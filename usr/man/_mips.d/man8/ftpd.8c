@@ -1,0 +1,207 @@
+.\" SCCSID: @(#)ftpd.8c	8.1	9/11/90
+.TH ftpd 8c
+.SH Name
+ftpd \- DARPA Internet File Transfer Protocol server
+.SH Syntax
+.B /usr/etc/ftpd
+[
+.B \-d
+] [
+.B \-l
+] [
+.BR \-t timeout
+]
+.SH Description
+.NXB "ftpd server"
+.NXR "Internet File Transfer Protocol server"
+The 
+.PN ftpd
+server is the DARPA Internet File Transfer Protocol
+server process.  The server uses the TCP protocol
+and is invoked by
+.PN inetd(8c)
+when it receives a connection on the port specified in the 
+.PN ftp
+service specification.  For further information, see
+.PN services(5).
+.PP
+The 
+.PN ftp
+server currently supports the following
+.PN ftp
+requests.  Case is not distinguished.
+.PP
+.NXB "ftpd server" "request list"
+.IP \fBRequest\fR 9
+\fBDescription\fR
+.IP ABOR 10
+Abort previous command
+.IP ACCT 10
+Specify account 
+.IP ALLO 10 
+Allocate storage 
+.IP APPE 10 
+Append to a file
+.IP CDUP 10 
+Change to parent of current working directory
+.IP CWD 10 
+Change working directory
+.IP DELE 10 
+Delete a file
+.IP HELP 10 
+Give help information
+.IP LIST 10 
+Give list of files in a directory (\f(CWls \-lg\fP)
+.IP MKD 10 
+Make a directory
+.IP MODE 10 
+Specify data transfer \fImode\fP
+.IP NLST 10 
+Give name list of files in directory (\f(CWls\fP)
+.IP NOOP 10 
+Do nothing
+.IP PASS 10 
+Specify password
+.IP PASV 10 
+Prepare for server-to-server transfer
+.IP PORT 10 
+Specify data connection port
+.IP PWD 10 
+Print the current working directory
+.IP QUIT 10 
+Terminate session
+.IP RETR 10 
+Retrieve a file
+.IP RMD 10 
+Remove a directory
+.IP RNFR 10 
+Specify rename-from file name
+.IP RNTO 10 
+Specify rename-to file name
+.IP STOR 10 
+Store a file
+.IP STOU 10 
+Store a file with a unique name
+.IP STRU 10 
+Specify data transfer \fIstructure\fP
+.IP TYPE 10 
+Specify data transfer \fItype\fP
+.IP USER 10 
+Specify user name
+.IP XCUP 10 
+Change to parent of current working directory
+.IP XCWD 10 
+Change working directory
+.IP XMKD 10 
+Make a directory
+.IP XPWD 10 
+Print the current working directory
+.IP XRMD 10 
+Remove a directory
+.PP
+The remaining 
+.PN ftp
+requests specified in Internet RFC 959 are
+recognized, but not implemented.
+.NXE "ftpd server" "request list"
+.PP
+The
+.PN ftpd
+server interprets file names according to the globbing
+conventions used by
+.PN csh(1).
+This allows users to utilize the metacharacters *?[]{}~.
+.PP
+The
+.PN ftpd
+server authenticates users according to three rules: 
+.NXR "ftpd server" "verifying users"
+.IP 1. 5
+The user name must be in the password database,
+.PN /etc/passwd ,
+and not have a null password.  In this case a password
+must be provided by the client before any file operations
+may be performed.
+.IP 2. 5
+The user name must not appear in the file
+.PN /etc/ftpusers .
+.IP 3. 5
+If the user name is anonymous or 
+.PN ftp , 
+an anonymous 
+.PN ftp
+account must be present in the password
+file (user \f(CWftp\fP).  In this case the user is allowed
+to log in by specifying any password (by convention this
+is given as the client host's name).
+.PP
+In the last case, 
+.PN ftpd
+takes special measures to restrict the client's access privileges.
+.NXR "ftpd server" "restricting access"
+The server performs a 
+.PN chroot(2)
+command to the home directory of the 
+.PN ftp 
+user. To prevent system security from being breached, it is recommended
+that the 
+.PN ftp 
+subtree be constructed with care.  Thus the following
+rules are recommended:
+.IP \fB~ftp)\fR 10 
+Make the home directory owned by 
+.PN ftp 
+and unwritable by anyone.
+.IP \fB~ftp/bin)\fR 10 
+Make this directory owned by the superuser and unwritable by
+anyone.  The program 
+.PN ls(1)
+must be present to support the list commands.  This
+program should have mode 111.
+.IP \fB~ftp/etc)\fR 10 
+Make this directory owned by the superuser and unwritable by
+anyone.  The files 
+.MS passwd 5  
+and 
+.MS group 5 
+must be present for the 
+.PN ls
+command to work properly.  These files should be mode 444.
+.IP \fB~ftp/pub)\fR 10 
+Make this directory mode 777 and owned by 
+.PN ftp.  
+Place the files, which are to be accessible by the
+anonymous account, in this directory.
+.SH Options
+.IP \fB\-d\fR 5
+Enables certain debugging messages that are printed by ftpd. 
+.NXR "ftpd server" "options"
+.IP \fB\-l\fR 5
+Logs each ftp session to the
+.PN syslog .
+.IP \fB\-t\fR 5 
+Sends the inactivity timeout period to  
+.IR timeout; 
+otherwise, the 
+.PN ftp 
+server will timeout an inactive session after 15 minutes. 
+.SH Restrictions
+.NXR "ftpd server" "restricted"
+Support does not exist for aborting commands.
+.PP
+The use of an anonymous account is inherently dangerous and should
+be avoided when possible.
+.PP
+The server must run as the superuser
+to create sockets with privileged port numbers.  The server maintains
+an effective user id of the logged in user, reverting to
+the superuser only when binding addresses to sockets.  The
+possible security holes have been extensively
+scrutinized, but are possibly incomplete.
+.SH Files
+.TP 15
+.PN /etc/ftpusers
+Contains the list of unauthorized users
+.SH See Also
+ftp(1c), services(5), inetd(8c), syslog(8)
+.NXE "ftpd server"

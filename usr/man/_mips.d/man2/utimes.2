@@ -1,0 +1,107 @@
+.\" SCCSID: @(#)utimes.2	2.2	8/10/87
+.TH utimes 2
+.SH Name
+utimes \- set file times
+.SH Syntax
+.nf
+#include <sys/time.h>
+.PP
+int utimes(\fIfile, tvp\fP)
+char *\fIfile\fP;
+struct timeval *\fItvp\fP;
+.fi
+.SH Description
+.NXR "utimes system call"
+.NXR "file" "setting access time"
+.NXR "file" "setting modification time"
+The
+.PN utimes
+call
+sets the access and modification times of the  file
+named by \fIfile\fP.
+.PP
+If
+.I tvp
+is NULL,
+the access and modification times
+of the file are set to the current time.
+A process must be the owner of the file, the superuser,
+or have write permission to use
+.PN utimes
+in this manner.
+.PP
+If 
+\fItvp\fP is not NULL, it is assumed to point to an array of
+two timeval structures.  The access time is set to the value
+of the first member, and the modification time is set to the
+value  of  the second member.  
+Only the owner of the file or
+the super-user may use 
+.PN utimes 
+in this manner.
+.PP
+In either case, the inode-changed time of the \fIfile\fP is set to
+the current time.
+.SH Return Values
+Upon successful completion, a value of zero (0) is returned.
+Otherwise, a value of \-1 is returned, and
+.I errno 
+is set to indicate the error.
+.SH Diagnostics
+The
+.PN utimes
+system call
+fails if one or more of the following are true:
+.TP 20
+[EACCES]
+Search permission is denied for a component of the path prefix.
+.TP 20
+[EACCES]
+The
+.I tvp
+argument is NULL and the caller is not the owner of the file;
+write access is denied.
+.TP 20
+[EFAULT]
+The
+.I file
+or
+.I tvp
+points outside the process's allocated address space.
+.TP 20
+[EINVAL]
+An illegal timeval (that is, negative seconds or 
+microseconds greater than 999999) was supplied.
+.TP 20
+[EIO]
+An I/O error occurred while reading or writing the affected inode.
+.TP 20
+[ELOOP]
+Too many symbolic links were encountered in translating the pathname.
+.TP 20
+[ENAMETOOLONG]
+A component of a pathname exceeds 255 characters, or an entire
+pathname exceeds 1023 characters.
+.TP 20
+[ENOENT]
+The named file does not exist.
+.TP 20
+[ENOTDIR]
+A component of the path prefix is not a directory.
+.TP 20
+[EPERM]
+The
+.I tvp
+argument is not NULL, the caller has write access, the caller
+is not the owner of the file, and the caller is not the superuser.
+.TP 20
+[EROFS]
+The file system containing the file is mounted read-only.
+.TP
+[ETIMEDOUT]
+A connect request or remote file operation failed,
+because the connected party
+did not respond after a period
+of time determined by the communications protocol.
+.SH See Also
+stat(2)

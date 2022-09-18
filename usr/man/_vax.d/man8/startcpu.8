@@ -1,0 +1,22 @@
+.TH startcpu 8 
+.SH Name
+startcpu \- start one or all CPUs
+.SH Syntax
+.B /etc/startcpu 
+[\fIcpunumber\fP]
+.SH Description
+The 
+.PN startcpu 
+program is used to start the non-boot CPUs in a system.
+.NXR "SMP" "startcpu"
+Normally, it will be executed from the
+.PN /etc/rc
+startup file as the
+system comes up in multi-user mode. 
+.PP
+If no argument is used, 
+.PN startcpu 
+will try to start all the non-boot
+CPUs in the system. Otherwise, it starts the specified CPU.
+.SH See Also
+startcpu(2), stopcpu(2), stopcpu(8) 

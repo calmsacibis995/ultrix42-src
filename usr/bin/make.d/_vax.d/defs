@@ -1,0 +1,171 @@
+/* Original ID: defs 4.6 83/07/01 */
+/*
+    defs	definitions for MAKE
+
+    defs     4.1     90/07/17
+
+ ------------
+ Modification History
+ ~~~~~~~~~~~~~~~~~~~
+01	17-Apr-86, Greg Tarsa
+	Increased QBUFMAX to allow more names to be in the $? list.
+
+ ************************************************************************
+ *									*
+ *			Copyright (c) 1985 by				*
+ *		Digital Equipment Corporation, Maynard, MA		*
+ *			All rights reserved.				*
+ *									*
+ *   This software is furnished under a license and may be used and	*
+ *   copied  only  in accordance with the terms of such license and	*
+ *   with the  inclusion  of  the  above  copyright  notice.   This	*
+ *   software  or  any  other copies thereof may not be provided or	*
+ *   otherwise made available to any other person.  No title to and	*
+ *   ownership of the software is hereby transferred.			*
+ *									*
+ *   This software is  derived  from  software  received  from  the	*
+ *   University    of   California,   Berkeley,   and   from   Bell	*
+ *   Laboratories.  Use, duplication, or disclosure is  subject  to	*
+ *   restrictions  under  license  agreements  with  University  of	*
+ *   California and with AT&T.						*
+ *									*
+ *   The information in this software is subject to change  without	*
+ *   notice  and should not be construed as a commitment by Digital	*
+ *   Equipment Corporation.						*
+ *									*
+ *   Digital assumes no responsibility for the use  or  reliability	*
+ *   of its software on equipment which is not supplied by Digital.	*
+ *									*
+ ************************************************************************/
+
+#include <stdio.h>
+#include <ctype.h>
+#include <sys/param.h>
+#include <sys/dir.h>
+
+#define SHELLCOM "/bin/sh"
+
+typedef long int TIMETYPE;
+
+#ifdef unix
+/*  to install metering, add a statement like */
+#define METERFILE "/usr/sif/make/Meter"
+/* to turn metering on, set external variable meteron to 1 */
+#endif
+
+/* define FSTATIC to be static on systems with C compilers
+   supporting file-static; otherwise define it to be null
+*/
+#define FSTATIC static
+
+#define NO 0
+#define YES 1
+
+#define unequal strcmp
+#define NLEFTS 512
+#define NCHARS 500
+#define NINTS  250
+#define INMAX 3500
+#define OUTMAX 3500
+#define MAXDIR 10
+
+#define ALLDEPS  1
+#define SOMEDEPS 2
+
+#define META 01
+#define TERMINAL 02
+extern char funny[128];
+
+
+#define ALLOC(x) (struct x *) ckalloc(sizeof(struct x))
+
+extern int sigivalue;
+extern int sigqvalue;
+extern int waitpid;
+extern int dbgflag;
+extern int prtrflag;
+extern int silflag;
+extern int noexflag;
+extern int keepgoing;
+extern int noruleflag;
+extern int touchflag;
+extern int questflag;
+extern int ndocoms;
+extern int ignerr;
+extern int okdel;
+extern int inarglist;
+extern char *prompt;
+extern int nopdir;
+extern char junkname[ ];
+
+
+
+struct nameblock
+	{
+	struct nameblock *nxtnameblock;
+	char *namep;
+	struct lineblock *linep;
+	int done:3;
+	int septype:3;
+	TIMETYPE modtime;
+	};
+
+extern struct nameblock *mainname ;
+extern struct nameblock *firstname;
+
+struct lineblock
+	{
+	struct lineblock *nxtlineblock;
+	struct depblock *depp;
+	struct shblock *shp;
+	};
+extern struct lineblock *sufflist;
+
+struct depblock
+	{
+	struct depblock *nxtdepblock;
+	struct nameblock *depname;
+	};
+
+struct shblock
+	{
+	struct shblock *nxtshblock;
+	char *shbp;
+	};
+
+struct varblock
+	{
+	struct varblock *nxtvarblock;
+	char *varname;
+	char *varval;
+	int noreset:1;
+	int used:1;
+	};
+extern struct varblock *firstvar;
+
+struct pattern
+	{
+	struct pattern *nxtpattern;
+	char *patval;
+	};
+extern struct pattern *firstpat;
+
+struct dirhdr
+	{
+	struct dirhdr *nxtopendir;
+	DIR *dirfc;
+	char *dirn;
+	};
+extern struct dirhdr *firstod;
+
+
+struct chain
+	{
+	struct chain *nextp;
+	char *datap;
+	};
+
+char *copys(), *concat(), *subst(), *realloc(), *calloc();
+int *ckalloc();
+struct nameblock *srchname(), *makename();
+TIMETYPE exists();

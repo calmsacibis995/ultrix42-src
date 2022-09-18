@@ -1,0 +1,209 @@
+.TH stfd 3 RISC
+.SH Name
+stfd, st_currentifd, st_ifdmax, st_setfd, st_fdadd, st_symadd, st_auxadd, st_stradd, st_lineadd, st_pdadd, st_ifd_pcfd, st_pcfd_ifd, st_psym_ifd_isym, st_paux_ifd_iaux, st_paux_iaux, st_str_iss, st_str_ifd_iss, st_ppd_ifd_isym, st_malloc  \- routines that provide 
+access to per file descriptor section of the
+symbol table
+.SH Syntax
+.nf
+.B #include <syms.h>
+.PP
+.ft B
+long st_currentifd ()
+.PP
+.ft B
+long st_ifdmax ()
+.PP
+.ft B
+void st_setfd (ifd)
+long ifd;
+.PP
+.ft B
+long st_fdadd (filename)
+char *filename;
+.PP
+.ft B
+long st_symadd (iss, value, st, sc, freloc, index)
+long iss;
+long value;
+long st;
+long sc;
+long freloc;
+long index;
+.PP
+.ft B
+long st_auxadd (aux)
+AUXU aux;
+.PP
+.ft B
+long st_stradd (cp)
+char *cp;
+.PP
+.ft B
+long st_lineadd (line)
+long line;
+.PP
+.ft B
+long st_pdadd (isym)
+long isym;
+.PP
+.ft B
+long st_ifd_pcfd (pcfd1)
+pCFDR pcfd1;
+.PP
+.ft B
+pCFDR st_pcfd_ifd (ifd)
+long ifd;
+.PP
+.ft B
+pSYMR st_psym_ifd_isym (ifd, isym)
+long ifd;
+long isym;
+.PP
+.ft B
+pAUXU st_paux_ifd_iaux (ifd, iaux)
+long ifd;
+long iaux;
+.PP
+.ft B
+pAUXU st_paux_iaux (iaux)
+long iaux;
+.PP
+.ft B
+char *st_str_iss (iss)
+long iss;
+.PP
+.ft B
+char *st_str_ifd_iss (ifd, iss)
+long ifd;
+long iss;
+.PP
+.ft B
+pPDR st_ppd_ifd_isym (ifd, isym)
+long ifd;
+long isym;
+.PP
+.ft B
+char * st_malloc (ptr,psize,itemsize,baseitems)
+char *ptr;
+long *size;
+long itemsize;
+long baseitems;
+.PP
+.ft B
+.fi
+.ft R
+.br
+.SH Description
+The
+.B stfd
+routines provide an interface to objects handled on a per file
+descriptor (or fd) level.  For example: local symbols, 
+auxiliaries, local strings, line numbers, optimization
+entries, procedure descriptor entries, and the file descriptors.
+These routines constitute a group because they deal with
+objects corresponding to fields in the
+.I FDR
+structure.
+.PP
+A fd can be activated by reading an existing one into memory or by
+creating a new one.
+The compilation unit routines
+.I st_readbinary
+and
+.I st_readst
+read file descriptors and their constituent parts
+into memory from a symbol table on disk.
+.PP
+The
+.I st_fdadd
+adds a file descriptor to the list of file descriptors. The 
+.I lang
+field is initialized from a user specified global 
+.I st_lang 
+that should be set to a constant designated for the language in 
+.I symconst.h. 
+The
+.I fMerge
+field is initialized from the user specified global st_merge that specifies
+whether the file is to start with the attribute of being able
+to be merged with identical files at load time. The
+.I fBigendian
+field is initialized by the 
+.MS gethostsex 3  
+routine, which determines the
+permanent byte ordering for the auxiliary and line number entries 
+for this file.
+.PP
+The
+.I st_fdadd 
+adds the null string to the new files string table that is
+accessible by the constant issNull (0.  It also adds the filename to the
+string table and sets the
+.I rss
+field. Finally, the current file is set to the newly added file so that
+later calls operate on that file.
+.PP
+All routines for fd-level objects handle only the current file
+unless a file index is specified. The current file can also be set with
+.I st_setfd.
+.PP
+Programs can find the current file by calling
+.I st_currentifd,
+which returns the current index. Programs can find the number of
+files by calling
+.I st_ifdmax.
+The fd routines only require working with indices to do most things.
+They allow more in-depth manipulation by allowing users to get the
+compile time file descriptor
+.I (CFDR
+see 
+.I stsupport.h) 
+that contains memory pointers to the per file tables (rather
+than indices or offsets used in disk files). 
+Users can retrieve a pointer to the CFDR by calling
+.I st_pcfd_ifd
+with the index to the desired file. The inverse mapping
+.I st_ifd_pcfd
+exists, as well. 
+.PP
+Each of fd's constituent parts has an add routine:
+.I st_symadd,
+.I st_stradd,
+.I st_lineadd,
+.I st_pdadd,
+and
+.I st_auxadd. 
+The parameters of the add routines correspond to the fields of the
+added object (see \fIsym.h\fR). The \fIpdadd\fR routine lets users fill in
+the isym field only. Further information can be added by directly accessing
+the procedure descriptor entry. 
+.PP
+The add routines return an index that can
+be used to retrieve a pointer to part of
+the desired object with one of the following
+routines:
+.I st_psym_isym,
+.I st_str_iss,
+and
+.I st_paux_iaux.
+.NT
+These routines only return objects within the current 
+file. The following
+routines allow for file specification:
+.I st_psym_ifd_isym,
+.I st_aux_ifd_iaux,
+and
+.I st_str_ifd_iss.
+.NE
+The
+.I st_ppd_ifd_isym 
+allows access to procedures through
+the file index for the file where they occur
+and the isym field of the entry that points at the local symbol for
+that procedure. 
+.PP
+The return index from st_symadd should be used to get a dense number
+(see stcu).  That number should be the ucode block number for the object the
+symbol describes.
+.SH See Also
+stcu(3), stfe(3), sym.h(5), stsupport.h(5)

@@ -1,0 +1,7 @@
+% Copyright, 1986, 1988, Digital Equipment Corp.
+save/DECMCSEncoding where exch pop/DECMCSEncoding ISOLatin1Encoding 256
+array copy def mark 8#240 8#244 8#246 8#254 8#255 8#256 8#257 8#264 8#270
+8#276 8#320 8#336 8#360 8#376 8#377 counttomark{DECMCSEncoding exch/.notdef
+put}repeat 8#250/currency 8#327/OE 8#335/Ydieresis 8#367/oe 8#375/ydieresis
+counttomark 2 idiv{DECMCSEncoding 3 1 roll put}repeat
+cleartomark{restore}if

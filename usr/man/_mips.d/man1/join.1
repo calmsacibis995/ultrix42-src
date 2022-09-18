@@ -1,0 +1,281 @@
+.TH join 1
+.SH Name
+join \- join files
+.SH Syntax
+.B "join [ \-a \fIn\fP] [ \-e \fIstring\fP] [ \-j \fI n m\fP] [ \-o \fIlist\fP] [ \-t \fIc\fP] \fI file1 file2\fP"
+.SH Description
+.NXR "join command"
+.NXR "file" "comparing"
+.NXR "file" "combining"
+.NXR "join command" "sort command"
+.NXR "join command" "comm command"
+.NXR "relational data base operator"
+The
+.PN join
+command compares a field in 
+.I file1 
+to a field in 
+.IR file2 .
+If the two fields match, the
+.PN join
+command combines the line in 
+.I file1
+that contains the field with
+the line in 
+.I file2 
+that contains the field.  The command writes
+its output to standard output.  If you specify a hyphen (-) in the
+.I file1
+argument,
+.PN join
+compares standard input to the contents of 
+.IR file2 .
+.PP
+The 
+.PN join
+command compares and combines the input files one line at a time. Each
+line in the input file contains one field that 
+.PN join
+uses to determine if two lines should be joined.  This field is called
+the join field. By default, the
+.PN join
+command uses the first field in each line as the join field.   
+The command compares the join field in the first line of 
+.I file1
+to the join field in the first line of 
+.IR file2 .  
+If the two
+fields match, the command joins the lines.  The command then compares
+the join fields in the second line of both files, and so on.
+.PP
+In the input files, fields are separated by tab or space
+characters.  The
+.PN join 
+command reads data from the first field until it encounters a tab or space 
+character, which terminates the
+first field.   By default, the
+command ignores tab and space characters, so the next character that is not
+a tab or space begins the
+second field.  The second field is terminated by the tab or space that
+follows it, and the third field begins with the next character that is
+not a tab or space.  The 
+.PN join
+command reads fields in this way until it encounters
+a new line character.
+Any number of tabs or spaces can separate two fields, and any number
+of newline characters can separate two lines.
+.PP
+Both 
+.I file1
+and 
+.I file2
+must be ordered in the collating sequence of the
+.PN sort \-b
+command on the fields that the two files are to be joined. By default, 
+.PN join 
+uses the first field in each line and collates the same as 
+.PN sort
+.PN \-b .
+.PP
+To create output, the 
+.PN join 
+command writes the join field, followed by the remaining fields in the
+line from 
+.I file1, 
+followed by the remaining fields in the line
+from 
+.I file2
+to the output file.  The following demonstrates how lines
+in the  output appear by default:
+.EX
+join_field file1.field2 file1.field3 file1.field4 file2.field2 file2.field3
+.EE
+.PP
+By default, the 
+.PN join
+command ignores lines that do not contain identical join fields.  The
+command writes no output for these lines.
+.PP
+You can change how 
+.PN join
+creates output using command options.  For example, you can
+cause the command to write output for lines that do not
+contain identical join fields.  You can also specify a 
+.I list
+using the
+.PN \-o
+option.  In
+.I list,
+you supply a list of specifiers in the form
+.I file.field, 
+where 
+.I file
+is either 1 or 2 and 
+.I field
+is the number of the field.  For example, 1.2 specifies the second field
+in the first file and 2.4 specifies the fourth field in the second
+file. The following demonstrates how lines in the output appear if you
+use these two specifiers:
+.EX
+file1.field2 field2.field4
+.EE
+.SS International Environment
+.IP LC_COLLATE 15
+If this environment variable is set and
+valid,
+.PN join
+uses the international language database named in the definition to
+determine collation rules.
+.IP LC_CTYPE
+If this environment variable is set and valid,
+.PN join
+uses the international language database named in the definition to
+determine character classification rules.
+.IP LANG
+If this environment variable is set and valid 
+.PN join
+uses the international language database named in the definition to
+determine collation and character classification rules.  If LC_COLLATE
+or LC_CTYPE is defined their definition supercedes the definition of
+LANG.
+.SH Options
+.IP \fB\-a[\fIn\fR] 12
+Write lines that contain unmatched join fields to the output file.  
+You can cause the
+command to write unmatched lines from only one file using 
+.IR n .
+If you specify 1 in 
+.IR n ,
+.PN join
+writes unmatched lines only from file 1.  If you specify 2,
+.PN join
+writes unmatched lines only from file 2.
+.IP
+If you omit the
+.PN \-a 
+option, 
+.PN join
+writes no output for unmatched lines.
+.IP "\fB\-\|e\fI s\fR" 12 
+Writes the string you specify in 
+.I s
+to the output if you
+specify a nonexistent field in the 
+.I list
+for the
+.PN \-o
+option.  For example, if lines in file 2 contain only three fields,
+and you specify 2.4 in 
+.IR list ,
+.PN join
+writes 
+.I s
+in place of the nonexistent field.
+.IP "\fB\-\|j\fIn m\fR" 12
+Defines field \fIm\fP in file \fIn\fP to be the join field. The
+.PN join
+command compares the field you specify in the
+.PN \-j
+option to the default join field in the other file.
+If you omit
+.IR n ,
+the 
+.PN join
+command uses 
+the 
+.IR m th
+field in both files.
+.IP "\fB\-\|1\fI m\fR"
+Use the 
+.I m
+th
+field in the first file as the join field.  This option is equivalent
+to using
+.PN \-j 1 
+.IR m .
+.IP "\fB\-\|2\fI m\fR"
+Use the 
+.I m 
+field in the second file as the join field.  This option is equivalent
+to using
+.PN \-j 2 
+.IR m .
+.IP "\fB\-\|o\fI list\fR" 12
+Output the joined data according to 
+.IR list .
+The specifiers in
+.I list
+have the format 
+.IR file.field ,
+where 
+.I file
+is either 1 or 2 and 
+.I field
+is the number of the field.
+.IP \fB\-t\fIc\fR 12
+Recognize the tab character 
+.IR c .
+The presence of 
+.I c
+in a line is significant, both for comparing join fields and creating output.
+.SH Restrictions
+.NXR "join command" "restricted" 
+If you specify the
+.PN \-t
+option, the 
+.PN join 
+command collates the same as
+.PN sort
+with no options.
+.SH Examples
+Suppose that by issuing the following 
+.PN cat
+commands, you display the files shown in the example:
+.EX
+% cat file_1
+apr     15
+aug     20
+dec     18
+feb     05
+% cat file_2
+apr     06
+aug     14
+date
+feb     15
+.EE
+Both files are sorted in ascending order.
+.PP
+If you issue the 
+.PN join
+command without options, the output appears as follows:
+.EX
+% join file_1 file_2
+apr 15 06
+aug 20 14
+feb 05 15
+.EE
+The third line in each input file is not joined in the output because
+the join fields (date and dec) do not match.
+.PP
+To join the lines in these files and format the output so that the
+second field from each file appears first and the first (join) field
+appears second, issue
+the following command:
+.EX
+% join \-o 1.2 1.1 2.2 2.1 file_1 file_2
+15 apr 06 apr
+20 aug 14 aug
+05 feb 15 feb
+.EE
+To write lines
+that are unmatched to the output, issue the following command:
+.EX
+% join \-a file_1 file_2
+apr 15 06
+aug 20 14
+date
+dec 18
+feb 05 15
+.EE
+.SH See Also
+awk(1), comm(1), sort(1), sort5(1), environ(5int)

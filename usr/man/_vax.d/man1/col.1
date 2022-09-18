@@ -1,0 +1,76 @@
+.TH col 1
+.SH Name
+col \- filter reverse line feeds
+.SH Syntax
+.B col [\fI\-options\fR]
+.SH Description
+.NXR "col command"
+.NXR "line feed" "reversing"
+The
+.PN col
+command
+reads the standard input and writes the standard output.
+It performs the line overlays implied by reverse line
+feeds (ESC-7 in ASCII)
+and by forward and reverse half line feeds (ESC-9 and ESC-8,
+respectively).
+The 
+.PN col
+command
+is particularly useful for filtering multicolumn
+output made with the 
+.PN \&.rt
+command of
+.PN nroff ,
+and for filtering output resulting from the
+.PN tbl
+preprocessor.
+.NXR "column" "filtering multiple"
+.PP
+Although
+.PN col
+accepts half line motions in its input, it does not
+normally output them.
+Instead, text that would appear between lines is moved to the next lower
+full line boundary.
+.PP
+The control characters SO (ASCII code 017)
+and SI (ASCII code 016) are assumed
+to start and end text in an alternate character set.
+The character set (primary or alternate) associated with each printing
+character read is remembered.  
+On output, SO and SI characters are generated
+where necessary to maintain the correct treatment of each character.
+.PP
+The
+.PN col
+command
+normally converts white space to tabs to shorten printing time.
+If the
+.B \-h
+option is given, this conversion is suppressed.
+.PP
+On input, the only control characters accepted are <space>,
+<backspace>, <tab>, <return>, <newline>, etc...  The VT
+character is an alternate form of full reverse linefeed, included
+for compatibility with earlier programs of this type. All other
+non-printing characters are ignored.
+.SH Options
+.IP \fB\-b\fR
+Assumes that the output device does not have backspacing.  
+.IP \fB\-f\fR 
+Suppresses moving half lines to the next full line.  
+.IP \fB\-h\fR 
+Suppresses conversion of white space to tabs.  
+.IP \fB\-p\fR
+Forces through unchanged any unknown escape sequences
+that are found in its input. This option should be used with care.
+.IP \fB\-x\fR
+Suppresses conversion of white space to tabs (same as \-h).
+.SH Restrictions
+.NXR "col command" "restricted"
+Cannot back up more than 128 lines.
+.br
+No more than 800 characters, including backspaces, on a line.
+.SH See Also
+tbl(1), nroff(1)

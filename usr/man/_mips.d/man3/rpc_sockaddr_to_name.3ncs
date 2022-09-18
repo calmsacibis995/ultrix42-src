@@ -1,0 +1,84 @@
+.TH rpc_sockaddr_to_name 3ncs
+.SH Name
+rpc_sockaddr_to_name \- convert a socket address to a host name and port number (client or server)
+.SH Syntax
+#include <idl/c/rpc.h>
+
+void rpc_$sockaddr_to_name(\fIsockaddr, slength, name, nlength,\fP
+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\fIport, status\fP)
+.nf
+socket_$addr_t *\fIsockaddr\fP;
+unsigned long \fIslength\fP;
+unsigned char \fIname\fP;
+unsigned long *\fInlength\fP;
+unsigned long *\fIport\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$sockaddr_to_name(\fR
+.\"	\fBin \fIsockaddr\fB: socket_$addr_t;\fR
+.\"	\fBin \fIslength\fB: unsigned32;\fR
+.\"	\fBout \fIname\fB: array [0..255] of char;\fR
+.\"	\fBin out \fInlength\fB: unsigned32;\fR
+.\"	\fBout \fIport\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIsockaddr\fR
+A socket address.
+.TP 20
+\fIslength\fR
+The length, in bytes, of \fIsockaddr\fR.
+.TP 20
+\fIname\fR
+A string that contains the host name
+and the address family.
+The format is \fIfamily:host [port]\fR
+where \fIfamily\fR is \fBip\fR.
+.TP 20
+\fInlength\fR
+On input, \fInlength\fR is the length of the \fIname\fR buffer. \" terminator?
+On output, \fInlength\fR is the number of characters returned in the \fIname\fR parameter.
+.TP 20
+\fIport\fR
+The socket port number.
+.TP 20
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$sockaddr_to_name
+routine provides the address family, the host name, and the port number
+identified by the specified socket address.
+.NXR "Interface to the Remote Procedure Call" "rpc_sockaddr_to_name"
+.SH Diagnostics
+This section lists status codes for errors returned by this
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.NT 
+This routine has been superseded by the 
+.PN socket_$to_name
+routine.
+.NE
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs), rpc_name_to_sockaddr(3ncs), socket_to_name(3ncs)

@@ -1,0 +1,138 @@
+.\" SCCSID: @(#)rm.1	8.1	9/11/90
+.TH rm 1
+.SH Name
+rm, rmdir \- remove (unlink) files or directories
+.SH Syntax
+\fBrm\fR [\fB\-f\fR] [\fB\-r\fR] [\fB\-i\fR] [\fB\-\fR] \fIfile-or-directory-name...
+.br
+\fBrmdir\fI directory-name...
+.SH Description
+.NXR "rm command"
+.NXR "rmdir command (general)"
+.NXR "file" "removing"
+.NXR "directory" "removing"
+The
+.PN rm
+command removes the entries for one or more files from a directory.
+If there are no links to the file 
+then the file is destroyed.
+For further information, see 
+.MS ln 1 . 
+.PP
+The
+.PN rmdir
+command removes entries for the named directories, which must be
+empty.  If they are not empty, the directories remain, and
+.PN rmdir 
+displays an error message (see EXAMPLES).
+.PP
+To remove a file, you must have write permission in its directory,
+but you do not need read or write permission on the file itself.
+When you are using
+.PN rm
+from a terminal, and you do not have write permission on the file, 
+the
+.PN rm
+command asks for confirmation before destroying the file. 
+.PP
+If input 
+is redirected from the standard input device (your terminal),
+then
+.PN rm
+checks to ensure
+that input is not coming from your terminal.  If not, 
+.PN rm
+sets the \fB\-f\fR option, which overrides the file protection,
+and removes the files silently, regardless of what you have
+specified in the file redirected as input to 
+.PN rm .
+See EXAMPLES.
+.SH Options
+.NXR "rm command" "options"
+.IP \fB\-\fR 5
+Specifies that the named files have names
+beginning with a minus (for example
+.PN \-myfile
+).
+.IP \fB\-f\fR 
+Forces the removal of file or directory without first requesting confirmation.  
+Only system or usage messages are displayed.
+.IP \fB\-i\fR  
+Prompts for yes or no response before removing each entry.  
+Does not ask when combined with the \fB\-f\fR option.  If you
+type a y, followed by any combination of characters, a yes response is assumed.
+.IP \fB\-r\fR 
+Recursively removes all entries from the specified directory and, then, 
+removes the entry for that directory from its parent directory.  
+.SH Examples
+The following example shows how to remove a file in
+your current working directory.
+.NXR(e) "rm command" "removing file"
+.EX
+rm myfile
+.EE
+This example shows use of the null option to remove
+a file beginning with a minus sign.
+.EX
+rm \- \-gorp
+.EE
+This example shows how a confirmation is requested 
+for removal of a file for which you do not have
+write permission.
+.NXR(e) "rm command" "confirming file removal"
+.EX
+rm testfile
+rm: override protection 400 for testfile? y
+.EE
+This example shows how the combination of \fB\-i\fR
+and \fB\-r\fR options lets you examine all the files in a
+directory before removing them.   
+.NXR(e) "rm command" "examining files"
+In the example,
+mydirectory
+is a subdirectory of the current working directory.
+Note that the last question requests confirmation before 
+removing the directory itself.  Although the user
+types ``y'', requesting removal of the directory,
+the 
+.PN rm
+command does not allow this, because the directory
+is not empty; the user typed ``n'' to the question
+about the file
+.I file2 ,
+so 
+.I file2
+was not removed.
+.EX
+rm \-ir mydirectory
+rm: remove mydirectory/file1? y
+rm: remove mydirectory/file2? n
+      .
+      .
+      .
+rm: remove mydirectory? y
+rm: mydirectory: Directory not empty
+.EE
+This example illustrates that 
+.PN rm
+overrides file protection when input is redirected from
+the standard input device.  The user creates a file
+named ``alfie'', with a read-only file protection.  The
+user then creates a file named ``ans'' to contain the
+character ``n''.  The
+.PN rm 
+command
+following destroys the file ``alfie'', even though the
+redirected input file requested no deletion.
+.EX
+cat > alfie
+hello
+^d
+chmod 444 alfie
+cat > ans
+n
+^d
+rm < ans alfie
+.EE
+.SH See Also
+unlink(2)

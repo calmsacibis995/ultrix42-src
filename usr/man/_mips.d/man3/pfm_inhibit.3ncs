@@ -1,0 +1,54 @@
+.\"	@(#)pfm_inhibit.3ncs	8.1 of 9/11/90
+.TH pfm_inhibit 3ncs
+.SH Name
+pfm_inhibit \- inhibit asynchronous faults
+.SH Syntax
+.nf
+#include <idl/c/base.h>
+#include <idl/c/pfm.h>
+
+void pfm_$inhibit()
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/sys/ins/base.ins.pas';\fR
+.\"\fB%include '/sys/ins/pfm.ins.pas';\fR
+.\"
+.\"\fBprocedure pfm_$inhibit;\fR
+.\".DE
+.ig
+.SH Synopsis (fortran)
+.nf
+\fB%include '/sys/ins/base.ins.ftn'\fR
+\fB%include '/sys/ins/pfm.ins.ftn'\fR
+
+	 \fBcall pfm_$inhibit\fR
+.fi
+..
+.SH Description
+The 
+.PN pfm_$inhibit
+routine prevents asynchronous faults
+from being passed to the calling process.
+While faults are inhibited,
+the operating system holds
+at most one asynchronous fault.
+Consequently,
+a call to 
+.PN pfm_$inhibit
+can result in the loss of some signals.
+It is good practice to inhibit faults
+only when absolutely necessary.
+.NXR "Fault Management" "pfm_inhibit"
+.NT
+This routine has no effect on the processing of synchronous faults such
+as floating-point and overflow exceptions, access violations, and so on.
+.NE
+.SH Files
+.PN /usr/include/idl/c/base.h
+.br
+.PN /usr/include/idl/base.idl
+.br
+.PN /usr/include/idl/c/pfm.h
+.SH See Also
+intro(3ncs), pfm_enable(3ncs), pfm_inhibit_fault(3ncs)

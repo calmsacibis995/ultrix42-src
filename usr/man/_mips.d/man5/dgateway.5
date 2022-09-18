@@ -1,0 +1,98 @@
+.\" SCCSID: @(#)dgateway.5	8.2	12/3/90
+.TH dgateway 5 "" "" Unsupported
+.SH Name
+dgateway \- name of the intermediate host (DECnet gateway)
+.SH Description
+.NXR "dgateway file" "format"
+.NXAM "dgate command" "dgateway file"
+The
+.PN dgateway
+file contains the ASCII name of the ULTRIX system serving as
+the intermediate host (gateway system) used by
+.MS dgate 1c
+to connect to the DECnet network.  This gateway system
+must be connected to the local system through a local area
+(TCP/IP) network and to DECnet systems through the DECnet
+network.
+.PP
+The
+.MS dgate 1c
+command first looks in your home
+directory for a file named .dgateway.
+The .dgateway file should contain one
+(and only one) system, followed by a new line.
+In this case, you must have an account on the gateway system,
+as the
+.MS dgate 1c
+command will log in to this account to do its work there.
+Your gateway account must be set up so that a password is
+not required in order to gain access to the system.
+This is accomplished by means of a .rhosts file in your
+home directory on the remote system.
+See
+.MS rlogin 1c
+for more information about the .rhosts file.
+.PP
+If there is no .dgateway file in your home directory,
+the 
+.MS dgate 1c
+command looks for the file 
+.PN /etc/dgateway ,
+which has some optional additional fields separated by spaces:
+.EX
+gateway [ account ] [ path-to-dgated ]
+.EE
+.PP
+In this case, the 
+.MS dgate 1c
+command logs into
+the gateway system running
+.PN setuid
+\fIguest\fR, while access is made through the \fIaccount\fR specified.
+The account specified must allow user \fIguest\fR to
+log in to the system without providing a password.
+This means that the .rhosts file in the home directory of the \fIaccount\fR
+listed must contain an entry of the form ``myhostname guest'',
+where "myhostname" is the name of the local system that desires access
+to the gateway node.
+.PP
+The syntax of the 
+.PN \&~/.dgateway 
+file permits an optional
+username. The username on the gateway system must permit you to
+log in to that system from your system without using a password. For example:
+.PP
+home system:  localhost
+.br
+\  \  
+.PN \&~/.dgateway 
+contains  "remotehost username"
+.PP
+gateway system: remotehost
+.br
+\  \  
+.PN \&~username/.rhosts 
+contains  "remotehost username" 
+.PP
+This permits 
+.PN dgate 
+to work even if the home system does not have
+an 
+.PN /etc/dgateway 
+file, or if the gateway system does
+not have a guest account.
+.PP
+If no account is specified in the 
+.PN /etc/dgateway 
+file, the default of the \fIguest\fR account is used.
+The last optional field specifies the pathname for the 
+.MS dgated 8
+daemon.
+The default is 
+.PN /etc/dgated .
+.SH Files
+.PN /etc/dgateway
+.br
+.PN \&~/.dgateway
+.SH See Also 
+dgate(1c), dgated(8), rlogin(1c)

@@ -1,0 +1,31 @@
+	(cd _vax.O;\
+	/new.pool/s5make INCLUDEVARS=/new.pool/Makevars_vax.mk MAKERULE=all INCLUDERULES=/new.pool/Makerules.mk -f ../Makelocal.mk all)
+	yacc -d ../awk.g.y
+
+conflicts: 95 shift/reduce
+	cc -c  -O  -I. -I.. y.tab.c
+	rm -f y.tab.c
+	mv y.tab.o awk.g.o
+	cmp -s y.tab.h awk.h || cp y.tab.h awk.h
+cc -c -O -I. -I.. ../b.c
+cc -c -O -I. -I.. ../main.c
+cc -c -O -I. -I.. ../tran.c
+cc -c -O -I. -I.. ../lib.c
+cc -c -O -I. -I.. ../run.c
+cc -c -O -I. -I.. ../parse.c
+	cc -c  -O  -I. -I.. ../proc.c
+	cp ../token.c ../_vax.O/token.c
+	chmod 664 ../_vax.O/token.c
+	ex - <../tokenscript
+	rm -f temp
+	cc -c  -O  -I. -I.. ../_vax.O/token.c
+	cp ../token.c ../_vax.O/token.c
+	chmod 664 ../_vax.O/token.c
+	ex - <../tokenscript
+	rm -f temp
+	cc -c  -O  -I. -I.. ../_vax.O/token.c
+	cc  -I/new.pool/usr/include -I.. -o proc proc.o token.o
+	proc >proctab.c
+cc -c -O -I. -I.. ../proctab.c
+*** Error code 1
+*** Error code 1

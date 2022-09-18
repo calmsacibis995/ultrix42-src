@@ -1,0 +1,2645 @@
+# @(#)aqpcst.db	4.2   (ULTRIX)   12/20/90
+
+sseg
+id cds
+name aqpcst_cds
+label 'pcs status'
+elements
+	aqpcst_stcreg 
+
+sseg
+id ads
+name aqpcst_ads
+label 'additional info'
+elements
+	aqpcst_ambient
+	aqpcst_scufan1 aqpcst_scufan2 aqpcst_scufan3
+	aqpcst_scuasd aqpcst_scufansts aqpcst_scuairsts
+	aqpcst_cpafan1 aqpcst_cpafan2 aqpcst_cpafan3
+	aqpcst_cpaasd aqpcst_cpafansts aqpcst_cpaairsts
+	aqpcst_cpbfan1 aqpcst_cpbfan2 aqpcst_cpbfan3
+	aqpcst_cpbasd aqpcst_cpbfansts aqpcst_cpbairsts
+	aqpcst_ioastatus aqpcst_ioaasd aqpcst_iobstatus aqpcst_iobasd
+	aqpcst_wcuatempo aqpcst_wcuatempi aqpcst_wcuassts aqpcst_wcuasts
+	aqpcst_wcubtempo aqpcst_wcubtempi aqpcst_wcubssts aqpcst_wcubsts
+	aqpcst_ioacab aqpcst_iobcab aqpcst_ioabi aqpcst_iobbi
+	aqpcst_ioaac aqpcst_iobac aqpcst_ioagc aqpcst_iobgc
+	aqpcst_pcssts
+	aqpcst_busareg aqpcst_busavbus aqpcst_busareg0 aqpcst_busareg1
+	aqpcst_busareg2 aqpcst_busareg3 aqpcst_busareg4 aqpcst_busasts
+	aqpcst_busbreg aqpcst_busbvbus aqpcst_busbreg0 aqpcst_busbreg1
+	aqpcst_busbreg2 aqpcst_busbreg3 aqpcst_busbreg4 aqpcst_busbsts
+	aqpcst_buscreg aqpcst_buscvbus aqpcst_buscreg0 aqpcst_buscreg1
+	aqpcst_buscreg2 aqpcst_buscreg3 aqpcst_buscreg4 aqpcst_buscsts
+	aqpcst_busdreg aqpcst_busdvbus aqpcst_busdreg0 aqpcst_busdreg1
+	aqpcst_busdreg2 aqpcst_busdreg3 aqpcst_busdreg4 aqpcst_busdsts
+	aqpcst_busereg aqpcst_busevbus aqpcst_busereg0 aqpcst_busereg1
+	aqpcst_busereg2 aqpcst_busereg3 aqpcst_busereg4 aqpcst_busests
+	aqpcst_busfreg aqpcst_busfvbus aqpcst_busfreg0 aqpcst_busfreg1
+	aqpcst_busfreg2 aqpcst_busfreg3 aqpcst_busfreg4 aqpcst_busfsts
+	aqpcst_busjreg aqpcst_busjvbus aqpcst_busjreg0 aqpcst_busjreg1
+	aqpcst_busjreg2 aqpcst_busjreg3 aqpcst_busjreg4 aqpcst_busjsts
+	aqpcst_buskreg aqpcst_buskvbus aqpcst_buskreg0 aqpcst_buskreg1
+	aqpcst_buskreg2 aqpcst_buskreg3 aqpcst_buskreg4 aqpcst_busksts
+	aqpcst_busmreg aqpcst_busmvbus aqpcst_busmreg0 aqpcst_busmreg1
+	aqpcst_busmreg2 aqpcst_busmreg3 aqpcst_busmreg4 aqpcst_busmsts
+	aqpcst_busnreg aqpcst_busnvbus aqpcst_busnreg0 aqpcst_busnreg1
+	aqpcst_busnreg2 aqpcst_busnreg3 aqpcst_busnreg4 aqpcst_busnsts
+
+sitem
+name aqpcst_stcreg
+size 1
+class composite
+type short_register
+display nil
+label 'SYS TYPE/CONFIG'
+map
+	field
+size 2
+class coded
+map
+	1 "SOME RICS AVAILABLE IN IOB CAB"
+	2 "RESERVED RIC AVAILABILITY CODE"
+	3 "ALL RICS AVAILABLE IN IOB CAB"
+	field
+size 2
+class coded
+map
+	1 "SOME RICS AVAILABLE IN CPB CAB"
+	2 "RESERVED RIC AVAILABILITY CODE"
+	3 "ALL RICS AVAILABLE IN CPB CAB"
+	field
+size 2
+class coded
+map
+	0 "NO RICS AVAILABLE IN IOA CAB"
+	1 "SOME RICS AVAILABLE IN IOA CAB"
+	2 "RESERVED RIC AVAILABILITY CODE"
+	3 "ALL RICS AVAILABLE IN IOA CAB"
+	field
+size 2
+class coded
+map
+	0 "NO RICS AVAILABLE IN CPA CAB"
+	1 "SOME RICS AVAILABLE IN CPA CAB"
+	2 "RESERVED RIC AVAILABILITY CODE"
+	3 "ALL RICS AVAILABLE IN CPA CAB"
+	field
+size 2
+class coded
+map
+	0 "NO RICS AVAILABLE IN SCU CAB"
+	1 "SOME RICS AVAILABLE IN SCU CAB"
+	2 "RESERVED RIC AVAILABILITY CODE"
+	3 "ALL RICS AVAILABLE IN SCU CAB"
+	field
+size 4
+class coded
+map
+	0 "94XX SYSTEM TYPE"
+	1 "93XX SYSTEM TYPE"
+
+sitem
+name aqpcst_ambient
+label 'AMBIENT TEMP'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_scufan1
+label 'SCU CAB FAN 1 TEMP'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_scufan2
+label 'SCU CAB FAN 2 TEMP'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_scufan3
+label 'SCU CAB FAN 3 TEMP'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_scuasd
+label 'SCU CAB ASD TIME'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_scufansts
+label 'SCU CAB THERMISTOR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 4
+class coded
+label "AMBIENT TEMP"
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+	field
+size 4
+class coded
+label "SCU CAB FAN1"
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+	field
+size 4
+class coded
+label "SCU CAB FAN2"
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+	field
+size 4
+class coded
+label "SCU CAB FAN3"
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+
+
+sitem
+name aqpcst_scuairsts
+class composite
+type short_register
+display nil
+size 1
+label 'SCU CAB AIRFLOW'
+map
+	field
+size 2
+label "SCU CAB AF #1"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "SCU CAB AF #2"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "SCU CAB AF #3"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "SCU CAB AF #4"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "SCU CAB AF #5"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "SCU CAB AF #6"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+
+sitem
+name aqpcst_cpafan1
+label 'CPA CAB FAN 1 TEMP'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_cpafan2
+label 'CPA CAB FAN 2 TEMP'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_cpafan3
+label 'CPA CAB FAN 3 TEMP'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_cpaasd
+label 'CPA CAB ASD TIME'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_cpafansts
+label 'CPA CAB THERMISTOR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 4
+class coded
+label "AMBIENT TEMP"
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+	field
+size 4
+class coded
+label "CPA CAB FAN1"
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+	field
+size 4
+class coded
+label "CPA CAB FAN2"
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+	field
+size 4
+class coded
+label "CPA CAB FAN3"
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+
+
+sitem
+name aqpcst_cpaairsts
+class composite
+type short_register
+display nil
+size 1
+label 'CPA CAB AIRFLOW'
+map
+	field
+size 2
+label "CPA CAB AF #1"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "CPA CAB AF #2"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "CPA CAB AF #3"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "CPA CAB AF #4"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "CPA CAB AF #5"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "CPA CAB AF #6"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+
+sitem
+name aqpcst_cpbfan1
+label 'CPB CAB FAN 1 TEMP'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_cpbfan2
+label 'CPB CAB FAN 2 TEMP'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_cpbfan3
+label 'CPB CAB FAN 3 TEMP'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_cpbasd
+label 'CPB CAB ASD TIME'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_cpbfansts
+label 'CPB CAB THERMISTOR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 4
+class coded
+label "AMBIENT TEMP"
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+	field
+size 4
+class coded
+label "CPB CAB FAN1"
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+	field
+size 4
+class coded
+label "CPB CAB FAN2"
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+	field
+size 4
+class coded
+label "CPB CAB FAN3"
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+
+
+sitem
+name aqpcst_cpbairsts
+class composite
+type short_register
+display nil
+size 1
+label 'CPB CAB AIRFLOW'
+map
+	field
+size 2
+label "CPB CAB AF #1"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "CPB CAB AF #2"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "CPB CAB AF #3"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "CPB CAB AF #4"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "CPB CAB AF #5"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+	field
+size 2
+label "CPB CAB AF #6"
+class coded
+map
+	0 "OK"
+	1 "NOT OK"
+
+sitem
+name aqpcst_ioastatus
+label 'IOA CAB STATUS'
+type short_register
+display nil
+class composite
+size 1
+map
+	field
+size 2
+class filler
+	field
+size 1
+class coded
+map
+	1 "IOA CAB XMI B DOOR OPEN"
+	field
+size 1
+class coded
+map
+	1 "IOA CAB XMI A DOOR OPEN"
+	field
+size 2
+class coded
+map
+	0 "IOA CAB AF #2 OK"
+	1 "IOA CAB AF #2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "IOA CAB AF #1 OK"
+	1 "IOA CAB AF #1 NOT OK"
+
+sitem
+name aqpcst_ioaasd
+label 'IOA CAB ASD'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_iobstatus
+label 'IOB CAB STATUS'
+type short_register
+display nil
+class composite
+size 1
+map
+	field
+size 2
+class filler
+	field
+size 1
+class coded
+map
+	1 "IOB CAB XMI B DOOR OPEN"
+	field
+size 1
+class coded
+map
+	1 "IOB CAB XMI A DOOR OPEN"
+	field
+size 2
+class coded
+map
+	0 "IOB CAB AF #2 OK"
+	1 "IOB CAB AF #2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "IOB CAB AF #1 OK"
+	1 "IOB CAB AF #1 NOT OK"
+
+sitem
+name aqpcst_iobasd
+label 'IOB CAB ASD'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_wcuatempo
+label 'WCUA CAB OUT AIR'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_wcuatempi
+label 'WCUA CAB IN AIR'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_wcuassts
+label 'WCUA CAB SENSOR'
+type short_register
+display nil
+class composite
+size 1
+map
+	field
+size 4
+class coded
+label 'WCUA AIR OUT'
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+	field
+size 4
+class coded
+label 'WCUA AIR IN'
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+
+sitem
+name aqpcst_wcuasts
+size 1
+type short_register
+display nil
+class composite
+label 'WCUA CAB STATUS'
+map
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB ADD WATER FAULT"
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB RETURN MANIFOLD FLOW ERR"
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB SUPPLY MANIFOLD FLOW ERR"
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB FILTER FLOW ERROR"
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB - WCUB NOT OK"
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB STATUS VALID"
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB PUMP A RUNNING"
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB PUMP B RUNNING"
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB BLOWER B AIRFLOW FAULT"
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB BLOWER A AIRFLOW FAULT"
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB WATER IN DRIP PAN"
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB PHASE ROTATION ERROR"
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB PUMP B FAULT"
+	field
+size 1
+class coded
+map
+	1 "WCUA CAB PUMP A FAULT"
+
+sitem
+name aqpcst_wcubtempo
+label 'WCUB CAB OUT AIR'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_wcubtempi
+label 'WCUB CAB IN AIR'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_wcubssts
+label 'WCUB CAB SENSOR'
+type short_register
+display nil
+class composite
+size 1
+map
+	field
+size 4
+class coded
+label 'WCUB AIR OUT'
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+	field
+size 4
+class coded
+label 'WCUB AIR IN'
+map
+	0 "SENSOR OPEN"
+	1 "NOMINAL RANGE"
+	2 "YELLOW ZONE (WARM)"
+	3 "RED ZONE (HOT)"
+	4 "SENSOR SHORTED"
+
+sitem
+name aqpcst_wcubsts
+size 1
+type short_register
+display nil
+class composite
+label 'WCUB CAB STATUS'
+map
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB ADD WATER FAULT"
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB RETURN MANIFOLD FLOW ERR"
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB SUPPLY MANIFOLD FLOW ERR"
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB FILTER FLOW ERROR"
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB - WCUB NOT OK"
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB STATUS VALID"
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB PUMP A RUNNING"
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB PUMP B RUNNING"
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB BLOWER B AIRFLOW FAULT"
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB BLOWER A AIRFLOW FAULT"
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB WATER IN DRIP PAN"
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB PHASE ROTATION ERROR"
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB PUMP B FAULT"
+	field
+size 1
+class coded
+map
+	1 "WCUB CAB PUMP A FAULT"
+
+sitem
+name aqpcst_ioacab
+class integer
+type short
+size 1
+label "IOA CAB STATUS"
+display hex
+
+sitem
+name aqpcst_iobcab
+class integer
+type short
+size 1
+label "IOB CAB STATUS"
+display hex
+
+sitem
+name aqpcst_ioabi
+size 1
+label "IOA CAB BI STATUS"
+class composite
+type short_register
+display nil
+map
+	field
+size 1
+class coded
+map
+	1 "BIXAA CAB K1 H7189 NOT MOD OK"
+	field
+size 1
+class coded
+map
+	1 "BIXAA CAB K2 H7189 NOT MOD OK"
+	field
+size 1
+class coded
+map
+	1 "BIXAA CAB K3 H7189 NOT MOD OK"
+	field
+size 1
+class coded
+map
+	1 "BIXAA CAB K4 H7189 NOT MOD OK"
+	field
+size 4
+class filler
+	field
+size 1
+class coded
+map
+	1 "BIXAB CAB K1 H7189 NOT MOD OK"
+	field
+size 1
+class coded
+map
+	1 "BIXAB CAB K2 H7189 NOT MOD OK"
+	field
+size 1
+class coded
+map
+	1 "BIXAB CAB K3 H7189 NOT MOD OK"
+	field
+size 1
+class coded
+map
+	1 "BIXAB CAB K4 H7189 NOT MOD OK"
+
+sitem
+name aqpcst_iobbi
+size 1
+label "IOB CAB BI STATUS"
+class composite
+type short_register
+display nil
+map
+	field
+size 1
+class coded
+map
+	1 "BIXBA CAB K1 H7189 NOT MOD OK"
+	field
+size 1
+class coded
+map
+	1 "BIXBA CAB K2 H7189 NOT MOD OK"
+	field
+size 1
+class coded
+map
+	1 "BIXBA CAB K3 H7189 NOT MOD OK"
+	field
+size 1
+class coded
+map
+	1 "BIXBA CAB K4 H7189 NOT MOD OK"
+	field
+size 4
+class filler
+	field
+size 1
+class coded
+map
+	1 "BIXBB CAB K1 H7189 NOT MOD OK"
+	field
+size 1
+class coded
+map
+	1 "BIXBB CAB K2 H7189 NOT MOD OK"
+	field
+size 1
+class coded
+map
+	1 "BIXBB CAB K3 H7189 NOT MOD OK"
+	field
+size 1
+class coded
+map
+	1 "BIXBB CAB K4 H7189 NOT MOD OK"
+
+sitem
+name aqpcst_ioaac
+size 1
+display nil
+class composite
+type short_register
+label "ACA CAB STATUS"
+map
+	field
+size 1
+class coded
+map
+	1 "ACA CAB THERMAL WARNING"
+	field
+size 1
+class coded
+map
+	1 "ACA CAB PHASE ROTATION ERROR"
+	field
+size 1
+class coded
+map
+	1 "ACA CAB PHASE LOSS ERROR"
+	field
+size 1
+class coded
+map
+	1 "ACA CAB OUTPUT CURRENT ERROR"
+	field
+size 1
+class coded
+map
+	1 "ACA CAB OUTPUT CURRENT ERROR"
+	field
+size 1
+class coded
+map
+	1 "ACA CAB OUTPUT CURRENT ERROR"
+	field
+size 1
+class coded
+map
+	0 "ACA CAB - UPC INSTALLED"
+	field
+size 1
+class coded
+map
+	0 "ACA CAB - H7390 INSTALLED"
+
+sitem
+name aqpcst_iobac
+size 1
+display nil
+class composite
+type short_register
+label "ACB CAB STATUS"
+map
+	field
+size 1
+class coded
+map
+	1 "ACB CAB THERMAL WARNING"
+	field
+size 1
+class coded
+map
+	1 "ACB CAB PHASE ROTATION ERROR"
+	field
+size 1
+class coded
+map
+	1 "ACB CAB PHASE LOSS ERROR"
+	field
+size 1
+class coded
+map
+	1 "ACB CAB OUTPUT CURRENT ERROR"
+	field
+size 1
+class coded
+map
+	1 "ACB CAB OUTPUT CURRENT ERROR"
+	field
+size 1
+class coded
+map
+	1 "ACB CAB OUTPUT CURRENT ERROR"
+	field
+size 1
+class coded
+map
+	0 "ACB CAB - UPC INSTALLED"
+	field
+size 1
+class coded
+map
+	0 "ACB CAB - H7390 INSTALLED"
+
+sitem
+name aqpcst_ioagc
+size 1
+label "ACA CAB GRD CURRENT"
+class composite
+type short_register
+display nil
+map
+	field
+size 15
+class integer
+label "ACA CAB GND CURRENT (AMPS) ="
+display decimal
+
+sitem
+name aqpcst_iobgc
+size 1
+label "ACB CAB GRD CURRENT"
+class composite
+type short_register
+display nil
+map
+	field
+size 15
+class integer
+label "ACB CAB GND CURRENT (AMPS) ="
+display decimal
+
+sitem
+name aqpcst_pcssts
+size 1
+class integer
+type short
+display hex
+label "PCS BIAS STATUS"
+
+sitem
+name aqpcst_busareg
+label 'BUS A REGULATOR STAT'
+size 1
+class composite
+type short_register
+display nil
+map
+	field
+size 2
+class coded
+map
+	0 "REG A0 NOT INSTALLED"
+	1 "REG A0 NOT ENABLED"
+	2 "REG A0 NOT MOD OK"
+	3 "REG A0 MOD OK"
+
+sitem
+name aqpcst_busavbus
+label 'BUS A VOLTAGE'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_busareg0
+label 'BUS A REG0 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG A0 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busareg1
+label 'BUS A REG1 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG A1 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busareg2
+label 'BUS A REG2 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG A2 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busareg3
+label 'BUS A REG3 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG A3 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busareg4
+label 'BUS A REG4 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG A4 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busasts
+label 'BUS B STATUS'
+class composite
+size 1
+type short_register
+display nil
+map
+	field
+size 1
+class coded
+map
+	0 "BUS B GROUP LO"
+	field
+size 1
+class coded
+map
+	1 "BUS B OVERVOLTAGE ERROR"
+	field
+size 1
+class coded
+map
+	0 "BUS B OVERCURRENT ERROR"
+	field
+size 2
+class coded
+map
+	0 "BUS B CROBAR READY"
+	1 "BUS B CROBAR NOT READY"
+	field
+size 2
+class coded
+map
+	1 "BUS B LOW MARGINS SET"
+	3 "BUS B HIGH MARGINS SET"
+	field
+size 2
+class coded
+map
+	0 "BUS B CROBAR BIAS 2 OK"
+	1 "BUS B CROBAR BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS B CROBAR BIAS 1 OK"
+	1 "BUS B CROBAR BIAS 1 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS B BIAS 2 OK"
+	1 "BUS B BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS B BIAS 1 OK"
+	1 "BUS B BIAS 1 NOT OK"
+
+sitem
+name aqpcst_busbreg
+label 'BUS B REGULATOR STAT'
+size 1
+class composite
+type short_register
+display nil
+map
+	field
+size 2
+class coded
+map
+	0 "REG B0 NOT INSTALLED"
+	1 "REG B0 NOT ENABLED"
+	2 "REG B0 NOT MOD OK"
+	3 "REG B0 MOD OK"
+
+sitem
+name aqpcst_busbvbus
+label 'BUS B VOLTAGE'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_busbreg0
+label 'BUS B REG0 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG B0 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busbreg1
+label 'BUS B REG1 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG B1 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busbreg2
+label 'BUS B REG2 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG B2 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busbreg3
+label 'BUS B REG3 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG B3 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busbreg4
+label 'BUS B REG4 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG B4 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busbsts
+label 'BUS B STATUS'
+class composite
+size 1
+type short_register
+display nil
+map
+	field
+size 1
+class coded
+map
+	0 "BUS B GROUP LO"
+	field
+size 1
+class coded
+map
+	1 "BUS B OVERVOLTAGE ERROR"
+	field
+size 1
+class coded
+map
+	0 "BUS B OVERCURRENT ERROR"
+	field
+size 2
+class coded
+map
+	0 "BUS B CROBAR READY"
+	1 "BUS B CROBAR NOT READY"
+	field
+size 2
+class coded
+map
+	1 "BUS B LOW MARGINS SET"
+	3 "BUS B HIGH MARGINS SET"
+	field
+size 2
+class coded
+map
+	0 "BUS B CROBAR BIAS 2 OK"
+	1 "BUS B CROBAR BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS B CROBAR BIAS 1 OK"
+	1 "BUS B CROBAR BIAS 1 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS B BIAS 2 OK"
+	1 "BUS B BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS B BIAS 1 OK"
+	1 "BUS B BIAS 1 NOT OK"
+
+sitem
+name aqpcst_buscreg
+label 'BUS C REGULATOR STAT'
+size 1
+class composite
+type short_register
+display nil
+map
+	field
+size 2
+class coded
+map
+	0 "REG C0 NOT INSTALLED"
+	1 "REG C0 NOT ENABLED"
+	2 "REG C0 NOT MOD OK"
+	3 "REG C0 MOD OK"
+
+sitem
+name aqpcst_buscvbus
+label 'BUS C VOLTAGE'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_buscreg0
+label 'BUS C REG0 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG C0 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_buscreg1
+label 'BUS C REG1 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG C1 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_buscreg2
+label 'BUS C REG2 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG C2 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_buscreg3
+label 'BUS C REG3 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG C3 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_buscreg4
+label 'BUS C REG4 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG C4 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_buscsts
+label 'BUS C STATUS'
+class composite
+size 1
+type short_register
+display nil
+map
+	field
+size 1
+class coded
+map
+	0 "BUS C GROUP LO"
+	field
+size 1
+class coded
+map
+	1 "BUS C OVERVOLTAGE ERROR"
+	field
+size 1
+class coded
+map
+	0 "BUS C OVERCURRENT ERROR"
+	field
+size 2
+class coded
+map
+	0 "BUS C CROBAR READY"
+	1 "BUS C CROBAR NOT READY"
+	field
+size 2
+class coded
+map
+	1 "BUS C LOW MARGINS SET"
+	3 "BUS C HIGH MARGINS SET"
+	field
+size 2
+class coded
+map
+	0 "BUS C CROBAR BIAS 2 OK"
+	1 "BUS C CROBAR BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS C CROBAR BIAS 1 OK"
+	1 "BUS C CROBAR BIAS 1 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS C BIAS 2 OK"
+	1 "BUS C BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS C BIAS 1 OK"
+	1 "BUS C BIAS 1 NOT OK"
+
+sitem
+name aqpcst_busdreg
+label 'BUS D REGULATOR STAT'
+size 1
+class composite
+type short_register
+display nil
+map
+	field
+size 2
+class coded
+map
+	0 "REG D0 NOT INSTALLED"
+	1 "REG D0 NOT ENABLED"
+	2 "REG D0 NOT MOD OK"
+	3 "REG D0 MOD OK"
+
+sitem
+name aqpcst_busdvbus
+label 'BUS D VOLTAGE'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_busdreg0
+label 'BUS D REG0 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG D0 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busdreg1
+label 'BUS D REG1 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG D1 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busdreg2
+label 'BUS D REG2 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG D2 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busdreg3
+label 'BUS D REG3 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG D3 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busdreg4
+label 'BUS D REG4 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG D4 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busdsts
+label 'BUS D STATUS'
+class composite
+size 1
+type short_register
+display nil
+map
+	field
+size 1
+class coded
+map
+	0 "BUS D GROUP LO"
+	field
+size 1
+class coded
+map
+	1 "BUS D OVERVOLTAGE ERROR"
+	field
+size 1
+class coded
+map
+	0 "BUS D OVERCURRENT ERROR"
+	field
+size 2
+class coded
+map
+	0 "BUS D CROBAR READY"
+	1 "BUS D CROBAR NOT READY"
+	field
+size 2
+class coded
+map
+	1 "BUS D LOW MARGINS SET"
+	3 "BUS D HIGH MARGINS SET"
+	field
+size 2
+class coded
+map
+	0 "BUS D CROBAR BIAS 2 OK"
+	1 "BUS D CROBAR BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS D CROBAR BIAS 1 OK"
+	1 "BUS D CROBAR BIAS 1 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS D BIAS 2 OK"
+	1 "BUS D BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS D BIAS 1 OK"
+	1 "BUS D BIAS 1 NOT OK"
+
+sitem
+name aqpcst_busereg
+label 'BUS E REGULATOR STAT'
+size 1
+class composite
+type short_register
+display nil
+map
+	field
+size 2
+class coded
+map
+	0 "REG E0 NOT INSTALLED"
+	1 "REG E0 NOT ENABLED"
+	2 "REG E0 NOT MOD OK"
+	3 "REG E0 MOD OK"
+
+sitem
+name aqpcst_busevbus
+label 'BUS E VOLTAGE'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_busereg0
+label 'BUS E REG0 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG E0 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busereg1
+label 'BUS E REG1 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG E1 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busereg2
+label 'BUS E REG2 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG E2 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busereg3
+label 'BUS E REG3 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG E3 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busereg4
+label 'BUS E REG4 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG E4 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busests
+label 'BUS E STATUS'
+class composite
+size 1
+type short_register
+display nil
+map
+	field
+size 1
+class coded
+map
+	0 "BUS E GROUP LO"
+	field
+size 1
+class coded
+map
+	1 "BUS E OVERVOLTAGE ERROR"
+	field
+size 1
+class coded
+map
+	0 "BUS E OVERCURRENT ERROR"
+	field
+size 2
+class coded
+map
+	0 "BUS E CROBAR READY"
+	1 "BUS E CROBAR NOT READY"
+	field
+size 2
+class coded
+map
+	1 "BUS E LOW MARGINS SET"
+	3 "BUS E HIGH MARGINS SET"
+	field
+size 2
+class coded
+map
+	0 "BUS E CROBAR BIAS 2 OK"
+	1 "BUS E CROBAR BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS E CROBAR BIAS 1 OK"
+	1 "BUS E CROBAR BIAS 1 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS E BIAS 2 OK"
+	1 "BUS E BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS E BIAS 1 OK"
+	1 "BUS E BIAS 1 NOT OK"
+
+sitem
+name aqpcst_busfreg
+label 'BUS F REGULATOR STAT'
+size 1
+class composite
+type short_register
+display nil
+map
+	field
+size 2
+class coded
+map
+	0 "REG F0 NOT INSTALLED"
+	1 "REG F0 NOT ENABLED"
+	2 "REG F0 NOT MOD OK"
+	3 "REG F0 MOD OK"
+
+sitem
+name aqpcst_busfvbus
+label 'BUS F VOLTAGE'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_busfreg0
+label 'BUS F REG0 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG F0 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busfreg1
+label 'BUS F REG1 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG F1 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busfreg2
+label 'BUS F REG2 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG F2 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busfreg3
+label 'BUS F REG3 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG F3 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busfreg4
+label 'BUS F REG4 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG F4 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busfsts
+label 'BUS F STATUS'
+class composite
+size 1
+type short_register
+display nil
+map
+	field
+size 1
+class coded
+map
+	0 "BUS F GROUP LO"
+	field
+size 1
+class coded
+map
+	1 "BUS F OVERVOLTAGE ERROR"
+	field
+size 1
+class coded
+map
+	0 "BUS F OVERCURRENT ERROR"
+	field
+size 2
+class coded
+map
+	0 "BUS F CROBAR READY"
+	1 "BUS F CROBAR NOT READY"
+	field
+size 2
+class coded
+map
+	1 "BUS F LOW MARGINS SET"
+	3 "BUS F HIGH MARGINS SET"
+	field
+size 2
+class coded
+map
+	0 "BUS F CROBAR BIAS 2 OK"
+	1 "BUS F CROBAR BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS F CROBAR BIAS 1 OK"
+	1 "BUS F CROBAR BIAS 1 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS F BIAS 2 OK"
+	1 "BUS F BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS F BIAS 1 OK"
+	1 "BUS F BIAS 1 NOT OK"
+
+
+sitem
+name aqpcst_busjreg
+label 'BUS J REGULATOR STAT'
+size 1
+class composite
+type short_register
+display nil
+map
+	field
+size 2
+class coded
+map
+	0 "REG J0 NOT INSTALLED"
+	1 "REG J0 NOT ENABLED"
+	2 "REG J0 NOT MOD OK"
+	3 "REG J0 MOD OK"
+
+sitem
+name aqpcst_busjvbus
+label 'BUS J VOLTAGE'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_busjreg0
+label 'BUS J REG0 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG J0 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busjreg1
+label 'BUS J REG1 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG J1 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busjreg2
+label 'BUS J REG2 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG J2 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busjreg3
+label 'BUS J REG3 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG J3 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busjreg4
+label 'BUS J REG4 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG J4 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busjsts
+label 'BUS J STATUS'
+class composite
+size 1
+type short_register
+display nil
+map
+	field
+size 1
+class coded
+map
+	0 "BUS J GROUP LO"
+	field
+size 1
+class coded
+map
+	1 "BUS J OVERVOLTAGE ERROR"
+	field
+size 1
+class coded
+map
+	0 "BUS J OVERCURRENT ERROR"
+	field
+size 2
+class coded
+map
+	0 "BUS J CROBAR READY"
+	1 "BUS J CROBAR NOT READY"
+	field
+size 2
+class coded
+map
+	1 "BUS J LOW MARGINS SET"
+	3 "BUS J HIGH MARGINS SET"
+	field
+size 2
+class coded
+map
+	0 "BUS J CROBAR BIAS 2 OK"
+	1 "BUS J CROBAR BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS J CROBAR BIAS 1 OK"
+	1 "BUS J CROBAR BIAS 1 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS J BIAS 2 OK"
+	1 "BUS J BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS J BIAS 1 OK"
+	1 "BUS J BIAS 1 NOT OK"
+
+sitem
+name aqpcst_buskreg
+label 'BUS K REGULATOR STAT'
+size 1
+class composite
+type short_register
+display nil
+map
+	field
+size 2
+class coded
+map
+	0 "REG K0 NOT INSTALLED"
+	1 "REG K0 NOT ENABLED"
+	2 "REG K0 NOT MOD OK"
+	3 "REG K0 MOD OK"
+
+sitem
+name aqpcst_buskvbus
+label 'BUS K VOLTAGE'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_buskreg0
+label 'BUS K REG0 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG K0 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_buskreg1
+label 'BUS K REG1 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG K1 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_buskreg2
+label 'BUS K REG2 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG K2 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_buskreg3
+label 'BUS K REG3 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG K3 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_buskreg4
+label 'BUS K REG4 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG K4 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busksts
+label 'BUS K STATUS'
+class composite
+size 1
+type short_register
+display nil
+map
+	field
+size 1
+class coded
+map
+	0 "BUS K GROUP LO"
+	field
+size 1
+class coded
+map
+	1 "BUS K OVERVOLTAGE ERROR"
+	field
+size 1
+class coded
+map
+	0 "BUS K OVERCURRENT ERROR"
+	field
+size 2
+class coded
+map
+	0 "BUS K CROBAR READY"
+	1 "BUS K CROBAR NOT READY"
+	field
+size 2
+class coded
+map
+	1 "BUS K LOW MARGINS SET"
+	3 "BUS K HIGH MARGINS SET"
+	field
+size 2
+class coded
+map
+	0 "BUS K CROBAR BIAS 2 OK"
+	1 "BUS K CROBAR BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS K CROBAR BIAS 1 OK"
+	1 "BUS K CROBAR BIAS 1 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS K BIAS 2 OK"
+	1 "BUS K BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS K BIAS 1 OK"
+	1 "BUS K BIAS 1 NOT OK"
+
+sitem
+name aqpcst_busmreg
+label 'BUS M REGULATOR STAT'
+size 1
+class composite
+type short_register
+display nil
+map
+	field
+size 2
+class coded
+map
+	0 "REG M0 NOT INSTALLED"
+	1 "REG M0 NOT ENABLED"
+	2 "REG M0 NOT MOD OK"
+	3 "REG M0 MOD OK"
+
+sitem
+name aqpcst_busmvbus
+label 'BUS M VOLTAGE'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_busmreg0
+label 'BUS M REG0 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG M0 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busmreg1
+label 'BUS M REG1 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG M1 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busmreg2
+label 'BUS M REG2 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG M2 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busmreg3
+label 'BUS M REG3 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG M3 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busmreg4
+label 'BUS M REG4 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG M4 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busmsts
+label 'BUS M STATUS'
+class composite
+size 1
+type short_register
+display nil
+map
+	field
+size 1
+class coded
+map
+	0 "BUS M GROUP LO"
+	field
+size 1
+class coded
+map
+	1 "BUS M OVERVOLTAGE ERROR"
+	field
+size 1
+class coded
+map
+	0 "BUS M OVERCURRENT ERROR"
+	field
+size 2
+class coded
+map
+	0 "BUS M CROBAR READY"
+	1 "BUS M CROBAR NOT READY"
+	field
+size 2
+class coded
+map
+	1 "BUS M LOW MARGINS SET"
+	3 "BUS M HIGH MARGINS SET"
+	field
+size 2
+class coded
+map
+	0 "BUS M CROBAR BIAS 2 OK"
+	1 "BUS M CROBAR BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS M CROBAR BIAS 1 OK"
+	1 "BUS M CROBAR BIAS 1 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS M BIAS 2 OK"
+	1 "BUS M BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS M BIAS 1 OK"
+	1 "BUS M BIAS 1 NOT OK"
+
+sitem
+name aqpcst_busnreg
+label 'BUS N REGULATOR STAT'
+size 1
+class composite
+type short_register
+display nil
+map
+	field
+size 2
+class coded
+map
+	0 "REG N0 NOT INSTALLED"
+	1 "REG N0 NOT ENABLED"
+	2 "REG N0 NOT MOD OK"
+	3 "REG N0 MOD OK"
+
+sitem
+name aqpcst_busnvbus
+label 'BUS N VOLTAGE'
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcst_busnreg0
+label 'BUS N REG0 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG N0 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busnreg1
+label 'BUS N REG1 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG N1 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busnreg2
+label 'BUS N REG2 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG N2 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busnreg3
+label 'BUS N REG3 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG N3 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busnreg4
+label 'BUS N REG4 CUR'
+class composite
+type short_register
+display nil
+size 1
+map
+	field
+size 12
+class integer
+display decimal
+label 'REG N4 CURRENT (AMPS) ='
+
+sitem
+name aqpcst_busnsts
+label 'BUS N STATUS'
+class composite
+size 1
+type short_register
+display nil
+map
+	field
+size 1
+class coded
+map
+	0 "BUS N GROUP LO"
+	field
+size 1
+class coded
+map
+	1 "BUS N OVERVOLTAGE ERROR"
+	field
+size 1
+class coded
+map
+	0 "BUS N OVERCURRENT ERROR"
+	field
+size 2
+class coded
+map
+	0 "BUS N CROBAR READY"
+	1 "BUS N CROBAR NOT READY"
+	field
+size 2
+class coded
+map
+	1 "BUS N LOW MARGINS SET"
+	3 "BUS N HIGH MARGINS SET"
+	field
+size 2
+class coded
+map
+	0 "BUS N CROBAR BIAS 2 OK"
+	1 "BUS N CROBAR BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS N CROBAR BIAS 1 OK"
+	1 "BUS N CROBAR BIAS 1 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS N BIAS 2 OK"
+	1 "BUS N BIAS 2 NOT OK"
+	field
+size 2
+class coded
+map
+	0 "BUS N BIAS 1 OK"
+	1 "BUS N BIAS 1 NOT OK"
+

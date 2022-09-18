@@ -1,0 +1,270 @@
+.\" SCCSID: @(#)mtio.4	6.5	8/30/89
+.TH mtio 4
+.SH Name
+mtio \- magnetic tape interface
+.SH Description
+.NXR "mtio keyword"
+.NXR "magnetic tape interface"
+.NXC "magnetic tape interface" "\fISee also interfaces for specific devices\fP
+The 
+.PN /dev 
+directory special files
+``rmt0{a,l,m,h}, ..., rmt31{a,l,m,h''}
+refer to the mass storage tape drives,
+that may exist on several different buses depending on the
+bus/formatter/controller. On the BI, the TMSCP controllers,
+.MS tms 4 ,
+are available. 
+On the DSSI bus the TMSCP controller
+.MS tms 4
+is available.
+On the Q-bus the TMSCP controllers,
+.MS tms 4 ,
+and the TSV05 controller, 
+.MS ts 4 ,
+are available. On the MASSBUS, there are the TM03, 
+.MS tu 4 ,
+and TM78 formatters,
+.MS mu 4 .
+On the UNIBUS, TS11 formatters, the TSU05 controller, 
+.MS ts 4 ,
+and the TMSCP controllers, 
+.MS tms 4 ,
+are available.
+On VAXstation 2000s and MicroVAX 2000s, the TZK50 cartridge tape subsystem, 
+.MS stc 4 ,
+is available.
+On the SCSI bus, the SCSI tapes (see 
+.MS tz 4 )
+are available.
+The following description applies to any mass
+storage tape drive.
+.PP
+For both the ``rewind'' and \*Qnorewind\*U special files, described later,
+the unit number represents a symbolic count that has no connection
+with the actual ``plug'' or controller
+number of a particular tape drive.
+As each tape unit special file is created, the number counts up from
+.I 0
+to
+.I 31
+for a total of
+.I 32
+tape drives.
+.PP
+The special files ``rmt0l, ..., rmt31l'' are low density,
+``rmt0m, ..., rmt31m''
+are medium density (when a drive is ``triple density''), and
+``rmt0h, ..., rmt31h''
+are high density. All these special files cause a loaded and on-line tape
+to automatically rewind to the beginning-of-tape (BOT) when closed.
+Low, medium, and high density
+are relative to the densities supported on a particular tape drive, 
+for example, the TS11/TSU05/TSV05 supports only 1600 bpi
+so its rewind namespace is
+``rmt0h, ..., rmt31h''.
+.PP
+For SCSI QIC tape devices, the special files
+``rmt0a, ..., rmt31a'' are QIC-24 density,
+``rmt0l, ..., rmt31l'' are QIC-120 density,
+``rmt0m, ..., rmt31m'' are QIC-150 density,
+and ``rmt0h, ..., rmt31h'' are QIC-320 density (see
+.MS
+tz 4
+for further details.
+.PP
+The special files
+``nrmt0{a,l,m,h}, ..., nrmt31{a,l,m,h}''
+do not cause a rewind when closed, regardless of density.
+When closed, the tape is positioned between two tapemarks. The
+norewind namespace for the TS11/TSU05/TSV05 example given above is
+``nrmt0h, ..., nrmt31h''.
+.PP
+The rmt and nrmt special files are available
+to all ULTRIX utilities that can perform I/O to tape.  A
+number of magnetic tape ioctl operations are available.
+The operations come
+under two ioctl request groups. 
+The MTIOCTOP ioctl is used to issue tape operation commands.
+The MTIOCGET ioctl is used for getting status.
+.PP
+The 
+.B mtop 
+data structure defined in 
+.PN <sys/mtio.h> 
+is passed as a
+parameter to the MTIOCTOP ioctl.  The 
+.B mtop 
+structure is:
+.EX 5
+struct mtop {
+	short   mt_op;
+	daddr_t mt_count;
+}
+.EE
+The mt_op field is used to specify the specific tape command to
+be performed.  The mt_count field is used to specify the number of
+times the command is to be performed (where applicable).
+.PP
+The following are tape operations supported in the MTIOCTOP ioctl.
+These commands are specified in the mt_op field of the mtop structure.
+.RS 5
+.TP 10
+MTWEOF
+Writes an end-of-file to the tape.  Physically, an end of file consists of
+a tape mark.  
+.TP
+MTFSF
+Repositions forward the number of files specified in the mt_count
+field.  This command repositions the tape forward the specified number of 
+tape marks.  (Tape marks delimit files.)
+Upon successful completion of this command, the tape is physically 
+positioned at the end of the specified number of tape marks.
+.TP
+MTBSF
+Repositions backward the number of files specified in the mt_count
+field.  This command repositions the tape backward the specified number of 
+tape marks.  (Tape marks delimit files.)
+Upon successful completion of the command, the tape is physically positioned 
+at the beginning of the specified number of tape marks.  Note that, due
+to the difference in the side of a tape mark that a reposition command 
+leaves the tape positioned, the MTFSF and MTBSF commands are not strictly
+reciprocal operations.  For example, if a tape is initially positioned
+at the bottom of tape (BOT) and the command MTFSF 1 is issued followed
+by the command MTBSF 1, the tape does not return to the BOT position.
+Instead, the tape is positioned on the BOT side of the first tape mark.
+.TP
+MTFSR
+Repositions forward the number of records specified in the mt_count
+field.  This command returns a failure if a tape mark is encountered.
+This error condition indicates that there were not as many records remaining in
+the file as specified by the mt_count parameter.
+.TP
+MTBSR
+Repositions backward the number of records specified in the mt_count
+field.  This command returns a failure if a tape mark is encountered.
+This error condition indicates that there were not as many records between the
+present position and the beginning of the file as specified in the 
+mt_count parameter.
+.TP 
+MTREW
+Rewinds the tape.  This command repositions to the beginning of the tape.
+.TP
+MTOFFL
+Rewinds and unloads the tape.
+.TP
+MTNOP
+Does not perform any tape operation.  Always returns success from
+a tape file.
+.TP
+MTCACHE
+Enables the use of controller-based write-back caching.  Some tape
+controllers support caching as a performance enhancement.  Caching
+can speed up tape transfer operations by keeping the unit streaming
+more effectively.  When using cached mode of operation, the MTFLUSH
+command should be used to flush cached data to media.  See the 
+description of MTFLUSH for more details.
+.TP
+MTNOCACHE
+Disables use of the controller's write-back cache.  This mode of 
+operation can result in performance degradation over cached mode.
+.TP
+MTCSE
+Clears serious exception.  Certain operations cause the tape
+unit to go into a serious exception state.  An example of this is
+when the physical end-of-media foil is encountered.  Typically,
+when a tape is in serious exception state, all data transfer operations
+fail.  In order to acknowledge this exception condition and to 
+allow further operations to proceed, this command is provided.
+.TP
+MTFLUSH
+Flushes the controller's write-back cache.  This command is intended to
+be used in conjunction with the MTCACHE command.  When caching has 
+been enabled using the MTCACHE command, writes to the tape will receive
+completion status when the data has been transferred to the controller's
+write-back cache.  In the unlikely event of controller error, it is 
+possible that the data will not be transferred to the physical media.
+To insure data integrity, the MTFLUSH command is provided to force
+a flush of the cache to physical media.  Failure of this command
+with 
+.I errno 
+set to ENXIO means that the drive does not support the
+flush command.  Failure with 
+.I errno 
+set to EIO indicates that the
+cache flush has failed.  In this case, the application should retry
+writing records that have been written since the last successful
+MTFLUSH command.
+.TP
+MTRETEN
+Retensions the tape.  Retension means moving the tape one complete
+pass between EOT and BOT.
+.RE
+.PP
+The global variable 
+.I errno 
+is set to ENXIO if the command specified in
+mt_op is not recognized or not supported by the respective tape driver.
+.PP
+Each
+.PN read
+or
+.PN write
+system call reads or writes the next record on the tape. In the case of
+.PN write ,
+the record has the same length as the buffer given.
+During a 
+.PN read , 
+the record size is passed back as the number of
+bytes read, provided it is no greater than the buffer size.
+If the record is long, an error is returned.
+Seeks are ignored. Positioning is done with a tape ioctl call.
+When n-buffered I/O is not being used (see 
+.MS nbuf 4 ),
+a zero byte count is returned when a tape mark
+is read, but another read fetches the first record of the
+next tape file.  When n-buffered I/O is being used (see 
+.MS nbuf 4 ),
+a zero byte count is returned when a tape mark is read, but another read
+will not fetch the first record of the next tape file.  In this situation,
+all outstanding read requests return a status of 0.  In order to allow
+reading to proceed to the next file, the MTCSE command must be issued.
+When a file open for writing is closed,
+two end-of-files (EOF) are written. If a tape reaches the
+end-of-tape (EOT) marker, the ENOSPC
+.I errno 
+value is set.
+.PP
+Each
+.PN read
+or
+.PN write
+system call causes the file offset associated with the device special file
+to be incremented.  This file offset is reset to 0 when the file is closed.
+If a program does an unusually large number or reads and writes to the tape,
+it is possible to cause the file offset to be incremented beyond the maximum
+allowable value.  When this happens, any further
+.PN read
+or
+.PN write
+system calls fail with an error number of EINVAL.
+This situation can only occur if the tape is read or written to
+several times over, using repositioning commands such as MTREW to 
+reposition backwards on the tape.  It is recommended that any application
+which expects to make numerous passes over the tape use the 
+.PN lseek 
+system call to reset the file offset to zero, for example, lseek(fd,0,0)
+.SH Restrictions
+For SCSI tapes on VAX systems, the maximum tape record
+length is limited to 16K bytes (K = 1024).
+.PP
+For SCSI tapes on both VAX and RISC systems, the MTCACHE, MTNOCACHE, and 
+MTFLUSH ioctls are not supported.
+.PP
+The MTRETEN ioctl is only supported by the SCSI QIC tape drive.
+.SH Files
+.PN /dev/rmt???
+.br
+.PN /dev/nrmt???
+.SH See Also
+lseek(2), mu(4), scsi(4), stc(4), tms(4), ts(4), tu(4), tz(4), MAKEDEV(8) 

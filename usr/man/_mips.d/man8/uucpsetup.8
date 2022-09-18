@@ -1,0 +1,74 @@
+.\" SCCSID: @(#)uucpsetup.8	8.1	9/11/90
+.\" Last modified by liza sanford-crane on 5-Aug-86  1040
+.\"  Fixed whatis problem
+.TH uucpsetup 8 
+.SH Name
+uucpsetup \- uucp set up program
+.SH Syntax
+.B /etc/uucpsetup [ \-moia ]
+.SH Description
+.NXR "uucpsetup command"
+.NXR "uucp file" "setting up"
+The
+.PN uucpsetup
+command provides an interactive facility for setting up
+and updating the
+.PN uucp
+files necessary to configure your system for 
+.PN uucp
+connections.
+.PP
+To set up
+.PN uucp
+initially,
+run the
+.PN uucpsetup
+command with the
+.PN \-a
+option and answer the questions.
+To update the
+.PN uucp
+files and directories,
+run
+.PN uucpsetup
+with the \f(CW\-m\fR, \f(CW\-o\fR, and/or \f(CW\-i\fR options,
+as appropriate.
+If no options are specified,
+the \f(CW\-o\fR and \f(CW\-i\fR options are the default.
+.PP
+You must be superuser to run
+.PN uucpsetup .
+.SH Options
+.IP \fB\-m\fR
+Adds modems,
+configuring the dialers for
+.PN uucp
+and
+.PN tip .
+.IP \fB\-i\fR
+Adds incoming systems;
+that is,
+systems that are allowed to call your local system.
+.IP \fB\-o\fR
+Adds outgoing systems;
+that is, systems that your local system is allowed to call.
+.IP \fB\-a\fR
+Adds the modems and incoming and outgoing systems to
+.PN uucp .
+The \f(CW\-a\fR option implies the \f(CW\-m\fR,
+\f(CW\-i\fR, and \f(CW\-o\fR options.
+.SH Files
+.TP 20
+.PN /usr/lib/uucp/L.sys
+Systems called out to
+.TP
+.PN /usr/lib/uucp/L-devices
+Device information
+.TP
+.PN /usr/lib/uucp/USERFILE
+Systems which call in
+.TP
+.PN /usr/lib/uucp/L.cmds
+Command execution protections
+.SH See Also
+.I "Guide to the uucp Utility"

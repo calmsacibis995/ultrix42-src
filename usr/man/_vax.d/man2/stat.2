@@ -1,0 +1,240 @@
+.\" SCCSID: @(#)stat.2	2.2	4/28/87
+.TH stat 2
+.SH Name
+stat, lstat, fstat \- get file status
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.B #include <sys/stat.h>
+.PP
+.B stat(\fIpath, buf\fP)
+.B char *\fIpath\fP;
+.B struct stat *\fIbuf\fP;
+.PP
+.B lstat(\fIpath, buf\fP)
+.B char *\fIpath\fP;
+.B struct stat *\fIbuf\fP;
+.PP
+.B fstat(\fIfd, buf\fP)
+.B int \fIfd\fP;
+.B struct stat *\fIbuf\fP;
+.fi
+.SH Description
+.NXR "stat system call"
+.NXR "lstat system call"
+.NXR "fstat system call"
+.NXR "file" "getting status"
+The
+.PN stat
+system call
+obtains information about the file
+.IR path .
+Read, write, or execute
+permission of the named file is not required, but all directories
+specified in the path name that leads to the file must be reachable.
+.PP
+The
+.PN lstat
+system call is like 
+.PN stat ,
+except when a named file is a symbolic link.  In this instance,
+.PN lstat
+returns information about the link;
+.PN stat
+returns information about the file that is referenced by the link.
+.PP
+The
+.PN fstat
+system call and
+the
+.PN open
+system call obtain the same information about an open file
+referenced by the argument descriptor.
+.PP
+The
+.I buf
+is a pointer to a
+.PN stat
+structure.  Information about a file is placed in the
+.PN stat
+structure.  The contents of the structure pointed to by
+.I buf
+includes the following:
+.EX 0
+struct stat {
+  dev_t   st_dev;    /* device inode resides on */
+  ino_t   st_ino;    /* this inode's number */
+  u_short st_mode;   /* protection */
+  short   st_nlink;  /* number or hard links to the file */
+  short   st_uid;    /* user-id of owner */
+  short   st_gid;    /* group-id of owner */
+  dev_t   st_rdev;   /* the device type, for inode that is device */
+  off_t   st_size;   /* total size of file */
+  time_t  st_atime;  /* file last access time */
+  int     st_spare1;
+  time_t  st_mtime;   /* file last modify time */
+  int     st_spare2;
+  time_t  st_ctime;   /* file last status change time */
+  int     st_spare3;
+  long st_blksize; /* optimal blocksize for file system i/o ops */
+  long st_blocks;  /* actual number of blocks allocated */
+  long st_spare4;
+  u_long st_gennum; /* file generation number */
+    };
+.EE
+.PP
+.TP 12
+st_atime
+The time when file data was last accessed.
+This is changed by the system calls
+.MS mknod 2 ,
+.MS utimes 2 ,
+and
+.MS read 2 .
+For efficiency, 
+st_atime is not set when a directory
+is searched.
+.TP 12
+st_mtime
+The time when data was last modified.
+It is not set by changes of owner, group, link count, or mode.
+It is changed by the system calls
+.MS mknod 2 ,
+.MS utimes 2 ,
+and
+.MS write 2 .
+.TP 12
+st_ctime
+The time when file status was last changed.
+It is set by writing and changing the 
+i-node. It can be changed by the following system calls:
+.MS chmod 2 ,
+.MS chown 2 ,
+.MS link 2 ,
+.MS mknod 2 ,
+.MS unlink 2 ,
+.MS utimes 2 ,
+and 
+.MS write 2 .
+.PP
+The status information word \fIst_mode\fP has the following bits:
+.EX 0
+#define S_IFMT   0170000 /* type of file */
+#define S_IFDIR  0040000 /* directory */
+#define S_IFCHR  0020000 /* character special */
+#define S_IFBLK  0060000 /* block special */
+#define S_IFREG  0100000 /* regular */
+#define S_IFLNK  0120000 /* symbolic link */
+#define S_IFSOCK 0140000 /* socket */
+#define S_IFIFO  0010000 /* FIFO - named pipe */
+#define S_ISUID  0004000 /* set user id on execution */
+#define S_ISGID  0002000 /* set group id on execution */
+#define S_ISVTX  0001000 /* save swapped text even after use */
+#define S_IREAD  0000400 /* read permission, owner */
+#define S_IWRITE 0000200 /* write permission, owner */
+#define S_IEXEC  0000100 /* execute/search permission, owner */
+.EE
+The mode bits 0000070 and 0000007 encode group and
+others permissions.  For further information, see
+.MS chmod 2 .
+.PP
+When
+.I fd
+is associated with a pipe,
+.PN fstat
+returns a buffer with only st_blksize set.
+.SH Environment
+SYSTEM_FIVE
+.PP
+Unlike the System V definition, ELOOP
+is a possible error condition.
+.SH Restrictions
+.NXR "stat system call" "restricted"
+Applying
+.PN fstat
+to a socket returns a zeroed buffer and [EOPNOTSUPP].
+.PP
+The fields in the stat structure marked 
+.IR st_spare1 ,
+.IR st_spare2 ,
+and
+.I st_spare3
+are used when inode time stamps expand
+to 64 bits.  This, however, can break certain programs that
+depend on the time stamps being contiguous in calls to
+.PN utimes .
+.SH Return Values
+Upon successful completion, a value of zero (0) is returned.
+Otherwise, a value of \-1 is returned and
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+.NXR "stat system call" "diagnostics"
+The
+.PN stat
+and
+.PN lstat
+system calls
+fail if any of the following is true:
+.TP 15
+[EACCES]
+Search permission is denied for a component of the path prefix.
+.TP 15
+[EFAULT]
+The
+.I buf
+or
+.I name
+points to an invalid address.
+.TP 15
+[EIO]
+An I/O error occurred while reading from or writing to the
+file system.
+.TP 15
+[ELOOP]
+Too many symbolic links were encountered in translating the
+pathname.
+.TP 15
+[ENAMETOOLONG]
+A component of a pathname exceeds 255 characters, or an
+entire path name exceeds 1023 characters.
+.TP 15
+[ENOENT]
+The named file does not exist or
+.I path
+points to an empty string and the environment defined is POSIX or SYSTEM_FIVE.
+.TP 15
+[ENOTDIR]
+A component of the
+.I path
+prefix is not a directory.
+.PP
+The
+.PN fstat
+system call
+fails if one or more of the following are true:
+.TP 15
+[EBADF]
+The
+.I fildes
+is not a valid open file descriptor.
+.TP 15
+[EFAULT]
+The
+.I buf
+points to an invalid address.
+.TP 15
+[EIO]
+An I/O error occurred while reading from or writing to the file
+system.
+.TP 15
+[EOPNOTSUPP]
+The file descriptor points to a socket.
+.TP
+[ETIMEDOUT]
+A connect request or remote file operation failed
+because the connected party
+did not respond after a period
+of time determined by the communications protocol.
+.SH See Also
+chmod(2), chown(2), link(2), mknod(2), read(2), unlink(2), utimes(2), write(2)

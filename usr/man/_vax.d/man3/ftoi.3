@@ -1,0 +1,70 @@
+.TH ftoi 3
+.SH Name
+ftoi, itof, dtoi, itod, gtoi, itog \- convert floating values between VAX and IEEE format
+.SH Syntax
+.nf
+.ft B 
+int ftoi(\fIvalue\fP)
+    float *\fIvalue\fP;
+
+int itof(\fIvalue\fP)
+    float *\fIvalue\fP;
+
+int dtoi(\fIvalue\fP)
+    double *\fIvalue\fP;
+
+int itod(\fIvalue\fP)
+    double *\fIvalue\fP;
+
+int gtoi(\fIvalue\fP)
+    double *\fIvalue\fP;
+
+int itog(\fIvalue\fP)
+    double *\fIvalue\fP;
+.fi
+.ft R
+.SH Description
+The following C library functions convert floating 
+values between VAX and IEEE formats.
+.PP
+The
+.PN ftoi
+function converts the specified VAX ffloat number to IEEE single-precision
+format.
+It returns zero if successful and nonzero without performing the conversion
+if not successful (for example, underflow).
+.PP
+The
+.PN itof
+function converts the specified IEEE single-precision number to VAX ffloat 
+format.
+It returns zero if successful and nonzero without performing the conversion
+if not successful (for example, overflow).
+.PP
+The
+.PN dtoi
+function converts the specified VAX dfloat number to IEEE double-precision
+format.
+It returns zero if successful and nonzero without performing the conversion
+if not successful (for example, underflow).
+.PP
+The
+.PN itod
+function converts the specified IEEE double-precision number to VAX dfloat 
+format.
+It returns zero if successful and nonzero without performing the conversion
+if not successful (for example, underflow or overflow).
+.PP
+The
+.PN gtoi
+function converts the specified VAX gfloat number to IEEE double-precision
+format.
+It returns zero if successful and nonzero without performing the conversion
+if not successful (for example, underflow).
+.PP
+The
+.PN itog
+function converts the specified IEEE double-precision number to VAX gfloat 
+format.
+It returns zero if successful and nonzero without performing the conversion
+if not successful (for example, underflow).

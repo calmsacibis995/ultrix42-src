@@ -1,0 +1,24 @@
+/*        @(#)xlc_iface.vc	4.1      7/2/90      */
+
+/*  Version 2.00   4/ 3/89 13:53:00.0000  */
+/* makehf /vc /cv /setup=portab.h,capdl.def,pdl_st.def,cpsys.def xlc_iface.def
+  ...   xlc_iface.vc*/
+
+
+
+
+
+NOSHARE UBYTE * ibuf_loc;
+NOSHARE UBYTE * ibuf_ptr;
+NOSHARE WORD ibuf_len;
+NOSHARE DEFAULT (* getr_loc) ();
+NOSHARE DEFAULT user_g;
+NOSHARE UBYTE * obuf_loc;
+NOSHARE UBYTE * obuf_ptr;
+NOSHARE WORD obuf_len;
+NOSHARE DEFAULT (* putr_loc) ();
+NOSHARE DEFAULT user_p;
+NOSHARE UBYTE * obuf_sum;
+
+
+

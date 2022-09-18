@@ -1,0 +1,32 @@
+.\" SCCSID: @(#)halt.8	3.1	11/24/87
+.TH halt 8 RISC
+.SH Name
+halt \- stop the processor
+.SH Syntax
+.B /etc/halt
+[
+.B \-n
+]
+[
+.B \-q
+]
+[
+.B \-y
+]
+.SH Description
+.NXR "halt command"
+.NXR "processor" "halting"
+The
+.PN halt
+command
+writes information to the disks and then returns the processor to the
+monitor.  The machine does not reboot.
+.SH Options
+.IP -n
+Prevents the sync before stopping.  
+.IP -q
+Causes a quick halt, no graceful shutdown is attempted.  
+.IP -y
+Allows you to halt the system from a dialup.
+.SH See Also
+reboot(8), shutdown(8)

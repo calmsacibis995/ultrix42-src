@@ -1,0 +1,114 @@
+.TH conflict 8mh
+.SH Name
+conflict \- search for alias/password conflicts
+.SH Syntax
+.B /usr/lib/mh/conflict
+[
+.B \-help
+] [
+.B \-mail
+.I name
+] [
+.B \-search
+.I directory
+] [
+.I "aliasfiles ..."
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "conflicts" "aliases"
+.NXR "conflicts" "passwords"
+.NXR "aliases" "conflicts"  
+.NXR "passwords" "conflicts"  
+The 
+.PN conflict
+program checks to see if the interface between MH
+and transport system is in good shape.
+It also checks for maildrops in 
+.PN /usr/spool/mail 
+which do not belong to a valid user.
+It assumes that no user name will start with a dot (.)
+and thus ignores files in 
+.PN /usr/spool/mail 
+which begin with a dot.
+.PP
+The 
+.PN conflict 
+program checks the entries in the specified alias files.
+It parses the entries in the same way that
+.PN post
+would, and outputs any errors which it finds.
+The program can be used to check the entries in a user's
+personal alias file, or in the system alias file,
+.PN /usr/lib/mh/MailAliases .
+If no alias file is specified, 
+.PN conflict
+checks the system alias file.
+.PP
+The
+.PN conflict
+program also checks the
+.PN /etc/group
+file for entries which do not belong to a valid user,
+and for users who do not have a valid group number.
+In addition, duplicate users and groups are noted.
+.PP
+The 
+.PN conflict
+program
+should be run under  
+.PN cron ,
+or whenever system accounting takes place.
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-help" 10
+Prints a list of the valid options to this command.
+.\"
+.IP "\-mail \fIname\fB"
+Mails the results to the specified \fIname\fR.
+Otherwise, the results are sent to the standard output.
+.\"
+.IP "\-search \fIdirectory\fB"
+Searches directories other than 
+.PN /usr/spool/mail ,
+and reports anomalies in those directories.
+The 
+.B \-search
+switch can appear more than once in an invocation to 
+.PN conflict ,
+with different directories named.
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN /usr/lib/mh/mtstailor
+The system customization file.
+.TP 10
+.PN /etc/passwd
+The system password file.
+.TP 10
+.PN /etc/group
+The system group file.
+.TP 10
+.PN /usr/bin/mh/mhmail
+Program used to mail results, if the
+.B \-mail
+option is used.
+.TP 10
+.PN /usr/spool/mail
+Directory containing users' maildrops.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+mh-alias(5mh), cron(8)

@@ -1,0 +1,374 @@
+.\" SCCSID: @(#)errno.2	8.3	1/28/91
+.TH errno 2
+.de en
+.HP
+\\$1  \\$2  \\$3
+.br
+..
+.SH Name
+errno \- introduction error numbers
+.SH Syntax
+#include <errno.h>
+.SH Description
+.NXR "errno variable"
+The
+.PN errno
+external variable is set when an error occurs in a system
+call.  You can use the value stored in errno to obtain a more detailed
+description of the error than is given in the system call's return
+value.
+The
+.PN errno
+variable is not cleared on successful system calls, so you should check
+its value only when an error is reported.
+.SH Return Values
+Most system calls have one or more return values.
+An error condition is indicated by an otherwise impossible return
+value.  This value is almost always \-1. All return codes and values
+from system call are of type
+.I int,
+unless otherwise noted.
+.PP
+When an error occurs, most calls store one of the
+following values, as defined in <errno.h>, in the errno variable:
+.NXR "errno error list"
+.IP "\fR0\fP" 5 
+Unused.
+.en 1 EPERM "Not owner
+This error indicates
+an attempt to modify a file in some way forbidden
+except to its owner or the superuser.
+It is also returned for attempts
+by ordinary users to do things
+allowed only to the superuser.
+.en 2 ENOENT "No such file or directory
+This error occurs when a file name is specified
+and the file should exist but does not, or when one
+of the directories in a pathname does not exist.
+.en 3 ESRCH "No such process
+The process whose number was given to 
+.PN kill 
+and 
+.PN ptrace 
+does not exist or is already dead.
+.en 4 EINTR "Interrupted system call
+An asynchronous signal (such as interrupt or quit)
+that the program catches 
+occurred during a system call.
+If execution resumes
+after the asynchronous signal is processed,
+it will appear as if the interrupted system call
+returned this error condition.
+.en 5 EIO "I/O error
+Some physical I/O error occurred during a
+.PN read
+or
+.PN write .
+This error may occur
+on a call following the one to which it actually applies.
+.en 6 ENXIO "No such device or address
+I/O on a special file refers to a subdevice that does not
+exist or to an area beyond the limits of the device.
+This error might also occur when an illegal tape drive
+unit number is selected 
+or a disk pack is not loaded on a drive.
+.en 7 E2BIG "Arg list too long
+An argument list longer than 10240 bytes
+is presented to 
+.PN execve .
+.en 8 ENOEXEC "Exec format error
+A request is made to execute a file
+that does not start with a valid magic number,
+although it has the appropriate permissions.
+For further information, see 
+.MS a.out 5 .
+.en 9 EBADF "Bad file number
+Either a file descriptor refers to no
+open file or a read request is made for a file that is open only
+for writing. Likewise, a write request made to a file open only for
+reading causes this error.
+.en 10 ECHILD "No children
+The program issued a
+.PN wait
+call and the process has no
+active or unwaited-for children.
+.en 11 EAGAIN "No more processes
+In a
+.I fork,
+the system's process table is full
+or the user is not allowed to create any more
+processes.
+.en 12 ENOMEM "Not enough core
+During an 
+.PN execve 
+or 
+.PN brk ,
+a program asks for more core or swap space than the system is
+able to supply.
+A lack of swap space is normally a temporary condition.  However,
+a lack of core
+is not a temporary condition; the maximum size
+of the text, data, and stack segments is a system parameter.
+.en 13 EACCES "Permission denied
+The call attempts to access a file in some way forbidden
+by the protection system.
+.en 14 EFAULT "Bad address
+The system encountered a hardware fault in attempting to
+access the arguments of a system call.
+.en 15 ENOTBLK "Block device required
+The call specifies a plain file where a block device is required.
+.en 16 EBUSY "Mount device busy
+The call attempts to mount a device that was already mounted
+or to unmount a device
+on which there was an active file directory, an
+open file, current directory, mounted-on file, or active text segment.
+Or,
+the call attempts to modify a partition table incorrectly.
+See the restrictions in 
+.MS chpt 8 .
+.en 17 EEXIST "File exists
+An existing file is mentioned in an inappropriate context.
+.en 18 EXDEV "Cross-device link
+The call attempts to form a hard link to a file on another device.
+.en 19 ENODEV "No such device
+The call attempts to perform an invalid operation on a device, such as
+write to a read-only device.
+.en 20 ENOTDIR "Not a directory
+A file that is not a directory is specified where a directory
+is required,
+for example, in a pathname or
+as an argument to 
+.PN chdir .
+.en 21 EISDIR "Is a directory
+The call attempts to write on a directory.
+.en 22 EINVAL "Invalid argument
+An invalid argument is specified.
+For example, the call might specify dismounting a device that is not mounted 
+or reading or writing a file for which
+.PN seek
+has generated a negative pointer.
+This error is also set by math functions, as described in the 
+.MS intro 3 
+reference page.
+.en 23 ENFILE "File table overflow
+The system's table of open files is full,
+and temporarily no more
+.PN open
+calls can be processed.
+.en 24 EMFILE "Too many open files
+The process has opened too many files. The customary configuration limit is 64 
+files per process.
+.en 25 ENOTTY "Not a typewriter
+The file named in an 
+.PN ioctl 
+call is not a terminal or one of the other
+devices to which the call applies.
+.en 26 ETXTBSY "Text file busy
+The call attempts to execute a pure-procedure
+program that is currently open for writing
+or reading.
+Or, the call attempts to open for writing a pure-procedure
+program that is being executed.
+.en 27 EFBIG "File too large
+The size of a file exceeds the maximum (about
+.if t 10\u\s-29\s+2\d
+.if n 1.0E9
+bytes).
+.en 28 ENOSPC "No space left on device
+A device runs out of space during a write to an ordinary file.
+.en 29 ESPIPE "Illegal seek
+An 
+.PN lseek 
+call specifies a pipe or other device that 
+.PN lseek
+does not support.
+.en 30 EROFS "Restricted operation on a file system
+The call attempts to access a file or directory
+on a mounted file system when that permission has been revoked. 
+For example, the call attempts to write a file on a file system mounted 
+read only.
+.en 31 EMLINK "Too many links
+The call attempts to make more than {LINK_MAX} hard links to a file.
+.en 32 EPIPE "Broken pipe
+The call attempts to write on a pipe or socket for which there is no process
+to read the data.
+This condition normally generates a signal;
+the error is returned if the signal is ignored.
+.en 33 EDOM "Argument too large"
+The argument of a function in the math package (which is described in
+the
+.I ULTRIX Reference Pages, Section 3: Subroutines
+) is out of the domain of the function.
+.en 34 ERANGE "Result too large
+The value of a function in the math package (which is described in the
+.I ULTRIX Reference Pages, Section 3: Subroutines
+) is unrepresentable within machine precision.
+.en 35 EWOULDBLOCK "Operation would block"
+The call attempts an operation that would cause a process to block 
+on an object in nonblocking mode.
+For further information, see 
+.MS ioctl 2 .
+.en 36 EINPROGRESS "Operation now in progress"
+The call is performing an operation that takes a long time to complete, such as
+a 
+.PN connect 
+call, on a nonblocking object.
+For further information, see 
+.MS ioctl 2 .
+.en 37 EALREADY "Operation already in progress"
+The call attempts an operation on a nonblocking object that already
+has an operation in progress.
+.en 38 ENOTSOCK "Socket operation on non-socket"
+The call attempts to perform a socket-specific operation on an
+entity that is not a socket.
+.en 39 EDESTADDRREQ "Destination address required"
+A required address is omitted from an operation on a socket.
+.en 40 EMSGSIZE "Message too long"
+A message sent on a socket is larger than the internal message buffer.
+.en 41 EPROTOTYPE "Protocol wrong type for socket"
+A protocol is specified that does not support the semantics of the
+socket type requested. For example, you cannot use the ARPA Internet
+UDP protocol with type SOCK_STREAM.
+.en 42 ENOPROTOOPT "Protocol not available"
+A bad option was specified in a 
+.PN getsockopt 
+or 
+.PN setsockopt 
+call.
+.en 43 EPROTONOSUPPORT "Protocol not supported"
+The protocol has not been configured into the
+system or an implementation for it does not exist.
+.en 44 ESOCKTNOSUPPORT "Socket type not supported"
+The support for the socket type has not been configured into the
+system or an implementation for it does not exist.
+.en 45 EOPNOTSUPP "Error\-operation not supported"
+The call attempts an unsupported operation, such as trying to accept a connection on a datagram socket.
+.en 46 EPFNOSUPPORT "Protocol family not supported"
+The protocol family has not been configured into the
+system or an implementation for it does not exist.
+.en 47 EAFNOSUPPORT "Address family not supported by protocol family"
+An address incompatible with the requested protocol is specified.
+For example, you cannot use PUP
+Internet addresses with ARPA Internet protocols.
+.en 48 EADDRINUSE "Address already in use"
+The call attempts to use an address that is already in use. Each address
+can be used only once.  
+.en 49 EADDRNOTAVAIL "Cannot assign requested address"
+The call attempts to create a socket with an
+address not on this machine.
+.en 50 ENETDOWN "Network is down"
+A socket operation encountered a network that is not operating.
+.en 51 ENETUNREACH "Network is unreachable"
+A socket operation attempts to reach an unreachable network.
+.en 52 ENETRESET "Network dropped connection on reset"
+The host to which the program was connected to crashed and rebooted.
+.en 53 ECONNABORTED "Software caused connection abort"
+A connection abort has occurred internal to your host machine.
+.en 54 ECONNRESET "Connection reset by peer"
+A connection has been forcibly closed by a peer.  This error usually
+results from the peer executing a 
+.PN shutdown  
+call.
+.en 55 ENOBUFS "No buffer space available"
+The system lacks sufficient buffer space to perform an operation on a
+socket or pipe.
+.en 56 EISCONN "Socket is already connected"
+A
+.PN connect
+request names an already connected socket, or
+a
+.PN sendto
+or
+.PN sendmsg
+request on a connected socket specifies a destination
+other than the connected party.
+.en 57 ENOTCONN "Socket is not connected"
+A request to send or receive data could not complete because
+the socket is not connected.
+.en 58 ESHUTDOWN "Cannot send after socket shutdown"
+A request to send data could not complete because the socket
+has already been shut down with a previous 
+.PN shutdown  
+call.
+.en 59 ETOOMANYREFS "Too many references: cannot splice"
+.en 60 ETIMEDOUT "Connection timed out"
+A
+.PN connect
+request failed because the connected party did not
+properly respond after a period of time.  (The timeout
+period is dependent on the communication protocol.)
+For example, this error
+occurs when an NFS file system is mounted with the ``soft,''
+option and the server is not responding to file operation
+requests.
+.en 61 ECONNREFUSED "Connection refused"
+No connection could be made because the target machine actively
+refused it.  This error usually results from trying to connect
+to a service that is inactive on the remote host.
+.en 62 ELOOP "Too many levels of symbolic links"
+A pathname lookup involves more than eight symbolic links.
+.en 63 ENAMETOOLONG "File name too long"
+A component of a path name exceeds 255 characters, or an entire
+path name exceeds 1023 characters.
+.en 64 EHOSTDOWN "Host is down" 
+A socket operation has failed because the destination host is down.
+.en 65 EHOSTUNREACH "No route to host"
+A socket operation attempts to reach an unreachable host.
+.en 66 ENOTEMPTY "Directory not empty"
+A directory with entries other than dot (.) and dot-dot (..) is specified 
+in a 
+.PN rmdir 
+or 
+.PN rename 
+call.
+.en 67 EPROCLIM "Too many processes"
+Creating the process would cause the user to exceed the number of user 
+processes that are
+available.  The 
+.I maxuprc
+option in the configuration file controls this limit.
+.en 68 EUSERS "Too many users"
+A login process would exceed the
+maximum allowable login processes for which the system is
+licensed.  
+.en 69 EDQUOT "Disk quota exceeded"
+A
+.PN write
+to an ordinary file, the creation of a directory or symbolic
+link, or the creation of a directory entry has failed because the
+user's quota of disk blocks is exhausted. Or, the allocation
+of an inode for a newly created file has failed because the user's
+quota of inodes is exhausted.
+.en 70 ESTALE "Stale NFS file handle" 
+Information used by the operating
+system to identify a file in an NFS file system that is no longer  
+valid.  This error code results from operating on a remote file
+that no longer exists on the server or resides in a file system
+that has been moved to a different device on the server.
+.en 71 EREMOTE "Too many levels of remote in path"
+A remote NFS client has requested an operation on a file
+that is remote to the server as well.  An attempt has been 
+made to mount an NFS remote file system that is not local to the
+specified server.  This error code cannot occur except in response
+to a failed 
+.PN mount 
+call. 
+.en 72 ENOMSG "No message of desired type"
+An attempt was made to receive a message of a type that does not
+exist on the specified message queue.  For further information, see
+.MS msgop 2 .
+.en 73 EIDRM "Identifier removed"
+In semaphores, shared memory, or message queues, the caller
+tried to access the identifier after it had been removed
+from the system.
+.en 74 EALIGN "Alignment error"
+Alignment error of some type has occurred, for example, cluster,
+page, or block.
+.en 75 ENOLCK "No locks available"
+A file locking request could not be fulfilled because a system
+limit on the number of active locks would have been exceeded.
+.en 76 ENOSYS "Function not implemented"
+The requested function is not available in ULTRIX.  Included for
+POSIX compatibility only.
+.SH See Also
+.MS perror 3

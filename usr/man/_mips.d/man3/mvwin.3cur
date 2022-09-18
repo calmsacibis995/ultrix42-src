@@ -1,0 +1,21 @@
+.TH mvwin 3cur 
+.SH Name
+mvwin \- move window
+.SH Syntax
+.br
+.B
+mvwin(win, y, x)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int y, x;
+.SH Description
+.NXR "mvwin subroutine"
+Move the window so that the upper left corner will be at position (\c
+.PN y, 
+.PN x).
+It is an error to move the window off the screen.
+If you try to do this 
+the window is not moved.

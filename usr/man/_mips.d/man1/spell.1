@@ -1,0 +1,146 @@
+.\" SCCSID: @(#)spell.1	8.1	9/11/90
+.TH spell 1
+.SH Name
+spell, spellin, spellout \- check text for spelling errors
+.SH Syntax
+.B spell
+[\fB\-v\fR] [\fB\-b\fR] [\fB\-x\fR] [\fB\-d\fI hlist\fR\|] 
+[+\fIlocal-file\fR]
+[\fB\-s\fI hstop\fR\|] [\fB\-h\fI spellhist\fR\|] [\|\fIfile...\fR\|] 
+.PP
+.B spellin
+[\|\fIlist\fR\|]
+.PP
+.B spellout
+[\fB\-d\fR] \fIlist\fR
+.SH Description
+.NXR "spell command"
+.NXR "spellin command"
+.NXR "spellout command"
+The
+.PN spell
+command collects words from the named documents,
+and looks them up in a spelling list.
+Words that are not on the spelling list and
+are not derivable from words on the list
+(by applying certain inflections, prefixes or suffixes)
+are printed on the standard output.
+If no files are specified,
+words are collected from the standard input.
+.PP
+The
+.PN spell
+command ignores most
+.PN troff ,
+.PN tbl
+and
+.PN eqn
+constructions.
+.PP
+Two routines help maintain the hash lists used by
+.PN spell .
+Both expect a set of words, one per line,
+from the standard input.
+The
+.PN spellin
+command combines the words from the standard input and the
+preexisting
+.I list
+file and places a new list on the standard output.
+If no 
+.I list
+file is specified, a new list is generated.
+The
+.PN spellout
+command looks up each word from the standard input and prints
+on the standard output
+those that are missing from (or present on, with
+option
+.BR \-d )
+the hashed
+.I list
+file.
+For example, to verify that
+.I hookey
+is not on the default spelling list, add it to your own
+private list, and then use it with
+.PN spell ,
+.EX
+echo  hookey  |  spellout  /usr/dict/hlista
+echo  hookey  |  spellin  /usr/dict/hlista  >  myhlist
+spell  \-d  myhlist <filename>
+.EE
+.SH Options
+.NXR "spell command" "options"
+.IP \fB\-v\fR 15
+Displays words not found in spelling list with all plausible derivations 
+from spelling list.  
+.IP \fB\-b\fR
+Checks data according to British spelling.  
+Besides preferring
+.ft I
+centre, colour, speciality, travelled,
+.ft R
+this option insists upon
+.I \-ise
+instead of 
+.I \-ize 
+in words like
+.I standardise.
+.IP \fB\-x\fR 
+Precedes each word with an equal sign (=) and displays
+all plausible derivations.  
+.IP "\fB\-\|d\fI hlist\fR" 
+Specifies the file used for the spelling list.  
+.IP "\fB\-\|h\fI spellhist\fR" 
+Specifies the file used as the history file.  
+.IP "\fB\-\|s\fI hstop\fR" 
+Specifies the file used for the stop list.  
+.IP "+\fIlocal-file\fR"
+Removes words found in \fIlocal-file\fR from the output of the
+.PN spell
+command.
+The argument \fIlocal-file\fR is
+the name of a file provided by the user that contains a sorted list of
+words, one per line.  With this option, the user can specify
+a list of words for a particular job that are spelled correctly.
+.PP
+The auxiliary files used for the spelling list,
+stop list, and history file may be specified by
+arguments following the
+.BR \-d ,
+.BR \-s ,
+and
+.B \-h
+options.
+The default files are indicated below.
+Copies of all output
+may be accumulated in the history file.
+The stop list filters out misspellings (for example, thier=thy\-y+ier)
+that would otherwise pass.
+.SH Restrictions
+.NXR "spell command" "restricted"
+The coverage of the spelling list is uneven;
+new installations will probably wish to 
+monitor the output for several months to gather
+local additions.
+.PP
+The 
+.PN spell
+command works only with ASCII text
+files.
+.SH Files
+.ta 2.0i
+\f(CW/usr/dict/hlist[ab]\fR	hashed spelling lists, American &
+	British, default for \fB\-d\fR
+.br
+\f(CW/usr/dict/hstop\fR	hashed stop list, default for \fB\-s
+.br
+\f(CW/dev/null\fR	history file, default for
+.B \-h
+.br
+\f(CW/tmp/spell.$$\(**\fR	temporary files
+.br
+\f(CW/usr/lib/spell\fR
+.SH See Also
+deroff(1), sed(1), sort(1), tee(1)

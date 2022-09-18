@@ -1,0 +1,115 @@
+#!/bin/sh5
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)shut_down	4.1	(ULTRIX)	7/27/90"
+#
+#	000	Jonathan Wallace	1-Jun-1990
+#
+########################################################################
+#
+#
+trap 'exit' 1 2 3 18
+LL="
+"
+FLAG=$1
+
+case $FLAG in
+-r )
+	PROCEDURE_NAME="*** System Reboot Procedure ***"
+	COMMAND1="reboot"
+	COMMAND2="reboot"
+	;;
+* )
+	PROCEDURE_NAME="*** System Shutdown Procedure ***"
+	COMMAND1="shutdown"
+	COMMAND2="shut down"
+	;;
+esac
+
+clear
+while true
+do
+	while true
+	do
+		echo "
+$PROCEDURE_NAME
+
+How many minutes delay do you want until system ${COMMAND1}? [1]: \c"
+
+		read DELAY
+		case $DELAY in
+		"" )
+			DELAY="+1"
+			;;
+		[1-9] | [1-9][0-9] | [1-9][0-9][0-9] )
+			DELAY="+$DELAY"
+			;;
+		* )
+			clear
+			echo "
+Sorry, '$DELAY' is not a valid response."
+			continue
+			;;
+		esac
+
+		break
+	done
+
+	echo "
+If you want a message displayed to users explaining the reason
+for the system shutdown, enter it below.   The message text is
+limited to one line.  Type  <RETURN>  without typing a message
+if you do not want a shutdown message displayed:
+"
+	read MESSAGE
+
+	while true
+	do
+		echo "
+Are you sure you want to ${COMMAND2} the system? (y/n) [n]: \c"
+		read resp
+		case $resp in
+		"" | [Nn]* )
+			echo "${LL}${LL}System will not be shut down!"
+			echo "${LL}Press <RETURN> to continue: \c"
+			read resp
+			break 2
+			;;
+		[Yy]* )
+			echo "${LL}${LL}SYSTEM SHUTDOWN PROCESS INVOKED!"
+			/etc/shutdown $FLAG $DELAY "$MESSAGE"
+			case $? in
+			0 )
+				;;
+			* )
+				echo "ERROR trying to invoke /etc/shutdown command."
+				echo "System will not be shut down!"
+				;;
+			esac
+			echo "${LL}Press <RETURN> to continue: \c"
+			read resp
+			break 2
+			;;
+		* )
+			;;
+		esac
+	done
+done

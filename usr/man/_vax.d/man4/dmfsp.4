@@ -1,0 +1,43 @@
+.\" SCCSID: @(#)dmfsp.4	8.1	9/11/90
+.\" SCCSID: @(#)dmfsp.4	8.1	9/11/90
+.TH dmfsp 4 VAX
+.SH Name
+dmfsp \- DMF32 serial printer
+.SHsyntax
+.B "device dmf0 at uba? csr 0160340 flags 0x????"
+.br
+.ti +0.5i
+.B "vector dmfsrint dmfsxint dmfdaint dmfdbint dmfrint dmfxint dmflint"
+.SH Description
+.NXS "dmf interface" "DMF32 serial printer interface"
+.NXR "dmfsp keyword" "DMF32 serial printer interface"
+.NXR "DMF32 serial printer interface"
+The
+.PN dmf
+supports a connection to a line printer through the line printer
+port of the DMF32.
+.PP
+Bits
+.I 8-15
+of the 
+.PN flags 
+longword are used to specify the number of columns per line on
+the line printer.  If 0 is specified, 132 columns are used.
+Bits
+.I 16-23
+are used to specify the number of lines per page.  If 0 is specified, 66
+lines are used.
+.SH Diagnostics
+.B "dmf%d: Line Printer Disconnected"
+.br
+This message occurs if an open is performed on the printer port when
+the DMF32 detects that there is no printer cable connected.
+.PP
+.B "dmf%d: Printer DMA Error"
+.br
+A DMA output transfer to the printer failed.
+This could be caused by a memory error or an invalid pte (page table entry).
+.SH Files
+.PN /dev/lp?
+.SH See Also
+dmf(4), MAKEDEV(8)

@@ -1,0 +1,38 @@
+.\" SCCSID: @(#)miscd.8c	8.1	9/11/90
+.TH miscd 8c
+.SH Name
+miscd \- miscellaneous services daemon
+.SH Syntax
+.B /etc/miscd
+.SH Description
+.NXR "miscd daemon"
+.NXA "inetd server daemon" "miscd daemon"
+The 
+.PN miscd
+daemon is the service daemon for 
+some utility internet services.
+It is started by
+.MS inetd 8c
+when it receives a packet or a connection on an appropriate socket.
+Once invoked,
+.PN miscd
+determines the type of request and the protocol and then attempts
+to service it.
+.PP
+When performing services for datagram functions, the daemon will
+stay active until approximately two minutes pass without a service
+request.  It will then terminate until reinvoked by 
+.MS inetd 8c .
+.PP
+Invocations of
+.PN miscd
+serving for connection-based sockets will terminate when the
+connection is broken.
+.SH Restrictions
+The
+.PN miscd
+daemon supports only a subset of the internet utility functions.
+The supported services are echo, discard, systat, daytime, quote,
+chargen, and time.
+.SH See Also
+inetd(8c)

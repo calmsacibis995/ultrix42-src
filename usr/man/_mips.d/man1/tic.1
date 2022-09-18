@@ -1,0 +1,81 @@
+.TH tic 1
+.SH Name
+tic \- terminfo compiler
+.SH Syntax
+.B tic
+[
+.BR \-v[n]
+] [
+.I file ...
+]
+.SH Description
+.NX R "terminfo compiler" "tic"
+.NX R "tic" "terminfo compiler" 
+The 
+.PN tic
+command translates 
+.PN terminfo 
+files from the source format 
+into the compiled format.
+The results are placed in the directory 
+.PN /usr/lib/terminfo .
+The compiled format is necessary for use with the library routines 
+described in 
+.MS intro 3cur .
+The 
+.I file
+argument contains one or more 
+.PN terminfo 
+terminal descriptions in 
+.MS terminfo 5
+source format.
+If no file argument is present, the standard input is read.
+.PP
+The
+.PN tic
+command compiles all terminfo descriptions in the given files.
+Each description in the file describes the 
+capabilities of a particular terminal.
+When a \fIuse=entry_name\fP field is discovered,
+.PN tic
+duplicates the capabilities in \fIentry_name\fP for the current entry,
+with the exception of the capabilities that are 
+explicitly defined in the current entry.
+.PP
+If the environment variable TERMINFO is set, the results are placed
+there instead of in
+.PN /usr/lib/terminfo .
+The variable TERMINFO must be a directory pathname.  
+The compiled results are placed
+in subdirectories of the directory specified by the TERMINFO environment
+variable.
+.IP "\-v[\fIn\fP]" 8
+Causes
+.PN tic
+to output trace information showing its progress (verbose mode).
+The optional integer \fIn\fP is a number from 1 to 10, inclusive, 
+indicating the desired level of information.
+If \fIn\fP is greater than 1, the level of detail is increased.
+If \fIn\fP is omitted, the default is 1.
+.SH Restrictions
+Total compiled entries cannot exceed 4096 bytes.
+.PP
+The 
+.I entry_name 
+field cannot exceed 128 bytes.
+.PP
+When an entry, for example 
+.I entry_name_1,
+contains a \fIuse=entry_name_2\fP field, any canceled capabilities in 
+\fIentry_name_2\fP must also appear in 
+.I entry_name_1
+before \fIuse=\fP for these capabilities to be canceled in 
+.I entry_name_1.
+.SH Files
+.TP 25
+.PN /usr/lib/terminfo/*/*
+Compiled terminal capability data base
+.SH See Also
+intro(3cur), terminfo(5)
+.br
+\fIGuide to X/Open curses Screen Handling\fP

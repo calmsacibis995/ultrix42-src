@@ -1,0 +1,47 @@
+.\" SCCSID: @(#)soelim.1	8.1	9/11/90
+.\" Last modified by MJT on 27-Aug-85  0001
+.\"  Repaired beginning matter to work right in whatis database
+.TH soelim 1
+.SH Name
+soelim \- eliminate nroff source directives from nroff input
+.SH Syntax
+.B soelim
+[\|\fIfile...\fR\|]
+.SH Description
+.NXR "soelim command"
+.NXA "nroff text processor" "soelim command"
+The
+.PN soelim
+command
+reads the specified files or the standard input and performs the textual
+inclusion implied by the
+.PN nroff
+directives of the form
+.EX
+\&.so somefile
+.EE
+when they appear at the beginning of input lines.
+This is useful since programs such as
+.PN tbl
+do not normally do this; it allows the placement of individual tables
+in separate files to be run as a part of a large document.
+.PP
+Note that inclusion can
+be suppressed by using `\'' instead of `\.', that is
+.EX
+\'so /usr/lib/tmac.s
+.EE
+A sample usage of
+.PN soelim
+would be
+.EX
+soelim exum?.n | tbl | nroff \-ms | col | lpr
+.EE
+.SH Options
+.IP \fB\-\fR 0.3i
+File name corresponding to standard input.  
+.SH Restrictions
+The format of the source commands must involve no strangeness \-
+exactly one blank must precede and no blanks follow the file name.
+.SH See Also
+colcrt(1), more(1)

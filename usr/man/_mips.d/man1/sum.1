@@ -1,0 +1,25 @@
+.\" SCCSID: @(#)sum.1	8.1	9/11/90
+.TH sum 1 
+.SH Name
+sum \- print object file's checksum
+.SH Syntax
+.B sum
+\fIfile...\fR
+.SH Description
+.NXR "sum command"
+.NXA "sum command" "wc command"
+.NXA "wc command" "sum command"
+.NXR "file" "getting block count"
+The
+.PN sum
+command calculates and prints a 16-bit checksum for the named file,
+and also prints the number of blocks in the file.
+It is typically used to look for bad spots, or
+to validate a file communicated over
+some transmission line.
+.SH Diagnostics
+.B `Read error'
+is indistinguishable from end of file on
+most devices; check the block count.
+.SH See Also
+wc(1)

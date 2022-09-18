@@ -1,0 +1,89 @@
+.\" SCCSID: @(#)fp.1	8.1	9/11/90
+.\" Last modified by MJT on 26-Aug-85  23
+.\"  Repaired beginning matter to work right in whatis database
+.\"  Deleted defined string s, which provided variable section
+.\"   number for lisp and liszt -- used plain old IR instead
+.TH fp 1 VAX "" Unsupported
+.SH Name
+fp \- Functional Programming language compiler/interpreter
+.SH Syntax
+.B fp
+.SH Description
+The
+.PN fp
+interpreter/compiler implements the applicative language proposed
+by John Backus.  It is written in
+.SM "FRANZ LISP" .
+.PP
+In a  functional programming language
+intent is expressed
+in  a mathematical style devoid of assignment statements
+and variables.
+Functions compute by value only; there are no side-effects
+since  the result of a computation depends solely on the inputs.
+.PP
+The
+.PN fp
+programs consist of
+.I functional expressions \-
+primitive and user-defined 
+.PN fp
+functions
+combined by 
+.I functional forms.
+These forms take functional arguments
+and return functional results.
+For example, the composition
+operator 
+.I '@'
+takes two functional arguments and returns a function
+which represents their composition.
+.PP
+There exists a single operation in 
+.PN fp
+\&\-
+.I application.
+This operation causes the system to evaluate the indicated function using
+the single argument 
+as input
+(all functions are monadic).
+.SS Getting Started
+.PN fp
+invokes the system.  
+.PN fp
+compiles functions into
+.IR lisp (1)
+source code;
+.IR lisp (1)
+interprets this code
+(the user may compile this code using the
+.IR liszt (1)
+compiler to gain a factor of 10 in performance).
+Ctrl D
+exits back to the shell.
+.I Break
+terminates any computation in progress  and resets any open file units.
+.I )help
+provides a short summary of all user commands.
+.SH Restrictions
+If a non-terminating function is applied as the result of loading a file,
+then control is returned to the user immediately, everything
+after that position in the file is ignored.
+.PP
+.PN fp 
+incorrectly marks the location of a syntax error on
+large, multi-line function definitions or applications.
+(Turing award lecture by John Backus).
+.SH Files
+.DT
+/usr/ucb/lisp	the FRANZ LISP interpreter
+.br
+/usr/ucb/liszt	the liszt compiler
+.br
+/usr/doc/fp	the User's Guide
+.SH See Also
+lisp(1),
+liszt (1).
+.br
+"The FRANZ LISP Manual" in the
+\fISupplementary Documents, Volume 2: Programmer\fP

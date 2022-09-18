@@ -1,0 +1,249 @@
+#		@(#)magic	4.1	(ULTRIX)	7/17/90
+#									
+#			Copyright (c) 1989 by		
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.			
+#									
+#   This software is furnished under a license and may be used and
+#   copied  only  in accordance with the terms of such license and
+#   with the  inclusion  of  the  above  copyright  notice.   This
+#   software  or  any  other copies thereof may not be provided or
+#   otherwise made available to any other person.  No title to and
+#   ownership of the software is hereby transferred.		
+#
+#   This software is  derived  from  software  received  from Bell
+#   Laboratories.  Use, duplication, or disclosure is  subject  to
+#   restrictions  under  license  agreements  with  AT&T.
+#
+#   The information in this software is subject to change  without
+#   notice  and should not be construed as a commitment by Digital
+#   Equipment Corporation.
+#
+#   Digital assumes no responsibility for the use  or  reliability
+#   of its software on equipment which is not supplied by Digital.
+#--------------------------------------------------------------------
+#
+#		Magic File For The file Command
+#
+#	The fields of each entry in this file are as follows:
+#
+#	byte offset:  Where magic information is to be found in the
+#	file.  This is the number of bytes from the beginning of the
+#	file to the first byte of the magic number or string. This may,
+#	optionally,  be preceded by a '>' to indicate a continuation
+#	line to supply extra information in the printed message.
+#
+#	value type: The type of the information to be found at the
+#	specified byte offset.  Valid types are the following:
+#		byte	interpret file data as "unsigned char" type.
+#		short	interpret file data as "unsigned short" type.
+#		long	interpret file data as "long" type.
+#		string	interpret file data as a character(byte) string
+#
+#	optional operator: How the value specified here should be
+#	compared with the data at the desired offset.  Valid operator
+#	characters are: =, >, and <.  If none is specified, = is assumed.
+#
+#	value: The value to match. Numeric values may be decimal, octal,
+#	or hex.  Strings values are defined as regular expressions here.
+#	The regular expressions used here are extended in two ways from
+#	regular expression definition in ed(1).
+#	1. Normally unprintable characters may be escaped with '\'.  The
+#	special characters \n, \b, \r, and \f are allowed.  An octal
+#	representation can also be used to insert any desired byte value
+#	(except 0).  Normally, regular expression can not handle such 
+#	character values.  Because the backslash is used as an escape
+#	character while the regular expression is being read in, normal
+#	occurances of a backslash in a regular expression must be escaped
+#	with a second backslash ( \( -> \\(, \. -> \\., ...)
+#	2. Text found in a file can also be inserted in the printed string
+#	with the use of the \\% delimiter.  All text found between these
+#	delimiters is substituted into the print string.  See the entries
+#	below for script and PostScript files for examples of this usage.
+#	Note this is really just a \% delimiter with the backslash escaped.
+#	Finally, a word of caution: This regular expression search never
+#	terminates until a match is explicitly found or rejected.  (\n is
+#	a valid character in the patterns).  Therefore the pattern ".*"
+#	should probably never be used here.
+#
+#	major, minor type: The major and minor file type numbers are
+#	not used by the file(1) command.  They will be used in a future
+#	release of Ultrix.  Put any small integers in this field.
+#
+#	string to print: Any desired text string.  Data from the file
+#	may be included with the use of continuation lines beginning
+#	with a '>'.  Two types of continuation lines are possible,
+#	depending on the sign of the byte offset entry.  If the byte offset
+#	is positive, the specified data may be printed in the string
+#	when requested with an appropriate printf(3) format.  If the offset
+#	is a negative number, an internal routine will be called
+#	to test if a particular string is necessary and if so, to return
+#	it.  The byte offset number is an index to an internal table of
+#	routines available for use.  Two such routines are currently
+#	defined, both for a.out images:
+#
+#   Byte offset	  String(s) returned by routine if appropriate
+#
+#	-1:	["old version 7 style symbol table"]
+#	-2:	["setuid "]["setgid "]["sticky "]
+#	
+#offset	type	operator+value	major, minor type	string to print
+#
+#  Various sorts of archives
+#
+0	long	0177555			14,1	very old pdp11 archive
+0	short	0177545			14,2	old pdp11 archive
+0	string	^<ar>			14,3	System V archive
+0	string	^!<arch>\n__\\.SYMDEF	14,4	archive random library
+0	string	^!<arch>\n__________E	14,6	MIPS archive
+>20	string	^U			14,6	with mipsucode members
+>21	string	^L			14,6	with mipsel members
+>21	string	^B			14,6	with mipseb members
+>19	string	^L			14,6	and a EL hash table
+>19	string	^B			14,6	and a EB hash table
+>22	string	^X			14,6	-- out of date
+0	string	^!<arch>\n		14,5	archive
+#
+#  All sorts of scripts (like /bin/sh, /bin/awk, etc.) are identified
+#  here.  The second line adds setuid, setgid text if appropriate.
+#
+0	string	^#![ ]*\\%[^ \n]*\\%	7,4	%s
+>-2	long	0			7,4	%sscript
+#
+#  Various sorts of executable images.  Note how either "POSIX" or "SVID"
+#  are chosen based on the value of the second short word.
+#
+0	short	0407			12,2	VAX executable (object file)
+>8	short	>0			12,2	not stripped
+0	long	0410			12,3	VAX pure
+>-2	long	0			12,3	%sexecutable
+>16	long	>0			12,3	not stripped
+>-1	long	0			12,3	%s
+0	short	0413			12,4	VAX demand paged pure
+>2	short	02			12,4	POSIX
+>2	short	01			12,4	SVID
+>-2	long	0			12,4	%sexecutable
+>16	long	>0			12,4	not stripped
+>-1	long	0			12,4	%s
+0	short	0401			12,1	Ultrix-11 Stand-alone or boot executable
+0	short	0430			12,5	Ultrix-11 overlay text kernel executable
+0	short	0431			12,6	Ultrix-11 user overlay (separated I&D) executable
+0	short	0450			12,7	Ultrix-11 overlay kernel executable
+0	short	0451			12,8	Ultrix-11 overlay kernel (separated I&D) executable
+#
+#  Various sorts of text and data files.
+#
+0	string	^\01h[0-9][0-9][0-9][0-9][0-9]	7,1	sccsfile
+0	string	^#ifndef			7,5	c program
+0	string	^070707				7,106	ASCII cpio archive
+0	string	^%!PS-Adobe-\\%[.0-9]*\\%\n	7,11	PostScript (v%s) text
+#
+#
+0	string	^\0377\0377\0177	11,1	ddis/ddif 
+0	string	^\0377\0377\0174	11,9	ddis/dots archive
+0	string	^\0377\0377\0176	11,10	ddis/dtif table data
+0	string	^\033c\033		11,8	LN03 output
+0	string	^\0100\0357		11,2	troff (CAT) output
+0	long	04553207		11,3	X image
+0	short	017777			11,4	compacted data
+0	short	0116437			11,5	compressed data 
+0	short	070707			11,106	cpio archive
+0	short	017037			11,7	packed data
+0	string	^begin\040[0-9]		11,6	uuencoded data
+#
+#	MIPS magic info follows.  This needs to be integrated the stuff above,
+#	but for now I'll do it here so it can be checked out more easily...
+#
+0	long		0x1010101	11,9	MMDF mailbox
+#
+#	Sys V type executables - needs to be integrated with the ones above
+#	Do we need any of this at all?
+#
+#0	short		0407		executable
+#>8	short		>0		not stripped
+#>15	byte		>0		- version %ld
+#0	short		0401		unix-rt ldp
+#0	short		0405		old overlay
+#0	short		0410		pure executable
+#>8	short		>0		not stripped
+#>15	byte		>0		- version %ld
+#0	short		0411		separate I&D
+#>8	short		>0		not stripped
+#>15	byte		>0		- version %ld
+#0	short		0413		demand-paged executable
+#>8	short		>0		not stripped
+#>15	byte		>0		- version %ld
+#0	short		0430		obsolete text-overlay pure
+#>8	short		>0		not stripped
+#0	short		0431		obsolete text-overlay separate
+#>8	short		>0		not stripped
+#0	short		0450		text-overlay pure
+#>8	short		>0		not stripped
+#0	short		0451		text-overlay separate
+#>8	short		>0		not stripped
+#0	short		0437		pdp11 kernel overlay
+#0	short		0570		executable
+#>12	long		>0		not stripped
+#>22	short		>0		- version %ld
+#0	short		0575		pure executable
+#>12	long		>0		not stripped
+#>22	short		>0		- version %ld
+#0	short		0502		basic-16 executable
+#>12	long		>0		not stripped
+#0	short		0503		basic-16 executable (TV)
+#>12	long		>0		not stripped
+#0	short		0510		x86 executable
+#>12	long		>0		not stripped
+#0	short		0511		x86 executable (TV)
+#>12	long		>0		not stripped
+#0	short		0520		mc68000 executable
+#>12	long		>0		not stripped
+#0	short		0521		mc68000 executable (TV)
+#>12	long		>0		not stripped
+#0	short		0550		3b20 executable
+#>12	long		>0		not stripped
+#0	short		0551		3b20 executable (TV)
+#>12	long		>0		not stripped
+#0	short		0560		3b5|DMD executable
+#>12	long		>0		not stripped
+#0	short		0561		3b5|DMD executable (TV)
+#>12	long		>0		not stripped
+#
+# MIPS binary information - Note that version number printing is an
+# extreme hack.
+#
+#0	short		0x0160		mipseb
+#>20	short		0407		executable
+#>20	short		0410		pure
+#>20	short		0413		demand paged
+#>8	long		!0		not stripped
+#>22	byte		x		- version %ld.
+#>23	byte		x		%ld
+0	short		0x0162		12,9	mipsel
+>20	short		0407		12,9	407
+>20	short		0410		12,9	pure
+>20	short		0413		12,9	demand paged
+>-2	long		0		12,9	%sexecutable
+>8	long		>0		12,9	not stripped
+>8	long		<0		12,9	not stripped
+>23	byte		x		12,9	- version %ld.
+>22	byte		x		12,9	%ld
+#0	short		0x6001		swapped mipseb
+#>20	short		03401		executable
+#>20	short		04001		pure
+#>20	short		05401		demand paged
+#>8	long		!0		not stripped
+#>22	byte		x		- version %ld.
+#>23	byte		x		%ld
+0	short		0x6201		12,10	swapped mipsel
+>20	short		03401		12,10	407
+>20	short		04001		12,10	pure
+>20	short		05401		12,10	demand paged
+>-2	long		0		12,10	%sexecutable
+>8	long		>0		12,10	not stripped
+>8	long		<0		12,10	not stripped
+>22	byte		x		12,10	- version %ld.
+>23	byte		x		12,10	%ld
+0	short		0x180		12,11	mipseb ucode
+0	short		0x182		12,12	mipsel ucode
+

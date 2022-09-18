@@ -1,0 +1,21 @@
+.TH dirname 1
+.SH Name
+dirname \- deliver directory names from pathname
+.SH Syntax
+.NXR "dirname command"
+.B dirname
+\fIstring\fR
+.SH Description
+The
+.PN dirname
+command
+delivers all but the last level of the path name in
+.IR string .
+.SH Examples
+The following example sets the Bourne shell variable NAME to 
+.PN /usr/src/cmd: 
+.EX
+NAME=`dirname /usr/src/cmd/cat.c`
+.EE
+.SH See Also
+basename(1), sh(1), sh5(1), ksh(1)

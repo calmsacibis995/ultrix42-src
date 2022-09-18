@@ -1,0 +1,56 @@
+.\" SCCSID: @(#)dz.4	8.1	9/11/90
+.TH dz 4 VAX
+.SH Name
+dz \- DZ11/DZ32 communications interface
+.SH Syntax
+.B "device dz0 at uba0 csr 0160100 flags 0x????"
+.br
+.ti +0.5i
+.B "vector dzrint dzxint"
+.SH Description
+.NXS "dz interface" "DZ11 communications interface"
+.NXS "dz interface" "DZ32 communications interface"
+.NXR "DZ11 communications interface"
+.NXR "DZ32 communications interface"
+A DZ11/DZ32 interface 
+provides eight communication lines with partial modem control,
+adequate for dialup use.
+Each line attached to the DZ11/DZ32 communications interface
+behaves as described in
+.MS tty 4
+and can be set to run at any of 16 speeds.  See
+.MS tty 4
+for the encoding.
+.PP
+Bit
+.I i
+of 
+.PN flags 
+cwcanmay be specified for a 
+.PN dz 
+to say that a line is not properly
+connected, and that the line should be treated
+as hardwired, with carrier always present.
+Thus, specifying ``flags 0x04'' in the specification of 
+.PN dz0
+would cause line 2 to be treated in this way.
+.PP
+The 
+.PN dz
+driver normally uses its input silos
+and polls for input at each clock tick (10 milliseconds),
+rather than taking an interrupt on each input character.
+.SH Diagnostics
+.B "dz%d: silo overflow"
+.br
+The 64-character input silo overflowed
+before it could be serviced.  This can happen if a hard error occurs
+when the CPU is running with elevated priority, as the system 
+then prints a message on the console, with interrupts disabled.
+.SH Files
+.PN /dev/tty??
+.TP 15
+.PN /dev/ttyd?
+(modem lines only)
+.SH See Also
+tty(4), MAKEDEV(8)

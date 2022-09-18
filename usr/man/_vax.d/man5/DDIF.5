@@ -1,0 +1,62 @@
+.TH DDIF 5
+.SH Name
+DDIF \- Digital Document Interchange Format (DDIF) files
+.SH Description
+.PP
+Digital Document Interchange Format (DDIF) is a DDIS/ASN.1 encoding for
+the interchange of revisable compound documents with document processing
+systems.  DDIF is also a document output format, a storage format for
+user documents residing on a disk, and a compound document
+format.
+.PP
+The purpose of DDIF is to allow the creation of compound documents and also
+to serve as a standard intermediate format for the conversion of documents
+based on other formats.  For example, a simple ASCII text file can be
+converted to DDIF, and the DDIF file can then be converted to PostScript.
+A DDIF document can also be converted to ASCII.
+.PP
+DDIF files are documents or portions of compound documents.  A DDIF
+document is considered a simple document if it consists of one
+file.  A DDIF document is considered a compound document if it
+consists of more than one file, the master of which must be a DDIF
+file.  
+.PP
+A DDIF file can contain storage addresses (for example,
+filename) of other files, which must be DDIF, ASCII text,
+binary, or PostScript.  References to DOTS files is not supported.  
+.PP
+Because a DDIF file can reference another DDIF file and the referenced DDIF
+file can reference other DDIF files, a DDIF document can
+consist of a tree of files.
+.PP
+The following commands are used to manipulate DDIF files:
+.TP 20
+.B cdoc
+Provides a set of converters to and from DDIF format.
+.TP
+.B ctod
+Packs DDIF documents into DOTS syntax.  The user can choose to
+archive a DDIF document in this manner.  The
+.PN ctod
+command also copies DDIF files from one location to another.  
+.TP
+.B dtoc
+Copies DDIF files from one location to another.
+.TP
+.B dxvdoc
+Enables user to view DDIF documents. The
+.PN dxvdoc
+command is used on workstations running ULTRIX UWS software.  The
+.PN dxvdoc
+command can also display imbedded graphics and image data that is
+encoded in the DDIF syntax.
+.TP
+.B vdoc
+Enables user to view DDIF documents.  The
+.PN vdoc
+command is for use on character-cell terminals.
+.PP
+DDIF documents can be mailed to other users.
+.SH See Also
+cdoc(1), ctod(1), dtoc(1), vdoc(1), dxvdoc(1X), DOTS(5), DDIS(5)
+.br

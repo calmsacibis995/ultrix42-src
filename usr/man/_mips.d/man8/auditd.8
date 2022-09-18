@@ -1,0 +1,185 @@
+.\" SCCSID: @(#)auditd.8	4.0	11/04/14/89
+.TH auditd 8
+.SH Name
+auditd \- audit daemon 
+.SH Syntax
+.B /etc/sec/auditd [
+.I options ...
+]
+.SH Description 
+.NXR "audit daemon"
+The audit daemon, 
+.PN auditd , 
+operates as a server,
+monitoring 
+.PN /dev/audit
+for local audit
+data, monitoring a known port for data from remote cooperating audit
+daemons, and monitoring an AF_UNIX socket for input from the system
+administrator. 
+.PP
+Local audit data is read from the
+.PN /dev/audit
+device.  Data read from 
+.PN /dev/audit
+is buffered by the audit daemon, and 
+eventually output into the 
+auditlog when the buffer nears capacity or the daemon receives an explicit 
+instruction from the administrator to flush its buffer.
+.PP
+Local administrative data is read via the socket 
+.PN /tmp/.audit/audS .  
+Input from the system administrator allows for 
+changing of the daemon's configurable
+options.  The administrator communicates with the audit daemon by
+executing 
+.PN auditd
+with the desired options.  The first invocation 
+of 
+.PN auditd
+spawns the daemon; subsequent invocations detect that an audit
+daemon already exists and will communicate with it, passing along
+directions for the selected options.  The first invocation of the daemon 
+also turns on auditing for the system (
+.MS audcntl 2 ).  
+When the daemon is 
+terminated, by the \f(CW-k\fR option or
+the SIGTERM signal, auditing is turned off.
+It is important not to have system auditing turned on when there is no
+audit daemon running on the system (processes being audited will sleep 
+until 
+.PN /dev/audit
+is read, which is typically done by the audit daemon).
+.PP
+Remote audit data is first detected 
+when the remote audit daemon attempts 
+to communicate with the local audit daemon.  
+To establish a communications 
+path between the remote and the local daemons, 
+the remote audit daemons 
+hostname is first checked against a list of hosts allowed to transmit data 
+to the local host.  This list is maintained in 
+.PN /etc/auditd_clients.  
+If 
+the remote host is allowed to transfer audit data to the local host, a 
+child audit daemon dedicated to communicating with the remote host is 
+spawned.
+.SH Options
+.NXR "auditd command" "options"
+.IP "\fB-a\fR" 12
+Toggle the KERBEROS switch.  If on, KERBEROS authentication routines will 
+be used to verify the identity of any audit daemons attempting to 
+communicate.  This occurs either when sending to a remote host (by
+the \f(CW-i\fR option) or accepting from remote hosts 
+(by the \f(CW-s\fR option).
+.IP "\fB-b \fIalternate_pathname\fR" 12
+Sets the pathname to which the audit daemon will write its data should the 
+location currently accepting data become unavailable.  This can happen should 
+the current location specify a remote host which is no longer available, or 
+when the filesystem of the current location reaches an overflow condition 
+(in this case, the alternate pathname must specify a partition other than 
+the currently overflowing partition).
+.IP "\fB-c \fIpathname\fR" 12
+Sets the pathname to which the audit daemon will post any warning or 
+informational messages (such as "audit log change").  This may be either a 
+device or local file.
+.IP "\fB-d\fR" 12
+Causes the audit daemon to dump its currently buffered audit data out
+to
+.PN /dev/audit .  
+The audit daemon normally dumps its buffer only when it 
+approaches capacity.
+.IP "\fB-f \fIpercentage\fR" 12
+Sets the minimum percent free space on the current partition before 
+an overflow 
+condition is triggered.
+.IP "\fB-h\fR" 12
+Outputs a brief help menu.
+.IP "\fB-i \fIhostname\fR" 12
+Causes the audit daemon to transfer its audit data to the audit daemon 
+executing on the remote host \fIhostname\fR.  If the remote site stops 
+receiving, the local daemon will store its data
+locally (in \fIalternate_pathname\fR if available).
+.IP "\fB-k\fR" 12
+Kills the audit daemon (killing the local daemon turns audit off).
+.IP "\fB-l \fIpathname\fR" 12
+Causes the audit daemon to output its audit data to the local
+file \fIpathname\fR.
+.IP "\fB-n \fIkbytes\fR" 12
+Sets the size of the audit daemons buffer for the audit data (minimum is 4).
+.IP "\fB-o \fIoverflow action\fR" 12
+Sets the system action to take on a local overflow condition.  Alternatives
+are a) use the alternate log specified via \-b option, b) shutdown the system, 
+c) switch to the root-mounted filesystem with the most free space, d) 
+suspend auditing until space is made available, and e) overwrite the 
+current auditlog.
+.IP "\fB-p \fIdaemon id\fR" 12
+Specifies the id of the audit daemon to receive the current options.  When 
+the local audit daemon accepts a connection to receive data from 
+a remote audit 
+daemon, a dedicated child audit daemon is spawned off from the 
+local audit daemon to 
+service that connection.  With this scenario, multiple audit daemons
+may exist on a single system.  Specifying the id of the 
+.PN auditd
+allows for communication with one of the child audit daemons.  The
+id for each daemon can be found by entering the following at the
+command line:
+.EX
+.B /etc/sec/auditd -?
+.EE
+The previous command line displays
+the current options.  No id's are displayed unless at least one child 
+audit daemon exists.
+If the \f(CW-p\fR option is not specified when running with
+more than one audit daemon, the master daemon (accepting audit data for the 
+local system) handles the request.  When the master daemon is killed, 
+it kills all of its child daemons.
+.IP "\fB-q\fR" 12
+Queries the audit daemon for the current location of the audit data.
+.IP "\fB-s\fR" 12
+Toggles the network server switch.  If on, allows the audit daemon to 
+accept audit data from other audit daemons whose hostnames are specified in 
+the 
+.PN /etc/auditd_clients
+file.
+.IP "\fB-t \fItimeout value\fR" 12
+Sets the timeout value used in establishing initial connections with remote
+audit daemons.
+.IP "\fB-x\fR" 12
+Auditlog pathnames are always appended with a suffix consisting of a 
+generation number.  These generation numbers range from 0 to 999.  
+(Generation numbers may be overridden via explicit generation number 
+specification on the pathname for the \f(CW-lfR option, 
+for example auditlog.345).
+The \f(CW-x\fR option causes a change in 
+auditlog to the next auditlog in the 
+generation number sequence.  (If the current log was auditlog.345, 
+then \f(CW-x\fR would change the log to auditlog.346).  
+Whenever an auditlog is 
+closed, it is also compressed (by 
+.PN /usr/ucb/compress ).
+.IP "\fB-z\fR" 12
+Removes any AF_UNIX sockets left by previous daemons.  This occurs 
+when the system shuts down abnormally.  This option is useful typically 
+only for the 
+.PN auditd 
+invocation from the 
+.PN /etc/rc.local
+file.  If no
+AF_UNIX socket is present, the next invocation of 
+.PN auditd 
+will start the
+.PN audit 
+daemon.  If an AF_UNIX socket is present, the next invocation of 
+.PN auditd
+will spawn a client process which will communicate with the system audit
+daemon.  This \f(CW-z\fR option removes any leftover AF_UNIX sockets, forcing
+a new audit daemon to start.  This should be used only when no audit daemon
+is present on the system.
+.IP "\fB-?\fR" 12
+Shows the current status of the audit daemons options.
+.SH Files
+.PN /etc/auditd_clients
+.SH See Also
+audcntl(2), audit(4)

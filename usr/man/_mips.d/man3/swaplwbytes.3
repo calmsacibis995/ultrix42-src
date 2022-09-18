@@ -1,0 +1,54 @@
+.TH swap_lw_bytes 3
+.SH Name
+swap_lw_bytes, swap_word_bytes, swap_words \- perform byte swapping operations
+.SH Syntax
+unsigned int swap_lw_bytes\^(\^\fIbuffer\fP\^)
+.br
+unsigned int \fIbuffer\fP\^;
+.sp
+unsigned int swap_word_bytes\^(\^\fIbuffer\fP\^)
+.br
+unsigned int \fIbuffer\fP\^;
+.sp
+unsigned int swap_words\^(\^\fIbuffer\fP\^)
+.br
+unsigned int \fIbuffer\fP\^;
+.SH Arguments
+.IP \fIbuffer\fP 1.0i
+Specifies a 32-bit (4 bytes) quantity.
+.SH Description
+.NXR "byte swapping"
+The
+.PN "swap_lw_bytes" 
+routine performs a long word byte swap.
+The
+.PN "swap_word_bytes" 
+routine performs a short word byte swap.
+The
+.PN "swap_words" 
+routine performs a word byte swap.
+Because Digital devices support the little endian model of byte
+ordering, there is
+a need for these byte swapping routines.
+.PP
+For the purposes of the following discussion, a long word 
+is equal to 4 bytes; a
+short word is equal to 2 bytes; and 1 byte is equal to 8 bits.
+The
+.PN "swap_lw_bytes" 
+routine takes the 32-bit quantity specified by the
+\fIbuffer\fP
+argument and swaps all four bytes.
+The
+.PN "swap_word_bytes" 
+routine takes the 32-bit quantity specified by the
+\fIbuffer\fP
+argument and swaps the individual bytes that make up each byte of the
+32-bit quantity.
+The
+.PN "swap_words" 
+routine takes the 32-bit quantity specified by the
+\fIbuffer\fP
+argument and swaps the two words.
+.SH Return Values
+These routines return the result of the byte swapping.

@@ -1,0 +1,10 @@
+#
+#	@(#)Makefile.vax	4.1	ULTRIX	7/3/90
+#
+
+OBJS=	inet_addr.o inet_network.o inet_netof.o inet_ntoa.o inet_lnaof.o \
+	inet_makeaddr.o
+
+TARGS=	inetlib profiled/inetlib gfloat/inetlib
+
+include ../vaxrules

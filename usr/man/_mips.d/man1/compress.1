@@ -1,0 +1,232 @@
+.TH compress 1 RISC
+.SH Name
+compress, uncompress, zcat \- compress and expand data
+.SH Syntax
+.NXR "compress command"
+.B compress
+[
+.B \-f
+] [
+.B \-v
+] [
+.B \-c
+] [
+.B \-b
+.I bits
+] [
+.I "name \&..."
+]
+.ll -8
+.br
+.B uncompress
+[
+.B \-f
+] [
+.B \-v
+] [
+.B \-c
+] [
+.I "name \&..."
+]
+.br
+.B zcat
+[
+.I "name \&..."
+]
+.SH Description
+The 
+.PN compress
+command
+reduces the size of the named files using adaptive Lempel-Ziv coding.
+Whenever possible,
+each file is replaced by one with the extension
+.B "\&.Z,"
+while keeping the same ownership modes, access, and modification times.
+If no files are specified, the standard input is compressed to the
+standard output.
+Compressed files can be restored to their original form using
+.PN uncompress
+or
+.PN zcat .
+.PP
+The
+.B \-f
+option will force compression of
+.IR name ,
+even if it does not actually shrink
+.IR name ,
+or if the corresponding \fIname\fR .Z
+file already exists.
+If the
+.B \-f
+option is omitted, the user is asked whether an existing
+.IR name \&.Z
+file should be overwritten (unless
+.PN compress
+is run in the background under
+.PN /bin/sh ).
+.PP
+The
+.B \-c
+(cat) option makes
+.I compress/uncompress
+write to the standard output without changing any
+files.
+Neither
+.PN uncompress
+.B \-c
+nor
+.PN zcat
+alter files.
+.PP
+The
+.PN compress
+command
+uses the modified Lempel-Ziv algorithm.
+Common substrings in the file are first replaced by 9-bit codes 257 and up.
+When code 512 is reached, the algorithm switches to 10-bit codes and
+continues to use more bits until the
+limit specified by the
+.B \-b
+flag is reached (default 16).
+The
+.I bits
+must be between 9 and 16.  The default can be changed in the source to allow
+.PN compress
+to be run on a smaller machine.
+.PP
+After the
+.I bits
+limit is attained,
+.PN compress
+periodically checks the compression ratio.  If the ratio is increasing,
+.PN compress
+continues to use the existing code dictionary.  However,
+if the compression ratio decreases,
+.PN compress
+discards the table of substrings and rebuilds it from scratch.  This allows
+the algorithm to adapt to the next block of the file.
+.PP
+Note that the
+.B \-b
+flag is omitted for
+.PN uncompress ,
+since the 
+.I bits
+parameter specified during compression
+is encoded within the output along with
+a number that ensures that neither decompression of random data nor
+recompression of compressed data is attempted. 
+.PP
+How much each file is compressed depends on the size of the
+input, the number of
+.I bits
+per code, and the distribution of common substrings.
+Typically, text such as source code or English
+is reduced by 50\-60%.
+Compression is generally much better than that achieved by
+Huffman coding 
+or adaptive Huffman coding,
+and takes less time to compute.
+.PP
+The
+.B \-v
+option displays the percent reduction of each file.
+.PP
+If an error occurs, exit status is 1.  However,
+if the last file was not compressed because it became larger, the status
+is 2.  Otherwise, the status is 0.
+.SH Options
+.TP 5
+.B \-f
+Forces compression of \fIname\fR.
+.TP
+.B \-c
+Makes \fIcompress/uncompress\fR write to the standard output.
+.TP
+.B \-b
+Specifies the allowable \fIbits\fR limit.  The default is 16.
+.TP
+.B \-v
+Displays the percent reduction of each file.
+.SH Diagnostics
+.sp
+.B "Usage: compress [\-fvc] [\-b maxbits] [file ...]"
+.br
+Invalid options were specified on the command line.
+.PP
+.B "Missing maxbits"
+.br
+Maxbits must follow
+.BR \-b \.
+.PP
+.IR file :
+.B "not in compressed format"
+.br
+The file specified to
+.I uncompress
+has not been compressed.
+.PP
+.IR file :
+.B "compressed with"
+.I xx
+.B "bits, can only handle"
+.I yy
+.B "bits"
+.br
+The
+.I file
+was compressed by a program that could deal with
+more 
+.I bits
+than the compress code on this machine.
+Recompress the file with smaller
+.IR bits \.
+.PP
+.IR file :
+.B "already has .Z suffix -- no change"
+.br
+The file is assumed to be compressed already.
+Rename the file and try again.
+.PP
+.I file
+.B "already exists; do you wish to overwrite (y or n)?"
+.br
+Type y if you want the output file to be replaced; type n if 
+you do not.
+.PP
+.B "uncompress: corrupt input"
+.br
+A SIGSEGV violation was detected which usually means that the input file is
+corrupted.
+.PP
+.B "Compression:"
+.I "xx.xx%"
+.br
+Percent of the input saved by compression.
+(For the
+.B \-v 
+option only.)
+.PP
+.B "-- not a regular file: unchanged"
+.br
+If the input file is not a regular file
+(for example, a directory), it remains unchanged.
+.PP
+.B "-- has"
+.I xx 
+.B "other links: unchanged"
+.br
+The input file has links; it is left unchanged.  See
+.MS ln 1
+for more information.
+.PP
+.B "-- file unchanged"
+.br
+No savings is achieved by
+compression.  The input remains unchanged.
+.SH Restrictions
+Although compressed files are compatible between machines with large memory,
+.BR \-b \12
+should be used for file transfer to architectures with 
+a small process data space (64KB or less). 

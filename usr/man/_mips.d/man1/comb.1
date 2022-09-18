@@ -1,0 +1,138 @@
+.\" SCCSID: @(#)comb.1	8.1	9/11/90
+.tr ~
+.nr f 0
+.bd S B 3
+.de SP
+.if n .ul
+\%[\fB\-\\$1\fR\\c
+.if n .ul 0
+\\$2\\$3
+..
+.de SF
+.if n .ul
+\%[\fB\-\\$1\fR]
+.if n .ul 0
+..
+.de AR
+.if \\nf \{ \
+.    RE
+.    nr f 0 \}
+.PP
+.TP 8
+\fB\-\\$1\\fR
+\\$2 \\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.nr f 1
+..
+.de A2
+.if \\nf \{ \
+.    RE
+.    nr f 0 \}
+.PP
+.TP 8
+\fB\-\\$1\fI\\$2\fR
+\\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.nr f 1
+..
+.TH comb 1
+.SH Name
+comb \- combine delta versions of SCCS file 
+.SH Syntax   
+.B comb
+[\fB\-o\fR] [\fB\-s\fR] [\fB\-p\fIsid\fR\|] [\fB\-c\fIlist\fR\|] \fIfiles\fR
+.SH Description
+.NXR "comb command (sccs)"
+.NXR "SCCS file" "reconstructing"
+The
+.PN comb
+command generates a shell procedure
+which, when run, will reconstruct the given \s-1SCCS\s+1 files.
+For further information, see
+.MS sh 1 .
+The reconstructed files are generally smaller than the original
+files.
+The arguments may be specified in any order,
+but all keyletter arguments apply to all named \s-1SCCS\s+1 files.
+If a directory is named,
+.PN comb
+behaves as though each file in the directory were
+specified as a named file,
+except non-\s-1SCCS\s+1 files
+(last component of the path name does not begin with \fBs.\fR)
+and unreadable files,
+which are silently ignored.
+If a name of \fB\-\fR is given, the standard input is read;
+each line of the standard input is taken to be the name of an \s-1SCCS\s+1 file
+to be processed.
+.PP
+The generated shell procedure is written on the standard output.
+.PP
+Each keyletter argument is explained as though 
+only one named file is to be processed,
+but the effects of any keyletter argument apply independently
+to each named file.
+.SH Options
+.NXR "comb command (sccs)" "options"
+.IP \fB\-c\fIlist\fR 10 
+Preserves specified deltas.
+See
+.MS get 1
+for the syntax of a \fIlist\fR.
+All other deltas are discarded.
+.IP \fB\-o\fR 
+Causes the reconstructed file to be accessed at
+the release of the delta to be created.
+Otherwise the reconstructed file would be accessed at
+the most recent ancestor.
+Use of the
+.B \-o
+keyletter may decrease the size of the reconstructed \s-1SCCS\s+1 file.
+It may also alter the shape of the delta tree of the original file.
+.IP \fB\-p\fISID\fR 
+Indicates oldest delta to be preserved.
+All older deltas are discarded in the reconstructed file.
+.IP \fB\-s\fR 
+Generates a shell procedure which 
+produces a report. 
+This report gives the file name, size (in blocks) after combining,
+original size (also in blocks), and
+percentage change
+computed by:
+.br
+.ce 1
+\%100~\fB\(**\fR~(original~\-~combined)~/~original
+.br
+It is  recommended that before any \s-1SCCS\s+1 files are actually combined,
+one should use this option to determine exactly how much space
+is saved by the combining process.
+.PP
+If no keyletter arguments are specified,
+.PN comb
+will preserve only leaf deltas and the minimal number of ancestors
+needed to preserve the tree.
+.SH Restrictions
+.NXR "comb command (sccs)" "restricted"
+The
+.PN comb
+command may rearrange the shape of the tree of deltas.
+It may not save any space;
+in fact, it is possible for the reconstructed file to
+actually be larger than the original.
+.PD
+.SH Diagnostics
+See
+.MS sccshelp 1
+for explanations.
+.tr ~~
+.SH Files
+.PD 0
+.TP 14
+.RB s . \s-1COMB\s+1
+The name of the reconstructed \s-1SCCS\s+1 file.
+.RE
+.TP 14
+comb?????
+Temporary.
+.SH See Also
+admin(1), delta(1), get(1), help(1), prs(1), sccs(1), sccsfile(5)
+.br
+\fIGuide to the Source Code Control System\fP

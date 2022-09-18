@@ -1,0 +1,72 @@
+.\" SCCSID: @(#)telnetd.8c	8.1	9/11/90
+.TH telnetd 8c
+.SH Name
+telnetd \- DARPA TELNET protocol server
+.SH Syntax
+.B /etc/telnetd
+.SH Description
+.NXR "telnetd server"
+.NXAM "interface" "TELNET user interface" "telnetd server"
+.NXS "TELNET protocol server" "telnetd server"
+The
+.PN telnetd
+server supports the DARPA standard TELNET
+virtual terminal protocol.  The TELNET server is invoked
+when 
+.MS inetd 8c  
+receives a connection request on
+the port indicated in the TELNET service description.
+.PP
+The
+.PN telnetd
+server operates by allocating a pseudo-terminal device 
+for a client, then creating a login process which has
+the slave side of the pseudo-terminal as 
+.BR stdin ,
+.BR stdout ,
+and
+.BR stderr .
+The
+.PN telnetd
+server manipulates the master side of the pseudo terminal,
+implementing the TELNET protocol and passing characters
+between the client and login process.
+.PP
+When a TELNET session is started up, 
+.PN telnetd
+sends a TELNET option to the client side indicating
+a willingness to do remote echo of characters, to suppress go ahead,
+and to receive terminal type information from the remote client.
+If the remote client is willing, the remote terminal type is propagated in the
+environment of the created login process.
+The pseudo terminal allocated to the client is configured
+to operate in cooked mode and with XTABS and CRMOD
+enabled.
+.PP
+Aside from this initial setup, the only mode changes
+.PN telnetd
+will carry out are those required for echoing characters
+at the client side of the connection.
+.PP
+The
+.PN telnetd
+server supports binary mode, suppress go ahead, echo, and
+timing mark. 
+It also allows a remote client to do binary, terminal type, and 
+suppress go ahead.
+.SH Restrictions
+Some TELNET commands are only partially implemented.
+.PP
+The TELNET protocol allows the exchange of the number of lines
+and columns on the user's terminal, but
+.PN telnetd
+does not make use of them.
+.PP
+The terminal type name received from the remote client is converted
+to lower case.
+.PP
+The
+.PN telnetd
+server never sends TELNET go ahead commands.
+.SH See Also
+telnet(1c), pty(4), tty(4), services(5), inetd(8c)

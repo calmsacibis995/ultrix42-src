@@ -1,0 +1,77 @@
+.\" SCCSID: @(#)what.1	8.2	9/18/90
+.TH what 1
+.SH Name
+what \- display ID keywords from SCCS file
+.SH Syntax
+.B what [-s]  
+.I files
+.SH Description
+.NXR "what command (sccs)"
+.NXR "SCCS file" "identifying"
+.NXA "get command (sccs)" "what command (sccs)"
+The 
+.PN what
+command searches the given files for all occurrences
+of the pattern that
+.MS get 1
+substitutes for %\&Z% (this is
+\fB@\&(#)\fR
+at this printing)
+and prints out what follows until the
+first ", >, new-line, \e, or null character.
+For example, if the C program in file \fBf.c\fR contains
+.PP
+.RS 5
+char ident[] = "\|@\&(#)identification information\|";
+.RE
+.PP
+and \fBf.c\fR is compiled to yield \fBf.o\fR and \fBa.out\fR,
+then the command
+.PP
+.RS 5
+what\|
+.RB f . c\|
+.RB f . o\|
+.RB a . out
+.RE
+.PP
+will print
+.PP
+.RS 5
+.TP 8
+f\fB.\fRc:
+.br
+identification information
+.TP 8
+f\fB.\fRo:
+.br
+identification information
+.TP 8
+a\fB.\fRout:
+.br
+identification information
+.RE
+.PP
+Use
+.PN what
+in conjunction with the SCCS command 
+.MS get 1 ,
+which automatically inserts identifying information,
+but information can also be inserted manually.
+.SH Restrictions
+It is possible that an unintended occurrence of the pattern
+.B @\&(#)
+could be
+found.  This causes no harm in nearly all cases.
+.SH Diagnostics
+Use 
+.MS sccshelp 1
+for explanations.
+.SH Options
+.TP
+\fB-s\fP
+Quit after finding the first occurrence of the pattern in the file.
+.SH See Also
+get(1), sccshelp(1), sccs(1)
+.br
+\fIGuide to the Source Code Control System\fP

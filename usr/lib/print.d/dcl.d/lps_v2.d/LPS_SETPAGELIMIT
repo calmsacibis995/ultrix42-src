@@ -1,0 +1,14 @@
+
+% LPS$$SETSHEETLIMIT device control library module
+% Version V1.1
+%
+% Copyright ) 1986 by DEC, Maynard, Mass.  All rights reserved.
+
+% Remember, you are still in lps$lpsdict.
+%
+% This module expects the stack to be: low-limit high-limit
+
+    /lps$page-high-limit exch cvi def % convert to an integer and store
+    /lps$page-low-limit exch cvi def % convert to an integer and store
+    /lps$page-limits? true def	% There are limits
+

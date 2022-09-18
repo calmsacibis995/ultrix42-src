@@ -1,0 +1,60 @@
+#!/bin/sh5
+#
+# @(#)UDTFIS420.scp	4.1 (ULTRIX) 4/4/91
+#
+#   This software is furnished under a license and may be used and
+#   copied  only  in accordance with the terms of such license and
+#   with the  inclusion  of  the  above  copyright  notice.   This
+#   software  or  any  other copies thereof may not be provided or
+#   otherwise made available to any other person.  No title to and
+#   ownership of the software is hereby transferred.
+#
+#   The information in this software is subject to change  without
+#   notice  and should not be construed as a commitment by Digital
+#   Equipment Corporation.
+#
+#   Digital assumes no responsibility for the use  or  reliability
+#   of its software on equipment which is not supplied by Digital.
+#
+
+umask 022
+
+COPY_LIST="./vmunix ./genvmunix ./usr/sys/dist/log ./usr/adm/log"
+MOVE_LIST="./real.profile ./.profile ./etc/fis/fis_.login ./.login"
+MOVE_LIST="$MOVE_LIST ./etc/fis/fis_default.DECterm ./default.DECterm"
+APPEND_LIST="./etc/fis/fis_rc.local ./etc/rc.local"
+REMOVE_LIST="./.updprofile ./restoresymtable ./lost+found ./install.tmp"
+REMOVE_LIST="$REMOVE_LIST ./vmunix.sas ./netload ./etc/fis/fis_rc.local"
+
+case $ACT in
+POST_[AL])
+
+	set $COPY_LIST
+	while [ $# -gt 0 ]
+	do
+		/bin/cp $1 $2
+		shift 2 
+	done
+
+	set $APPEND_LIST
+	while [ $# -gt 0 ]
+	do
+		/bin/cat $1 >> $2
+		shift 2
+	done
+
+	set $MOVE_LIST
+	while [ $# -gt 0 ]
+	do
+		/bin/mv $1 $2
+		shift 2
+	done
+
+	for K in $REMOVE_LIST
+	do
+		/bin/rm -rf $K
+	done
+
+	;;
+esac
+exit 0

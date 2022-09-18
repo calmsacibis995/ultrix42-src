@@ -1,0 +1,47 @@
+.TH screenstat 8
+.SH Name
+screenstat \- show gateway screening statistics
+.SH Syntax
+.B /usr/etc/screenstat
+.SH Description
+.NXR "screenstat command"
+.NXR "gateway screening" "showing statistics"
+The
+.PN screenstat
+command displays statistics about
+kernel gateway screening.  The display is sent to the
+standard output.
+.PP
+The format of the 
+.PN screenstat
+report is as follows:
+.nf
+.EX 0
+total packets screened: 16754
+total accepted: 15149
+total rejected: 12
+packets dropped:
+        because buffer was full:        0
+        because user was out of sync:   0
+        because too old:        1592
+total dropped:  1592
+.EE
+.fi
+The 
+.PN "total packets screened"
+count shows how many packets have been received
+for forwarding.  The 
+.PN accepted
+and 
+.PN rejected
+counts show how many
+packets were forwarded or dropped based on instructions from a user-level
+process.  The 
+.PN "total dropped"
+count shows how many packets were dropped
+for other reasons: lack of space in the kernel buffer, errors by
+a user process, or packets that were queued for too long.
+If the counts do not add up, some packets are currently
+queued in the kernel.
+.SH See Also
+screen(2), screend(8), screenmode(8)

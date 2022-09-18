@@ -1,0 +1,67 @@
+.TH krb_set_tkt_string 3krb
+.SH Name
+krb_set_tkt_string, krb_set_srvtab_string \- Environmental setup of the Kerberos 
+libraries
+.SH Syntax
+.nf
+.nj
+ \fB#include <krb.h>\fP
+.sp 1
+ \fBvoid krb_set_tkt_string\fP \fI(filename)\fP
+ \fBchar\fP \fI*filename\fP
+.sp 1
+ \fBvoid krb_set_srvtab_string\fP \fI(filename)\fP
+ \fBchar\fP \fI*filename\fP
+.sp 1
+.PP
+.fi
+.SH Arguments
+.TP 8
+.I filename
+The filename of the Kerberos ticket cache file or the name of the service table file.
+.SH Description
+.NXR "Kerberos routines" "krb_set_tkt_string"
+.NXR "Kerberos routines" "krb_set_srvtab_string"
+The
+.PN krb_set_tkt_string
+routine sets the default name of the file that holds a cache of service
+tickets and associated session keys belonging to a Kerberos principal.
+The routine accepts a
+filename for the cache and copies this name into the local storage of
+.PN libkrb .
+The default before any calls to 
+.PN krb_set_tkt_string ,
+is
+.PN /var/dss/kerberos/tkt/tkt[\fIuid\fP] \fRwhere 
+.PN uid
+is the user ID of the process that calls
+.PN krb_set_tkt_string .\fP
+.PP
+You should call \f(CWkrb_set_tkt_string\fP during Kerberos
+initialization to assure that any routines called later
+receive the proper name if they
+require the filename of the cache.
+.PP
+The
+.PN krb_set_srvtab_string
+routine sets the default name of the file that stores the keys of the
+Kerberos applications running on the local host.  The routine accepts a
+filename for the service table file and copies this name into the local storage
+of 
+.PN libkrb .
+.PP
+You should call \f(CWkrb_set_srvtab_string\fP during the Kerberos
+initialization of a service to assure that any subsequently called routines that
+require the filename of the service table receive the proper name. 
+The default, before any calls to
+the
+.PN krb_set_srvtab
+string, is
+.PN /etc/srvtab .
+.SH Files
+.TP
+.PN /var/dss/kerberos/tkt/tkt[\fIuid\fP]
+.TP
+.PN /etc/srvtab
+.SH See Also
+kerberos(3krb), krb_sendauth(3krb), krb_sendmutual(3krb)

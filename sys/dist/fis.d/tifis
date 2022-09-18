@@ -1,0 +1,643 @@
+#!/bin/sh5
+# tifis   --      Technician's Interface to Factory Installed Software.
+#
+#			Copyright (c) 1990 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)tifis	1.2	(ULTRIX)	8/14/90"
+#
+#
+#
+# 
+#
+# This script provides an interface between the Technician and
+# the FIS Server.  tifis provides the following functionality:
+#
+# o       Hardware Ethernet Address modification
+# o       Serial Number tracking via the Error Logging Facilities
+# o       Choice of "fsi" to load the client
+#
+# This script is a Phase I pass at tifis.  Phase II will 
+# transform this script into "C" code which will communicate
+# to the clients to gather configuration information, and boot
+# these clients.  Phase III will enhance this "C" code to include
+# a DECWindows interface.
+#
+# Modification History:
+# ~~~~~~~~~~~~~~~~~~~~
+#       000     --      Scott M. Fafrak         05-Jun-90
+#       001     --      Scott M. Fafrak         20-Jun-90
+#                       
+#                       Modified script so that all responses have default
+#                       answers.  Deleted the Ask_Graphics_Driver -- No longer
+#                       necessary.  Added Layered product support.
+#
+#       002     --      Scott M. Fafrak         29-Jun-90
+#
+#                       Added "getopts" to allow default flags to be set.
+#
+#	003	James C. Overman	14-Aug-90
+#		Added DS5100 support to tifis
+#
+
+ECHO=
+PATH=.:/etc:/bin:/usr/bin:/usr/ucb
+HOME=/usr/users/fis
+DNET=/usr/lib/dnet
+MACHTYPE=`/bin/machine`
+export PATH HOME MACHTYPE
+
+# Define the initial "default" responses
+
+DEBUG="FALSE"
+CLIENT_DEFAULT=1
+SERIAL_N_DEFAULT="No Default" 
+SERIAL_N_STARTER="AB" # This should equal the Manufacturing Site's SN initials
+ASN_ERROR=1
+ADDRESS_DEFAULT="No Default"
+ADDRESS_STARTER="08-00-2B-"
+AHEA_ERROR=1
+IMAGE_DEFAULT=1
+CLTYPE_DEFAULT=1
+SERVER_LN0="SERVER_NAME_on_LN0"
+SERVER_LN1="SERVER_NAME_on_LN1"
+
+# trap interrupts
+
+trap '
+while :
+do
+        echo "        Do you really want to quit? (y/n) []: \c"
+        
+        read trap_answer
+        
+        case $trap_answer
+        in
+                [yY]* )  echo "        Bye..."
+                         exit 1 ;;
+                [nN]* )
+                         break ;;
+        esac
+done ' 1 2 3 18
+
+#while getopts vx option
+#do
+#        case "$option"
+#        in
+#                v)      set -v;;
+#                x)      set -x;;
+#               \?)      echo "Usage: tifis [-v] [-x]"
+#                        echo "  -v means do a set -v"
+#                        echo "  -x means do a set -x"
+#                        exit 1;;
+#        esac
+#done
+
+# Get and Evaluate command line arguments (if any)
+
+while [ "$#" -gt 0 ]
+do
+        case $1
+        in
+                -[dD] ) DEBUG=TRUE
+                        shift;;
+                -[xX] ) set -x
+                        shift;;
+                    * ) echo "Usage: tifis [-d] [-v] [-x]"
+                        echo "  -d means turn on minimal trace functionality"
+                        echo "  -x means turn on \"set -x\" functionality";;
+        esac
+done
+
+################################################################################
+: Print_Client_Selection
+################################################################################
+
+# This function displays the client menu and queries for the tech's selection.
+# The function asks if the tech is sure of his/her selection.  The selection is
+# verified to be inactive.
+
+Print_Client_Selection()
+{
+ 
+ if [ "$DEBUG" = "TRUE" ]
+ then
+        echo "\n"
+        echo "*** Now Entering the Print_Client_Selection() function"
+        echo "\n"
+        sleep 1
+ fi
+ 
+ PCS_boolean="FALSE"
+ PCS_answer=0
+ clear
+
+ while [ "$PCS_boolean" = "FALSE" ]
+ do
+        echo "
+        
+        tifis for RISC Ultrix           Version 1.0             05-Jun-90
+        
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        Client Name     Selection               Client Name     Selection
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n
+        FIS001                  1               FIS011                 11
+        FIS002                  2               FIS012                 12
+        FIS003                  3               FIS013                 13
+        FIS004                  4               FIS014                 14
+        FIS005                  5               FIS015                 15
+        FIS006                  6               FIS016                 16
+        FIS007                  7               FIS017                 17
+        FIS008                  8               FIS018                 18
+        FIS009                  9               FIS019                 19
+        FIS010                 10               FIS020                 20
+        
+        Type ? for Help...
+        Type "EXIT" to exit the program...
+        Please enter your selection [ $CLIENT_DEFAULT ]: \c"
+
+        read PCS_answer
+
+        if [ "$DEBUG" = "TRUE" ]
+        then
+                echo "\n"
+                echo "*** $PCS_answer was entered in PCS_answer"
+                echo "\n"
+                sleep 1
+        fi
+
+
+        if [ -z "$PCS_answer" ]
+        then
+                PCS_answer="$CLIENT_DEFAULT"
+        fi
+
+        case $PCS_answer
+        in
+                        \?)     clear
+                                more $HOME/HELP/Client_Selection.help
+                                echo "        Press [Return] to continue...\c"
+                                read PCS_continue;;
+                    "EXIT")     echo "        Exitting...  Bye...\n"
+                                exit;;
+           [1-9]|1[0-9]|20)     while :
+                                do
+                                        echo "\n        Are you sure? ( y or n ) \c"
+                                        read PCS_verify
+                                        case $PCS_verify
+                                        in
+                                                [yY]*)  if [ "$PCS_answer" -lt 10 ]
+                                                        then
+                                                                PCS_answer="0${PCS_answer}"
+                                                        fi
+                                                        if [ -f $HOME/FISINIT/fis0${PCS_answer}.fisinit ]
+                                                        then
+                                                                echo "\n        fis0${PCS_answer} is currently in use."
+                                                                echo "        Please reenter your selection."
+                                                                sleep 5
+                                                        else
+                                                                PCS_boolean="TRUE"
+                                                        fi        
+                                                        break;;
+                                                [nN]*)  break;;
+                                        esac
+                                done;;
+                         *)     continue;;
+        esac
+ done        
+}
+
+################################################################################
+: Assign_Client
+################################################################################
+
+# This function assigns the tech's selection, assigns the dlclient area and the
+# defines the load host's IP broadcast name as the client will see it.
+
+Assign_Client()
+{
+
+ if [ "$DEBUG" = "TRUE" ]
+ then
+        echo "\n"
+        echo "*** Now Entering the Assign_Client() function"
+        echo "\n"
+        sleep 1
+ fi
+
+ case $PCS_answer
+ in
+        0[1-9]|1[0-9]|20)       CLIENT="fis0$PCS_answer";;
+                       *)       echo "\nNot a valid answer: $PCS_answer  *";;
+ esac
+
+# This loop assigns the dlclient and hostname space.  As more client areas come
+# online, this loop will need to be modified accordingly.  A possible solution
+# would be to modulus by two (for the even numbered clients) and then those 
+# greater than say ten go into area 2 those less than go into 0, else those 
+# greater than ten go into 3 and those less than go into 1.
+ 
+ if [ `expr $PCS_answer % 2` -eq 0 ]
+ then
+        SERVER="$SERVER_LN0"
+        CLIENT_AREA="/dlclient0"
+ else
+        SERVER="$SERVER_LN1"
+        CLIENT_AREA="/dlclient1"
+ fi
+ 
+}
+
+################################################################################
+: Ask_Client_Type
+################################################################################
+
+Ask_Client_Type()
+{
+
+ if [ "$DEBUG" = "TRUE" ]
+ then
+        echo "\n"
+        echo "*** Now Entering the Ask_Client_Type() function"
+        echo "\n"
+        sleep 1
+ fi
+
+ ACT_boolean="FALSE"
+ 
+ clear
+ while [ "$ACT_boolean" = "FALSE" ]
+ do
+ 
+        echo "
+        
+        Client Type                     Selection
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        DECstation 2100/3100    (PMIN/PMAX)     1
+        DECstation 5000-200     (3MAX)          2       
+        DECstation 5100         (MIPSmate )     3
+        
+        Type ? for Help...
+        Please enter the Client's machine type [ $CLTYPE_DEFAULT ]: \c"
+
+        read ACT_answer        
+
+        if [ -z "$ACT_answer" ]
+        then
+                ACT_answer=$CLTYPE_DEFAULT    
+        fi        
+        
+        case $ACT_answer
+        in
+                \?)   clear
+                      more $HOME/HELP/FIS_CLType_Selection.help
+                      echo "        Press [Return] to continue...\c"
+                      read ACT_continue;;
+                 1)   CLTYPE="DS3100"
+                      ACT_boolean="TRUE";;
+                 2)   CLTYPE="DS5000"
+                      ACT_boolean="TRUE";;
+		 3)   CLTYPE="DS5100"
+                      ACT_boolean="TRUE";;
+                 *)   continue;;
+        esac
+ done        
+
+}
+
+################################################################################
+: Ask_Serial_Number
+################################################################################
+
+# This function queries for the client's serial number.  The serial number must
+# start with two alpha characters (ie. AB for ABO).  The remainder of this
+# number must be eight alpha-numeric characters.  The answer is started for the
+# technician by tifis providing the "AB", which will be a constant for ABO 
+# (this starter can be easily adapted to other sites).  Default answers are
+# implemented on the second a consecutive times through this function for the
+# the current client.
+
+Ask_Serial_Number()
+{
+
+ if [ "$DEBUG" = "TRUE" ]
+ then
+        echo "\n"
+        echo "*** Now Entering the Ask_Serial_Number() function"
+        echo "\n"
+        sleep 1
+ fi
+
+ ASN_boolean="FALSE"
+ SERIAL_N=0
+ 
+ while [ "$ASN_boolean" = "FALSE" ]
+ do
+        echo "\n        Please enter $CLIENT's serial number"
+        echo "        [ $SERIAL_N_DEFAULT ]: $SERIAL_N_STARTER\c"
+        
+        read SERIAL_N
+        SERIAL_N=`echo $SERIAL_N | tr '[a-z]' '[A-Z]'`
+        
+        case $SERIAL_N
+        in
+               "")      SERIAL_N="$SERIAL_N_DEFAULT"
+                        if [ "$ASN_ERROR" -eq 1 ]
+                        then
+                                echo "        Invalid Serial Number.  Please reenter."
+                        else
+                                ASN_boolean="TRUE"
+                        fi;;
+               \?)      clear
+                        more $HOME/HELP/Serial_Number.help
+                        echo "        Press [Return] to continue... \c"
+                        read ASN_continue;;
+                [0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z]) 
+                        SERIAL_N="${SERIAL_N_STARTER}${SERIAL_N}"
+                        ASN_boolean="TRUE";;
+                *)      echo "        Invalid Serial Number.  Please reenter.";;
+        esac
+ done
+ 
+}
+
+################################################################################
+: Ask_Hardware_Ethernet_Address
+################################################################################
+
+# This function queries for the ethernet hardware address.  The address is
+# with the constant 08-00-2B-.  If the constant should change then the starter
+# can be modified.  On the second and consecutive times through this function
+# for the current client, a default is employed as a convenience.
+
+Ask_Hardware_Ethernet_Address()
+{
+
+ if [ "$DEBUG" = "TRUE" ]
+ then
+        echo "\n"
+        echo "*** Now Entering the Ask_Hardware_Ethernet_Address() function"
+        echo "\n"
+        sleep 1
+ fi
+
+ AFI_boolean="FALSE"
+
+ while [ "$AFI_boolean" = "FALSE" ]
+ do
+        echo "\n        Please enter $CLIENT's \"Hardware Ethernet Address\""
+        echo "        [ $ADDRESS_DEFAULT ]: $ADDRESS_STARTER\c"
+        read ADDRESS
+        ADDRESS=`echo $ADDRESS | tr '[a-z]' '[A-Z]'`
+        
+        case $ADDRESS
+        in
+                "")   ADDRESS="$ADDRESS_DEFAULT"
+                      if [ "$AHEA_ERROR" -eq 1 ]
+                      then
+                                echo "        Hardware Ethernet Address is in the wrong format, please reenter."
+                      else
+                                AFI_boolean="TRUE"
+                      fi;;
+                \?)   clear
+                      more $HOME/HELP/Hardware_Ethernet_Address.help
+                      echo "        Press [Return] to continue...\c"
+                      read AFI_continue
+                      AFI_boolean="FALSE";;
+                [0-9A-F][0-9A-F]-[0-9A-F][0-9A-F]-[0-9A-F][0-9A-F]) echo
+                      ADDRESS="${ADDRESS_STARTER}${ADDRESS}"
+                      AFI_boolean="TRUE";;
+                 *)   echo "        Hardware Ethernet Address is in the wrong format, please reenter."
+                      AFI_boolean="FALSE";;
+        esac
+ done
+
+}
+
+################################################################################
+: Ask_FIS_Image
+################################################################################
+
+# This function queries for the FIS image to loaded.  As the list of images
+# grows, this function will need to be modified.
+
+Ask_FIS_Image()
+{
+
+ if [ "$DEBUG" = "TRUE" ]
+ then
+        echo "\n"
+        echo "*** Now Entering the Ask_FIS_Image() function"
+        echo "\n"
+        sleep 1
+ fi
+
+ AFI_answer=0
+
+ clear
+ while [ "$AFI_answer" -le 0 -o "$AFI_answer" -gt 2 ]
+#
+#	the above will limit the correct answers to <= 0 or > 2
+#	this means that either 1 or 2 will be accepted
+ do
+        echo "
+        
+        Image Name                      Selection
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        RZ23 and RZ24  (DS2100/3100)            1
+	RZ23 and RZ24  (DS5100)			2
+        RZ24 only                               2 ----- Not Implemented yet
+        RZ55 only                               3 ----- Not Implemented yet
+        RZ56 only                               4 ----- Not Implemented yet
+        RZ57 only                               5 ----- Not Implemented yet
+        
+        Type ? for Help...
+        Please enter the FIS image to be loaded. [ $IMAGE_DEFAULT ] \c"       
+
+        read AFI_answer
+
+        if [ -z "$AFI_answer" ]
+        then
+                AFI_answer=$IMAGE_DEFAULT    
+        fi        
+        
+        case $AFI_answer
+        in
+                \?)   clear
+                      more $HOME/HELP/FIS_Image_Selection.help
+                      echo "        Press [Return] to continue...\c"
+                      read AFI_continue;;
+		 1)   IMAGE="DS3100";;
+		  2)   IMAGE="DS5100";;
+#                 1)   IMAGE="RZ23+24";;
+#                 2)   IMAGE="RZ24.only";;
+#                 3)   IMAGE="RZ55.only";;
+#                 4)   IMAGE="RZ56.only";;
+#                 5)   IMAGE="RZ57.only";;
+              [3-5])  echo "\n        Not Implemented yet."
+                      echo "       Changing the value to the default."
+                      sleep 5
+                      AFI_answer=1;;
+
+        esac
+ done        
+
+}
+
+
+################################################################################
+: Print_Selections
+################################################################################
+
+# This function displays the selections the technician has made and then
+# queries for verification of those selections.  If "yes" then tifis moves on, 
+# if "no" then this function assigns the defaults and sends the technician back
+# through the question loop.
+
+Print_Selections()
+{
+
+ if [ "$DEBUG" = "TRUE" ]
+ then
+        echo "\n"
+        echo "*** Now Entering the Print_Selections() function"
+        echo "\n"
+        sleep 1
+ fi
+
+ clear
+ while :
+ do
+        echo "\n        Here are the selections you have made for $CLIENT...\n"
+        echo "        Serial Number =                   $SERIAL_N"
+        echo "        Hardware Ethernet Address =       $ADDRESS"
+        echo "        Client Machine Type =             $CLTYPE"
+        echo "        FIS Image to be loaded =          $IMAGE\n"
+        echo "        Are you satisfied with these selections? ( y or n ) \c"
+        
+        read PS_answer
+        
+        case $PS_answer
+        in
+                [yY]*)  REDO="FALSE"
+                        break;;
+                [nN]*)  SERIAL_N_DEFAULT="$SERIAL_N"
+                        ASN_ERROR=0
+                        ADDRESS_DEFAULT="$ADDRESS"
+                        AHEA_ERROR=0
+                        IMAGE_DEFAULT="$AFI_answer"
+                        CLTYPE_DEFAULT="$ACT_answer"
+                        break;;
+                    *)  continue;;
+        esac
+ done
+ 
+}
+
+################################################################################
+: Assign_Selections
+################################################################################
+
+# This function modifies the ethernet hardware address and writes the responses
+# to the [client].fisinit file which fisld uses.  When this funtion is complete
+# then tifis starts all over again.
+
+Assign_Selections()
+{
+
+ if [ "$DEBUG" = "TRUE" ]
+ then
+        echo "\n"
+        echo "*** Now Entering the Assign_Selections() function"
+        echo "\n"
+        sleep 1
+ fi
+
+
+ echo "\n\n\n        $CLIENT is being prepared for FIS installation...\n"
+
+#       Increment the CLIENT_DEFAULT counter.
+
+ CLIENT_DEFAULT=`expr $PCS_answer + 1`
+        
+ if [ "$CLIENT_DEFAULT" -gt 20 ]
+ then
+        CLIENT_DEFAULT=1
+ fi
+
+#       Modify the client's hardware ethernet address
+
+ addnode $CLIENT -h $ADDRESS || 
+        { echo "\n        Could not modify the client's hardware ethernet address.\n        Please call support.  Exitting...\n"; exit 1;}
+ if [ -f $DNET/nodes_p ]
+ then
+        addnode $CLIENT -P -h $ADDRESS
+ else
+        cp $DNET/nodes_v $DNET/nodes_p
+ fi
+
+#       Create the ".fisinit" file for fisld to use
+
+# touch $HOME/FISINIT/$CLIENT.fisinit || 
+#        { echo "\n        Could not create $HOME/FISINIT/$CLIENT.fisinit.\n        Please call support.  Exitting...\n"; exit 1;}
+
+ echo "$SERVER:$CLTYPE:$SERIAL_N:$ADDRESS:$IMAGE" >> $HOME/FISINIT/$CLIENT.fisinit || 
+        { echo "\n        Cannot create $CLIENT.fisinit.  Please call support.  Exitting...\n"; exit 1;}
+        
+
+
+ echo "        $CLIENT is configured.  Boot $CLIENT using the following commands:\n"
+ echo "                  >> setenv bootmode d"
+ echo "                  >> setenv bootpath mop()"
+ echo "                  >> auto\n"
+ echo "        Press [Return] to continue...\c"
+ read AS_continue
+
+}
+
+#       Main part of program begins here
+
+while :
+do
+
+        if [ "$DEBUG" = "TRUE" ]
+        then
+                echo "\n"
+                echo "*** Now Entering the MAIN portion of the program..."
+                echo "\n"
+                sleep 1
+        fi
+
+        Print_Client_Selection
+        Assign_Client
+
+        REDO="TRUE"
+
+        while [ "$REDO" = "TRUE" ]
+        do
+                Ask_Serial_Number
+                Ask_Hardware_Ethernet_Address
+		Ask_Client_Type
+                Ask_FIS_Image
+                Print_Selections
+        done
+        
+        Assign_Selections
+done

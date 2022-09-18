@@ -1,0 +1,74 @@
+.TH cxb 4 VAX
+.SH Name
+cxb \- CXB16 communications interface
+.SH Syntax
+.B "device dhu0 at uba0 csr 0160440 flags 0xffff vector dhurint dhuxint"
+.SH Description
+.NXR "CX16 communications interface"
+.NXR "RS422A standard"
+A CXB16 provides 16 data leads-only communication lines with no modem control.
+The CXB16 conforms to RS422A.
+The device behaves and looks just
+like a DHV11
+(with the exception of modem control and number of lines)
+and is specified in the configuration line the same
+as a DHV11 device.
+Each line attached to the CXB16 communications interface
+behaves as described in
+.MS tty 4
+and can be set to run at any of 16 speeds. See
+.MS tty 4
+for the encoding.
+.PP
+A flags field of 0xffff must be used to specify that all lines are to operate
+as hardwired.  This is done to prevent the line from being treated as a
+modem control line.
+.PP
+The dhu driver normally interrupts on each input character.
+.NT
+The 
+.PN cxa ,
+.PN cxb ,
+.PN cxy ,
+.PN dhv ,
+and
+.PN dhq
+devices operate under the control of the dhu driver.
+.SH Diagnostics
+.B "dhu%d: receive fifo overflow
+.br
+The character input fifo overflowed
+before it could be serviced.  This can happen if a hard error occurs
+when the CPU is running with elevated priority, as the system 
+then prints a message on the console with interrupts disabled.
+This can cause a few input characters to be lost to users.
+It is not serious.
+.PP
+.B "dhu%d:%d DMA ERROR
+.br
+A DMA transfer error has occurred.
+The
+.PN cxb
+unit number and line number are printed.
+This means that the channel indicated has failed to transfer DMA data
+within 10.7 microseconds of the bus request being acknowledged or that
+there is a memory parity error.
+This may cause a few output characters to be lost.
+.PP
+.B "dhu%d: DIAG. FAILURE
+.br
+This indicates that the
+.PN cxb
+internal diagnostics have detected an error.
+.PP
+.B "dhu%d: DHU HARDWARE ERROR.  TX.DMA.START failed
+.br
+The 
+.PN cxb 
+failed to clear the start bit.  Normally, this 
+is cleared to signal 
+that a DMA transfer has completed.
+.SH Files
+.PN /dev/tty??
+.SH See Also
+tty(4), MAKEDEV(8)

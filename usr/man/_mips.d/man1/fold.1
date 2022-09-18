@@ -1,0 +1,50 @@
+.\" SCCSID: @(#)fold.1	8.1	9/11/90
+.TH fold 1
+.SH Name
+fold \- fold long lines for finite width output device
+.SH Syntax
+.B fold
+[\|\fB\-b\fP\|] [\|\fB\-s\fP\|] 
+[\|\fB\-w \fIwidth\fR or \fB\-\fIwidth\fR\|] [\|\fIfile...\fR\|]
+.SH Description
+.NXR "fold command"
+.NXA "fold command" "expand command"
+.NXR "file" "specifying line width"
+.NXR "printer" "folding text lines for"
+The
+.PN fold
+command
+is a filter which folds the contents of each specified 
+.IR file ,
+or the standard input if no 
+.I file
+is specified,
+breaking the lines to have maximum width
+.IR width .
+.SH Options
+.IP \-b 5
+Causes each `<backspace>' in a line to be interpreted as 
+decrementing the line length by one.
+.IP \-s
+Breaks the line on the last <blank> character found before 
+the specified length. If none are found the line breaks at 
+the specified length.
+.IP "\-w \fIwidth\fR or \fB\-\fIwidth\fR"
+Specify the maximum line width, in bytes. The default value is 80.
+The
+.I width
+should be a multiple of 8 if tabs are present, or the tabs should
+be expanded using 
+.MS expand 1
+before coming to
+.PN fold .
+.SH Restrictions
+The 
+.PN fold 
+command may interfere with underlining.
+.SH Return Values
+The 
+.PN fold
+command returns zero (0) on successful completion.
+.SH See Also
+expand(1)

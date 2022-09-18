@@ -1,0 +1,49 @@
+.\" SCCSID: @(#)swapon.8	8.1	9/11/90
+.TH swapon 8
+.SH Name
+swapon \- specify additional device for paging and swapping
+.SH Syntax
+.B "/etc/swapon"
+.B \-a
+.br
+.B "/etc/swapon"
+.I name ...
+.SH Description
+.NXR "swapon command"
+.NXAM "system call" "swapon system call" "swapon command"
+.NXR "device" "specifying for paging"
+.NXR "device" "specifying for swapping"
+The
+.PN swapon
+command
+is used to specify additional devices on which paging and swapping
+are to take place.
+The system begins by swapping and paging on only a single device
+so that only one disk is required at bootstrap time.
+Calls to
+.PN swapon
+normally occur in the system multi-user initialization file 
+.PN /etc/rc ,
+making all swap devices available, so that the paging and swapping
+activity is interleaved across several devices.
+.PP
+Normally, the
+.PN \-a
+option is given, causing all devices marked as ``sw''
+(swap devices) in 
+.PN /etc/fstab 
+to be made available.
+.PP
+The second form gives individual block devices, as listed
+in the system swap configuration table.  The call makes only this space
+available to the system for swap allocation.
+.SH Restrictions
+There is no way to stop paging and swapping on a device.
+It is therefore not possible to make use of devices which may be
+dismounted during system operation.
+.SH Files
+.TP 20
+.PN /dev/[ru][pk]?b
+Normal paging devices
+.SH See Also
+swapon(2), init(8)

@@ -1,0 +1,166 @@
+#!/bin/sh5
+#	@(#)COMU4BACKEND203.scp	3.1	ULTRIX	8/22/90
+#	This file contains routines to solve two common problems encountered
+#	when producing subsets for use with setld. The first set of routines
+#	allow and extended dependency checking syntax. The syntax permitted
+#	has the following features:
+#
+#	1. dependency wildcarding - this permits the use of shell file
+#		expansion characters in specifying required subsets -
+#		eg. U?TB*03[012], DNUBASE03?, etc.
+#
+#	2. dependency relations - setld currently supports 'and' dependencies
+#		for one or more subsets. The routines included here permit
+#		subset dependencies to be specified using postfix logical
+#		expressions using the syntax:
+#
+#	EXPR :=		SUBSET
+#			EXPR EXPR and
+#			EXPR EXPR or
+#			EXPR not
+#
+#	An example of such a postfix expression would be:
+#
+#	U?TB*03? DNUBASE031 not and
+#		which is true if any U?TB*03? match is found and DNUBASE031
+#		is not installed.
+#
+#	or:
+#	UDTBASE030 UDTBASE040 or DNUBASE040 and
+#		which true if DNUBASE040 is installed and one of either
+#		UDTBASE030 or UDTBASE040 is installed.
+#
+#	The second routine makes it easier to determine that the
+#	subset is being installed to the correct architecture.
+
+# The DEPENDENCY ROUTINES
+DepInit()
+{
+	DEPSTACK=
+	Push()
+	{
+		DEPSTACK="$1 $DEPSTACK"
+		[ $1 = 0 ]
+	}
+
+	Pop()
+	{
+		set -- $DEPSTACK
+		V=$1
+		shift
+		DEPSTACK="$*"
+		[ $V = 0 ]
+	}
+}
+
+DepEval()
+{
+	ARGS=$*
+
+	case "$1" in
+	"")	Pop
+		return $?
+		;;
+	and)	Pop && Pop
+		;;
+	or)	Pop || Pop
+		;;
+	not)	Pop
+		[ $? = 1 ]
+		;;
+	*)	[ -f usr/etc/subsets/$1.lk ]
+	esac
+	Push $?
+	set -- $ARGS
+	shift
+	DepEval $*
+}
+
+# ARCHITECTURE ROUTINE
+
+ArchAssert()
+{
+	ARCH=$1
+
+	MACH=vax
+	[ -f bin/machine ] &&
+		MACH=`bin/machine`
+
+	[ "$ARCH" = "$MACH" ]
+}
+
+case $ACT in
+
+  M)  case $1 in
+
+       -l) DepInit
+           if DepEval COMU4BACKEND20[456789] # change numbers to appropriate
+           then exit 1
+           fi ;;
+     esac ;;
+
+  PRE_[LA]) 
+         DepInit
+         if DepEval UDTBASE40? not
+         then echo "This is for Version 4 of ULTRIX."
+              exit 1
+         fi
+
+         if DepEval COMU4BACKEND20? 
+         then echo "You must remove installed COMU4BACKEND before installing."
+              exit 1
+         fi
+       ;;
+
+  PRE_D) DepInit
+         if DepEval PASBASE*
+         then echo "PASBASE depends on this being installed."
+              echo "Do you still wish to delete COMU4BACKEND? (y/n) \c"
+              read _X_
+              case "$_X_" in 
+                [yY]*) DepInit
+                       if DepEval F77U4BASE20?
+                       then echo "F77U4BASE depends on this being installed."
+                            echo "Do you still wish to delete COMU4BACKEND? (y/n) \c"
+                            read _X_
+                            case "$_X_" in 
+                              [yY]*) exit 0 ;;
+                              *) exit 1 ;;
+                            esac
+		       else exit 0
+                       fi ;;
+                *) exit 1 ;;
+              esac
+         fi
+         DepInit
+         if DepEval F77U4BASE20?
+         then echo "F77U4BASE depends on this being installed."
+              echo "Do you still wish to delete COMU4BACKEND? (y/n) \c"
+              read _X_
+              case "$_X_" in 
+                [yY]*) exit 0 ;;
+                    *) exit 1 ;;
+              esac
+	 else exit 0
+         fi ;;
+
+ POST_[AL])
+	DepInit
+	if DepEval COMU4BACKEND203
+	then echo " "
+	     echo "COMU4BACKEND203 software installed successfully."
+	     echo " "
+        fi ;;
+
+
+POST_D) echo " "
+	echo "COMU4BACKEND203 software deleted successfully."
+	echo " "
+        ;;
+
+V)
+	echo ""
+	echo "-v option is not supported."
+	echo ""
+	;;
+esac

@@ -1,0 +1,62 @@
+.TH rpc_shutdown 3ncs
+.SH Name
+rpc_shutdown \- shut down a server (server only)
+.SH Syntax
+.nf
+#include <idl/c/rpc.h>
+
+void rpc_$shutdown(\fIstatus\fP)
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$shutdown(\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$shutdown
+routine shuts down a server.
+When this routine is executed,
+the server stops processing incoming calls and 
+.PN rpc_$listen
+returns.
+.NXR "Interface to the Remote Procedure Call" "rpc_shutdown"
+.PP
+If 
+.PN rpc_$shutdown
+is called from within a remote procedure,
+that procedure completes, and the server shuts down after replying to the
+caller.
+.SH Diagnostics
+This section lists status codes for errors returned by this
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$comm_failure\fR
+The call could not be completed due to a communication problem. 
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs), rpc_allow_remote_shutdown(3ncs), rpc_listen(3ncs),
+rrpc_shutdown(3ncs)

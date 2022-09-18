@@ -1,0 +1,80 @@
+.TH resolv.conf 5
+.SH Name
+resolv.conf \- resolver configuration file 
+.SH Description
+.NXR "resolver configuration file"
+.NXR "file" "resolver configuration"
+.PP
+The resolver configuration file,
+.PN /etc/resolv.conf ,
+contains information that the resolver routines read
+the first time they are invoked by a process.
+The resolver file contains ASCII text and lists the
+name-value pairs that provide various types of resolver information.
+.PP
+The
+.PN /etc/resolv.conf
+file is required if your system is running BIND.
+This file must contain the BIND domain name for the local area 
+network.  If your system is a BIND client, this file must also contain 
+nameserver entries.
+.PP
+There are two entry formats for the
+.PN /etc/resolv.conf
+file:
+.IP "\fBdomain\fI binddomain\fR"
+This line specifies the default domain to append to 
+local host names.
+If no domain entries are present,
+the domain returned by
+.PN gethostname
+after the first dot (.) is used.
+If the host name does not contain a domain,
+the root domain is assumed.
+.IP "\fBnameserver\fI address\fR"
+In this entry, the address is the IP address,
+in dot notation,
+of the BIND server that should be queried to resolve host name
+and address information.
+You should have at least one name server listed.
+Two or more name servers reduces the possibility of interrupted
+BIND service in the event that one of the servers is down.
+You can list up to
+.PN NSMAX
+(10) name servers.
+If more than one server is listed,
+the resolver library queries you to try them in the order listed.
+If no name server entries are present,
+the default is to use the name server on the local machine.
+.IP
+The algorithm used is to try a name server,
+and, if the query times out, to try the next, 
+until out of name servers or the query is resolved.
+The last step is to repeat trying all the name servers
+until a maximum number of retries has been made
+or the query has been resolved.
+.PP
+The name value pair must appear on a single line, and the keyword
+.PN domain
+or
+.PN nameserver
+must start each line.
+.SH Examples
+The following is an example of a 
+.PN /etc/resolv.conf
+file:
+.EX
+;
+; Data file for a client
+;
+domain		cities.us
+nameserver	128.11.22.33
+.EE
+Lines beginning with a semicolon (;)
+are comment lines.
+.SH Files
+.PN /etc/resolv.conf
+.SH See Also
+gethostname(2), resolver(3), named(8)
+.br
+.I Guide to the BIND Service

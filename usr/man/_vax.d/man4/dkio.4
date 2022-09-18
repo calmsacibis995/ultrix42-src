@@ -1,0 +1,165 @@
+.\" SCCSID: @(#)dkio.4	2.1	3/10/87
+.TH dkio 4 VAX
+.SH Name
+dkio \- disk interface
+.SH Syntax
+\fB#include <sys/fs.h>\fR
+.br
+\fB#include <sys/ioctl.h>\fR
+.SH Description
+.NXA "disk interface" "dkio file"
+.NXR "dkio file" "ioctl codes"
+This section describes the ioctl (input/output controller) codes for all
+disk drivers.
+.NXR "disk interface" "ioctl codes"
+The basic ioctl (input/output controller) format is:
+.sp
+.br
+\fB#include <sys/fs.h>\fR
+.br
+\fB#include <sys/ioctl.h>\fR
+.br
+\fBioctl\fR(\fIfildes, code, arg)\fR
+.br
+\fBstruct pt\fR *\fR\fIarg\fR;
+.sp 
+The applicable \fIcodes\fR are:
+.IP DIOCGETPT 16
+Indicates to the driver to store
+the information in the current partition table in
+the address pointed to by \fIarg\fR.
+The file descriptor must be opened on the raw
+partitions, \fIa\fR or \fIc\fR.
+.IP
+DIOCGETPT does not change the partition table,
+but it does provide access to the partition table information.
+.IP DIOCSETPT
+Indicates to the driver to modify
+the current partition table with the information
+pointed to by \fIarg\fR.
+.IP
+The file descriptor must be opened on the raw
+partitions, \fIa\fR or \fIc\fR.
+.IP
+If the \fIa\fR or \fIc\fR partition is not mounted,
+only the partition table in the driver is modified.
+This temporarily modifies the partition table of the disk.
+The modifications are overwritten with the default table
+when the disk is turned off and on.
+.IP
+If the \fIa\fR or \fIc\fR partition is mounted,
+both the partition table in the driver and the partition table in
+the primary superblock are modified.
+This permanently modifies the partition table of the disk.
+This is not recommended.
+To change a partition table permanently,
+use the 
+.MS chpt 8
+command.
+.IP DIOCDGTPT
+Indicates to the driver to store
+the \fIdefault\fR information of the current partition table in
+the address pointed to by \fIarg\fR.
+The file descriptor must be opened on the raw
+partitions, \fIa\fR or \fIc\fR.
+.IP
+DIOCGETPT does not change the partition table,
+but it does provide access to the partition table information.
+.IP DKIOCGET
+Allows the user to receive generic disk information as defined in
+.PN <sys/devio.h> 
+.I struct devget.
+.IP DKIOCACC
+This code is defined in 
+.PN <sys/bbr.h>.
+For an MSCP class disk, the driver performs
+one of the following functions:
+.RS 18
+.IP ACC_REVEC 11
+Forces revector of a specified disk block.
+.IP ACC_SCAN
+Scans an area of the disk reporting any forced errors
+found and revectoring any bad blocks found.
+.RE
+.IP DKIOCEXCL
+This command is used to set and clear the exclusive access attribute
+on controllers that provide multihost support.  In this case \fIarg\fR
+is an integer pointer.  If the value of \fIarg\fR is 0 the exclusive access
+attribute will be cleared.  If the value of \fIarg\fR is nonzero the
+exclusive access attribute will be set.  The exclusive access attribute
+is set on a per-drive basis and can not be used selectively on individual
+partitions.
+.IP
+Attempts to clear the exclusive attribute will fail if the drive is not
+currently set exclusive access to the issuing host or the underlying
+controller or driver does not support multihost exclusive access.
+Attempts to set the exclusive attribute will fail if the drive is already
+exclusively associated with another host or the underlying
+controller or driver does not support multihost exclusive access.
+.SH Examples
+This example shows how to use the DIOGETPT ioctl code to
+print the length and offset of the \fIa\fR partition of an RA81 disk:
+.NXR(e) "disk interface" "DIOGETPT and"
+.EX 0
+#include <sys/types.h>
+#include <sys/param.h>
+#include <sys/fs.h>
+#include <sys/ioctl.h>
+
+main()
+{
+	struct pt arg;
+	int fd, i;
+
+	/* Open the "a" partition of the disk you want to see */
+
+	if ( (fd = open("/dev/rra0a",0)) < 0 ) {
+		printf("Unable to open device\\n");
+		exit(2);
+	}
+
+	/* Get the partition information */
+
+	if ( ioctl(fd,DIOCGETPT,&arg) < 0 )
+		printf("Error in ioctl\\n");
+
+	printf("Length\\t\\tOffset\\n");
+
+
+	for ( i = 0; i <= 7; i++ ) {
+		printf("%d\\t\\t%d\\n",arg.pt_part[i].pi_nblocks,
+				  arg.pt_part[i].pi_blkoff );
+	}
+}
+.EE
+.SH Restrictions
+.NXR "disk interface" "restricted"
+These restrictions apply when using the DIOCSETPT ioctl code:
+.IP \(bu 4
+You must have superuser privileges.
+.IP \(bu
+You cannot shrink or change the offset of a partition
+with a file system mounted on it
+or with an open file descriptor on the entire partition.
+.IP \(bu
+You cannot change the offset of the \fIa\fR partition.
+.IP \(bu
+The exclusive access ioctl DKIOCEXCL is only supported on HSC version V5.00
+or later.
+.SH Files
+.PN /dev/{r}ra???
+.br
+.PN /dev/{r}hp???
+.br
+.PN /dev/{r}rb???
+.br
+.PN /dev/{r}rd???
+.br
+.PN /dev/{r}rk???
+.br
+.PN /dev/{r}rl???
+.br
+.PN /dev/{r}rx???
+.SH See Also
+hp(4), ra(4), rb(4), rd(4), rk(4), rl(4), rx(4), disktab(5), fstab(5), chpt(8), 
+diskpart(8), fsck(8), MAKEDEV(8), mkfs(8), tunefs(8)

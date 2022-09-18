@@ -1,0 +1,67 @@
+.\" SCCSID: @(#)adduser.8	8.2	11/1/90
+.TH adduser 8 
+.SH Name
+adduser, removeuser, addgroup \- add and remove user accounts
+.SH Syntax
+.B /etc/adduser
+.br
+.B /etc/removeuser
+.br
+.B /etc/addgroup
+.SH Description
+.NXR "adduser command"
+.NXR "removeuser command"
+.NXR "addgroup command"
+.NXA "adduser command" "vipw command"
+.NXR "password file (system)" "adding users"
+.NXR "password file (system)" "removing users"
+The
+.PN adduser
+command provides an interactive
+facility for adding new user
+accounts to
+the system password file.  
+.sp
+The
+.PN adduser
+command also sets up a home directory with the files 
+.PN \&.cshrc , 
+.PN \&.login ,
+and
+.PN \&.profile
+from the 
+.PN /usr/skel
+directory for new users.  
+.PP
+The interactive
+.PN removeuser
+command deletes 
+user accounts from the system password file.
+It also gives 
+the option of deleting the user's home directory and files.
+.PP
+The interactive
+.PN addgroup
+command adds new groups
+to the 
+.PN /etc/group 
+file. 
+.NXR "group file" "adding groups"
+.SH Restrictions
+The `name' can contain only lower case ASCII characters a to z and the 
+numbers 0 to 9.
+.SH Files
+.TP 15
+.PN /etc/utmp
+Lock file
+.TP
+.PN /etc/passwd
+Password file
+.TP
+.PN /etc/group
+Group file
+.TP
+.PN /usr/skel
+Default files directory
+.SH See Also
+passwd(1), passwd(5yp), vipw(8)

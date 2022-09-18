@@ -1,0 +1,160 @@
+# @(#)aq.db	4.2   (ULTRIX)   12/20/90
+
+oitem 
+name SPUEVCLASS 
+type TINY_INDEX 
+class CODED 
+size 1 
+doc "Raw to standard mapping event (subid_type) for eventclass for spu"
+map 
+ 2 EC$ERROR
+ 3 EC$ERROR
+ 6 EC$ERROR
+ 8 EC$ERROR
+ 15 EC$ERROR
+ 16 EC$ERROR
+ 18 EC$ERROR
+ 33 EC$ERROR
+ 34 EC$ERROR
+ 43 EC$OPERATOR
+ 100 EC$OPERATOR
+ 101 EC$MAINTENANCE
+
+
+sseg
+id cds
+name aqkaf_cds
+label 'KEEP ALIVE FAILURE'
+elements
+	aqkaf_1 aqkaf_2 aqkaf_3 aqkaf_4
+	aqkaf_5 aqkaf_6 aqkaf_7 aqkaf_8
+
+sitem
+name aqkaf_1
+size 36
+class character
+type string
+display nil
+label 'SNAPSHOT FILENAME'
+
+sitem
+name aqkaf_2
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqkaf_3
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqkaf_4
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqkaf_5
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqkaf_6
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqkaf_7
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqkaf_8
+size 36
+class character
+type string
+display nil
+
+sseg
+id cds
+name aqconfig_cds
+label 'CONFIGURATION CHANGE ENTRY'
+elements
+	aqconfig_type aqconfig_type_str
+	aqconfig_status
+	aqconfig_location aqconfig_location_str
+	aqconfig_serialno aqconfig_partid
+
+sitem
+name aqconfig_type
+display decimal
+size 1
+class integer 
+type short
+label 'TYPE'
+
+sitem
+name aqconfig_type_str
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqconfig_status
+display decimal
+size 1
+class composite
+type short_register
+label 'STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 'COMPONENT REMOVED'
+	1 'COMPONENT ADDED'
+	2 'COMPONENT CHANGED'
+
+sitem
+name aqconfig_location
+size 1
+type short
+display hex
+label 'LOCATION'
+class integer
+
+sitem
+name aqconfig_location_str
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqconfig_serialno
+class bytes
+type byte_vector
+size 10
+display hex
+label 'SERIAL NUMBER'
+
+sitem
+name aqconfig_partid
+class bytes
+type byte_vector
+size 16
+display hex
+label 'PART IDENTIFIER'
+

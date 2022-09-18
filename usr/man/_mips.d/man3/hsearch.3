@@ -1,0 +1,88 @@
+.\" SCCSID: @(#)hsearch.3	8.1	9/11/90
+.TH hsearch 3 
+.SH Name
+hsearch, hcreate, hdestroy \- manage hash search tables 
+.SH Syntax
+.B #include <search.h>
+.PP
+.B \s-1ENTRY\s+1 \(**hsearch (item, action)
+.br
+.B \s-1ENTRY\s+1 item;
+.br
+.B \s-1ACTION\s+1 action;
+.PP
+.B int hcreate (nel)
+.br
+.B unsigned nel;
+.PP
+.B void hdestroy ( )
+.SH Description
+.NXR "hsearch subroutine"
+.NXR "hcreate subroutine"
+.NXR "hdestroy subroutine"
+.NXR "hash table search routine"
+The
+.PN hsearch
+subroutine
+is a hash-table search routine generalized from Knuth (6.4) Algorithm D.
+It returns a pointer into a hash table indicating the location at which
+an entry can be found.
+The
+.I item\^
+is a structure of type ENTRY
+(defined in the <search.h> header file)
+containing two pointers:
+.I item.key\^
+points to the comparison key, and
+.I item.data\^
+points to any other data to be associated with that key.
+(Pointers to types other than character
+should be cast to pointer-to-character.)
+The
+.I action\^
+is a member of an enumeration type ACTION
+indicating the disposition of the entry
+if it cannot be found in the table.
+ENTER indicates that the item should be inserted in the table at an
+appropriate point.
+FIND indicates that no entry should be made.
+Unsuccessful resolution is 
+indicated by the return of a NULL pointer.
+.PP
+The
+.PN hcreate
+subroutine
+allocates sufficient space for the table, and must be called before
+.PN hsearch
+is used.
+The
+.I nel\^
+is an estimate of the maximum number of entries that
+the table will contain.
+This number may be adjusted upward by the
+algorithm in order to obtain certain mathematically favorable
+circumstances.
+.PP
+The
+.PN hdestroy
+subroutine destroys the search table,
+and may be followed by another call to
+.PN hcreate .
+.SH Restrictions
+.NXR "hsearch subroutine" "restrictions"
+Only one hash search table may be active at any given time.
+.SH Diagnostics
+The
+.PN hsearch
+subroutine returns a NULL
+pointer if either the action is FIND
+and the item could not be found or the action is ENTER
+and the table is full.
+.PP
+The
+.PN hcreate
+subroutine
+returns zero if it cannot allocate sufficient space for the
+table.
+.SH See Also
+bsearch(3), lsearch(3), string(3), tsearch(3)

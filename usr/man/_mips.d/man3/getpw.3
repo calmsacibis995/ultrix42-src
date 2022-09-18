@@ -1,0 +1,38 @@
+.\" SCCSID: @(#)getpw.3	8.1	9/11/90
+.TH getpw 3 
+.SH Name
+getpw \- get name from uid
+.SH Syntax
+.nf
+.B getpw(uid, buf)
+.B char *buf;
+.fi
+.SH Description
+.NXR "getpw subroutine"
+.NXR "getpw subroutine" "getpwuid subroutine"
+.NXR "password file (general)" "getting name from"
+The 
+.PN getpw 
+routine has been superseded by 
+.PN getpwuid, 
+see 
+.MS getpwent 3 .
+.PP
+The
+.PN getpw
+routine searches the password file for
+the (numerical)
+.IR uid ", and fills in " "buf"
+with the corresponding line;
+it returns nonzero if
+.IR uid ""
+could not
+be found.
+The line is null terminated.
+.SH Diagnostics
+Nonzero
+return on error.
+.SH Files
+/etc/passwd
+.SH See Also
+getpwent(3), passwd(5yp)

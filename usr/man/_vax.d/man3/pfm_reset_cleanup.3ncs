@@ -1,0 +1,92 @@
+.\"	@(#)pfm_reset_cleanup.3ncs	8.1 of 9/11/90
+.TH pfm_reset_cleanup 3ncs
+.SH Name
+pfm_reset_cleanup \- reset a clean-up handler
+.SH Syntax
+.nf
+#include <idl/c/base.h>\fR
+#include <idl/c/pfm.h>\fR
+
+void pfm_$reset_cleanup(\fIcleanup_record, status)\fP
+pfm_$cleanup_rec *\fIcleanup_record\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/sys/ins/base.ins.pas';\fR
+.\"\fB%include '/sys/ins/pfm.ins.pas';\fR
+.\"
+.\"\fBprocedure pfm_$reset_cleanup(\fR
+.\"	\fBin \fIcleanup_record\fB: pfm_$cleanup_rec;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.ig
+.SH Synopsis (fortran)
+\fB%include '/sys/ins/base.ins.ftn'\fR
+\fB%include '/sys/ins/pfm.ins.ftn'\fR
+
+	 \fBinteger*4 \fIcleanup_record\fB(16), \fIstatus\fR
+
+	 \fBcall pfm_$reset_cleanup(\fIcleanup_record\fB, \fIstatus\fB)\fR
+..
+.SH Arguments
+.TP 20 
+\fIcleanup_record\fR
+A record of the context
+at the clean-up handler entry point.
+It is supplied by 
+.PN pfm_$cleanup ,
+when the clean-up handler if first established.
+.TP 20
+\fIstatus\fR
+The completion status.  If the completion status returned in
+.PN status\&.all
+is equal to \fBstatus_$ok\fP, then the routine that supplied it was successful.
+.SH Description
+The 
+.PN pfm_$reset_cleanup
+routine reestablishes
+the clean-up handler last entered
+so that any subsequent errors enter it first.
+This procedure should only be used
+within clean-up handler code.
+.NXR "Fault Management" "pfm_reset_cleanup"
+.SH Diagnostics 
+This section lists status codes for errors returned by this 
+.PN pfm_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBpfm_$bad_rls_order\fR
+Attempted to release a clean-up handler out of order.
+.TP 20
+\fBpfm_$cleanup_not_found\fR
+There is no pending clean-up handler.
+.TP 20
+\fBpfm_$cleanup_set\fR
+A clean-up handler was established successfully.
+.TP 20
+\fBpfm_$invalid_cleanup_rec\fR
+Passed an invalid clean-up record to a routine.
+.TP 20
+\fBpfm_$no_space\fR
+Cannot allocate storage for a clean-up handler.
+.\".DM "\
+.\"path syscalls/pfm/pfm_$reset_cleanup\
+.\"type reference\
+.\"book syscalls\
+.\"chapter pfm\
+.\"section pfm_$reset_cleanup\
+.\""
+.\".DD "\
+.\"return(ed)(s)(ing) reset(ed)(s)(ing) clean-up cleanup clean(ed)(s)(ing) up \
+.\"handler(s) to top of stack(s) pfm pfm_$\
+.\""
+.SH Files
+.PN /usr/include/idl/c/base.h
+.br
+.PN /usr/include/idl/base.idl
+.br
+.PN /usr/include/c/pfm.h
+.SH See Also
+intro(3ncs)

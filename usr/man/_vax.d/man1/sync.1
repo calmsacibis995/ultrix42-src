@@ -1,0 +1,29 @@
+.\" SCCSID: @(#)sync.1	8.1	9/11/90
+.TH sync 1 
+.SH Name
+sync \- update the super block
+.SH Syntax
+.B /bin/sync
+.SH Description
+.NXR "sync command"
+.NXAM "sync command" "sync system call"
+.NXR "superblock" "updating"
+The
+.PN sync
+command executes the
+.PN sync
+system primitive.
+The
+.PN sync
+command
+can be called to insure all disk writes have been completed before the
+processor is halted in a way not suitably done by
+.MS reboot 8
+or
+.MS halt 8 .
+.PP
+See 
+.MS sync 2
+for details on the system primitive.
+.SH See Also
+fsync(2), sync(2), halt(8), reboot(8), update(8)

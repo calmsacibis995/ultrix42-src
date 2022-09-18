@@ -1,0 +1,18 @@
+.TH killchar 3cur 
+.SH Name
+killchar \- return current kill character
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+char killchar(\|)
+.SH Description
+.NXR "killchar subroutine"
+The user's current line kill character is returned.
+.SH Return Values
+The
+.PN killchar
+function returns the user's current line kill character.

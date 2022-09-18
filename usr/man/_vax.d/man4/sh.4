@@ -1,0 +1,37 @@
+.TH sh 4 VAX
+.SH Name
+sh \- Small VAX DHT32 serial line interface
+.SH Syntax
+.B "device sh0 at uba0 csr 0x38000000 flags 0xff vector shrint shxint"
+.SH Description
+.NXS "sh interface" "DHT32 serial line interface"
+.NXR "DHT32 serial line interface"
+A DHT32 provides eight asynchronous communication lines with no modem control.
+.PP
+Each line attached to the DHT32 communications multiplexer
+behaves as described in
+.MS tty 4 .
+Input and output for each line can be set independently
+to run at any of 16 speeds.
+See
+.MS tty 4
+for the coding.
+.PP
+Because no modem control is provided, a flags field of 0xff
+must be specified to ensure that all lines will be handled as data leads
+only.
+.SH Diagnostics
+.B "sh%d: DIAG. FAILURE"
+.br
+A failure has been detected by internal module diagnostics.
+.PP
+.B "sh%d: recv. fifo overflow"
+.br
+The character input fifo overflowed
+before it could be serviced.  This can happen if a hard error occurs
+when the CPU is running with elevated priority.  Interrupts are
+disabled, and the system then prints a message on the console.
+.SH Files
+.PN /dev/tty??
+.SH See Also
+tty(4), MAKEDEV(8)

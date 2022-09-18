@@ -1,0 +1,85 @@
+.\" SCCSID: @(#)setreuid.2	8.1	9/11/90
+.TH setreuid 2
+.SH Name
+setreuid \- set real and effective user ID's
+.SH Syntax
+.nf
+.B setreuid\fP(\fIruid, euid\fP)
+.B int\fP\fIruid, euid\fP;
+.fi
+.SH Description
+.NXR "setreuid system call"
+.NXR "real user ID" "setting"
+.NXR "effective user ID" "setting"
+The real and effective user ID's of the
+current process are set according to the arguments.
+If
+.I ruid
+or 
+.I euid
+is \-1, the current uid is filled in by the system.
+.SH Return Values
+Upon successful completion, a value of zero (0) is returned.  Otherwise,
+a value of \-1 is returned and \fIerrno\fP is set to indicate the error.
+.SH Environment
+.PP 
+.B BSD
+.br 
+If the process is superuser, or 
+.PN ruid
+and
+.PN euid
+matches with the real user ID, the effective user ID, or the saved
+set-user-id (as described in 
+.MS execve 2
+), then the real, effective, and the saved set-user-id are set to
+.PN ruid ,
+.PN euid ,
+and
+.PN euid ,
+respectively.
+.PP 
+.B POSIX
+.br
+.B SYSTEM-FIVE
+.br 
+When your program is compiled in the POSIX or SYSTEM-FIVE mode,
+if both arguments to 
+.PN setreuid 
+are \-1, the system call returns
+a value of \-1 and errno is set to [EINVAL].
+.PP
+The following semantics apply when using the    
+.PN setreuid
+function:
+.PP
+If the process is the superuser, the real, effective, and saved
+set-user-id (as described in
+.MS execve 2
+) are set to
+.PN ruid ,
+.PN euid ,
+and
+.PN euid ,
+respectively.
+.PP
+If the process is not the superuser, but the
+.PN ruid
+and
+.PN euid
+matches with the real user ID, the effective user ID (only in
+the SYSTEM-FIVE and BSD environments), or the saved set-user-id, then the
+effective ID is set to 
+.PN euid.  
+The  real user ID and the saved set-user-id are left unchanged.
+.SH Diagnostics
+.TP 15
+[EPERM]
+The current process is not the superuser and the 
+.PN euid
+and
+.PN ruid
+specified does not match with the real user ID, the effective user ID
+(only in SYSTEM-FIVE and BSD environment), or the saved set-user-id.
+.SH See Also
+getuid(2), setregid(2), setuid(3)

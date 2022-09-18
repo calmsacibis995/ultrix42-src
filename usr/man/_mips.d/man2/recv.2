@@ -1,0 +1,170 @@
+.\" SCCSID: @(#)recv.2	8.1	9/11/90
+.TH recv 2
+.SH Name
+recv, recvfrom, recvmsg \- receive a message from a socket
+.SH Syntax
+.nf
+.ft B
+#include <sys/types.h>
+#include <sys/socket.h>
+.PP
+.ft B
+cc = recv(s, buf, len, flags)
+int cc, s;
+char *buf;
+int len, flags;
+.PP
+.ft B
+cc = recvfrom(s, buf, len, flags, from, fromlen)
+int cc, s;
+char *buf;
+int len, flags;
+struct sockaddr *from;
+int *fromlen;
+.PP
+.ft B
+cc = recvmsg(s, msg, flags)
+int cc, s;
+struct msghdr msg[];
+int flags;
+.ft R
+.SH Description
+.NXR "recv system call"
+.NXR "recvfrom system call"
+.NXR "recvmsg system call"
+.NXA "recv system call" "send system call"
+.NXR "socket" "receiving message from"
+The
+.PN recv ,
+.PN recvfrom ,
+and
+.PN recvmsg
+system calls are used to receive messages from a socket.
+.PP
+The 
+.PN recv
+call can be used only on a connected socket. The  
+.PN recvfrom
+and 
+.PN recvmsg
+calls can be used to receive data on a socket, whether or not
+it is in a connected state.
+For further information, see 
+.MS connect 2 .
+.PP
+If
+.I from
+is nonzero, the source address of the message is filled in.
+The
+.I fromlen
+is a value-result parameter, initialized to the size of
+the buffer associated with
+.IR from ,
+and modified on return to indicate the actual size of the
+address stored there.
+The length of the message is returned in
+.PN cc .
+If a message is too long to fit in the supplied buffer,
+excess bytes can be discarded, depending on the type of socket
+the message is received from.  For further information, see
+.MS socket 2 .
+.PP
+If no messages are available at the socket, the
+receive call waits for a message to arrive, unless
+the socket is nonblocking.  If the socket is nonblocking,
+a
+.PN cc
+of \-1 is returned, and the external variable errno is
+set to EWOULDBLOCK.
+For further information, see 
+.MS ioctl 2 .
+.PP
+The 
+.MS select 2
+call can be used to determine when more data arrives.
+.PP
+The
+.I flags
+argument to a send call is formed by 
+ORing
+one or more of the values following values:
+.EX 0
+#define	MSG_OOB	0x1	/* process out-of-band data */
+#define	MSG_PEEK	0x2	/* peek at incoming message */
+.EE
+The
+.PN recvmsg
+call uses a 
+.I msghdr
+structure to minimize the number of directly supplied parameters.
+This structure has the following form, as defined in <sys/socket.h>:
+.NXR(e) "recv system call" "msghdr structure"
+.EX 0
+struct msghdr {
+       caddr_t  msg_name;        /* optional address */
+       int      msg_namelen;     /* size of address */
+       struct   iov *msg_iov;    /* scatter/gather array */
+       int      msg_iovlen;      /* # elements in msg_iov */
+       caddr_t  msg_accrights;   /* access rights sent/received */
+       int      msg_accrightslen;
+};
+.EE
+Here,
+.I msg_name
+and
+.I msg_namelen
+specify the destination address if the socket is unconnected;
+.I msg_name
+can be given as a null pointer if no names are desired or required.
+The 
+.I msg_iov
+and
+.I msg_iovlen
+describe the scatter gather locations, as described in
+.MS read 2 .
+Access rights to be sent along with the message are specified
+in 
+.I msg_accrights ,
+which has length
+.I msg_accrightslen .
+.SH Return Values
+These calls return the number of bytes received, or \-1
+if an error occurred.
+.SH Diagnostics
+.NXR "recv system call" "diagnostics"
+The 
+.PN recv
+call fails under the following conditions:
+.TP 15
+[EBADF]
+The argument \fIs\fP is an invalid descriptor.
+.TP 15
+[EINVAL]
+The argument length of the message is less than 0.
+.TP 15
+[EMSGSIZE]
+The message sent on the socket was larger than the
+internal message buffer.
+.TP 15
+[ENOTCONN]
+A call was made to 
+.PN recv
+from an unconnected stream socket.
+.TP 15
+[ENOTSOCK]
+The argument \fIs\fP is not a socket.
+.TP 15
+[EWOULDBLOCK]
+The socket is marked nonblocking and the receive operation
+would block.
+.TP 15
+[EINTR]
+The receive was interrupted by delivery of a signal before
+any data was available for the receive.
+.TP 15
+[EFAULT]
+The data was specified to be received into a nonexistent
+or protected part of the process address space. The argument \fIfromlen\fP
+points outside the process address space.
+.SH See Also
+read(2), send(2), socket(2)

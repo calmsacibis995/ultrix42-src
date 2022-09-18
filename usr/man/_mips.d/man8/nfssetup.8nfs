@@ -1,0 +1,71 @@
+.\" SCCSID: @(#)nfssetup.8nfs	8.1	9/11/90
+.\" Written by liza sanford-crane  (7/30/86)
+.\"
+.TH nfssetup 8nfs
+.SH Name
+nfssetup \- set up the network file system (NFS)
+.SH Syntax
+.B /etc/nfssetup
+.SH Description
+.NXR "nfssetup command"
+.NXR "NFS" "setting up"
+The
+.PN nfssetup
+command is an interactive facility that allows you to set up
+or modify NFS on your system.
+A local area network must be set up on your system
+before you can set up NFS.
+.PP
+The
+.PN nfssetup
+command allows you to either enable or disable the NFS locking service.
+In addition, the
+.PN nfssetup
+command appends entries to the
+.PN /etc/exports
+and
+.PN /etc/fstab
+files.
+.NT
+To remove entries from the
+.PN /etc/exports
+or
+.PN /etc/fstab
+you must edit them by hand.
+The
+.PN nfssetup
+command only appends entries to these files.
+.NE
+You can run
+.PN nfssetup
+while the system is in multiuser mode.
+To run
+.PN nfssetup ,
+type the following
+and then answer the questions:
+.EX
+# /etc/nfssetup
+.EE
+When
+.PN nfssetup
+has completed,
+reboot the system.
+.PP
+If you use 
+.PN dms 
+to set up your system as a diskless server before running 
+.PN nfssetup ,
+.PN dms
+will automatically call the 
+.PN nfssetup 
+utility to set up a default NFS server environment.
+.SH Files
+.PN /etc/exports
+.br
+.PN /etc/fstab
+.br
+.PN /etc/rc.local
+.SH See Also
+dms(8), biod(8nfs), mountd(8nfs), nfsd(8nfs), rwalld(8c)
+.br
+.I "Guide to the Network File System"

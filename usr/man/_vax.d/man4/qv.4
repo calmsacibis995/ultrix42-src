@@ -1,0 +1,73 @@
+.\" SCCSID: @(#)qv.4	8.1	9/11/90
+.TH qv 4 VAX
+.SH Name
+qv \- VCB01 (QVSS) video subsystem
+.SH Syntax
+.B "device qv0 at uba0 csr 0177200 flags 0x0f  vector qvkint qvvint"
+.SH Description
+.NXS "qv interface" "VCB01 video subsystem"
+.NXR "VCB01 video subsystem"
+.NXR "console terminal" "QVSS and"
+.NXS "QVSS" "VCB01 video subsystem"
+A VCB01 provides a half-page or
+full-page, user-accessible bitmap display for
+graphics applications.
+The device consists of a 256 kbyte Q22 bus memory array,
+a 15-inch or 19-inch video monitor, and a VX10X-EA mouse.
+.PP
+The subsystem device driver
+supports a hybrid terminal with three minor devices.
+The first device emulates a glass tty with a
+screen that appears as a 120-column
+by 80-row page that scrolls from the bottom.
+This device is capable of being configured as the system console.
+.PP
+The second minor device is opened in the raw mode by default.
+Opening the second device makes the driver function like a pseudoterminal
+in that the output destined for the first minor device is channeled to
+the second instead.
+Input and output on the first two minor device numbers are processed by
+the standard line disciplines.
+.PP
+The third minor device number is reserved for the mouse.
+This device is a source of mouse state changes.
+(A state change is defined as an X/Y axis mouse movement or button change.)
+When opened, the driver couples movements of the mouse with the cursor.
+Mouse position changes are filtered and translated into cursor position
+changes in an exponential manner.
+Rapid movements result in large cursor position changes.
+All cursor positions are
+range checked to ensure that the cursor remains on
+the display.
+.PP
+If there is a VCB01
+module at the standard address, the system will use it as
+the system console.
+All input/output destined for
+.PN /dev/console
+will use the VCB01
+instead.  
+This is done by overwriting the device switch tables.
+There is a second set of device switch
+entries configured for the console
+that can be used as an additional terminal or printer port
+by making a special device file using major number 38 and minor number 0
+and making the appropriate entry in 
+.PN /etc/ttys .
+.SH Restrictions
+The use of the bitmap as source or destination of I/O operations is not
+supported.
+Minor devices 1 and 2 are read only and are the only ones supported by
+the MAKEDEV script.
+Shared access by multiple processes is not constrained or supported.
+The system only supports one VCB01.
+The mouse device buffers the last 50 events (state changes).
+If the console port has been enabled as an additional terminal it must
+be disabled before removing the
+VCB01 to avoid two login processes on the same device.
+.SH Files
+.PN /dev/qvscreen
+.br
+.PN /dev/mouse
+.SH See Also
+tty(4), ttys(5), MAKEDEV(8)

@@ -1,0 +1,83 @@
+.\" SCCSID: @(#)renice.8	8.1	9/11/90
+.TH renice 8
+.SH Name
+renice \- alter priority of running processes
+.SH Syntax
+.B /etc/renice
+priority [ [
+.B \-p
+] pid ... ] [ [
+.B \-g
+] pgrp ... ] [ [
+.B \-u
+] user ... ]
+.SH Description
+.NXR "renice command"
+.NXAM "getpriority system call" "renice command"
+.NXR "process" "changing priority of running"
+The 
+.PN renice
+command alters the 
+scheduling priority of one or more running processes.
+The
+.I who
+parameters are interpreted as process ID's, process group
+ID's, or user names.
+Using
+.PN renice
+on a process group causes all processes in the process group
+to have their scheduling priority altered.  
+Using
+.PN renice
+on a user causes all processes owned by the user to have
+their scheduling priority altered.
+By default, the processes to be affected are specified by
+their process ID's.  
+.SH Options
+To force 
+.I who
+parameters to be interpreted as process group ID's, a
+.PN \-g 
+may be specified.  To force the
+.I who
+parameters to be interpreted as user names, a
+.PN \-u
+may be given.  Supplying
+.PN \-p
+will reset 
+.I who
+interpretation to be (the default) process ID's.
+.PP
+Users other than the superuser may only alter the priority of
+processes they own,
+and can only monotonically increase their ``nice value''
+within the range 0 to PRIO_MIN (20).
+(This prevents overriding administrative fiats.)
+The superuser can alter the priority of any process
+and set the priority to any value in the range PRIO_MAX (\-20)
+to PRIO_MIN.
+Useful priorities are:
+19 (the affected processes will run only when nothing else
+in the system wants to),
+0 (the ``base'' scheduling priority),
+anything negative (to make things go very fast).
+.SH Examples
+The following command
+changes the priority of process ID's 987 and 32, and
+all processes owned by users daemon and root:
+.EX
+/etc/renice +1 987 \-u daemon root \-p 32 
+.EE
+.SH Restrictions
+If you make the priority very negative,
+then the process cannot be interrupted.
+To regain control you make the priority greater than zero.
+Non-superusers cannot increase scheduling priorities of 
+their own processes, even if they were the ones that 
+decreased the priorities in the first place.
+.SH Files
+.TP 15
+.PN /etc/passwd
+Maps user names to user IDs
+.SH See Also
+getpriority(2), setpriority(2)

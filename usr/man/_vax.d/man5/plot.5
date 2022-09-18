@@ -1,0 +1,120 @@
+.\" SCCSID: @(#)plot.5	3.1	11/24/87
+.TH plot 5 
+.SH Name
+plot \- graphics interface
+.SH Description
+.NXR "plot keyword"
+.NXR "graphics file" "format"
+.NXAM "plot command" "graphics file"
+Files in this format are produced by the routines
+described in 
+.MS plot 3x 
+and are interpreted for various devices
+by commands described in 
+.MS plot 1g .
+.PP
+A graphics file is a stream of plotting instructions.
+Each instruction consists of an ASCII letter,
+usually followed by bytes of binary information, executed in order.
+A point is designated by 4 bytes representing the x and y
+values and each value is a signed integer.  The last designated point in an
+.PN l ,
+.PN m ,
+.PN n ,
+or
+.PN p
+instruction becomes the current point for the next instruction.
+.PP
+In the following descriptions, the name of the corresponding
+routine in 
+.MS plot 3x 
+is enclosed in parenthesis:
+.RS 3
+.IP "a (arc)" 12
+The first 4 bytes are the center, the next 4 provide the
+starting point,
+and the last 4 bytes designate the end point of a circular arc.
+The least significant coordinate of the end point is
+used only to determine the quadrant.
+The arc is drawn counter-clockwise.
+.IP "c (circle)"
+The first 4 bytes provide the center of the circle and 
+the next 2 bytes designate the radius.
+.IP "e (erase)"
+Start another frame of output.
+.IP "f (linemod)"
+Take the following string, up to a new line,
+as the style for drawing further lines.
+The styles are dotted, solid, longdashed, shortdashed, and dotdashed.
+This is only effective in the following plots:
+.I 4014,
+.I ver,
+.I lvp16,
+and
+.I hp7475a.
+.IP "l (line)"
+Draw a line from the point designated by the next
+4 bytes to the point provided by the following 4 bytes.
+.IP "m (move)" 
+The next 4 bytes provide a new current point.
+.IP "n (cont)"
+Draw a line from the current point to the point designated by the next 
+4 bytes. For further information, see 
+.MS plot 1g .
+.IP "p (point)"
+Plot the point provided by the next 4 bytes.
+.IP "s (space)"
+The next 4 bytes give the lower left corner of the plotting area.
+The following 4 bytes give the upper right corner.
+The plot is magnified or reduced to fit the device as closely as possible.
+.IP
+Space settings that fill the plotting area
+with unity scaling are listed below for devices supported by the filters of
+.MS plot 1g .
+In each of the following cases, the plotting area is assumed 
+square; points outside the square can be displayed on devices
+that have areas which are not square:
+.RE
+.RS 18
+.IP 4014 10
+space(0, 0, 3120, 3120);
+.PD 0
+.IP ver
+space(0, 0, 2048, 2048);
+.IP "300, 300s"
+space(0, 0, 4096, 4096);
+.IP 450
+space(0, 0, 4096, 4096);
+.IP aed
+space(0, 0, 511, 482)
+.IP bitgraph
+space(0, 0, 768, 1024)
+.IP dumb
+space(0, 0, 132, 90)
+.IP gigi
+space(0, 0, 767, 479)
+.IP grn
+space(0, 0, 512, 512)
+.IP hp7221
+space(0, 0, 1800, 1800)
+.IP lvp16
+space(0, 0, 10365, 7962)  (Paper Size: MET A)
+.IP
+space(0, 0, 16640, 10365) (Paper Size: MET B)
+.IP
+space(0, 0, 11040, 7721)  (Paper Size: US A4)
+.IP
+space(0, 0, 16150, 11040) (Paper Size: US A3)
+.IP
+space(0, 0, 7721, 7721)   (Default)
+.IP hp7475a
+Same as for lvp16.
+.PD
+.RE
+.RS 3
+.IP "t (label)" 12
+Place the first character of the following ASCII string on the current point.
+This string is terminated by a newline character.
+.RE
+.SH See Also
+graph(1g), plot(1g), plot(3x)

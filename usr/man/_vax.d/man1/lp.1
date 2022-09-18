@@ -1,0 +1,84 @@
+.TH lp 1
+.SH Name
+lp \- send requests to an LP line printer
+.SH Syntax
+.NXR "lp command"
+.B lp
+[\fB\-c\fR] [\fB\-d \fIdest\fR\|]
+[\fB\-n \fInumber\fR\|]
+[\-] [\fIfiles\fR]
+.SH Description
+The
+.PN lp
+command arranges for the named files and associated information
+(collectively called a \fIrequest\fR) to be
+printed by a line printer.
+If no file names are mentioned, the standard input is assumed.
+When a file name is designated by a minus sign
+.B (\-)
+it stands for the standard input and may be supplied
+on the command line in conjunction with named
+.I files.
+The order
+in which
+.I files
+appear
+is the same order
+in which they are printed.
+.PP
+This command exists for X/OPEN compatibility.
+.SH Options
+The following options to
+.PN lp
+may appear in any order and may be intermixed with file names:
+.IP \fB\-c\fR 12
+Makes copies of the
+.I files
+to be printed immediately when
+.PN lp
+is invoked.
+Normally,
+.I files
+are not copied, but are linked whenever possible.
+If the
+.B \-c
+option is not given, then the user should be careful not to remove
+any of the
+.I files
+before the request has been printed in its entirety.
+It should also be noted that without the
+.B \-c
+option, any changes made to the named
+.I files
+after the request is made but before it is printed
+are reflected in the printed output.
+.IP "\fB\-d \fIdest\fR" 
+Chooses
+.I dest
+as the printer that is to do the printing.
+If
+.I dest
+is a printer, then the request
+is printed on that specific printer.
+By default,
+.I dest
+is taken from the environment variable PRINTER
+if it is set.
+Otherwise, a default destination, lp, is used.
+.IP "\fB\-n \fInumber\fR" 
+Prints
+.I number
+copies (default of 1) of the output.
+.SH Files
+.nf
+.ta \w'/usr/spool/*/cf*       'u
+/etc/passwd	personal identification
+/etc/printcap	printer capabilities data base
+/usr/lib/lpd*	line printer daemons
+/usr/spool/*	directories used for spooling
+/usr/spool/*/cf*	daemon control files
+/usr/spool/*/df*	data files specified in cf files
+/usr/spool/*/tf*	temporary copies of cf files
+.fi
+.SH See Also
+lpq(1), lpr(1), lprm(1), pr(1), symlink(2), printcap(2), lpc(8), lpd(8)

@@ -1,0 +1,281 @@
+.\" SCCSID: @(#)wait.2	2.1	3/10/87
+.TH wait 2
+.SH Name
+wait, wait3, waitpid \- wait for process to terminate
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.br
+.B #include <sys/wait.h>
+.PP
+.B pid = wait(\fIstatus\fP)
+.B pid_t pid;
+.B union wait *\fIstatus\fP;
+.PP
+.B pid = wait((\fIunion wait*\fP)0)
+.B pid_t pid;
+.PP
+.B #include <sys/time.h>
+.br
+.B #include <sys/resource.h>
+.PP
+.B pid = wait3(\fIstatus, options, rusage\fP)
+.B pid_t pid;
+.B union wait *\fIstatus\fP;
+.B int \fIoptions\fP;
+.B struct \fIrusage *rusage\fP;
+.PP
+.B pid = waitpid(\fIpid, status, options\fP)
+.B pid_t \fIpid\fP;
+.B union wait *\fIstatus\fP;
+.B int \fIoptions\fP;
+.fi
+.SH Description
+.NXR "wait system call"
+.NXR "wait3 system call"
+.NXR "waitpid system call"
+.NXA "wait system call" "exit system call"
+.NXR "process" "waiting for termination"
+The
+.PN wait
+system call
+causes its caller to delay either until a signal is received or
+one of its child
+processes terminates.
+If a child process has died since the last
+.PN wait ,
+return is immediate, returning the process id and exit status of one of 
+the terminated child processes.  If a child process does not exist, return 
+is immediate, with the value \-1 returned.
+.PP
+On return from a successful 
+.PN wait
+call, if 
+.I status
+is nonzero, the high byte of 
+.I status
+contains the low byte of the argument to
+.I exit
+supplied by the child process;
+the low byte of 
+.I status
+contains the termination status of the process.
+A more precise definition of the
+.I status
+word is given in 
+.PN <sys/wait.h> .
+.PP
+The
+.PN wait3
+system call
+provides an alternate interface for programs
+that must not block when collecting the status
+of child processes.  The
+.I status
+parameter is defined as above.  The
+.I options
+parameter is used to indicate that the call should not block if there are
+no processes that wish to report status (WNOHANG),
+or that only children of the current process, which are stopped
+due to a SIGTTIN, SIGTTOU, SIGTSTP, or SIGSTOP signal, should have
+their status reported (WUNTRACED).  If
+.I rusage
+is nonzero, a summary of the resources used by the terminated
+process and all its
+children is returned (this information is not available
+for stopped processes).
+.PP
+When the WNOHANG option is specified and no processes
+wish to report status, 
+.PN wait3
+returns a 
+.I pid
+of zero (0).  The WNOHANG and WUNTRACED options can be combined by ORing
+the two values.
+.PP
+See 
+.MS sigvec 2
+for a list of termination statuses (signals).  A
+0 status indicates normal termination.
+A special status (0177) is returned for a process stopped 
+by the process tracing mechanism,
+.MS ptrace 2 .
+If the 0200 bit of the termination status
+is set,
+a core image of the process was produced
+by the system.
+.PP
+If the parent process terminates without
+waiting on its children,
+the initialization process
+(process ID = 1)
+inherits the children.
+.PP
+The
+.PN waitpid
+system call
+provides an interface for programs that want to wait for 
+a specific child process or
+child processes from specific process groups. The
+.PN waitpid 
+system call behaves as follows:
+.IP \(bu 5
+If 
+.IR pid
+is equal to \-1, status is requested for any child process.
+.IP \(bu
+If
+.IR pid
+is greater than zero, it specifies the process ID of a single child process for which status is requested.
+.IP \(bu
+If
+.IR pid
+is equal to zero, status is requested for any child process whose process group ID is equal to that of the
+calling process.
+.IP \(bu
+If
+.IR pid
+is less than \-1, status is requested for any child process whose process group ID is equal to the absolute
+value of
+.IR pid.
+.PP
+The
+.IR status
+and
+.IR options
+arguments are defined as above.
+The
+.PN waitpid
+system call
+behaves identically to the
+.PN wait
+system call, if the
+.I pid
+argument has a value of \-1 and the
+.I options
+argument has a value of zero (0).
+.PP
+The
+.PN wait ,
+.PN wait3 ,
+and
+.PN waitpid
+system calls
+are automatically restarted when a process receives a
+signal while awaiting termination of a child process, unless the
+SV_INTERRUPT bit has been set for that signal. See 
+.MS sigvec 2 .
+.PP
+The following macros, defined in 
+.PN <sys/wait.h> 
+can be used to interpret the information contained in the
+.IR status
+parameter returned by the wait functions; the 
+.I stat_val
+argument is the value pointed to by the
+.I status
+argument.
+.IP "WIFEXITED(\fIstat_val\fP)"
+Evaluates to a nonzero value, if status was returned for a child process that
+terminated normally.
+.sp
+.IP "WEXITSTATUS(\fIstat_val\fP)"
+If the value of WIFEXITED(\fIstat_val\fP) is nonzero, this macro evaluates 
+to the low-order eight bits of the 
+.IR status
+argument that the child process passes to 
+.PN _exit 
+or 
+.PN exit ,
+or the value the child process returned from 
+.PN main .
+.sp
+.IP "WIFSIGNALED(\fIstat_val\fP)"
+Evaluates to a nonzero value, if status 
+was returned for a child process that terminated
+due to the receipt of a signal that was not caught.
+.sp
+.IP "WTERMSIG(\fIstat_val\fP)"
+If the value of WIFSIGNALED(\fIstat_val\fP) is nonzero, this macro evaluates to the number of the
+signal that caused the termination of the child process.
+.sp
+.IP "WIFSTOPPED(\fIstat_val\fP)"
+Evaluates to a nonzero value, if status was returned for a child process that 
+is currently stopped.
+.sp
+.IP "WSTOPSIG(\fIstat_val\fP)"
+If the value of WIFSTOPPED(\fIstat_val\fP) is nonzero, this macro evaluates to the number of the
+signal that caused the child process to stop.
+.SH Return Values
+If 
+.PN wait ,
+.PN wait3 ,
+or
+.PN waitpid 
+returns due to a stopped
+or terminated child process, the process ID of the child
+is returned to the calling process.  Otherwise, a value of \-1
+is returned, and \fIerrno\fP is set to indicate the error.
+.PP
+The
+.PN wait3
+and
+.PN waitpid
+system calls
+return \-1, if there are no children not previously waited
+for.  A value of zero (0) is returned, if WNOHANG is specified and there are
+no stopped or exited children.
+.SH Environment
+.NXR "wait system call" "System V and"
+SYSTEM_FIVE
+.PP
+When your program is compiled using the System V environment,
+when the SIGCLD signal is being ignored, 
+.PN wait
+continues until all children terminate.
+SIGCLD is the same as SIGCHLD.
+.PP
+In addition, when using the System V environment, 
+.I status
+is of type int *.
+.PP
+POSIX
+.PP
+When using the POSIX environment,
+.I status
+is of type int *.
+.PP
+In addition, the SV_INTERRUPT flag is always set in POSIX mode, causing the
+above system calls to always fail, if interrupted by a signal.
+.SH Diagnostics
+.NXR "wait system call" "diagnostics"
+The
+.PN wait ,
+.PN wait3 ,
+or
+.PN waitpid
+system calls
+fail and return is immediate, if any of the following
+is true:
+.TP 15
+[ECHILD]
+The calling process has no existing unwaited-for
+child processes.
+.TP 15
+[ECHILD]
+The process or process group specified by \fIpid\fP does not exist or is not
+a child of the calling process.
+.TP 15
+[EINTR]
+The function was interrupted by a signal. The value of the location pointed to
+by
+.IR status
+is undefined.
+.TP 15
+[EINVAL]
+The value of the \fIoptions\fP argument is not valid.
+.TP 15
+[EFAULT]
+The \fIstatus\fP or \fIrusage\fP arguments point to an illegal address.
+.SH See Also
+exit(2), ptrace(2), sigvec(2)

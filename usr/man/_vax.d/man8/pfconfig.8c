@@ -1,0 +1,114 @@
+.TH pfconfig 8c
+.SH Name
+pfconfig \- configure packet filter parameters
+.SH Syntax  
+.B /usr/etc/pfconfig
+[
+.BR +/\-p [ romisc ]
+]
+[
+.BR +/\-c [ opyall ]
+]
+[
+.BR \-b [ acklog ]
+.I nnn
+]
+[
+.BR \-a [ ll ]
+]
+.I [interface-name ...]
+.SH Description
+.NXR "pfconfig command"
+.NXR "packet filter" "configure parameters"
+.NXR "packet filter" "pfconfig command"
+The
+.PN pfconfig
+command allows the system manager to configure certain parameters of
+the packet filter driver (see
+.MS packetfilter 4 ).
+These parameters are configured separately for each interface; the
+interfaces are specified by name on the command line (for
+example, 
+.PN ln0 ,
+and
+.PN ni1 ).
+If more than one interface is specified, they are all
+given the same settings.  Alternatively, you can specify 
+.B \-all
+to configure all the packet-filter interfaces on the system.
+.PP
+You can set the following parameters with 
+.PN  pfconfig:
+.IP \fB+promisc\fR 1i
+Allows packet filter users to set the interface into promiscuous mode
+(receives all packets).  Whenever there is at least one packet filter
+descriptor open with the ENPROMISC mode bit set, the interface is put
+into promiscuous mode.  When no such descriptors are in use, the interface
+is returned to normal mode.
+.IP \fB\-promisc\fR 1i
+The interface is no longer
+put into promiscuous mode on behalf of packet filter
+users; if the interface is in promiscuous mode when this command is given,
+it is returned to normal mode.  (The superuser may use
+.PN ifconfig (8c)
+to control promiscuous mode, overriding the mode set by
+non-superusers.
+This is the default setting.)
+.IP \fB+copyall\fR 1i
+Allows packet filter users to set the interface into copy-all mode
+(receives packets sent/received by the kernel-resident protocol
+software [for example, IP, ARP, DECnet, LAT] on this host).
+Whenever there is at least one packet filter
+descriptor open with the ENCOPYALL mode bit set, the interface
+is put into copy-all mode.  When no such descriptors are in use,
+the interface is returned to normal mode.
+.IP \fB\-copyall\fR 1i
+The interface is no longer put into copy-all
+mode on behalf of packet filter users;
+if the interface is in copy-all mode when this command is given,
+it is returned to normal mode.  (The superuser may use
+.MS ifconfig 8c
+to control copy-all mode, overriding the mode set by
+non-superusers.
+This is the default setting.)
+.IP "\fB\-backlog\fR \fInnn\fR" 1i
+Sets the maximum backlog (packet filter input queue length)
+for non-superuser descriptors to the
+specified number.  When a descriptor is opened, it is given
+a queue length limit of two. An application can increase
+this backlog using the EIOCSETW ioctl request.  Superusers are allowed
+to increase their backlog up to a system-wide maximum; non-superusers
+are allowed to increase their backlog only up to the maximum set by this
+program.  Note that allowing too large a backlog may result in vast amounts
+of kernel memory being tied up in the packet filter driver queues.
+.PP
+If no configuration parameters are specified, the
+.PN pfconfig
+command displays the current packet filter configuration
+for the network interface(s).
+.PP
+Only the superuser may use this command to change the configuration.
+.SH Examples
+On a system used for network monitoring, one might put this line into
+.PN /etc/rc.local :
+.EX
+/usr/etc/pfconfig \-a +promisc \-backlog 64
+.EE
+This allows users to run promiscuous network monitoring applications,
+with a maximum input queue length per application of 64 packets, on
+any interface in the system.
+.EX
+/usr/etc/pfconfig \-a +promisc +copyall \-backlog 64
+.EE
+This allows promiscuous network monitoring applications
+to monitor communications to or from the local host, as well as
+the rest of the local network.
+.SH Diagnostics
+.NXR "pfconfig command" "diagnostics"
+Messages indicating the specified interface do not exist;
+an attempt to set a maximum backlog less than 1 or greater than
+the system-wide maximum;
+the user tried to alter an interface's configuration
+but is not privileged.
+.SH "See Also"
+netstat(1), intro(4n), packetfilter(4), ifconfig(8c), rc(8)

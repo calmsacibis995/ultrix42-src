@@ -1,0 +1,92 @@
+.\" SCCSID: @(#)finger.1	8.1	9/11/90
+.TH finger 1
+.SH Name
+finger \- print user finger information
+.SH Syntax
+\fBfinger\fR [\|\fIoptions\fR\|] [\|\fIname\fR...\|]
+.SH Description
+.NXR "finger command"
+.NXR "system" "listing user information"
+.NXR "finger command" "and the who command"
+By default,
+.PN finger
+lists the login name, full name, terminal
+name and write status,
+idle time, login time, and
+office location and phone number for
+each current ULTRIX user.  Terminal write status is noted
+as an asterisk (*) before the terminal name if write
+permission is denied.  Idle time is given in minutes if the
+listing shows a
+single integer, hours and minutes if a colon (:) is present, or
+days and hours if a d is present.
+.PP
+A longer format also exists and is used by 
+.PN finger 
+whenever a
+list of people's names is given.  (Account names as well as
+first and last names of users are accepted.) This format is
+multi-line, and includes all the information described above
+as well as the user's home directory and login shell.  Additionally, it
+displays the information contained in the files \.plan and \.project,
+both of which are located in the user's home directory.
+If no list is given, all the people currently logged in are
+shown.
+.PP
+The
+.PN finger 
+command may be used to look up users on a remote machine.  The format is to
+specify the user as user@host.  If the user name is left off, 
+the standard format listing is provided on the remote machine. 
+.SH Options
+.NXR "finger command" "options"
+.IP \fB\-b\fR 5
+Displays a briefer long form list of users.
+.IP \fB\-f\fR 
+Disables printing of headers for short and quick outputs.
+.IP \fB\-h\fR 
+Suppresses printing of the .project file.
+.IP \fB\-i\fR 
+Displays list of users with idle times.
+.IP \fB\-l\fR 
+Displays output in long format.
+.IP \fB\-m\fR 
+Matches arguments only on user name.
+.IP \fB\-p\fR 
+Suppresses printing of the .plan file.
+.IP \fB\-q\fR 
+Displays list of users.
+.IP \fB\-s\fR 
+Displays output in short format.
+.IP \fB\-w\fR 
+Displays narrow short format of specified users.
+.SH Restrictions
+.NXR "finger command" "restricted"
+.PP
+Only the first line of the .project file is printed.
+.PP
+The user's 
+.PN \&.plan 
+or 
+.PN \&.project 
+file cannot be a link to another file.
+If either of these files is something other than a regular
+file, it will be ignored.
+.SH Files
+.TP 20
+.PN /etc/utmp
+Who file
+.TP 
+.PN /etc/passwd
+User information
+.TP 
+.PN /usr/adm/lastlog
+Last login times
+.TP 
+.PN ~/.plan
+Plans
+.TP 
+.PN ~/.project
+Projects
+.SH See Also
+chfn(1), w(1), who(1), fingerd(8c)

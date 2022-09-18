@@ -1,0 +1,63 @@
+.TH newterm 3cur 
+.SH Name
+newterm \- open new terminal
+.SH Syntax
+.br
+.B
+#include <stdio.h>
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+SCREEN \(**newterm(type, outfd, infd)
+.br
+.B
+char \(**type;
+.br
+.B
+FILE \(**outfd, \(**infd;
+.SH Description
+.NXR "newterm subroutine"
+.NXA "initscr subroutine" "newterm subroutine"
+Programs using more than one terminal should call 
+the
+.PN newterm
+routine for each terminal instead of 
+.PN initscr .
+The routine 
+.PN newterm
+should be called ONCE for each terminal.
+.PP
+The
+.PN newterm
+routine returns a variable of type
+SCREEN 
+\(**
+which should be saved as a reference to that terminal.
+There are three arguments.
+The first argument 
+.PN type ,
+is the type of the terminal to be used in place of
+TERM.
+The second argument,
+.PN outfd, 
+is a file pointer for output to the terminal.
+The third argument, 
+.PN infd ,
+is a file pointer for input from the terminal.
+The program must also call
+the
+.PN endwin 
+routine for each terminal, after each terminal
+has finished running a 
+.PN curses
+application.
+.SH Return Values
+On success the
+.PN newterm
+function returns a pointer to the new SCREEN structure created.  On failure
+the function returns a null pointer.
+.SH See Also
+endwin(3cur), initscr(3cur)

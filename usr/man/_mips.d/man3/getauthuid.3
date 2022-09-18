@@ -1,0 +1,73 @@
+.TH getauthuid 3 
+.SH Name
+getauthuid, storeauthent, setauthfile, endauthent \- get/set auth entry
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.B #include <auth.h>
+.PP
+.B AUTHORIZATION *getauthuid(\fIuid\fP)
+.B uid_t \fIuid\fP;
+.PP
+.B int storeauthent(\fIauth\fP)
+.B AUTHORIZATION *\fIauth\fP;
+.PP
+.B void setauthfile(\fIpathname\fP)
+.B char *\fIpathname\fP;
+.PP
+.B int endauthent()
+.fi
+.SH Description
+.NXR "getauthuid subroutine"
+.NXR "storeauthent subroutine"
+.NXR "setauthfile subroutine"
+.NXR "endauthent subroutine"
+.NXR "auth database (general)" "getting/setting entry"
+.PP
+The
+.PN getauthuid
+function looks up the auth entry for the specified user ID
+and returns a pointer to a static area containing it.
+.PP
+The
+.PN storeauthent
+function will store the specified auth entry into the
+local auth database, overwriting any existing entry with the
+same \fIa_uid\fP field.
+.PP
+The
+.PN setauthfile
+function will set the pathname of the file to be used for the
+local auth database in all subsequent operations.
+.PP
+The
+.PN endauthent
+functions closes the auth database.  Subsequent calls to
+getauthuid and storeauthent will reopen it.
+.PP
+The auth database may be distributed via the BIND/Hesiod
+naming service.
+.SH Restrictions
+Only the super-user and members of the group
+.I authread
+may read information from the auth database.
+.PP
+Only the super-user may modify the auth database.
+.PP
+The auth databse may not be distributed via the Yellow Pages service.
+.SH Return Values
+Functions which return a pointer value will return the
+null pointer
+(0) on EOF or error.
+Other functions will return zero (0) on success and a negative value
+on failure.
+.SH Files
+.PN /etc/auth.[pag,dir]
+.SH See Also
+getpwent(3), auth(5), edauth(8)
+.br
+\fISecurity Guide for Users and Programmers\fP
+.br
+\fISecurity Guide for Administrators\fP
+.br
+\fIGuide to the BIND/Hesiod Service\fP

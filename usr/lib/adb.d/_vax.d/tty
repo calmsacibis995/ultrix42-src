@@ -1,0 +1,63 @@
+./"   struct tty {"n
+./"       union {"n
+./"          struct {"n
+./"              struct clist T_rawq;"n
+./"                  int   c_cc;           "Dn
++/"                  char  *c_cf;          "Xn
++/"                  char  *c_cl;          "Xn
++/"              struct clist T_canq;"n
+./"                  int   c_cc;           "Dn
++/"                  char  *c_cf;          "Xn
++/"                  char  *c_cl;          "Xn
++/"           } t_t;"n
+./"           struct {"n
+./"               struct  buf *T_bufp;"n
+./"               char    *T_cp;"n
+./"               int     T_inbuf;"n
+./"               int     T_rec;"n
+./"           } t_n;"n
+./"       } t_nu;"n
+./"       struct {
+./"           struct  buf *H_bufp;       "Xn
++/"           char *H_in;                "Xn
++/"           char *H_out;               "Xn
++/"           char *H_base;              "Xn
++/"           char *H_top;               "Xn
++/"           int  H_inbuf;              "Xn
++/"           int  H_read_cnt;           "Xn
++/"       } t_h;"n
+./"       struct  clist t_outq;"n
+./"           int   c_cc;                "Dn
++/"           char  *c_cf;               "Xn
++/"           char  *c_cl;               "Xn
++/"       int      (*t_oproc)();         "Xn
++/"       struct   proc *t_rsel;         "Xn
++/"       struct   proc *t_wsel;         "Xn
++/"       caddr_t  T_LINEP;              "Xn
++/"       caddr_t  t_addr;               "Xn
++/"       dev_t    t_dev;  MINOR Number: "bn
++/"                        MAJOR Number: "b2+n
++/"       unsigned int     t_flags;      "Xn
++/"       unsigned short   t_iflag;      "xn
++/"       unsigned short   t_iflag_ext;  "xn
++/"       unsigned short   t_oflag;      "xn
++/"       unsigned short   t_oflag_ext;  "xn
++/"       unsigned short   t_cflag;      "xn
++/"       unsigned short   t_cflag_ext;  "xn
++/"       unsigned short   t_lflag;      "xn
++/"       unsigned short   t_lflag_ext;  "xn
++/"       unsigned char    t_cc[NCCS];  NCCS = 19"n
+./             "eol"8t"eol2"8t"swtch"8t"min"8t"time"nC8tC8tC8tbb
++/"             start"8t"stop"8t"susp"8t"dsusp"8t"rprnt"nC8tC8tC8tC8tC
++/"             flush"8t"werase"8t"lnext"8t"quote"nC8tC8tC8tC1+
++/"       unsigned int     t_state;      "Xn
++/"       short    t_pgrp;               "dn
++/"       char     t_delct;              "bn
++/"       char     t_line;               "bn
++/"       char     t_col;                "bn
++/"       char     t_rocount, t_rocol;   "2b1+n
++/"       struct  winsize t_winsize;
+./"           unsigned short  ws_row, ws_col;         "2dn
++/"           unsigned short  ws_xpixel, ws_ypixel;   "2dn
++/"       union  local_ext *t_language;               "Xn
++/"   };"n

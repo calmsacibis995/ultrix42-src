@@ -1,0 +1,63 @@
+.TH ldgetaux 3x RISC
+.SH Name
+ldgetaux \- retrieve an auxiliary entry, given an index
+.SH Syntax
+.nf
+.B "#include <stdio.h>"
+.B "#include <filehdr.h>"
+.B "#include <sym.h>"
+.B "#include <ldfcn.h>"
+.fi
+.sp
+.nf
+.BR "pAUXU ldgetaux (" "ldptr, iaux" )
+.BR "LDFILE \**" ldptr ;
+.BR "long \**" iaux ;
+.fi
+.SH Description
+The
+.PN ldgetaux
+function returns a pointer to an auxiliary table entry associated with 
+.I iaux.
+The AUXU is contained in a static buffer.  Because the buffer can be 
+overwritten by later calls to 
+.PN ldgetaux , 
+it must be copied by the caller if the aux is to be saved or changed.
+.PP
+Note that auxiliary entries are not swapped as this routine cannot detect
+what manifestation of the AUXU union is retrieved. 
+If LDAUXSWAP(ldptr, ldf) is non-zero,
+a further call to
+.I swap_aux
+is required.  Before calling the 
+.I swap_aux routine, the caller should copy the aux.
+.PP
+If the auxiliary cannot be retrieved, 
+.PN ldgetaux 
+returns null (defined in <stdio.h>) for an object file.
+This occurs in the following instances:
+.IP \(bu 5
+The auxiliary table cannot be found
+.IP \(bu 5
+The 
+.I iaux 
+offset into the auxiliary table is beyond the end of the table
+.PP
+Typically, 
+.PN ldgetaux 
+is called immediately after a successful call to 
+.PN ldtbread 
+to retrieve the data type information associated with the symbol table 
+entry filled by 
+.PN ldtbread . 
+The index field of the symbol, pSYMR, is the 
+.I iaux 
+when data type information is required. If the data type information for a 
+symbol is not present, the index field is 
+.I indexNi 
+and 
+.PN ldgetaux 
+should not be called.
+.SH See Also
+intro(3x), ldclose(3x), ldopen(3x), ldtbseek(3x), ldtbread(3x),
+ldfcn(5).

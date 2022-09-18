@@ -1,0 +1,146 @@
+.\" SCCSID: @(#)tftp.1c	8.1	9/11/90
+.TH tftp 1c
+.SH Name
+tftp \- trivial file transfer program
+.SH Syntax
+.B tftp
+[\|\fIhost\fR\|] [\|\fIport\fR\|]
+.SH Description
+.NXR "tftp program"
+.NXR "Trivial File Transfer Protocol" "user interface"
+.NXR "Trivial File Transfer Protocol" "tftp program"
+.NXR "file" "transferring remote"
+The 
+.PN tftp
+command
+provides the user interface to the 
+Internet standard Trivial File Transfer Protocol.
+The program allows a user to transfer files to and from a
+remote network site.  The remote host
+can be specified on the 
+command line.  If you specify the remote host on the
+command line
+.PN tftp
+uses
+.I host
+as the default host for future transfers.
+.PP
+If a
+.I port
+is specified,
+.PN tftp
+uses that port number instead of the standard 
+.PN tftp 
+service port.
+When the user invokes the
+.PN tftp
+program
+.PN tftp
+enters its command interpreter and awaits instructions.
+The prompt tftp> is displayed on the screen.
+.PP
+The following commands are recognized
+by
+.PN tftp :
+.TP 20
+.B ?
+.NXR "? command (tftp)"
+Displays a help message that gives a brief summary of the commands.
+.TP
+.B ascii
+.NXR "ascii command (tftp)"
+Specifies mode ascii.
+.TP
+.B binary
+.NXR "binary command (tftp)"
+Specifies mode binary.
+.TP
+\fBconnect \fIhost-name\fR [ \fIport\fR ]
+.NXR "connect command (tftp)"
+Sets the 
+.I host 
+and, optionally, sets
+.I port
+for transfers.
+Note that the TFTP protocol does not 
+maintain connections between transfers.  Because 
+.PN connect
+merely remembers
+what host should be used for transfers instead of
+actually creating a connection, it is not necessary to use
+the
+.PN connect
+command.  The remote host can be specified as part of the
+.PN get
+or
+.PN put 
+commands.
+.TP
+\fBget\fP \fIremote-file...\fP [ \fIlocal-file\fP ]
+.NXR "get command (tftp)"
+Gets a file or set of files from the specified sources.  If the host
+has already been specified, the
+.I source
+can be in the form of a filename on the remote host.
+If the host has not been specified, the 
+.I source 
+can be a string of the form 
+.I host:file,
+specifying both a host and filename at the same time.  If the latter
+form is used, the last hostname entered becomes the default for
+future transfers.
+.TP
+.B mode
+.NXR "mode command (tftp)"
+Sets the file transfer 
+.I type
+to network ASCII or binary.  The default type is network ASCII.
+.TP
+\fBput\fP \fIlocal-file...\fP [ \fIremote-file/directory\fP ]
+.NXR "put command (tftp)"
+Puts a file or set of files to the specified remote file or directory.  
+If the remote host has
+already been specified, the destination can be a filename on it.
+If the remote host has not been specified, the destination
+can be a string of the form
+.I host:filename,
+specifying both a host and filename at the same time.  If the latter form is 
+used, the last hostname entered becomes the default for future transfers.
+If the remote-directory form is used, the remote host is assumed to be a UNIX
+machine.
+.TP
+.B quit
+.NXR "quit command (tftp)"
+Exits the 
+.PN tftp 
+program.
+.TP
+.B rexmt
+.NXR "rexmt command (tftp)"
+Sets the retransmit timer.
+.TP
+.B status
+.NXR "status command (tftp)"
+Shows what
+.PN tftp
+believes to be the current connection status.
+.TP
+.B timeout
+.NXR "timeout command (tftp)"
+Set the transaction timeout.
+.TP
+.B trace
+.NXR "trace command (tftp)"
+Sets the packet trace flag.
+.TP
+.B verbose
+.NXR "verbose command (tftp)"
+Sets the verbose mode flag.
+.SH Restrictions
+.NXR "tftp program" "authentication and"
+Since the TFTP protocol does not support any authentication,
+files must be world read (writable) on the remote system.
+.PP
+Because there is no user-login validation within the TFTP protocol,
+the remote site should have some sort of file access restrictions
+in place.  The exact methods are specific to each site.

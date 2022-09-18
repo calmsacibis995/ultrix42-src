@@ -1,0 +1,65 @@
+.\" SCCSID: @(#)load.8	8.1	9/11/90
+.TH load 8 
+.SH Name
+load \- down-line load software to a target node
+.SH Syntax 
+.B /etc/load 
+[
+.I node
+]
+.SH Description
+.NXR "load command"
+.NXA "load command" "addnode command"
+.NXR "node" "down-line loading"
+The 
+.PN load 
+command loads software to an unattended target node.
+The target node is loaded by the host that executes the 
+.PN load 
+command. 
+.PP
+The 
+.PN load 
+command requires the identification of the service circuit over
+which the load is performed, the Ethernet 
+hardware address of the target node, and the service password needed 
+to gain access to the target.  This information is included in 
+the nodes database entry for the target node.  A node entry is 
+defined with the 
+.PN addnode 
+command.  For further information, see 
+.MS addnode 8 .
+The
+.I node
+is the name or address of the target node.  A node name
+consists of from one to six alphanumeric characters.
+For single networks, a node address consists of a 
+decimal integer (1-1023).  For multiple networks, a
+node address consist of two decimal integers (n.n), 
+where the first indicates the network number (1-63), 
+and the second indicates the node address (1-1023).
+.SH Options
+.TP 5
+.B \-p
+Uses the specified service and password (next arguments) 
+in accessing the target node.
+You can omit a target node's service and password from the nodes
+database for security reasons, but you must then specify the service
+and password in the command line by using the
+.PN \-p
+option.
+.SH Examples
+.EX
+# /etc/load bangor \-p 130fe
+.EE
+This command causes node 
+.PN bangor 
+to be loaded by the ULTRIX host node 
+executing the command.  The ULTRIX host uses the load files 
+specified in the nodes database entry for node 
+.PN bangor 
+to perform the load.
+.SH See Also
+addnode(8), ccr(8), getnode(8), mop_mom(8), remnode(8), trigger(8)
+.br
+.I "Guide to Local Area Transport Servers"

@@ -1,0 +1,18 @@
+.TH catpw 1
+.SH Name
+catpw \- prints all password entries
+.SH Syntax
+.B catpw
+.SH Description
+.NXR "password" "printing with catpw"
+.NXR "catpw command" "reference page"
+The 
+.PN catpw 
+command prints password entries for all users known to the
+system using the format in 
+.MS passwd 5 .
+Password entries are gathered from all sources including Yellow Pages,
+Kerberos, and 
+.PN /etc/passwd .
+.SH See Also
+getpwent(3), passwd(5)

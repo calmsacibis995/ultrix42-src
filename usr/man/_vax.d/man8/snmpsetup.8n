@@ -1,0 +1,71 @@
+.TH snmpsetup 8n
+.SH Name
+snmpsetup \- set up the Simple Network Management Protocol (SNMP)
+Agent
+.SH Syntax
+.B /usr/etc/snmpsetup
+.SH Description
+The
+.PN snmpsetup
+.NXR "snmpsetup" "command"
+.NXR "Simple Network Management Protocol"  "setting up automatically"
+command is an interactive facility for configuring the ULTRIX SNMP
+Agent.  When your system is configured
+as an SNMP Agent certain network parameters
+can be monitored or managed by a Network Management
+Station (NMS).
+.PP
+The 
+.PN snmpsetup
+command also allows you to configure Extended ULTRIX SNMP Agents.
+Extended Agents are user-defined daemons 
+that allow you to specify private network parameters to be
+monitored or managed by the NMS.  
+.PP
+Before you invoke
+.PN snmpsetup ,
+the network must be up and running, your host must have a name, and
+you must know the Internet Protocol address of any NMSs
+that you want to have monitor or manage your system.
+.PP
+You can run
+.PN snmpsetup
+while in multiuser mode, but you must be root or superuser.
+.PP
+To invoke
+.PN snmpsetup, type:
+.PP
+# \f(CBsnmpsetup\fP
+.SH Diagnostics
+The following error messages are issued by 
+.NXR "snmpsetup" "error messages"
+.PN snmpsetup :
+.PP
+.B "snmpsetup must be run by root"
+.br
+.B "snmpsetup: need /etc/rc"
+.br
+.B "snmpsetup: need /etc/snmpd.conf"
+.br
+.B "snmpsetup: non-interactive mode not currently supported"
+.br
+.B "snmpsetup: network must be setup before running snmpsetup"
+.br
+.B "snmpsetup: terminated with no installations made"
+.SH Files
+.TP 20
+.PN /etc/snmpd.conf
+SNMP configuration file
+.TP
+.PN /etc/rc
+File that controls automatic reboot
+.SH See Also
+.\" These are in alphabetical order by section number. 
+.\" For example,
+.\" cat(1), kill(1), tty(4), dump(8)
+.\"
+.\" Code as text as follows:
+.\"
+snmpext(3n), snmpd.conf(5n), snmpd(8n)
+.br
+.I Guide to Networking

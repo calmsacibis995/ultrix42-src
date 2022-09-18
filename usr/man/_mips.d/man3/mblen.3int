@@ -1,0 +1,62 @@
+.\" This file contains the ditroff text for the mblen() function.
+.TH mblen 3int
+.SH Name
+mblen \- determines the number of bytes comprising a multibyte character
+.SH Syntax
+#include <stdlib.h>
+.PP
+int mblen\fI (s, n)\fR
+.br
+const char\fI *s;\fR
+.br
+size_t\fI n; \fR
+.SH Arguments
+.TP 8
+.I s
+The 
+.I s
+argument is a pointer to the multibyte character string.
+.PP
+.TP 8 
+.I n
+The 
+.I n 
+argument is the maximum number of bytes in 
+.I s
+that are examined. 
+.SH Description
+.NXR "multibyte character length function"
+If \fIs\fR is not a null pointer, the 
+.PN mblen
+function determines
+the number of bytes comprising the multibyte character
+pointed to by \fIs\fR.
+The 
+.PN mblen 
+function is equivalent to:
+.EX 
+\fI(mbtowc((wchar_t *)0, s, n);)\fR
+.EE
+.PP
+This function is affected by the LC_CTYPE category of the
+current locale.
+.SH Return Values
+If \fIs\fR is a null pointer, the 
+.PN mblen 
+function returns a zero value.
+If \fIs\fR is not a null pointer, the 
+.PN mblen 
+function returns:
+.RS 3
+.IP \(bu 3
+0 (if \fIs\fR points to the null character)
+.IP \(bu 3
+The number
+of bytes that comprise the multibyte character (if the next
+\fIn\fR or fewer bytes form a valid multibyte character)
+.IP \(bu 3
+ -1 (if they do not form a valid multibyte character)
+.RE
+.SH See Also
+mbtowc(3int), mbstowcs(3int), setlocale(3int), wctomb(3int),
+wcstombs(3int)

@@ -1,0 +1,580 @@
+.TH dist 1mh
+.SH Name
+dist \- redistribute a message to additional addresses
+.SH Syntax
+.B dist
+[
+.I msg
+] [
+.I +folder
+] [
+.I options
+]
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.\" .SH Arguments
+.\" .IP \fImsg\fR 10
+.\" The number of the message to be redistributed.
+.\" If you do not specify a message number, the default is to 
+.\" take the current message.
+.\" You can only specify one message at a time with 
+.\" .PN dist .
+.\" The message you specify becomes the current message.
+.\"
+.\"
+.\" .IP \fI+folder\fR
+.\" Specifies the folder of the message to be redistributed.
+.\" If this argument is not present, the default is to take the
+.\" current folder.
+.\" The folder you specify becomes the current folder.
+.\" This argument can be used in conjunction with the \fImsg\fR
+.\" argument.
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "dist command"
+.NXR "redistributing messages"
+Use 
+.PN dist
+to redistribute a message to addresses 
+that are not on the original address list.
+.\"
+.\" ***Info from old Arguments section
+.PP
+You can specify the message which you want
+to redistribute by giving a message number as the
+.I msg 
+argument.
+If you do not supply a message number, 
+.PN dist 
+takes the current message.
+You can only redistribute one message at a time.
+You can also specify a message in another folder 
+by giving the
+.I +folder
+argument.
+This argument can be used in conjunction with the \fImsg\fR
+argument.
+.\"
+.\" ***End of Arguments info
+.\"
+.PP
+The program
+.PN dist
+is similar to 
+.PN forw .
+The main difference between the two commands is that
+.PN forw
+encapsulates the message, whereas
+.PN dist
+merely resends it.
+You cannot add any new text of your own to a message
+that you re-distribute using 
+.PN dist .
+A message that has been forwarded will appear to have been 
+sent by the person who forwarded the message.  
+A message that has been redistributed using
+.PN dist
+will appear to have come from the sender of the original message.  
+This is shown in the scan listing of the messages.  
+In the following example, messages 1 and 2 are identical 
+apart from the method used to send the message on 
+to additional recipients:
+.EX
+   1  20/06 goodman            ULTRIX <<As you will see from th
+   2+ 21/06 John               As previous, but forwarded <<---
+.EE
+.PP
+When you use
+.PN dist ,
+you will get a message form to fill in with the details of the additional
+recipients.  The default message form contains the following elements:
+.EX
+Resent-To:
+Resent-cc:
+.\" Resent-Xmts:
+.\"
+.\"
+.EE
+.PP
+If the file named 
+.PN distcomps
+exists in your Mail directory, standardly
+.PN $HOME/Mail ,
+it is used instead of the standard mail header.
+If the option
+.B \-form
+.I formfile
+is given, it overrides both of these.
+.PP
+You can only put recognized header lines in your message form.
+The 
+.PN dist 
+program recognizes values in the following fields:
+.EX
+Resent\-To:
+Resent\-cc:
+Resent\-Bcc:
+Resent\-Fcc:
+Resent\-Xmts:
+.EE
+.PP
+.\" The \f(CWResent\-Fcc:\fR 
+.\" field will be used only if you have a corresponding \f(CWResent\-Fcc:\fR
+.\" folder set up in your 
+.\" .PN \&.mh_profile ;
+.\" see
+.\" .MS send 1mh .
+The headers and the body of the original message are copied 
+to the draft when the message is sent.
+You cannot add any new body text of your own when
+redistributing a message with
+.PN dist .
+.\"
+.\" ***COMMENTED OUT
+.ig
+.PP
+You can specify whether you wish to resend the message to
+X.400 users or to non-X.400 users by entering a value in the
+\f(CWResent-Xmts:\fP
+field of the message form.
+There are two valid entries: \f(CWx400\fP
+to resend the message over the X.400 transport system; \f(CWsmtp\fP
+to resend it using non-X.400 transport.
+You can use upper- or lower-case letters,
+or a combination of the two.
+The default is to assume non-X.400 transport.
+You cannot resend a single message to
+both X.400 and non-X.400 users; you must choose one
+or the other.
+If you do make an entry in the
+\f(CWResent-Xmts:\fP
+field, this will override any option you specify
+later by using the
+.B \-mts
+.I mtsname
+option with
+.PN send
+or
+.PN whom .
+..
+.\" ***END OF COMMENTS
+.\"
+.PP
+If you do not have a draft folder set up,
+.PN dist
+creates the message form in a file called
+.PN draft
+in your Mail directory.
+This file must be empty before you can create a new draft,
+which means that you can only store one draft at a time.
+If it is not empty, the mail system asks you
+what you want to do with the existing contents.
+The options are:
+.TP 10
+\f(CWquit\fR
+Aborts
+.PN dist ,
+leaving the draft intact.
+.TP 10
+\f(CWreplace\fR
+Replaces the existing draft with the appropriate message form.
+.\" .TP 10
+.\" \f(CWuse\fR
+.\" Allows you to edit the existing draft.
+.TP 10
+\f(CWlist\fR
+Displays the draft message.
+.TP 10
+\f(CWrefile\fR
+Refiles the existing draft message in the specified folder,
+and provides a new message form for you to complete.
+.PP
+If you want to be able to have more than one draft at a time,
+you can set up a draft folder in your
+.PN \&.mh_profile .
+This allows you to keep as many unsent drafts as space
+allows,
+and still create new messages as you wish.
+To do this, make sure that the following line is in your
+.PN \&.mh_profile :
+.EX
+Draft-folder: +drafts
+.EE
+For more information on how to do this, see
+.MS mh_profile 5mh .
+.PP
+You cannot store unsent messages created using 
+.PN dist 
+in your draft folder.
+If you attempt to do so,
+only the message form is stored.
+This does not contain the original message 
+that you are redistributing,
+so you will not be able to send it later.
+.\"
+.\" ***COMMENTED OUT - NOT NECESSARY
+.ig
+.PP
+If you set up a draft folder,
+all draft messages are created in that folder.
+If you decide not to send the draft, by typing
+.PN quit
+at the \f(CWWhat now?\fR prompt,
+the message is stored in the draft folder.
+However, only the message form is stored.
+This does not contain the original message that you 
+are redistributing, so you will not be able
+to send it later.
+.PP
+The
+.PN dist
+command originally used headers of the form 
+\f(CWDistribute\-xxx:\fR instead of \f(CWResent\-xxx:\fR.  
+In order to conform with the ARPA Internet standard RFC-822,
+the \f(CWResent\-xxx:\fR form is now used.
+The
+.PN dist
+command will recognize \f(CWDistribute\-xxx:\fR type headers 
+and automatically convert them to \f(CWResent\-xxx\fR.
+.PP
+While you are in the editor,
+the message being resent is available through a link named 
+\f(CW@\fR
+(assuming the default 
+.PN whatnowproc ).
+If your current working directory is not writable,
+this link is not available.
+In addition, the actual pathname of the message is stored in the
+environment variable \f(CW$editalt\fR,
+and the pathname of the folder containing the message is stored in the
+variable \f(CW$mhfolder\fR.
+..
+.\" ***END OF COMMENTS
+.\"
+.PP
+If you use
+.PN repl
+to reply to a message resent to you by 
+.PN dist ,
+the reply will go to the sender of the original message,
+rather than the person who forwarded it to you.
+The 
+.PN repl
+command ignores the 
+\f(CWResent-xxx:\fR
+fields when creating the header for your draft reply.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP \-annotate 10
+.PD 0
+.IP \-noannotate 10
+.PD
+Annotates the message that you are redistributing.
+The following lines are added to the message that you are
+redistributing:
+.EX
+Resent:\ date
+Resent:\ addrs
+.EE
+The first line records the time at which the message
+was redistributed; the second records the addresses of the
+recipients of the redistributed message.
+.IP
+The
+.PN dist
+command only annotates messages when they are successfully sent.
+If you do not send the message immediately and file
+the unsent draft, it will not be annotated.
+.\"
+.\"
+.IP "\-draftfolder \fI+folder\fR" 10
+.PD 0
+.IP \-nodraftfolder 10
+.PD
+Specifies the folder in which the draft message is created.
+If you do not send the draft, the mail system 
+will store it in this folder.
+.IP
+This option is usually set up in your
+.PN \&.mh_profile .
+See 
+.MS mh_profile 5mh
+for more information.
+If you have this option set up, you can
+override it by using the 
+.B \-nodraftfolder
+option.
+.\"
+.\"
+.IP "\-draftmessage \fIfile-name\fR" 10
+Specifies the file in which the draft message is created.
+If no absolute pathname is given, the file is assumed to be in
+your Mail directory, standardly
+.PN $HOME/Mail .
+If you do not send the message, it is stored in the named file
+until you delete it, or send it at a later date.
+.\"
+.\"
+.IP \-editor\ \fIeditorname\fR
+Specifies the editor that you want to use to edit your forwarded
+message.
+.IP
+You can also set up an editor in your 
+.PN \&.mh_profile
+file; see
+.MS mh_profile 5mh
+for more information.
+.\"
+.\"
+.IP \-form\ \fIformfile\fR
+Specifies the message header to be used in the draft message.
+If this option is present,
+.PN dist
+takes the header of the draft message
+from the named file.
+If this option is not present, the header is taken from the
+.PN distcomps
+file in your Mail directory, or failing that, 
+from the mail system default header.
+.\"
+.\"
+.IP \-inplace 10
+.PD 0
+.IP \-noinplace 10
+.PD
+Causes annotation to be done in place, to preserve
+links to the annotated message.
+This option only works with the
+.B \-annotate
+option.
+.\"
+.\"
+.IP \-help
+Prints a list of the valid options for this command.
+.\"
+.\"
+.IP \-noedit
+Suppresses editing of the draft message altogether.
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.ig
+.IP \-template [\fIeditorname\fB]
+Helps you to construct valid X.400 addresses in message headers.
+If you are resending mail over X.400, you can use 
+.B \-template 
+to add addresses to the \f(CWResent-xxx:\fR
+header fields of your message.
+For each appropriate field, the
+.PN template
+program first asks you whether you want to create an address in
+that field;
+then it prompts you for the attributes of an X.400 address.
+Finally, the completed addresses are entered in the appropriate fields
+of the message form.
+You can specify your own choice of editor to use for the template
+by using the
+.B \-template
+.I editorname
+option.
+The default editor for
+.B \-template
+.R
+is
+.PN prompter .
+.R
+If you use one editor regularly, you can specify it in the
+\f(CWTemplate-Editor:\fP
+.R
+line of your
+.PN \&.mh_profile .
+.R
+The
+.PN template
+.R
+function is also available as a separate program.
+See
+.MS template 1
+.R
+for more information.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.IP "\-whatnowproc \fIprogram\fR" 10
+.PD 0
+.IP \-nowhatnowproc 10
+.PD
+Specifies an alternative
+.PN whatnow
+program.
+Normally,
+.PN dist
+invokes the default
+.PN whatnow
+program.
+See
+.MS whatnow 1mh
+for a discussion of available options.
+You can specify your own alternative
+to the default program using the
+.B \-whatnowproc
+.I program
+option.
+If you do specify your own program, you should not call it
+.PN whatnow .
+.IP
+You can suppress the
+.PN whatnow
+program entirely by using the
+.B \-nowhatnowproc
+option.
+However, as the program normally starts the initial edit, the
+.B \-nowhatnowproc
+option will prevent you from editing the message.
+.\"
+.\" Specifies the
+.\" .PN whatnow
+.\" program that is used.
+.\" When you exit from the editor,
+.\" .PN dist
+.\" invokes the 
+.\" .PN whatnow
+.\" program.
+.\" See 
+.\" .MS whatnow 1mh
+.\" for details of the available options.
+.\" The invocation of this program can be inhibited by using the
+.\" .B \-nowhatnowproc
+.\" option.
+.\" However the
+.\" .PN whatnow
+.\" program starts the initial edit, hence, 
+.\" .B \-nowhatnowproc
+.\" prevents any edit from occurring.
+.\" .IP
+.\" If 
+.\" .PN whatnowproc
+.\" is 
+.\" .PN whatnow,
+.\" then 
+.\" .PN dist
+.\" uses the built-in 
+.\" .PN whatnow
+.\" program; it does not actually run the 
+.\" .PN whatnow
+.\" program.
+.\" Hence, if you define your own 
+.\" .PN whatnowproc,
+.\" do not call it 
+.\" .PN whatnow
+.\" since 
+.\" .PN dist
+.\" will not run it.
+.\"
+.\"
+.\"
+.\"
+.PP
+The defaults for 
+.PN dist
+are:
+.IP
+.I +folder
+defaults to the current folder
+.br
+.I msg
+defaults to cur
+.br
+.B \-noannotate
+.br
+.B \-nodraftfolder
+.br
+.B \-noinplace
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" ************************************************
+.\" COMMENTED OUT - also applies to comp, repl, forw
+.ig
+.SH Restrictions
+The
+.PN dist
+command does not 
+rigorously check the message being
+distributed for adherence to the transport standard,
+but 
+.PN post
+called by 
+.PN send
+does.
+The 
+.PN post
+program will not deliver poorly formatted messages,
+and 
+.PN dist
+will not correct things for you.
+..
+.\" ************************************************
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine your Mail directory (\f(CW<mh-dir>\fR)
+Draft-Folder:+To find the default draft folder
+Editor:+To override the default editor
+.\"
+.\" Template-Editor:+To override the default editor for the template
+.\"
+fileproc:+Program to refile the message
+whatnowproc:+Program to ask the What now? questions
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN /usr/lib/mh/distcomps
+The default system template for re-distributed messages.
+.TP
+.PN <mh\-dir>/distcomps
+The user-supplied alternative to the default system template.
+.TP
+.PN $HOME/\&.mh_profile
+The user profile.
+.TP
+.PN <mh\-dir>/draft
+The draft file.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+comp(1mh), forw(1mh), repl(1mh), send(1mh), 
+.\" template(1), 
+whatnow(1mh)

@@ -1,0 +1,47 @@
+.\" SCCSID: @(#)nfs_svc.2nfs	8.2	1/28/91
+.TH nfs_svc 2nfs
+.SH Name
+nfs_svc, nfs_biod \- invoke NFS daemons
+.SH Syntax
+.nf
+nfs_svc(\fIsock\fP)
+int \fIsock\fP;
+.PP
+void nfs_biod()
+.fi
+.SH Description
+.NXR "nfs_svc system call"
+.NXR "nfs_biod system call"
+.NXR "nfsd daemon" "invoking"
+.NXAM "nfsd daemon" "nfs_svc system call"
+.PP
+The
+.PN nfs_svc 
+system call starts an NFS
+daemon listening on the socket referenced by the file descriptor
+.I sock.
+The socket must be an AF_INET address format, and a SOCK_DGRAM socket
+type (protocol UDP/IP). This system call is used by 
+.PN nfsd .
+.PP
+If the process is killed, the system call
+returns the diagnostic EINTR.
+.PP
+The 
+.PN nfs_biod
+implements the NFS daemon
+that handles asynchronous I/O for an NFS client.
+This system call is used by 
+.PN biod .
+Unlike
+.PN nfs_svc ,
+this system call does not return any 
+diagnostics if the process is killed.
+.SH Diagnostics
+.TP 15
+[EINTR]
+The NFS daemon,
+.PN nfs_svc ,
+process was killed.
+.SH See Also
+socket(2), biod(8nfs), nfsd(8nfs)

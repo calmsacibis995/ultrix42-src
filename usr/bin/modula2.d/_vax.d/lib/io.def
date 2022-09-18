@@ -1,0 +1,71 @@
+(*#@(#)io.def	4.1	Ultrix	7/17/90 *)
+(* $Header: io.def,v 1.5 84/05/19 11:39:44 powell Exp $ *)
+This module should not be compiled, but is supplied for documentation purposes.
+definition module io;
+
+(* This is a dummy definition module to indicate what is in the built-in *)
+(* io module.  Note that case is ignored in built-in identifiers *)
+
+type File;		(* Open file variable type *)
+			(* Although this is an opaque type, it can be *)
+			(* compared to nil.  Open returns nil on an error *)
+
+var
+    (* Standard files connected to Unix standard input, output, and error *)
+    input, output, terminal : File;
+
+procedure Open(name : array of Char; mode : array of Char) : File;
+    (* open a file *)
+    (* name : file name; mode = "r" for input, "w" for output *)
+    (* return value : opened file or nil *)
+
+procedure Close(f : File);
+    (* close a file *)
+
+procedure Readf(f : File; format : (* constant *) array of Char;
+		var arg1 : ArgType1; var arg2 : ArgType2; ...) : integer;
+    (* read a list of values from a file according to a format string *)
+    (* f : an open file; format : constant string format (like Unix scanf) *)
+    (* argn : variable for corresponding format item, type must match *)
+    (* return value : number of values read,  < 0 for end of file *)
+
+procedure Writef(f : File; format : (* constant *) array of Char;
+		arg1 : ArgType1; arg2 : ArgType2; ...);
+    (* write a list of values to a file according to a format string *)
+    (* f : an open file; format : constant string format (like Unix printf) *)
+    (* argn : value for corresponding format item, type must match *)
+
+procedure Readc(f : File; var c : Char) : integer;
+    (* read the next character from the file *)
+    (* f : an open file; c : variable to read next char into; *)
+    (* return value : >= 0 if read OK, < 0 if end of file *)
+
+procedure Writec(f : File; c : Char);
+    (* write a character to a file *)
+    (* f : an open file; c : value for next char to write; *)
+
+procedure SReadf(s : array of Char; format : (* constant *) array of Char;
+		var arg1 : ArgType1; var arg2 : ArgType2; ...) : integer;
+    (* read a list of values from a string according to a format string *)
+    (* s : a string; format : constant string format (like Unix scanf) *)
+    (* argn : variable for corresponding format item, type must match *)
+    (* return value : number of values read *)
+
+procedure SWritef(s : array of Char; format : (* constant *) array of Char;
+		arg1 : ArgType1; arg2 : ArgType2; ...);
+    (* write a list of values to a string according to a format string *)
+    (* s : a string; format : constant string format (like Unix printf) *)
+    (* argn : value for corresponding format item, type must match *)
+
+procedure Readb(f : File; var buff : array of byte; length : integer) : integer;
+    (* read binary data from a file *)
+    (* f : an open file; buff : variable to read into *)
+    (* length : number of bytes to read *)
+    (* return value : if read OK, = number of bytes read, < 0 if end of file *)
+
+procedure Writeb(f : File; buff : array of byte; length : integer);
+    (* write binary data to a file *)
+    (* f : an open file; buff : variable to write *)
+    (* length : number of bytes to write *)
+
+end io.

@@ -1,0 +1,948 @@
+/*#@(#)pascal.gram	4.1	Ultrix	7/17/90*/
+/****************************************************************************
+ *									    *
+ *  Copyright (c) 1984 by						    *
+ *  DIGITAL EQUIPMENT CORPORATION, Maynard, Massachusetts.		    *
+ *  All rights reserved.						    *
+ * 									    *
+ *  This software is furnished under a license and may be used and copied   *
+ *  only in  accordance with  the  terms  of  such  license  and with the   *
+ *  inclusion of the above copyright notice. This software or  any  other   *
+ *  copies thereof may not be provided or otherwise made available to any   *
+ *  other person.  No title to and ownership of  the  software is  hereby   *
+ *  transferred.							    *
+ * 									    *
+ *  The information in this software is  subject to change without notice   *
+ *  and  should  not  be  construed as  a commitment by DIGITAL EQUIPMENT   *
+ *  CORPORATION.							    *
+ * 									    *
+ *  DIGITAL assumes no responsibility for the use  or  reliability of its   *
+ *  software on equipment which is not supplied by DIGITAL.		    *
+ * 									    *
+$Header: pascal.gram,v 1.3 84/05/19 11:42:50 powell Exp $
+ ****************************************************************************/
+/* grammar for PASCAL for input to yacc */
+
+/* basic tokens */
+
+%token ENDOFFILE	0
+%token PLUS		1	
+%token MINUS		2	
+%token ASTERISK		3	
+%token SLASH		4	
+%token ASSIGN		5	
+%token AMPERSAND	6	
+%token DOT		7	
+%token COMMA		8	
+%token SEMICOLON	9	
+%token LPAREN		10	
+%token LBRACKET		11	
+%token LBRACE		12	
+%token UPARROW		13	
+%token EQUALS		14	
+%token SHARP		15	
+%token LESS		16	
+%token GREATER		17	
+%token NOTEQUAL		18	
+%token LSEQUAL		19	
+%token GREQUAL		20	
+%token DOTDOT		21	
+%token COLON		22	
+%token RPAREN		23	
+%token RBRACKET		24	
+%token RBRACE		25	
+%token BAR		26	
+%token IDENT		27	
+%token NUMBER		28	
+%token UNUSED		29
+%token CHARCONST	30	
+%token STRCONST		31	
+%token BOOLCONST	32	
+
+/* reserved words */
+
+%token AND		33	
+%token ARRAY		34	
+%token BEGIN		35	
+%token BY		36	
+%token CASE		37	
+%token CONST		38	
+%token LABEL		39	
+%token DIV		40	
+%token DO		41	
+%token ELSE		42	
+%token GOTO		43	
+%token END		44	
+%token PACKED		45	
+%token FORWARD		46	
+%token FOR		47	
+%token FROM		48	
+%token IF		49	
+%token FUNCTION 	50	
+%token EXTERNAL		51	
+%token IN		52	
+%token DOWNTO		53	
+%token MOD		54	
+%token PROGRAM		55	
+%token NOT		56	
+%token OF		57	
+%token OR		58	
+%token POINTER		59	
+%token PROCEDURE	60	
+%token PFILE		61	
+%token RECORD		62	
+%token REPEAT		63	
+%token RETURN		64	
+%token SET		65	
+%token THEN		66	
+%token TO		67	
+%token TYPE		68	
+%token UNTIL		69	
+%token VAR		70	
+%token WHILE		71	
+%token WITH		72	
+
+/* extra word for easy recognition */
+
+%token INCLUDE		73	
+%token BAD		74	/* force error from scanner */	
+
+%start pascalFile
+
+%%
+
+/************************************************************************/
+/* Note:								*/
+/* 	An action of 							*/
+		     /**/
+/* 			  means nothing needs to be done.		*/
+/* 	An action of							*/
+		     /*=*/
+/* 			   means the default is used, i.e., $$ = $1	*/
+/************************************************************************/
+
+pascalFile:
+		CompilationUnit
+	;
+
+CompilationUnit:
+		program
+	|	lsDeclaration
+	;
+
+program:
+		PROGRAM ident zoplsIdent SEMICOLON
+		{ SetProgFile(); }
+		block END DOT
+	;
+
+block:
+		oplsDeclaration
+		BEGIN { PrintKeyword("BEGIN"); }
+		StatementSequence
+
+	|	FORWARD
+		{ SourceError("forward does not exist"); }
+	;
+
+/* ********************** Declarations ************************* */
+
+oplsDeclaration:
+		/* empty */
+	
+	|	lsDeclaration
+
+	;
+
+lsDeclaration:
+		declaration
+
+	|	lsDeclaration
+		declaration
+	;
+
+declaration:
+		IncludeDecl
+	|	LabelDecl
+	|	ConstDecl
+	|	TypeDecl
+	|	VarDecl
+	|	ProcedureDecl
+	|	error SEMICOLON
+				{ SourceError("declaration error"); }
+	;
+
+IncludeDecl:
+		SHARP INCLUDE { PrintString("(* #"); PrintKeyword("INCLUDE");}
+		STRCONST
+		{ PrintStringConst($4); PrintString(" *)");
+			ProcessInclude($4); }
+
+LabelDecl:
+		LABEL { PrintKeyword("LABEL"); }
+		oplsElement 				/* too general */
+		SEMICOLON { PrintSemi(); SourceError("no gotos or labels"); }
+	;
+
+ConstDecl:
+		CONST { PrintKeyword("CONST"); }
+		ConstDef SEMICOLON
+			{ PrintSemi(); }
+	|	ConstDecl ConstDef SEMICOLON
+			{ PrintSemi(); }
+	;
+
+ConstDef:
+		exportIdent EQUALS { PrintString("="); } expression
+			    /* too general */
+	;
+
+TypeDecl:
+		TYPE { PrintKeyword("TYPE"); } TypeDef
+		{ PrintSemi(); } SEMICOLON
+
+	|	TypeDecl TypeDef { PrintSemi(); } SEMICOLON
+	;
+
+TypeDef:
+		exportIdent EQUALS { PrintString("="); } typeDefinition
+	;
+
+VarDecl:
+		VAR { PrintKeyword("VAR"); } VarDef { PrintSemi(); } SEMICOLON
+
+	|	VarDecl VarDef { PrintSemi(); } SEMICOLON
+	;
+
+VarDef:
+		varIdentList COLON { PrintString(":"); } typeDefinition
+	;
+
+ProcedurePrefix:
+		PROCEDURE { PrintKeyword("PROCEDURE"); }
+		exportIdent { DefineFunction($3); $$ = $3; }
+	;
+
+ProcedureHeader:
+		ProcedurePrefix SEMICOLON
+				{ DefineParameters(0); PrintSemi(); $$=$1; }
+	|	ProcedurePrefix parameterList SEMICOLON
+				{ DefineParameters(1); PrintSemi(); $$=$1; }
+	;
+
+FunctionPrefix:
+		FUNCTION { PrintKeyword("PROCEDURE"); }
+		exportIdent { DefineFunction($3); $$ = $3; }
+	;
+FunctionHeader:
+		FunctionPrefix SEMICOLON
+				{ DefineParameters(0); PrintSemi(); $$=$1; }
+	|
+		FunctionPrefix fparameterList COLON { PrintString(":"); }
+			prIdent { DefineParameters(1); } SEMICOLON
+				{ PrintSemi(); $$=$1; }
+	;
+ProcedureDecl:
+		FunctionHeader block END SEMICOLON
+		    { PrintKeyword("END"); PrintIdent($1); EndFunction();
+			PrintSemi(); }
+	|
+		ProcedureHeader block END SEMICOLON
+		    { PrintKeyword("END"); PrintIdent($1); EndFunction();
+			PrintSemi(); }
+	|
+		FunctionHeader EXTERNAL SEMICOLON
+		    { EndFunction(); PrintSemi(); }
+	|
+		ProcedureHeader EXTERNAL SEMICOLON
+		    { EndFunction(); PrintSemi(); }
+	;
+
+fparameterList:
+		/* empty */
+			{ PrintString("()"); }
+	|
+		parameterList
+	;
+parameterList:
+		LPAREN { PrintString("("); }
+		lsParam
+		RPAREN { PrintString(")"); }
+	;
+
+		
+
+/* ************************ Type Definitions *************************** */
+
+typeDefinition:
+		SimpleType
+
+	|	PointerType
+
+	|	ArrayType
+
+	|	FileType
+
+	|	SetType
+
+	|	RecordType
+
+	;
+
+SimpleType:
+		typeIdentifier
+
+	|	enumeration
+
+	|	SubrangeType
+
+	;
+
+enumeration:
+		LPAREN { PrintString("("); }
+		prIdentList
+		RPAREN { PrintString(")"); }
+	;
+		
+SubrangeType:
+		NUMBER { PrintString("[");
+			    PrintConst($1); }
+		DOTDOT { PrintString(".."); }
+		constant
+		{ PrintString("]"); }
+	
+	|	CHARCONST { PrintString("[");
+			    PrintStringConst($1); }
+		DOTDOT { PrintString(".."); }
+		constant
+		{ PrintString("]"); }
+
+	|	IDENT { PrintString("[");
+			PrintIdent($1); }
+		DOTDOT { PrintString(".."); }
+		constant
+		{ PrintString("]"); }
+
+	|	PLUS { PrintString("[+"); }
+		prIdent
+		DOTDOT { PrintString(".."); }
+		constant
+		{ PrintString("]"); }
+
+	|	MINUS { PrintString("[-"); }
+		prIdent
+		DOTDOT { PrintString(".."); }
+		constant
+		{ PrintString("]"); }
+
+	|	PLUS
+		NUMBER { PrintString("[+");
+		PrintConst($2); }
+		DOTDOT { PrintString(".."); }
+		constant
+		{ PrintString("]"); }
+
+	|	MINUS
+		NUMBER { PrintString("[-");
+		PrintConst($2); }
+		DOTDOT { PrintString(".."); }
+		constant
+		{ PrintString("]"); }
+	;
+
+PointerType:
+		UPARROW {PrintKeyword("POINTER TO"); EnsureSpace(); }
+		prIdent
+	;
+
+ArrayType:
+		opPACKED
+		ARRAY { PrintKeyword("ARRAY"); EnsureSpace(); }
+		bracketedSimpleTypeList
+		OF { PrintKeyword("OF"); }
+		typeDefinition
+	;
+
+bracketedSimpleTypeList:	
+		LBRACKET /* { PrintString("["); } */
+		bTypeList
+		RBRACKET /* { PrintString("]"); } */
+	;
+
+bTypeList:
+		SimpleType
+
+	|	bTypeList
+		COMMA { PrintString(","); }
+		SimpleType
+	;
+
+opPACKED:
+		/* empty */
+	|	PACKED
+	;
+
+FileType:
+		PFILE { PrintKeyword("FILE"); }
+		OF { PrintKeyword("OF"); }
+		typeDefinition
+		{ SourceError("use io module for files"); }
+	;
+
+
+RecordType:		
+		RECORD
+		{ PrintKeyword("RECORD"); }
+		FieldList
+		opCase
+		END
+		{ PrintEND(); }
+	;
+
+FieldList:
+		lsField
+	;
+
+lsField:
+		Field
+
+	|	lsField
+		SEMICOLON { PrintSemi(); }
+		Field
+	;
+
+Field:	
+		/* empty */
+
+	|	prIdentList
+		COLON { PrintString(":"); }
+		typeDefinition
+	;
+
+opCase:
+		/* empty */
+
+	|	CASE { PrintKeyword("CASE"); }
+		prIdent opColonIdent
+		OF { PrintKeyword("OF"); AdvanceSpace(); }
+		Variants
+		{ PrintEND(); }
+	;
+
+opColonIdent:
+		/* empty */
+	|	COLON { PrintString(":");} prIdent
+	;
+
+Variants:
+		Variant
+
+	|	Variants Variant
+	;
+
+Variant:
+		{ PrintString("| "); }
+		ElementList
+		COLON { PrintString(":"); }
+		LPAREN /* not printed */
+		FieldList
+		RPAREN
+		SEMICOLON { PrintSemi(); }
+	;
+
+SetType:
+		SET { PrintKeyword("SET"); }
+		OF { PrintKeyword("OF"); }
+		SimpleType
+	;
+
+
+/* ************************ Parameter Lists *************************** */
+
+
+lsParam:
+		formalParam
+
+	|	lsParam
+		SEMICOLON { PrintSemi(); }
+		formalParam
+	;
+
+formalParam:
+		PROCEDURE { PrintKeyword("PROCEDURE"); }
+		prIdentList
+		{ SourceError("use procedure type for procedure parameters"); }
+		
+	|	opParamType
+		prIdentList
+		COLON { PrintString(":"); }
+		typeIdentifier
+	;
+
+opParamType:
+		/* empty */
+
+	|	VAR { PrintKeyword("VAR"); }
+	
+	|	FUNCTION { PrintKeyword("FUNCTION");
+		SourceError("use procedure type for function parameters"); }
+
+	;
+		
+
+
+/* ************************ Statements *************************** */
+
+StatementSequence:
+		statement
+
+	|	StatementSequence SEMICOLON {PrintSemi();} statement
+
+	|	error
+		SEMICOLON { SourceError("statement error"); }
+		statement	
+	;
+
+DelimitedSequence:
+		statement
+	;
+
+BeginEndBlock:
+		BEGIN			/* the BEGIN/END isn't needed */
+		StatementSequence
+		END
+		{ EatSpace(); }
+	;		
+
+statement:
+		opLabel
+		unlabelledStatement
+	;
+
+opLabel:
+		/* empty */
+
+	|	opLabel NUMBER COLON { PrintConst($2); PrintString(":");
+		SourceError("no gotos or labels"); }
+	;
+
+
+unlabelledStatement:
+		/* empty */
+
+	|	Assignment
+
+	|	ProcedureCall
+
+	|	IfStatement
+	
+	|	CaseStatement
+
+	|	WhileStatement
+
+	|	RepeatStatement
+
+	|	ForStatement
+
+	|	WithStatement
+
+	|	GotoStatement
+
+	|	BeginEndBlock
+	;
+
+Assignment:
+		designator ASSIGN
+		{ PrintString(":="); CheckFunction($1); } expression
+	;
+
+ProcedureCall:
+		prIdent
+
+	|	prIdent ActualParameters
+
+	;
+
+ActualParameters:
+		LPAREN { PrintString("("); }
+		RPAREN { PrintString(")"); }
+
+	|	LPAREN { PrintString("("); }
+		ColonExpList
+		RPAREN { PrintString(")"); }
+	;
+
+
+IfStatement:
+		IF { PrintKeyword("IF");} expression
+		THEN { PrintKeyword("THEN"); EatSpace();} DelimitedSequence
+		ElsePart
+		{ PrintEND(); }
+	;
+
+ElsePart:
+		/* empty */
+	|	ELSE { EatSpace(); } ElseIfPart
+	;
+
+ElseIfPart:
+		IF { PrintKeyword("ELSIF"); } expression
+		THEN { PrintKeyword("THEN"); EatSpace(); } DelimitedSequence
+		ElsePart
+	|
+		{ PrintKeyword("ELSE"); } DelimitedSequence
+	;
+
+CaseStatement:
+		CASE
+		{ PrintKeyword("CASE"); }
+		expression
+		OF { PrintKeyword("OF"); AdvanceSpace(); }
+		lsCaseInstance
+		END
+		{ PrintEND(); }
+	;
+
+lsCaseInstance:
+		caseInstance
+		
+	|	lsCaseInstance caseInstance
+	;
+
+caseInstance:
+		{ PrintString("| "); }
+		ExpList 			/* too general */
+		COLON { PrintString(":"); EatSpace(); }
+		DelimitedSequence
+		SEMICOLON
+	;
+
+WhileStatement:
+		WHILE
+		{ PrintKeyword("WHILE"); }
+		expression
+		DO { PrintKeyword("DO"); EatSpace(); }
+		DelimitedSequence
+		{ PrintEND(); }
+	;
+
+RepeatStatement:
+		REPEAT { PrintKeyword("REPEAT"); }
+		StatementSequence
+		UNTIL { PrintKeyword("UNTIL"); }
+		expression
+	;
+
+ForStatement:
+		FOR
+		{ PrintKeyword("FOR"); }
+		designator
+		ASSIGN { PrintString(":="); }
+		expression
+		TOpart
+		DO { PrintKeyword("DO"); EatSpace(); }
+		DelimitedSequence
+		{ PrintEND(); }
+	;
+
+TOpart:
+		TO { PrintKeyword("TO"); }
+		expression
+
+	|	DOWNTO { PrintKeyword("TO"); }
+		expression
+		{ PrintKeyword("BY -1"); EnsureSpace(); }
+	;
+
+WithStatement:
+		WITH
+		{ PrintKeyword("WITH"); }
+		WithDesignatorMiddle
+	;
+
+WithDesignatorMiddle:
+		designator COMMA { PrintString(","); } WithDesignatorMiddle
+					{ PrintEND(); }
+	|
+		designator DO { PrintKeyword("DO"); EatSpace(); }
+		DelimitedSequence { PrintEND(); }
+	;
+
+GotoStatement:
+		GOTO { PrintKeyword("GOTO"); }
+		expression				/* too general */
+		{ SourceError("no gotos or labels"); }
+	;
+
+/* ************************** expressions ***************************** */
+
+factor:
+		NUMBER { PrintConst($1); }
+
+	|	CHARCONST { PrintStringConst($1); }
+
+	|	STRCONST { PrintStringConst($1); }
+
+	|	setexpr
+
+	|	designator
+
+	|	designator ActualParameters
+
+	|	LPAREN { PrintString("("); }
+		expression
+		RPAREN { PrintString(")"); }
+
+	|	NOT { PrintKeyword("NOT"); }
+		factor
+
+	;
+
+
+
+/* ********************************************************************** */
+
+designator:
+		prIdent
+
+	|	designator
+		LBRACKET { PrintString("["); }
+		ExpList
+		RBRACKET { PrintString("]"); }
+
+	|	designator UPARROW { PrintString("^"); }
+
+	|	designator DOT { PrintString("."); }
+		prIdent
+	;
+
+expression:
+		SimpleExpression
+
+	|	SimpleExpression relation SimpleExpression
+
+	;
+
+ExpList:
+		expression
+
+	|	ExpList
+		COMMA { PrintString(","); }
+		expression
+
+	;
+
+ColonExpList:				/* for parameter lists */
+		expression
+		opColonParam
+
+	|	ColonExpList
+		COMMA { PrintString(","); }
+		expression
+		opColonParam
+
+	;
+
+	/* opColonParam allows format stuff on write statements to be parsed */
+opColonParam:
+		/* empty */
+	|	opColonParamHeader opColonParam
+	|	opColonParamHeader prIdent opColonParam
+	;
+opColonParamHeader:
+		COLON { PrintString(":"); } expression
+	;
+
+setexpr:
+		LBRACKET { PrintString("{"); }
+		oplsElement
+		RBRACKET { PrintString("}"); }
+
+	|	prIdent
+		LBRACE { PrintString("{"); }
+		oplsElement
+		RBRACE { PrintString("}"); }
+
+	;
+
+oplsElement:
+		/* empty */
+
+	|	ElementList
+
+	;
+
+/*Token*/
+MulOperator:
+		ASTERISK { PrintString("*"); }
+
+	|	SLASH { PrintString("/"); }
+
+	|	DIV { PrintKeyword("DIV"); }
+
+	|	MOD { PrintKeyword("MOD"); }
+
+	|	AND { PrintKeyword("AND"); }
+
+	;
+
+/*Token*/
+AddOperator:
+		PLUS { PrintString("+"); }
+
+	|	MINUS { PrintString("-"); }
+
+	|	OR { PrintKeyword("OR"); }
+
+	;
+
+/*Token*/
+relation:
+		EQUALS { PrintString("="); }
+
+	|	NOTEQUAL { PrintString("<>"); }
+
+	|	LESS { PrintString("<"); }
+
+	|	LSEQUAL { PrintString("<="); }
+
+	|	GREATER { PrintString(">"); }
+
+	|	GREQUAL { PrintString(">="); }
+
+	|	IN { PrintKeyword("IN"); }
+
+	;
+
+Element:
+		expression
+
+	|	expression
+		DOTDOT { PrintString(".."); }
+		expression
+
+	;
+
+ElementList:
+		Element
+
+	|	ElementList
+		COMMA { PrintString(","); }
+		Element
+
+	;
+
+term:
+		factor
+
+	|	term MulOperator factor
+
+	;
+
+SimpleExpression:
+		lsAddTerm
+
+	|	PLUS { PrintString("+"); }
+		lsAddTerm
+
+	|	MINUS { PrintString("-"); }
+		lsAddTerm
+
+	;
+
+lsAddTerm:
+		term
+
+	|	lsAddTerm AddOperator term
+
+	;
+
+PlusMinus:
+		PLUS { PrintString("+"); }
+
+	|	MINUS { PrintString("-"); }
+
+	;
+
+
+/* ************************** identifiers **************************** */
+
+typeIdentifier:
+		prIdent
+	;
+
+/*Symbol*/
+prIdent:
+		ident { PrintIdent($1);}
+	;
+
+zoplsIdent:
+		/* empty */
+	|	LPAREN IdentList RPAREN
+	;
+
+prIdentList:
+		prIdent
+
+	|	prIdentList
+		COMMA { PrintString(","); }
+		prIdent
+
+	;
+
+IdentList:
+		ident
+	|	IdentList COMMA ident
+	;
+
+/*String*/
+ident:
+		IDENT
+	;
+
+
+/* **************************** constants ******************************** */
+
+
+constant:
+		NUMBER { PrintConst($1); }
+	
+	|	PlusMinus
+		NUMBER { PrintConst($2); }
+
+	|	CHARCONST { PrintStringConst($1); }
+
+	|	STRCONST { PrintStringConst($1); }
+
+	|	PlusMinus
+		prIdent
+
+	|	prIdent
+
+	;
+
+/* ***********************  Translation hacks  *************************** */
+
+
+exportIdent:
+		prIdent
+		{ CheckExport($1); }
+	;
+
+varIdentList:
+		exportIdent
+
+	|	varIdentList
+		COMMA { PrintString(","); }
+		exportIdent
+	;
+
+
+%%
+
+PrintEND()
+{
+	PrintSemi();
+	PrintKeyword("END");
+	PrintSemi();
+}

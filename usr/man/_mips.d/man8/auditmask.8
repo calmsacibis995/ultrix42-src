@@ -1,0 +1,89 @@
+.TH auditmask 8
+.SH Name
+auditmask \- get or set auditmasks
+.SH Syntax
+.B auditmask [ \fIoption ... \fP ]
+[ \fIevent\fP[:\fIsucceed\fP:\fIfail\fP]
+.SH Description
+.NXR "auditmask command"
+The
+.PN auditmask
+command with no arguments displays the system-calls and trusted-events
+currently being audited for the system, and displays whether
+they are being audited under successful or failed occurrences or both. 
+The format used for the display is acceptable as input to the
+.PN auditmask
+command. 
+.PP
+The
+.PN auditmask
+command with \fIevent\fP arguments sets the system-call and trusted-event
+audit masks for the system.  This is cumulative operation, so it is
+possible to turn on or off audit for one set of events, then turn on or
+off audit for a second set of events without changing the first set of
+events (except for intersection between the two sets).  Command line
+arguments to
+.PN auditmask
+can include one or more events, each with an optional field
+:\fIsucceed\fP:\fIfail\fP, where \fIsucceed\fP is
+either 0 to specify no auditing of successful
+occurrences of \fIevent\fP, or 1 (or any non-zero character)
+to specify auditing of successful
+occurrences of \fIevent\fP; and \fIfail\fP is either 0 to specify 
+no auditing of failed occurrences of \fIevent\fP or 1 (or any non-zero
+character) to specify auditing of failed occurrences of \fIevent\fP. 
+The event name is the system-call name or
+the trusted-event name (see \fIaudit.h\fP ).
+.PP
+The 
+.PN auditmask
+command will also accept redirected input, 
+which can be the output of a previously issued
+.PN auditmask
+command.  This is a file which contains lines of the format 
+\fIevent [succeed][fail]\fP.
+If the keyword
+.I succeed 
+is present, successful occurrences of 
+that event will be audited; if the keyword
+.I fail 
+is present, failed occurrences of that event will be audited; if both are
+present, successful and failed occurrences will be audited; if neither
+keyword is present, that event will not be audited. 
+.PP
+The \fIauditmask\fP command can also be used to set the audit style 
+characteristics of the audit subsystem.  These characteristics control how 
+much information is recorded on \fIexec\fP operations.
+.PP
+The
+.PN auditmask 
+command is used in 
+.PN /etc/rc.local 
+to initialize the auditmask at boot time according to the file 
+.PN /etc/sec/audit_events .  
+This makes use of privileged operations within the 
+.MS audcntl 2 
+system call.
+.SH Options
+.IP \-f  12
+Turns on full auditing for the system.  This list may include events which
+have no symbolic name and are represented only by a number (reserved for
+future use); these events will not be audited, despite their presence in
+the auditmask. 
+.IP \-n
+Turns off all auditing for the system. 
+.IP "\fB-s \fIaud_style\fR" 12
+An \fIaud_style\fP of "\fIexec_argp\fP" enables the auditing of the argument 
+list to an 
+.PN execv 
+or 
+.PN execve 
+syscall.
+An \fIaud_style\fP of "\fIexec_envp\fP" enables the auditing of the 
+environment strings to an 
+.PN execv 
+or 
+.PN execve 
+syscall.
+.SH See Also
+audcntl(2)

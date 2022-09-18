@@ -1,0 +1,198 @@
+.TH setsysinfo 2
+.SH Name
+setsysinfo \- set system information
+.SH Syntax
+.nf
+#include <sys/types.h>
+#include <sys/sysinfo.h>
+.PP
+setsysinfo(\fIop, buffer, nbytes, arg, flag\fP)
+unsigned	 \fIop\fP;
+char		*\fIbuffer\fP;
+unsigned	 \fInbytes\fP;	
+unsigned	 \fIarg\fP;
+unsigned	 \fIflag\fP;
+.fi
+.SH Description
+.NXR "setsysinfo system call"
+The
+.PN setsysinfo
+system call modifies system information.
+The
+.I op
+argument specifies the operation to be performed.  
+Values for 
+.I op
+are defined in the 
+.PN <sys/sysinfo.h> 
+header file.
+The optional
+.I buffer
+and
+.I nbytes
+arguments are 
+used to pass data, which varies depending upon
+.IR op .
+When
+.I buffer
+and
+.I nbytes
+are not required, they should be set to NULL.
+The optional
+.I arg
+argument can be used with certain
+.I op 
+values for additional information. 
+When
+.I arg
+is not required, it should be set to NULL.
+The optional
+.I flag
+argument can be used with certain
+.I op 
+and
+.I arg
+values for additional information.
+When
+.I flag
+is not required it should be set to NULL.
+.PP
+.sp
+Possible 
+.I op
+values are:
+.IP "\fIop\fR = SSI_NVPAIRS" 0.5i
+Use a list of 
+.I name-value 
+pairs to modify predefined system
+variables.
+.I Buffer
+is an array of
+.I name-value
+pairs, where
+.I name
+is one of a predefined set of system variables defined in
+the <sys/sysinfo.h> header file. 
+.sp
+Possible
+.I name
+values are:
+.RS
+.IP "SSIN_NFSPORTMON" 0.5i
+A Boolean that determines whether incoming NFS traffic is
+originating at a privileged port or not.
+.IP "SSIN_NFSSETLOCK" 0.5i
+A Boolean that determines whether NFS (daemon) style file
+and record locking are enabled or not.
+.IP "SSIN_PROG_ENV" 0.5i
+Set the compatibility mode of the process. Possible values are
+A_BSD, A_POSIX, or A_SYSV.
+.IP "SSIN_UACSYS (RISC only)" 0.5i
+A Boolean that determines whether or not the system prints an
+"unaligned access fixup" message.  Use of this is restricted to the
+superuser.
+.IP "SSIN_UACPARNT (RISC only)" 0.5i
+A Boolean that is set in the current process's parent proc
+structure.  It turns printing of ``unaligned access fixups'' on
+or off.  This flag is inherited across forks and execs.
+If parent is init, it returns EPERM.
+.IP "SSIN_UACPROC (RISC only)" 0.5i
+A Boolean value that is set in the proc structure to turn
+off/on printing of ``unaligned access fixup'' messages.  This flag
+is inherited across forks and execs.
+.PP
+The
+.I value
+is a legal value for
+.I name.
+The
+.I nbytes
+argument defines the number of 
+.I name-value 
+pairs in
+.I buffer.
+The
+.I arg
+and
+.I flag
+arguments are not used.
+.RE
+.IP "\fIop\fR = SSI_ZERO_STRUCT" 0.5i
+Each member of a system structure is set to zero.  The
+.I arg
+defines the structure type. 
+.sp
+Possible values for
+.I arg
+are:
+.RS
+.IP "SSIS_NFS_CLSTAT" 0.5i
+NFS client statistics.
+.IP "SSIS_NFS_SVSTAT" 0.5i
+NFS server statistics.
+.IP "SSIS_RPC_STAT" 0.5i
+RPC statistics.
+The
+.I flag
+argument is used for a particular
+.I arg
+value, to further define the operation or a resultant
+action to be performed.
+The
+.I buffer
+and
+.I nbytes
+arguments are not used.
+.PP
+Permission checking is done on a structure-by-structure basis.
+.RE
+.IP "\fIop\fR = SSI_SET_STRUCT" 0.5i
+Each member of a system structure is set to a supplied value. The
+.I arg
+defines the structure type. 
+.sp
+Possible values for
+.I arg
+are as defined for op SSI_STRUCT_ZERO.
+The
+.I flag
+argument is used for a particular
+.I arg
+value, to further define the operation or a resultant
+action to be performed.
+The
+.I buffer
+argument is the address of a structure of the appropriate type that
+contains the desired values.
+The
+.I nbytes
+argument specifies the amount of data to be transferred that is stored at
+.IR buffer .
+.EE
+.SH Return Values
+.PP
+A zero (0) is returned if the call succeeds. If the call fails, \-1 
+is returned, and the global variable
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+.TP 15
+[EFAULT]
+Either
+.I buffer
+or
+.I arg
+causes an illegal address to be referenced.
+.TP 15
+[EINVAL]
+The 
+.I op,
+.I arg,
+or
+.I flag
+argument is invalid.
+.TP
+[EPERM]
+Permission is denied for the operation requested
+.SH See Also
+getsysinfo(2)

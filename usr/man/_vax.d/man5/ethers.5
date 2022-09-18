@@ -1,0 +1,56 @@
+.TH ethers 5
+.SH Name
+ethers \- database that maps Ethernet addresses to hostnames
+.SH Description
+The
+.PN /etc/ethers
+.NXR "ethers file" "description"
+file is used in conjunction with the reverse address resolution
+protocol daemon,
+.PN rarpd ,
+to map Ethernet addresses to hostnames.  
+It contains information about the
+known (48-bit) Ethernet addresses of hosts on the Internet.
+.PP
+For each host on an Ethernet,
+a single line should be present in the file with the following information:
+.PP
+\fIEthernet-address        official-host-name\fR
+.PP
+Items are separated by one or more spaces or tabs.
+A number sign (#) indicates the beginning of a comment
+that extends to the end of line.
+.PP
+The standard form for Ethernet addresses is:
+.PP
+\fIx:x:x:x:x:x\fR
+.PP
+The
+.I x
+is a hexadecimal number between 0 and ff, representing 1 byte.
+The address bytes are always in network order.
+.PP
+Hostnames can contain any printable character other than a
+space, tab, newline, or number sign (#).
+.PP
+Hostnames in the
+.PN /etc/ethers
+file should correspond to the hostnames in the
+.PN /etc/hosts 
+file or to those provided by the name service.
+.NXR "ethers file" "host name restrictions"
+.SH Examples
+The following is a sample 
+.PN ethers 
+file:
+.EX0
+08:00:20:01:e5:1c       host1        # Comments go here
+08:00:20:01:d0:4c       host2        # Comments go here
+08:00:20:01:e0:1d       host3        # Comments go here
+08:00:20:00:c2:4e       host4        # Comments go here
+.EE
+.NXR(e) "ethers file" 
+.SH See Also
+ethers(3n), hosts(5), rarpd(8c)
+.br
+.I "Introduction to Networking and Distributed System Services"

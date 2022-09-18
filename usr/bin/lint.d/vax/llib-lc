@@ -1,0 +1,963 @@
+/* 
+ *
+ * The lint library has been reorganized and updated.
+ *
+ * The first section contains all the Berkeley code as close to exact as
+ * possible.  Functions that don't return or return void are declared as
+ * such, which is not the way it was done previously.  In some places,
+ * variables were declared as pointers to characters when they were
+ * actually integers, and these have been corrected.  The ifndef's are
+ * because of conflicts with System V additions.
+ *
+ * The second section contains the Berkeley definitions that are not in
+ * System V, and are not included in the System V lint library.
+ *
+ * The third section has all the System V additions to Ultrix that
+ * don't conflict and have been included in the normal Ultrix lint
+ * library.
+ *
+ * The fourth section, seperated by an ifdef block, is all the
+ * conflicting definitions between System V and Berkeley.
+ *
+ */
+
+/* This is the basic Ultrix (Berkeley) lint library with the conflicting
+ * definitions with System V 'ifndef'ed.
+ */
+
+/*LINTLIBRARY*/
+#include <sys/types.h>
+#include <dbm.h>
+#undef NULL /* dbm's NULL is brain-dead */
+#include <disktab.h>
+#include <fstab.h>
+#include <grp.h>
+#include <sys/dir.h>
+#include <netdb.h>
+#include <nlist.h>
+#include <pwd.h>
+#include <setjmp.h>
+#include <stdio.h>
+#include <sgtty.h>
+#include <signal.h>
+#include <limits.h>
+#include <sys/param.h>
+#include <sys/mount.h>
+#include <sys/time.h>
+#include <sys/times.h>
+#include <sys/vtimes.h>
+#include <sys/timeb.h>
+#include <sys/resource.h>
+#include <sys/wait.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/uio.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+
+	/***	SECTION 2	***/
+/* ACCEPT(2) */
+int	accept(s,a,l) int s; struct sockaddr *a; int *l; { return s; }
+/* ACCESS(2) */
+int	access(p,m) char *p; int m; { return 0; }
+/* ACCT(2) */
+int	acct(f) char *f; { return 0;}
+/* ADJTIME(2) */
+int	adjtime(d, o) struct timeval *d, *o; { return 0; }
+/* BRK(2) */
+#ifndef SYSTEM_FIVE
+caddr_t	brk(a) caddr_t a; { return(0); }
+#endif
+caddr_t	sbrk(i) int i; { return(0); }
+
+#ifdef mips
+/* CACHECTL(2) */
+int	cachectl(a, n, o) char *a; int n, o; { return 0; }
+/* CACHEFLUSH(2) */
+int	cacheflush(a, n, c) char *a; int n, c; { return 0; }
+#endif
+
+/* CHDIR(2) */
+int	chdir(s) char *s; { return(0); }
+/* CHMOD(2) */
+int	chmod(s,m) char *s; int m;  { return(0); }
+int	fchmod(f, m) int f,m; { return(0); }
+/* CHOWN(2) */
+int	chown(s,u,g) char *s; int u; int g; { return(0); }
+int	fchown(f, u, g) int f,u,g; { return(0); }
+/* CHROOT(2) */
+int	chroot(d) char *d; { return 0; }
+/* CLOSE(2) */
+int	close(f) int f; { return(0); }
+/* CREAT(2) */
+int	creat(s,m) char *s; int m; { return(0); }
+/* DUP(2) */
+int	dup(f) int f; { return(f); }
+int	dup2(o,n) int o; int n; { return o; }
+/* EXECVE(2) */
+int	execve(s,v,e) char *s, *v[], *e[]; {return(0);}
+/* EXIT(2) */
+#ifndef SYSTEM_FIVE
+int	_exit(s) int s; {return(0);}
+#endif
+/* EXPORTFS(2) */
+int	exportfs(n, r, e) char *n; int r,e; { return 0; }
+/* FCNTL(2) */
+int	fcntl(f,c,a) int f; int c; int a;{ return (0); }
+/* FORK(2) */
+int	fork() { return(0); }
+/* GETDIRENTRIES(2) */
+int	getdirentries(f, b, n, bp) int f, n; char *b; long *bp; { return 0; }
+/* GETDOMAINNAME(2) */
+int	getdomainname(n, nl) char *n; int nl; { return 0; }
+int	setdomainname(n, nl) char *n; int nl; { return 0; }
+/* GETGID(2) */
+#ifndef SYSTEM_FIVE
+int	getgid() { return(1); }
+int	getegid() { return(1); }
+#endif
+/* GETMNT(2) */
+int	getmnt(s,b,n,m,p) int *s,n,m; struct fs_data *b; char *p; { return 0; }
+/* GETPGRP(2) */
+#ifndef SYSTEM_FIVE
+int	getpgrp(p) int p; { return 1; }
+#endif
+/* GETPID(2) */
+int	getpid() { return(1); }
+int	getppid() { return(1); }
+/* GETUID(2) */
+#ifndef SYSTEM_FIVE
+int	getuid() { return(1); }
+int	geteuid() { return(1); }
+#endif
+/* IOCTL(2) */
+#ifndef SYSTEM_FIVE
+int	ioctl(d,r,p) int d; int r; char *p; { return 0;}
+#endif
+/* KILL(2) */
+int	kill(p,s) int p; int s; { return(0); }
+/* LINK(2) */
+int	link(a,b) char *a, *b; { return(0); }
+/* LSEEK */
+long	lseek(f,o,d) int f; long o; int d; { return 1L; }
+
+#ifdef SYSTEM_FIVE
+int	madvise(a,l,b) char * a; int l, b; { return 0;}
+int	mmap(a,l,p,s,f,o) char * a; int l,p,s,f; off_t o; { return 0;}
+int	mincore(a,l,v) char * a; int l; char *v; { return 0; }
+#endif
+
+/* MKDIR(2) */
+int	mkdir(p,m) char *p; int m; { return 0; }
+/* MKNOD(2) */
+int	mknod(n,m,a) char *n; int m,a; { return(0); }
+/* MOUNT(2) */
+int	mount(s,n,f) char *s, *n; int f; { return(0); }
+int	umount(s) char *s; { return(0); }
+
+#ifdef SYSTEM_FIVE
+int	mprotect(a,l,p) char * a; int l,p; { return 0;}
+int	mremap(a,l,p,s,f) char * a, f; int l,p,s; { return 0;}
+int	munmap(a,l) char * a; int l; { return 0;}
+#endif
+
+/* NFS_SVC(2) -- return types are guesses */
+int	nfs_svc(s) int s; { return 0; }
+void	nfs_biod() { }
+/* OPEN(2) */
+	/*VARARGS2*/
+int	open(f,m,stuff) char *f; int m,stuff; { return(0); }
+/* PIPE(2) */
+int	pipe(f) int f[2]; { return(0); }
+/* PROFIL(2) */
+#ifndef SYSTEM_FIVE
+int	profil(b,s,o,i) char *b; int s,o,i; { return(0);}
+#endif
+/* PTRACE(2) */
+int	ptrace(r,p,a,d) int r,p,*a,d; { return(0); }
+/* READ(2) */
+#ifndef SYSTEM_FIVE
+int	read(f,b,l) int f,l; char *b; { return(l); }
+int	readv(d,v,l) int d,l; struct iovec *v; { return l; }
+#endif
+/* SETPGRP(2) */
+#ifndef SYSTEM_FIVE
+int	setpgrp(g,pg) int g, pg; { return 0; }
+#endif
+
+#ifdef mips
+/* SIGRETURN(2) */
+int	sigreturn(s) struct sigcontext *s; { return 0; }
+#endif
+
+/* STAT(2) */
+int	stat(s,b) char *s; struct stat *b; { return(0); }
+int	fstat(f,b) int f; struct stat *b; { return(0); }
+int	lstat(s,b) char *s; struct stat *b; { return(0); }
+
+#ifdef SYSTEM_FIVE
+char *	stk(a) char * a; { return a; }
+char *	sstk(a) int a; { return (char *)0; }
+#endif
+
+/* SYNC(2) */
+void	sync(){}
+/* UMASK */
+int	umask(n) int n; { return n; }
+/* UNLINK */
+int	unlink(s) char *s; { return(0); }
+/* WAIT(2) */
+#ifndef SYSTEM_FIVE
+int	wait(s) union wait *s; { return(1); }
+int	wait3(s,o,r) union wait *s; int o; struct rusage *r; { return 1;}
+#endif
+/* WAITPID(2) */
+pid_t	waitpid(p,s,o) pid_t p; int *s; int o; { return (p); }
+/* WRITE(2) */
+#ifndef SYSTEM_FIVE
+int	write(f,b,l) int f, l; char *b; { return(l); }
+int	writev(f,v,l) int f, l; struct iovec *v; { return l; }
+#endif
+
+
+	/***	SECTION	3	***/
+
+/* ABORT(3) */
+void	abort() {}
+/* ABS(3) */
+int	abs(i) int i; { return(i); }
+/* ALARM(3C) */
+#ifndef SYSTEM_FIVE
+int	alarm(s) unsigned s; { return(s); }
+#endif
+/* CRYPT(3) */
+char *	crypt(k,s) char *k, *s; { return(""); }
+#ifndef SYSTEM_FIVE
+void	encrypt(s) char *s; {}
+#endif
+/* CTIME(3) */
+char *	ctime(c) long *c;{ return(""); }
+char *	asctime(t) struct tm *t; { return(""); }
+struct	tm *localtime(c) long *c; { return localtime(c); }
+struct	tm *gmtime(c) long *c; { return gmtime(c); }
+#ifndef SYSTEM_FIVE
+char *	timezone(z,d) int z, d; {return("");}
+#endif
+/* DBM(3) */
+int	dbminit(f) char *f; { return 0; }
+datum	fetch(k) datum k; { return k; }
+int	store(k, c) datum k, c; { return 0; }
+int	delete(k) datum k; { return 0; }
+datum	firstkey() { static datum k; return k; }
+datum	nextkey(k) datum k; { return k; }
+/* ECVT(3) */
+char *	ecvt(v,n,d,s) double v; int n, *d, *s; { return(""); }
+char *	fcvt(v,n,d,s) double v; int n, *d, *s; { return(""); }
+char *	gcvt(v,n,b) double v; int n; char *b; { return(""); }
+/* END(3) */
+int	end;
+int	etext;
+int 	edata;
+/* EXECL(3) */
+	/*VARARGS*/
+int	execl(f,a) char *f, *a; {return (1);}
+	/*VARARGS*/
+int	execle(f,a) char *f, *a; {return (1);}
+int	execv(s,v) char *s, *v[]; {return (1);}
+int	exect(s, v, e) char *s, *v[], *e[]; {;}
+/* EXIT(3) */
+void	exit(s) int s; {}
+/* FCLOSE(3S) */
+int	fclose(f) FILE *f; {return(0);}
+int	fflush(f) FILE *f; {return(0);}
+/* FOPEN(3S) */
+FILE *	fopen(s,m) char *s, *m; { return(stdin); }
+FILE *	fdopen(fd,m) int fd; char *m; { return(stdin);}
+FILE *	freopen(s,m,f) char *s, *m; FILE *f; { return(stdin); }
+/* FREAD(3S) */
+int	fread(p,s,n,f) char *p; int s, n; FILE *f; {return(1);}
+int	fwrite(p,s,n,f) char *p; int s, n; FILE *f; {return(0);}
+/* FREXP(3) */
+double	frexp(v,e) double v; int *e; { return v; }
+double	ldexp(v,e) double v; int e; { return v; }
+double	modf(v,p) double v, *p; { return v; }
+/* FSEEK(3S) */
+int	fseek(f,o,p) FILE *f; long o; int p; { return(0); }
+long	ftell(f) FILE *f; { return(0L); }
+void	rewind(f) FILE *f; {}
+/* GETC(3S) */
+int	fgetc(f)  FILE *f; {return 0; }
+int	getw(f) FILE *f; { return 0;}
+/* GETDISKBYNAME(3) */
+struct disktab * getdiskbyname(n) char *n; { return (struct disktab *) 0; }
+/* GETENV(3) */
+char *	getenv(n) char *n; { return n; }
+/* GETFSENT(3X) */
+struct fstab *	getfsent() { return (struct fstab *)NULL; }
+struct fstab *	getfsspec(n) char *n; { return (struct fstab *)NULL; }
+struct fstab *	getfsfile(n) char *n; { return (struct fstab *)NULL; }
+struct fstab *	getfstype(t) char *t; { return (struct fstab *)NULL; }
+int	endfsent() { return 0; }
+int	setfsent() { return 0; }
+/* GETGRENT(3) */
+#ifndef SYSTEM_FIVE
+struct group *	getgrent() { return (struct group *)NULL; }
+struct group *	getgrgid(n) int n; { return (struct group *)NULL; }
+struct group *	getgrnam(n) char *n; { return (struct group *)NULL; }
+int	endgrent() { return 0; }
+int	setgrent() { return 0; }
+#endif
+/* GETLOGIN(3) */
+char *	getlogin(){ return " "; }
+/* GETHOSTENT(3) */
+struct hostent * gethostent() { return (struct hostent *) 0; }
+struct hostent * gethostbyname(n) char *n; { return (struct hostent *) 0; }
+struct hostent * gethostbyaddr(a, l, t) char *a; int l,t; { return (struct hostent *) 0; }
+void	sethostent(s) int s; { ; }
+void	endhostent() { ; }
+/* GETNETENT(3) */
+struct netent *	getnetent() { return (struct netent *) 0; }
+struct netent *	getnetbyname(n) char *n; { return (struct netent *) 0; }
+struct netent *	getnetbyaddr(n, t) int n,t; { return (struct netent *) 0; }
+void	setnetent(s) int s; { ; }
+void	endnetent() { ; }
+/* GETPASS(3) */
+char *	getpass(n) char *n ; { return n; }
+/* GETPROTOENT(3) */
+struct protoent * getprotoent() { return (struct protoent *) 0; }
+struct protoent * getprotobyname(n) char *n; { return (struct protoent *) 0; }
+struct protoent * getprotobynumber(p) int p; { return (struct protoent *) 0; }
+void	setprotoent(s) int s; { ; }
+void	endprotoent() { ; }
+/* GETPW(3C) */
+int	getpw(u,b) int u; char *b;  { return 0; }
+/* GETPWENT(3) */
+#ifndef SYSTEM_FIVE
+struct passwd *	getpwent() { return (struct passwd *)NULL; }
+struct passwd *	getpwuid(n) int n; { return (struct passwd *)NULL; }
+struct passwd *	getpwnam(n) char *n; { return (struct passwd *)NULL; }
+int	endpwent() { return 0; }
+int	setpwent() { return 0; }
+#endif
+/* GETS(3S) */
+char *	gets(s) char *s; { return(s); }
+char *	fgets(s,l,f) char *s; int l; FILE *f; { return(s); }
+/* GETSERVENT(3) */
+struct servent * getservent() { return (struct servent *) 0; }
+struct servent * getservbyname(n,p) char *n,*p; { return (struct servent *) 0; }
+struct servent * getservbyport(p, pr) int p; char *pr; { return (struct servent *) 0; }
+void	setservent(s) int s; { ; }
+void	endservent() { ; }
+/* GETTTYENT(3) */
+struct ttyent *	getttyent() { return (struct ttyent *) 0; }
+struct ttyent *	getttynam(n) char *n; { return (struct ttyent *) 0; }
+void	setttyent() { ; }
+void	endttyent() { ; }
+/* INET(3) */
+/* inet_addr and inet_network don't match the man page; they match
+   the header file arpa/inet.h. */
+unsigned long	inet_addr(cp) char *cp; { return 0L; }
+unsigned long	inet_network(cp) char *cp; { return 0L; }
+char *	inet_ntoa(in) struct in_addr in; { return (char *) 0; }
+struct in_addr	inet_makeaddr(n, h) int n,h; { static struct in_addr in; return in; }
+int	inet_lnaof(in) struct in_addr in; { return 0; }
+int	inet_netof(in) struct in_addr in; { return 0; }
+/* INITGROUPS(3) */
+int	initgroups(uname, agroup) char *uname; int agroup; { return 0; }
+/* MALLOC(3) */
+char *	malloc(n) unsigned n; {static char c; return(&c);}
+char *	calloc(n,s) unsigned n, s; { static char c[1]; return(c); }
+char *	realloc(p,n) char *p; unsigned n; { static char c[1]; return(c);}
+void	free(p) char *p; {}
+char *	alloca(s) int s; {static char c; return (&c); }
+/* MKFIFO(3) */
+int	mkfifo(p,m) char *p; mode_t m; {return (0); }
+/* MKTEMP(3) */
+char *	mktemp(p) char *p; { return(p);}
+/* MONITOR(3) */
+#ifndef SYSTEM_FIVE
+void	monitor(l,h,b,s,n) int (*l)(), (*h)(); short *b; int s, n; {}
+#endif
+void	monstartup(l,h) int (*l)(), (*h)(); {}
+void	moncontrol(mode) int mode; {}
+/* NICE(3C) */
+#ifndef SYSTEM_FIVE
+void	nice(i) int i; {}
+#endif
+/* NLIST(3) */
+#ifndef SYSTEM_FIVE
+void	nlist(f,n) char *f; struct nlist n[]; {}
+#endif
+/* PATHCONF(3) */
+long	pathconf(p,n) char *p; int n; { return(0L); }
+long	fpathconf(f,n) int f,n; { return(0L); }
+/* PAUSE(3C) */
+int	pause() {return(1);}
+/* PERROR(3) */
+void	perror(s) char *s; {}
+int 	errno;
+int	sys_nerr;
+char *	sys_errlist[];
+/* POPEN(3) */
+FILE *	popen(c,t) char *c, *t; { return(stdin); }
+int	pclose(f) FILE *f; { return 0; }
+/* PRINTF(3S) */
+	/*VARARGS*/
+int	printf(s) char *s; {return(1);}
+	/*VARARGS*/
+int	fprintf(f,s) FILE *f; char *s; {return(1);}
+#ifndef SYSTEM_FIVE
+	/*VARARGS*/
+char *	sprintf(s,f) char *s, *f; { return(s);}
+#endif
+/* PUTC(3S) */
+int	fputc(c,f) char c; FILE *f; {return 0; }
+int	putw(w,f) int w; FILE *f; { return 0;}
+/* PUTS(3S) */
+int	puts(s) char *s;{return(0);}
+int	fputs(s,f) char *s; FILE *f; {return(0);}
+/* QSORT(3) */
+#ifndef SYSTEM_FIVE
+int	qsort(b,n,w,c) char *b; int n, w; int (*c)(); {}
+#endif
+/* RAND(3C) */
+int	rand(){ return 1; }
+void	srand(s) int s; {}
+/* RCMD(3) */
+int	rcmd(a, rp, lu, ru, c, f) char **a, *lu, *ru, *c; u_short rp; int *f; { return 0; }
+int	rresvport(p) int *p; { return 0; }
+int	ruserok(rh, su, ru, lu) char *rh, *ru, *lu; int su; { return 0; }
+/* REXEC(3) */
+int	rexec(a, rp, n, p, c, f) char **a, *n, *p, *c; u_short rp; int *f; { return 0; }
+/* SCANF(3S) */
+	/*VARARGS*/
+int	scanf(f) char *f; {return(1); }
+	/*VARARGS*/
+int	fscanf(f,s) FILE *f; char *s; {return(1);}
+	/*VARARGS*/
+int	sscanf(s,f) char *s, *f; { return(1); }
+/* SETBUF(3S) */
+void	setbuf(f,b) FILE *f; char *b; {}
+void	setbuffer(f,b,s) FILE *f; char *b; int s; {}
+void	setlinebuf(f) FILE *f; {}
+/* SETJMP(3) */
+int	setjmp(e) jmp_buf e; { return(0); }
+void	longjmp(e,v) jmp_buf e; int v; {}
+int	_setjmp(e) jmp_buf e; { return(0); }
+void	_longjmp(e,v) jmp_buf e; int v; {}
+/* SETPGID(3) */
+int	setpgid(p,o) pid_t p,o; { return(0); }
+/* SETUID(3) */
+int	setuid(u) int u; { return(0); }
+int	seteuid(u) int u; { return(0); }
+int	setruid(u) int u; { return(0); }
+int	setgid(g) int g; { return(0); }
+int	setegid(g) int g; { return(0); }
+int	setrgid(g) int g; { return(0); }
+/* SIGSETOPS(3) */
+#ifndef	SYSTEM_FIVE
+int	sigemptyset(s) sigset_t *s; {return(0); }
+int	sigfillset(s) sigset_t *s; {return(0); }
+int	sigaddset(s,f) sigset_t *s; int f; {return(0); }
+int	sigdelset(s,f) sigset_t *s; int f; {return(0); }
+int	sigismember(s,f) sigset_t *s; int f; {return(0); }
+/* SIGPROCMASK(3) */
+int	sigprocmask(h,s,o) int h; sigset_t *s, *o; {return(0); }
+/* SIGSUSPEND(3) */
+int	sigsuspend(s) sigset_t *s; {return(0); }
+#endif
+/* SIGINTERRUPT(3) */
+int	siginterrupt(s,f) int s, f; {return(0); }
+/* SIGNAL(3C) */
+void	(*signal(c,f))() void (*f)(); { return(f); }
+/* SLEEP(3) */
+unsigned	sleep(n) unsigned n; { return (n); }
+/* STRING(3) */
+char *	strcat(a,b) char *a, *b; { return a; }
+int	strcmp(a,b) char *a, *b; { return(1); }
+char *	strcpy(a,b) char *a, *b; { return a; }
+int	strlen(s) char *s; { return(1); }
+char *	strncat(a,b,n) char *a, *b; int n; { return a;}
+int	strncmp(a,b,n) char *a, *b; int n; { return(1); }
+char *	strncpy(a,b,n) char *a, *b; int n; { return a; }
+char *	strchr(s, c) char *s; int c; { return s; }
+char *	strrchr(s, c) char *s; int c; { return s; }
+char *	strpbrk(s, brk) char *s, *brk; { return s; }
+int	strspn(s, set) char *s, *set; { return(0); }
+int	strcspn(s, set) char *s, *set; { return(0); }
+char *	strtok(s, sep) char *s, *sep; { return s; }
+char *	index(s,c) char *s, c; { return s; }
+char *	rindex(s,c) char *s, c; { return s; }
+/* SWAB(3) */
+void	swab(f,t,n) char *f, *t; int n; {}
+/* SYSCONF(3) */
+long	sysconf(n) int n; { return(0L); }
+/* SYSTEM(3) */
+int	system(s) char *s; { return(0); }
+/* TIMES(3C) */
+#ifndef SYSTEM_FIVE
+int	times(b) struct tms *b; { return(0); }
+#endif
+/* TTYNAME(3) */
+char *	ttyname(f) int f; { return " "; }
+int	isatty(f) int f; { return 1; }
+int	ttyslot() { return 1; }
+/* UNGETC(3S) */
+int	ungetc(c,f) int c; FILE *f; {  return(c); }
+/* UTIME(3C) */
+int 	utime(f,t) char *f; time_t t[]; { return(1); }
+
+struct	_iobuf _iob[];
+
+
+
+
+/* Things in the Ultrix-Berkeley environment that don't need to be
+ * in the SYSTEM_FIVE environment.
+ */
+
+#ifndef SYSTEM_FIVE
+/* BIND(2) */
+int	bind(s,n,l) int s; struct sockaddr *n; int l; { return 0; }
+/* CONNECT(2) */
+int	connect(s,n,l) int s; struct sockaddr *n; int l; { return 0; }
+/* FLOCK(2) */
+int	flock(f,o) int f; int o; { return 0; }
+/* FSYNC(2) */
+int	fsync(f) int f; { return (0); }
+/* GETDTABLESIZE(2) */
+int	getdtablesize() { return 20 ; }
+/* GETGROUPS(2) */
+int	getgroups(n,g) int n, *g; { return 0; }
+/* GETHOSTID(2) */
+int	gethostid() { return 1; }
+int	sethostid(h) int h; { return 0;}
+/* GETHOSTNAME(2) */
+int	gethostname(n,l) char *n; int l; { return 0 ;}
+int	sethostname(n,l) char *n; int l; { return 0 ;}
+/* GETITIMER(2) */
+int	getitimer(w,v) int w; struct itimerval *v; { return 0; }
+int	setitimer(w,v,ov) int w; struct itimerval *v, *ov; { return 0; }
+/* GETPAGESIZE(2) */
+int	getpagesize() { return 1; }
+/* GETPEERNAME(2) */
+int	getpeername(s,n,l) int s, *l; struct sockaddr *n; {return 0;}
+/* GETPRIORITY(2) */
+int	getpriority(w,who) int w; int who; { return 1;}
+int	setpriority(w,who, pri ) int w, who, pri; { return 1;}
+/* GETRLIMIT(2) */
+int	getrlimit(res,rip) int res; struct rlimit *rip; { return 0;}
+int	setrlimit(res,rip) int res; struct rlimit *rip; { return 0;}
+/* GETRUSAGE(2) */
+int	getrusage(res,rip) int res; struct rusage *rip; { return 0;}
+/* GETSOCKNAME(2) */
+int	getsockname(s,name,namelen) int s; char *name; int *namelen;
+		{ return(0); }
+/* GETSOCKOPT(2) */
+int	getsockopt(s,level,opt,buf,len) int s,level,opt; char *buf;
+		int *len; {return(0); }
+	/*VARARGS*/
+int	setsockopt(s,level,opt,buf,len) int s,level,opt,len; char *buf;
+		{return(0); }
+/* GETTIMEOFDAY(2) */
+int	gettimeofday(t,z) struct timeval *t; struct timezone *z; { return 0;}
+int	settimeofday(t,z) struct timeval *t; struct timezone *z; { return 0;}
+/* KILLPG(2) */
+int	killpg(pg,s) int pg; int s; { return 0;}
+/* LISTEN(2) */
+int	listen(s,b) int s; int b; { return 0; }
+/* QUOTA(2) */
+int	quota(c,u,a,b) int c,u,a; caddr_t b; { return(0); }
+/* READLINK(2) */
+int	readlink(p,b,s) char *p, *b; int s; { return 1; }
+/* REBOOT(2) */
+int	reboot(h) int h; {return (0);}
+/* RECV(2) */
+int	recv(s,b,l,f) int s,l,f; char *b; { return l ; }
+int	recvfrom(s,b,l,f,fr,fl ) int s,l,f; char *b; struct sockaddr *fr;
+ 		int *fl; { return l; }
+int	recvmsg(s,m,f) int s,f; struct msghdr m[]; { return 1; }
+/* RENAME(2) */
+int	rename(f,t) char *f, *t; { return 0;}
+/* RMDIR(2) */
+int	rmdir(p) char *p; { return 0;}
+/* SELECT(2) */
+int	select(n,r,w,e,t) int  n,*r,*w,*e;struct timeval *t; { return n; }
+/* SEND(2) */
+int	send(s,m,l,f)  int s,l,f; char *m; { return l; }
+int	sendto(s,m,l,f,t,tl) int s,l,f,tl; char *m; struct sockaddr *t; 
+		{ return l; }
+int	sendmsg(s,m,l) int s,l; struct msghdr m[]; { return l; }
+/* SETGROUPS(2) */
+int	setgroups(n,g) int *g, n; { return 0; }
+/* SETPEGID(2) */
+int	setregid(r,e) int r, e; { return 0; }
+/* SETQUOTA(2) */
+int	setquota(s,f) char *s, *f; { return 0; }
+/* SETREUID(2) */
+int	setreuid(r,e) int r, e; { return 0; }
+/* SETSID(2) */
+pid_t	setsid() {return ((pid_t)NULL); }
+/* SHUTDOWN(2) */
+int	shutdown(s,h) int s,h; { return 0;}
+/* SIGBLOCK(2) */
+int	sigblock(m) int m; { return (m); }
+/* SIGPENDING(2) */
+#ifndef	SYSTEM_FIVE
+int	sigpending(s) sigset_t *s; { return (0); }
+#endif
+/* SIGPAUSE(2) */
+int	sigpause(m) int m; { return (0); }
+/* SIGSETMASK(2) */
+int	sigsetmask(m) int m; { return (m); }
+/* SIGSTACK(2) */
+int	sigstack(ss,oss) struct sigstack *ss, *oss; { return (0); }
+/* SIGVEC(2) */
+int	sigvec(c,f,m) int c; struct sigvec *f, *m; { return(0); }
+/* SOCKET(2) */
+int	socket(a,t,p) int a, t, p; {return 1;}
+/* SOCKETPAIR(2) */
+int	socketpair(d,t,p,s) int d, t, p; int s[2]; { return 0; }
+/* SWAPON(2) */
+int	swapon(s) char *s; { return 0;}
+/* SYMLINK(2) */
+int	symlink(t,f) char *t, *f; { return 0;}
+/* TRUNCATE(2) */
+int	truncate(p,l) char *p; int l; { return 0;}
+int	ftruncate(d,l) int d; int l; { return 0;}
+/* UTIMES(2) */
+int	utimes(f,t) char *f; struct timeval t[2]; { return 0 ;}
+/* VFORK(2) */
+int	vfork() { return(0); }
+/* VHANGUP(2) */
+void	vhangup() {}
+/* ATOF(3) */
+double	atof(s) char *s; { return(1.); }
+int	atoi(s) char *s; { return 1;   }
+long	atol(s) char *s; { return 1L;  }
+/* BSTRING(3) */
+void	bcopy(a,b,l) char *a, *b; int l; {}
+int	bcmp(a,b,l) char *a, *b; int l; { return (0); } 
+void	bzero(b, length) char *b; int length; { ; }
+int	ffs(i) int i; { return i; }
+/* DIRECTORY(3) */
+DIR *	opendir(f) char *f; { return (DIR *)NULL; }
+struct direct *	readdir(p) DIR *p; { return (struct direct *)NULL; }
+int	closedir(p) DIR *p; {}
+
+/* rewinddir, telldir, and seekdir are macros 
+ *
+ *	void	rewinddir(p) DIR *p; {}
+ *	long	telldir(p) DIR *p; { return 1L; }
+ *	void	seekdir(p,l) DIR *p; long l; {}
+ *
+ */
+
+/* GETWD(3) */
+char *	getwd(p) char *p; { return(p); }
+/* INSQUE(3) */
+struct qelem {
+	struct qelem *q_forw;
+	struct qelem *q_back;
+	char   q_data[1];
+};
+void	insque(e,p) struct qelem *e, *p; {}
+void	remque(e) struct qelem *e; {}
+/* PSIGNAL(3) */
+void	psignal(g,s) unsigned g; char *s; {}
+char *	sys_siglist[];
+/* RANDOM(3) */
+void	srandom(s) int s; {}
+long	random() { return 1L; }
+char *	initstate(s,st,n) unsigned s; char *st; int n; { return st; }
+char *	setstate(st) char *st; { return st; }
+/* REGEX(3) */
+char *	re_comp(s) char *s ; { return s; }
+int	re_exec(s) char *s ; { return 1; }
+/* SCANDIR(3) */
+int	scandir(d,n,s,c) char *d; struct direct *(*n[]); int (*s)(),(*c)();
+		{ return 1; }
+int	alphasort(d1,d2) struct direct **d1, **d2; { return 0;}
+/* SIGACTION(3) */
+int	sigaction(s,a,o) int s; struct sigaction *a, *o; {return(0); }
+/* STTY(3C) */
+int	stty(f,b) struct sgttyb *b; int f; { return(0); }
+int	gtty(f,b) int f; struct sgttyb *b; { return(0); }
+/* SYSLOG(3) */
+int	openlog(i,l) char *i; int l; { return(0); }
+	/*VARAGS2*/
+void	syslog(i,p) int i; char *p; {}
+void	closelog() {}
+/* TIME(3C) */
+long	time(t) long *t; { return(0L);}
+void	ftime(t) struct timeb *t; {}
+/* VALLOC(3) */
+char *	valloc(s) unsigned s; { return malloc(s); }
+/* VLIMIT(3C) */
+int	vlimit(r,v) int r,v; { return(0); }
+/* VTIMES(3C) */
+int	vtimes(p,c) struct vtimes *p, *c; { return(0); }
+#endif
+
+/* These variables were in the System V library but not in the 
+   Ultrix library.  They are here to make the Ultrix lint lib
+   compatible with System V code.
+*/
+
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <sys/sem.h>
+
+/* EXEC(2) */
+char **	environ;
+	/*VARARGS1*/
+int	execlp(f,a) char *f, *a; { return (0); }
+int	execvp(s,v) char *s, *v[]; { return (0); }
+/* MSGCTL(2) */
+int	msgctl(m,c,b) int m,c; struct msqid_ds *b; { return (m); }
+/* MSGGET(2) */
+int	msgget(k,m) key_t k; int m; { return (m); }
+/* MSGOP(2) */
+int	msgsnd(q,p,s,f) int q,s,f; struct msgbuf *p; { return (q); }
+int	msgrcv(q,p,s,t,f) int q,s,f; struct msgbuf *p; long t;
+		{ return (q); }
+/* PLOCK(2) */
+int	plock(o) int o; { return (o); }
+/* SEMCTL(2) */
+union semun { int val; struct semid_ds *buf; ushort *array; };
+	/*VARARGS3*/
+int	semctl(i,n,c,a) int i,n,c; union semun a; { return (i); }
+/* SEMGET(2) */
+int	semget(k,n,s) key_t k; int n,s; { return (n); }
+/* SEMOP(2) */
+int	semop(i,o,n) int i,n; struct sembuf **o; { return (i); }
+/* SHMCTL(2) */
+#include <sys/shm.h>
+int	shmctl(s,c,b) int s,c; struct shmid_ds *b; { return (s); }
+/* SHMGET(2) */
+int	shmget(k,s,f) key_t k; int s,f; { return (s); }
+/* SHMOP(2) */
+char *	shmat(i,a,f) int i,f; char *a; { return (a); }
+int	shmdt(a) char *a; { return (0); }
+/* STIME(2) */
+int	stime(t) long *t; { return (0); }
+#if u3b || u3b5 || u3b2
+/* SYS3B(2) (3B20, 3B2 and 3B5 only) */
+	/*VARARGS2*/
+void	sys3b(c,a,b) int c,a,b; {}
+#endif
+/* ULIMIT(2) */
+long	ulimit(c,n) int c; long n; { return (n); }
+/* UNAME(2) */
+#include <sys/utsname.h>
+int	uname(n) struct utsname *n; { return (0); }
+/* USTAT(2) */
+#include <ustat.h>
+int	ustat(d,b) int d; struct ustat *b; { return (d); }
+
+/* A64L(3C) */
+long	a64l(s) char *s; { return (0L); }
+char *	l64a(l) long l; { return (""); }
+/* ASSERT(3X) */
+void	_assert(a,f,n) char *a, *f; int n; {}
+/* BSEARCH(3C) */
+char *	bsearch(k,b,n,w,c) char *k, *b; unsigned n, w; int (*c)(); 
+		{ return (k); }
+/* CONV(3C) */
+#undef _toupper
+#undef _tolower
+#undef toascii
+int	toupper(i) int i; { return (i); }
+int	tolower(i) int i; { return (i); }
+int	_toupper(i) int i; { return (i); }
+int	_tolower(i) int i; { return (i); }
+int	toascii(i) int i; { return (i); }
+/* CLOCK(3C) */
+long	clock() { return (0L); }
+/* CTERMID(3S) */
+char *	ctermid(s) char *s; { return (s); }
+/* CTYPE(3C) */
+#undef isalpha
+#undef isupper
+#undef islower
+#undef isdigit
+#undef isxdigit
+#undef isalnum
+#undef isspace
+#undef ispunct
+#undef isprint
+#undef isgraph
+#undef iscntrl
+#undef isascii
+int	isalpha(c) int c; { return (c); }
+int	isupper(c) int c; { return (c); }
+int	islower(c) int c; { return (c); }
+int	isdigit(c) int c; { return (c); }
+int	isxdigit(c) int c; { return (c); }
+int	isalnum(c) int c; { return (c); }
+int	isspace(c) int c; { return (c); }
+int	ispunct(c) int c; { return (c); }
+int	isprint(c) int c; { return (c); }
+int	isgraph(c) int c; { return (c); }
+int	iscntrl(c) int c; { return (c); }
+int	isascii(c) int c; { return (c); }
+char	_ctype[129];
+/* CUSERID(3S) */
+char *	cuserid(s) char *s; { return (s); }
+/* DRAND48(3C) */
+double	drand48() { return (0.0); }
+double	erand48(x) unsigned short x[3]; { return (0.0); }
+long	lrand48() { return (0L); }
+long	nrand48(x) unsigned short x[3]; { return (0L); }
+long	mrand48() { return (0L); }
+long	jrand48(x) unsigned short x[3]; { return (0L); }
+void	srand48(s) long s; {}
+unsigned short *	seed48(s) unsigned short s[3]; { return (s); }
+void	lcong48(p) unsigned short p[7]; {}
+/* FERROR(3S) */
+#undef feof
+#undef ferror
+#undef clearerr
+#undef fileno
+int	feof(f) FILE *f; { return (0); }
+int	ferror(f) FILE *f; { return (0); }
+void	clearerr(f) FILE *f; {}
+int	fileno(f) FILE *f; { return (0); }
+/* GETCWD(3C) */
+char *	getcwd(b,s) char *b; int s; { return (b); }
+/* GETOPT(3C) */
+int	getopt(c,v,o) int c; char **v, *o; { return (c); }
+char *	optarg;
+int	optind;
+int	opterr;
+int	optopt; /* undocumented */
+/* HSEARCH(3C) */
+#include <search.h>
+ENTRY *	hsearch(i,a) ENTRY i; ACTION a; { return (&i); }
+int	hcreate(n) unsigned n; { return (0); }
+void	hdestroy() {}
+/* L3TOL(3C) */
+void	l3tol(l,c,n) long *l; char *c; int n; {}
+void	ltol3(c,l,n) char *c; long *l; int n; {}
+/* LSEARCH(3C) */
+char *	lsearch(k,b,n,w,c) char *k, *b; unsigned *n, w; int (*c)();
+		{ return (k); }
+char *	lfind(k,b,n,w,c) char *k, *b; unsigned *n, w; int (*c)();
+		{ return (k); }
+/* MEMORY(3C) */
+char *	memccpy(a,b,c,n) char *a, *b; int c,n; { return (a); }
+char *	memchr(s,c,n) char *s; int c,n; { return (s); }
+int	memcmp(a,b,n) char *a, *b; int n; { return (n); }
+char *	memcpy(a,b,n) char *a, *b; int n; { return (a); }
+char *	memset(s,c,n) char *s; int c,n; { return (s); }
+/* SSIGNAL(3C) */
+int (*	ssignal(s,a))() int s; int (*a)(); { return (a); }
+int	gsignal(s) { return (s); }
+/* STDIPC(3C) */
+key_t	ftok(s,i) char *s; int i; { return ((key_t)0); }
+/* STRTOD(3C) */
+double	strtod(s,t) char *s, **t; { return (0.0); }
+/* STRTOL(3C) */
+long	strtol(s,t,b) char *s, **t; int b; { return (0L); }
+/* TMPFILE(3) */
+FILE *	tmpfile() { return (stdin); }
+/* TMPNAM(3S) */
+char *	tmpnam(s) char *s; { return (s); }
+char *	tempnam(d,s) char *d, *s; { return (d); }
+/* TSEARCH(3C) */
+char *	tsearch(k,r,c) char *k, **r; int (*c)(); { return (k); }
+char *	tfind(k,r,c) char *k, **r; int (*c)(); { return (k); }
+char *	tdelete(k,r,c) char *k, **r; int (*c)(); { return (k); }
+void	twalk(r,f) char *r; void (*f)(); {}
+/* VPRINTF(3S) */
+#include <varargs.h>
+int	vprintf(s,v) char *s; va_list v; { return (0); }
+int	vfprintf(f,s,v) FILE *f; char *s; va_list v; { return (0); }
+int	vsprintf(p,s,v) char *p, *s; va_list v; { return (0); }
+
+/* UNDOCUMENTED (not for general use) */
+	/*VARARGS3*/
+int	syscall(n,r,s,a) int n,r,s,a; { return (n); }
+long	tell(f) int f; { return((long)0); }
+int	_filbuf(f) FILE *f; { return 0; }
+/* the unsigned is due to putc and putchar macro expansion */
+int	_flsbuf(c,f) unsigned c; FILE *f; { return 0; }
+
+/* Unknown vars */
+
+char	_ctype_[];
+unsigned short	_ctype__[];
+unsigned short	*_pctype;
+
+/*
+ * These System V definitions conflict with the Ultrix definitions and
+ * so they are seperated by an ifdef block.
+ */
+
+#ifdef SYSTEM_FIVE
+
+#include <mon.h>
+
+/* ALARM(2) */
+unsigned	alarm(s) unsigned s; { return (s); }
+/* BRK(2) */
+int	brk(e) char *e; { return (0); }
+/* EXIT(2) */
+void	_exit(s) int s; {}
+/* GETPGRP(2) */
+int	getpgrp() { return (0); }
+/* GETUID */
+unsigned short getuid() { return((unsigned short)0); }
+unsigned short geteuid() { return((unsigned short)0); }
+unsigned short getgid() { return((unsigned short)0); }
+unsigned short getegid() { return((unsigned short)0); }
+/* IOCTL(2) */
+	/*VARARGS2*/
+int	ioctl(f,r,a) int f, r, a; { return (f); }
+/* NICE(2) */
+int	nice(i) int i;{ return (i); }
+/* PROFIL(2) */
+void	profil(b,s,o,i) char *b; int s, o, i; {}
+/* READ(2) */
+int	read(f,b,n) int f; char *b; unsigned n; { return (f); }
+/* SETPGRP(2) */
+int	setpgrp() { return (0); }
+/* TIMES(2) */
+long	times(b) struct tms *b; { return (0L); }
+/* WAIT(2) */
+int	wait(s) int *s; { return (0); }
+/* WRITE(2) */
+int	write(f,b,n) int f; char *b; unsigned n; { return (f); }
+
+/* CRYPT(3C) */
+void	setkey(k) char *k; {}
+void	encrypt(b,e) char *b; int e; {}
+/* CTIME(3C) */
+void	tzset() {}
+long	timezone;
+int	daylight;
+char *	tzname[2];
+/* GETGRENT(3C) */
+struct group *	getgrent() { static struct group x; return (&x); }
+struct group *	getgrgid(g) { static struct group x; return (&x); }
+struct group *	getgrnam(n) char *n; { static struct group x; return (&x); }
+void	setgrent() {}
+void	endgrent() {}
+/* GETPWENT(3C) */
+struct passwd *	getpwent() { static struct passwd x; return (&x); }
+struct passwd *	getpwuid(u) { static struct passwd x; return (&x); }
+struct passwd *	getpwnam(n) char *n; { static struct passwd x; return (&x); }
+void	setpwent() {}
+void	endpwent() {}
+/* MONITOR(3C) */
+void	monitor(l,h,b,s,n) int (*l)(), (*h)(); WORD *b; int s, n; {}
+/* NLIST(3C) */
+int	nlist(f,n) char *f; struct nlist *n; { return (0); }
+/* PRINTF(3S) */
+	/*VARARGS*/
+int	sprintf(p,s) char *p, *s; { return (0); }
+/* QSORT(3C) */
+void	qsort(b,n,w,c) char *b; unsigned n, w; int (*c)(); {}
+
+#endif

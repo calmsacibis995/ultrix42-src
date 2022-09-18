@@ -1,0 +1,54 @@
+.\" SCCSID: @(#)vhangup.2	8.2	1/28/91
+.TH vhangup 2
+.SH Name
+vhangup \- virtually hang up the current control terminal
+.SH Syntax
+.B void vhangup\|(\|)
+.SH Description
+.NXR "vhangup system call"
+.NXR "terminal" "revoking access"
+The
+.PN vhangup
+system call initializes a terminal line. 
+For example, the 
+.PN init 
+command uses
+.PN vhangup
+to ensure that 
+the previous user's processes cannot access the
+terminal anymore.
+.PP
+First,
+.PN vhangup
+searches the system tables for references to the current
+terminal (the control terminal
+of the invoking process) and revokes access permissions
+on each instance of the terminal that it finds.
+.PP
+The
+.PN vhangup
+system call
+also removes all references to the inode that corresponds to the
+control terminal. 
+The
+.PN vhangup 
+system call
+then invokes the kernel's device close routine to turn
+the terminal off.
+Finally,
+.PN vhangup
+sends a hangup signal (SIGHUP) to the process group
+of the control terminal.  For further information, see
+.MS tty 4
+for a description of process groups.
+.PP
+When
+.PN vhangup
+finishes, a terminal line is 
+initialized; no other processes refer to this line.
+The only way for other processes to access 
+the control terminal is through the special file,
+.PN /dev/tty .
+All other requests will yield I/O errors (EBADF).
+.SH See Also
+init(8)

@@ -1,0 +1,115 @@
+.TH lb_unregister 3ncs
+.SH Name
+lb_unregister \- remove an entry from the Location Broker database
+.SH Syntax
+.nf
+#include <idl/c/lb.h>
+
+void lb_$unregister(\fIentry, status\fP)
+lb_$entry_t *\fIentry;\fR
+status_$t *\fIstatus;\fR
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/lb.ins.pas'\fR
+.\"
+.\"\fBprocedure lb_$unregister(\fR
+.\"	\fBout \fIentry\fB: lb_$entry_t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP
+\fIentry\fR
+The entry being removed from the Location Broker database.
+.TP
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN lb_$unregister
+routine removes from the Location Broker database
+the entry that matches 
+.I entry.
+.NXR "Interface to the Location Broker" "lb_unregister"
+The value of 
+.I entry
+should be identical to that returned by the 
+.PN lb_$register
+routine when the database entry was created.
+However, 
+.PN lb_$unregister
+does not compare all of the fields in 
+.I entry,
+the
+.B annotation
+field, and the port number in the
+.B saddr
+field.
+.PP
+This routine removes the entry from the LLB database on the local host 
+(the host that issues the routine).
+If the 
+.B flags
+field of 
+.I entry
+is equal to 0, it removes the entry from the GLB database.  If
+the
+.B flags
+field is equal to 
+.B lb_$server_flag_local,
+it deletes only the LLB entry.
+.SH Examples
+The following statement unregisters the entry specified by 
+.PN BankEntry ,
+which was obtained from a previous 
+.PN lb_$register
+routine:
+.EX
+lb_$unregister (&BankEntry, &status);
+.EE
+.SH Diagnostics 
+This section lists status codes for errors returned by this
+.PN lb_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBlb_$database_invalid\fR
+The format of the Location Broker database is out of date.
+The database may have been created by an old version of the Location Broker; 
+in this case, delete the out-of-date database and reregister any entries
+that it contained.
+The LLB or GLB that was accessed may be running out-of-date software;
+in this case, update all Location Brokers to the current software version.
+.TP 20
+\fBlb_$database_busy\fR
+The Location Broker database is currently in use in an incompatible manner.
+.TP 20
+\fBlb_$not_registered\fR
+The Location Broker does not have any entries that match
+the criteria specified in the unregister routine.
+The requested object, type, interface, or combination thereof
+is not registered in the specified database.
+.TP 20
+\fBlb_$update_failed\fR
+The Location Broker was unable to register or unregister the entry.
+.TP 20
+\fBlb_$cant_access\fR
+The Location Broker cannot access the database.
+Among the possible reasons:
+.IP
+1. The database does not exist.
+.IP
+2. The database exists, but the Location Broker cannot access it.
+.TP 20
+\fBlb_$server_unavailable\fR
+The Location Broker Client Agent cannot reach the requested GLB or LLB.
+A communications failure occurred or the broker was not running.
+.SH Files
+.PN /usr/include/idl/c/glb.h
+.SH See Also
+intro(3ncs), lb_register(3ncs)

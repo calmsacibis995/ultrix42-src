@@ -1,0 +1,104 @@
+.\" SCCSID: @(#)w.1	8.1	9/11/90
+.TH w 1
+.SH Name
+w \- display who is logged in and what they are doing
+.SH Syntax
+.B w
+[ \fIoptions\fR ] [\|\fIuser\fR\|]
+.SH Description
+.NXR "w command" 
+The
+.PN w
+command
+prints a summary of the current activity on the system,
+including what each user is doing.
+The heading line shows the current time of day,
+how long the system has been up,
+the number of users logged into the system,
+and the load averages.
+The load average numbers give the number of jobs in the run queue
+averaged over 1, 5 and 15 minutes.
+.PP
+The fields output are:
+.NXR "w command" "output fields"
+.NXR "terminal" "showing name"
+.NXR "system" "showing login time"
+.NXR "date" "showing"
+.NXR "time" "showing"
+.NXR "system" "showing uptime"
+.NXR "system" "showing users"
+.NXR "system" "showing run queue average"
+.NXR "system" "showing user activity"
+.NXR "process" "printing status"
+.nf
+The users login name
+The name of the tty the user is on
+The host from which the user is logged in
+The time of day the user logged on
+The number of minutes since the user last typed anything
+The CPU time used by all processes and their children on that terminal
+The CPU time used by the currently active processes
+The name and arguments of the current process
+.fi
+.SH Options
+.NXR "w command" "options"
+.IP \fB\-d\fR 0.3i
+Outputs debug information.
+.IP \fB\-f\fR 0.3i
+Suppresses the `from' field.
+.IP \fB\-h\fR 0.3i
+Suppresses the normal header from the output.  
+.IP \fB\-l\fR 0.3i
+Displays information in long format (default).  
+.IP \fB\-s\fR 0.3i
+Displays information in short format.  
+In the short form, the tty is abbreviated, the login time and cpu times
+are left off, as are the arguments to commands.
+.IP \fB\-u\fR 0.3i
+Outputs the same information as the 
+.PN uptime
+command.
+.IP
+If a
+.I user
+name is included,
+the output will be restricted to that user.
+.SH Restrictions
+.NXR "w command" "restricted"
+The notion of the ``current process'' is unclear.
+The current algorithm is ``the highest numbered process on
+the terminal that is not ignoring interrupts,
+or, if there is none, the highest numbered process on the terminal''.
+This fails, for example, in critical sections of programs
+like the shell and editor,
+or when faulty programs running in the background
+fork and fail to ignore interrupts.
+(In cases where no process can be found,
+.PN w
+prints ``\-''.)
+.PP
+The CPU time is only an estimate, in particular, if someone leaves a
+background process running after logging out, the person currently
+on that terminal is ``charged'' with the time.
+.PP
+Background processes are not shown, even though they account for
+much of the load on the system.
+.PP
+Sometimes processes, typically those in the background, are
+printed with null or garbaged arguments.
+In these cases, the name of the command is printed in parentheses.
+.PP
+The
+.PN w
+command does not know about conventions
+for detection of background jobs.
+It will sometimes find a background job instead of the right one.
+.SH Files
+.ta 1i
+/etc/utmp
+.br
+/dev/kmem
+.br
+/dev/drum
+.SH See Also
+finger(1), ps(1), who(1)

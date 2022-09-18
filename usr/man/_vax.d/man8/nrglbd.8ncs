@@ -1,0 +1,78 @@
+.TH nrglbd 8ncs
+.SH Name
+nrglbd \- non-replicating global location broker (GBL) daemon
+.SH Syntax
+\fB/etc/ncs/nrglbd\fR [ \fB\-version\fR ]
+.SH Description
+The global location broker (GLB), enables clients to locate
+servers on a network or internet.
+.NXR "Non-replicating Global Location Broker Daemon" "nrglbd"
+The GLB database stores the locations
+(that is, the network addresses and port numbers) where server processes are running.
+The GLB maintains this database and provides access to it.
+.PP
+The 
+.PN /etc/ncs/nrglbd
+daemon should run as a background process.
+.NXR "Non-Replicatable Global Location Broker Daemon"
+It requires no options or arguments.
+A Local Location Broker daemon
+(
+.PN llbd
+)
+must be running on the local host when 
+.NXR "Local Location Broker Daemon"
+.PN nrglbd
+is started.
+.PP
+You can run only one 
+.PN nrglbd
+on a network or internet.
+.PP
+On ULTRIX systems,
+.PN nrglbd
+is typically started by a line in
+.PN /etc/rc
+such as the following:
+.EX
+/etc/ncs/nrglbd& echo \-n ' nrglbd' > /dev/console
+.EE 
+.SH Options
+.TP 10
+\fB\-version\fR
+Display the version of the Network Computing Kernel (NCK) that this 
+.PN nrglbd
+belongs to but do not start the daemon.  (NCK is part of the Network
+Computing System (NCS) on which DECrpc is based.)
+.SH Restrictions
+This section discusses the procedure to follow if the system running the
+.PN nrglbd 
+is taken off-line.
+.PP
+If you restart
+.PN nrglbd
+on the same system and no server on any other system changed state, all
+things should run as before.  If, however, an application tries to
+contact a server that is no longer running or which has different port
+numbers, the application will fail.  The application also will not see
+any new server registrations.
+.PP
+If a copy of
+.PN /etc/ncs/glbdbase.dat
+is not available, you must create an up to date version of the file
+before restarting
+.PN nrglbd .
+To do so, use
+.PN lb_admin
+to query the
+.PN llbd
+for registration data on every system running an DECrpcserver and
+then use
+.PN lb_admin
+to register all DECrpc servers with the GLB on the new host. 
+Then restart
+.PN nrglbd .
+.SH See Also
+lb_admin(1ncs), llbd(8ncs)
+.br
+\fIGuide to the Location Broker\fR

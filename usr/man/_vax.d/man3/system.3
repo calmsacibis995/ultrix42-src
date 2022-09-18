@@ -1,0 +1,40 @@
+.\" SCCSID: @(#)system.3	6.3	8/30/89
+.TH system 3
+.SH Name
+system \- issue a shell command 
+.SH Syntax
+.nf
+.B system(\fIstring\fP)
+.B char *\fIstring\fP;
+.fi
+.SH Description
+.NXR "system subroutine (standard C)"
+.NXR "shell command" "issuing"
+If the
+.I string
+argument is the NULL pointer (0) the
+.PN system
+function tests the accessibility of
+the command interpreter
+.MS sh 1 .
+The function will return zero for failure to find the command
+interpreter, and positive if successful.
+.PP
+If the
+.I string
+argument is non-NULL the
+.PN system
+routine causes the
+.I string
+to be given to 
+.MS sh 1
+as input as if the string had been typed as a command
+at a terminal.
+The current process waits until the shell has
+completed, then returns the exit status in the form that
+.MS wait 2
+returns.
+.SH Diagnostics
+Exit status 127 indicates the shell couldn't be executed.
+.SH See Also
+execve(2), wait(2), popen(3)

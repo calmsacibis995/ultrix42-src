@@ -1,0 +1,161 @@
+.\" SCCSID: @(#)termcap.3x	8.1	9/11/90
+.TH termcap 3x
+.SH Name
+tgetent, tgetnum, tgetflag, tgetstr, tgoto, tputs \- terminal independent operation routines
+.SH Syntax
+.nf
+.B char PC;
+.B char *BC;
+.B char *UP;
+.B short ospeed;
+.PP
+.B tgetent(bp, name)
+.B char *bp, *name;
+.PP
+.B tgetnum(id)
+.B char *id;
+.PP
+.B tgetflag(id)
+.B char *id;
+.PP
+.B char *
+.B tgetstr(id, area)
+.B char *id, **area;
+.PP
+.B char *
+.B tgoto(cm, destcol, destline)
+.B char *cm;
+.PP
+.B tputs(cp, affcnt, outc)
+.B register char *cp;
+.B int affcnt;
+.B int (*outc)();
+.fi
+.SH Description
+.NXR "termcap keyword"
+.NXA "tgetent subroutine" "termcap file"
+.NXA "tgetent subroutine" "curses package"
+.NXR "tgetent subroutine"
+.NXR "tgetnum subroutine"
+.NXR "tgetflag subroutine"
+.NXR "tgetstr subroutine"
+.NXR "tgoto subroutine"
+.NXR "tputs subroutine"
+.NXR "terminal" "independent operation routines"
+These functions extract and use capabilities 
+from the terminal capability data
+base 
+.MS termcap 5 .
+These are low level routines;
+see 
+.MS curses 3x
+for a higher level package.
+.PP
+The
+.PN tgetent
+function extracts the entry for terminal
+.I name
+into the buffer at
+.I bp.
+The
+.I bp
+should be a character buffer of size
+1024 and must be retained through all subsequent calls
+to
+.PN tgetnum ,
+.PN tgetflag ,
+and
+.PN tgetstr .
+The
+.PN tgetent
+function returns \-1 if it cannot open the
+.PN termcap
+file, 0 if the terminal name given does not have an entry,
+and 1 if all goes well.
+It will look in the environment for a TERMCAP variable.
+If found, and the value does not begin with a slash,
+and the terminal type
+.B name
+is the same as the environment string TERM,
+the TERMCAP string is used instead of reading the termcap file.
+If it does begin with a slash,
+the string is used as a pathname rather than 
+.PN /etc/termcap .
+This can speed up entry into programs that call
+.PN tgetent ,
+as well as to help debug new terminal descriptions
+or to make one for your terminal if you cannot write the file
+.PN /etc/termcap .
+.PP
+The
+.PN tgetnum
+function gets the numeric value of capability
+.I id,
+returning \-1 if is not given for the terminal.
+The
+.PN tgetflag
+returns 1 if the specified capability is present in
+the terminal's entry, 0 if it is not.
+The
+.PN tgetstr
+function gets the string value of capability
+.I id,
+placing it in the buffer at
+.I area,
+advancing the
+.I area
+pointer.
+It decodes the abbreviations for this field described in
+.MS termcap 5 ,
+except for cursor addressing and padding information.
+.PP
+The
+.PN tgoto
+function returns a cursor addressing string decoded from
+.I cm
+to go to column
+.I destcol
+in line
+.I destline.
+It uses the external variables UP
+(from the \fBup\fR capability)
+and BC (if \fBbc\fR is given rather than \fBbs\fR)
+if necessary to avoid placing \fB\en\fR, \fB^D\fR or \fB^@\fR in
+the returned string.
+Programs that call 
+.PN tgoto 
+should be sure to turn off the XTABS bit(s),
+because 
+.PN tgoto
+may now output a tab.
+Note that programs using termcap should in general turn off XTABS
+anyway, because some terminals use control I for other functions,
+such as nondestructive space.
+If a \fB%\fR sequence is given that is not understood, then
+.PN tgoto
+returns \*(lqOOPS\*(rq.
+.PP
+The
+.PN tputs
+function decodes the leading padding information of the string
+.IR cp ;
+.I affcnt
+gives the number of lines affected by the operation, or 1 if this is
+not applicable,
+.I outc
+is a routine that is called with each character in turn.
+The external variable
+.I ospeed
+should contain the output speed of the terminal as encoded by
+.MS stty 3 .
+The external variable PC
+should contain a pad character to be used (from the \fBpc\fR capability)
+if a null (\fB^@\fR) is inappropriate.
+.SH Files
+.ta \w'/usr/lib/libtermcap.a  'u
+/usr/lib/libtermcap.a	\-ltermcap library
+.br
+/etc/termcap	data base
+.DT
+.SH See Also
+ex(1), curses(3x), termcap(5)

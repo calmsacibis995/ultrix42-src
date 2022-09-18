@@ -1,0 +1,42 @@
+.\" SCCSID: @(#)yppoll.8yp	8.1	9/11/90
+.TH yppoll 8yp
+.SH Name
+yppoll \- determine which version of a yellow pages (YP) map is at a master YP server host.
+.SH Syntax
+.B yppoll
+[ \fB-h \fIhost\fR ]
+[ \fB-d \fIdomain\fR ]
+.I mapname
+.SH Description
+.NXR "yppoll command"
+.NXAM "ypfiles file" "yppoll command"
+.NXR "YP map" "determining version"
+The
+.PN yppoll 
+command asks a 
+.PN ypserv 
+process what the order number is, and which host
+is the master YP server for the named map.  
+If the server is a
+v.1 YP protocol server, 
+.PN yppoll
+uses the older protocol to communicate with 
+.PN ypserv 
+and uses the older diagnostic messages if a failure occurs.
+.SH Options
+.IP "\fB\-h \fIhost\fR"
+Ask the 
+.PN ypserv 
+process at
+.I host
+about the map parameters.  If 
+.I host 
+is not specified, the YP server for the local host is used.
+That is, the default host is the one returned by 
+.MS ypwhich 1yp .
+.IP "\fB\-d \fIdomain\fR"
+Use
+.I domain
+instead of the default domain.
+.SH See Also
+ypfiles(5yp), ypserv(8yp)

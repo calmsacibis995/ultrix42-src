@@ -1,0 +1,80 @@
+.TH getopt 1
+.SH Name
+getopt \- parse command options
+.SH Syntax
+.NXR "getopt command"
+.B set \- \- \*\`getopt optstring
+.B $\(**\*\`
+.SH Description
+.NXR "getopt command"
+The
+.PN getopt
+command
+breaks up options in command lines for easy parsing by Shell
+procedures and checks for legal options.
+The
+.B optstring
+option letters are recognized
+if a letter is followed by a colon, the option
+expects an argument which may or
+may not be separated from it by white space.
+For further information, see 
+.MS getopt 3 .
+.PP
+The special option, specified by two minus signs (\- \-), 
+delimits the end of the
+options.  If the delimiters are used explicitly, 
+.PN getopt
+recognizes it;
+otherwise,
+.PN getopt
+generates it.
+In either case,
+.PN getopt
+places the delimiter at the end of the options.
+The positional parameters ($1 $2 ...) of the shell are reset
+so that each option
+is preceded by a single minus sign (\-) and is in its own positional 
+parameter; each option argument is also parsed into its own positional 
+parameter.
+.SH Examples
+The following code fragment shows how you can process the arguments
+for a command that can take the options
+.B a
+or
+.B b,
+as well as the option
+.B o,
+which requires an argument:
+.EX
+#!/bin/sh5
+set \-\- \*\`getopt abo: $\(**\*\`
+if [ $? != 0 ]
+then
+	echo $\s-1USAGE\s+1
+	exit 2
+fi
+for i in $\(**
+do
+	case $i in
+	\-a \(bv \-b)	\s-1FLAG\s+1=$i; shift;;
+	\-o)	\s-1OARG\s+1=$2; shift 2;;
+	\-\-)	shift; break;;
+	esac
+done
+.EE
+This code accepts any of the following as equivalent:
+.EX
+cmd \-aoarg file file
+cmd \-a \-o arg file file
+cmd \-oarg \-a file file
+cmd \-a \-oarg \-\- file file
+.EE
+.SH Diagnostics
+The
+.PN getopt
+command prints an error message on the standard error
+when it encounters an option letter not included in
+.IR optstring .
+.SH See Also
+sh5(1), getopt(3)

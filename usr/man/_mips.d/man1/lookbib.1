@@ -1,0 +1,95 @@
+.\" SCCSID: @(#)lookbib.1	8.1	9/11/90
+.TH lookbib 1
+.SH Name
+indxbib, lookbib \- build inverted index for a bibliography, lookup bibliographic
+references
+.SH Syntax
+.B indxbib
+\fIdatabase...\fR
+.br
+.B lookbib
+\fIdatabase\fR
+.SH Description
+.NXR "lookbib command"
+.NXR "indxbib command"
+.NXA "refer preprocessor" "indxbib command"
+.NXA "refer preprocessor" "lookbib command"
+.NXR "bibliography" "indexing"
+.NXR "bibliography" "finding references"
+The
+.PN indxbib
+makes an inverted index to the named
+.I databases
+(or files) for use by
+.MS lookbib 1
+and
+.MS refer 1 .
+These files contain bibliographic references
+(or other kinds of information) separated by blank lines.
+.PP
+A bibliographic reference is a set of lines,
+constituting fields of bibliographic information.
+Each field starts on a line beginning with a ``%'',
+followed by a key-letter, then a blank,
+and finally the contents of the field,
+which may continue until the next line starting with ``%''.
+.PP
+The
+.PN indxbib 
+command is a shell script that calls
+.PN /usr/lib/refer/mkey
+and
+.PN /usr/lib/refer/inv .
+The first program,
+.PN mkey ,
+truncates words to 6 characters,
+and maps upper case to lower case.
+It also discards words shorter than 3 characters,
+words among the 100 most common English words,
+and numbers (dates) < 1900 or > 2000.
+These parameters can be changed. 
+The second program,
+.I inv,
+creates an entry file (.ia),
+a posting file (.ib), and a tag file (.ic),
+all in the working directory.
+.PP
+The
+.PN lookbib
+command uses an inverted index made by
+.PN indxbib
+to find sets of bibliographic references.
+It reads keywords typed after the ``>'' prompt on the terminal,
+and retrieves records containing all these keywords.
+If nothing matches, nothing is returned except another ``>'' prompt.
+.PP
+It is possible to search multiple databases,
+as long as they have a common index made by
+.PN indxbib .
+In that case, only the first argument given to
+.PN indxbib
+is specified to
+.PN lookbib .
+.PP
+If
+.PN lookbib
+does not find the index files (the .i[abc] files),
+it looks for a reference file with the same name as the argument,
+without the suffixes.
+It creates a file with a '.ig' suffix, suitable for use with
+.PN fgrep .
+It then uses this fgrep file to find references.
+This method is simpler to use, but the .ig file is slower to use
+than the .i[abc] files,
+and does not allow the use of multiple reference files.
+.SH Files
+.IR x \&.ia,
+.IR x \&.ib,
+.IR x \&.ic,
+where 
+.I x
+is the first argument, or if these are not present, then
+.IR x \&.ig,
+.IR x
+.SH See Also
+addbib(1), lookbib(1), refer(1), roffbib(1), sortbib(1),

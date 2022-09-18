@@ -1,0 +1,454 @@
+#!/bin/sh5
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)printsetup	4.2	(ULTRIX)	8/5/90"
+#
+#	000	Jonathan Wallace	1-Jun-1990
+#
+#	001	James C. Overman	05-Aug-1990
+#	    Moved references to /tmp to /usr/tmp and references
+#	    of /etc/scampdir to /usr/etc/scampdir
+#
+########################################################################
+#
+#
+#############################################
+# Set variables, constants, and environment #
+#############################################
+set -h
+trap 'exit 1' 1 2 3 18
+LL="
+"
+SWITCH=$1
+TTY=$2
+NUM=`expr $TTY : '.*\([0-9]\)'`
+TTD=ttyd$NUM
+
+ED_ERROR="
+
+Errors occured while attempting to edit the terminal initialization
+file /etc/ttys during this procedure. A temporary error file called
+/usr/tmp/ed_errs  is created to trap  any  errors  that might occur
+while attempting to add a  terminal device  using  this  procedure.
+Check /usr/tmp/ed_errs to determine  the  nature of the error,  and
+then check /etc/ttys to see if a valid entry was made for tty01.  
+Refer to the Guide to System Environment Setup for more information
+about  the terminal initialization file /etc/ttys, it's format, and
+description of it's entries; or contact your system administrator."
+
+SS_ERR="
+The software needed to support printers is not loaded on this machine.
+You can load the necessary subsets using the SCAMP Install/Remove
+Subsets option if you have an ULTRIX Software kit and an installation
+device, or see setld(8) for more information on how to load software
+onto this machine."
+
+FILE_ERR="
+The '/usr/lib/lpdfilters' directory could not be found on this machine
+by SCAMP, which uses files stored in the 'lpdfilters' directory to
+properly setup a printing environment.  Check '/usr/lib/lpdfilters'
+to verify whether it exists or not, and then refer to the setld(8)
+manpage for instructions on how to delete and then install subsets
+on your system.  The 'ldpfilters' directory and it's files are located
+in the 'PRINT' subset that is shipped with ULTRIX software."
+
+###################
+# SH5 Subroutines #
+###################
+#############################################################
+#
+: Error_Routine - error handler from tty_stat program
+#
+# Return Codes	Meaning
+#	0	Success
+#	1	Generic Failure 
+#	2	Undefined
+#	3	grep failed to find tty in /etc/ttys
+#	4	tty specified more than once in /etc/ttys
+#	5	specified tty is already turned on in /etc/ttys
+#
+#############################################################
+Error_Routine()
+{
+	case $1 in
+	3 )
+		clear
+		echo "
+$PROCEDURE_NAME
+
+No valid entry for Line $TTY in /etc/ttys file.  This could be caused
+by a missing entry, or an entry that is commented out (#).  Check the
+file for corruption by refering to the Guide to System Environment Setup,
+Terminal Initialization File section.  
+
+Press <RETURN> to continue: \c"
+		read resp
+		return 1
+		;;
+	4 )
+		clear
+		echo "
+$PROCEDURE_NAME
+
+$TTY is defined more than once in the /etc/ttys file.
+_______________________________________________________________________________"
+		cat /usr/tmp/tty_lines
+		echo "_______________________________________________________________________________
+
+This causes unpredictable results and is unsupported by this
+procedure.  You may want to take corrective action by manually
+editing the Terminal Initialization File /etc/ttys refering to
+the Guide to System Environment Setup, Terminal Initialization
+File section, for information about it's format, and description
+of it's entries; or contact your system administrator.
+
+Press <RETURN> to continue: \c"
+		read resp
+		return 1
+		;;
+	5 )
+		TTY_ERROR=`cat /usr/tmp/tty_stat`
+		while :
+		do
+			clear
+			echo "
+$PROCEDURE_NAME
+
+Line $TTY has already been activated for the following use:
+
+	$TTY - $TTY_ERROR
+
+If you want to override the current $TTY entry in /etc/ttys
+and create a new printer line on $TTY anyway, type 'y' to the
+confirmation request below. 
+
+Do you want to override the current $TTY entry? (y/n) [n]: \c"
+			read resp
+			case $resp in
+			[Nn]* | "" )
+				return 1
+				;;
+			[Yy]* )
+				return 0
+				;;
+			* )
+				;;
+			esac
+		done
+		;;
+	* )
+		clear
+		echo "
+$PROCEDURE_NAME
+
+Line $TTY is in an unknown state.  Check the entries of line $TTY
+in /etc/ttys by refering to the Guide to System Environment Setup,
+Terminal Initialization File section.
+
+Press <RETURN> to continue: \c"
+		read resp
+		return 1
+		;;
+	esac
+
+}
+
+
+#################################################################
+: Select_Printer_Routine - Get the printer type
+#################################################################
+Select_Printer_Routine()
+{
+	while :
+	do
+		clear
+		echo "
+$PROCEDURE_NAME
+
+Select a printer type from the menu below:
+
+	1 - LA75
+	2 - LA210
+	3 - LN03
+	4 - LN03S
+	5 - LN03R
+
+	0 - None of the above
+
+Enter your choice [3]: \c"
+		read resp
+		case $resp in
+		0 )
+			exit 0
+			;;
+		1 )
+			PNAME=LA75
+			PTYPE=la75
+			break
+			;;
+		2 )
+			PNAME=LA210
+			PTYPE=la210
+			break
+			;;
+		3 | "" )
+			PNAME=LN03
+			PTYPE=ln03
+			break
+			;;
+		4 )
+			PNAME=LN03S
+			PTYPE=ln03s
+			break
+			;;
+		5 )
+			PNAME=LN03R
+			PTYPE=ln03r
+			break
+			;;
+		* )
+			echo ""
+			;;
+		esac
+	done
+}
+
+
+#################################################################
+: Select_Baud_Routine - select baud rate of printer
+#################################################################
+Select_Baud_Routine()
+{
+	while :
+	do
+		clear
+		echo "
+$PROCEDURE_NAME
+
+Select a baud rate for the $PTYPE printer from the menu below.
+Make sure that your selection matches the baud rate that the
+printer is currently set at.
+
+	1 - 1200
+	2 - 2400
+	3 - 4800
+	4 - 9600
+
+	0 - None of the above
+
+Enter your choice [3]: \c"
+		read resp
+		case $resp in
+		0 )
+			return 1
+			;;
+		1 )
+			BAUD=1200
+			break
+			;;
+		2 )
+			BAUD=2400
+			break
+			;;
+		3 | "" )
+			BAUD=4800
+			break
+			;;
+		4 )
+			BAUD=9600
+			break
+			;;
+		* )
+			echo ""
+			;;
+		esac
+	done
+}
+
+
+#################################################################
+: Status_Check_Routine - Make sure Subsets and files are loaded
+#################################################################
+Status_Check_Routine()
+{
+	[ -f /usr/etc/subsets/*PRINT*.lk ] ||
+	{
+		clear
+		echo ""
+		echo "$PROCEDURE_NAME"
+		echo "$SS_ERR"
+		echo "${LL}Press <RETURN> to continue: \c"
+		read resp
+		exit 1
+	}
+
+	[ -d /usr/lib/lpdfilters ] ||
+	{
+		clear
+		echo ""
+		echo "$PROCEDURE_NAME"
+		echo "$FILE_ERR"
+		echo "${LL}Press <RETURN> to continue: \c"
+		read resp
+		exit 1
+	}
+
+	[ -d /usr/spool/lpd ] || mkdir /usr/spool/lpd
+	[ -f /usr/adm/lperr ] || >/usr/adm/lperr
+	[ -f /usr/adm/lpacct ] || >/usr/adm/lpacct
+}
+
+
+###################################################
+: TTY_Off_Routine - Disable entry in /etc/ttys
+###################################################
+TTY_Off_Routine()
+{
+	ed - /etc/ttys <<xxEOFxx >/usr/tmp/ed_errs
+	/^$TTY/d
+	i
+$TTY	"/etc/getty std.9600"	vt100	off nomodem	#direct connect tty
+.
+	w
+	q
+xxEOFxx
+
+	if [ -s /usr/tmp/ed_errs ]
+	then
+		echo "Error resetting tty line $TTY! $ED_ERROR"
+	else
+		kill -1 1
+	fi
+}
+
+
+#################################################################
+: Printcap_Routine - put entry in printcap and edit it
+#################################################################
+Printcap_Routine()
+{
+	[ -f /etc/printcap.orig ] || mv /etc/printcap /etc/printcap.orig
+	echo "#$PNAME - Default System Printer on Line $TTY" >/etc/printcap
+	echo "lp0|lp|0|$PTYPE|PS:\\" >>/etc/printcap
+	cat /usr/etc/scampdir/lpr_info/$PNAME >>/etc/printcap
+	ed - /etc/printcap <<xxEOFxx 2>&1 >/dev/null
+		/^#$PTYPE/d
+		/:br/d
+i
+	:br#$BAUD:\\
+.
+		w
+		q
+xxEOFxx
+	case $? in
+	0 )
+		clear
+		echo "
+$PROCEDURE_NAME
+
+Printer setup complete.  Press <RETURN> to continue: \c"
+		;;
+	* )
+		clear
+		echo ""
+		echo "
+$PROCEDURE_NAME
+
+$ED_ERROR
+
+Press <RETURN> to continue: \c"
+		;;
+	esac
+	read resp
+}
+
+
+###############################################
+: Remove_Printer_Routine -
+###############################################
+Remove_Printer_Routine()
+{
+	clear
+	echo "
+$PROCEDURE_NAME
+
+Removing printer support for $TTY ..... \c"
+	[ -f /etc/printcap.orig ] && mv /etc/printcap.orig /etc/printcap
+	sleep 2
+	echo "done.
+
+Press <RETURN> to continue: \c"
+	read resp
+}
+
+
+###########################################################
+# MAIN PROGRAM PROCEDURE ROUTINE #
+##################################
+while :
+do
+	case $SWITCH in
+	-A )
+		PROCEDURE_NAME="*** Printer Setup Procedure ***"
+		tty_scan $TTY
+		case $? in
+		0 )
+			;;
+		5 )
+			Error_Routine $?
+			case $? in
+			0 )
+				TTY_Off_Routine
+				;;
+			1 )
+				exit 1
+				;;
+			esac
+			;;
+		* )
+			Error_Routine $?
+			case $? in
+			1 )
+				exit 1
+				;;
+			esac
+			;;
+		esac
+		Status_Check_Routine
+		Select_Printer_Routine
+		Select_Baud_Routine
+		case $? in
+		1 )
+			continue
+			;;
+		esac
+		Printcap_Routine
+		break
+		;;
+	-R )
+		PROCEDURE_NAME="*** Printer Removal Procedure ***"
+		Remove_Printer_Routine
+		break
+		;;
+	esac
+done
+
+exit 0

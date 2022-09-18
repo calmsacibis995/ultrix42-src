@@ -1,0 +1,120 @@
+#!/usr/bin/ksh
+
+# @(#)pr_call	4.1      ULTRIX 	10/16/90
+
+#************************************************************************
+#									*
+#			Copyright (c) 1988, 1990 by			*
+#		Digital Equipment Corporation, Maynard, MA		*
+#			All rights reserved.				*
+#									*
+#   This software is furnished under a license and may be used and	*
+#   copied  only  in accordance with the terms of such license and	*
+#   with the  inclusion  of  the  above  copyright  notice.   This	*
+#   software  or  any  other copies thereof may not be provided or	*
+#   otherwise made available to any other person.  No title to and	*
+#   ownership of the software is hereby transferred.			*
+#									*
+#   The information in this software is subject to change  without	*
+#   notice  and should not be construed as a commitment by Digital	*
+#   Equipment Corporation.						*
+#									*
+#   Digital assumes no responsibility for the use  or  reliability	*
+#   of its software on equipment which is not supplied by Digital.	*
+#									*
+#************************************************************************
+
+#
+# File:	pr_call
+# Author:	Adrian Thoms
+# Description:
+#	This file handles the length/width algorithms used by
+#	ansi and ascii data types.
+#	This is so that lpr -p works correctly for both data types.
+#
+# Modification History:
+#
+
+function get_width_and_length
+{
+
+	typeset -i portraitW[10]
+	typeset -i portraitL[10]
+	typeset -i landscapeW[10]
+	typeset -i landscapeL[10]
+
+	# Set up page sizes for ascii and ansi
+	#			ascii		ANSI
+	#			    a	a3  a4	a5  b	b4  b5	exe leg
+
+	set -A portraitW	80  80	111 80	53  105	93  64	70  80
+	set -A portraitL	66  66	100 68	48  103	83  58	62  85
+	set -A landscapeW	132 132	218 132	105 225	182 127	136 172
+	set -A landscapeL	66  66	93  66	44  88	77  53	58  66
+
+	integer dtype=0
+
+	case $datatype in
+
+	(*ascii*)
+		dtype=0
+		if (( wflag == 1 )); then
+			orientation="portrait"
+			(( portraitW[0] = $width ))
+			(( portraitL[0] = $length ))
+		fi
+		;;
+	(*ansi*)
+		case $pagesize in
+		(a)		dtype=1 ;;
+		(a3)		dtype=2 ;;
+		(a4)		dtype=3 ;;
+		(a5)		dtype=4 ;;
+		(b)		dtype=5 ;;
+		(b4)		dtype=6 ;;
+		(b5)		dtype=7 ;;
+		(executive)	dtype=8 ;;
+		(legal)		dtype=9 ;;
+		(*)		dtype=0 ;;
+		esac
+		;;
+	(*)
+		$DEBUG_ECHO exec cat
+		exit 0
+		;;
+	esac
+
+	case $orientation in
+		(landscape)	width=${landscapeW[dtype]}
+				length=${landscapeL[dtype]}
+				;;
+		(*)		width=${portraitW[dtype]}
+				length=${portraitL[dtype]}
+				;;
+	esac
+}
+
+integer wflag=0		# if > 0: width and length win over orientation
+
+case $1 in
+(-*)
+	if [[ ${1%%w*} != $1 ]] ; then
+		(( wflag=1 ))
+	fi
+	shift
+	;;
+(*)
+	;;
+esac
+
+
+datatype=$1
+pagesize=$2
+orientation=$3
+width=$4
+length=$5
+title=$6
+
+get_width_and_length
+
+$DEBUG_ECHO /bin/pr -w$width -l$length -h $title

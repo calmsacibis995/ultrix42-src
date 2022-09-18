@@ -1,0 +1,570 @@
+.\" SCCSID: @(#)man.1	8.2	4/1/91
+.TH man 1
+.SH Name
+man \- displays manual pages online
+.SH Syntax
+.B man \-k
+.I keyword...
+.br
+.B man \-f
+.I page_title...
+.br
+.B man
+[
+.I options
+] [
+.BI \- roff_options
+]... [
+.I section
+]
+.I page_title...
+.br
+.B man
+[
+.I options
+] [
+.I section page_title...
+]...
+.sp
+.B /usr/bin/man 
+[
+.I option
+] [
+.I section
+]
+.I page_title...
+.br
+.B /usr/bin/man
+[
+.I options
+] [
+.I section page_title...
+]...
+.SH Description
+.NXR "man command"
+.NXA "man command" "man macro package"
+.NXAM "man command" "catman command"
+.NXR "man command" "locating online information"
+There are two
+.PN man
+commands:
+.PN /usr/ucb/man ,
+and
+.PN /usr/bin/man .
+For most users,
+.PN /usr/ucb/man
+is the default
+.PN man
+command.  The command
+.EX 5
+which man
+.EE
+shows you which
+.PN man
+command is the default.  The recommended default is
+.PN /usr/ucb/man .
+.PP
+Both
+the
+.PN man
+commands
+provide online displays of specified reference pages.
+.SS The /usr/ucb/man Command.
+The basic function of this command is to provide online displays of
+reference pages.
+You can use
+.IR options,
+however, to direct the 
+.PN man 
+command to display one line summaries of reference pages which
+contain specific keywords, to display
+one line summaries of specific reference pages, to use special formatting
+options when preparing the reference page for display or printing, and
+to search alternate reference page directories for specified reference
+pages.
+.PP
+If an option is not used, the 
+.PN man
+command formats and displays one or more specified
+reference pages.
+If there are multiple reference pages which match a specified name, only
+the first matching reference page is displayed.  If there are multiple matches
+in a section for a specified name, the matching page in the first
+alphabetically occurring subsection is displayed.
+.PP
+If you specify the
+.PN man
+command with a
+.I section
+argument, the
+.PN man
+command looks in that section of the reference pages for the
+specified page titles.
+A
+.I section
+consists of a number in the range 0 to 9, optionally followed by
+an alphanumeric subsection, or
+.I section
+can be the name `local', `new', `old', or `public'.  Numbers 0 and 9
+are non-standard.  
+If a
+.PN section
+is omitted,
+the 
+.PN man
+command searches all sections of the reference pages.   The
+.PN man
+command displays commands (both standard and local) over subroutines in system
+libraries,
+and displays the first occurrence it finds, if any.  If Section 1 is
+specified, the sections n, l, and o are also searched, if they
+exist.
+.PP
+The
+.I section
+and
+.I page_title...
+arguments can be paired, so that multiple pages can be searched for in a
+section, and multiple sections can be searched for a page or pages.
+.PP
+All displays are directed to standard out, unless redirected, or unless the
+.PN \-t
+option is specified.
+If the standard output is a teletype device,
+the
+.PN man
+command completes the following: pipes the output through the
+.MS cat 1
+command using the option
+.B \-s
+to eliminate unnecessary blank lines and
+invokes the
+.MS page 1
+command using the option
+.B \-s
+to display a screen at a time.
+.PP
+If a specified reference page is not already formatted, but the source file
+exists, the
+.PN man
+command preprocesses the file through the
+.MS tbl 1
+command.
+The command next pipes the output to the
+.MS nroff 1
+command, or to
+the
+.PN troff
+command if the
+.PN \-t
+option was specified,
+using the
+.MS man 7
+macros package.
+If the
+.PN tbl
+output was directed to the
+.PN nroff
+command, the output is then piped through the
+.MS col 1
+postprocessor, then directed to standard out.
+If the appropriate
+.PN /usr/man/cat?
+directory exists, the formatted display is saved there.
+.SS The /usr/bin/man Command
+The
+.PN /usr/bin/man
+command performs the same basic function as the
+.PN /usr/ucb/man
+command, that is, formats and displays or prints specified reference
+pages.  It does not provide all the functions of
+.PN /usr/ucb/man ,
+and there are some differences in common functions.
+.PP
+The
+.PN /usr/bin/man
+command searches for the specified reference pages,
+and formats and displays all reference pages matching the specified names.
+If no
+.I section
+is specified, all sections 1 through 8 are searched.
+In the case of multiple matches, the display order is in numeric section
+order, and ASCII subsection order within a section.
+.PP
+All displays are directed to standard out, unless redirected, or unless
+an option is used which requests processing through the
+.PN troff
+command.
+If a
+.PN troff 
+option was not specified, then the standard output is to a teletype device.
+If the standard output is a teletype device,
+the
+.PN /usr/bin/man
+pipes the output through the
+.MS col 1
+postprocessor, then directs the output to standard out.
+.PP
+The
+.PN /usr/bin/man
+command does not use preformatted files.  It searches only the
+.PN /usr/man/man[1-8]
+directories for source files.
+.PP
+If a specified file exists, it is always preprocessed through the
+.MS tbl 1
+command.
+.PP
+If an option is not used, the
+.PN /usr/bin/man
+command formats and displays specified reference pages using the
+.PN nroff
+command.
+.PP
+If multiple options are specified, only the last one is executed, except
+that multiple \fIroff_options\fP
+are accepted and executed.
+.SH Options
+.NXR "man command" "options"
+.SS /usr/ucb/man Options
+The following options are recognized only by the
+.PN /usr/ucb/man
+command.  Note that the options
+.PN \-
+and
+.PN \-k
+do not have the same functionality as the corresponding
+.PN /usr/bin/man
+options.
+.IP \- 12
+Squeeze multiple blank lines from output.  
+.IP \-f
+Display one line summaries of each page title specified on
+the command line.
+.IP \-k
+Display one line summaries of each reference page that contains 
+the specified keyword or keywords.  
+.IP "\-P \fImanpath\fP"
+Search the specified \fImanpath\fP directory instead of
+.PN /usr/man .
+.IP \-s
+Remove unnecessary blank lines.  
+.IP \-t
+Phototypesets the output through the
+.PN troff
+command.
+.IP
+This
+option requires the installation of the
+.PN troff
+command, which is unsupported.  
+When the 
+.B \-t 
+option is specified,
+the 
+.PN troff 
+output is directed, by 
+.PN lpr \'s
+.B \-t
+option, to the printer or typesetter specified by the PRINTER
+environment variable.  PRINTER must be set to a printer
+which is capable of handling 
+.PN troff 
+output files.  The default is the lp printer (see
+.MS lpr 1  
+description of the 
+.B \-t 
+option for more information).
+.SS /usr/bin/man Options
+The following options are recognized by the
+.PN /usr/bin/man
+command.  Note that the options
+.PN \-
+and
+.PN \-k
+do not have the same functionality as the corresponding
+.PN /usr/ucb/man
+options.
+.IP "\-\fIroff_options\fR" 12
+Inserts the specified
+\fIroff_option\fR in front of the
+.B \-man
+option when the appropriate *roff text formatter is called (the other
+options determine which *roff formatter is called).  Multiple
+\fIroff_options\fP can be specified.  If a null value is specified, the results
+are unpredictable.
+.IP "\-e | \-et | \-te"
+Preproceses the display with the
+.PN eqn
+command, then performs the same steps
+as the
+.PN \-t
+option.
+.IP
+This
+option requires the installation of the
+.PN eqn
+and
+.PN troff
+commands, which are unsupported.  
+.IP "\-ek | \-ke"
+Preproceses the display with the
+.PN eqn
+command, then performs the same steps
+as the
+.PN \-k
+option.
+.IP
+This
+option requires the installation of the
+.PN eqn ,
+.PN tc ,
+and 
+.PN troff
+commands, which are unsupported.
+.IP \-k
+Formats the display through the
+.PN troff
+command, using troff's
+.PN \-t
+option, then directs the output to the
+.PN tc
+command.
+.IP
+This
+option requires the installation of the
+.PN tc
+and 
+.PN troff
+commands, which are unsupported.
+.IP \-n
+Formats the display through the
+.PN nroff
+command.  This is the default.
+.IP "\-ne | \-en"
+Preproceses the display with the
+.PN neqn
+command, then performs the same steps
+as the
+.PN \-n
+option.
+.IP
+This
+option requires the installation of the
+.PN neqn
+command, which is unsupported.
+.IP \-t
+Photypesets the output through the
+.PN troff
+command.
+.IP
+This
+option requires the installation of the
+.PN troff
+command, which is unsupported.
+.IP \-w
+Shows where the specified reference pages
+are located, relative to the
+.PN /usr/man
+directory.
+.SH Restrictions
+The reference pages are reproducible on phototypesetters
+or on hardcopy devices.  However, some devices do not 
+properly handle special characters which causes information to
+be lost.
+.PP
+Some options require the installation of unsupported software.  Use of these
+options is at your own risk.
+.PP
+Options which call the
+.PN neqn
+or
+.PN eqn
+commands will generally fail when used with the ULTRIX reference pages,
+because any ULTRIX reference pages which use
+.PN *eqn
+commands were preprocessed through the
+.PN neqn
+text formatter before being packaged for shipment to you.
+.PN *eqn
+text preprocessors generally report numerous errors when attempts are
+made to reprocess files a second time through an
+.PN *eqn
+text preprocessor.
+.PP
+Both
+.PN /usr/ucb/man
+and
+.PN /usr/bin/man
+commands 
+.PN cd 
+to the
+.PN /usr/man
+directory before searching for and formatting files.  Some reference
+pages assume that this happens.  Therefore, an attempt to format some
+reference pages manually with a
+.PN *roff
+text formatter may fail if you are not sitting in the
+.PN /usr/man
+directory.
+.SS /usr/ucb/man Restrictions
+If a specified reference page exists in the appropriate
+.PN /usr/man/man?
+directory,
+but there is no appropriate
+.PN /usr/man/cat?
+directory, you will not be able to scroll backwards in the display.
+.PP
+The man directories for sections n, l, o, p, 0 and 9 are optional
+directories. They must be created
+by the system administrator.
+.PP
+The
+.PN /usr/man/cat?
+directories are not required to exist.  They must be created by the
+system administrator.  This is generally done through the
+.MS catman 8
+command.
+.SH Examples
+.SS /usr/ucb/man Examples
+The following examples all assume the use of the default command:
+.PN /usr/ucb/man .
+.PP
+The following example shows how to locate reference pages containing the
+keyword `graph':
+.EX 5
+% man \-k graph
+.EE
+The following example shows how to display the
+.MS graph 1g
+reference page:
+.EX 5
+% man 1g graph
+.EE
+The following example shows how to display 
+.PN plot
+reference pages:
+.EX 5
+% man 1 plot 3 plot
+.EE
+The following example shows how to display 
+.PN chmod
+and 
+.PN chown
+reference
+pages:
+.EX 5
+% man 1 chmod chown 2 chmod chown
+.EE
+The following example shows how to display a reference page 
+.PN test
+in the
+.PN /usr/man/manl
+directory.  In order to locate the 
+.PN test
+reference page here, it must have
+the file name
+.PN test.l ,
+so its reference page title would be
+.MS test l .
+.EX 5
+% man local test
+.EE
+To locate the 
+.PN test
+reference pages in Section 1:
+.EX 5
+% man 1 test 1sh5 test
+.EE
+If you have a directory
+.PN /usr/local/man
+which contains
+.PN man?
+subdirectories, which also contain reference pages, then the following
+example shows how to display a reference page 
+.PN games
+located somewhere
+in a subdirectory of
+.PN /usr/local/man:
+.EX 5
+% man \-P /usr/local games
+.EE
+.SS /usr/bin/man Examples
+The following example shows how to display
+.PN chmod 
+reference pages:
+.EX 5
+% /usr/bin/man chmod 
+.EE
+The above displays all the 
+.PN chmod
+reference pages from all sections of
+the installed reference pages.
+.PP
+The following example shows how to display all the 
+.PN test
+reference pages in Section 1:
+.EX 5
+% /usr/bin/man 1 test
+.EE
+.PP
+The following example shows how to locate all the 
+.PN test
+reference pages:
+.EX 5
+% /usr/bin/man \-w test
+.EE
+.PP
+The following example shows how to locate all the 
+.PN intro
+reference pages
+in 
+Section 3:
+.EX 5
+% /usr/bin/man \-w 3 intro
+.EE
+The following example displays the
+.MS man 1
+reference page with a starting page number of 10.
+.EX 5
+% /usr/bin/man \-n10 1 man
+.EE
+.SH Files
+.TP 20
+.PN /usr/ucb/man
+The default 
+.PN man
+command.
+.TP
+.PN /usr/bin/man
+The alternate 
+.PN man
+command.
+.TP
+.PN /usr/man/man?/*
+These directories contain the online reference pages which
+are divided into sections 1 through 8, n, l, o, and p.  Sections 0
+and 9 can also exist but these are non-standard sections.
+.TP
+.PN /usr/man/cat?/*
+These directories contain the files generated by the
+.PN man
+and
+.PN catman
+commands.
+.TP
+.PN /usr/lib/whatis
+This file contains the summary lines of each reference page.
+.TP
+.PN \fImanpath\fP/man/man?/*
+These directories contain reference pages to be searched by the
+.PN man
+command when the
+.PN \-P
+.I manpath
+option is specified. These directories must have the same 
+organization and format as
+.PN /usr/man .
+.SH See Also
+apropos(1), col(1), nroff(1), page(1), tbl(1),
+whatis(1), whereis(1), man(7), catman(8)

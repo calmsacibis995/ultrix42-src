@@ -1,0 +1,36 @@
+.TH stl_comp 5
+.SH Name
+stl_comp \- software subset compression file
+.SH Description
+The software subset compression file is used to indicate
+.NX R "Software subset compression file"
+.NX R "stl_comp file"
+.NX R "setld utility" "specifying compressed format for files"
+to the
+.PN setld
+utility that the subsets on a distribution are in compressed format.
+This file is created in the
+.I instctrl
+directory of the kit output hierarchy by the
+.PN kits
+utility
+if the value for the 
+.I COMPRESS
+attribute in the key file for the product is 1.
+The name of this file is of the form
+.I XXXZZZ.comp
+where
+.I XXX
+is the value of the
+.I CODE
+attribute for the product and
+.I ZZZ
+is the value of the
+.I VERS
+attribute.
+.SH See Also
+.TP
+kits(1), stl_key(5), setld(8)
+.PP
+.I Guide to Preparing Software for
+.I Distribution on ULTRIX Systems

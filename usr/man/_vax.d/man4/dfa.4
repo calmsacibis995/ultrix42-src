@@ -1,0 +1,87 @@
+.\" SCCSID: @(#)dfa.4	2.1	3/10/87
+.TH dfa 4 VAX
+.SH Name
+dfa \- DFA01 communications interface
+.SH Syntax
+.B "device dz0 at uba0 csr 0160100 flags 0x0 vector dzrint dzxint
+.NXS "dfa interface" "DFA01 communications interface"
+.NXR "DFA01 communications interface" 
+.NXA "DZQ11 communications interface" "DFA01 communications interface"
+.SH Description
+The DFA01 contains two DF224-compatible modems with a DZQ11-compatible
+interface.
+Each line attached to the DFA01
+behaves as described in
+.MS tty 4 .
+See 
+.MS tty 4
+for the encoding.
+Lines may operate at 300, 1200, or 2400 baud.
+.NT Caution
+The DZQ11 interface is capable of baud rates up to 9600 baud,
+but, because the modem is restricted to speeds of 300, 1200, and 2400 baud, 
+all other baud rates are considered illegal and pass meaningless data.
+.NE
+.PP
+A flags field of 0x0 must be specified to indicate that the lines are
+to be treated as modems.
+.PP
+An 
+.MS acucap 5
+entry of \f(CWdfa01\fP should be used to describe the 2400 baud
+autodial attributes used by such programs as 
+.MS tip 1c ,
+.PN cu
+and
+.MS uucp 1c .
+.NXR "DFA01 communications interface" "acucap file entry"
+For pulse tone dialing at 2400 baud, an 
+.MS acucap 5
+entry of \f(CWdfa01-p\fP should be used.
+To dial at 1200 baud, the \f(CWdfa01-1200\fP or \f(CWdfa01-1200p\fP (pulse dial)
+should be used.
+To use the DFA01 autodialer, the terminal line must be set to
+no parity.  
+.PP
+Any entry in the
+.MS remote 5
+file that specifies an 
+ACU type of \f(CWdfa01\fP must specify no parity.  The
+following example shows how a correct entry in the
+.MS remote 5
+file may look:
+.NXR(e) "DFA01 communications interface" "remote file entry"
+.EX
+dial2400|2400 Baud attributes:\e
+	:dv=/dev/ttyd0:br#2400:at=dfa01:du:pa=none:
+.EE
+.PP
+The 
+.PN dfa 
+driver normally uses its input silos
+and polls for input at each clock tick (10 milliseconds)
+rather than taking an interrupt on each input character.
+.PP
+.MS MAKEDEV 8
+will produce four terminal lines for the DZQ11 interface.
+The second and fourth lines are the actual modem lines.  
+The first and third lines
+pass status information when the modem is on line.  
+.SH Diagnostics
+.PP
+\fBdz%d: receive fifo overflow\fR.  
+.br
+The character input fifo overflowed
+before it could be serviced.
+This can happen if other devices heavily utilize the bus
+and CPU, preventing interrupts from the DFA01 from being serviced.
+This may cause a few input characters to be lost to users.
+It is not serious.
+.SH Files
+.TP 15
+.PN /dev/tty??
+.TP
+.PN /dev/ttyd?
+Dialups
+.SH See Also
+tty(4), acucap(5), MAKEDEV(8)

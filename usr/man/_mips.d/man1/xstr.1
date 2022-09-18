@@ -1,0 +1,117 @@
+.\" SCCSID: @(#)xstr.1	8.1	9/11/90
+.TH xstr 1
+.SH Name
+xstr \- extract strings from C program 
+.SH Syntax
+.B xstr
+[\fB\-c\fR] [\fB\-\fR] [\fI\|file\fR\|]
+.SH Description
+.NXR "xstr command"
+.NXA "xstr command" "mkstr command"
+.NXA "mkstr command" "xstr command"
+.NXR "C program" "implementing shared constant strings"
+The
+.PN xstr
+command maintains a file
+.I strings
+into which strings in component parts of a large program are hashed.
+These strings are replaced with references to this common area.
+This serves to implement shared constant strings, most useful if they
+are also read-only.
+.PP
+The command
+.EX
+xstr \-c name
+.EE
+.PP
+will extract the strings from the C source in name, replacing
+string references by expressions of the form (&xstr[number])
+for some number.
+An appropriate declaration of
+.PN xstr
+is prepended to the file.
+The resulting C text is placed in the file x.c,
+to then be compiled.
+The strings from this file are placed in the
+.I strings
+data base if they are not there already.
+Repeated strings and strings which are suffices of existing strings
+do not cause changes to the data base.
+.PP
+After all components of a large program have been compiled a file
+xs.c declaring the common
+.PN xstr
+space can be created by a command of the form
+.EX
+xstr
+.EE
+.PP
+This xs.c file should then be compiled and loaded with the rest
+of the program.
+If possible, the array can be made read-only (shared) saving
+space and swap overhead.
+.PP
+The
+.PN xstr
+command can also be used on a single file.
+A command
+.EX
+xstr name
+.EE
+.PP
+creates files x.c
+and xs.c
+as before, without using or affecting any
+.I strings
+file in the same directory.
+.PP
+It may be useful to run
+.PN xstr
+after the C preprocessor if any macro definitions yield strings
+or if there is conditional code which contains strings
+which may not, in fact, be needed.
+The
+.PN xstr
+command
+reads from its standard input when the argument `\-' is given.
+An appropriate command sequence for running
+.PN xstr
+after the C preprocessor is:
+.EX
+cc \-E name.c | xstr \-c \-
+cc \-c x.c
+mv x.o name.o
+.EE
+.PP
+The
+.PN xstr
+command does not touch the file
+.I strings
+unless new items are added, thus
+.PN make
+can avoid remaking xs.o unless truly necessary.
+.SH Options
+.IP \fB\-\fR 0.3i
+Reads stdin.
+.IP \fB\-c\fR 0.3i
+Extracts strings from specified C
+source (next argument).
+.SH Restrictions
+.NXR "xstr command" "restricted"
+If a string is a suffix of another string in the data base,
+but the shorter string is seen first by
+.PN xstr
+both strings will be placed in the data base, when just
+placing the longer one there will do.
+.SH Files
+.DT
+strings		Data base of strings
+.br
+x.c		Massaged C source
+.br
+xs.c		C source for definition of array `xstr'
+.br
+/tmp/xs*	Temp file when `xstr name' doesn't touch
+.I strings
+.SH See Also
+mkstr(1)

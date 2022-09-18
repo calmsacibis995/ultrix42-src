@@ -1,0 +1,165 @@
+.\" SCCSID: @(#)grep.1	8.1	9/11/90
+.TH grep 1
+.SH Name
+grep, egrep, fgrep \- search file for regular expression
+.SH Syntax
+.B grep
+[\|\fIoption...\fR\|] 
+\fIexpression\fR [\|\fIfile...\fR\|] 
+.PP
+.B egrep 
+[\|\fIoption...\fR\|] 
+[\|\fIexpression\fR\|]
+[\|\fIfile...\fR\|] 
+.PP
+.B fgrep
+[\|\fIoption...\fR\|] 
+[\|\fIstrings\fR\|]
+[\|\fIfile\fR\|]
+.SH Description
+.NXR "grep command"
+.NXR "egrep command"
+.NXR "fgrep command"
+.NXR "file" "finding pattern"
+.NXA "grep command" "sed stream editor"
+Commands of the
+.PN grep
+family search the input
+.I files
+(standard input default) for lines matching a pattern.
+Normally, each line found is copied to the standard output.
+.PP
+The
+.PN grep
+command patterns are limited regular expressions in the style of
+.MS ex 1 ,
+which uses a compact nondeterministic algorithm.
+The
+.PN egrep
+command patterns are full regular expressions. 
+The
+.PN egrep
+command uses a fast deterministic
+algorithm that sometimes needs exponential space.
+The
+.PN fgrep
+command
+patterns are fixed strings. 
+The
+.PN fgrep
+command is fast and compact.
+.PP
+In all cases the file name is shown
+if there is more than one input file.
+Take care when using
+the characters $ * [ ^ | ( ) and \\ in the
+.I expression
+because they are also meaningful to the Shell.
+It is safest to enclose the entire
+.I expression
+argument in single quotes \' \'.
+.PP
+The
+.PN fgrep
+command
+searches for lines that contain one of the (new line-separated)
+.I strings.
+.PP
+The
+.PN egrep
+command
+accepts extended regular expressions.
+In the following description `character' excludes new line:
+.IP
+A \e followed by a single character
+other than new line matches that character.
+.IP
+The character ^ matches the beginning of a line.
+.IP
+The character $ matches the end of a line.
+.IP
+A 
+.B .
+(dot) matches any character.
+.IP
+A single character not otherwise endowed with special
+meaning matches that character.
+.IP
+A string enclosed in brackets [\|] matches
+any single character from the string.
+Ranges of ASCII character codes may be abbreviated as in `a\-z0\-9'.
+A ]
+may occur only as the first character of the string.
+A literal \- must be placed where it can't
+be mistaken as a range indicator.
+.IP
+A regular expression followed by an * (asterisk) matches a sequence of 0
+or more matches of the regular expression.
+A regular expression followed by a + (plus)
+matches a sequence of 1 or more
+matches of the regular expression.
+A regular expression followed
+by a ? (question mark) matches a sequence of
+0 or 1 matches of the regular expression.
+.IP
+Two regular expressions concatenated match a match of the first followed
+by a match of the second.
+.IP
+Two regular expressions separated by | or new line
+match either a match for the first or a match for the second.
+.IP
+A regular expression enclosed in parentheses
+matches a match for the regular expression.
+.PP
+The order of precedence of operators at the same parenthesis level
+is the following:  [\|], then *+?, then concatenation, then | and new line.
+.SH Options
+.NXR "grep command" "options"
+.IP \fB\-b\fR 12
+Precedes each output line with its block number.
+This is sometimes useful in locating disk block numbers by context.
+.IP \fB\-c\fR 
+Produces count of matching lines only.
+.IP "\fB\-\|e\fI expression\fR" 
+Uses next argument as expression that begins with a minus (\-).  
+.IP "\fB\-\|f\fI file\fR" 
+Takes regular expression
+(\fBegrep\fR) or string list (\fBfgrep\fR) 
+from 
+.I file.
+.IP \fB\-i\fR 
+Considers upper and lowercase letter identical in making comparisons  
+.PN (grep 
+and
+.PN fgrep
+only).
+.IP \fB\-l\fR 
+Lists files with matching lines only once, 
+separated by a new line.
+.IP \fB\-n\fR 
+Precedes each matching line with its line number.
+.IP \fB\-s\fR 
+Silent mode and nothing is printed (except error messages).
+This is useful for checking the error status (see DIAGNOSTICS).
+.IP \fB\-v\fR 
+Displays all lines that do not match specified expression.
+.IP \fB\-w\fR 
+Searches for an expression as for a word
+(as if surrounded by `\e<' and `\e>').
+For further information, see 
+.MS ex 1 ,
+.PN grep
+only.
+.IP \fB\-x\fR 
+Prints exact lines matched in their entirety 
+.PN (fgrep
+only).
+.SH Restrictions
+.NXR "grep command" "restricted"
+Lines are limited to 256 characters; longer lines are truncated.
+.SH Diagnostics
+.NXR "grep command" "diagnostics"
+Exit status is 0 if any matches are found,
+1 if none, 2 for syntax errors or inaccessible files.
+.SH See Also
+ex(1), sed(1), sh(1)

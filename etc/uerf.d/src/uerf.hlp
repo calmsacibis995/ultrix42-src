@@ -1,0 +1,23 @@
+/*  sccsid  =  @(#)uerf.hlp	4.1   (ULTRIX)   7/2/90  */
+
+ uerf<cr>            - process all events in the default input file
+
+PROCESSING OPTIONS
+  -h     	     - display this help screen.
+  -f input_filename  - process events from the specified input file.
+  -n                 - process events from kernel errorlog buffer immediately.
+  -H ascii_host_name - process events for the specified hosts.
+  -R                 - process events from the errorlog file in reverse order.
+  -S		     - display a summary of the selected events.
+  -t time_range      - process events in the specified time range.
+  -o output_format   - format the output in brief, full or terse.
+  -x                 - exclude selected events (below) from output.
+  -Z                 - display the entry in hex format.
+
+SELECTION OPTIONS - Events may be selected as follows.
+
+  -A adapter_list         -D disk_devices         -M mainframe_type  
+  -O os_specific          -T tape_devices         -c class_of_events 
+  -e error_types          -r record type          -s sequence number 
+
+         ***** For a detailed list of options see uerf(8) *****

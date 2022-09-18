@@ -1,0 +1,48 @@
+.\" SCCSID: @(#)rwho.1c	2.3	6/8/87
+.TH rwho 1c
+.SH Name
+rwho \- who is logged in on local machines
+.SH Syntax
+.B rwho
+[
+.B \-ah
+] [\fIusers\fR]
+.SH Description
+The
+.PN rwho
+command lists the login name, terminal name, and login time for
+users on all machines on the local network.
+If no report has been
+received from a machine for 5 minutes, 
+.PN rwho
+assumes that the machine is down, and does not report users last known
+to be logged in to that machine.
+If a user has not typed to the system for a minute or more, 
+.PN rwho
+reports this idle time.
+.PP
+If a user has not typed to the system for an hour or more,
+the user is omitted from the output of
+.PN rwho .
+.PP
+If given a list of user names, the
+.PN rwho
+command reports on the status of only those names.
+.SH Options
+.IP \fB\-a\fR 5 
+Lists all users.  Normally,
+.PN rwho
+omits users who have not typed to the system for an hour or
+more.  If the
+.B \-a
+flag is specified, these users are also listed.
+.IP \fB\-h\fR 
+Sorts users by host name.  Normally,
+.PN rwho
+prints its output sorted by user name.  If the
+.B \-h
+flag is specified, the results are sorted by host name.
+.SH Files
+/usr/spool/rwho/whod.*	Information about other machines
+.SH See Also
+ruptime(1c), rwhod(8c)

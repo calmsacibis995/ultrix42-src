@@ -1,0 +1,58 @@
+.\" SCCSID: @(#)gfsi.5	8.1	9/11/90
+.TH gfsi 5
+.SH Name 
+gfsi \- The Generic File System Interface
+.SH Description
+.NXR "gfsi file"
+.NXR "Generic File System Interface"
+.NXA "gfsi file" "NFS file"
+.NXA "gfsi file" "UFS file"
+.NXA "gfsi file" "getdirentries system call"
+.NXA "gfsi file" "getmnt system call"
+The Generic File System Interface (GFSI) is the interface
+between the kernel and
+specific file system implementations such as 
+.PN ufs ,
+the local ULTRIX file system and 
+.PN nfs , 
+the Network File System.
+The Generic File System Interface has many performance improvements,
+along with a complete reorganization of the
+file system code.  The GFS interface
+has been accomplished with modifications to both
+the mount table,
+.PN sys/mount.h
+and to the inode, which under the GFS interface implementation
+is referred to as the gnode.  The gnode is defined in the
+.PN sys/gnode.h
+and 
+.PN sys/gnode_common.h .
+.PP
+The GFS interface allows superusers to
+.PN mount 
+and 
+.PN umount
+file systems on local and remote machines.
+Changes to the
+.PN /etc/fstab
+file allow any type of mount to occur automatically at boot time in the
+files 
+.PN /etc/rc
+and 
+.PN /etc/rc.boot .
+Other than mounting and unmounting file systems, users should not see
+any difference in the local file system.
+.PP
+The GFS interface requires two system calls: 
+.MS getmnt 2 
+and 
+.MS getdirentries 2 .
+The 
+.PN getmnt
+system call handles generic mounted file system data.
+The 
+.PN getdirentries 
+system call handles generic directory entries from any file system.
+.SH See Also
+getdirentries(2), getmnt(2), mount(2), fstab(5), nfs(5nfs), ufs(5),
+fsck(8), mount(8)

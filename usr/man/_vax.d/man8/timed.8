@@ -1,0 +1,191 @@
+.TH timed 8
+.SH Name
+timed \- time server daemon
+.SH Syntax
+.B /usr/etc/timed
+[ 
+.B \-i | \-n
+.I network 
+][ 
+.B \-E
+][
+.B \-M 
+][
+.B \-t
+]
+.SH Description
+The 
+.PN timed
+.NXR "timed" "daemon"
+daemon synchronizes a host's time with the time of other
+machines in a local area network running
+.PN timed .
+It is normally invoked
+at boot time from the
+.PN /etc/rc.local
+file.  
+.PP
+Servers running
+.PN timed
+slow down the clocks of some machines
+and speed up the clocks of others to bring them all
+to the average network time.
+The average network time is computed from measurements of clock differences
+with the Internet Communication Message Protocol (ICMP)
+timestamp request message.
+.PP
+The service provided by 
+.PN timed
+is based on a master-slave scheme.
+When
+.PN timed
+is started on a machine, it asks the master for the network time
+and sets the host's clock to that time.
+After that, it accepts synchronization messages periodically sent by
+the master and calls the 
+.PN adjtime 
+or
+.PN settimeofday
+routine to perform any corrections on the host's clock.
+.PP
+It also communicates with the
+.PN date
+command to set the date globally,
+and with the 
+.PN timed 
+control program,
+.PN timedc .
+If the machine running the master crashes, then the slaves elect
+a new master from among slaves running with the 
+.PN \-M
+flag set.  The
+.PN \-M
+flag provides time synchronization on any attached networks
+where no current master server is detected.
+Such a server propagates the time computed by the top-level master.
+At least one 
+.PN timed
+daemon on each network must run with the
+.PN \-M
+option set to
+allow it to become a 
+.PN timed 
+master.
+.SH Options
+.IP \-E 
+Overrides the input of slaves.  Use the
+.PN \-E
+flag in conjunction with the 
+.PN \-M
+flag.  It specifies that a master
+.PN timed
+should not average the times of the slaves to calculate the network time but
+should distribute the time of its local host as the network time.  This flag
+allows a master 
+.PN timed 
+to distribute time to a network while the network time is controlled by an
+outside agent such as the Network Time Protocol.
+.IP "[\-i | \-n] \fInetwork\fP"
+.RS
+.IP \-i 
+Specifies a network to ignore.  Each network that appears as an
+argument to the 
+.PN \-i
+flag is added to the list of networks that
+.PN timed
+will ignore.  If the 
+.PN \-i
+flag is used,
+.PN timed
+accesses all networks to which the host is connected except for those 
+networks specified as arguments to the
+.PN \-i
+flag.  
+.IP \-n 
+Specifies a network to use.  When the
+.PN timed
+is started, it gathers
+information about all the network devices connected to the local
+host.  If neither the 
+.PN \-n
+flag nor the 
+.PN \-i
+flag is used,
+.PN timed
+tries to access all the network devices connected to the local host.
+The network argument to the
+.PN \-n
+flag is the name of a network that
+.PN timed
+should access.  
+.IP
+If the
+.PN \-n
+switch is used, only those networks specified by the 
+.PN \-n
+flag are accessed. 
+.IP
+Do not use the
+.PN \-i
+and
+.PN \-n
+flags together.
+.RE
+.IP \-M 
+Allows a slave time server to become a master time server if the
+master server crashes.  A system running the
+.PN timed
+daemon without the 
+.PN \-M
+flag set remains a slave.
+The 
+.PN timed
+daemon checks for a master time server on each network to which
+it is connected.  It requests synchronization service from the first
+master server it locates.
+.IP \-t 
+Enables 
+.PN timed
+to trace the messages it receives in the
+file 
+.PN /usr/adm/timed.log .
+Tracing can be enabled or disabled with the 
+.PN timedc 
+program.
+.SH Restrictions
+Any system running
+.PN timed
+with the
+.PN \-E
+and
+.PN \-M
+options set is eligible to become the 
+.PN timed
+master, and distribute its local time to all systems
+running 
+.PN timed
+on its network.  Run the Network Time Protocol daemon,
+.PN ntpd ,
+instead of 
+.PN timed
+to prevent this behavior.
+.SH Files
+./".ta \w'/usr/adm/timed.masterlog     'u
+.TP 35
+.PN /etc/rc.local
+Invokes the 
+.PN timed
+daemon each time the system boots
+.TP 35
+.PN /usr/adm/timed.log		
+Tracing file for 
+.PN timed
+.TP 35
+.PN /usr/adm/timed.masterlog	
+Log file for master 
+.PN timed 
+.SH See Also
+date(1), adjtime(2), gettimeofday(2), 
+networks(5), ntpd(8), timedc(8)
+.br
+.I "Introduction to Networking and Distributed System Services"

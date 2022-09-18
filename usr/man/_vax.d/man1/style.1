@@ -1,0 +1,63 @@
+.\" SCCSID: @(#)style.1	8.1	9/11/90
+.TH style 1 
+.SH Name
+style \- analyze surface characteristics of a document
+.SH Syntax
+.B style
+[\fB\-ml\fR] [\fB\-mm\fR] [\fB\-a\fR] [\fB\-e\fR] [\fB\-l\fI num\fR\|] 
+[\fB\-r\fI num\fR\|] [\fB\-p\fR] [\fB\-P\fR] \fIfile...\fR
+.PP
+.SH Description
+.NXR "style program"
+.NXR "readability" "analyzing"
+.NXR "passive verb" "finding"
+.NXA "style program" "diction program"
+The
+.PN style
+command
+analyzes the surface characteristics of the writing style
+of a document.
+It reports on readability, sentence length and
+structure, word length and usage, verb type, and sentence openers.
+Because
+.PN style
+runs
+.PN deroff
+before looking at the text, formatting
+header files should be included as part of the input.
+The default macro package
+.B \-ms
+may be overridden with the flag
+.B \-mm.
+The flag
+.BR \-ml ,
+which causes 
+.PN deroff
+to skip lists, should be used if the document contains many lists of
+non-sentences.
+The other options are used to locate sentences with certain characteristics.
+.SH Options
+.IP \fB\-a\fR 0.3i
+Displays all sentences with their length and readability index.
+.IP \fB\-e\fR 0.3i
+Displays all sentences that begin with an expletive.
+.IP "\fB\-\|l\fI num\fR" 0.3i
+Displays all sentences longer than
+.IR num .
+.IP \fB\-ml\fR 0.3i
+Skips lists in document.
+.IP \fB\-mm\fR 0.3i
+Overrides the default macro package
+.B \-ms.
+.IP \fB\-P\fR 0.3i
+Displays parts of speech of the words in the document.
+.IP \fB\-p\fR 0.3i
+Displays all sentences that contain a passive verb.
+.IP "\fB\-\|r\fI num\fR" 0.3i
+Displays all sentences whose readability index is greater than
+.IR num .
+.SH Restrictions
+Use of non-standard formatting macros may cause
+incorrect sentence breaks.
+.SH See Also
+deroff(1), diction(1)

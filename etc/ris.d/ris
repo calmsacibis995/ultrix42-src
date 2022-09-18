@@ -1,0 +1,1302 @@
+#!/bin/sh5
+# @(#)ris	4.5	(ULTRIX)	11/14/90
+#									
+# 			Copyright (c) 1989 by				
+# 		Digital Equipment Corporation, Maynard, MA		
+# 			All rights reserved.				
+# 									
+#    This software is furnished under a license and may be used and	
+#    copied  only  in accordance with the terms of such license and	
+#    with the  inclusion  of  the  above  copyright  notice.   This	
+#    software  or  any  other copies thereof may not be provided or	
+#    otherwise made available to any other person.  No title to and	
+#    ownership of the software is hereby transferred.			
+# 									
+#    The information in this software is subject to change  without	
+#    notice  and should not be construed as a commitment by Digital	
+#    Equipment Corporation.						
+# 									
+#    Digital assumes no responsibility for the use  or  reliability	
+#    of its software on equipment which is not supplied by Digital.	
+#
+#    Major functions: 
+#	- Install software
+#	- Add client
+#	- Modify client
+#	- Remove client
+#
+# Modification History:
+#
+# 002 - 9/4/1990  Tungning Cherng
+#	Modified to be compatible with DECnet Phase V OSI.
+#
+# 001 - 8/10/89   Tungning Cherng
+#	Adds command line and a database file to manage multiple clients
+#
+# 000 - 3/28/89   Tungning Cherng created
+#	V4.0 supports Multi-architecture RIS for VAX and RISC.
+#	Based on V2.2 RIS 
+#
+#	Prompt edits by Barbara Staines
+
+RIS=/usr/var/adm/ris
+PATH=/bin:/usr/bin:/etc:/usr/ucb:/usr/etc
+export PATH
+readonly RIS
+
+umask 022
+
+[ -d $RIS ] || { echo "$RIS does not exist"; exit 1; }
+chown ris /usr/adm/ris
+
+: Ticker - Put time stamps on screen
+Ticker()
+{
+	(
+		while :
+		do
+			echo "    working ..... \c"
+			date
+			sleep 120
+		done
+	)&
+	TICKPID=$!
+}
+
+
+: Unticker - Stop time stamps to screen
+Unticker()
+{
+	[ -n "$TICKPID" ] &&
+	{
+		(
+		kill -15 $TICKPID
+		wait $TICKPID
+		TICKPID=
+		)&
+	}
+}
+
+:  getenvir
+# 
+# Output: 
+#	RISROOT: Which system is installed 
+#
+getenvir()
+{
+	case $1 in
+	"" )
+		RISROOT=
+		DIRS=`ls -d $RIS/ris[0-9]* 2>/dev/null`
+		;;
+	* )
+		RISROOT=$1
+		ARC=`expr $RISROOT : '.*\.\(.*\)'`
+		DIRS=`ls -d $RIS/*.$ARC 2>/dev/null`
+		;;
+	esac
+	set xxx $DIRS
+	case $#  in
+	1 )	
+		echo "
+There are no directories containing remote installation environments."
+		return 1	;;
+	2 )
+		RISROOT=$2
+		echo "
+The existing environment is $RISROOT."
+		return 0 	;;
+	esac
+	echo "
+Select the remote installation environment:"
+	while :
+	do
+		INDEX=0
+		for i in $DIRS
+		do
+			INDEX=`expr $INDEX + 1`
+			echo "\n$INDEX  $i"
+			sed -e "s/^....../    /" $i/ProdNames 2>/dev/null
+			[ "$i" = "$RISROOT" ] && DEF=$INDEX
+		done
+		echo "\nEnter your choice [$DEF]: \c"
+		read CHOICE
+		[ -z "$CHOICE" ] && CHOICE=$DEF
+		case $CHOICE in
+		[1-9]|[1-9]|[0-9]*)
+			INDEX=0
+			for i in $DIRS
+			do
+				INDEX=`expr $INDEX + 1`
+				case $INDEX in
+				$CHOICE )
+					RISROOT=$i
+					[ -d $RISROOT ] && break 2
+					echo "$RISROOT is not valid.".
+					continue 2
+				esac
+			done
+			;;
+		esac
+	done
+	return 0
+}
+
+:  Ckdevice
+# 
+# Abstract:
+#	Check device or mount point whether is valid.
+#
+Ckdevice()
+{
+	while :
+	do
+		echo "
+Enter the device special file name or the path of the directory where the 
+software is located, for example, /dev/rmt0h: \c"
+		read DEV
+		case $DEV in
+		"" )	;;
+		/dev/* )
+			Unit=`expr $DEV : '.*mt\([0-9][0-9]*\).*'`
+			DEV=/dev/nrmt${Unit}h
+			mt -f $DEV rew || { Unlock; exit 1; }
+			MEDIA=tape
+			break
+			;;
+		/* )
+			MEDIA=disk
+			ppp=`ls -d $DEV/instctrl 2>/dev/null`
+			[ -z "$ppp" ] && ppp=`ls -d $DEV/*/instctrl 2>/dev/null`
+			[ -z "$ppp" ] && 
+			{
+				echo "
+Cannot find a valid product directory under $DEV."
+				continue
+			}
+			Pdirs=
+			for i in $ppp
+			do
+				Pdirs="`dirname $i` $Pdirs"
+			done
+			while :
+			do
+				echo "
+Choose one of the following options:
+
+1  Extract software from $DEV
+2  Create symbolic link to $DEV 
+
+Enter your choice: \c"
+				read ans 
+				case $ans in
+				1 )	LNK=n
+					break	;;
+				2 )	LNK=y	
+					break	;;
+				esac
+			done
+			break
+			;;
+		esac
+		echo "Invalid input."
+	done
+}
+
+:  prodnames
+#
+# Output:
+# 	Grep product name string from subsets ctrl file to a file, "ProdNames". 
+#
+prodnames()
+{
+	RISYSDIR=$1
+	cd $RISYSDIR || exit 1
+	ctrldir=`ls -d */instctrl 2>/dev/null`
+	case $ctrldir in
+	"" )	
+		return	;;
+	esac
+	
+	DIRS=
+	for i in $ctrldir
+	do
+		DIRS="$DIRS `dirname $i`"
+	done
+			
+	trap '' 1 2 3  
+	> $RISYSDIR/ProdNames
+	J=0
+	for k in $DIRS
+	do
+		J=`expr $J + 1`
+		(cd $k/instctrl
+		for i in *.ctrl
+		do
+			S_ctrl=`expr $i : '\(.*\).ctrl'` 
+			D_S=`egrep "NAME=" $S_ctrl.ctrl | sed -e "s/NAME=//" | 
+				sed -e "s/${S_ctrl}//"`
+			echo " $J    $D_S" >>$RISYSDIR/ProdNames
+			break
+		done
+		)
+	done
+	trap 1 2 3 
+}
+
+: Pdsetld
+#
+# Extract image using setld
+#
+Pdsetld()
+{
+	DEV=$1
+	setld -x $DEV || {
+		 echo "setld failed" 
+		 return 1
+	}
+	rm -f all mandatory
+	return 0
+}
+
+: Namepd
+#
+# Make a proper product directory
+#
+Namepd()
+{
+	TMPROOT=$1
+	cd $TMPROOT
+	NUM=1
+	while :
+	do
+		if [ -d "product_$NUM" ]
+		then
+			NUM=`expr $NUM + 1`
+		else
+			PDdir=$TMPROOT/product_$NUM
+			break
+		fi
+	done
+	mkdir $PDdir
+	chown ris $PDdir; chgrp ris $PDdir
+}
+
+: Ckprodir
+#
+# If *.image exists under one of products and checksum is the same,
+# then the product has existed already.
+# Otherwise, it is a new product.
+# $1: ris?.{vax,mips}
+# $2: the directory of the *.image file 
+
+Ckprodir()
+{
+	Risroot=$1
+	Imagedir=$2
+	cd $Imagedir
+	Image=`ls *.image`
+	Simage=`find $Risroot -name $Image -print`
+	case $Simage in
+	"" ) 
+		Namepd $Risroot
+		;;
+	* )
+		Findflg=n
+		for I in $Simage
+		do
+			cmp $I $Image >/dev/null 2>&1 && {
+				Findflg=y
+				A=`dirname $I`
+				PDdir=`dirname $A`
+				break
+			}
+		done
+		case $Findflg in
+		n )
+			Namepd $Risroot
+			;;
+		esac
+	esac
+}
+
+: Installing 
+# 
+# Installing sofware from dev or mount point
+# $1: temparary directory for extracting images
+# $2: environment flag either New or Exist
+#
+Installing()
+{
+	TMPROOT=$1
+	ENVFLAG=$2
+	Ckdevice   
+	case $MEDIA in
+	tape ) 
+		case $ENVFLAG in
+		New )
+			Namepd $TMPROOT
+			cd $PDdir
+			Pdsetld $DEV || {
+				cd ..; rm -rf $PDdir
+				Unlock
+				exit 1
+			}
+			;;
+		Exist )
+			Ticker
+			PDTMP=/tmp/PROD$$
+			mt -f $DEV fsf 3  || { Unlock; exit 1; }
+			mkdir $PDTMP
+			cd $PDTMP
+			tar xf $DEV || { Unlock; exit 1; }
+			mt -f $DEV rew || { Unlock; exit 1; }
+			NMimage=`ls *.image 2>/dev/null`
+			case $NMimage in
+			"" )
+				echo "Cannot find image file."
+				exit 1
+			esac
+			Ckprodir $TMPROOT $PDTMP
+			rm -rf $PDTMP
+			cd $PDdir
+			Unticker
+			Pdsetld $DEV || { Unlock; exit 1; }
+			;;
+		* )
+			echo "Unknown Installing flag."
+			Unlock
+			exit 1
+		esac
+		;;
+	disk )
+		for j in $Pdirs
+		do
+			case $LNK in
+			y )
+				cd $j
+				Namepd $TMPROOT 
+				set -- `ls -ld $j`
+				case $1 in
+				dr??r??r?? )
+					[ -d $PDdir ] && rmdir $PDdir
+					ln -s $j $PDdir 
+					;;
+				* )
+					echo "
+The mode of $j directory has to be read and executed by world.\n"
+				esac	
+				;;
+			n )
+				case $ENVFLAG in
+				New )
+					Namepd $TMPROOT
+					cd $PDdir
+					Pdsetld $j || {
+						cd ..; rm -rf $PDdir
+						Unlock
+						exit 1
+					}
+					;;
+				Exist )
+					Ckprodir $TMPROOT $j/instctrl
+					cd $PDdir
+					Pdsetld $j || { Unlock; exit 1; }
+					;;
+				* )
+					echo "Unknown Installing flag."
+					Unlock
+					exit 1
+				esac
+			esac
+		done
+	esac
+}
+					
+:  Instenv
+#
+Instenv()
+{
+	echo "
+You have chosen to establish a new remote installation environment."
+
+	TMPROOT=$RIS/TMP.ris 
+	[ -d $TMPROOT ] && rm -rf $TMPROOT
+	mkdir $TMPROOT
+
+	Installing $TMPROOT New
+
+	case `ls $TMPROOT/*/instctrl/*BIN* 2>/dev/null` in
+	*ULTBIN* ) ARC=vax	
+		;;
+	*UDTBIN* ) ARC=mips
+		;;
+	* )
+		while :
+		do
+			echo "
+Enter the identifier for the architecture of clients to be
+served from the environment, either mips or vax: \c"
+			read ARC
+			case $ARC in
+			mips | vax )	break	
+			esac
+		done
+	esac
+
+	NUM=0
+	while : 
+	do
+		if [ -d "$RIS/ris$NUM.$ARC" ]
+		then 
+			NUM=`expr $NUM + 1`
+		else 
+			RISROOT=$RIS/ris$NUM.$ARC
+		     	break
+		fi
+	done
+	mv $TMPROOT $RISROOT 
+	chown ris $RISROOT; chgrp ris $RISROOT
+	echo "\nThe new environment is in $RISROOT."
+
+	
+}
+
+:  Instprod
+#
+# Abstract:
+#	Install new product to existing environment.
+#
+Instprod()
+{
+	echo "
+You have chosen to add a product to an existing environment."
+
+	getenvir || return
+	Installing $RISROOT Exist
+}
+
+#
+# Name: Instsoft
+# Abstract:
+#	Softwares are installed under three situation.
+#
+Instsoft()
+{
+	while :
+	do
+		echo "
+The menu below offers you two software installation alternatives:
+
+	1) You can create a new area to serve either RISC or VAX clients
+	   by installing a software product.  The ris utility automatically
+	   creates the new area.
+
+	2) You can install additional software to an existing area 
+	   that serves either RISC or VAX clients.
+
+RIS Software Installation Menu:
+
+	1  Install Software to a New Area.
+	2  Add Software to an Existing Area.
+	3  Return to Previous Menu
+
+Enter your choice: \c"
+		read ANS
+		case $ANS in
+		1 )
+			Instenv		;;
+		2 )
+			Instprod	;;
+		3 )	
+			;;
+		* )	continue	;;
+		esac
+		break
+	done
+}
+
+
+:  getbdname
+# 
+# Output: 
+#	  CLIENT: the name without a binddoman extension.
+#	  CLIENTNAME: if there is a binddomain, the name with the extension.
+#
+getbdname()
+{
+	CLIENTNAME=$CLIENT
+	SERHOST=`/bin/hostname`
+	binddomain=`expr $SERHOST : '[^.]*\.\(.*\)'`
+	bindtp=`expr $CLIENT : '[^.]*\.\(.*\)'`
+	case $bindtp in
+	$binddomain )
+		CLIENT=`echo $CLIENT | sed 's/\..*//'`
+			;;
+	"" )
+		;;
+	* )
+		echo "
+The extension you entered, $bindtp, is incorrect.
+$SERHOST is a BIND server, and $binddomain is the extension for
+the domain name listed for $SERHOST by the /bin/hostname command."
+		return 1
+		;;
+	esac
+	return 0
+}
+
+: Ckname
+#
+Ckname()
+{
+	CLIENT=$1
+	case $CLIENT in
+	[A-Za-z]* )
+		getbdname
+		case $? in
+		0 )	
+			ARPRET=`/etc/arp "$CLIENT"`
+			case $ARPRET in
+			"" )	
+				return 1	
+			esac
+		 	return 0	
+			;;
+		esac
+		;;
+	* )	echo "Invalid name: $CLIENT.\n"	
+		return 1
+		;;
+	esac
+}
+
+: getname
+# 
+# get client name
+#
+getname()
+{
+	# get client name
+	while : true
+	do
+		echo  "\nEnter the client processor's hostname: \c"
+		read CLIENT
+		Ckname $CLIENT && break
+	done
+	
+}
+
+Ckether()
+{
+	ans=$1
+	set -- `Parse ":|-" $ans`
+	for i in $*
+	do
+		case $i in
+		[0-9A-Fa-f] )
+			i="0$i"
+			;;
+		[0-9A-Fa-f][0-9A-Fa-f] )
+			;;
+		* )
+			echo "
+Error: Invalid number for a hardware Ethernet or FDDI address." 1>&2
+			return 1
+			;;
+		esac
+		if [ -z "$ETHER" ] 
+		then
+			ETHER=$i 
+		else
+			ETHER="$ETHER-$i"
+		fi
+	done
+	case $ETHER in
+	[0-9A-Fa-f][0-9A-Fa-f]-[0-9A-Fa-f][0-9A-Fa-f]-[0-9A-Fa-f][0-9A-Fa-f]\
+-[0-9A-Fa-f][0-9A-Fa-f]-[0-9A-Fa-f][0-9A-Fa-f]-[0-9A-Fa-f][0-9A-Fa-f])
+		echo "$ETHER"
+		return 0
+		;;
+	* )	
+		echo "
+Error: Invalid number for a hardware Ethernet or FDDI address." 1>&2
+		return 1
+		;;
+	esac
+}
+
+: getether
+# get the ethernet or FDDI address
+#
+getether()
+{
+	CLINET=$1
+	while : true
+	do
+		echo  "
+Enter the client processor's hardware Ethernet or FDDI address, for
+example, 08-00-2b-02-67-e1 [$1]: \c"
+		read ans 
+		[ -z "$ans" ] && ans=$CLINET
+		CLINET=`Ckether $ans` && break
+	done
+}
+
+: RemoveClient
+#
+RemoveClient()
+{
+	CLIENT=$1
+	if [ -f /var/dna/mop_client_db ]
+	then
+		MOPCLI=$CLIENT
+	else
+		MOPCLI=`expr $CLIENT : '\(......\).*' '|' $CLIENT`
+	fi
+	cd $RIS/clients 
+	rm -f ${CLIENT}.netblk.[co]
+
+	grep -v "^$CLIENT:" risdb >/tmp/risdb
+		mv /tmp/risdb risdb
+	grep -v "^$CLIENT " $RIS/.rhosts >/tmp/.rhosts
+		mv /tmp/.rhosts $RIS/.rhosts
+
+	GETNODE=`/etc/getnode $MOPCLI 2>/dev/null |sed s/node//g |sed s/=//g`
+	case $GETNODE in
+	"" ) 	return 0	;;
+	esac
+	remnode $MOPCLI 2>/dev/null
+	[ -f /var/dna/mop_client_db ] ||
+    {
+	cd /usr/lib/dnet
+	if [ -f nodes_p ]
+	then
+		remnode $MOPCLI -P
+	else
+		cp nodes_v nodes_p
+	fi
+	set $GETNODE; NODADR=$1
+	case $NODADR in
+	[A-Z]* ) return 0	
+	esac
+	addnode $NODADR $MOPCLI
+	if [ -f nodes_p ]
+	then
+		addnode $NODADR $MOPCLI -P
+	else
+		cp nodes_v nodes_p
+	fi
+   }
+}
+
+:  Rmclient
+#
+# Abstract:
+#	Remove client processor 
+#
+Rmclient()
+{
+	echo "
+You have chosen to remove a client from the remote
+installation services. "
+
+	getname
+	echo "
+Remove ${CLIENT} (y/n)? [n]: \c"
+	read ans 
+	case $ans in
+	[yY] )	;;
+	* ) 	
+		echo "$CLIENT was not removed."
+		exit 0 ;;
+	esac
+	
+	RemoveClient $CLIENT
+}
+
+: SelectProds
+#
+# Select products from RISROOT
+#
+SelectProds()
+{
+	[ -s $RISROOT/ProdNames ] || prodnames $RISROOT
+
+	cd $RISROOT
+	instDIRS=`ls -d */instctrl 2>/dev/null` 
+	case $instDIRS in
+	"" )
+		echo "There are no products in $RISROOT."
+		exit 1 ;;
+	esac
+	DIRS=
+	for i in $instDIRS
+	do
+		DIRS="$DIRS `dirname $i`"
+	done
+		
+	while :
+	do
+		echo "
+Select one or more products for the client to install 
+from $RISROOT:"
+		echo "
+Product    Description"
+		cat $RISROOT/ProdNames 2>/dev/null
+		echo "\nEnter one or more choices, for example, 1 2: \c"
+		read ANS
+		case $ANS in
+		[1-9]* )
+			cd $RISROOT
+			ROOTDIR=`expr $RISROOT : '.*\/\(.*\)'`
+			PRODS=$ROOTDIR
+			echo "\nYou chose the following products: \n"
+			set $DIRS
+			for j in $ANS
+			do
+				Index=0
+				for i in $DIRS
+				do
+					Index=`expr $Index + 1`
+					case $Index in
+					$j )
+						PD=$i
+						[ -d $RISROOT/$PD ] || 
+						{
+						echo "Invalid value: $PD\n" 
+						continue 2
+						}
+						egrep "^ $j" $RISROOT/ProdNames 
+						PRODS="$PRODS,$PD"
+						break
+					esac
+				done
+			done
+			while :
+			do 
+				echo "\nIs that correct (y/n)? [y]: \c"
+				read ans
+				case $ans in
+				"" | [Yy])	break	;;
+				*) 	continue 2 ;;
+				esac
+			done
+			;;
+		* ) 
+			echo "Invalid number $ANS."
+			continue ;;
+		esac
+		break
+	done
+}
+		
+: Putrisdb
+#
+Putrisdb()
+{
+	cd $RIS/clients
+	[ -f risdb ] && {
+		grep -v "^$CLIENT:" risdb > /tmp/risdb$$
+		mv /tmp/risdb$$ risdb
+	}
+	echo "$1" >> risdb
+}
+
+Mkris()
+{
+	CLIENT=$1
+	egrep -s "^$CLIENT " $RIS/.rhosts  >/dev/null 2>&1 ||
+		echo "$CLIENT root" >>$RIS/.rhosts
+	chown ris $RIS/.rhosts; chgrp ris $RIS/.rhosts
+
+	cd $RIS/clients
+	[ -f risdb ] || {
+		echo "There is no 'risdb' file in the $RIS/clients directory.\n"
+		exit 1
+	}
+	ENT=`grep "^$CLIENT:" risdb` || {
+		echo "$CLIENT does not have an entry in the 'risdb' file.\n"
+		exit 1
+	}
+	set `Parse : $ENT`
+	CLINET=$2; PRODS=$3
+	set `Parse , $PRODS`
+	RISROOT=$RIS/$1
+	shift
+	SUBPRODS=$*
+	[ -z "$SUBPRODS" ] && {
+		echo "No product names is found.  Check the syntax of product names."
+		exit 1
+	}
+
+
+	# if client only choose layer product, the client does not 
+	# need register in mop database
+	cd $RISROOT
+	found=
+	for i in $SUBPRODS
+	do
+		[ -f $i/ROOT ] && { 
+			found=1
+			ROOTF=$i/ROOT
+			break 
+		}
+	done
+	[ -z "$found" ] && return
+	
+	CLISYS=$RISROOT/vmunix
+	CLIBOT=$RISROOT/netload
+
+	[ -f $CLISYS ] || {
+		touch tnc || { 
+			echo "
+$RISROOT directory is not writable 
+and no 'vmunix' file exists.  
+Therefore, $CLIENT is not registered in MOP database."
+		exit 1
+		}
+		rm tnc
+		
+		echo "\nExtracting vmunix ...\c"
+		restore xf $ROOTF vmunix.sas || {
+			echo "There is no 'vmunix.sas' file in $ROOTF."; exit 1
+		}
+		mv vmunix.sas vmunix
+		echo "done."
+	}
+	[ -f $CLIBOT ] || {
+		touch tnc || { 
+			echo "
+$RISROOT directory is not writable
+and no 'netload' file exists.  
+Therefore, $CLIENT is not registered in MOP database."
+		exit 1
+		}
+		rm tnc
+		restore xf $ROOTF netload
+		[ -f $CLIBOT ] || { 
+			echo "There is no 'netload' file in $ROOTF."; exit 1
+		}
+	}
+
+	NETPARAM=`getnetif ${CLIENT}` || exit 1
+	set xxx $NETPARAM
+	SERVER=$2; CLINETM=$3; CLIBRDC=$4
+	
+	ARPRET=`/etc/arp $SERVER`
+	case $ARPRET in 
+	"" )	
+		echo "Error: Can not find $SERVER on the netowrk.\n"
+		exit 1	;;
+	* )	set $ARPRET; SERARP=$2
+	esac
+	set -- `/etc/arp $CLIENT`
+	CLIARP=$2
+	
+	CLISWTP=0
+	CLIROTP=1
+	CLISWSZ=0
+	CLIDMPF=0
+	CLIROOT="dummypath"
+	CLISWAP="dummypath"
+
+	if [ -f /var/dna/mop_client_db ]
+	then
+		MOPCLI=$CLIENT
+	else
+		MOPCLI=`expr $CLIENT : '\(......\).*' '|' $CLIENT`
+	fi
+
+	# make netblk.c
+	#
+	cd $RIS/clients
+	OUTP=`makpkt $SERARP $CLIENT $CLIARP $CLIBRDC $CLINETM` || exit 1
+
+	echo "#include <sas/mop.h>
+struct netblk   nblk={ 
+	\"$SERVER\",
+	"$OUTP"
+	$CLISWTP,
+	$CLIROTP,
+	$CLISWSZ,
+	$CLIDMPF,
+	\"$CLIROOT\",
+	\"$CLISWAP\",
+	\"\"
+};" > $CLIENT.netblk.c
+	cc -c $CLIENT.netblk.c || exit 1
+
+	CLIPKT=$RIS/clients/$CLIENT.netblk.o
+
+	addnode $MOPCLI -h $CLINET -l $CLIBOT -t $CLISYS -s $CLIPKT
+
+        [ -f /var/dna/mop_client_db ] ||
+    {
+	cd /usr/lib/dnet
+	if [ -f nodes_p ]
+	then
+		addnode $MOPCLI  -P -h $CLINET -l $CLIBOT -t $CLISYS -s $CLIPKT 
+	else
+		cp nodes_v nodes_p
+	fi
+    }
+}
+
+: Addclient
+#
+# Abstract:
+#	Add client processor
+#
+
+Addclient()
+{
+
+	case `ps x | grep mop_mom | grep -v grep` in
+	"" )
+		echo "Setting up mop_mom in rc.local."
+		echo "/etc/mop_mom &" >>/etc/rc.local
+		/etc/mop_mom &
+	esac
+
+	[ -d $RIS/clients ] || {
+		mkdir $RIS/clients
+		chown ris $RIS/clients
+		chgrp ris $RIS/clients
+	}
+	#
+	#	CLIENT REGISTRY INFORMATION		             
+	#
+	echo "
+You have chosen to add a client for remote installation services.
+
+The following conditions must be met to add a client:
+	 
+	1. You must know the client processor's hostname
+	2. The client's hostname must be in your system's host database(s).
+	3. You must know the client's hardware Ethernet or FDDI address 
+
+Do you want to continue (y/n)? [y]: \c"
+	read ans
+	case $ans in
+		""|[Yy]*)	;;
+		*)	exit	;;
+	esac
+
+	getname
+
+	if [ -s "$RIS/clients/risdb" ] 
+	then
+		cd $RIS/clients
+		ENT=`grep "^$CLIENT:" risdb` && {
+			echo "
+The \"$CLIENT\" was previouly registered.
+Please use the \"Modify Client\" option. "
+			return
+		}
+	fi
+		
+	getether 
+
+	getenvir 
+
+	SelectProds
+
+	Putrisdb $CLIENT:$CLINET:$PRODS
+	
+	##
+	# Make netblk.o , add node, and put client in .rhosts.
+	Mkris $CLIENT
+	
+	echo "\n$CLIENT has been added."
+}
+
+:  Parse
+# 
+#  Seperator is $1
+#
+Parse()
+{(
+	IFS=$1
+	shift 
+	echo $*
+)}
+
+: Modclient
+#
+# Modify client 
+#
+Modclient()
+{
+	
+	[ -s $RIS/clients/risdb ] || { 
+		echo "There are no clients available to modify.\n"
+		 exit 1
+	}
+	echo "
+The following clients are available to modify: \n"
+
+	 cut -d: -f1 $RIS/clients/risdb | sort | fmt
+
+	getname
+	
+	cd $RIS/clients
+	ENT=`grep "^$CLIENT:" risdb` || { 
+		echo "There is no $CLIENT entry in risdb .\n"
+		exit 1 
+	}
+	set `Parse : $ENT`
+	OLDCLINET=$2; OLDPRODS=$3 
+	set `Parse , $OLDPRODS`
+	OLDRISROOT=$RIS/$1
+	shift
+	SUBPRODS=$*
+
+	getether $OLDCLINET
+
+	getenvir $OLDRISROOT
+
+	[ "$OLDRISROOT" = "$RISROOT" ] && {
+		echo "
+The client currently can install the following products 
+from $RISROOT: \n"
+		for j in $SUBPRODS
+		do
+			(cd $RISROOT/$j/instctrl
+			for i in *.ctrl
+			do
+				S_ctrl=`expr $i : '\(.*\).ctrl'` 
+				echo "    `egrep "NAME=" $S_ctrl.ctrl | 
+				   sed -e "s/NAME=//" | sed -e "s/${S_ctrl}//"`"
+				break
+			done
+			)
+		done
+	}
+
+	SelectProds
+
+	if [ "$OLDPRODS" = "$PRODS" -a "$CLINET" = "$OLDCLINET" ] 
+	then
+		echo "\n$CLIENT was not modified."
+		return 0
+	else 
+		Putrisdb $CLIENT:$CLINET:$PRODS
+		##
+		# Make netblk.o , add node, and put client in .rhosts.
+		Mkris $CLIENT
+		echo "\n$CLIENT has been modified."
+	fi
+	
+	
+}
+
+:  Showprod
+# 
+# Output:
+#	show products in remote installation environment
+#
+Showprod()
+{
+	DIRS=`ls -d $RIS/ris[0-9]* 2>/dev/null`
+	case $DIRS in 
+	"" )
+		echo "
+No remote installation environment exists.\n"
+		return
+		;;
+	esac
+	N=0
+	for I in $DIRS
+	do 
+		N=`expr $N + 1`
+		echo "\n$N  $I"
+		prodnames $I
+		sed -e "s/^....../    /" $I/ProdNames 2>/dev/null
+	done
+}
+	
+: Exit
+#
+Exit()
+{
+	echo "Usage: 
+	$CMD -a client_name -p prod_name -h hardware_address 
+	$CMD -r client_name
+	$CMD -m client_name [ -p prod_name ] [ -h hardware_address ]
+"
+	exit 1 
+}
+#
+# Main program start here
+#
+
+: Cklock_ris
+Cklock_ris()
+{
+	[ -p /tmp/rislock ] && {
+		[ -f /tmp/ris.tty.lock ] || { rm -f /tmp/rislock; return 0; }
+		TTY=`sed -e "s/\/dev\///" /tmp/ris.tty.lock` 
+		[ "$TTY" ] || { 
+			rm -f /tmp/rislock /tmp/ris.tty.lock
+			return 0
+		}
+		set -- `who | grep $TTY`
+		Person=$1; Tty=$2
+		[ "$Person" -a "$Tty" ] || { 
+			rm -f /tmp/rislock /tmp/ris.tty.lock
+			return 0
+		}
+		echo "
+The ris utility is currently locked.  Try again later.
+$Person on /dev/$Tty is installing software."
+		return 1
+	}
+	return 0 
+}
+
+: Lock_ris
+Lock_ris()
+{
+	Cklock_ris || exit 1
+	mknod /tmp/rislock p
+	echo `/usr/bin/tty` > /tmp/ris.tty.lock
+	(
+		exec < /tmp/rislock
+		read X
+		rm -f /tmp/rislock /tmp/ris.tty.lock
+	) &
+}
+
+: Unlock
+Unlock()
+{
+	[ -p /tmp/rislock ] && echo > /tmp/rislock
+	trap 1 2 3 
+}
+
+CMD=$0
+case $# in
+0 )
+	while :
+	do
+		echo "
+REMOTE INSTALLATION SERVICE (RIS) MENU
+
+	a -  Add Client 
+	r -  Remove Client 
+	s -  Show Products in Remote Installation Environments
+	m -  Modify Client
+	i -  Install Software 
+	e -  Exit	
+
+Enter your choice: \c"
+		read ANSWER
+		case $ANSWER in
+		[IiAsRrMmSs] )
+			Cklock_ris || continue
+		esac
+		case $ANSWER in
+		[Ii] )	
+			trap 'Unlock' 1 2 3 
+			Lock_ris
+			Instsoft 	
+			Unlock
+			prodnames $RISROOT
+			;;
+		[Aa] )	Addclient	;;
+		[Rr] )	Rmclient	;;
+		[Mm] )	Modclient	;;	
+		[Ss] )  Showprod	;; 	
+		[Ee] )	exit 0 	;;
+		* )	echo "Invalid choice." ;;
+		esac
+	done
+	;;
+* )
+	Flag=
+	while [ $# -gt 0 ]
+	do
+		case $1 in 
+		-a )	
+			[ -z "$Flag" ] || Exit
+			case "$3" in
+			-* )	
+				Flag=Addflg
+				CLIENT=$2
+				shift
+				;;
+			* )
+				[ -z "$2" ] && Exit
+				shift
+				for i in $*
+				do
+					Ckname $i || continue
+					Mkris $i
+				done
+				exit 0
+			esac
+			;;	
+		-h )	CLINET=$2; shift 
+			;;
+		-p)	
+			PRODS=$2; shift 
+			;;
+		-r)	
+			[ -z "$Flag" ] || Exit
+			[ -z "$2" ] && Exit
+			shift
+			for i in $*
+			do
+				Ckname $i || continue
+				RemoveClient $i
+			done
+			exit 0
+			;;
+		-m )
+			[ -z "$Flag" ] || Exit
+			Flag=Modflg
+			CLIENT=$2; shift
+			;;
+		-s )
+			Showprod	
+			exit 0
+			;;
+		-- )	;;
+		* )
+			Exit
+		esac
+		shift
+	done
+	Ckname $CLIENT || Exit
+	
+	case $Flag in
+	Addflg )
+		if [ "$CLINET" -a "$PRODS" ] 
+		then
+			Putrisdb $CLIENT:$CLINET:$PRODS
+		else
+			Exit
+		fi
+		;;
+	Modflg )
+		cd $RIS/clients
+		ENT=`grep "^$CLIENT:" $RIS/clients/risdb` || { 
+			echo "There is no $CLIENT entry in risdb .\n"
+			Exit
+		}
+		set `Parse : $ENT`
+		OLDCLINET=$2; OLDPRODS=$3
+		[ -z "$CLINET" ] && CLINET=$OLDCLINET
+		[ -z "$PRODS" ] && PRODS=$OLDPRODS
+		;;
+	* )	
+		Exit
+	esac
+
+	CLINET=`Ckether $CLINET` || Exit
+	Putrisdb $CLIENT:$CLINET:$PRODS
+
+	# Make netblk.o , add node, and put client in .rhosts.
+	Mkris $CLIENT
+esac

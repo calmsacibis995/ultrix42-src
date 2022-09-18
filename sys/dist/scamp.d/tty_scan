@@ -1,0 +1,130 @@
+#!/bin/sh5
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)tty_scan	4.2	(ULTRIX)	8/5/90"
+#
+#	000	Jonathan Wallace	1-Jun-1990
+#
+#
+#	001	James C. Overman	05-Aug-1990
+#	    Moved references to /tmp to /usr/tmp 
+#	    
+########################################################################
+#
+#
+set -h
+trap 'exit 1' 1 2 3 18
+>/usr/tmp/tty_stat
+
+#####################################################################
+: TTY_Status_Routine
+#####################################################################
+TTY_Status_Routine()
+{(
+	set $*
+	shift;shift;shift
+	KEEPER="$*"
+	STATUS=`expr "$KEEPER" : '\(.*\)[#]'`
+	case $? in
+	0 )
+		COMMENT=`expr "$KEEPER" : '.*[#]\(.*\)'`
+		;;
+	1 )
+		STATUS="$KEEPER"
+		;;
+	esac
+
+	for K in $STATUS
+	do
+		case $K in
+		on )
+			echo "$COMMENT" > /usr/tmp/tty_stat
+			return 1
+			;;
+		* )
+			;;
+		esac
+	done
+
+	return 0
+)}
+
+
+######################
+# Main Program Start #
+######################
+grep -n "^$1" /etc/ttys >/usr/tmp/tty_lines
+case $? in
+1 )
+	exit 3
+	;;
+esac
+
+LINES=`wc -l /usr/tmp/tty_lines` 
+LINES=`expr "$LINES" : '.*\([0-9][0-9]*\)'`
+case $LINES in
+1 )
+	;;
+* )
+	exit 4
+	;;
+esac
+
+TTOP=
+QFLAG=0
+for K in `cat /usr/tmp/tty_lines`
+do
+	case $K in
+	*:*)
+		TEMP=`expr $K : '.*[:]\(.*\)'`
+		TTOP="$TTOP $TEMP"
+		;;
+	\"* )
+		TTOP="$TTOP $K"
+		QFLAG=1
+		;;
+	*\" )
+		TTOP="$TTOP$K"
+		QFLAG=0
+		;;
+	* )
+		case QFLAG in
+		1 )
+			TTOP="$TTOP$K"
+			continue
+			;;
+		esac
+		TTOP="$TTOP $K"
+		;;
+	esac
+done
+
+[ "$TTOP" = "" ] ||
+{
+	TTY_Status_Routine $TTOP
+	case $? in
+	1 )
+		exit 5
+		;;
+	esac
+}
+
+exit 0

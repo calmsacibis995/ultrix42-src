@@ -1,0 +1,32 @@
+.\" UNSUPPORTED REF PAGE
+.TH bootparams 5 "" "" Unsupported
+.SH Name
+bootparams \- boot parameter data base
+.SH Syntax
+.B /etc/bootparams
+.SH Description
+The
+.PN bootparams
+.NXR "bootparams file" "description"
+.NXR "diskless clients" "booting"
+.NXR "booting diskless clients" "and /etc/bootparams"
+file contains the list of client entries that Sun diskless clients use
+for booting.  For each diskless client the entry should contain: first,
+the name of the diskless client; and, second, a list of keys, names of
+servers, and pathnames.
+.NXR "bootparams file" "format"
+.PP
+Items are separated by
+TAB characters.
+.SH Examples
+The following is an example of the
+.PN /etc/bootparams
+taken from a Sun\s-1OS\s0 system.
+.NX(e) "bootparams file"
+.EX0
+myclient	root=myserver:/nfsroot/myclient \e
+   		swap=myserver:/nfsswap/myclient \e
+		dump=myserver:/nfsdump/myclient
+.EE
+.SH See Also
+bootparamd(8)

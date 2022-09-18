@@ -1,0 +1,126 @@
+%!
+%! Module Name: LPS_PUNCHED 
+%! This module shows how you can print on either one or both sides of a 
+%! sheet no matter how the paper is loaded.
+%!
+%!Example:  Printing on Punched Paper
+%!
+% Fix-Punched-Paper
+%
+% Use this module to invert the pages in a job printed on punched
+% paper that is loaded the wrong way for the value of
+% /Parameter=Sides that you are using.
+%
+/Fix-Punched-Paper-dict 20 dict def
+Fix-Punched-Paper-dict begin
+
+%
+% Load the old values of the operators that we're going to redefine.
+%
+
+/old-showpage /showpage load def
+/old-initgraphics /initgraphics load def
+/old-initmatrix /initmatrix load def
+
+%
+% Determine the size of the paper. A dictionary is created that
+% maps trays names into the size of the paper. Add other names
+% if you are using other-sized paper.
+%
+
+5 dict begin
+    /lettertray { 612 792 } def
+    /a4tray { 595.28 841.89 } def
+    currentdict                   % Leave this dict on stack.
+    end
+
+%
+% Get the size of the current paper.
+%
+
+statusdict begin
+    papersize pop                 % Leave a name on stack.
+    end
+
+get exec                          % Look up the name in the dict.
+/y-size exch def
+/x-size exch def
+
+%
+% -- `adjust-ctm' --
+%
+% Performs the inversion of the coordinate system.
+%
+
+/adjust-ctm {
+    x-size y-size translate
+    180 rotate
+    } def
+
+%
+% This dictionary is used to hold our redefinitions of
+% PostScript operators.
+%
+
+/redefinitions 3 dict def
+redefinitions begin
+
+%
+% -- `showpage' --
+%
+% Just like the old one, but invert the page before returning.
+%
+
+/showpage {
+    Fix-Punched-Paper-dict begin
+        old-showpage
+        adjust-ctm
+        end
+    } def
+
+%
+% -- `initgraphics' --
+%
+% Just like the old one, but invert the page before returning.
+%
+
+/initgraphics {
+    Fix-Punched-Paper-dict begin
+        old-initgraphics
+        adjust-ctm
+        end
+    } def
+
+%
+% -- `initmatrix' --
+%
+% Just like the old one, but invert the page before returning.
+%
+
+/initmatrix {
+    Fix-Punched-Paper-dict begin
+        old-initmatrix
+        adjust-ctm
+        end
+        } def
+
+end                                     % redefinitions
+
+%
+% Execute adjust-ctm to set things up for the first page.
+%
+
+adjust-ctm
+
+%
+% In order to get the "redefinitions" dictionary on the
+% dictionary stack without our main dictionary, we leave
+% it on the stack.
+%
+
+redefinitions
+
+end                                     % Fix-Punched-Paper-dict
+
+begin                                   % redefinitions.
+userdict begin

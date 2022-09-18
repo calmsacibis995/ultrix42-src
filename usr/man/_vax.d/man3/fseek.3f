@@ -1,0 +1,53 @@
+.\" SCCSID: @(#)fseek.3f	8.1	9/11/90
+.TH fseek 3f VAX "" Unsupported
+.SH Name
+fseek, ftell \- reposition a file on a logical unit
+.SH Syntax
+.B integer function fseek (lunit, offset, from)
+.br
+.B integer offset, from
+.sp 1
+.B integer function ftell (lunit)
+.SH Description
+.NXR "fseek subroutine (FORTRAN)"
+.NXR "ftell subroutine (FORTRAN)"
+.NXR "file" "repositioning on logical unit"
+The
+.I lunit
+argument must refer to an open logical unit.
+The
+.I offset
+argument 
+is an offset in bytes relative to the position specified by
+.I from.
+Valid values for
+.I from
+are:
+.sp 1
+.in +5
+0 meaning 'beginning of the file'
+.br
+1 meaning 'the current position'
+.br
+2 meaning 'the end of the file'
+.in \-5
+.PP
+The value returned by
+.PN fseek
+will be 0 if successful, a system error code otherwise.
+See 
+.MS perror 3f .
+.PP
+The
+.PN ftell
+function returns the current position of the file 
+associated with the specified logical unit. The value 
+is an offset, in bytes, from the beginning of the file.
+If the value returned is negative, it indicates an error 
+and will be the negation of the system error code. See 
+.MS perror 3f .
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+perror(3f), fseek(3s)

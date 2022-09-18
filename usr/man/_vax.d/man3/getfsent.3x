@@ -1,0 +1,116 @@
+.\" SCCSID: @(#)getfsent.3x	8.1	9/11/90
+.TH getfsent 3x
+.SH Name
+getfsent, getfsspec, getfsfile, getfstype, setfsent, endfsent \- get file system descriptor file entry
+.SH Syntax
+.nf
+.B #include <fstab.h>
+.B #include "/usr/include/sys/fs_types.h"
+.PP
+.B struct fstab *getfsent()
+.PP
+.B struct fstab *getfsspec(\fIspec\fP)
+.B char *\fIspec\fP;
+.PP
+.B struct fstab *getfsfile(\fIfile\fP)
+.B char *\fIfile\fP;
+.PP
+.B struct fstab *getfstype(\fItype\fP)
+.B char *\fItype\fP;
+.PP
+.B int setfsent()
+.PP
+.B int endfsent()
+.fi
+.SH Description
+.NXR "getfsent subroutine"
+.NXR "getfsspec subroutine"
+.NXR "getfsfile subroutine"
+.NXR "getfstype subroutine"
+.NXR "setfsent subroutine"
+.NXR "endfsent subroutine"
+.NXR "fstab file" "getting entry"
+.NXR "fstab file" "setting"
+.NXR "fstab file" "closing"
+.NXR "fstab file" "getting special file name"
+.NXR "fstab file" "getting file system name"
+.NXR "fstab file" "getting file system type"
+.NXA "fstab file" "getfsent subroutine"
+All routines operate on the file 
+.PN /etc/fstab ,
+which contains
+descriptions of the known file systems.
+The routine
+.PN setfsent
+opens this file.  The routine
+.PN getfsent
+reads the next file system description 
+within 
+.PN /etc/fstab
+opening the file if necessary.  
+The
+.PN endfsent 
+routine closes the file.
+.PP
+The
+.PN getfsspec ,
+.PN getfsfile ,
+and
+.PN getfstype
+routines
+sequentially scan the file 
+.PN /etc/fstab
+for specific file system descriptions.  
+The
+.PN getfsspec
+routine searches for a description 
+with a matching special file name field. 
+The routine
+.PN getfsfile
+searches for a description 
+with a matching file system path prefix field.
+The routine
+.PN getfstype
+searches for a description with a matching file system type field.
+.PP
+The
+.PN getfsent ,
+.PN getfsspec ,
+.PN getfstype, 
+and
+.PN getfsfile
+each
+return a pointer to a representation of the description they have
+matched or read.
+Representations are in the format of the following structure:
+.EX
+#define	FSTAB_RW	"rw"	/* read-write device      */
+#define	FSTAB_RO	"ro"	/* read-only device       */
+#define	FSTAB_RQ	"rq"	/* read-write with quotas */
+#define	FSTAB_SW	"sw"	/* swap device            */
+#define	FSTAB_XX	"xx"	/* ignore totally         */
+
+struct fstab {
+	char	*fs_spec;	/* block special device name    */
+	char	*fs_file;	/* file system path prefix      */
+	char	*fs_type;	/* rw,ro,sw or xx               */
+	int	fs_freq;	/* dump frequency, in days      */
+	int	fs_passno;	/* pass number on parallel dump */
+	char	*fs_name;	/* name of the file system type */
+	char	*fs_opts	/* arbitrary options field      */
+};
+.EE
+.SH Return Values
+A NULL or 0 is returned, but 
+.I errno
+is not set
+on detection of errors.
+.SH Restrictions 
+All descriptions are contained in
+static areas, which should be copied. 
+.SH Files
+.TP 15
+/etc/fstab
+File system information file.
+.SH See Also
+fstab(5)

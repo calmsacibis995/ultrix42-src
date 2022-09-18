@@ -1,0 +1,93 @@
+.\" SCCSID: @(#)yppush.8yp	8.1	9/11/90
+.TH yppush 8yp
+./" Last edited by Jeff J. 6/24/86
+.SH Name
+yppush \- force propagation of a changed yellow pages (YP) map
+.SH Syntax
+.B yppush
+[
+.B \-d
+.I domain 
+] 
+[
+.B \-v
+]
+.I mapname
+.SH Description
+.NXR "yppush command"
+.NXA "yppush command" "ypxfr command"
+.NXR "YP map" "copying to slave servers"
+The 
+.PN yppush
+command copies a new version of a yellow pages (YP) 
+map from the master YP server to the
+slave YP servers.
+It is normally run only on the master YP server by the 
+.PN make
+utility accessing the
+.PN /var/yp/Makefile
+after the master YP databases have been changed.
+When invoked,
+.PN yppush 
+first constructs a list of YP server hosts by reading the YP map 
+\fIypservers\fR within the 
+.I domain.  
+Keys within the map
+.I ypservers
+are the ASCII names of the machines on which the YP servers
+run.  
+.PP
+A transfer map request is sent to the YP server at each host, 
+along with the information needed by the transfer agent (the program
+which actually moves the map) to call back the 
+.PN yppush
+command.
+When the
+attempt has completed
+(successfully or not), and the transfer agent has sent
+.PN yppush 
+a status message, the results can be printed to stdout.  Messages
+are also printed when a transfer is not possible, for
+instance when the request message is undeliverable,
+or when the timeout period on responses has expired.
+.PP
+Refer to 
+.MS ypfiles 5yp 
+and 
+.MS ypserv 8yp 
+for an overview of the yellow
+pages.
+.SH Options
+.TP
+.B \-d
+Specify a 
+.I domain.
+.TP
+.B \-v
+Verbose.  
+This causes messages to be printed when each server is called, and for
+each response.
+Without this flag, only error messages are printed.
+.SH Restrictions
+.PP
+In the current implementation
+(version 2 YP protocol), the transfer agent is
+.PN ypxfr , 
+which is started by the 
+.PN ypserv 
+program.  If 
+.PN yppush
+detects that it is speaking to a version 1 YP protocol 
+server, it uses the older protocol, sending a version 1 YPPROC_GET
+request and issues a message to that effect.  
+Unfortunately, there is no way of knowing 
+if or when the map transfer was performed for version 1 servers.
+The
+.PN yppush 
+command prints a message saying that an old-style message has been sent.
+The system administrator should later check to see that the
+transfer has actually taken place.
+.SH Files
+\f(CW/etc/yp/\fIdomainname\f(CW/ypservers.{dir, pag}
+.SH See Also
+ypfiles(5yp), ypserv(8yp), ypxfr(8yp)

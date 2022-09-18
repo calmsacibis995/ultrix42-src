@@ -1,0 +1,53 @@
+.\" SCCSID: @(#)inetd.conf.5	8.1	9/11/90
+.TH inetd.conf 5 
+.SH Name
+inetd.conf \- Internet daemon configuration data base
+.SH Description
+.NXR "inetd.conf file" "format"
+.NXA "protocols file" "inetd.conf file"
+.NXA "services file" "inetd.conf file"
+.NXAM "inetd server daemon" "inetd.conf file"
+The
+.PN inetd.conf
+file contains information regarding
+the services that
+.MS inetd 8c
+will handle by opening sockets and listening for requests.
+For each service, a single line should be present
+with the following information:
+.IP 
+Official service name (must be in 
+.PN /etc/services)
+.IP 
+Socket type (stream or dgram)
+.IP 
+Protocol name (must be in 
+.PN /etc/protocols)
+.IP 
+Delay (wait or nowait)
+.IP 
+Program (fully specified server program name)
+.IP 
+Arguments (up to five arguments for server program)
+.PP
+Items are separated by any number of blanks or
+tab characters.  
+A number sign (#) indicates the beginning of
+a comment.  Characters up to the end of the line are
+not interpreted by routines that search the file.
+.PP
+Fields may contain any printable
+character other than a field delimiter, newline,
+or comment character.
+.PP
+A server marked as ``wait'' must be able to handle all requests that
+come to it during its lifetime.  The 
+.MS inetd 8c
+program will not invoke any new instances of the program until the
+current one terminates.  If a server is marked as ``nowait'', 
+a new invocation of the server will be started for
+every incoming request.
+.SH Files
+.PN /etc/inetd.conf
+.SH See Also
+protocols(5), services(5), inetd(8c)

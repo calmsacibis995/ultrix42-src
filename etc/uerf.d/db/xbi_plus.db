@@ -1,0 +1,282 @@
+# @(#)xbi_plus.db	4.2   (ULTRIX)   9/11/90
+
+sseg
+id CDS 74
+name xbi_plus_cds
+doc "xbi plus registers"
+label "xbi plus registers"
+elements
+    xnode dtype xfadr0 arear aesr aimr aivintr adg1 bcsr besr xbi_bidr btim bvor bvr bdcr1 autlr acsr arvr abear xbe0 xfaer
+
+
+sitem 
+id 784 
+name xbi_bidr
+type register 
+class composite 
+size 4 
+label "xbi bidr" 
+display nil 
+doc "xbi bidr"
+map 
+    field
+    class integer
+    size 16
+    label "INTERRUPT DESTINATION: " 
+    display hex 
+    doc nil
+    map nil
+    field
+    class integer
+    size 16
+    label "DIAGNOSTIC R/W: " 
+    display hex 
+    doc nil
+    map nil
+
+sitem 
+id 786
+name autlr
+type register 
+class composite 
+size 4 
+label "autlr" 
+display nil 
+doc "autlr"
+map 
+    field
+    class integer
+    size 14
+    label "BI WINDOW SPACE: " 
+    display hex 
+    doc nil
+    map nil
+    field
+    class filler
+    size 3
+    label nil
+    display nil
+    doc nil
+    map nil
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "34 BIT ADDRESS ENABLE"
+    field
+    class coded
+    size 2
+    label nil
+    display nil
+    doc nil
+    map
+        0 "DWMBA COMPATIBILITY MODE"
+        1 "40 BIT EXTENDED VAX ADDR TRANS MODE - 512B PAGE SIZE"
+        2 "40 BIT EXTENDED VAX ADDR TRANS MODE -  4KB PAGE SIZE"
+        3 "40 BIT EXTENDED VAX ADDR TRANS MODE -  8KB PAGE SIZE"
+    field
+    class integer
+    size 4
+    label "TIMEOUT LIMIT: "
+    display hex
+    doc nil
+    map nil
+    field
+    class integer
+    size 4
+    label "LOCKOUT DEASSERTION FIELD: " 
+    display hex 
+    doc nil
+    map nil
+    field
+    class integer
+    size 4
+    label "LOCKOUT LIMIT FIELD: "
+    display nil
+    doc nil
+    map nil
+
+sitem 
+id 787
+name acsr
+type register 
+class composite 
+size 4 
+label "acsr" 
+display nil 
+doc "acsr"
+map 
+    field
+    class FILLER
+    size 1
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "RETURN VECTOR DISABLE"
+    field
+    class FILLER
+    size 1
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "MULTIPLE INT ENABLE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "RESPONDER REQUEST ENABLE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "BI WINDOW SPACE ENABLE"
+    field
+    class FILLER
+    size 1
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "LOCKOUT ASSERT ENABLE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "LOCKOUT RESPONSE ENABLE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "SHORT TIMEOUT ENABLE"
+    field
+    class FILLER
+    size 7
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class INTEGER
+    size 12
+    label "ECC SYNDROME BITS"
+    display HEX
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "PMR READY"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "CONTROL RESET"
+    field
+    class FILLER
+    size 1
+    label nil
+    display nil
+    doc nil
+    map NIL
+
+sitem
+id 788
+name arvr
+type register 
+class composite 
+size 4
+label "arvr"
+display nil
+doc "arvr register"
+map
+    field
+    class FILLER
+    size 2
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class INTEGER
+    size 14
+    label "XBI VECTOR"
+    display HEX
+    doc nil
+    map NIL
+    field
+    class FILLER
+    size 16
+    label nil
+    display nil
+    doc nil
+    map NIL
+
+sitem
+id 762
+name abear
+type register 
+class composite 
+size 4
+label "abear"
+display nil
+doc "abear"
+map
+    field
+    class INTEGER
+    size 30
+    label "FAILING BI ADDR"
+    display HEX
+    doc nil
+    map NIL
+    field
+    class FILLER
+    size 2
+    label nil
+    display nil
+    doc nil
+    map NIL

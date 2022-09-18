@@ -1,0 +1,51 @@
+.\" SCCSID: @(#)setsid.2	2.3	8/10/87
+.TH setsid 2
+.SH Name
+setsid \- POSIX create session and set process group ID
+.SH Syntax
+.ft B
+.nf
+#include <sys/types.h>
+pid_t
+setsid()
+.fi
+.ft R
+.SH Description
+.NXR "setsid system call"
+.NXR "session" "creating"
+The
+.PN setsid
+system call
+creates a new session, if the calling process is 
+not a process group leader.
+The calling process is the session leader of the 
+new session, the process group 
+leader of the new process group, and does 
+not have a controlling terminal.
+The process group ID of the calling process is set 
+equal to the process ID of the calling process.
+.SH Return Values
+Upon successful completion, the
+.PN setsid
+system call
+returns the value of the process group ID of the calling process.
+If the 
+.PN setsid
+system call fails, \-1 is returned, and the global
+variable
+.I errno
+indicates the reason.
+.SH Diagnostics
+The
+.PN setsid
+system call
+fails and a new session is not created if
+the following occurs:
+.TP 15
+[EPERM]
+The calling process is already a process group leader.
+.sp
+The process group ID of a process other than the calling process
+matches the process ID of the calling process.
+.SH See Also
+getpgrp(2), setpgid(3)

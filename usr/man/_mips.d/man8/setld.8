@@ -1,0 +1,560 @@
+.TH setld 8
+.SH Name
+setld \- software subset management utility
+.SH Syntax
+.B /etc/setld 
+[
+.B \-D
+.I root-path
+]
+.B \-l
+.I location
+[
+.I subset...
+]
+.sp
+.\"
+.\" 
+.B /etc/setld
+[
+.B \-D
+.I root-path
+]
+.B \-d
+.I subset...
+.br
+.\"
+.B /etc/setld
+[
+.B \-D
+.I root-path
+]
+.B \-i
+[
+.I subset...
+]
+.br
+.B /etc/setld
+[
+.B \-D
+.I root-path
+]
+.B \-v
+.I subset...
+.br
+.B /etc/setld
+[
+.B \-D
+.I root-path
+]
+.B \-c
+.I subset
+.I message
+.sp
+.B /etc/setld
+[
+.B \-D
+.I root-path
+]
+.B \-x
+.I location
+[
+.I subset...
+]
+.SH Description
+.NX R "setld utility"
+.NX R "software subsets" "installing and managing"
+.NX R "Installing software subsets"
+The
+.PN setld
+command is used for installing and managing software. Software is
+organized into
+.I subsets
+which may be loaded, deleted, inventoried, updated, verified and
+configured. The load and update operations
+read software from disks, tapes or from an Internet installation
+server.
+.PP
+The
+.PN setld
+command is also used to read the contents of an installation
+tape onto a disk so that the disk can be used as the distribution
+media.
+.PP
+The \fIlocation\fP argument specifies the location of distribution. 
+This can be be either
+the name of a directory, a device special file name, or
+the name of a remote installation server. The specified \fIlocation\fR
+is used to determine the type of media to be
+used. Valid location specifiers include the following:
+.RS
+.IP \fI/dev/rmt0h\fR 15
+Magnetic tape on tape unit 0
+.IP \fI/mnt/VAX/BASE\fR
+Disk distribution in directory
+.I /mnt/VAX/BASE
+.IP \fIhostname:\fR
+Remote distribution from server
+.I hostname
+.RE
+.PP
+The \fIsubset\fR argument specifies the name of a 
+subset on which an operation is
+to be performed. The \fIsubset\fR names are strings of seven or
+more characters used to uniquely identify subsets, for example,
+.PN UDTUUCP400 .
+.PP
+The \fImessage\fR argument specifies a string to be sent to a 
+subset control program
+to configure a \fIsubset\fR.
+.SH Function Keys
+.TP
+.B \-l
+Load software from distribution mounted on
+.I location.
+If no optional
+.I subset
+is specified, a menu of subsets available on
+the distribution is presented. Any subset
+chosen from the menu is then loaded on the system.
+If an optional
+.I subset
+is specified, only that subset is loaded.
+.TP
+.B \-d
+Delete
+.I subset
+from the system. Each
+.I subset
+named on the command line is removed from the system.
+All files in each
+.I subset
+which have not been modified since installation
+are unlinked.
+.IP
+Subsets can be marked by a vendor during manufacture so that they
+cannot be deleted.  Attempts
+to delete such subsets will generate an appropriate diagnostic.
+.IP
+If a subset being deleted is required by other subsets installed
+to the system, these are listed and the user is asked to confirm
+that the subset is to be deleted.
+.TP
+.B \-i
+Inventory the system or any specified
+.I subset.
+When no
+.I subset
+is specified, the state of the system is listed on
+standard output in three columns.
+The first column gives the code for a subset known to
+the system. The second column lists the status of that
+subset. The value for the status is
+.PN installed
+if the subset is currently installed,
+.PN corrupt
+if the subset failed to install correctly,
+.PN incomplete 
+if information in the subset control file is incomplete,
+or blank if the subset is not installed.
+The third column presents the textual description for
+that subset.
+.IP
+When
+.I subset
+arguments are present, the names of the files which
+make up the contents of each
+.I subset
+are listed. The
+.I subset
+does not need to be currently installed for this option
+to display its contents.
+.TP
+.B \-v
+Verify each
+.I subset.
+The existence of the subset is first checked. Then
+.PN fverify
+is used to verify the integrity of each file in the subset.
+Verification errors and informational messages resulting from 
+.PN fverify
+are logged to
+.PN usr/var/adm/fverifylog
+relative to \fIroot-path\fP. If the
+subset is provided with an installation verification program
+(IVP), the IVP is executed.
+.TP
+.B \-c
+Configure
+.I subset,
+passing the configuration message
+.I message
+to the subset control program.
+.TP
+.B \-x
+Extract subsets from the distribution media
+mounted on
+.I location.
+If you specify no
+.I subset
+arguments,
+.PN setld
+displays a menu of subsets on the
+distribution.  Subsets chosen from this
+menu are extracted. 
+.PP
+If you specify
+.I subset
+arguments, 
+.PN setld
+extracts only the subsets specified.
+.SH Options
+.TP
+.B \-D \fIroot-path\fR
+Specify
+.I root-path
+as the root directory for
+an operation. The default is
+.B / 
+for all operations except
+.BR \-x .
+The default for
+.B \-x
+is the current directory.
+If this option is specified,
+.PN setld
+will operate on the software rooted at the specified
+directory. This option is useful for installing software
+to offline systems on removable media or dual-ported
+disk drives.
+.SH Restrictions
+Do not attempt to install software into an NFS mounted file system.
+.SH Examples
+Load software subsets from tape unit 2:
+.IP "" 5
+#
+.B "setld \-l /dev/rmt2h"
+.PP
+Load the
+.PN UDTUUCP400
+subset from tape unit 2:
+.IP "" 5
+#
+.B "setld \-l /dev/rmt2h UDTUUCP400"
+.PP
+Load the 
+.PN UDTUUCP400
+subset to an offline system
+rooted at
+.PN /mnt
+from tape unit 2:
+.IP "" 5
+#
+.B "setld \-D /mnt \-l /dev/rmt2h UDTUUCP400"
+.PP
+Load the
+.PN UDTUUCP400
+subset to an offline system rooted at 
+.PN /mnt
+from installation server
+.PN mumbly :
+.IP "" 5
+#
+.B "setld \-D /mnt \-l mumbly: UDTUUCP400"
+.PP
+Load the 
+.PN UDTUUCP400
+subset to an offline system rooted at 
+.PN /mnt
+from a disk distribution in
+.PN /mnt2/RISC/BASE :
+.IP "" 5
+#
+.B "setld \-D /mnt \-l /mnt2/RISC/BASE UDTUUCT400"
+.PP
+Delete the
+.PN UDTUUCP400
+and
+.PN UDTCOMM400
+subsets:
+.IP "" 5
+#
+.B "setld \-d UDTUUCP400 UDTCOMM400"
+.PP
+Delete 
+.PN UDTUUCP400
+and
+.PN UDTCOMM400
+subsets from the offline system
+rooted at
+.PN /mnt :
+.IP "" 5
+#
+.B "setld \-D /mnt \-d UDTUUCP400 UDTCOMM400"
+.PP
+Display the status of all subsets known to
+the system:
+.IP "" 5
+%
+.B "setld \-i"
+.PP
+Display the status of all subsets known to the offline system rooted
+at
+.PN /mnt :
+.IP "" 5
+%
+.B "setld \-D /mnt \-i"
+.PP
+Display the contents of the
+.PN UDTUUCP400
+subset:
+.IP "" 5
+%
+.B "setld \-i UDTUUCP400"
+.PP
+Verify the
+.PN ULTVAXC400
+subset on the running system:
+.IP "" 5
+#
+.B "setld \-v ULTVAXC400"
+.PP
+Send the configuration message
+\fB"Don't Worry, Be Happy"\fR
+to the 
+.PN UWSX11400
+subset:
+.IP "" 5
+#
+\fBsetld \-c UWSX11400 "Don't Worry, Be Happy"\fR
+.PP
+Extract subsets from the distribution on tape unit 0
+into the current directory:
+.IP "" 5
+#
+.B "setld \-x /dev/nrmt0h"
+.PP
+Extract subsets from the disk distribution in
+.PN /mnt/RISC/UNSUPPORTED
+into
+.PN /usr/bigdisk :
+.IP "" 5
+#
+.B "setld \-D /usr/bigdisk \-x /mnt/RISC/UNSUPPORTED"
+.SH Return Values
+The exit status from
+.PN setld
+is 0 if the operation requested was performed successfully. All
+other cases yield exit status of 1 for failed operations on
+mandatory subsets and greater than 1 for failed operations on 
+optional subsets.
+.SH Diagnostics
+.B "\-\fIc\fP can be used by super-user only"
+.br
+The
+.PN setld
+command was entered by a non-root user with one of the root-only
+function keys. The only function which 
+.PN setld 
+will perform
+for non-privileged users is
+.BR \-i .
+.PP
+.B "error in Args()"
+.br
+This message is displayed if 
+.PN setld
+cannot understand the command line arguments. It will
+always be preceded by a usage message or another diagnostic.
+.PP
+.B "Temp directory /usr/tmp/stltmp\fIXXXXXX\fP already in use"
+.br
+This message is displayed if the temporary directory that
+.PN setld
+would create for itself already exists. Run 
+.PN setld
+again.
+.PP
+.B "Cannot create directory \fIdir\fP"
+.br
+The directory
+.I dir
+which is needed for
+.PN setld
+to operate correctly could not be created. This can happen
+if parts of the system are NFS-mounted but not root-mapped.
+.PP
+.B "error in Dirs()"
+.br
+This message always accompanies the preceding two messages.
+.PP
+.B "\fIsubset\fB: not currently installed, cannot configure."
+.br
+Occurs when
+.I subset
+is used as an argument to
+.B \-c
+but
+.I subset
+is not installed to the system.
+.PP
+.B "\fIsubset\fB: missing control program, cannot configure."
+.br
+An attempt is being made to
+configure
+.I subset
+but the program responsible for doing this
+is missing. Delete the subset and install it again 
+before retrying the operation.
+.PP
+.B "\fIsubset\fB: not currently installed, cannot delete"
+.br
+A
+.I subset
+specified as an argument with the
+.B \-d
+switch is not installed on the system, it cannot be
+deleted.
+.PP
+\fBReadCtrlFile(): cannot find \fIfilename\fP.ctrl\fR
+.br
+The control file named in the error message is not where
+it is expected to be.
+.PP
+\fBReadCtrlFile(): cannot read \fIfilename\fP.ctrl\fR
+.br
+The control file named in the error message exists but cannot
+be read.
+.PP
+.B "setld: Sorry, You may not delete the \fIdescription\fB (\fIsubset\fB) subset"
+.br
+The
+.I subset
+in the error message which was used as an argument with the
+.B \-d
+switch is a subset which was marked by its vendor during manufacture
+as a subset that cannot be deleted.
+In this case, the subset cannot be removed from the system by
+.PN setld .
+.PP
+.B "\fIsubset\fB: deletion declined by subset control program"
+.br
+The subset named in the error message cannot be deleted because
+of the return status of the subset control program. This indicates
+that the subset control program provided with this subset has determined
+that the subset should not be deleted. This message may be seen
+with a diagnostic issued directly from the subset control program.
+Consult the documentation accompanying the product.
+.PP
+.B "Tape Positioning Error"
+.br
+An error was detected while positioning the tape for a read
+operation while using
+.PN setld
+with either the
+.BR \-l , 
+.BR \-u ,
+or
+.B \-x
+switches. This can indicate a faulty tape or a transient
+tape subsystem error. Check the error log and try the
+operation again.
+.PP
+.B "Error Extracting \fIsubset\fB"
+.br
+An unrecoverable error has occurred when trying to extract
+a subset from the distribution.
+.PP
+.B "Control Info Error on \fIsubset\fB"
+.br
+An attempt to access a control or inventory file or subset
+control program has failed while extracting subsets.
+This may indicate a faulty distribution. Try the operation again.
+.PP
+.B "\fIsubset\fB: extract checksum error"
+.br
+A checksum error was detected in the extracted
+copy of the
+.I subset
+subset. This may indicate a transient tape subsystem error.
+Check the error log and retry the extract.
+.PP
+.B "Error contacting server \fIhostname\fB: \fIerror-message\fB"
+.br
+Attempt to contact installation server
+.I hostname
+failed. The
+.I error-message
+provides more information.
+.PP
+.B "Device \fIlocation\fB not supported for installations."
+.br
+The
+.I location
+specified on the command line was not recognized as
+a valid input location for a
+.BR \-l , 
+.BR \-u ,
+or 
+.B \-x
+operation.
+.PP
+.B "Cannot access /dev/nrmt\fI?\fBh"
+.br
+The device special file 
+\f(CW/dev/nrmt\fI?\fR 
+either does not exist or is not a character special file.
+Remake the file with
+.PN MAKEDEV
+and try the operation again.
+.PP
+.B "\fIsubset\fB: Unknown subset"
+.br
+A
+.I subset
+argument that was specified with the
+.B \-i
+switch does not correspond to any subset known to
+the system. Check the command line for spelling errors.
+.PP
+.B "\fIlocation\fB/instctrl: no such file or directory"
+.br
+The disk distribution 
+.I location 
+specified on
+the command line does not point to a valid directory.
+Check the command line for spelling errors.
+.SH Files
+.TP 28
+.PN /etc/setldlog
+Logfile for 
+.PN setld 
+transactions
+.PP
+Following files are relative to root-path:
+.TP 28
+.PN usr/etc/subsets/*.inv
+Subset inventory files
+.PD 0
+.TP
+.PN usr/etc/subsets/*.ctrl
+Subset control files
+.TP
+.PN usr/etc/subsets/*.scp
+Subset control programs
+.TP
+.PN usr/etc/subsets/*.lk
+Subset installed lock files
+.TP
+.PN usr/etc/subsets/*.dw
+Subset corrupt lock files
+.TP
+.PN var/adm/install/archive
+Update archive directory
+.TP
+.PN var/adm/install/reference
+Update reference directory
+.SH See Also
+kits(1), fitset(8), frm(8), fverify(8), sysupd(8)
+.br
+\fIGuide to Preparing Software for Distribution on ULTRIX Systems\fP

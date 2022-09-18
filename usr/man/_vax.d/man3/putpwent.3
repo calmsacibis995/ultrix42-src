@@ -1,0 +1,46 @@
+.\" SCCSID: @(#)putpwent.3	8.1	9/11/90
+.TH putpwent 3
+.SH Name
+putpwent \- write password file entry
+.SH Syntax
+.B #include <pwd.h>
+.PP
+.B int putpwent (\fIp, f\fP)
+.br
+.B struct passwd \(**\fIp\fP;
+.br
+.B \s-1FILE\s+1 \(**\fIf\fP;
+.SH Description
+.NXR "putpwent subroutine"
+.NXA "getpwent subroutine" "putpwent subroutine"
+.NXR "password file (general)" "writing entry"
+The
+.PN putpwent
+subroutine is the inverse of 
+.MS getpwent 3 .
+Given a pointer to a
+.I passwd\^
+structure created by
+.PN getpwent
+(or
+.PN getpwuid 
+or
+.PN getpwnam), 
+.PN putpwent 
+writes a line on the stream
+.I f\^
+which matches the format of 
+.PN /etc/passwd .
+.SH Diagnostics
+The
+.PN putpwent
+subroutine returns non-zero if
+an error was detected during its operation, otherwise zero.
+.NT "Caution"
+The 
+.PN putpwent
+routine uses <stdio.h>, which causes 
+it to increase the size of programs,
+not otherwise using standard I/O, more
+than might be expected.
+.NE

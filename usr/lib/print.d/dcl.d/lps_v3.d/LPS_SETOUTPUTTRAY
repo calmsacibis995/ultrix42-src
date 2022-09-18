@@ -1,0 +1,14 @@
+% Copyright (c) 1986, 1987, 1988, 1989 by Digital, Maynard, Mass.  All rights reserved.
+% Version V2.1-1
+/lps$lpsdict 55 dict def statusdict begin lps$lpsdict begin/lps$pn 31
+string printername def/lps$output-tray exch def mark
+product(PrintServer 40)eq{/face_up{2 setoutputtray}/side{1
+setoutputtray}/top{3 setoutputtray}/upper{3 setoutputtray mark(TOP)lps$pn
+99 returnstatus}/lower{1 setoutputtray mark(SIDE)lps$pn 99
+returnstatus}/lcos{{4 setoutputtray}stopped{3 setoutputtray mark(TOP)lps$pn
+99 returnstatus}{4 setoutputtray}ifelse}}if
+product(PrintServer 20)eq{/face_up{2 setoutputtray}/side{1 setoutputtray
+mark(LOWER)lps$pn 99 returnstatus}/top{3 setoutputtray mark(UPPER)lps$pn 99
+returnstatus}/upper{3 setoutputtray}/lower{1 setoutputtray}/lcos{3
+setoutputtray mark(UPPER)lps$pn 99 returnstatus}}if counttomark 2 idiv dup
+dict begin{def}repeat lps$output-tray load exec end cleartomark

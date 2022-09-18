@@ -1,0 +1,31 @@
+.TH kstash 8krb
+.SH Name
+kstash \- hide the Kerberos master database key for automatic retrieval
+.SH Syntax
+.B /var/dss/kerberos/bin/kstash
+.SH Description
+.NXR "Kerberos routines" "kstash"
+The
+.PN kstash
+administration utility stores the Kerberos master database password in
+a hidden place on the host machine of the database.
+The password is then
+available to other administration programs so that they can access and
+manipulate the database, without needing the password to be entered manually.
+.PP
+In general,
+.PN kstash
+is used during the initial setup of a Kerberos system.  The installer
+initializes the master database with
+.MS kdb_init 8krb
+and then uses
+.PN kstash
+to hide the master database key.
+If someone changes the master key,
+you must invoke
+.PN kstash
+again to store the new key.
+.SH Restrictions
+This utility can only be used on Kerberos master and slave hosts.
+.SH See Also
+kdb_init(8krb), kdb_edit(8krb), kdb_destroy(8krb), kdb_util(8krb)

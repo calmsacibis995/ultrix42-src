@@ -1,0 +1,64 @@
+.\" SCCSID: @(#)install.1	8.1	9/11/90
+.\" SCCSID: @(#)install.1	8.1	9/11/90
+.TH install 1
+.SH Name
+install \- install binaries
+.SH Syntax
+.B install
+[\fB\-c\fR] [\fB\-m\fI mode\fR\|] [\fB\-o\fI owner\fR\|] [\fB\-g\fI group\fR\|] 
+[\fB\-s\fR] \fIbinary destination\fR
+.SH Description
+.NXR "install command"
+.NXR "binary file" "installing"
+The
+.I binary
+is moved to
+.IR destination .
+If
+.I destination
+already exists,
+it is removed before
+.I binary
+is moved.
+If the destination is a directory then
+.I binary
+is moved into the
+.I destination
+directory with its original file-name.
+.PP
+The
+.PN install
+command
+refuses to move a file onto itself.
+.SH Options
+.IP \fB\-c\fR 20
+Copies binary to
+.I destination.
+.IP "\fB\-\|g\fI group\fR" 20
+Specifies a different group from group staff for 
+.I destination.
+The
+.I destination
+is changed to group system; the
+.B \-g
+.I group
+option may be used to specify a different group.
+The user must belong to the specified group and 
+be the owner of the file or the superuser.
+.IP "\fB\-\|m\fI mode\fR" 20
+Specifies a different mode from the standard 755 for 
+.I destination.
+.IP "\fB\-\|o\fI owner\fR" 20
+Specifies a different owner from owner root for 
+.I destination.
+The
+.I destination
+is changed to current owner.  The
+.B \-o
+.I owner
+option may be used to specify a different owner, but only
+the superuser can change the owner.
+.IP \fB\-s\fR 20
+Strips the binary after it is installed.
+.SH See Also
+chgrp(1), chmod(1), cp(1), mv(1), strip(1), chown(8)

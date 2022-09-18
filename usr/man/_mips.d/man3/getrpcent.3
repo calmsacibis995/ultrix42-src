@@ -1,0 +1,149 @@
+.\" SCCSID: @(#)getrpcent.3	8.1	9/11/90
+.\"
+.TH getrpcent 3n
+.SH Name
+getrpcent, getrpcbynumber, getrpcbyname, setrpcent, endrpcent \- get rpc entry
+.SH Syntax
+.nf
+.B #include <netdb.h>
+.PP
+.B struct rpcent *getrpcent()
+.PP
+.B struct rpcent *getrpcbynumber(\fInumber\fP)
+.B int \fInumber\fP;
+.PP
+.B struct rpcent *getrpcbyname(\fIname\fP)
+.B char *\fIname\fP;
+.PP
+.B setrpcent(\fIstayopen\fP)
+.br
+.B int \fIstayopen\fP;
+.PP
+.B endrpcent( )
+.fi
+.SH Description
+.NXR "getrpcent subroutine"
+.NXR "getrpcbynumber subroutine"
+.NXR "getrpcbyname subroutine"
+.NXR "setrpcent subroutine"
+.NXR "endrpcent subroutine"
+.NXR "group file (general)" "getting entry"
+The
+.PN getrpcent ,
+.PN getrpcbynumber
+and
+.PN getrpcbyname
+subroutines each return pointers
+to an object
+with the following structure
+containing the broken-out
+fields of a line in the rpc database:
+.EX
+.nf
+struct  rpcent {               /* see getrpcent(3) */
+        char    *r_name;
+        char    **r_aliases;   /* alias list */
+        char    r_number;      /* rpc program number */
+};
+struct group *getrpcent(), *getrpcbynumber(), *getrpcbyname();
+.fi
+.EE
+.PP
+The members of this structure are:
+.TP \w'r_aliases'u+2n
+r_name
+The name of the rpc.
+.br
+.ns
+.TP \w'_aliases'u+2n
+r_aliases
+A zero-terminated list of alternate names for the rpc.
+.br
+.ns
+.TP \w'r_aliases'u+2n
+r_number
+The rpc program number for the rpc.
+.PP
+If the \fIstayopen\fP flag on the
+.PN setrpcent
+subroutine is NULL, the 
+.PN rpc
+database is opened.  Otherwise the 
+.PN setrpcent
+has the effect of rewinding the 
+.PN rpc
+database.
+The
+.PN endrpcent
+may be called to
+close the 
+.PN rpc 
+file when processing is complete.
+.PP
+The
+.PN getrpcent
+subroutine simply reads the next
+line while
+.PN getrpcbynumber
+and
+.PN getrpcbyname
+search until a matching
+.I gid
+or
+.I name
+is found
+(or until EOF is encountered).
+The
+.PN getrpcent
+subroutine keeps a pointer in the database, allowing
+successive calls to be used 
+to search the entire file.
+.PP
+A call to 
+.PN setrpcent
+must be made before a 
+.PN while
+loop using 
+.PN getrpcent
+in order to perform initialization and an
+.PN endrpcent
+must be used after the loop.  Both
+.PN getrpcbynumber
+and 
+.PN getrpcbyname
+make calls to 
+.PN setrpcent 
+and 
+.PN endrpcent .
+.SH Restrictions
+.NXR "getrpcent subroutine" "restrictions"
+All information
+is contained in a static area
+so it must be copied if it is
+to be saved.
+.PP
+If YP is running, 
+.PN getrpcent
+does not return the entries in any particular order.
+See the 
+.I Guide to the Yellow Pages Service
+for setup information.
+.PP
+The 
+.PN rpc
+database may also be distributed by the BIND/Hesiod
+naming service.  See the
+.I Guide to the BIND/Hesiod Service
+for more information.
+.SH Return Values
+A null pointer
+(0) is returned on EOF or error.
+.SH Files
+.PN /etc/rpc
+.SH See Also
+rpc(5), svc.conf(5)
+.br
+.I Guide to the BIND/Hesiod Service
+.br
+.I Guide to the Yellow Pages Service
+   

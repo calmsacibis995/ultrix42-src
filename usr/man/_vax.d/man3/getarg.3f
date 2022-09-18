@@ -1,0 +1,28 @@
+.\" SCCSID: @(#)getarg.3f	8.1	9/11/90
+.TH getarg 3f VAX "" Unsupported
+.SH Name
+getarg, iargc \- return command line arguments
+.SH Syntax
+.B subroutine getarg (k, arg)
+.br
+.B character*(*) arg
+.sp 1
+.B function iargc ()
+.SH Description
+.NXR "getarg subroutine (FORTRAN)"
+.NXR "iargc subroutine (FORTRAN)"
+.NXR "command line" "returning arguments"
+A call to
+.PN getarg
+will return the \fBk\fIth\fR command line argument in character string
+.I arg.
+The 0\fIth\fR argument is the command name.
+.PP
+An
+.PN iargc
+call returns the index of the last command line argument.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+execve(2), getenv(3f)

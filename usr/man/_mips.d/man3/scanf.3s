@@ -1,0 +1,479 @@
+.\" SCCSID: @(#)scanf.3s	2.5	8/12/87
+.TH scanf 3s
+.SH Name
+scanf, fscanf, sscanf \- convert formatted input
+.SH Syntax
+.B #include <stdio.h>
+.PP
+.B int scanf(
+.IR format [, 
+.I pointer 
+] ...
+.B )
+.br
+.B char 
+.IR *format ;
+.PP
+.B int fscanf(
+.IR stream ,
+.I format
+[,
+.I pointer
+] ...
+.B )
+.br
+.B FILE
+.IR *stream ;
+.br
+.B char 
+.IR *format ;
+.PP
+.B int sscanf(
+.IR s ,
+.I format
+[,
+.I pointer
+] ...
+.B )
+.br
+.B char \fI*s, *format\fP;
+.SH Description
+.NXR "scanf function"
+.NXR "fscanf function"
+.NXR "sscanf function"
+.NXR "formatted input" "converting"
+.NXR "scanf function" "conversion specification list"
+Each function reads characters, interprets
+them according to a format, and stores the results in its arguments.
+Each expects, as arguments, a control string,
+.I format,
+and a set of
+.I pointer
+arguments that indicate where to store the converted input.
+The
+.PN scanf
+function reads from the standard input stream
+.IR stdin .
+The
+.PN fscanf
+function reads from the named input
+.IR stream .
+The
+.PN sscanf\^
+function reads from the character string
+.IR s .
+.PP
+In the 
+.I format
+string you specify how to convert the input stream.  You may use
+one or more conversion specifications in a single format string,
+depending on the number of 
+.I pointer
+arguments you specify.   Conversion specifications are introduced by a
+percent sign and specify the format of one input field.  You may also
+use spaces, tabs, form feeds, new-line characters, alphabetic
+characters, and numbers in the format string.  The following list
+describes conversion
+specifications and the other components of a 
+.I format
+string:
+.IP \(bu 5
+Conversion specifications have the following format:
+.EX
+%[*][\fIw\fP][l][h][\fIcode\fP]
+.EE
+Each conversion specification must be introduced by a percent sign.
+The rest of the conversion specification is optional and has the
+following purpose:
+.IP * 5
+Specifies that an input field in the input string is not read by 
+.PN scanf;
+that is, the function skips the field.
+.IP \fIw\fP 5
+Specifies the maximum field width.
+.IP \fBl\fP 5
+Specifies that the variable where the input value is stored is a
+longword integer or a double-precision variable. The
+.PN scanf
+function ignores the \fBl\fP if the input field is a character string or
+a pointer.
+.IP \fBh\fP 5
+Specifies that the variable where the input value is stored is a
+short integer or floating-point variable.  The
+.PN scanf
+function ignores the \fBh\fP if the input field is a character string or a
+pointer. 
+.IP \fItype\fP 5
+Specifies the conversion code.  Possible values for the conversion
+code are described in the paragraphs that follow.
+.br
+.ne 3
+.IP \(bu 5
+Alphabetic characters and numbers that appear inside the
+.I format
+string, but not in a conversion specification, specify that
+.PN scanf
+ignore those characters in the input string.
+.IP \(bu 5
+The white-space characters in a 
+.I format
+string that appear outside of a conversion specification normally have
+no effect on how
+.PN scanf
+formats data.  The exception is when the white space character
+precedes the \fBc\fP conversion code in the 
+.I format 
+string.  In this case, the white space causes 
+.PN scanf
+to ignore leading white space in the input field.  Normally, 
+.PN scanf
+treats leading white space as part of the input character string for
+the \fBc\fP conversion code.
+.PP
+Each conversion specification in the 
+.I format
+string directs the conversion of the next input field.  The 
+.PN scanf
+function stores the result of each conversion in the 
+.I pointer 
+that corresponds to the conversion specification.
+Thus, the conversion specification
+controls how
+.PN scanf 
+converts the first unread input field, and
+.PN scanf 
+stores the result in the first
+.I pointer.  
+The second conversion specification controls how 
+.PN scanf
+converts the next input field.
+The
+.PN scanf
+function stores the result of the second conversion in the second
+.IR pointer ,
+and so on.  
+.PP
+You do not include
+.I pointers
+for conversion specifications that contain the asterisk character.
+These specifications cause 
+.PN scanf
+to ignore an input field, so no 
+.I pointer
+storage is needed.
+.PP
+An input field is defined as a string of non-space characters; it
+begins at the first unread character and extends to the first
+inappropriate character or EOF. An inappropriate character is one that
+is not valid
+for the value
+.PN scanf
+is reading.  For example, the letter ``z'' is invalid for an integer
+value.
+If the
+.PN scanf
+function does not reach EOF and encounters no inappropriate
+characters, the field width is
+the number of characters specified by 
+.IR w .
+For all conversion codes except left-bracket ( 
+.BR [ ) 
+and 
+.BR c ,
+.PN scanf
+ignores leading white space in an input field.
+.PP
+The conversion code controls how
+.PN scanf
+converts an input field.  The data type of a
+.I pointer
+that corresponds to a conversion specification must match the
+conversion code.  For example, the 
+.I pointer
+that corresponds to a 
+.B c
+conversion code must point to a character variable. The 
+.I pointer 
+that corresponds to a 
+.B d
+conversion code must point to an integer, and so on. The following list 
+describes the valid conversion codes:
+.PP
+.TP
+.B %
+The input field is a percent sign. The
+.PN scanf
+function does not move any value to
+.IR pointer .
+.TP
+.B d D
+The input field is a decimal integer; 
+the corresponding 
+.I pointer
+must point to an integer.  If you specify 
+.B h ,
+.I pointer
+can point to a short integer.  
+.TP
+.B u U
+The input field is a decimal integer;
+.I pointer
+must point to an unsigned integer.  
+.TP
+.B o 0
+The input field is octal integer is expected;
+the corresponding 
+.I pointer
+must point to an integer.  If you specify 
+.B h ,
+.I pointer
+can be a short integer. 
+.TP
+.B x X
+The input field is a hexadecimal integer;
+the corresponding 
+.I pointer
+must point to an integer pointer.  If you specify 
+.BR h ,
+.I pointer
+can be a short integer.  
+.TP
+\fBe\fP,\fBf\fP,\fBg\fP
+The input field is an optionally signed string of
+digits. The field may contain a radix character and an exponent field
+begins with a letter 
+.B E
+or 
+.BR e , 
+followed by an optional sign or space and an integer.  The 
+.I pointer
+must point to a floating-point variable.  If you specify 
+.BR l ,
+.I pointer 
+must point to a double-precision variable.
+.TP
+.B s
+The input field is a character string.  The
+.I pointer
+must point to an array of characters large enough to contain the
+string and a termination character (\\0). The
+.PN scanf 
+function adds the termination character automatically.
+A white-space character terminates the input field, so the input field
+cannot contain spaces.
+.TP
+.B c
+The input field is a character or character string.  The
+.I pointer
+must point to either a character variable or a character array.
+.IP
+The
+.PN scanf
+function reads white space in the input field, including leading
+white space.  To cause
+.PN scanf
+to ignore white space, you can include a space in front of the
+conversion specification that includes the \fBc\fP.  
+.TP
+.B [
+The input field is a character string.  The
+.I pointer
+must point to an array of characters large enough to contain the
+string and a termination character (\\0). The
+.PN scanf 
+function adds the termination character automatically.
+.IP
+Following the left bracket, you specify a list of characters and a
+right bracket ( ] ).
+The
+.PN scanf
+function reads the input field until it encounters a character other
+than those listed between the brackets.  The
+.PN scanf
+function ignores white-space characters.
+.IP
+You can change the meaning of the characters within the brackets by
+including a circumflex (\fB^\fP) character before the list of
+characters. The circumflex causes
+.PN scanf
+to read the input field until it encounters one of the characters in
+the list.
+.IP
+You can represent a range of characters by specifying the first
+character, a hyphen (-), and the last character.  For example, you can
+express [0123456789] using [0\-9].
+When you use a hyphen to represent a range of characters, the first
+character you specify must precede or be equal to the last character 
+you specify in
+the current collating sequence.  If the last character sorts before
+the first character, the hyphen stands for itself.  
+The hyphen also stands for
+itself when it is the first or the last character that appears within
+the brackets.
+.IP
+To include the right square bracket as a character within the list, 
+put the right bracket first in the list.  If the right bracket is
+preceded by any character other than the circumflex, 
+.PN scanf
+interprets it as a closing bracket.
+.IP
+At least one input character must be valid
+for this conversion to be considered successful.
+.TP
+.B i
+The input field is an integer.  If the field begins with a zero, 
+.PN scanf
+interprets it as an octal value.  If the field begins with ``0X'' or
+``0x,\*u 
+.PN scanf
+interprets it as a hexadecimal value.  The
+.I pointer
+must point to an integer.  If you specify 
+.BR h , 
+.I pointer
+can point to a short integer.
+.PP
+.TP
+.B n
+The
+.PN scanf
+function maintains a running total of the number of input fields it has
+read so far.  This conversion code causes 
+.PN scanf
+to store that total in the integer that corresponds to
+.I pointer.
+.PP
+.TP
+.B p
+The input field is a pointer.  The
+.I pointer
+must point to an integer variable.
+.sp
+.PP
+In all cases,
+.PN scanf
+uses the radix character and collating sequence that is defined by the
+last successful call to
+.PN setlocale
+category
+.PN LC_NUMERIC 
+or 
+.PN LC_COLLATE .
+If the radix or collating sequence
+is undefined, the
+.PN scanf
+function uses the C locale definitions.
+.SS International Environment
+.IP LC_NUMERIC 15
+If this environment is set and valid, 
+.PN scanf
+uses the international language database named in the definition to
+determine radix character rules.
+.IP LANG 15
+If this environment variable is set and valid 
+.PN scanf
+uses the international language database named in the definition to
+determine collation and character classification rules.  If
+.PN LC_NUMERIC 
+is defined, its definition supersedes the definition of
+LANG.
+.SH Restrictions
+.NXR "scanf subroutine" "restrictions"
+You cannot directly determine whether conversion codes that cause 
+.PN scanf
+to ignore data (for example, brackets and asterisks) succeeded.
+.PP
+The
+.PN scanf
+function ignores any trailing white-space characters, including a newline
+character. If you want 
+.PN scanf
+to read a trailing white-space character, include the character in the
+conversion code for the data item that contains it.
+.SH Examples
+.NXR "scanf function"
+The following shows an example of calling the
+.PN scanf
+function:
+.EX
+int i, n; float x; char name[50];
+
+n = scanf("%d%f%s", &i, &x, name);
+.EE
+Suppose the input to the
+.PN scanf
+function appear as follows:
+.EX
+25 54.32E\-1 thompson
+.EE
+In this case, 
+.PN scanf
+assigns the value 25 to the 
+.I i
+variable and the value 5.432 to the 
+.I x
+variable.  The character variable 
+.I name
+receives the value thompson\\0.  The function returns the value 3 to
+the 
+.I n 
+variable because it read and assigned three input fields.
+.PP
+The following example demonstrates using the \fBd\fP conversion code 
+to cause 
+.PN scanf 
+to ignore characters:
+.EX
+int i; float x; char name[5];
+
+scanf("%2d%f %*d %[0-9]", &i, &x, name);
+.EE
+Suppose the following shows the input to the function:
+.EX
+56789 0123 56a72
+.EE
+In this case, the
+.PN scanf
+function assigns the value 56 to the 
+.I i
+variable and the value 789.0 to the 
+.I x
+variable.  The function ignores the 0123 input field, because the
+.B %*d
+conversion specification causes 
+.PN scanf
+to skip one input field.  The function assigns 56 to 
+.IR name ; 
+it reads the first two characters in the last input field and stops at the third
+character.  The letter 'a' is not in the set of characters from 0 to 9.
+.SH Return Values
+The
+.PN scanf
+function returns the number of successfully matched
+and assigned input fields.  This number can be zero if the 
+.PN scanf
+function encounters invalid input characters, as specified by the
+conversion specification, before it can assign input characters.
+.PP
+If the input ends before the first conflict or conversion,
+.PN scanf
+returns EOF.
+These functions return EOF on end of input and a short count for missing or 
+invalid data items.
+.SH Environment
+In POSIX mode, the
+.BR E ,
+.BR F ,
+and
+.B X
+formats are treated the same as the
+.BR e ,
+.BR f ,
+and
+.B x
+formats, respectively; otherwise, the upper-case formats expect double, 
+double, and long arguments, respectively.
+.SH See Also
+atof(3), nl_scanf(3int), getc(3s), printf(3s), environ(5int)
+.br
+.I Guide to Developing International Software

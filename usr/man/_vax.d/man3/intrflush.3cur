@@ -1,0 +1,39 @@
+.TH intrflush 3cur 
+.SH Name
+intrflush \- enable flush on interrupt
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int intrflush(win, bf)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+bool bf;
+.SH Description
+.NXR "intrflush subroutine"
+If 
+.PN intrflush
+is enabled, 
+pressing an interrupt key
+(interrupt, break, quit) 
+flushes all output in the tty driver queue.
+This gives the effect of a faster response to the interrupt
+but causes
+the
+.PN curses
+program to have an inaccurate picture of what is on the screen.
+Disabling the option prevents the flush.
+.PP
+The default for the option is dependent on the tty driver settings.
+You have to force the terminal into the state you require. 
+The window argument is ignored.
+.SH Return Values
+The
+.PN intrflush
+function returns OK on success and ERR on error.

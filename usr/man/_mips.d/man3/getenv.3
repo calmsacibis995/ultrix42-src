@@ -1,0 +1,60 @@
+.\" SCCSID: @(#)getenv.3	8.1	9/11/90
+.TH getenv 3
+.SH Name
+getenv, setenv, unsetenv  \- manipulate environment variables
+.SH Syntax
+.nf
+.B char *getenv(\fIname\fP)
+.B char *\fIname\fP;
+.PP
+.B setenv(\fIname\fP, \fIvalue\fP, \fIoverwrite\fP)
+.B char *\fIname\fP, \fIvalue\fP;
+.B int \fIoverwrite\fP;
+.PP
+.B void unsetenv(\fIname\fP)
+.B char *\fIname\fP;
+.fi
+.SH Description
+.NXR "getenv subroutine (standard C)"
+.NXR "environment" "getting variable values"
+The
+.PN getenv
+subroutine searches the environment list
+for a string of the form
+.I name = value
+and returns a pointer to the string
+.I value
+if such a string is present, otherwise 
+.PN getenv
+returns the value 0 (NULL).
+For further information, see 
+.MS environ 7 .
+.PP
+The 
+.PN setenv 
+subroutine searches the environment list in the same manner as 
+.PN getenv. 
+If the string \fIname\fP is not found, a string of the form
+\fIname\fP=\fIvalue\fP is added to the environment.  If it is
+found, and \fIoverwrite\fP is non-zero, its value is changed to
+\fIvalue\fP.  The
+.PN setenv 
+subroutine returns 0 on success and \-1 on failure,
+where failure is caused by an inability to allocate space for the
+environment.
+.PP
+The 
+.PN unsetenv 
+subroutine removes all occurrences of the string \fIname\fP from
+the environment.  There is no library provision for completely removing
+the current environment.  It is suggested that the following code be
+used to do so.
+.EX
+static char     *envinit[1];
+extern char     **environ;
+environ = envinit;
+.EE
+All of these routines permit, but do not require, a trailing equals
+sign (=) on \fIname\fP or a leading equals sign on \fIvalue\fP.
+.SH See Also
+ csh(1), sh(1), execve(2), putenv(3), environ(7)

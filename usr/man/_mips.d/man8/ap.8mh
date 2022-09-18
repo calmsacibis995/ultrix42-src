@@ -1,0 +1,144 @@
+.TH ap 8mh
+.SH Name
+ap \- parse addresses RFC 822-style
+.SH Syntax
+.B /usr/lib/mh/ap
+[
+.B "\-form"
+.I file
+] [
+.B "\-format"
+.I string
+] [
+.B "\-help"
+] [
+.B "\-[no]normalize"
+] [
+.B "\-width"
+.I columns
+]
+.I "addrs ..."
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "ap program"
+.NXR "RFC 822" "address parsing by MH system"
+The
+.PN ap
+program parses addresses according to the ARPA Internet standard.
+It also understands many non-standard formats.
+It is useful for seeing how MH will interpret an address.
+.PP
+The 
+.PN ap
+program treats each argument as one or more addresses,
+and prints those addresses in the official RFC 822 format.
+Hence, it is usually best to enclose each argument in 
+double quotes (") for the shell.
+.PP
+In addition to the standard escapes,
+.PN scan
+also recognizes the additional escape 
+\f(CWerror\fR, 
+which is a diagnostic that is returned if the parse failed.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-form \fIfile\fB" 10
+Overrides the default output format of
+.PN ap .
+The output is formatted according to the instructions
+in the specified file.
+This must be a format file; see 
+.MS mh-format 5mh .
+.\"
+.IP "\-format \fIstring\fB" 10
+Overrides the default output format of
+.PN ap .
+The output is formatted according to the instructions
+in the specified string.
+This must be a format string; see
+.MS mh-format 5mh .
+.IP
+The argument to the 
+.B \-format 
+option must be interpreted as a single token
+by the shell that invokes 
+.PN ap .
+Therefore, you should usually place the argument to this 
+option inside double quotes (").
+.\"
+.IP "\-help" 10
+Prints a list of the valid options to this command.
+.\"
+.IP "\-normalize" 10
+.PD 0
+.IP "\-nonormalize" 10
+.PD
+Tells 
+.PN ap 
+to try to find the official host name of the address.
+This is the default behavior.
+It can be suppressed using the
+.B \-nonormalize
+option.
+.\"
+.IP "\-width \fIcolumns\fB" 10
+Specifies the width of the screen in columns.
+.\"
+.\"
+.PP
+The defaults for this command are as follows:
+.IP
+.B \-normalize
+.br
+.B \-width
+defaults to the width of the terminal
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+On systems where MH is configured with the BERK option,
+address parsing is not enabled.  
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+This is the default format string used by
+.PN ap :
+.EX
+%<{error}%{error}: %{text}%|%(proper{text})%>
+.EE
+If an error was detected, 
+this string instructs 
+.PN ap 
+to print the error, a colon (\f(CW:\fR), 
+and the address that is in error.
+Otherwise, output the proper RFC 822 format of the address.
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+User profile.
+.TP 10
+.PN /usr/lib/mh/mtstailor
+System customization file.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+mh-format(5mh), dp(8mh)
+.br
+.I "Standard for the Format of ARPA Internet Text Messages"
+(RFC 822)

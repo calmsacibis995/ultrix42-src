@@ -1,0 +1,189 @@
+.TH rcvstore 1mh
+.SH Name
+rcvstore \- incorporate new mail asynchronously
+.SH Syntax
+.B rcvstore
+[
+.I +folder 
+] [
+.B "\-[no]create"
+] [
+.B \-help
+] [
+.B "\-sequence \fIname\fB"
+] [
+.B \-[no]public
+] [
+.B \-[no]zero
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "rcvstore command"
+.PP
+The command
+.PN rcvstore
+incorporates a message from the standard input
+into an MH folder.
+If a 
+.I +folder
+argument is not given
+the file is placed in your
+.PN +inbox 
+folder.
+The new message being incorporated is assigned the next highest
+number in the folder.
+.PP
+If the specified (or default) folder does not exist,
+it is created if the
+.B \-create
+option is specified;
+otherwise 
+.PN rcvstore
+exits.
+.PP
+If your 
+.PN \&.mh_profile 
+file contains a 
+\f(CWMsg-Protect:\fR entry, 
+it is used as the protection on the newly created messages;
+otherwise the MH default of 0600 is used.  
+During all operations on messages,
+this initially assigned protection 
+is preserved for each message.
+You can use
+.PN chmod
+to change the protection on an individual message, 
+and the new protection is preserved thereafter.
+.PP
+The
+.PN rcvstore
+command incorporates anything except zero length messages
+into your MH folder.
+.PP
+If the profile entry \f(CWUnseen-Sequence:\fR 
+is present and non-empty, then 
+.PN rcvstore
+adds the newly incorporated message to each
+sequence named by the profile entry.
+Note that 
+.PN rcvstore
+does not zero each sequence prior to adding messages.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-create" 10
+.PD 0
+.IP "\-nocreate" 10
+.PD
+Creates the specified folder.
+If you attempt to incorporate mail into a folder
+that does not exist, 
+.PN rcvstore 
+creates the folder if you supply the
+.B \-create 
+option.
+If you supply the 
+.B \-nocreate
+option, the folder is not created and
+.PN rcvstore 
+exits.
+The default is
+.BR \-create .
+.\"
+.IP "\-help" 10
+Prints a list of the valid options to this command.
+.\"
+.IP "\-public" 10
+.PD 0
+.IP "\-nopublic" 10
+.PD
+Sets the read permissions of sequences.
+Normally, when you create a sequence with the
+.B \-sequence
+option, the sequence is not accessible
+to other MH users.
+The
+.B \-public
+option makes the sequence accessible to other MH users.
+You can use the
+.B \-nopublic
+option to ensure that the sequence that you create
+is only accessible to yourself.
+.\"
+.IP "\-sequence \fIname\fB" 10
+Specifies a sequence in which
+.PN rcvstore
+places the messages which it incorporates.
+For more information on sequences, see
+.MS mark 1mh .
+The name of the sequence must begin with a letter,
+and must consist entirely of alphabetic or numeric characters;
+no punctuation is allowed.
+.\"
+.IP "\-zero" 10
+.PD 0
+.IP "\-nozero" 10
+.PD
+Specifies whether to zero existing sequences
+before adding new messages.
+Normally,
+.PN rcvstore
+removes all existing messages from a sequence before
+adding messages to it.
+If you specify the
+.B \-nozero
+option,
+.PN rcvstore
+adds the messages it finds to the existing contents
+of the sequence.
+This option only works with the
+.B \-sequence
+option.
+.\"
+.PP
+The defaults for this command are:
+.IP
+.I +folder
+defaults to 
+.PN +inbox
+.br
+.B \-create
+.br
+.B \-nopublic
+if the folder is read-only, 
+otherwise
+.B \-public
+.br
+.B \-nozero
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine your Mail directory
+Folder-Protect:+To set protections when creating a new folder
+Msg-Protect:+To set protections when creating a new message
+Unseen-Sequence:+To name sequences denoting unseen messages
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+chmod(1), inc(1mh), mark(1mh), pick(1mh), mh-mail(5mh), mh_profile(5mh)

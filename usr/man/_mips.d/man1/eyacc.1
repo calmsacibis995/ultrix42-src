@@ -1,0 +1,32 @@
+.\" SCCSID: @(#)eyacc.1	8.1	9/11/90
+.\" SCCSID: @(#)eyacc.1	8.1	9/11/90
+.TH eyacc 1
+.SH Name
+eyacc \- modified yacc allowing much improved error recovery
+.SH Syntax
+.B eyacc
+[\fB\-v\fR] [\|\fIgrammar\fR\|]
+.SH Description
+.NXR "eyacc compiler"
+.NXR "Pascal compiler" "error recovery"
+.NXA "yacc compiler" "eyacc compiler"
+The
+.PN eyacc
+command
+is an old version of 
+.MS yacc 1 ,
+which produces tables used by the Pascal system and its error recovery
+routines.  The
+.PN eyacc
+command
+fully enumerates test actions in its parser when an error token
+is in the look-ahead set.
+This prevents the parser from making undesirable reductions
+when an error occurs before the error is detected.
+The table format is different in
+.PN eyacc
+than it was in the old
+.PN yacc ,
+as minor changes had been made for efficiency reasons.
+.SH See Also
+yacc(1)

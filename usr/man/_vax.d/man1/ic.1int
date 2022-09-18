@@ -1,0 +1,147 @@
+.TH ic 1int
+.SH Name
+ic \- compiler for language support database
+.SH Syntax
+.B ic
+[
+.B \-D\c
+.I name=def
+] [
+.B \-U\c
+.I name
+] [
+.B \-I\c
+.I dir
+] [
+.B \-v
+] [
+.B \-o
+.I output
+] [
+.I source
+]
+.SH Description
+.NXR "ic utility"
+The command
+.PN ic
+generates a binary international database from a database language
+source file. The command either accepts its input from the file
+.I source
+or from the standard input, if you do not specify
+.I source .
+.PP
+The name of the output file is the name of the codeset in the source
+file or the name you specify using the
+.PN \-o
+option.
+.PP
+For information on creating a database language source file, see the
+\fIGuide to Developing International Software\fP.
+.SH Options
+.IP \fB\-D\fR 5
+Defines
+.I name
+to the C preprocessor.  This option has the same effect as including 
+the 
+.PN #define 
+.PN name 
+directive at the head of your source file. The
+default 
+.I name 
+definition is 1.
+.PP
+.IP \fB\-U\fR 5
+Removes any initial preprocessor definition of
+.I name .
+.PP
+.IP \fB\-I\fR 5
+Causes the
+.PN ic 
+compiler to search the named directory for files you name in an 
+.PN #include
+directive.
+.PP
+.IP \fB\-o\fR 5
+Specifies the name you want
+.PN ic
+to use for the output file.  By default, the compiler uses the name of
+the codeset in the source file to name the output file.
+.PP
+.IP \fB\-v\fR 5
+Requests statistics on the number of simple and double letters in the
+source file,
+the number of tables in the source file, and the size of the output
+binary file.
+.SH Restrictions
+The length of the table name modifier is limited to 44 characters.
+.SH Examples
+The following command causes the
+.PN ic
+compiler to compile the
+.PN GER_CH.8859.in
+source file:
+.EX
+% \f(CBic \-v GER_CH.8859.in\fP
+INTLINFO database GER_CH.8859:
+	 257 code table entries (256 simple/1 multi-byte).
+	   1 property table(s).
+	   1 collation table(s).
+	   1 string table(s).
+	   3 conversion tables: toascii, tolower, toupper.
+5051 bytes total length.
+.EE
+The 
+.PN ic
+compiler searches for the 
+.PN GER_CH.8859.in
+file in the current working directory.
+The compiler writes compilation statistics to 
+.PN stderr , 
+as requested by the
+.PN \-v
+option.  The compiler creates a binary file, named 
+.PN GER_CH.8859 ,
+in the current working directory.
+.SH Return Values
+The 
+.PN ic
+compiler
+returns zero exit status for successful
+compilation; it returns nonzero status if it encounters errors that
+inhibit generation of a binary file.
+.SH Diagnostics
+The
+.PN ic
+compiler issues four types of messages.  The following list describes
+each of the four types:
+.TP 15
+.B warning
+The compiler has detected syntax that may be in error, but does not adversely
+effect the binary file.  
+.TP
+.B error nn
+The compiler has detected an error severe enough to inhibit the generation
+of a correct binary file.
+.TP
+.B fatal error
+The compiler has detected an error that makes it impossible to proceed
+with the compilation.
+This error most often occurs during compilation of the code table.
+.TP
+.B fatal bug
+This occurs when there are internal errors in
+the compiler.  For example, this is generally produced when
+an incompatible source file is given as an
+input to
+.PN ic .
+.SH Files
+.TP 20
+.PN /tmp/icXXXXXX 
+Temporary files
+.TP 20
+.PN /lib/cpp 
+C preprocessor
+.SH See Also
+intro(3int), setlocale (3), environ (5int), lang (5int), nl_langinfo(5int)
+.br
+\fIGuide to Developing International Software\fP

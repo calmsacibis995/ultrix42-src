@@ -1,0 +1,25 @@
+.TH delwin 3cur 
+.SH Name
+delwin \- delete window
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B
+int delwin(win)
+.br
+.B
+WINDOW \(**win;
+.SH Description
+.NXR "delwin subroutine"
+The
+.PN delwin
+routine
+deletes the named window, freeing all memory associated with it.
+Where windows overlap,
+subwindows should be deleted before the
+main window.
+.SH Return Values
+The 
+.PN delwin
+function returns OK on success and ERR on error.

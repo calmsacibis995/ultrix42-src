@@ -1,0 +1,136 @@
+.TH getch 3cur 
+.SH Name
+getch, mvgetch, mvwgetch, wgetch \- read character
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B
+int getch(\|)
+.PP
+.B
+int wgetch(win)
+.br
+.B
+WINDOW \(**win;
+.PP
+.B
+int mvgetch(y, x)
+.br
+.B
+int y, x;
+.PP
+.B
+int mvwgetch(win, y, x)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int y, x;
+.SH Description
+.NXR "getch macro"
+.NXR "mvgetch macro"
+.NXR "mvwgetch macro"
+.NXR "wgetch subroutine"
+The
+.PN getch
+routine
+reads a character from the 
+terminal associated with 
+the default window.
+.PP
+The
+.PN wgetch
+routine
+reads a character from 
+the terminal associated with 
+the specified window.
+.PP
+The routine
+.PN mvgetch
+reads a character from 
+the terminal associated with 
+the default window at the specified 
+position.
+.PP
+The routine
+.PN mvwgetch
+reads a character from 
+the terminal associated with 
+the specified 
+window at the specified 
+position.
+.PP 
+The following information applies to all the routines.
+In
+.PN nodelay
+mode, if there is no input waiting, the integer
+.PN ERR
+is returned.
+In
+.PN delay
+mode, 
+the program waits until the system passes text through to
+the program.
+Usually the program will restart
+after one character or after the first newline,
+but this depends on how 
+.PN cbreak 
+is set.
+The character will be echoed on the designated window unless
+.PN noecho 
+has been set.
+.PP
+If 
+.PN keypad 
+is 
+.PN TRUE, 
+and a function key is pressed, the token for that function
+key is returned instead of the raw characters.
+Possible function keys are defined in the
+.PN <cursesX.h>
+header file with integers beginning with
+0401.
+The function key names begin with
+KEY_.
+Function keys and their respective integer values are described
+in the 
+.I 
+Guide to X/Open Curses Screen-Handling
+.R
+.PP
+If a character is received that could be the beginning of a function key
+(such as escape),
+.PN curses
+sets a timer.
+If the remainder of the sequence does 
+not come within the designated time, 
+the character will be passed through, 
+otherwise the function key value is returned.
+Consequently, there may be a delay after a
+user presses the escape key before the escape is returned to the program.
+.PP
+Using 
+the escape key for a single character function is
+discouraged.
+.PP
+The routines
+.PN getch, 
+.PN mvgetch
+and 
+.PN mvwgetch
+are macros.
+.SH Return Values
+Upon successful completion, the 
+.PN getch ,
+.PN mvgetch ,
+and
+.PN wgetch
+functions return the character read.
+.PP
+If in delay mode and no data is available, ERR is returned.
+.SH See Also
+cbreak(3cur), keypad(3cur), nodelay(3cur), noecho(3cur)
+.br
+.I "Guide to X/Open Curses Screen-Handling"

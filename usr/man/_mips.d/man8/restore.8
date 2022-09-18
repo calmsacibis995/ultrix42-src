@@ -1,0 +1,385 @@
+.\" SCCSID: @(#)restore.8	8.1	9/11/90
+.TH restore 8
+.SH Name
+restore \- incremental file system restore
+.SH Syntax
+.B /etc/restore
+\fIkey\fR [ \fIname\fR... ]
+.SH Description
+.NXB "restore command"
+.NXA "dump command" "restore command"
+.NXB "file system" "restoring incremental dumps"
+The
+.PN restore
+command 
+reads from magnetic tapes, disks, a file, or a pipe
+created by the
+.MS dump 8
+command.  The default dump media from which files are read is
+.PN /dev/rmt0h .  
+You can request another dump device or dump image file by using
+the 
+.B f
+key modifier.
+The
+.I key
+is a character string containing one function letter and possibly one 
+or more function modifiers.  Other arguments to the command are
+file or directory names specifying the files to be restored.
+Unless the
+.B h
+key is specified, the appearance of a directory
+name refers to all files and, recursively, the subdirectories
+of that directory.
+The
+function portion of the key
+is specified by one of the following letters:
+.SH Keys
+.NXB "restore command" "keys"
+.TP 5 
+.B i
+This key allows interactive restoration of files from the dump media.
+After reading in the directory information from the dump media,
+.PN restore
+lets the user move
+around the directory tree selecting or deselecting
+files to be extracted.
+The available interactive commands are: 
+.RS 5
+.TP 12
+\fBls \fR[\fIarg\fR]
+List the specified directory.  If no directory is specified,
+the user's current directory is listed.
+Entries that are directories are appended with a slash (/).
+Entries that have been marked for extraction are prepended with an 
+asterisk (*).
+If the 
+.B verbose 
+key is set,
+the inode number of each entry is also listed.
+.TP
+\fBcd \fIarg\fR
+Change the current working directory to the directory specified.
+.TP
+\fB pwd\fR
+Print the full pathname of the current working directory.
+.TP
+\fBadd\fR [\fIarg\fR] 
+The current directory or the specified argument 
+(a directory or file)
+is added to the extraction list 
+(the list of files to be extracted).  
+If a directory is specified, then it and all its descendents are
+added to the extraction list,
+unless the
+.B h
+key is specified on the command line.
+Files that are on the extraction list are prepended with an
+asterisk (*)
+when they are listed by 
+.BR ls .
+.TP
+\fBdelete\fR [\fIarg\fR]
+The current directory or specified argument
+is deleted from the extraction list (the list of
+files to be extracted).  
+If a directory is specified, then it and all its descendents are
+deleted from the extraction list,
+unless the
+.B h
+key modifier is specified on the command line.
+The easiest way to extract most of the files from a directory 
+is to add the directory to the extraction list and then delete
+those files that are not needed.
+.TP
+\fBextract\fR
+All the files on the extraction list are extracted
+from the dump media.
+The
+.PN restore
+command asks which volume the user wishes to mount.
+.TP
+\fBverbose\fR
+The verbose (
+.B v
+) key is toggled. 
+Entering the command turns on verbose.  Entering the command
+again turns off verbose.
+When used, the verbose key causes the 
+.B ls
+command to list the inode numbers of all entries.
+It also causes
+.PN restore
+to print out information about each file as it is extracted.
+.TP
+\fBhelp\fR
+List a summary of the available commands.
+.TP
+\fBquit\fR
+The
+.PN restore 
+utility immediately exits,
+even if the extraction list is not empty.
+.RE
+.TP 5
+.B R
+The
+.PN restore
+utility prompts for a particular volume of a multivolume
+set on which to restart a full restore. 
+This option lets
+.PN restore
+be interrupted and then restarted.
+.TP 5
+.B r
+The dump media's data is read into the current directory.
+You should use this function key only to restore the complete
+dump media onto a newly created file system, or to restore incremental
+dump media after a full level-0 restore.  See the Examples section for
+a typical sequence to restore complete dump media.
+Note that
+.PN restore
+leaves a file, 
+.PN restoresymtab ,
+in the root directory to pass information between incremental
+restore passes.  Remove this file after the last
+incremental dump media has been restored.
+A 
+.MS dump 8 
+followed by a 
+.MS newfs 8 
+and a 
+.MS restore 8 
+can be used to change the size of a file system.
+.TP 5
+.B t
+The names of the specified files are listed if they occur
+on the dump media.  If no 
+.I name
+argument is given, then the
+root directory is listed.  This results in the entire contents
+of the dump media being listed, unless the
+.B h
+key modifier has been specified.
+.TP 5
+.B x
+The files specified by the
+.I name
+argument are extracted from the dump media.  If a named
+file matches a directory whose contents had been written onto
+the dump media and the
+.B h
+key modifier is not specified, the directory is recursively
+extracted.  The owner, modification time, and mode are
+restored, if possible.
+If no
+.I name
+argument is given, the root directory is extracted.  This
+results in the extraction of the
+entire contents of the dump media unless
+the
+.B h
+key modifier has been specified.
+.PP
+You can use any of the following characters in addition to the 
+letter that selects the function desired: 
+.TP 5
+.B B
+The next argument to
+.PN restore
+is a number giving the size, in 1024-byte blocks, of a
+fixed-size storage medium, such as diskettes or removable
+disks (see the Examples section). 
+The
+.PN restore
+command does not ask whether it should abort the restore
+if there is a dump media read error.  It always tries to
+skip over the bad block(s) and continue.
+.TP 5
+.B f
+The next argument to
+.PN restore
+is used as the name of the archive instead of 
+.PN /dev/rmt0h .
+If the argument is a dash (\fB\-\fR),
+.PN restore
+reads from standard input (see the Examples section).
+.TP 5
+.B h
+The
+.PN restore
+command extracts the actual directory, rather than the files
+that it references.  This prevents hierarchical restoration of
+complete subtrees from the dump media:
+.TP 5
+.B m
+The
+.PN restore
+command extracts by inode numbers rather than by file name.  This
+is useful if only a few files are being extracted, and you want
+to avoid typing the complete pathname to the file.
+.TP 5
+.B s
+The next argument
+identifies
+which dump file on the dump media is to be used by 
+.PN restore .
+This is useful when
+the dump media has more than one dump image on it and  
+not all of them will be restored.
+.TP 5
+.B v
+Normally,
+.PN restore
+does its work silently.
+The
+.B v
+(verbose)
+key modifier causes it to display
+the name of each file it treats,
+preceded by its file type.
+.NXE "restore command" "keys"
+.SH Examples
+.NXR "restore command" "examples"
+The following example shows a typical sequence of
+commands to restore complete dump media.
+.EX
+/etc/newfs /dev/rra0g ra60
+/etc/mount /dev/ra0g /mnt
+cd /mnt
+restore r
+.EE
+Another
+.PN restore
+can be done to get an incremental dump.
+.PP
+The following example shows how
+.MS dump 8
+and
+.MS restore 8
+can be used in a pipeline to dump and restore a file system:
+.EX
+dump 0f - /usr | (cd /mnt; restore xf -)
+.EE
+The following example shows how to restore files interactively
+from a dump on RX50 diskettes:
+.EX
+restore iBf 400 /dev/ra2a
+.EE
+.SH Restrictions
+.NXR "restore command" "restricted"
+The
+.PN restore
+utility
+can make errors when doing incremental restores from
+dump media that were made on active file systems.
+.PP
+You must do a level 0 dump after a full restore.
+Because 
+.PN restore 
+runs in user code,
+it has no control over inode allocation;
+thus, you must do a full 
+.PN restore 
+to get a new set of directories
+that reflects the new inode numbering,
+even though the contents of the files are unchanged.
+.SH Diagnostics
+.NXB "restore command" "diagnostics"
+Complains about bad key characters.
+.PP
+Complains if it gets a dump media read error.
+If 
+the user responds with a y,
+.PN restore
+attempts to continue the restore.
+.PP
+If the dump extends over more than one dump volume,
+.PN restore
+will ask the user to change volumes.
+If the
+.B x
+or
+.B i
+function key has been specified,
+.PN restore
+also asks which volume the user wishes to mount.
+.PP
+There are numerous consistency checks that can be listed by
+.PN restore .
+Most checks are self-explanatory. 
+Some common errors are: 
+.PP
+.B "Converting to new file system format"
+.br
+If dump media created from the Fast File System (FFS)
+has been loaded.
+It is automatically converted to the Berkeley Version 4.2
+file system format.
+.PP
+.B "<\fIfilename\fP>: not found on tape{disk}"
+.br
+The specified file name was listed in the dump media directory,
+but was not found on the media.
+This is caused by dump media read errors while looking for the file
+or from using dump media created on an active file system.
+.B "Expected next file <\fIinumber\fP>, got <\fIinumber\fP>"
+.br
+A file that was not listed in the directory was found on the media.
+This can occur when using dump media created on an active file system.
+.PP
+.B "Incremental tape{disk} too low"
+.br
+When doing incremental restore,
+dump media was loaded that was written 
+before the previous incremental media
+or has too low an incremental level.  
+.PP 
+.B "Incremental tape{disk} too high" 
+.br
+When doing incremental restore,
+dump media that does not begin its 
+coverage where the previous incremental 
+dump media left off,
+or that has too high an incremental level has been loaded.
+.PP 
+.B "Tape{Disk} read error while restoring <\fIfilename\fP>"
+.br
+.B "Dump media read error while skipping over inode <\fIinumber\fP>"
+.br
+.B "Dump media read error while trying to resynchronize"
+.br
+A dump media read error has occurred.
+If a file name is specified,
+then its contents are probably partially wrong.
+If an inode is being skipped or the restore is trying to resynchronize,
+then no extracted files have been corrupted,
+although files may not be found on the dump media.
+.PP 
+.B "resync restore, skipped <num> blocks"
+.br
+After a dump media read error, 
+.PN restore
+may have to resynchronize itself.
+This message lists the number of blocks that were skipped. 
+.NXE "restore command" "diagnostics"
+.SH Files
+.TP 15
+.PN /dev/rmt0h
+Default tape drive
+.TP
+.PN /tmp/rstdir
+File containing directories on the dump media
+.TP
+.PN /tmp/rstmode*
+Owner, mode, and time stamps for directories
+.TP
+.PN /restoresymtab
+Information passed between incremental restores
+.TP
+.PN /dev/tty
+Required for user interface
+.SH See Also
+dump(8), mkfs(8), mount(8), rrestore(8c)
+.NXE "file system" "restoring incremental dumps"
+.NXE "restore command"

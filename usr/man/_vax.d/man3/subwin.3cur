@@ -1,0 +1,49 @@
+.TH subwin 3cur 
+.SH Name
+subwin \- create subwindow
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+WINDOW \(**subwin(orig, nlines, ncols, begin_y, begin_x)
+.br
+.B
+WINDOW \(**orig;
+.br
+.B
+int nlines, ncols, begin_y, begin_x;
+.SH Description
+.NXR "subwin subroutine"
+This routine creates a new sub-window within a window.
+The dimensions of the sub-window are 
+.PN nlines
+lines 
+and 
+.PN ncols
+columns. 
+The sub-window is at position (\c
+.PN begin_y, 
+.PN begin_x) 
+on the screen.
+This position is relative to the screen, and not to the window 
+.PN orig .
+.PP
+The sub-window is made in the middle of the window 
+.PN orig ,
+so that changes made to either window will affect both.
+When using this routine,
+it will often be necessary 
+to call
+.PN touchwin 
+before calling 
+.PN wrefresh .
+.SH Return Values
+On success the
+.PN subwin
+function returns a pointer to the new WINDOW structure created.  On failure
+the function returns a null pointer.
+.SH See Also
+touchwin(3cur), wrefresh(3cur)

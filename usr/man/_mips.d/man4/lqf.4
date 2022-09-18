@@ -1,0 +1,90 @@
+.\" march 88 lqf print filter manpage (Dave Gray)
+.TH lqf 4
+.SH Name
+lqf \- general purpose letter quality filter
+.SH Syntax
+/usr/lib/lpdfilters/lqf [\fB\-c\fP] [\fB\-n\fP\fIlogin\fP] [\fB\-h\fP\fIhost\fP] [\fB\-w\fP\fIwidth\fP] [\fB\-l\fP\fInum\fP] [\fB\-i\fP\fIindent\fP]  [\fBaccounting file\fP]
+.SH Description
+The 
+.PN lqf
+filter is used to filter text data destined for a letter quality printer,
+specifically the lqp02, but will work with any impact printer: LP25, LP26, LP27,
+LA50, LA75, LA100, LA120, LA210, and LG01. The filter allows escape
+characters and control sequences to pass through to the printer.
+The filter handles the device dependencies of 
+the printers and performs accounting functions. 
+Accounting records are written to the file specified by the 
+\fBaf\fP field in 
+.PN /etc/printcap
+at the time of completion for each job.
+.PP
+The filter can handle plain ASCII files and files that have been preprocessed
+by 
+.PN nroff .
+However, it ignores escape sequences requesting superscripting and subscripting.
+.PP
+The 
+.PN lqf
+filter can be the specified filter in both the \fBof\fP
+and the \fBif\fP fields in the
+.PN /etc/printcap
+file.  For further information, see printcap 5 .
+When both fields are specified, the \fBof\fP filter is used only
+to print the banner page.  It is then stopped to allow the 
+\fBif\fP filter access to the printer. The
+\fBif\fP filter maintains accounting information.
+.PP
+If the \fBof\fP field is the only one specified, the filter is used to print the
+banner page.  It is then stopped and restarted. 
+This allows the \fBof\fP filter to be
+used to maintain accounting information.
+.PP
+If the \fBif\fP field is the only one specified, the banner
+page will be sent directly to
+the printer. This is not a problem for most impact printers.
+For a more detailed discussion on filters see the
+``Line Printer Spooler Manual'' in 
+The Supplementary Documents.
+.SH Options
+The arguments passed to the filter depend on its use.
+The \fBof\fP filter is called with the
+following arguments:
+.IP "lqf \fB\-w\fP\fIwidth\fP \fB\-l\fP\fIlength\fP"
+The \fIwidth\fP and \fIlength\fP values come from the \fBpw\fP and \fBpl\fP 
+fields in the 
+.PN /etc/printcap
+database. The \fBif\fP (or restarted \fBof\fP) filter is passed
+the following arguments:
+.IP "lqf \fB\-c\fP \fB\-n\fP\fIlogin\fP \fB\-h\fP\fIhost\fP \fB\-w\fP\fIwidth\fP \fB\-l\fP\fInum\fP \fB\-i\fP\fIindent\fP  \fBaccounting file\fP"
+.PP
+The \fB\-c\fP flag is optional, and supplied only when control
+characters are to be printed, that is, when
+the \fB\-l\fP option of lpr(1) is used to print the file.
+The \fB\-w\fP and \fB\-l\fP arguments are 
+the same as for the \fBof\fP filter. However, they may have different values
+if the \fB\-w\fP or \fB\-z\fP options of
+.MS pr 1
+were used to print the file.  The \fB\-n\fP and \fB\-h\fP arguments 
+specify the login name and host name of the job owner.
+These arguments are used to record
+accounting information. The \fB\-i\fP option specifies 
+the amount of indentation to be used. The last argument is the
+name of the accounting file 
+specified from the \fBaf\fP field in the 
+.PN /etc/printcap
+database.
+.SH Diagnostics
+The \fBlf\fP field (default "/dev/null") in the 
+.PN /etc/printcap
+database specifies error 
+logging file name.
+.SH Files
+.TP 20
+.PN /etc/printcap
+Printer Capabilities Database
+.TP
+.PN /dev/lp?
+.SH See Also
+lpr(1), pr(1), printcap(5), lpd(8), MAKEDEV(8), pac(8)
+.br
+.I "Line Printer Spooler Manual"

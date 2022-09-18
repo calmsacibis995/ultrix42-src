@@ -1,0 +1,23 @@
+.\" SCCSID: @(#)errlog.4	8.1	9/11/90
+.TH errlog 4
+.SH Name
+errlog \- error logging interface
+.SH Description
+.NXR "errlog interface"
+.NXR "error logging" "interface"
+This is a special character device that provides an interface to the
+error logging daemon process, 
+.PN /etc/elcsd .
+This device is also accessed by
+other system utilities, such as the error
+log administration utility, 
+.PN /etc/eli .
+.SH Restrictions
+This device should be readable and writable by root only,
+to protect access by nonsystem processes.
+The major number assigned to this device must correlate with
+the corresponding major number designation in the system kernel.
+.SH Files
+.PN /dev/errlog
+.SH See Also
+MAKEDEV(8)

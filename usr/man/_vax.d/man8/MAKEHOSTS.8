@@ -1,0 +1,49 @@
+.\" SCCSID: @(#)MAKEDEV.8	2.1	3/10/87
+.TH MAKEHOSTS 8
+.UC 4
+.SH Name
+MAKEHOSTS \- make symbolic links to hosts
+.SH Syntax
+.B /usr/hosts/MAKEHOSTS
+.SH Description
+The 
+.PN MAKEHOSTS
+command creates symbolic links to the
+.PN rsh
+command for each of the hosts as defined in the
+.PN /etc/svc.conf
+file.
+If the
+.PN /etc/svc.conf
+file does not exist,
+then the
+.PN MAKEHOSTS
+command creates the links for each of the hosts listed in the local
+.PN /etc/hosts
+file.
+The resulting symbolic links populate the
+.PN /usr/hosts
+directory.
+.PP
+The symbolic links are a convenience that allows users
+to type the name of a remote host on the network to log into that
+host.
+For example, the following command logs you into a remote host
+called
+.PN chicago :
+.EX
+# \f(CBchicago\f(CW
+.EE
+If you do not create the symbolic links,
+you must use the
+.PN rlogin
+command to log into a remote host.
+For example,
+to log into a remote host named
+.PN chicago ,
+type:
+.EX
+# \f(CBrlogin chicago\f(CW
+.EE
+.SH See Also
+rlogin(1c), rsh(1c), hosts(5), svc.conf(5)

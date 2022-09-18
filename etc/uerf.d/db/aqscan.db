@@ -1,0 +1,6345 @@
+# @(#)aqscan.db	4.2   (ULTRIX)   12/20/90
+
+sseg
+id cds
+name aqscan_cpu_cds
+label 'CPU SCAN'
+elements
+	aqscan_recovery_sts_cpu
+	aqscan_ele_number aqscan_mchkid
+	aqscan_rev_reg0 aqscan_rev_reg1
+	aqscan_cdc_reg0 aqscan_cdc_reg1
+	aqscan_sync_reg0 aqscan_sync_reg1 aqscan_sync_reg2
+
+sseg
+id cds
+name aqscan_scu_cds
+label 'SCU SCAN'
+elements
+	aqscan_recovery_sts_scu
+	aqscan_ele_number aqscan_mchkid
+	aqscan_cpu0_scan_num aqscan_cpu1_scan_num
+	aqscan_cpu2_scan_num aqscan_cpu3_scan_num
+	aqscan_mcu_reg aqscan_cdc_reg
+	aqscan_sync_reg0 aqscan_sync_reg1
+	aqscan_scu_err_sum aqscan_cpu_cnf aqscan_scu_cnfg
+	aqscan_tag_cnfg0 aqscan_tag_cnfg1
+	aqscan_j_reg0 aqscan_j_reg1 aqscan_j_reg2
+	aqscan_j_reg3 aqscan_j_reg4 aqscan_j_reg5
+	aqscan_j_reg6 aqscan_j_reg7 aqscan_j_reg8
+	aqscan_j_reg9 aqscan_j_rega aqscan_j_regb
+	aqscan_icu0_reg0 aqscan_icu0_reg1 aqscan_icu0_reg2
+	aqscan_icu1_reg0 aqscan_icu1_reg1 aqscan_icu1_reg2
+	aqscan_acu0_reg0 aqscan_acu0_reg1
+	aqscan_acu1_reg0 aqscan_acu1_reg1
+	aqscan_ser80 aqscan_ser81 aqscan_ser82 aqscan_ser83
+	aqscan_ser84 aqscan_ser85 aqscan_ser86 aqscan_ser87
+	aqscan_ser88 aqscan_ser89 aqscan_ser8a
+
+sseg
+id ads
+name aqscan_ebox_ads
+label 'CPU SCAN EBOX'
+elements
+	aqscan_e_errsum_reg
+	aqscan_e_ctl_reg1 aqscan_e_ctl_reg2
+	aqscan_e_distr_reg aqscan_e_retire aqscan_e_func_1 aqscan_e_func_2
+	aqscan_e_errdat_reg1 aqscan_e_errdat_reg2
+	aqscan_e_sts_reg1 aqscan_e_sts_reg2
+
+sseg
+id ads
+name aqscan_ibox_ads
+label 'CPU SCAN IBOX'
+elements
+	aqscan_i_fetch_err1 aqscan_i_fetch_err2
+	aqscan_i_decode_err1 aqscan_i_xbr_decode
+	aqscan_i_spec_err1 aqscan_i_spec_err2
+	aqscan_i_fetch_dat1 aqscan_i_fetch_dat2 aqscan_i_fetch_dat3
+	aqscan_i_fetch_dat4 aqscan_i_fetch_dat5 aqscan_i_fetch_dat6
+	aqscan_i_fetch_dat7 aqscan_i_fetch_dat8 aqscan_i_fetch_dat9
+	aqscan_i_decode_data1 aqscan_i_decode_data2
+	aqscan_i_decode_data3 aqscan_i_decode_data4
+	aqscan_i_xdata1 aqscan_i_xdata2 aqscan_i_xdata3 aqscan_i_xdata4
+	aqscan_i_spec_data0 aqscan_i_spec_data1 aqscan_i_spec_data2
+	aqscan_i_spec_data3 aqscan_i_spec_data4 aqscan_i_spec_data5
+	aqscan_i_spec_data6 aqscan_i_spec_data7 aqscan_i_spec_data8
+	aqscan_i_spec_data9 aqscan_i_spec_data10 aqscan_i_spec_data11
+	aqscan_i_spec_data12 aqscan_i_spec_data13 aqscan_i_spec_data14
+	aqscan_i_spec_data15
+	aqscan_i_fetch_sts1 aqscan_i_fetch_sts2 aqscan_i_fetch_sts3
+
+sseg
+id ads
+name aqscan_mbox_ads
+label 'CPU SCAN MBOX'
+elements
+    aqscan_m_err_sum aqscan_m_tb_error
+    aqscan_m_cache_error0 aqscan_m_cache_error1 aqscan_m_cache_error2
+    aqscan_m_err_data aqscan_m_status
+
+sseg
+id ads
+name aqscan_vbox_ads
+label 'CPU SCAN VBOX'
+elements
+	aqscan_v_errsum
+	aqscan_v_err0 aqscan_v_err1 aqscan_v_err2 aqscan_v_err3
+	aqscan_v_vcta_sts aqscan_v_vctb_sts aqscan_v_vctc_sts
+
+sitem
+name aqscan_recovery_sts_cpu
+size 1
+class composite
+type register
+display nil
+label "RECOVERY_STS"
+map
+	field
+size 1
+class coded
+map
+	1 "CPU"
+	field
+size 2
+class integer
+display decimal
+label "CPU NUMBER WITH ERROR:"
+	field
+size 1
+class coded
+map
+	1 "RECOVERY STATUS"
+	field
+size 1
+class coded
+map
+	1 "MACROSTEP STATUS"
+	field
+size 1
+class coded
+map
+	1 "MACHINE CHECK GENERATED"
+	field
+size 1
+class coded
+map
+	1 "INTERLOCK CLEARED"
+	field
+size 1
+class coded
+map
+	1 "MMU0 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "MMU1 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "ICU0 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "ICU1 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "CPU0 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "CPU1 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "CPU2 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "CPU3 ENABLED"
+	field
+size 8
+class integer
+display decimal
+label "RECOVERY TIME:"
+	field
+size 2
+class filler
+	field
+size 4
+class filler
+	field
+size 1
+class coded
+map
+	1 "KEEPALIVE FAILURE"
+	field
+size 1
+class coded
+map
+	1 "ERROR INSERTION IN PROGRESS"
+	field
+size 1
+class coded
+map
+	1 "CLOCK STOPPED"
+
+
+sitem
+name aqscan_recovery_sts_scu
+size 1
+class composite
+type register
+display nil
+label "RECOVERY_STS"
+map
+	field
+size 1
+class coded
+map
+	1 "SCU"
+	field
+size 2
+class integer
+display decimal
+label "CPU NUMBER WITH ERROR:"
+	field
+size 1
+class coded
+map
+	1 "RECOVERY STATUS"
+	field
+size 1
+class coded
+map
+	1 "MACROSTEP STATUS"
+	field
+size 1
+class coded
+map
+	1 "MACHINE CHECK GENERATED"
+	field
+size 1
+class coded
+map
+	1 "INTERLOCK CLEARED"
+	field
+size 1
+class coded
+map
+	1 "MMU0 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "MMU1 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "ICU0 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "ICU1 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "CPU0 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "CPU1 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "CPU2 ENABLED"
+	field
+size 1
+class coded
+map
+	1 "CPU3 ENABLED"
+	field
+size 8
+class integer
+display decimal
+label "RECOVERY TIME:"
+	field
+size 2
+class filler
+	field
+size 4
+class integer
+display hex
+label "CPUELE VALID:"
+	field
+size 1
+class coded
+map
+	1 "KEEPALIVE FAILURE"
+	field
+size 1
+class coded
+map
+	1 "ERROR INSERTION IN PROGRESS"
+	field
+size 1
+class coded
+map
+	1 "CLOCK STOPPED"
+
+sitem
+name aqscan_ele_number
+size 1
+class integer
+type long
+display decimal
+label 'ELE NUMBER'
+
+sitem
+name aqscan_mchkid
+size 1
+class integer
+type long
+display decimal
+label 'MCHK ID'
+
+
+sitem
+name aqscan_rev_reg0
+size 1
+class composite
+type register
+display nil
+label "REV_REG0"
+map
+	field
+size 4
+class integer
+display hex
+label "FAD:"
+	field
+size 4
+class integer
+display hex
+label "MUL:"
+	field
+size 4
+class integer
+display hex
+label "CTU:"
+	field
+size 4
+class integer
+display hex
+label "DTA:"
+	field
+size 4
+class integer
+display hex
+label "VAP:"
+	field
+size 4
+class integer
+display hex
+label "OPU:"
+	field
+size 4
+class integer
+display hex
+label "XBR:"
+	field
+size 4
+class integer
+display hex
+label "VIC:"
+
+sitem
+name aqscan_rev_reg1
+size 1
+class composite
+type register
+display nil
+label "REV_REG1"
+map
+	field
+size 4
+class integer
+display hex
+label "INT:"
+	field
+size 4
+class integer
+display hex
+label "DST:"
+	field
+size 4
+class integer
+display hex
+label "DTB:"
+	field
+size 4
+class integer
+display hex
+label "CTL:"
+	field
+size 4
+class integer
+display hex
+label "UCS:"
+	field
+size 4
+class integer
+display hex
+label "VML:"
+	field
+size 4
+class integer
+display hex
+label "VRG:"
+	field
+size 4
+class integer
+display hex
+label "VAD:"
+
+sitem
+name aqscan_cdc_reg0
+size 1
+class composite
+type register
+display nil
+label "CDC_REG0"
+map
+	field
+size 1
+class coded
+map
+	1 "FAD.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "FAD.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "FAD.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "FAD.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "MUL.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "MUL.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "MUL.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "MUL.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "CTU.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "CTU.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "CTU.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "CTU.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "DTA.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "DTA.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "DTA.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "DTA.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "VAP.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "VAP.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "VAP.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "VAP.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "OPU.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "OPU.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "OPU.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "OPU.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "XBR.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "XBR.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "XBR.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "XBR.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "VIC.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "VIC.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "VIC.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "VIC.CDxx.LEXCPT"
+
+sitem
+name aqscan_cdc_reg1
+size 1
+class composite
+type register
+display nil
+label "CDC_REG1"
+map
+	field
+size 1
+class coded
+map
+	1 "INT.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "INT.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "INT.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "INT.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "DST.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "DST.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "DST.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "DST.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "DTB.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "DTB.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "DTB.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "DTB.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "CTL.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "CTL.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "CTL.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "CTL.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "UCS.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "UCS.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "UCS.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "UCS.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "VML.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "VML.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "VML.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "VML.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "VRG.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "VRG.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "VRG.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "VRG.CDxx.LEXCPT"
+	field
+size 1
+class coded
+map
+	1 "VAD.CDxx.CLKFAIL"
+	field
+size 1
+class coded
+map
+	1 "VAD.CDxx.HOTCIR"
+	field
+size 1
+class coded
+map
+	1 "VAD.CDxx.HEXCPT"
+	field
+size 1
+class coded
+map
+	1 "VAD.CDxx.LEXCPT"
+
+sitem
+name aqscan_sync_reg0
+size 1
+class composite
+type register
+display nil
+label "SYNC_REG0"
+map
+	field
+size 1
+class coded
+map
+	1 "VAP.VAPO.E1916"
+	field
+size 1
+class coded
+map
+	1 "VAP.FALT.E1916"
+	field
+size 1
+class coded
+map
+	1 "VAP.FXUP.E1916"
+	field
+size 1
+class coded
+map
+	1 "VAP.WRTQ.E1916"
+	field
+size 1
+class coded
+map
+	1 "VAP.CCSQ.E1916"
+	field
+size 1
+class coded
+map
+	1 "CTU.CTMA.E1916"
+	field
+size 1
+class coded
+map
+	1 "CTU.CTMV.E1916"
+	field
+size 1
+class coded
+map
+	1 "CTU.WBES.E1916"
+	field
+size 1
+class coded
+map
+	1 "CTU.WBEM.E1916"
+	field
+size 1
+class coded
+map
+	1 "DTA.PAD1.E1916"
+	field
+size 1
+class coded
+map
+	1 "DTA.DTM2.E1916"
+	field
+size 1
+class coded
+map
+	1 "DTA.DTM3.E1916"
+	field
+size 1
+class coded
+map
+	1 "DTB.PAD0.E1916"
+	field
+size 1
+class coded
+map
+	1 "DTB.DTM0.E1916"
+	field
+size 1
+class coded
+map
+	1 "DTB.DTM1.E1916"
+	field
+size 1
+class coded
+map
+	1 "OPU.OCTL.E1916"
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.E1916"
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUB.E1916"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQA.E1916"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.E1916"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.E1916"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.E1916"
+	field
+size 1
+class coded
+map
+	1 "XBR.IBFA.E1916"
+	field
+size 1
+class coded
+map
+	1 "XBR.IBFB.E1916"
+	field
+size 1
+class coded
+map
+	1 "XBR.XDTA.E1916"
+	field
+size 1
+class coded
+map
+	1 "XBR.XDTB.E1916"
+	field
+size 1
+class coded
+map
+	1 "XBR.XSCA.E1916"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.E1916"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.E1916"
+
+sitem
+name aqscan_sync_reg1
+size 1
+class composite
+type register
+display nil
+label "SYNC_REG1"
+map
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSA.E1916"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSB.E1916"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSC.E1916"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSD.E1916"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSE.E1916"
+	field
+size 1
+class coded
+map
+	1 "CTL.QPCS.E1916"
+	field
+size 1
+class coded
+map
+	1 "CTL.QPTR.E1916"
+	field
+size 1
+class coded
+map
+	1 "DST.DST0.E1916"
+	field
+size 1
+class coded
+map
+	1 "DST.DST1.E1916"
+	field
+size 1
+class coded
+map
+	1 "DST.DST2.E1916"
+	field
+size 1
+class coded
+map
+	1 "DST.DST3.E1916"
+	field
+size 1
+class coded
+map
+	1 "DST.SRCS.E1916"
+	field
+size 1
+class coded
+map
+	1 "INT.USQA.E1916"
+	field
+size 1
+class coded
+map
+	1 "INT.USQB.E1916"
+	field
+size 1
+class coded
+map
+	1 "INT.USQC.E1916"
+	field
+size 1
+class coded
+map
+	1 "INT.RLOG.E1916"
+	field
+size 1
+class coded
+map
+	1 "INT.IALU.E1916"
+	field
+size 1
+class coded
+map
+	1 "INT.ISHF.E1916"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTA.E1916"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTB.E1916"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.E1916"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.E1916"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL1.E1916"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL2.E1916"
+	field
+size 1
+class coded
+map
+	1 "MUL.MACC.E1916"
+	field
+size 1
+class coded
+map
+	1 "MUL.MPCK.E1916"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET0.E1916"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET1.E1916"
+
+sitem
+name aqscan_sync_reg2
+size 1
+class composite
+type register
+display nil
+label "SYNC_REG2"
+map
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRA.E1916"
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRB.E1916"
+	field
+size 1
+class coded
+map
+	1 "FAD.FADR.E1916"
+	field
+size 1
+class coded
+map
+	1 "FAD.FPCK.E1916"
+	field
+size 1
+class coded
+map
+	1 "FAD.DUNP.E1916"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "FAD.DPCK.E1916"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG0.E1916"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG1.E1916"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG2.E1916"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG3.E1916"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG4.E1916"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG5.E1916"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG6.E1916"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG7.E1916"
+	field
+size 1
+class coded
+map
+	1 "VML.VMLA.E1916"
+	field
+size 1
+class coded
+map
+	1 "VML.VMLB.E1916"
+	field
+size 1
+class coded
+map
+	1 "VML.DIV1.E1916"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.E1916"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL3.E1916"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL4.E1916"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL5.E1916"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL6.E1916"
+	field
+size 1
+class coded
+map
+	1 "VAD.VFSA.E1916"
+	field
+size 1
+class coded
+map
+	1 "VAD.VFSB.E1916"
+	field
+size 1
+class coded
+map
+	1 "VAD.VMKA.E1916"
+	field
+size 1
+class coded
+map
+	1 "VAD.VMKB.E1916"
+	field
+size 1
+class coded
+map
+	1 "VAD.VFAD.E1916"
+	field
+size 1
+class coded
+map
+	1 "VAD.VPCK.E1916"
+	field
+size 1
+class filler
+
+
+sitem
+name aqscan_e_errsum_reg
+size 1
+class composite
+type register
+display nil
+label "ERRSUM_REG"
+map
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSE.EBOX_HW_ERROR"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSE.XSTALL_OVER_00_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQC.HARDWARE_FAULT_DLY_H"
+	field
+size 1
+class coded
+map
+	1 "INT.RLOG.L100.OSQA_RLOG_PARITY_FAULT_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET0.RETIRE_FAULT_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET0.RETIRE_INTERRUPT_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET1.RETIRE_FAULT_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET1.RETIRE_INTERRUPT_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FPCK.FPCK_HARDWARE_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.DPCK.DPCK_HARDWARE_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.MPCK.M2_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.MPCK.M1_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.MPCK.M0_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.MPCK.TAKE_ACCUM_HW_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.MPCK.HELD_MPCK_HARDWARE_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSE.ZIBOX_SYNC_ERROR_00_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSE.ZMBOX_SYNC_ERROR_00_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSE.LIKE_MBOX_ASYNC_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSE.LIKE_MBOX_SYNC_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSE.ZVBOX_SYNC_ERROR_00_H"
+
+sitem
+name aqscan_e_ctl_reg1
+size 1
+class composite
+type register
+display nil
+label "CTL_REG1"
+map
+	field
+size 1
+class coded
+map
+	1 "INT.USQA.HELD_USQB_USQA_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQA.HELD_USQC_USQA_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQA.HELD.IALU_USQA_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQA.HELD_DST0_USQA_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQA.HELD_NO_STOP_BIT_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQA.HELD_INTERRUPT_CODE_PARITY_ERROR_H"
+	field
+size 2
+class filler
+	field
+size 1
+class coded
+map
+	1 "INT.USQB.HELD_USQA_USQB_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQB.HELD_USQC_USQB_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQB.HELD_IALU_USQB_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQB.WRITE_SELECT_PARITY_ERROR_H"
+	field
+size 4
+class filler
+	field
+size 1
+class coded
+map
+	1 "INT.USQC.HELD_USQA_USQC_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQC.HELD_USQB_USQC_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQC.HELD_IALU_USQC_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQC.HELD_DPCK_USQC_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQC.HELD_ISSE_USQC_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQC.WRITE_SELECT_PARITY_ERROR_H"
+	field
+size 2
+class filler
+	field
+size 1
+class coded
+map
+	1 "INT.RLOG.L100.USQB_RLOG_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.RLOG.L100.USQC_RLOG_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.RLOG.L100.QPC_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.RLOG.L100.IBOX_RLOG_PARITY_ERROR_H"
+
+sitem
+name aqscan_e_ctl_reg2
+size 1
+class composite
+type register
+display nil
+label "CTL_REG2"
+map
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSA.TA_ISSA_HW_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSB.TA_ISSB_HW_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSC.TA_ISSC_HW_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSD.TA_ISSD_HW_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSE.TA_SRCS_HW_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSE.L1907.QA"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSE.LAT_UWORD_ERROR_H"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "DST.SRCS.ALU_RESULT_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.SRCS.RLOG_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.SRCS.QPTR_SRCS_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.SRCS.WRITE_SELECT_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.SRCS.IBOX_PTR_PARITY_ERROR_H"
+	field
+size 3
+class filler
+	field
+size 1
+class coded
+map
+	1 "CTL.QPCS.BYTE0_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.QPCS.BYTE1_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.QPCS.BYTE2_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.QPCS.BYTE3_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.QPCS.EBOX_CSSE_MATCH_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.QPTR.POINTER_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.QPTR.QPTR_INTERRUPT_H"
+
+sitem
+name aqscan_e_distr_reg
+size 1
+class composite
+type register
+display nil
+label "DISTR_REG"
+map
+	field
+size 1
+class coded
+map
+	1 "DST.DST0.TA_SHIFT_RES_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST0.TA_ALU_RES_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST0.STREG_D1_PAR_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST0.STREG_D2_PAR_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST0.STRAM_PAR_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST0.TA_MBOX_DATA_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST0.TA_WRITE_DATA_ERR_H"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "DST.DST1.TA_SHIFT_RES_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST1.TA_ALU_RES_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST1.STREG_D1_PAR_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST1.STREG_D2_PAR_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST1.STRAM_PAR_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST1.TA_MBOX_DATA_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST1.TA_WRITE_DATA_ERR_H"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "DST.DST2.TA_SHIFT_RES_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST2.TA_ALU_RES_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST2.STREG_D1_PAR_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST2.STREG_D2_PAR_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST2.STRAM_PAR_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST2.TA_MBOX_DATA_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST2.TA_WRITE_DATA_ERR_H"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "DST.DST3.TA_SHIFT_RES_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST3.TA_ALU_RES_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST3.STREG_D1_PAR_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST3.STREG_D2_PAR_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST3.STRAM_PAR_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST3.TA_MBOX_DATA_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "DST.DST3.TA_WRITE_DATA_ERR_H"
+
+sitem
+name aqscan_e_retire
+size 1
+class composite
+type register
+display nil
+label "RETIRE"
+map
+	field
+size 1
+class coded
+map
+	1 "MUL.RET0.DIV_RESULT_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET0.FLOAT_RESULT_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET0.SHIFT_RESULT_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET0.ALU_RESULT_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET0.MPCK_RET_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET0.MUL_INT_RESULT_PARITY_EWRROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET0.MUL_INT_HIGH_RES_PE_H"
+	field
+size 2
+class integer
+display hex
+label "MUL.RET0.VBOX_DATA_PARITY_ERROR_H"
+	field
+size 7
+class filler
+	field
+size 1
+class coded
+map
+	1 "MUL.RET1.DIV_RESULT_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET1.FLOAT_RESULT_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET1.SHIFT_RESULT_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET1.ALU_RESULT_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET1.MPCK_RET_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET1.MUL_INT_RESULT_PARITY_EWRROR_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET1.MUL_INT_HIGH_RES_PE_H"
+	field
+size 2
+class integer
+display hex
+label "MUL.RET1.VBOX_DATA_PARITY_ERROR_H"
+
+sitem
+name aqscan_e_func_1
+size 1
+class composite
+type register
+display nil
+label "FUNC_1"
+map
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L025_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L336_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L334_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L028_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L025_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L336_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L334_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L028_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L025_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L336_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L334_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L028_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L026_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L026_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MUL0.UNPACK_L026_QB"
+	field
+size 1
+class coded
+map
+	1 "MUL.MACC.HELD_MUL0_MACC_PE_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.MACC.HELD_MUL1_MACC_PE_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.MACC.HELD_MUL2_MACC_PE_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.MPCK.M2_PRODUCT_PE_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.MPCK.MUL2_MPCK_PE_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.MPCK.MACC_MPCK_PE_H"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "INT.ISHF.TA_ALU_RES_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.ISHF.TA_HIR_HW_ERR_H"
+	field
+size 4
+class integer
+display hex
+label "INT.ISHF.TA_SRC_HW_ERR_H<3:0> ="
+	field
+size 4
+class integer
+display hex
+label "INT.IALU.TA_SRC_HW_ERR_H<3:0> ="
+
+sitem
+name aqscan_e_func_2
+size 1
+class composite
+type register
+display nil
+label "FUNC_2"
+map
+	field
+size 1
+class coded
+map
+	1 "FAD.DUNP.DST0_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.DUNP.DST1_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.DUNP.DST2_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.DUNP.DST3_ERROR_H"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "FAD.DPCK.DPCK_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.DPCK.DIVX_DPCK_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRA.SRC1_SRC2_BYTE0_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRA.SRC1_SRC2_BYTE1_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRA.SRC1_BYTE2_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRA.SRC1_BYTE3_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRB.SRC2_SRC1_BYTE0_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRB.SRC2_SRC1_BYTE1_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRB.SRC2_BYTE2_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRB.SRC2_BYTE3_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRA.FLOAT_FSRA_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRA.MUL_FSRA_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRB.FLOAT_FSRB_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FSRB.MUL_FSRB_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FADR.FSRA_FADR_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FADR.FSRB_FADR_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FPCK.FSRA_FPCK_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FPCK.FSRB_FPCK_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "FAD.FPCK.FADR_FPCK_ERROR_H"
+
+sitem
+name aqscan_e_errdat_reg1
+size 1
+class composite
+type register
+display nil
+label "ERRDAT_REG1"
+map
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSC.XSAV_VULNERABLE_00_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSC.XSAV_ARITH_TRAP_00_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQB.RETIRE_TO_HIR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQC.RETIRE_TO_HIR_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQC.USED_UHIT_CCS_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQC.ICCS_V_DLY_H"
+	field
+size 2
+class filler
+	field
+size 4
+class integer
+display hex
+label "INT.USQC.CONSOLE_UTRAP_UPC<3:0> ="
+	field
+size 4
+class filler
+	field
+size 4
+class integer
+display hex
+label "INT.USQA.PARITY_UPC_H<3:0> ="
+	field
+size 7
+class integer
+display hex
+label "INT.USQB.PARITY_UPC_H<10:4> ="
+	field
+size 1
+class coded
+map
+	1 "INT.USQC.PARITY_UPC_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.QPCS.A_ENABLE_MATCH_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.QPCS.A_MATCHED_PA_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.QPCS.A_MATCHED_UPC_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.QPCS.A_MATCHED_MACRO_H"
+
+sitem
+name aqscan_e_errdat_reg2
+size 1
+class composite
+type register
+display nil
+label "ERRDAT_REG2"
+map
+	field
+size 23
+class integer
+display hex
+label "CTL.ISSE.SYN_EBOX_CTL_ST_H<22:0> ="
+	field
+size 1
+class filler
+	field
+size 3
+class integer
+display hex
+label "CTL.QPCS.A_REMOVE_PTR_H<2:0> ="
+	field
+size 1
+class filler
+	field
+size 3
+class integer
+display hex
+label "CTL.QPCS.A_LOAD_PC_H<2:0> ="
+
+sitem
+name aqscan_e_sts_reg1
+size 1
+class composite
+type register
+display nil
+label "STS_REG1"
+map
+	field
+size 4
+class integer
+display hex
+label "INT.USQC.CONDITION_CODES_H<3:0> ="
+	field
+size 4
+class integer
+display hex
+label "INT.USQC.PSL_DLY_H<7:4> ="
+	field
+size 8
+class filler
+	field
+size 5
+class integer
+display hex
+label "INT.USQB.INT_PSL_IPL_H<4:0> ="
+	field
+size 1
+class filler
+	field
+size 2
+class integer
+display hex
+label "INT.USQB.PM<1:0> ="
+	field
+size 2
+class integer
+display hex
+label "INT.USQB.PSL_CUR_MODE_H<1:0> ="
+	field
+size 1
+class coded
+map
+	1 "INT.USQB.INT_PSL_IS_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQB.PSL_FPD_H"
+	field
+size 1
+class filler
+	field
+size 3
+class integer
+display hex
+label "INT.USQB.SACN_PSL_H<31:29> ="
+
+sitem
+name aqscan_e_sts_reg2
+size 1
+class composite
+type register
+display nil
+label "STS_REG2"
+map
+	field
+size 1
+class coded
+map
+	1 "INT.USQC.CONSOLE_HALT_PENDING_H"
+	field
+size 3
+class integer
+display hex
+label "INT.USQC.CONS_HALT_DLY_H<3:1> ="
+	field
+size 4
+class filler
+	field
+size 1
+class coded
+map
+	1 "MUL.RET0.VBOX_DISABLED_H"
+	field
+size 1
+class coded
+map
+	1 "MUL.RET1.VBOX_DISABLED_H"
+	field
+size 1
+class coded
+map
+	1 "CTL.ISSC.NO_VBOX_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQA.NO_VBOX_H"
+	field
+size 1
+class coded
+map
+	1 "INT.USQA.INT_VBOX_IDLE_H"
+	field
+size 4
+class integer
+display hex
+label "CTL.QPCS.A_SIZE_PCQ_H<3:0> ="
+
+sitem
+name aqscan_i_fetch_err1
+size 1
+class composite
+type register
+display nil
+label "FETCH ERR REG1"
+map
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.PCBP_DECODE_PC_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.PCBP_PREFETCH_PC_ERROR_H"
+	field
+size 2
+class integer
+display hex
+label "VIC.PCBP.PCBP_PRED_TAG_ERR_H<3:2> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.PCBP_INSTR_LENGTH_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.PCBP_BP_PREDICTION_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.PCBP_PCLO_DECODE_PC_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.PCBP_PCHI_DECODE_PC_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "VIC_PCVC.PCVC_DECODE_PC_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.PCVC_PREFETCH_PC_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.PCVC_BP_PRED_TAG_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.PCVC_BP_PREDICTION_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.PCVC_PCBP_DECODE_PC_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.PCLO_DECODE_PC_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.PCLO_PREFETCH_PC_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.PCLO_PRED_PC_15_13_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.PCLO_BP_PREDICTION_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.PCLO_EBOX_RESULT_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.PCLO_PCBP_DECODE_PC_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.PCHI_DECODE_PC_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.PCHI_PREFETCH_PC_ERROR_H"
+	field
+size 2
+class integer
+display hex
+label "XBR.PCHI.PCHI_BP_TG_DSPERR_H<1:0> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.PCHI_BP_PREDICTION_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.PCHI_PCBP_DECODE_PC_ERR_Y"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.PCHI_XDTA_DISP_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.PCHI_XDTB_DISP_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.IBFA.IBFA_PREF_PC_ERROR_H<0>"
+	field
+size 2
+class integer
+display hex
+label "XBR.IBFA.IBFA_PREF_PC_ERR_H<3:2> ="
+	field
+size 2
+class integer
+display hex
+label "XBR.IBFA.IBFA_VIC_TAG_ERR_H<3:2> ="
+
+sitem
+name aqscan_i_fetch_err2
+size 1
+class composite
+type register
+display nil
+label "FETCH ERR REG 2"
+map
+	field
+size 1
+class coded
+map
+	1 "XBR.IBFA.IBFA_VIC_QUADWORD_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.IBFA.IBFA_VICA_BLOCK_VALID_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.IBFA.IBFA_VICB_BLOCK_VALID_ERROR_H"
+	field
+size 8
+class integer
+display hex
+label "XBR.IBFB.A_IBFB_IBEX_ERR_H<7:0> ="
+
+sitem
+name aqscan_i_decode_err1
+size 1
+class composite
+type register
+display nil
+label "DECODE ERROR 1"
+map
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.A_PCBP_DECODE_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.A_PCVC_DECODE_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.A_PCLO_DECODE_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.A_PCHI_DECODE_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.IBFA.A_IBFA_DECODE_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.IBFB.A_IBFB_SC_ERROR_H"
+	field
+size 9
+class integer
+display hex
+label "XBR.IBFB.A_IBFB_IBUF_ERR_H<8:0> ="
+
+sitem
+name aqscan_i_xbr_decode
+size 1
+class composite
+type register
+display nil
+label "XBR_DECODE"
+map
+	field
+size 1
+class coded
+map
+	1 "XBR.XDTA.L900.IBFA_XDTA_PARITY_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.XDTA.L900.IBFB_XDTA_PARITY_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.XDTA.L900.XSCA_XDTA_PARITY_ERR_H"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "XBR.XDTB.L700.IBFA_XDTB_PARITY_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.XDTB.L700.IBFB_XDTB_PARITY_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.XDTB.L700.XSCA_XDTB_PARITY_ERR_H"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "XBR.XSCA.L800.IBFA_XSCA_PARITY_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.XSCA.L800.IBFB_XSCA_PARITY_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.XSCA.L800.XDTA_XSCA_PARITY_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.XSCA.L800.OSQA_XSCA_PARITY_ERR_H"
+
+sitem
+name aqscan_i_spec_err1
+size 1
+class composite
+type register
+display nil
+label "SPECIF ERR 1"
+map
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQA.XDTA_OSQA_PERR_TA_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQA.XDTB_OSQA_PERR_TA_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQA.MASK_PERR_TA_H"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.XDTA_OSQB_PERR_TA_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.XDTB_OSQB_A_PERR_TA_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.XDTB_OSQB_B_PERR_TA_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.OPCODE_PERR_TA_H"
+	field
+size 6
+class integer
+display hex
+label "OPU.OCTL.REG_MASK_PERR_TA_H<5:0> ="
+
+sitem
+name aqscan_i_spec_err2
+size 1
+class composite
+type register
+display nil
+label "SPECIF ERR 2"
+map
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.SPEC_DECODE_DELTA_PERR_TA_H"
+	field
+size 2
+class integer
+display hex
+label "OPU.OPUA.SPC_ISTM_LW_PE_TA_H<1:0> ="
+	field
+size 3
+class integer
+display hex
+label "OPU.OPUA.SPEC_DEC_PC_PE_TA_H<2:0> ="
+	field
+size 2
+class integer
+display hex
+label "OPU.OPUA.BMUX_PERR_TA_H<1:0> ="
+	field
+size 2
+class integer
+display hex
+label "OPU.OPUA.AMUX_PERR_TA_H<1:0> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.OPUX_CONTROL_PERR_TA_H"
+	field
+size 2
+class integer
+display hex
+label "OPU.OPUA.SL_EXP_ERR_TA_H<1:0> ="
+	field
+size 3
+class filler
+	field
+size 2
+class integer
+display hex
+label "OPU.OPUB.SPEC_ISTR_LW_PE_TA_H<3:2> ="
+	field
+size 2
+class integer
+display hex
+label "OPU.OPUB.SPEC_DEC_PC_ERR_TA_H<3:2> ="
+	field
+size 2
+class integer
+display hex
+label "OPU.OPUB.BMUX_PERR_TA_H<3:2> ="
+	field
+size 2
+class integer
+display hex
+label "OPU.OPUB.AMUX_PERR_TA_H<3:2> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUB.OPUX_CONTROL_PERR_TA_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUB.SL_EXPANSION_PERR_TA_H<3>"
+
+sitem
+name aqscan_i_fetch_dat1
+size 1
+class composite
+type register
+display nil
+label "FETCH DATA REG1"
+map
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.A_LOAD_DECODE_PC_H"
+	field
+size 1
+class coded
+map
+	1 "BIC.PCBP.A_DECODE_PC_SEL_H"
+	field
+size 2
+class integer
+display hex
+label "VIC.PCBP.A_TARGET_PC_SEL_H<1:0> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.A_CTL_PC_FLUSH_H"
+	field
+size 2
+class integer
+display hex
+label "VIC.PCBP.A_PREFETCH_PC_SEL_H<1:0> ="
+	field
+size 2
+class integer
+display hex
+label "VIC.PCBP.A_PC_PREFCH_PC_SEL_H<1:0> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.A_LOAD_DECODE_PC_H"
+	field
+size 1
+class coded
+map
+	1 "BIC.PCVC.A_DECODE_PC_SEL_H"
+	field
+size 2
+class integer
+display hex
+label "VIC.PCVC.A_TARGET_PC_SEL_H<1:0> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.A_CTL_PC_FLUSH_H"
+	field
+size 2
+class integer
+display hex
+label "VIC.PCVC.A_PREFETCH_PC_SEL_H<1:0> ="
+	field
+size 2
+class integer
+display hex
+label "VIC.PCVC.A_PC_PREFCH_PC_SEL_H<1:0> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.A_LOAD_DECODE_PC_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.A_DECODE_PC_SEL_H"
+	field
+size 2
+class integer
+display hex
+label "XBR.PCLO.A_TARGET_PC_SEL_H<1:0> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.A_CTL_PC_FLUSH_H"
+	field
+size 2
+class integer
+display hex
+label "XBR.PCLO.A_PREFETCH_PC_SEL_H<1:0> ="
+	field
+size 2
+class integer
+display hex
+label "XBR.PCLO.A_PC_PREFCH_PC_SEL_H<1:0> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.A_LOAD_DECODE_PC_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.A_DECODE_PC_SEL_H"
+	field
+size 2
+class integer
+display hex
+label "XBR.PCHI.A_TARGET_PC_SEL_H<1:0> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.A_CTL_PC_FLUSH_H"
+
+sitem
+name aqscan_i_fetch_dat2
+size 1
+class composite
+type register
+display nil
+label "FETCH DATA REG2"
+map
+	field
+size 2
+class integer
+display hex
+label "XBR.PCHI.A_PREFCH_PC_SEL_H<1:0> ="
+	field
+size 2
+class integer
+display hex
+label "XBR.PCHI.A_PC_PREFCH_PC_SEL_H<1:0> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.VIC_ADDRESS_SEL_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.VIC_ADDRESS_SEL_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.VIC_ADDRESS_SEL_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.VIC_ADDRESS_SEL_H"
+	field
+size 2
+class integer
+display hex
+label "XBR.IBFA.A_IBEX_ROT_SEL_H<1:0> ="
+	field
+size 2
+class filler
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.A_TARGET_PC_PARITY_H"
+	field
+size 8
+class integer
+display hex
+label "VIC.PCBP.PRE_NEXT_PLUS_SC_H<7:0> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.A_DECODE_PC_PARITY_H<0>"
+	field
+size 8
+class integer
+display hex
+label "VIC.PCBP.PREFETCH_PC_H<7:0> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.PREFETCH_PC_PARITY_H"
+
+sitem
+name aqscan_i_fetch_dat3
+size 1
+class composite
+type register
+display nil
+label "FETCH DATA REG3"
+map
+	field
+size 8
+class integer
+display hex
+label "VIC.PCBP.A_BP_PRED_TAG_H<23:16> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.A_BP_PRED_TAG_PAR_H<2>"
+	field
+size 8
+class integer
+display hex
+label "VIC.PCBP.A_BP_PRED_TAG_H<31:24> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.A_BP_PRED_TAG_PARITY_H<3>"
+	field
+size 6
+class integer
+display hex
+label "VIC.PCBP.BP_INSTR_LEN_TA_H<5:0> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.A_BP_TAG_INSTR_LENGTH_PARITY_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.A_BP_PREDICTION_A_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.A_BP_PREDICTION_E_H"
+
+sitem
+name aqscan_i_fetch_dat4
+size 1
+class composite
+type register
+display nil
+label "FETCH DATA REG4"
+map
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.DECODE_PC_PARITY_TA_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.LV18.QA"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.DECODE_PC_PARITY_TA_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.LV18.QA"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.DECODE_PC_PARITY_TA_H"
+	field
+size 8
+class integer
+display hex
+label "VIC.PCVC.PREFETCH_PC_H<15:8> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.PREFETCH_PC_PARITY_TA_H"
+	field
+size 6
+class integer
+display hex
+label "VIC.PCVC.A_BP_PRED_TAG_H<15:10> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.A_BP_PRED_TAG_PARITY_H<1>"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.A_BP_PREDICTION_B_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.A_BP_PREDICTION_E_H"
+
+sitem
+name aqscan_i_fetch_dat5
+size 1
+class composite
+type register
+display nil
+label "FETCH DATA REG5"
+map
+	field
+size 8
+class integer
+display hex
+label "XBR.PCLO.PREFETCH_PC_H<23:16> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.PREFETCH_PC_PARITY_H"
+	field
+size 8
+class integer
+display hex
+label "XBR.PCLO.PREFETCH_PC_H<15:13> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.A_BPPC_PRED_PC_PARITY_15_13_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.A_BP_PREDICITON_C_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.A_BP_PREDICITON_F_H"
+	field
+size 2
+class filler
+	field
+size 8
+class integer
+display hex
+label "XBR.PCLO.EBOX_RESULT_TA_H<15:8> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.EBOX_RESULT_PARITY_TA_H<1>"
+
+sitem
+name aqscan_i_fetch_dat6
+size 1
+class composite
+type register
+display nil
+label "FETCH DATA REG6"
+map
+	field
+size 8
+class integer
+display hex
+label "XBR.PCHI.PREFETCH_PC_H<31:24> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.PREFETCH_PC_PARITY_H"
+	field
+size 8
+class integer
+display hex
+label "XBR.PCHI.BP_TAG_DISPLACE_TA_H<7:0> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.BP_TAG_DISPLACEMENT_PAR_H<0>"
+
+sitem
+name aqscan_i_fetch_dat7
+size 1
+class composite
+type register
+display nil
+label "FETCH DATA REG7"
+map
+	field
+size 8
+class integer
+display hex
+label "XBR.PCHI.BP_TAG_DISPL_TA_H<15:8> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.BP_TAG_DISPL_PARITY_H<1>"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.A_BP_PREDICTION_D_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.A_BP_PREDICTION_F_H"
+	field
+size 8
+class integer
+display hex
+label "XBR.PCHI.DISPL_TA_H<15:0> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.XDTA_DISP_PARITY_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.XDTB_DISP_PARITY_H"
+	field
+size 1
+class integer
+display hex
+label "VIC.PCBP.BP_WRITE_L ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.LE01.QA"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.MBOX_IB_RESPONSE_TA_H"
+
+sitem
+name aqscan_i_fetch_dat8
+size 1
+class integer
+type long
+display hex
+label "FETCH DATA REG8"
+
+sitem
+name aqscan_i_fetch_dat9
+size 1
+class integer
+type long
+display hex
+label "FETCH DATA REG9"
+
+sitem
+name aqscan_i_decode_data1
+size 1
+class composite
+type register
+display nil
+label "DECODE DATA 1"
+map
+	field
+size 4
+class integer
+display hex
+label "VIC.PCBP.A_XBAR_SHIFTCOUNT_H<3:0> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.A_XBAR_SHIFTOPCODE_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.A_XSCA_PCBP_B_PARITY_H"
+	field
+size 4
+class integer
+display hex
+label "VIC.PCVC.A_XBAR_SHIFTCOUNT_H<3:0> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.A_XBAR_SHIFTOPCODE_H"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.A_XSCA_PCVC_B_PARITY_H"
+	field
+size 4
+class integer
+display hex
+label "XBR.PCLO.A_XBAR_SHIFTCOUNT_H<3:0> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.A_XBAR_SHIFTOPCODE_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.A_XSCA_PCLO_B_PARITY_H"
+	field
+size 4
+class integer
+display hex
+label "XBR.PCHI.A_XBAR_SHIFTCOUNT_H<3:0> ="
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.A_XBAR_SHIFTOPCODE_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.A_XSCA_PCHI_B_PARITY_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.A_DISPLACEMENT_VALID_H"
+
+sitem
+name aqscan_i_decode_data2
+size 1
+class composite
+type register
+display nil
+label "DECODE DATA 2"
+map
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFA.IBFA_OPCODE_H<3:0> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFB.IBFB_OPCODE_H<7:4> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFA.A_IBFA_DATA_H<11:8> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFB.A_IBFB_DATA_H<15:12> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFA.A_IBFA_DATA_H<19:16> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFB.A_IBFB_DATA_H<23:20> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFA.A_IBFA_DATA_H<27:24> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFB.A_IBFB_DATA_H<31:28> ="
+
+sitem
+name aqscan_i_decode_data3
+size 1
+class composite
+type register
+display nil
+label "DECODE DATA 3"
+map
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFA.A_IBFA_DATA_H<35:32> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFB.A_IBFB_DATA_H<39:36> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFA.A_IBFA_DATA_H<43:40> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFB.A_IBFB_DATA_H<47:44> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFA.A_IBFA_DATA_H<51:48> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFB.A_IBFB_DATA_H<55:52> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFA.A_IBFA_DATA_H<59:56> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFB.A_IBFB_DATA_H<63:60> ="
+
+sitem
+name aqscan_i_decode_data4
+size 1
+class composite
+type register
+display nil
+label "DECODE DATA 4"
+map
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFA.A_IBFA_DATA_H<67:64> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.IBFB.A_IBFB_DATA_H<71:68> ="
+	field
+size 9
+class integer
+display hex
+label "XBR.IBFB.IBFB_PARITY_H<8:0> ="
+
+sitem
+name aqscan_i_xdata1
+size 1
+class composite
+type register
+display nil
+label "XDATA1"
+map
+	field
+size 3
+class integer
+display hex
+label "XBR.XDTA.I_YREG_F_L<3:1> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTA.I_DATA_L<15:12> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTA.I_DATA_L<23:20> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTA.I_DATA_L<31:28> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTA.I_DATA_L<39:36> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTB.I_DATA_H<3:0> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTB.L508.QA"
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTB.I-DATA_H<7:4> ="
+	field
+size 1
+class integer
+display hex
+label "XBR.XSCA.L200.IRC_L ="
+
+sitem
+name aqscan_i_xdata2
+size 1
+class composite
+type register
+display nil
+label "XDATA2"
+map
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTA.I_DATA_L<11:8> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTA.I_DATA_L<19:16> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTA.I_DATA_L<27:24> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTA.I_DATA_L<35:32> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTA.I_DATA_L<43:40> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTA.I_DATA_L<51:48> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTA.I_DATA_L<59:56> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTA.I_DATA_L<67:64> ="
+
+sitem
+name aqscan_i_xdata3
+size 1
+class composite
+type register
+display nil
+label "XDATA3"
+map
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTB.I_DATA_H<15:12> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTB.I_DATA_H<23:20> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTB.I_DATA_H<31:28> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTB.I_DATA_H<39:36> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTB.I_DATA_H<47:44> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTB.I_DATA_H<55:52> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTB.I_DATA_H<63:60> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XDTB.I_DATA_H<71:68> ="
+
+sitem
+name aqscan_i_xdata4
+size 1
+class composite
+type register
+display nil
+label "XDATA4"
+map
+	field
+size 8
+class integer
+display hex
+label "XBR.XSCA.I_DATA_H<7:0> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XSCA.I_DATA_H<15:12> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XSCA.I_DATA_H<23:20> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XSCA.I_DATA_H<31:28> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XSCA.I_DATA_H<39:36> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.XSCA.I_YREG_F_H<4:1> ="
+	field
+size 3
+class integer
+display hex
+label "XBR.XSCA.SL_MODE_H<7:5> ="
+
+sitem
+name aqscan_i_spec_data0
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA0"
+map
+	field
+size 4
+class integer
+display hex
+label "OPU.OSQA.SPECIFIER_XREG_H<3:0> ="
+	field
+size 4
+class integer
+display hex
+label "OPU.OSQA.SPECIFIER_YREG_H<3:0> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQA.XDTA_OSQA_PARITY_TA_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQA.SPECIFIER_ORDER_TA_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQA.SPECIFIER_SL_VALID_TA_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQA.PREV_XDTB_OSQA_PAR_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQA.SPECIFIER_INDEXED_H"
+	field
+size 4
+class integer
+display hex
+label "OPU.OSQA.SPECIFIER_MODE_H<3:0> ="
+	field
+size 3
+class integer
+display hex
+label "OPU.OSQA.SPEC_RLOG_TAG_H<2:0> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQA.PREV_STREG_YREG_H<4>"
+
+sitem
+name aqscan_i_spec_data1
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA1"
+map
+	field
+size 15
+class integer
+display hex
+label "OPU.OCTL.OCTL_EBOX_RD_MASK<14:0> ="
+	field
+size 1
+class filler
+	field
+size 16
+class integer
+display hex
+label "OPU.OCTL.OCTL_EBOX_WR_MASK<15:0> ="
+
+sitem
+name aqscan_i_spec_data2
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA2"
+map
+	field
+size 4
+class integer
+display hex
+label "OPU.OSQB.XBAR_SL_TA_H<3:0> ="
+	field
+size 4
+class integer
+display hex
+label "OPU.OSQB.SPEC_DEST_REG_H<3:0> ="
+	field
+size 4
+class integer
+display hex
+label "OPU.OSQB.SPEC_SRC1_REG_H<3:0> ="
+	field
+size 4
+class integer
+display hex
+label "OPU.OSQB.SPEC_SRC2_REG_H<3:0> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.SPECIFIER_DEST_REG_VALID_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.SPECIFIER_DEST_VALID_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.NON_VBOX_SPEC_SRC1_VALID_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.SPECIFIER_SRC1_REG_VALID_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.NON_VBOX_SPEC_SRC2_VALID_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.SPECIFIER_SRC2_REG_VALID_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.PREV_XDTA_OSQB_PAR_H"
+
+sitem
+name aqscan_i_spec_data3
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA3"
+map
+	field
+size 3
+class integer
+display hex
+label "OPU.OSQB.SPEC_COMP_TA_H<2:0> ="
+	field
+size 2
+class integer
+display hex
+label "OPU.OSQB.XDTB_RSL_TA_H<2:1> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.PREV_XDTB_OSQB_A_PARITY_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.INVERT_XDTB_A_PARITY_H"
+	field
+size 3
+class integer
+display hex
+label "OPU.OSQB.SL_SPEC_NUM_TA_H<2:0> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.XDTB_ORDER_TA_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.XDTB_SL_VALID_TA_H"
+	field
+size 2
+class integer
+display hex
+label "OPU.OSQB.XBAR_SL_TA_H<5:4> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.PREV_XDTB_OSQB_B_PARITY_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.PREV_OPCODE_PARITY_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OSQB.INVERT_OPCODE_PARITY_H"
+
+sitem
+name aqscan_i_spec_data4
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA4"
+map
+	field
+size 31
+class integer
+display hex
+label "OPU.OCTL.REG_MASK0_TA_H<30:0> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OCTL.PREV_WRITE_MASK_H"
+
+sitem
+name aqscan_i_spec_data5
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA5"
+map
+	field
+size 31
+class integer
+display hex
+label "OPU.OCTL.REG_MASK1_TA_H<30:0> ="
+
+sitem
+name aqscan_i_spec_data6
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA6"
+map
+	field
+size 31
+class integer
+display hex
+label "OPU.OCTL.REG_MASK2_TA_H<30:0> ="
+
+sitem
+name aqscan_i_spec_data7
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA7"
+map
+	field
+size 31
+class integer
+display hex
+label "OPU.OCTL.REG_MASK3_TA_H<30:0> ="
+
+sitem
+name aqscan_i_spec_data8
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA8"
+map
+	field
+size 31
+class integer
+display hex
+label "OPU.OCTL.REG_MASK4_TA_H<30:0> ="
+
+sitem
+name aqscan_i_spec_data9
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA9"
+map
+	field
+size 31
+class integer
+display hex
+label "OPU.OCTL.REG_MASK5_TA_H<30:0> ="
+
+sitem
+name aqscan_i_spec_data10
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA10"
+map
+	field
+size 6
+class integer
+display hex
+label "OPU.OPUA.SPEC_DECODE_DELTA_H<5:0> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.SPEC_DECODE_DELTA_PARITY_H"
+	field
+size 4
+class integer
+display hex
+label "OPU.OPUA.SPEC_ISTREAM_LWORD_H<11:8> ="
+	field
+size 4
+class integer
+display hex
+label "OPU.OPUA.SPEC_ISTREAM_LWORD_H<3:0> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.SPEC_ISTREAM_LWORD_PARITY_H<0>"
+	field
+size 4
+class integer
+display hex
+label "OPU.OPUA.SPEC_ISTREAM_LWD_H<15:12> ="
+	field
+size 4
+class integer
+display hex
+label "OPU.OPUA.SPEC_ISTREAM_LWD_H<7:4> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.SPEC_ISTREAM_LWORD_PARITY_H<1>"
+
+sitem
+name aqscan_i_spec_data11
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA11"
+map
+	field
+size 8
+class integer
+display hex
+label "OPU.OPUA.SPEC_DECODE_PC_H<7:0> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.SPEC_DECODE_PC_PAR_H<0>"
+	field
+size 5
+class integer
+display hex
+label "OPU.OPUA.SPEC_DECODE_PC_H<12:8> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.SPECIFIER_DECODE_PC_PARITY_H<1>"
+	field
+size 3
+class integer
+display hex
+label "OPU.OPUA.SPEC_DECODE_PC_H<15:13> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.SPECIFIER_DECODE_PC_PARITY_H<2>"
+	field
+size 8
+class integer
+display hex
+label "OPU.OPUA.STALLED_A_ADDEND_H<7:0> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.STALLED_A_ADDEND_H<16>"
+
+sitem
+name aqscan_i_spec_data12
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA12"
+map
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.STALLED_A_ADDEND_H<17>"
+	field
+size 3
+class integer
+display hex
+label "OPU.OPUA.PREV_AMUX_SEL_H<2:0> ="
+	field
+size 3
+class integer
+display hex
+label "OPU.OPUA.PREV_BMUX_SEL_H<2:0> ="
+	field
+size 3
+class integer
+display hex
+label "OPU.OPUA.PREV_CSHFT_SEL_H<2:0> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.PREV_OP_GRANT_WAIT_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.PREV_OPU_SEQ_START_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.PREV_OPUX_CONTROL_PARITY_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.PREV_INVERT_OPUX_CONTROL_PARITY_H"
+
+sitem
+name aqscan_i_spec_data13
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA13"
+map
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.PREV_SL_EXPANSION_PAR_H<0>"
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.PREV_SL_EXPANSION_H<14>"
+	field
+size 2
+class integer
+display hex
+label "OPU.OPUA.PREV_SL_EXPANSION_H<9:8> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUA.PREV_SL_EXPANSION_PARITY_H<1>"
+	field
+size 4
+class integer
+display hex
+label "OPU.OPUB.SPEC_ISTREAM_LWD_H<27:24> ="
+	field
+size 4
+class integer
+display hex
+label "OPU.OPUB.SPEC_ISTREAM_LWD_H<19:16> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUB.SPEC_ISTREAM_LWD_PAR_H<2>"
+	field
+size 4
+class integer
+display hex
+label "OPU.OPUB.SPEC_ISTREAM_LWD_H<31:28> ="
+	field
+size 4
+class integer
+display hex
+label "OPU.OPUB.SPEC_ISTREAM_LWD_H<23:20> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUB.SPEC_ISTREAM_LWD_PARITY_H<3>"
+
+sitem
+name aqscan_i_spec_data14
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA14"
+map
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUB.SPECIFIER_DECODE_PC_PARITY_H<2>"
+	field
+size 8
+class integer
+display hex
+label "OPU.OPUB.SPEC_DECODE_PC_H<31:24> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUB.SPECIFIER_DECODE_PC_PARITY_H<3>"
+	field
+size 8
+class integer
+display hex
+label "OPU.OPUB.STALLED_A_ADDEND_H<7:0> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUB.STALLED_A_ADDEND_H<16>"
+
+sitem
+name aqscan_i_spec_data15
+size 1
+class composite
+type register
+display nil
+label "SPEC_DATA15"
+map
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUB.STALLED_A_ADDEND_H<17>"
+	field
+size 3
+class integer
+display hex
+label "OPU.OPUB.PREV_AMUX_SEL_H<2:0> ="
+	field
+size 3
+class integer
+display hex
+label "OPU.OPUB.PREV_BMUX_SEL_H<2:0> ="
+	field
+size 3
+class integer
+display hex
+label "OPU.OPUB.PREV_CSHFT_SEL_H<2:0> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUB.PREV_OP_GRANT_WAIT_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUB.PREV_OPU_SEQ_START_H"
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUB.PREV_OPUX_CONTROL_PARITY_H"
+	field
+size 3
+class integer
+display hex
+label "OPU.OPUB.PREV_SL_EXPAN_H<31:29> ="
+	field
+size 1
+class coded
+map
+	1 "OPU.OPUB.PREV_SL_EXPANSION_PARITY_H<3>"
+
+sitem
+name aqscan_i_fetch_sts1
+size 1
+class composite
+type register
+display nil
+label "FETCH STATUS 1"
+map
+
+sitem
+name aqscan_i_fetch_sts2
+size 1
+class composite
+type register
+display nil
+label "FETCH STATUS 2"
+map
+	field
+size 4
+class integer
+display hex
+label "VIC.PCBP.LM05.QA<3:0> ="
+	field
+size 4
+class integer
+display hex
+label "VIC.PCVC.CURRENT_STATE_TA_H<3:0> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.PCLO.LM05.QA<3:0> ="
+	field
+size 4
+class integer
+display hex
+label "XBR.PCHI.LM06.QA<3:0> ="
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.LH10.QA"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.LH10.QA"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.LH10.QA"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.LH10.QA"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.LH16.QA"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.LH16.QA"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.LH13.QA"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.LH13.QA"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.LD02.QA"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.LD02.QA"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.LD02.QA"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.LD02.QA"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.LD10.QA"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.LD10.QA"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.LD10.QA"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.LD10.QA"
+
+sitem
+name aqscan_i_fetch_sts3
+size 1
+class composite
+type register
+display nil
+label "FETCH_STS3"
+map
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.LL08.QA"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.LL08.QA"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.LL08.QA"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.LL08.QA"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.LL16.QA"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCVC.LL16.QA"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCLO.LL16.QA"
+	field
+size 1
+class coded
+map
+	1 "XBR.PCHI.LL16.QA"
+	field
+size 1
+class coded
+map
+	1 "VIC.PCBP.A_DISABLE_BP_HIT_H"
+	field
+size 1
+class coded
+map
+	1 "XBR.IBFA.LVTF.QA"
+
+sitem
+name aqscan_m_err_sum
+size 1
+label "MBOX_ERRSUM"
+display nil
+type register
+class composite
+map
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.ERROR_CON.ERROR_DETECT_IN_MBOX_TA_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.ERROR_CON.ERROR_DURING_WRITE_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.ERROR_CON.BAD_GET_DATA_ERROR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.ERROR_CON.CTM_ERROR_WHILE_SWEEP_H'
+
+sitem
+name aqscan_m_tb_error
+size 1
+label "MBOX_TB_ERROR"
+display nil
+type register
+class composite
+map
+	field
+class coded
+size 1
+map
+	1 'VAP.VAPO.VAPO_PARITY.IB_ADDR_B0_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FXUP.IB_ADDR_B1_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FXUP.IB_ADDR_B2_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FXUP.IB_ADDR_B3_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.VAPO.VAPO_PARITY.OP_ADDR_B0_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FXUP.OP_ADDR_B1_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FXUP.OP_ADDR_B2_PERR_H'
+	field
+class coded
+size 1
+map
+	field
+class coded
+size 1
+map
+	1 'VAP.FXUP.OP_ADDR_B3_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.VAPO.VAPO_PARITY.OP_CNTL_PAR_ERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.VAPO.VAPO_PARITY.EB_ADDR_B0_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FXUP.EB_ADDR_B1_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FXUP.EB_ADDR_B2_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FXUP.EB_ADDR_B3_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.VAPO.VAPO_PARITY.EB_CNTL_PAR_ERR_H'
+	field
+class filler
+size 2
+	field
+class coded
+size 1
+map
+	1 'VAP.VAPO.VAPO_PARITY.MEM_MAN_REG_PARITY_ERROR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FXUP.MEM_MAN_REGS.MEM_MAN_REG_PARITY_ERROR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.VAPO.VAPO.PARITY.FXUP_MISS_ADDR_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FALT.FALT_PARITY.TAG_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FALT.FALT_PARITY.VALID_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FALT.FALT_PARITY.CNTL_PARITY_ERROR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FALT.FALT_PARITY.PTE_PERR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.WRTQ.PTE_PARITY_ERROR_H<0>'
+	field
+class coded
+size 1
+map
+	1 'VAP.WRTQ.PTE_PARITY_ERROR_H<1>'
+	field
+class coded
+size 1
+map
+	1 'VAP.WRTQ.PTE_PARITY_ERROR_H<2>'
+	field
+class coded
+size 1
+map
+	1 'VAP.WRTQ.PFN_PARITY_ERROR_H'
+
+sitem
+name aqscan_m_cache_error0
+size 1
+label "MBOX_CACHE_ERR0"
+display nil
+type register
+class composite
+map
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.PARITY_CON.L507.QA'
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.PARITY_CON.L606.QA'
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.ERROR_CON.L302.QA'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMA.TB_LOOKUP_PAR_ERROR_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMA.WRTQ_CTU_PA_PAR_ERROR_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMA.TB_CTU_PA_PAR_ERROR_H<1>'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMA.TB_CTU_PA_PAR_ERROR_H<2>'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMA.CCSQ_CTL_PAR_ERROR_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMA.WBB0_JBX_ADRS_PAR_ERROR_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMV.CTMA_CTMV_ERROR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMV.SET0_CTMV_ERROR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMV.SET1_CTMV_ERROR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMV.CCSQ_CTMV_ERROR0_TA_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMV.CCSQ_CTMV_ERROR1_TA_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMV.WBES_CTMV_ERROR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.SINGLE_BIT_ERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.DOUBLE_BIT_ERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.CACHE_DATA_PAR_ERROR_TA_H<0>'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBES.CACHE_DATA_PAR_ERROR_TA_H<0>'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.CACHE_DATA_PAR_ERROR_TA_H<1>'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBES.CACHE_DATA_PAR_ERROR_TA_H<1>'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.JBX_MBX_ADR_PERR_TA_H<0>'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.JBX_MBX_ADR_PERR_TA_H<1>'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBES.JBX_MBX_ADR_PERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.JBX_MBX_ADR_PERR_TA_H<2>'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.CTMA_WBEM_PERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.INTERNAL_PARITY_ERROR_TA_H<0>'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.INTERNAL_PARITY_ERROR_TA_H<1>'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBES.INTERNAL_PARITY_ERROR_TA_H<0>'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBES.INTERNAL_PARITY_ERROR_TA_H<1>'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBES.CTMV_WBES_PERR_TA_H'
+
+sitem
+name aqscan_m_cache_error1
+size 1
+label "MBOX_CACHE_ERR1"
+display nil
+type register
+class composite
+map
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM0.HOLD_EBOX_BYT0_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM1.HOLD_EBOX_BYT0_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM2.HOLD_EBOX_BYT0_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM3.HOLD_EBOX_BYT0_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM0.HOLD_JBOX_TRANSFER_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM1.HOLD_JBOX_TRANSFER_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM2.HOLD_JBOX_TRANSFER_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM3.HOLD_JBOX_TRANSFER_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM0.LD12.QA'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM1.LD12.QA'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM2.LD12.QA'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM3.LD12.QA'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM0.HOLD_MBOX_REG_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM1.HOLD_MBOX_REG_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM2.HOLD_MBOX_REG_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM3.HOLD_MBOX_REG_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM0.HOLD_CACHE_BYTE0_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM1.HOLD_CACHE_BYTE0_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM2.HOLD_CACHE_BYTE0_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM3.HOLD_CACHE_BYTE0_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM0.HOLD_CACHE_BYTE4_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM1.HOLD_CACHE_BYTE4_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM2.HOLD_CACHE_BYTE4_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM3.HOLD_CACHE_BYTE4_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM0.HOLD_CCSQ_DTM_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM1.HOLD_CCSQ_DTM_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM2.HOLD_CCSQ_DTM_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM3.HOLD_CCSQ_DTM_ERROR_LTH_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.PAD0.WRTQ_PADX_PERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.PAD1.WRTQ_PADX_PERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.PAD0.CCSQ_PADX_PERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.PAD1.CCSQ_PADX_PERR_TA_H'
+
+sitem
+name aqscan_m_cache_error2
+size 1
+label "MBOX_CACHE_ERR2"
+display nil
+type register
+class composite
+map
+	field
+class coded
+size 1
+map
+	1 'DTB.PAD0.VAPO_PADX_PERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.PAD1.VAPO_PADX_PERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.PAD0.TB_PADX_PERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.PAD1.TB_PADX_PERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.PAD0.INTERNAL_PERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.PAD1.INTERNAL_PERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'DTB.PAD0.CTMA_PADX_PERR_TA_H'
+	field
+class coded
+size 1
+map
+	1 'DTA.PAD1.CTMA_PADX_PERR_TA_H'
+	field
+class filler
+size 8
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.JCON.IO_PAM_NXM_HELD_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.JCON.MEM_RD_NXM_HELD_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.ERROR_CON.JBOX_MBOX_ADDR_CMD_ERROR_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.ERROR_CON.JBOX_FATAL_ERROR_TB_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBES.JBOX_CPERR_TA_H'
+
+sitem
+name aqscan_m_err_data
+size 1
+label "MBOX_ERRDAT"
+display nil
+type register
+class composite
+map
+	field
+class coded
+size 1
+map
+	1 'VAP.VAP0.VAP0_PAR.HEL_REGN_H<2:0> ='
+	field
+size 1
+class integer
+display hex
+label 'DTB.DTM0.ERROR_HELD_SELECT_SET0_L ='
+	field
+class integer
+size 1
+display hex
+label 'DTB.DTM1.ERROR_HELD_SELECT_SET0_L ='
+	field
+class integer
+size 1
+display hex
+label 'DTB.DTM2.ERROR_HELD_SELECT_SET0_L ='
+	field
+class integer
+size 1
+display hex
+label 'DTB.DTM3.ERROR_HELD_SELECT_SET0_L ='
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM0.LC05.QA'
+	field
+class coded
+size 1
+map
+	1 'DTB.DTM1.LC05.QA'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM2.LC05.QA'
+	field
+class coded
+size 1
+map
+	1 'DTA.DTM3.LC05.QA'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.LF06.QA'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.LF05.QA'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.LF11.QA'
+	field
+class coded
+size 1
+map
+	1 'VAP.FXUP.MM_REGS.HELD_REGN_H<2:0> ='
+
+sitem
+name aqscan_m_status
+size 1
+label "MBOX_STATUS_REG"
+display nil
+type register
+class composite
+map
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.ERROR_CON.ENABLE_ERROR_REP_TA_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.JCON.NO_ERROR_SWEEP_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FALT.INTERNAL_MAPEN_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.FALT.FIRST_MODIFY_FAULT_ENABLE_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.WRTQ.EXTENDED_MEMEORY_ENABLE_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMV.SET_SEL_H<1:0> ='
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMV.LCH9.QA'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMV.WIMP_MODE_TB_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMV.EXTENDED_MEMORY_ENABLE_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.CTMA.EXTENDED_MEMORY_ENABLE_TBH'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.REPORT_DISABLE_TA_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBEM.BIT_CORRECT_DISABLE_H'
+	field
+class coded
+size 1
+map
+	1 'CTU.WBES.BIT_CORRECT_DISABLE_H'
+	field
+class coded
+size 1
+map
+	1 'VAP.CCSQ.JCON.SWEEP_PENDING_H'
+
+sitem
+name aqscan_v_errsum
+size 1
+class composite
+type register
+display nil
+label "VBOX_ERRSUM"
+map
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0301.INT_VBOX_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTA.U0201.U1203.VCT_EBOX_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTB.U0201.U1203.VCT_EBOX_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0301.U2208.VCT_EBOX_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL3.UNPACK_L026_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL4.UNPACK_L026_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL5.UNPACK_L026_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL6.UNPACK_L026_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.VDIV_UNPK_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VML.VMLB.IOEP.QA"
+	field
+size 6
+class filler
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG0.PERR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG1.PERR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG2.PERR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG3.PERR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG4.PERR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG5.PERR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG6.PERR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG7.PERR"
+
+sitem
+name aqscan_v_err0
+size 1
+class composite
+type register
+display nil
+label "ERR0"
+map
+	field
+size 5
+class integer
+display hex
+label "UCS.VCTA.U0201.U1203.PE_H<4:0> ="
+	field
+size 2
+class integer
+display hex
+label "UCS.VCTB.U0201.U1203.PE_H<1:0> ="
+	field
+size 2
+class integer
+display hex
+label "UCS.VCTB.U0201.U1203.PE_H<5:4> ="
+	field
+size 2
+class integer
+display hex
+label "UCS.VCTC.U0301.U2208.PE_H<1:0> ="
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0301.U2208.PE_H<4>"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL3.UNPACK_L025_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL3.UNPACK_L336_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL3.UNPACK_L334_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL3.UNPACK_L028_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL4.UNPACK_L025_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL4.UNPACK_L336_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL4.UNPACK_L334_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL4.UNPACK_L028_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL5.UNPACK_L025_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL5.UNPACK_L336_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL5.UNPACK_L334_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL5.UNPACK_L028_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL6.UNPACK_L025_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL6.UNPACK_L336_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL6.UNPACK_L334_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.MUL6.UNPACK_L028_QB"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S1_PCHK0_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S1_PCHK1_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S1_PCHK2_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S1_PCHK3_H"
+
+sitem
+name aqscan_v_err1
+size 1
+class composite
+type register
+display nil
+label "ERR1"
+map
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S1_PCHK4_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S1_PCHK5_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S1_PCHK6_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S1_PCHK7_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S2_PCHK0_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S2_PCHK1_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S2_PCHK2_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S2_PCHK3_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S2_PCHK4_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S2_PCHK5_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S2_PCHK6_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIVU.S2_PCHK7_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIV1.S1B_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VML.DIV1.DUNPB_ERR_H"
+	field
+size 1
+class coded
+map
+	1 "VML.VMLA.U0801.VMLA_DIV_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VML.VMLA.U0501.MUL4_R_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VML.VMLA.U0501.MUL5_R_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VML.VMLA.U0501.MUL6_R_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VML.VMLA.U0801.MUL3_R_PARITY_ERROR_A_H"
+	field
+size 1
+class coded
+map
+	1 "VML.VMLA.U0801.MUL4_R_PARITY_ERROR_A_H"
+	field
+size 1
+class coded
+map
+	1 "VML.VMLA.U0801.MUL5_R_PARITY_ERROR_A_H"
+	field
+size 1
+class coded
+map
+	1 "VML.VMLB.U1101.VMLB_DIV_PARITY_ERROR_H"
+	field
+size 2
+class integer
+display hex
+label "VAD.VMKB.TA_VRG_PARITY_ERR_H<1:0> ="
+	field
+size 1
+class coded
+map
+	1 "VAD.VMKB.MTVR_VMKB_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VAD.VMKB.VAD_VMKB_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VAD.VMKB.VML_VMKB_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VAD.VMKA.U0802.TA_MFVR_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VAD.VFSA.VFSA_A_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VAD.VFSA.VFSA_B_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VAD.VFSB.VFSB_A_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VAD.VFSB.VFSB_B_PARITY_ERROR_H"
+
+sitem
+name aqscan_v_err2
+size 1
+class composite
+type register
+display nil
+label "ERR2"
+map
+	field
+size 1
+class coded
+map
+	1 "VAD.VFAD.FRA_1_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VAD.VFAD.FRA_2_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VAD.VFPK.NORM_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VAD.VFPK.EXP_PARITY_ERROR_H"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG0.WP0PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG0.WP1PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG0.WP2PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG0.PERRG0"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG0.PERRG1"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG0.PERRG2"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG1.WP0PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG1.WP1PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG1.WP2PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG1.PERRG0"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG1.PERRG1"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG1.PERRG2"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG2.WP0PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG2.WP1PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG2.WP2PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG2.PERRG0"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG2.PERRG1"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG2.PERRG2"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG3.WP0PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG3.WP1PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG3.WP2PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG3.PERRG0"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG3.PERRG1"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG3.PERRG2"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG4.WP0PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG4.WP1PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG4.WP2PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG4.PERRG0"
+
+sitem
+name aqscan_v_err3
+size 1
+class composite
+type register
+display nil
+label "ERR3"
+map
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG4.PERRG1"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG4.PERRG2"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG5.WP0PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG5.WP1PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG5.WP2PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG5.PERRG0"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG5.PERRG1"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG5.PERRG2"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG6.WP0PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG6.WP1PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG6.WP2PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG6.PERRG0"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG6.PERRG1"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG6.PERRG2"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG7.WP0PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG7.WP1PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG7.WP2PAR"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG7.PERRG0"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG7.PERRG1"
+	field
+size 1
+class coded
+map
+	1 "VRG.VRG7.PERRG2"
+
+sitem
+name aqscan_v_vcta_sts
+size 1
+class composite
+type register
+display nil
+label "VCTA_STS"
+map
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTA.U0201.EARLY_CONTROL_VALID_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTA.U0202.U0214.QA"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTA.U0202.U0207.QA"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTA.U0202.COMPARE_IN_PROGRESS_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTA.U0201.INSTRUCTION_DONE_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTA.U0201.INSTR_PENDING_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTA.U0201.IEBOX_VECTOR_DATA_VALID_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTA.U0201.I0_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTA.U0201.I1_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTA.U0201.I2_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTA.U0201.I3_H"
+
+sitem
+name aqscan_v_vctb_sts
+size 1
+class composite
+type register
+display nil
+label "VCTB_STS"
+map
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTB.U0201.CONTROL_VALID_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTB.U0301.TB_DIV_RD_EN_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTB.U0201.INSTRUCTION_DONE_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTB.U0201.INSTR_PENDING_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTB.U0201.IEBOX_VECTOR_DATA_VALID_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTB.U0201.I0_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTB.U0201.I1_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTB.U0201.I2_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTB.U0201.I3_H"
+
+sitem
+name aqscan_v_vctc_sts
+size 1
+class composite
+type register
+display nil
+label "VCTC_STS"
+map
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0201.U1105.QA"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0201.U1106.QA"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0201.TB_STORE_BUSY_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0201.TB_SCATTER_BUSY_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0201.TA_VB_RD_IN_PROGRESS_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0301.INSTRUCTION_DONE_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0301.INSTR_PENDING_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0301.IEBOX_VECTOR_DATA_VALID_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0301.I0_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0301.I1_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0301.I2_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0301.I3_H"
+	field
+size 1
+class coded
+map
+	1 "UCS.VCTC.U0301.CONTROL_VALID_H"
+
+
+sitem
+name aqscan_cpu0_scan_num
+size 1
+class integer
+display decimal
+type long
+label "CPU0 ELE NUM"
+
+sitem
+name aqscan_cpu1_scan_num
+size 1
+class integer
+display decimal
+type long
+label "CPU1 ELE NUM"
+
+sitem
+name aqscan_cpu2_scan_num
+size 1
+class integer
+display decimal
+type long
+label "CPU2 ELE NUM"
+
+sitem
+name aqscan_cpu3_scan_num
+size 1
+class integer
+display decimal
+type long
+label "CPU3 ELE NUM"
+
+sitem
+name aqscan_mcu_reg
+size 1
+class composite
+display nil
+type register
+label "MCU REVISION INFO"
+map
+	field
+size 4
+class integer
+display hex
+label "CCU REVISION"
+	field
+size 4
+class integer
+display hex
+label "DA0 REVISION"
+	field
+size 4
+class integer
+display hex
+label "TAG REVISION"
+	field
+size 4
+class integer
+display hex
+label "DB0 REVISION"
+	field
+size 4
+class integer
+display hex
+label "DA1 REVISION"
+	field
+size 4
+class integer
+display hex
+label "DB1 REVISION"
+	field
+size 1
+class coded
+map
+	1 "CCU PRESENT"
+	field
+size 1
+class coded
+map
+	1 "DA0 PRESENT"
+	field
+size 1
+class coded
+map
+	1 "TAG PRESENT"
+	field
+size 1
+class coded
+map
+	1 "DB0 PRESENT"
+	field
+size 1
+class coded
+map
+	1 "DA1 PRESENT"
+	field
+size 1
+class coded
+map
+	1 "DB1 PRESENT"
+
+
+sitem
+name aqscan_cdc_reg
+size 1
+class integer
+display hex
+type long
+label "CDC ERR"
+
+sitem
+name aqscan_scu_err_sum
+size 1
+class integer
+display hex
+type long
+label "SCUERRSUM"
+
+sitem
+name aqscan_cpu_cnf
+size 1
+class integer
+display hex
+type long
+label "CPUCNF"
+
+sitem
+name aqscan_scu_cnfg
+size 1
+class integer
+display hex
+type long
+label "SCU_CNFG"
+
+sitem
+name aqscan_tag_cnfg0
+size 1
+class integer
+display hex
+type long
+label "TAG CNFG0"
+
+sitem
+name aqscan_tag_cnfg1
+size 1
+class integer
+display hex
+type long
+label "TAG CNFG1"
+
+sitem
+name aqscan_j_reg0
+size 1
+class integer
+display hex
+type long
+label "JBOX ERR0"
+
+sitem
+name aqscan_j_reg1
+size 1
+class integer
+display hex
+type long
+label "JBOX ERR1"
+
+sitem
+name aqscan_j_reg2
+size 1
+class integer
+display hex
+type long
+label "JBOX ERR2"
+
+sitem
+name aqscan_j_reg3
+size 1
+class integer
+display hex
+type long
+label "JBOX ERR3"
+
+sitem
+name aqscan_j_reg4
+size 1
+class integer
+display hex
+type long
+label "JBOX ERR4"
+
+sitem
+name aqscan_j_reg5
+size 1
+class integer
+display hex
+type long
+label "JBOX ERR5"
+
+sitem
+name aqscan_j_reg6
+size 1
+class integer
+display hex
+type long
+label "JBOX ERR6"
+
+sitem
+name aqscan_j_reg7
+size 1
+class integer
+display hex
+type long
+label "JBOX ERR7"
+
+sitem
+name aqscan_j_reg8
+size 1
+class integer
+display hex
+type long
+label "JBOX ERR8"
+
+sitem
+name aqscan_j_reg9
+size 1
+class integer
+display hex
+type long
+label "JBOX ERR9"
+
+sitem
+name aqscan_j_rega
+size 1
+class integer
+display hex
+type long
+label "JBOX ERRA"
+
+sitem
+name aqscan_j_regb
+size 1
+class integer
+display hex
+type long
+label "JBOX ERRB"
+
+sitem
+name aqscan_icu0_reg0
+size 1
+class integer
+display hex
+type long
+label "ICU0 ERR0"
+
+sitem
+name aqscan_icu0_reg1
+size 1
+class integer
+display hex
+type long
+label "ICU0 ERR1"
+
+sitem
+name aqscan_icu0_reg2
+size 1
+class integer
+display hex
+type long
+label "ICU0 ERR2"
+
+sitem
+name aqscan_icu1_reg0
+size 1
+class integer
+display hex
+type long
+label "ICU1 ERR0"
+
+sitem
+name aqscan_icu1_reg1
+size 1
+class integer
+display hex
+type long
+label "ICU1 ERR1"
+
+sitem
+name aqscan_icu1_reg2
+size 1
+class integer
+display hex
+type long
+label "ICU1 ERR2"
+
+sitem
+name aqscan_acu0_reg0
+size 1
+class integer
+display hex
+type long
+label "ACU0 ERR0"
+
+sitem
+name aqscan_acu0_reg1
+size 1
+class integer
+display hex
+type long
+label "ACU0 ERR1"
+
+sitem
+name aqscan_acu1_reg0
+size 1
+class integer
+display hex
+type long
+label "ACU1 ERR0"
+
+sitem
+name aqscan_acu1_reg1
+size 1
+class integer
+display hex
+type long
+label "ACU1 ERR1"
+
+sitem
+name aqscan_ser80
+size 1
+class integer
+display hex
+type long
+label "ICU0 ENA"
+
+sitem
+name aqscan_ser81
+size 1
+class integer
+display hex
+type long
+label "DX0 DSENA"
+
+sitem
+name aqscan_ser82
+size 1
+class integer
+display hex
+type long
+label "MMU0 ENA"
+
+sitem
+name aqscan_ser83
+size 1
+class integer
+display hex
+type long
+label "ICU1 ENA"
+
+sitem
+name aqscan_ser84
+size 1
+class integer
+display hex
+type long
+label "DX1 DSENA"
+
+sitem
+name aqscan_ser85
+size 1
+class integer
+display hex
+type long
+label "MMU1 ENA"
+
+sitem
+name aqscan_ser86
+size 1
+class integer
+display hex
+type long
+label "CCU ENA"
+
+sitem
+name aqscan_ser87
+size 1
+class integer
+display hex
+type long
+label "TAG ENA"
+
+sitem
+name aqscan_ser88
+size 1
+class integer
+display hex
+type long
+label "TAGDX0 EN"
+
+sitem
+name aqscan_ser89
+size 1
+class integer
+display hex
+type long
+label "TAGDX1 EN"
+
+sitem
+name aqscan_ser8a
+size 1
+class integer
+display hex
+type long
+label "MTCH ENA"
+

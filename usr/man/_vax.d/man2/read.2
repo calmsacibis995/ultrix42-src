@@ -1,0 +1,234 @@
+.\" SCCSID: @(#)read.2	2.1	3/10/87
+.TH read 2
+.SH Name
+read, readv \- read from a file
+.SH Syntax
+.nf
+cc = read(\fId, buf, nbytes\fP)
+int cc, \fId\fP;
+char *\fIbuf\fP;
+int \fInbytes\fP;
+.PP
+#include <sys/types.h>
+#include <sys/uio.h>
+.PP
+cc = readv(\fId, iov, iovcnt\fP)
+int cc, \fId\fP;
+struct iovec *\fIiov\fP;
+int \fIiovcnt\fP;
+.fi
+.SH Arguments
+.TP 10
+.I d
+File descriptor.
+.TP 10
+.I buf
+Character pointer where information is stored.
+.TP 10
+.I nbytes
+Integer that tells you how many bytes to read.
+.TP 10
+.I iov
+Pointer to an
+.I iovec
+structure.
+.TP 10
+.I iovcnt
+The number of 
+.I iovec
+structures to be processed.
+.SH Description
+.NXR "read system call"
+.NXR "file" "reading"
+.NXR "socket" "reading"
+.NXR "readv system call"
+.NXR "read system call" "write system call"
+.NXR "read system call" "send system call"
+The system call
+.PN read
+attempts to read
+.I nbytes
+of data from the object referenced by the descriptor
+.I d
+into the buffer pointed to by
+.IR buf .
+The
+.PN readv
+system call performs the same action, but scatters the input data
+into the 
+.I iovcnt
+buffers specified by the members of the
+.I iovec
+following array: iov[0], iov[1], ..., iov[iovcnt\|\-\|1].
+.PP
+For 
+.PN readv ,
+the 
+.I iovec
+structure is defined as follows:
+.PP
+.EX
+struct iovec {
+	caddr_t	iov_base;
+	int	iov_len;
+};
+.EE
+.PP
+Each 
+.I iovec
+entry specifies the base address and length of an area
+in memory where data should be placed. 
+The
+.PN readv
+system call fills an area completely before proceeding
+to the next area.
+.PP
+On objects that are capable of seeking, the
+.PN read
+starts at a position
+given by the pointer associated with
+.IR d .
+See 
+.MS lseek 2 
+for more information.
+Upon return from
+.PN read ,
+the pointer is incremented by the number of bytes actually read.
+.PP
+Objects that are not capable of seeking always read from the current
+position.  The value of the pointer associated with such an object is undefined.
+.PP
+When attempting to read from an empty pipe (or FIFO):
+.IP \(bu 5
+If no process has the pipe open for writing, 
+.PN read
+returns zero to indicate end-of-file.
+.IP \(bu 5
+If some process has the pipe open for writing and O_NDELAY or O_NONBLOCK is
+set, 
+.PN read
+returns a \-1,
+.I errno
+is to [EWOULDBLOCK].  If some process has the 
+pipe open for writing and O_NDELAY and O_NONBLOCK are clear, 
+.PN read
+blocks until data is written or the pipe is closed by all 
+processes that opened the pipe for writing.
+.PP
+Upon successful completion,
+.PN read
+and
+.PN readv
+return the number of bytes actually read and placed in the buffer.
+The system reads the number of bytes requested if
+the descriptor references a file which has that many bytes left
+before the end-of-file; this is not true in any other instance.
+.PP
+Unless the SV_INTERRUPT bit has been set for a signal, the 
+.PN read 
+system calls are automatically restarted when a process receives a
+signal while waiting for input. See also 
+.MS sigvec 2 .
+.SH Return Values
+If the returned value is 0, then
+end-of-file has been reached.
+.PP
+If the read is successful, the
+number of bytes actually read is returned.
+Otherwise, a \-1 is returned and the global variable
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+.NXR "read system call" "diagnostics"
+The
+.PN read
+and
+.PN readv
+system calls fail if one or more of the following are true:
+.TP 15
+[EBADF]
+The
+.I d
+argument is not a valid file or socket descriptor open for reading.
+.TP 15
+[EFAULT]
+The
+\fIbuf\fP points outside the allocated address space.
+.TP 15
+[EINTR]
+A read from a slow device was interrupted before
+any data arrived by the delivery of a signal.
+.TP 15
+[EIO]
+An I/O error occurred while reading from the file system.
+.TP 15
+[ESTALE]
+The file handle given in the argument is invalid. The
+file referred to by that file handle no longer exists
+or has been revoked.
+.TP 15
+[EWOULDBLOCK]
+The O_DELAY or O_NONBLOCK flag is set for the file descriptor and 
+the process would be delayed in the read operation. 
+.PP
+In addition, 
+.PN readv
+may return one of the following errors:
+.TP 15
+[EINVAL]
+The
+.I iovcnt
+was less than or equal to 0, or greater than 16.
+.TP 15
+[EINVAL]
+One of the
+.I iov_len
+values in the
+.I iov
+array was negative.
+.TP 15
+[EINVAL]
+The sum of the
+.I iov_len
+values in the
+.I iov
+array overflowed a 32-bit integer.
+.TP 15
+[EFAULT]
+Part of the 
+.I iov
+points outside the process's allocated address space.
+.TP
+[ETIMEDOUT]
+A connect request or remote file operation failed
+because the connected party did not respond after a period
+of time determined by the communications protocol.
+.SH Environment
+.NXR "read system call" "System V and"
+SYSTEM_FIVE
+.PP
+When you use the System V environment, note the following:
+.IP \(bu 5
+If your program is compiled in this environment, a 
+.PN read
+and
+.PN readv
+system call 
+returns 0 if the file has been set up for non-blocking
+I/O and the read would block.
+.PP
+.IP \(bu 5
+In this environment, the parameter
+.I nbytes
+is of type 
+.I int 
+instead of type
+.I unsigned.
+.PP
+POSIX
+.PP
+In the POSIX environment, [EAGAIN] is returned in
+.I errno
+instead of [EWOULDBLOCK].
+.SH See Also
+dup(2), open(2), pipe(2), sigvec(2), socket(2), socketpair(2)

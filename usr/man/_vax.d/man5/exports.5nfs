@@ -1,0 +1,169 @@
+.\" SCCSID: @(#)exports.5nfs	3.4	8/5/88
+.TH exports 5nfs
+.SH Name
+exports \- defines NFS file systems to be exported
+.SH Syntax
+.B /etc/exports
+.SH Description
+.NXR "NFS file system" "accessing remotely"
+.NXR "exports file" "format"
+.NXAM "mountd daemon" "exports file"
+The 
+.PN /etc/exports
+file describes the local file systems and directories
+that can be mounted by
+remote hosts through the use of the NFS protocol.
+The
+.PN exports 
+file can also be used to restrict access to a particular set of remote
+systems.
+The
+.PN mount
+request daemon 
+.MS mountd 8nfs
+accesses the
+.PN exports
+file each time it receives a mount request from an NFS client.
+.PP
+Each entry in the 
+.PN /etc/exports 
+file consists of a file system or directory
+name followed by an optional list of options or
+an optional list of identifiers or both. The identifiers 
+define which remote hosts can mount that particular file system
+or directory.
+.\" By convention,
+.\" each file system name must be explicitly defined starting
+.\" at the root directory of the file system.
+The identifiers listed beside the name of each file system or directory 
+can be either host names or YP netgroups names.  When the
+.PN mountd
+daemon receives a mount request from a client,
+it searches for a match in the list of identifiers, first by checking
+the client host name with the host name identifiers
+and second by checking the client host name in a YP netgroups.
+When it finds a match,
+.PN mountd
+makes that file system or directory available to the requesting client.
+.PP
+The exports file format is defined as follows:
+.EX
+pathname [-r=#] [-o] [identifier_1 identifier_2 ... identifier_n]
+.EE
+or
+.EX
+#anything
+.EE
+.TP 15
+.PN pathname : 
+Name of a mounted local file system or a directory of a
+mounted local file system . The 
+.PN pathname 
+must begin in column 1.
+.TP
+.I options: 
+.RS 15
+.IP \-r=# 8
+Map client superuser access to uid #.  If you want to
+allow client superusers access to the file system or
+directory with the same permissions as a local superuser, 
+use 
+.PN \-r=0 .
+Use 
+.PN \-r=0 
+only if you trust the superuser on
+the client system.  The default is 
+.PN \-r=2 ,
+which maps a 
+client superuser to nobody.  This limits access to world 
+readable files.
+.IP \-o
+Export file system or directory read-only.
+.IP
+The options can be applied to both file system and directory 
+entries in 
+.PN /etc/exports .
+.RE
+.TP 15
+.I identifiers:
+Host names or netgroups, or both, separated by white space, that 
+specify the access list for this export.  Host names can optionally
+contain the local BIND domain name.  For more information on BIND,
+see the 
+\fIGuide to the BIND/Hesiod Service\fP
+.NT
+If no hosts or netgroups are specified, the 
+.PN mount 
+daemon exports this file system or directory to anyone 
+requesting it.
+.NE
+.PP
+A number sign (#) anywhere in the line marks a comment that 
+extends to the end of that line.
+.PP
+A whitespace character in the left-most position of a line indicates a 
+continuation line.
+.PP
+Each file system that you want to allow clients to mount must be
+explicitly defined.  Exporting only the root (/) will not allow clients
+to mount 
+.PN /usr .  
+Exporting only 
+.PN /usr 
+will not allow clients to mount
+.PN /usr/local , 
+if it is a file system.  
+.PP
+Duplicate directory entries are not allowed.  The first entry is valid
+and following duplicates are ignored.
+.PP
+Desired export options must be explicitly specified for each exported
+resource: file system or directory.  If a file system and subdirectories 
+within it are exported, the options associated with the file system are 
+not ``inherited''.  You do not need to export an entire file system to allow 
+clients to mount subdirectories within it.
+.PP
+The access list associated with each exported resource identifies which
+clients can mount that resource with the specified options.  For
+example, you can export an entire file system read-only, with a 
+subdirectory within it exported read-write to a subset of clients.
+If a client that is not identified in the export access list of a directory 
+attempts to mount it, then access is checked against the closest exported
+ancestor.  If mount access is allowed at a higher level in the directory
+tree of the file system, the export options associated with the successful 
+match will be in effect.
+.PP
+If you are concerned with nfs security, all ufs file systems exported
+via nfs should be ufs mounted with the 
+.PN nodev
+option. All 
+ufs file systems exported via nfs with the 
+.PN \-r=0
+option specified
+in the 
+.PN /etc/exports
+file should be ufs mounted with
+the 
+.PN nosuid 
+option.
+.SH Examples
+.EX 0
+/usr alpha beta         # export /usr to hosts alpha and beta, client
+                          superuser maps to uid \-2 and read\-write
+                          access is permitted
+
+/usr/staff/doe clients  # export directory to hosts in netgroup clients
+
+/usr/man/man1 \-o        # export directory read\-only to everyone
+
+/usr/local \-r=0 beta    # export file system to beta, superuser
+                          on beta maps to local superuser (uid=0)
+.EE
+.SH Files
+.PN /etc/exports
+.SH See Also
+hosts(5), mountd(8nfs), netgroup(5yp)
+.br
+\fIGuide to the BIND/Hesiod Service\fP
+.br
+\fIIntroduction to Networking and Distributed System Services\fP

@@ -1,0 +1,79 @@
+.\" SCCSID: @(#)vfork.2	8.1	9/11/90
+.TH vfork 2
+.SH Name
+vfork \- spawn new process in a virtual memory-efficient way
+.SH Syntax
+.B pid = vfork()
+.br
+.B int pid;
+.SH Description
+.NXR "vfork system call"
+.NXR "process" "creating efficiently"
+.NXA "fork system call" "vfork system call"
+.NXA "vfork system call" "fork system call"
+The
+.PN vfork
+can be used to create new processes without fully copying the address
+space of the old process, which is inefficient in a paged
+environment.  It is useful when the purpose of 
+.PN fork 
+would have been to create a new system context for an
+.PN execve .
+The
+.PN vfork
+system call differs from
+.PN fork
+in that the child borrows the parent's memory and thread of
+control until a call to 
+.PN execve 
+or an exit (either by a call to
+.MS exit 2
+or abnormally.)
+The parent process is suspended while the child is using its resources.
+.PP
+The
+.PN vfork
+system call returns a value of zero (0) in the child's context and,
+later, the pid of the child in
+the parent's context.
+.PP
+The
+.PN vfork
+system call
+can normally be used just like
+.PN fork .
+It does not work, however, to return while running in the childs context
+from the procedure which called
+.PN vfork ,
+because the eventual return from
+.PN vfork
+would then return to a nonexistent stack frame.
+Be careful, also, to call
+.I _exit
+rather than
+.I exit
+if you cannot call
+.PN execve ,
+because
+.I exit
+will flush and close standard I/O channels and thereby cause problems in the
+parent process's standard I/O data structures.
+Even with
+.PN fork
+it is wrong to call
+.IR exit ,
+because buffered data would then be flushed twice.
+.SH Restrictions
+To avoid a possible deadlock situation,
+processes which are children in the middle
+of a
+.PN vfork
+are never sent SIGTTOU or SIGTTIN signals.  Rather,
+output or
+.IR ioctl s
+are allowed, and input attempts result in an end-of-file indication.
+.SH Diagnostics
+Same as for
+.PN fork .
+.SH See Also
+execve(2), fork(2), sigvec(2), wait(2)

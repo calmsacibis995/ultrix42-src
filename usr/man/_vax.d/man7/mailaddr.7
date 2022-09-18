@@ -1,0 +1,159 @@
+.TH mailaddr 7
+.SH Name
+mailaddr \- mail addressing description
+.SH Description
+.NXAM "mail program" "mailaddr keyword"
+.NXAM "mail program" "sendmail program"
+.NXR "mailaddr keyword"
+.NXB "mail" "address protocol"
+Mail addresses are based on the ARPANET protocol
+listed in the SEE ALSO section of this reference page.
+In addition, the DECnet address format can be used, if DECnet is
+installed on your system.
+.PP
+To send mail to DECnet users, use the following address format:
+.EX
+nodename::username
+.EE
+In this case, 
+.I nodename 
+is the name of the DECnet system, or host, on which the 
+target user resides.
+.PP
+Addresses based on the ARPANET protocol use the 
+following general format:
+.EX
+user@domain
+.EE
+A domain is a hierarchical dot-separated list of subdomains.
+For example, the following address is interpreted from right to left:
+.EX
+eric@monet.Berkeley.ARPA
+.EE
+In the previous example, the message is directed to the ARPA name tables
+(which do not correspond exactly to the physical ARPANET).  The
+message then proceeds to the Berkeley
+gateway, after which it is directed to the local host 
+.PN monet .
+When the message reaches 
+.PN monet , 
+it is delivered to the user 
+.PN eric .
+.PP
+Unlike some other forms of addressing, this does not imply any routing.
+Thus, an address that is specified as an ARPA address
+can travel by an alternate route if that route is more convenient
+or efficient.  For example, from Berkeley, the message could go
+directly to 
+.PN monet 
+over the Ethernet,
+rather than using the Berkeley ARPANET gateway.
+.PP
+.B Abbreviations.
+.NXR "mail" "abbreviating address"
+In some instances, you do not have to type an entire domain name.
+Generally, any information that follows the first dot may be omitted
+if the sending and receiving domains are the same.
+For example, a user on calder.Berkeley.ARPA can eliminate the .Berkeley.ARPA
+when sending to eric@monet, because the sending and receiving
+hosts are the same.
+.PP 
+Other abbreviations are permitted when conflicts do not exist.
+For example, Berkeley ARPANET hosts can be accessed without
+adding the .ARPA, if their names do not conflict with a local
+host name.
+.PP 
+.B Compatible Addresses.
+.NXR "mail" "compatible addresses"
+To provide compatibility with the previous mail system, some
+old address formats are converted to the new
+format.  In particular, host::user is converted to user@host
+providing consistency with the 
+.MS rcp 1c
+command.  
+.PP 
+The syntax host!user is converted to user@host.UUCP.
+Before being sent on, user@host.UUCP is normally converted back to the 
+host!user form. This conversion is done for compatibility 
+with older UUCP hosts.
+.PP 
+The current implementation cannot automatically route messages
+through the UUCP network.
+.NXR "mail" "uucp and"
+Thus, you must explicitly tell the mail system
+all the hosts your messages must be sent through
+to arrive at its final destination.
+.PP
+.B Case Distinctions.
+Domain names (that is, anything following the at sign (@))
+can be a combination of upper- and lowercase characters
+with the exception of UUCP hostnames.
+Most hosts accept both upper- and lowercase in user names,
+with the exception of MULTICS sites.
+.PP
+.B Differences with ARPA Protocols.
+.NXR "mail" "ARPA protocol and"
+Although the UNIX addressing scheme
+is based on the ARPA mail addressing protocols,
+there are some significant differences.
+.PP 
+Currently, the only top level domain defined by ARPA is the \.ARPA 
+domain itself.
+This is further restricted to having only one level of host specifier.
+That is,
+the addresses that ARPA accepts must be in the format
+user@host.ARPA (where `host' is one word).
+For example, the following address is not legal under the
+ARPA protocols:
+.EX
+eric@monet.Berkeley.ARPA
+.EE
+Thus, the previous address would be converted to a different
+format on output to the ARPANET.  For example:
+.EX
+eric%monet@Berkeley.ARPA
+.EE
+.B Route-addrs.
+.NXR "mail" "routing"
+In some instances, a message must be routed through several hosts
+to reach its final destination.  Usually, this action is invisible
+to the sender; however, it is sometimes desirable to route
+a message manually.  Addresses that are moved manually are
+called route-addrs.  The syntax is as follows:
+.EX
+<@hosta,@hostb:user@hostc>
+.EE
+The previous example directs the message to 
+.IR hosta ,
+to 
+.IR hostb , 
+and finally to 
+.IR hostc .  
+This route is used regardless of
+a more efficient path to hostc.
+.PP 
+Route-addrs occur frequently on return addresses,
+because they are generally augmented by the software
+at each host.
+It is possible to ignore all but the user@host
+part of the address to determine the actual sender.
+.PP
+.B Postmaster.
+.NXR "postmaster" "defined"
+Every site must have a user or user alias
+designated as postmaster to which problems with the mail system can
+be addressed.
+.PP
+.B CSNET.
+.NXR "CSNET site" "sending mail to"
+To send messages to CSNET, use the following syntax:
+.EX
+user.host@UDel-Relay
+.EE
+.SH See Also
+mail(1), sendmail(8)
+.br
+Crocker, D. H.,
+Standard for the Format of Arpa Internet Text Messages, RFC822
+.\"This cross-reference is valid and should stay in manual page.
+.NXE "mail" "address protocol"

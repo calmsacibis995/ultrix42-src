@@ -1,0 +1,51 @@
+.\" SCCSID: @(#)intro.3m	8.1	9/11/90
+.TH intro 3m
+.SH Name
+intro \- introduction to mathematical library functions
+.SH Description
+.NXR "intro(3m) keyword"
+.NXS "math library" "libm library"
+.NXR "libm library" "introduction"
+These functions constitute the math library,
+.I libm.
+They are automatically loaded as needed by the FORTRAN compiler
+.MS f77 1 .
+The link editor searches this library under the \*(lq\-lm\*(rq option.
+Declarations for these functions may be obtained from the include file
+.RI <math.h>.
+.NT "VAX Only"				
+On VAX machines, the GFLOAT version of
+.IR libm
+is used when you use the
+.MS ld 1
+command with the  
+.B lcg
+option. 
+Note that you must use 
+the GFLOAT version of
+.IR libm
+with modules compiled using the
+.MS cc 1
+with the 
+.B \-Mg
+option. 
+.sp 
+Also on VAX machines, note that neither the compiler nor the linker
+.MS ld 1
+can detect when mixed double floating point
+types are used, and the program may produce
+erroneous results if this occurs.
+.NE
+.SH System V Compatibility
+This library contains System V compatibility features
+that are available to general ULTRIX programs.  For a discussion
+of how these features are documented, and how to specify that
+the System V environment is to be used in compiling and linking
+your programs,
+see
+.MS intro 3 .
+.SH Files
+.nf
+/usr/lib/libma
+/usr/lib/libmg.a  (VAX only)
+.fi

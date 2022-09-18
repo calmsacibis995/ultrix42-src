@@ -1,0 +1,20 @@
+#ln03s Printer Definition
+	:af=/usr/adm/lpacct:\
+	:br#4800:\
+	:ct=dev:\
+	:fc#0177777:\
+	:fs#03:\
+	:if=/usr/lib/lpdfilters/ln03of:\
+	:lf=/usr/adm/lperr:\
+	:lp=/dev/tty01:\
+	:mc#20:\
+	:mx#0:\
+	:of=/usr/lib/lpdfilters/ln03of:\
+	:pl#66:\
+	:pw#80:\
+	:rw:\
+	:sd=/usr/spool/lpd:\
+	:uv=4.0:\
+	:xc#0177777:\
+	:xf=/usr/lib/lpdfilters/xf:\
+	:xs#044000:

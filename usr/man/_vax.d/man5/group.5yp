@@ -1,0 +1,80 @@
+.\" SCCSID: @(#)group.5yp	8.1	9/11/90
+.TH group 5yp
+.SH Name
+group \- group file in a Yellow Pages environment
+.SH Description
+.NXR "group file (YP)"
+
+For each group, the
+.PN group
+file contains:
+.HP 10
+Group name
+.br
+.ns
+.HP 10
+Encrypted password
+.br
+.ns
+.HP 10
+Numerical group ID
+.br
+.ns
+.HP 10
+Comma-separated list of all users allowed in the group
+.PP
+This is an ASCII file.
+The fields are separated
+by colons.
+Each group is separated from the next by a new-line.
+If the password field is null, no password is needed.
+.PP
+This file resides in the 
+.PN /etc 
+directory.
+Because of the encrypted
+passwords, it can and does have general read
+permission and can be used, for example,
+to map numerical group ID's to names.
+.PP
+A group file can have a line beginning with a plus (+),
+which means to incorporate entries from the Yellow Pages.
+There are two styles of + entries:
+All by itself, + means to insert the entire contents
+of the Yellow Pages group file at that point;
+.I +name
+means to insert the entry (if any) for
+.I name
+from the Yellow Pages at that point.
+If a + entry has a password or group member field that is not null,
+the contents of that field will override
+what is contained in the Yellow Pages.
+The numerical group ID field cannot be overridden.
+.SH Examples
+.EX
++myproject:::bill, steve
++:
+.EE
+.PP
+If these entries appear at the end of a group file, then the group
+.I myproject
+will have members
+.IR "bill " and " steve" ,
+and the password and group ID of the Yellow Pages entry for the group
+.I myproject.
+All the groups listed in the Yellow Pages
+will be pulled in and placed after the entry for
+.I myproject.
+.SH Restrictions
+The 
+.MS passwd 1
+command will not change group passwords.
+.SH Files
+.TP 20
+.PN /etc/group
+ULTRIX file system group file
+.TP 25
+.PN /etc/yp/{domain}/group
+Yellow Pages group map
+.SH See Also
+yppasswd(1yp), setgroups(2), crypt(3), initgroups(3x), passwd(5yp)

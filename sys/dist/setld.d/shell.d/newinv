@@ -1,0 +1,195 @@
+#!/bin/sh
+#	Merge Inventory with Software Build
+#
+# "@(#)newinv	4.1 (ULTRIX) 7/2/90"
+#
+# Three fields database - new database
+#	facility	path	subsetname
+#
+#/*
+# *			Copyright (c) 1985 by
+# *		Digital Equipment Corporation, Maynard, MA
+# *			All rights reserved.
+# *								
+# *	This software is furnished under a license and may be used and
+# *	copied  only  in accordance with the terms of such license and
+# *	with the  inclusion  of  the  above  copyright  notice.   This
+# *	software  or  any  other copies thereof may not be provided or
+# *	otherwise made available to any other person.  No title to and
+# *	ownership of the software is hereby transferred.		
+# *								
+# *	The information in this software is subject to change  without
+# *	notice  and should not be construed as a commitment by Digital
+# *	Equipment Corporation.					
+# *								
+# *	Digital assumes no responsibility for the use  or  reliability
+# *	of its software on equipment which is not supplied by Digital.
+#*/
+#
+#	Mods:
+#
+#	000	Summer	1985	ccb
+#		Initial version for ULTRIX-32w V1.0
+#	001	7-JAN-1988	ccb
+#		Fix initial blank bug caused when user gets out of
+#		vi invoked on empty MAS.{EXTRA,DEAD}
+#
+
+
+PROG=$0
+BYE="failed. (exiting) Master inventory in .bkp file."
+
+EDITOR=${EDITOR-vi}
+
+BKP=.bkp
+TMP=.tmp
+EXTRA=.extra
+DEAD=.dead
+JOIN=.join
+
+# process args.
+case $# in
+0|1)	echo "Usage: $0 <masterdatabase>  <source dir> <source dir...>"
+	exit 1
+	;;
+*)	MAS=$1
+	shift
+	;;
+esac
+
+# is the old master here?
+if [ ! -f $MAS  ]
+then
+	echo "$PROG: where is $MAS?"
+	exit 1
+else
+# backup old master
+	cp $MAS $MAS$BKP
+fi
+
+# is the image valid.
+echo -n "Scanning new baselevel files..."
+> $MAS$TMP
+while test $# -gt 0
+do
+	(cd $1;find . -print)|grep -v '^$' >> $MAS$TMP ||
+	{
+		echo "$BYE"
+		exit 1
+	}
+	shift
+done
+
+echo -n "done.
+
+Sorting inventories..."
+sort -o $MAS$TMP $MAS$TMP &
+sort -o $MAS +1 -2 $MAS
+wait
+echo -n "done.
+
+Joining..."
+join -a1 -a2 -j1 2 -o 1.1 1.2 2.1 1.3 $MAS $MAS$TMP > $MAS$JOIN ||
+{
+	echo "$BYE"
+	exit 1
+}
+
+echo -n "done.
+
+Awking..."
+
+# new ones.
+awk 'NF == 1 {printf "%s\n", $1}' $MAS$JOIN > $MAS$EXTRA ||
+{
+	echo "*** 1a Field *** $BYE"
+	exit 1
+}
+
+# dead ones.
+awk 'NF == 3 {printf "%s\t%s\t%s\n", $1, $2, $3}' $MAS$JOIN > $MAS$DEAD ||
+{
+	echo "*** 3 Fields *** $BYE"
+	exit 1
+}
+
+# old (continuing) ones.
+awk 'NF == 4 {printf "%s\t%12s\t%s\n", $1, $2, $4}' $MAS$JOIN > $MAS ||
+{
+	echo "*** 4 Fields *** $BYE"
+	exit 1
+}
+
+echo "done."
+
+#+AUDIT	001 begins here
+#		solution is to not edit empty files and not to merge in
+#		files that have been emptied down to a single newline.
+#
+[ -s $MAS$DEAD ] &&
+{
+	echo -n "
+
+	*** THERE ARE FILES THAT ARE NO LONGER BEING BUILT ***
+
+	You will be placed in the editor with the inventory
+		records corresponding to these files.
+
+	Any records remaining in the file when you exit the
+	editor will become part of the new inventory.
+
+	Type <RETURN> when you are ready or CTRL/C to quit: "
+
+	read X
+
+	$EDITOR $MAS$DEAD
+}
+
+[ -s $MAS$EXTRA ] &&
+{
+	echo -n "
+
+	*** THIS BUILD CONTAINS FILES THAT ARE NOT IN THE PREVIOUS BUILD ***
+
+	You will be placed in the editor with the file containing
+		the names of these new files.
+
+	If you wish these new files to become part of the product,
+		you must convert the line for the wanted files into
+		an inventory record.
+
+	Any records remaining in the file when you exit the editor
+		will become part of the new inventory.
+
+	Type <RETURN> when you are ready or CTRL/C to quit: "
+	read X
+
+	$EDITOR $MAS$EXTRA
+}
+
+echo -n "Merging..."
+
+set xx `wc -c $MAS$EXTRA`
+case "$2" in
+1)	;;
+*)	cat $MAS$EXTRA >> $MAS
+esac
+
+set xx `wc -c $MAS$DEAD`
+case "$2" in
+1)	;;
+*)	cat $MAS$DEAD >> $MAS
+esac
+#-AUDIT 001	ends here
+
+echo -n "Sorting..."
+
+sort -o $MAS +1 -2 $MAS ||
+{
+	echo "BYE"
+	exit 1
+}
+
+echo "done."
+exit 0
+

@@ -1,0 +1,42 @@
+.TH sp 4 VAX
+.SH Name
+sp \- Small VAX user supplied device driver interface
+.SH Syntax
+\fBdevice  sp0 at uba0 csr 0x39000000 vector spintr\fR
+.SH Description
+The MicroVAX 2000 and MicroVAX 3100 system modules both have
+connectors that allow for the installation of a single option
+.NXR "sp driver"
+.NXR "drivers" "sp"
+module.  For example, the DHT32 is an option module (see
+.MS sh 4 ).  
+The ULTRIX software includes drivers for the DHT32 and other 
+supported options.
+.PP
+The
+.PN sp
+driver is a set of routines that provides the linkages necessary
+to add a user-written device driver to the ULTRIX operating
+system.  The 
+.PN sp
+files listed in the Files Section contain comments about
+interfacing a new driver to the ULTRIX operating system kernel.
+.SH Restrictions
+The
+.PN sp
+driver is not a guide to writing device drivers.
+.PP
+This driver can only be used with the MicroVAX 2000, MicroVAX 3100,
+VAXstation 2000, and the VAXstation 3100 systems. The usefulness
+of the 
+.PN sp
+driver on the VAXstation 2000 and VAXstation 3100 is further limited
+by option hardware mounting constraints on those systems.
+.SH Files
+.PN /sys/data/sp_data.c
+.br
+.PN /sys/io/uba/spreg.h
+.br
+.PN /sys/io/uba/sp.c
+.SH See Also
+sh(4)

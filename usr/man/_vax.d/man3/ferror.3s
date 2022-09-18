@@ -1,0 +1,72 @@
+.\" SCCSID: @(#)ferror.3s	2.1	3/10/87
+.TH ferror 3s 
+.SH Name
+ferror, feof, clearerr, fileno \- stream status inquiries
+.SH Syntax
+.B #include <stdio.h>
+.PP
+.B feof(stream)
+.br
+.SM
+.B FILE
+.B *stream;
+.PP
+.B ferror(stream)
+.br
+.SM
+.B FILE
+.B *stream
+.PP
+.B void clearerr(stream)
+.br
+.SM
+.B FILE
+.B *stream
+.PP
+.B fileno(stream)
+.br
+.SM
+.B FILE
+.B *stream;
+.SH Description
+.NXR "ferror subroutine"
+.NXR "feof subroutine"
+.NXR "clearerr subroutine"
+.NXR "fileno subroutine"
+.NXR "stream" "status queries"
+The
+.PN ferror
+function returns nonzero when an error has 
+occurred reading or writing the named
+.IR stream ,
+otherwise zero.
+Unless cleared by
+.PN clearerr ,
+the error indication lasts until
+the stream is closed.
+.PP
+The
+.PN feof
+function returns nonzero when end of file is read on the named input
+.IR stream ,
+otherwise zero.
+.PP
+The
+.PN clearerr
+function resets both the error and EOF
+indicators on the named
+.IR stream .
+.PP
+The
+.PN fileno
+function returns the integer file descriptor
+associated with the
+.IR stream ,
+see
+.MS open 2 .
+.PP
+These functions
+are implemented as macros;
+they cannot be redeclared.
+.SH See Also
+open(2), fopen(3s)

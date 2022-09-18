@@ -1,0 +1,31 @@
+.\" SCCSID: @(#)echo.1	8.1	9/11/90
+.\" SCCSID: @(#)echo.1	8.1	9/11/90
+.TH echo 1
+.SH Name
+echo \- echo arguments
+.SH Syntax
+.B echo
+[\fB\-n\fR] [\|\fIarg\fR...\|] 
+.SH Description
+.NXR "echo command (general)"
+.NXR "error message" "producing"
+.NXA "sh command interpreter" "echo command"
+.NXA "csh command interpreter" "echo command"
+The 
+.PN echo
+command writes its arguments separated by blanks and terminated by
+a new line on the standard output.  
+.SH Options
+.IP \fB\-n\fR 5
+Suppresses newlines from output.
+.SH Examples
+The
+.PN echo
+command is useful for producing diagnostics in
+shell programs and for writing constant data on pipes.
+.sp
+To send diagnostics to the standard error file, type the
+following:
+.EX
+echo ... 1>&2
+.EE

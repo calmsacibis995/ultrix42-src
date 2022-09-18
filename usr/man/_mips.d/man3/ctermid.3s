@@ -1,0 +1,59 @@
+.\" SCCSID: @(#)ctermid.3s	8.1	9/11/90
+.TH ctermid 3s
+.SH Name
+ctermid \- generate file name for terminal
+.SH Syntax
+.B #include <stdio.h>
+.PP
+.B char \(**ctermid(s)
+.br
+.B char \(**s;
+.SH Description
+.NXR "ctermid subroutine"
+.NXA "ctermid subroutine" "ttyname subroutine"
+.NXR "terminal" "generating file name for"
+The
+.PN ctermid
+subroutine generates the pathname of the controlling
+terminal for the current process, and stores it in a 
+string.
+.PP
+If
+.I s\^
+is a NULL
+pointer, the string is stored in an internal static area,
+the contents of which are overwritten at the next call to
+.PN ctermid ,
+and the address of which is returned.
+Otherwise,
+.I s\^
+is assumed to point to a character array of at least
+.PN L_ctermid
+elements.  The pathname is placed in this array and the value of
+.I s\^
+is returned.
+The constant
+.PN L_ctermid
+is defined in the <stdio.h> header file.
+.NXR "ctermid subroutine" "compared with ttyname subroutine"
+.NT
+The difference between
+.PN ctermid
+and 
+.MS ttyname 3
+is that
+.PN ttyname
+must be handed a file descriptor and returns the actual name of
+the terminal associated with that file descriptor, while
+.PN ctermid
+returns a string ( 
+.PN /dev/tty
+) that will refer to the
+terminal if used as a file name.
+Thus
+.PN ttyname
+subroutine is useful only if the process already has at least one file open
+to a terminal.
+.NE
+.SH See Also
+ttyname(3)

@@ -1,0 +1,361 @@
+.TH mark 1mh
+.SH Name
+mark \- mark messages
+.SH Syntax
+.NXR "mark command"
+.NXR "message sequences"
+.B mark
+[
+.I +folder
+] [
+.I msgs
+] [
+.I options
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+Use the 
+.PN mark
+command to assign a name to a sequence of messages 
+within the current folder.  
+.PP
+A sequence is a number of messages that are grouped together
+under a name.
+You can then use that name with any MH command 
+instead of a message number,
+to perform the command on all the messages in the sequence.
+You can still continue to handle messages individually
+when they belong to a sequence, just as you did before.
+Sequences are specific to a particular folder.
+You can use the same name for sequences in different folders
+without causing problems.
+.PP
+By default, 
+.PN mark
+operates on the sequences in the current folder.
+You can specify another folder by using the
+.I +folder 
+argument.
+.PP
+When you create a sequence using
+.PN mark ,
+the ordering of messages within the folder remains unchanged.  
+So if messages 3, 7 and 9 are put into the sequence, 
+they are still numbered as messages 3, 7 and 9 
+when you use 
+.PN scan
+to list the contents of the folder.
+The
+.PN scan
+command does not show you what sequences messages belong to;
+you must use
+.PN mark
+to find this information.
+.PP
+The 
+.PN mark
+command is used only to modify sequences, not messages.
+If you delete a message from a sequence using 
+.PN mark ,
+it remains in the folder.
+However, when a message is deleted or moved from a folder 
+(for example, using
+.MS rmm 1mh
+or
+.MS refile 1mh ),
+it is removed from all the sequences in that folder.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-add" 10
+Adds messages to sequences.
+The
+.PN mark
+command takes the messages specified by the 
+.I msgs 
+argument, and adds them to the sequence named by using the 
+.B \-sequence
+.I name
+option.
+If no 
+.I msgs 
+argument is given, the current message is added to the sequence.
+This option can also be used in conjunction with the 
+.B \-zero
+option.
+.IP
+This option cannot be used in conjunction with the
+.B \-delete 
+or 
+.B \-list
+options.
+If you attempt to use two or more of these options together,
+.PN mark
+takes the last occurrence of any of them,
+and ignores any previous occurrences.
+.\"
+.IP "\-delete" 10
+Deletes messages from sequences.
+The
+.PN mark 
+command removes the messages specified by the
+.I msgs 
+argument from the named sequences.
+As with 
+.BR \-add ,
+the sequences are specified using the
+.B \-sequence
+.I name
+option.
+If no 
+.I msgs 
+argument is given, the current message is removed 
+from the named sequences.
+This option can also be used in conjunction with the 
+.B \-zero 
+option.
+.IP
+This option cannot be used in conjunction with the
+.B \-add
+or
+.B \-list
+options.
+If you attempt to use two or more of these options together,
+.PN mark
+takes the last occurrence of any of them,
+and ignores any previous occurrences.
+.\"
+.IP "\-help" 10
+Prints a list of the valid options to this command.
+.\"
+.IP "\-list" 10
+Lists the sequences defined for the current folder 
+and the messages associated with those sequences.
+If you wish to list only particular sequences in a folder,
+you can specify them by using the 
+.B \-sequence
+.I name
+option.
+If you do not use this option, 
+.PN mark 
+lists all the sequences in the current folder.
+You can also list sequences in another folder by using the 
+.I +folder
+argument.
+.IP
+This option cannot be used in conjunction with the
+.B \-add
+or
+.B \-delete
+options.
+If you attempt to use two or more of these options together,
+.PN mark
+takes the last occurrence of any of them,
+and ignores any previous occurrences.
+.IP
+The
+.PN mark
+command automatically lists the sequences in the folder
+unless you use the 
+.B \-add
+or
+.B \-delete
+options, or unless you give a 
+.I msgs 
+argument.
+.\"
+.IP "\-public" 10
+.PD 0
+.IP "\-nopublic" 10
+.PD
+Indicates that the sequence being created 
+should be made readable for other MH users.
+When you use the 
+.B \-add
+option to create a sequence, the
+.B \-public
+option makes the sequence public, that is, 
+readable to other MH users.
+By contrast, the 
+.B \-nopublic
+option indicates that the sequence should be private,
+or exclusive to your own MH environment.
+.\"
+.IP "\-sequence \fIname..." 10
+Specifies the sequence(s) you wish to list or modify.
+You use this option in conjunction with the
+.BR \-add ,
+.BR \-delete ,
+and 
+.B \-list
+options, to name the sequences you wish to 
+add messages to, delete messages from, or list.
+You can name more than one sequence by listing the names
+with a space separating them; you do not need to repeat
+.B \-sequence
+before each sequence name.
+.\"
+.IP "\-zero" 10
+.PD 0
+.IP "\-nozero" 10
+.PD
+Modifies the behavior of the 
+.B \-add
+and 
+.B \-delete
+options.
+.IP 
+If you use the 
+.B \-zero
+option with
+.BR \-add ,
+all messages are removed from the named sequence
+before the new messages are added to it.
+This means that the sequence contains only the new messages 
+that you have just added.
+The
+.B \-nozero
+option simply adds the new messages to the existing sequence,
+without deleting any of the messages already in the sequence.
+This is the default behavior.
+.IP
+If you use 
+.B \-zero 
+with 
+.BR \-delete ,
+all of the messages in the folder are added to the named sequence,
+and then the messages you specify are deleted from the sequence.
+This means that the sequence contains all the messages in the folder
+except those that you have named.
+The
+.B \-nozero
+option simply removes the messages you specify from the sequence,
+leaving the rest of the contents of the sequence intact.
+This is the default behavior.
+.\"
+.PP
+The defaults for this command are:
+.IP
+.I +folder
+defaults to the current folder
+.br
+.I msgs
+defaults to the current message 
+(or all messages if 
+.B \-list
+is specified)
+.br
+.B \-add
+if a 
+.I msgs
+argument is specified, 
+.B \-list
+otherwise
+.br
+.B \-nopublic
+if the folder is read-only, 
+.B \-public
+otherwise
+.br
+.B \-nozero
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+MH allows a maximum of ten sequences in any folder.
+.PP
+The names of sequences must consist entirely of alphabetic
+or numeric characters, and must begin with an alphabetic character.
+Punctuation is not allowed.
+In addition, certain names are reserved for use by MH.
+These include
+\f(CWfirst\fR,
+\f(CWnext\fR,
+\f(CWprev\fR,
+and
+\f(CWcur\fR.
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+The first example shows how 
+.PN mark 
+lists all the sequences in a named folder:
+.EX
+% \f(CBmark\f(CW
+cur: 20
+Admail: 1 5 9-12
+test: 3-7
+.EE
+This output is identical to that produced by using the 
+.B \-list
+option.
+.PP
+The next example creates a sequence called \f(CWodd\fR,
+containing the first five odd-numbered messages:
+.EX
+% \f(CBmark -add -sequence odd 1 3 5 7 9\f(CW
+% \f(CBmark\f(CW
+cur: 20
+Admail: 1 5 9-12
+odd: 1 3 5 7 9
+test: 3-7
+.EE
+.PP
+The next example deletes message 3 from the sequences 
+\f(CWtest\fR and \f(CWodd\fR:
+.EX
+% \f(CBmark -delete -sequence test odd 3\f(CW
+% \f(CBmark\f(CW
+cur: 20
+Admail: 1 5 9-12
+odd: 1 5 7 9
+test: 4-7
+.EE
+.PP
+The final example illustrates how the 
+.B \-zero
+option works with
+.BR \-add .
+All messages are first removed from the sequence \f(CWtest\fR,
+and then messages 1 to 3 are added.
+The result is that \f(CWtest\fR contains only messages 1 to 3:
+.EX
+% \f(CBmark -add -zero -sequence test 1-3\f(CW
+% \f(CBmark\f(CW
+cur: 20
+Admail: 1 5 9-12
+odd: 1 5 7 9
+test: 1-3
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS 
+tab(+);
+l l.
+Path:+To determine your Mail directory
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+folder(1mh), pick(1mh), sortm(1mh)

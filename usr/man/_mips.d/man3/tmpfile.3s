@@ -1,0 +1,26 @@
+.\" SCCSID: @(#)tmpfile.3s	8.1	9/11/90
+.TH tmpfile 3s 
+.SH Name
+tmpfile \- create a temporary file
+.SH Syntax
+.B #include <stdio.h>
+.PP
+.B
+.SM FILE
+.B "\(**tmpfile (\|)"
+.SH Description
+.NXR "tmpfile subroutine"
+.NXA "tmpfile subroutine" "tmpname subroutine"
+.NXA "tmpfile subroutine" "mktemp subroutine"
+.NXA "file" "temporary file"
+.NXR "temporary file" "creating"
+The
+.PN tmpfile
+subroutine creates a temporary file and returns a corresponding
+.SM FILE
+pointer.
+The file will
+automatically be deleted when all references to the file have been
+closed.   The file is opened for update.
+.SH See Also
+creat(2), unlink(2), fopen(3s), mktemp(3), tmpnam(3s)

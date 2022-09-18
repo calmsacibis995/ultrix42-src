@@ -1,0 +1,219 @@
+.\" SCCSID: @(#)atof.3	2.5	8/10/87
+.TH atof 3 
+.SH Name
+atof, atoi, atol, strtol, strtoul, strtod \- convert ASCII to numbers
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double atof(\fInptr\fP)
+.B char *\fInptr\fP;
+.PP
+.B atoi(\fInptr\fP)
+.B char *\fInptr\fP;
+.PP
+.B long atol(\fInptr\fP)
+.B char *\fInptr\fP;
+.PP
+.B long strtol(\fInptr\fP, \fIeptr\fP, \fIbase\fP)
+.B char *\fInptr\fP, **\fIeptr\fP;
+.B int \fIbase\fP;
+.PP
+.B unsigned long strtoul(\fInptr\fP, \fIeptr\fP, \fIbase\fP)
+.B char *\fInptr\fP, **\fIeptr\fP;
+.B int \fIbase\fP;
+.PP
+.B double strtod (\fInptr\fP, \fIeptr\fP)
+.B char *\fInptr\fP, **\fIeptr\fP;
+.PP
+.B unsigned long strtoul(\fInptr, eptr, base\fP)
+.B char *\fInptr, **eptr\fP;
+.B int \fIbase\fP;
+.fi
+.SH Description
+.NXR "atof subroutine (standard C)"
+.NXR "atoi subroutine"
+.NXR "atol subroutine"
+.NXR "strtol subroutine"
+.NXR "strtod subroutine"
+.NXR "atof subroutine (standard C) " "isalpha subroutine"
+.NXR "isalpha subroutine" "atof subroutine (standard C)"
+.NXR "ASCII string" "converting to numbers"
+These functions convert a string pointed to by
+.I nptr
+to floating, integer, and long integer representation respectively.
+The first unrecognized character ends the string.
+.PP
+The
+.PN atof
+function recognizes (in order), an optional string of spaces, 
+an optional sign, a string of digits optionally containing a radix
+character, an optional `e' or `E', and then an optionally signed integer.
+.PP
+The
+.PN atoi
+and
+.PN atol
+functions recognize (in order), an optional string of spaces, 
+an optional sign, then a string of digits.
+.PP
+The
+.PN strtol
+function
+returns as a long integer, the value represented by the 
+character string
+.I nstr.
+The string is scanned up to the first character
+inconsistent with the 
+.I base.
+Leading white-space
+characters are ignored.
+.PP
+If the value of 
+.I eptr
+is not (char **) NULL, a pointer to the 
+character terminating the scan is returned in
+.I **eptr. 
+If no integer can be formed, 
+.I **eptr
+is set to 
+.I nstr ,
+and zero is returned.
+.PP
+If \fIbase\fP is positive and not greater than 36,
+it is used as the base for conversion.  After an
+optional leading sign, leading zeros are ignored,
+and 0x or 0X is ignored if \fIbase\fP is 16.
+.PP
+If \fIbase\fP is zero, the string itself determines 
+the base thus:  After an optional leading sign, a
+leading zero indicates octal conversion, and a 
+leading 0x or 0X hexadecimal conversion.
+Otherwise, decimal conversion is used.
+.PP
+Truncation from \fIlong\fR to \fIint\fR can take place upon 
+assignment, or by an explicit cast.
+.PP
+The
+.PN strtoul
+function is the same as
+.PN strtol
+except that
+.PN strtoul
+returns, as an unsigned long integer, the value represented by the
+character string
+.I nstr.
+.PP
+The
+.PN strtod
+function returns as a double-precision floating point number,
+the value represented by the character string pointed to by
+.I nptr.
+The string is scanned up to the first unrecognized character.
+.PP
+The
+.PN strtod 
+function recognizes an optional string of white-space characters,
+as defined by \fIisspace\fP in
+.PN ctype ,
+then an optional sign, then a string of digits
+optionally containing a radix character, then an optional \fIe\fR or \fIE\fR followed by an optional sign or space, followed by an integer.
+.PP
+If the value of
+.I eptr
+is not (char **)NULL, a pointer to the character
+terminating the scan is returned in the location pointed to by
+.I eptr.
+If no number can be formed, \fI*eptr\fP is set to \fInptr\fP,
+and zero is returned.
+.PP
+The radix character for
+.PN atof
+and
+.PN strtod
+is that defined by the last successful call to
+.PN setlocale
+category
+.PN LC_NUMERIC .
+If
+.PN setlocale
+category
+.PN LC_NUMERIC
+has not been called successfully, or if the radix character is not defined for a supported language, the radix character is defined as a period (.).
+.SS International Environment
+.IP LC_CTYPE 15
+If this environment variable is set and valid,
+.PN strtod
+uses the international language database named in the definition to
+determine character classification rules.
+.IP LC_NUMERIC 15
+If this environment is set and valid, 
+.PN atof
+and
+.PN strtod
+use the international language database named in the definition to
+determine radix character rules.
+.IP LANG 15
+If this environment variable is set and valid 
+.PN atof
+and
+.PN strtod
+use the international language database named in the definition to
+determine collation and character classification rules.  If
+.PN LC_CTYPE
+or 
+.PN LC_NUMERIC 
+is defined, their definition supercedes the definition of
+LANG.
+.SH Diagnostics
+The
+.PN atof
+function returns HUGE
+if an overflow occurs, and  a 0 value if an
+underflow occurs, and sets
+.I errno
+to ERANGE.
+HUGE is defined in
+.PN <math.h>.
+.PP
+The 
+.PN atoi 
+function returns INT_MAX or INT_MIN (according to
+the sign of the value) and sets 
+.I errno 
+to ERANGE, if the correct
+value is outside the range of values that can be represented.
+.PP
+The 
+.PN atol 
+function returns LONG_MAX or LONG_MIN (according to
+the sign of the value) and sets 
+.I errno 
+to ERANGE, if the correct
+value is outside the range of values that can be represented.
+.PP
+The
+.PN strtol
+function returns LONG_MAX or LONG_MIN (according to the 
+sign of the value) and sets
+.I errno
+to ERANGE, if the correct value is outside the 
+range of values that can be represented.
+.PP
+The
+.PN strtoul
+function returns ULONG_MAX and sets
+.I errno
+to ERANGE, if the correct value is outside the range of values that can
+be represented.
+.PP
+The
+.PN strtod
+function returns HUGE
+(according to the sign of the value), and sets 
+.I errno
+to ERANGE if the correct value would cause overflow.  A 0 is returned and
+.I errno
+is set to ERANGE if the correct value would cause underflow.
+.SH See Also
+ctype(3), setlocale(3), scanf(3s), environ(5int)

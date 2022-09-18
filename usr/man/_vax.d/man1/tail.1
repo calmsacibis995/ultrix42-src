@@ -1,0 +1,58 @@
+.\" SCCSID: @(#)tail.1	2.5	8/18/87
+.TH tail 1 
+.SH Name
+tail \- print lines from file
+.SH Syntax
+.B tail
+[ \(+-[\fInumber\fP][\fBlbcr\fR] ]
+[ \fIfile\fP ]
+.PP
+.B tail
+[ \(+-[\fInumber\fP][\fBlbcf\fR] ]
+[ \fIfile\fP ]
+.SH Description
+.NXR "tail command"
+.NXR "file" "copying portions"
+The
+.PN tail
+command copies the named file to the standard output beginning
+at a designated place.
+If no file is named, the standard input is used.
+.PP
+Copying begins at distance
+.I +number
+from the beginning, or
+.I \-number
+from the end of the input.
+The
+.I number
+is counted in units of lines, blocks or characters,
+according to the appended option
+.B l,
+.B b
+or
+.B c.
+When no units are specified, counting is by lines.
+.PP
+Specifying
+.B r
+causes 
+.PN tail
+to print lines from the end of the file in reverse order.
+The default for
+.B r
+is to print the entire file this way.
+Specifying
+.B f
+causes
+.PN tail
+not to quit at end of 
+.I file , 
+but rather to reread the file repeatedly.
+.SH Restrictions
+The results of the 
+.PN tail 
+command are unpredictable
+with character special files.
+.SH See Also
+dd(1)

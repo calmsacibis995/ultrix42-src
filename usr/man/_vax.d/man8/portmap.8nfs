@@ -1,0 +1,37 @@
+.\" SCCSID: @(#)portmap.8nfs	8.1	9/11/90
+.TH portmap 8nfs
+.SH Name
+portmap \- DARPA internet port to RPC program number mapper
+.SH Syntax
+.B /usr/etc/portmap
+.SH Description
+.NXR "portmap daemon"
+.NXA "mount command (NFS)" "portmap daemon"
+.NXA "portmap daemon" "rpcinfo command"
+.NXR "RPC program number" "converting to DARPA protocol number"
+The
+.PN portmap
+command is a server that converts RPC program numbers
+into DARPA protocol port numbers.
+When an RPC server is started, it will tell
+.PN portmap
+what TCP or UDP port number it is listening on,
+and what RPC program numbers it is prepared to serve.
+.PP
+It is important to understand that
+.PN portmap
+must first be invoked before attempting to run any RPC service. 
+It must be running in order to use any RPC-based applications, including
+the NFS mount daemon, 
+.MS mountd 8nfs .
+When a client wishes to make an RPC call to a given program number,
+the RPC program will first contact
+.PN portmap
+on the server machine to determine
+the port number where the RPC packets should be sent.
+.PP
+If
+.PN portmap
+crashes, all servers must be restarted.
+.SH See Also
+rpcinfo(8nfs)

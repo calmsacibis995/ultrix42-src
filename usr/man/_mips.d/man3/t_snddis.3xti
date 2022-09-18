@@ -1,0 +1,116 @@
+.TH t_snddis 3xti
+.SH Name
+t_snddis \- send user-initiated disconnect request
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_snddis(\fIfd, call\fB)
+.br
+.B int \fIfd\fB;
+.br
+.B struct t_call\fI*call\fB\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint of the connection.
+.IP \fIcall\fR 10
+Specifies information associated with the abortive release.
+.IP 
+\fICall\fR points to a \fBt_call\fR structure which contains the
+following members:
+.EX
+struct netbuf \fIaddr\fP;
+struct netbuf \fIopt\fP;
+struct netbuf \fIudata\fP;
+int \fIsequence\fR;
+.EE
+.SH Description
+This function is used to initiate an abortive release on an already
+established connection or to reject a connect request.
+.NXR "t_snddis system call"
+.NXR "transport connection" "abortive release"
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+call->addr.maxlen@x@/
+call->addr.len@x@/
+call->addr.buf@/@/
+call->opt.maxlen@/@/
+call->opt.len@/@/
+call->opt.buf@/@/
+call->udata.maxlen@/@/
+call->udata.len@x@/
+call->udata.buf@?(?)@/
+call->sequence@?@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+The values in \fIcall\fR have different semantics, depending on the context of
+the call to 
+.PN t_snddis(). 
+When rejecting a connect request, \fIcall\fR must
+be non-NULL and contain a valid value of \fIsequence\fR to uniquely identify
+the rejected connect indication to the transport provider. The \fIsequence\fR
+parameter is only meaningful, if the transport connection is in the
+T_INCON state. The \fIaddr\fR and \fIopt\fR fields of \fIcall\fR are
+ignored. In all other cases, \fIcall\fR needs be used only when data is being
+sent with the disconnect request. The \fIaddr\fR, \fIopt\fR, and
+\fIsequence\fR fields of the 
+.PN t_call() 
+structure are ignored. If the user
+does not wish to send data to the remote user, the value of \fIcall\fR can be
+NULL.
+.PP
+The \fIudata\fR field specifies the user data to be sent to the remote user.
+The amount of user data must not exceed the limits supported by the transport
+provider as returned in the \fIdiscon\fR field of the \fIinfo\fR argument of
+.PN t_open() 
+or
+.PN t_getinfo()\fR.\fR 
+If the \fIlen\fR field of the
+\fIudata\fR is zero, no data is sent to the remote user.
+.SH Return Values
+Upon successful completion, a value of 0 is returned. On failure,  a
+value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20 
+[TOUTSTATE]
+The function was issued in the wrong sequence on the transport endpoint
+referenced by \fIfd\fR.
+.TP
+[TBADDATA]
+The amount of user data specified was not within the bounds allowed by
+the transport provider. Some outbound data queued for this endpoint can be
+lost.
+.TP 20
+[TBADSEQ]
+An invalid sequence number was specified, or a NULL call structure was
+specified when rejecting a connect request. Some outbound data queued for this
+endpoint can be lost.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the underlying transport provider. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+t_connect(3xti), 
+t_getinfo(3xti), 
+t_listen(3xti), 
+t_open(3xti)

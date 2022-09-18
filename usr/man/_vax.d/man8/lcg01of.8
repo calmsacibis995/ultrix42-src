@@ -1,0 +1,86 @@
+.TH lcg01of 8
+.SH Name
+lcg01of \- LCG01 Color Printing System Filter
+.SH Syntax
+/usr/lib/lpdfilters/lcg01of [\fB\-c\fP] [\fB\-n\fP\fIlogin\fP] [\fB\-h\fP\fIhost\fP] [\fB\-w\fP\fIwidth\fP] [\fB\-l\fP\fInum\fP] [\fB\-i\fP\fIindent\fP]  [\fBaccounting file\fP]
+.SH Description
+The 
+.PN lcg01of
+filter is used to filter text data destined for the LCG01 Color
+Printing System.
+The filter handles the device dependencies of the printers
+and performs accounting functions. 
+Accounting records are written to the file specified
+by the \fBaf\fP field in 
+.PN /etc/printcap 
+at the time of completion for each job.
+.PP
+The filter can handle plain ASCII files, 
+nroff files, and sixel files. The
+printer also supports the following graphic protocols: ReGIS, NAPLPS,
+and GIDIS. To print using these protocols, the xf(8) filter should be
+invoked using the \fBlpr \-x\fP option.
+The 
+.PN lcg01of
+filter translates nroff control sequences for underlining, superscripting, and
+subscripting into the correct LCG01 control sequences.
+.PP
+The 
+.PN lcg01of
+filter can be the specified filter in both
+the \fBof\fP and the \fBif\fP fields in the
+.PN /etc/printcap
+file.  For further information, see 
+.MS printcap 5 .
+When both fields are specified, the \fBof\fP filter is used only
+to print the banner page.  It is then stopped to allow
+the \fBif\fP filter access to the printer. The
+\fBif\fP filter maintains accounting information.
+.PP
+If the \fBof\fP field is the only one specified, the filter is used to print the
+banner page.  It is then stopped and restarted.
+This allows the \fBof\fP filter to be
+used to maintain accounting information.
+.PP
+If the \fBif\fP field is the only one specified,
+the banner page is sent directly to
+the printer. If the printer has been left
+in an undetermined state, the banner page may not
+print correctly.
+.PP
+The best results are obtained when the filter is specified
+in both the \fBof\fP and \fBif\fP fields.
+For a more detailed discussion on filters, see the 
+``Line Printer Spooler Manual''
+in the 
+.I "ULTRIX Supplementary Documents, Volume 2: Programmer."
+.PP
+.SH Options
+The 
+.PN lcg01of
+filter ignores the arguments passed to it by the line printer daemon, lpd(8).
+The \fBof\fP filter is called with the
+following arguments:
+.IP "lcg01of \fB\-w\fP\fIwidth\fP \fB\-l\fP\fIlength\fP"
+The \fIwidth\fP and \fIlength\fP values come from
+the \fBpw\fP and \fBpl\fP fields in the 
+.PN /etc/printcap
+database. 
+.PP
+The \fBif\fP (or restarted \fBof\fP) filter is passed the following arguments:
+.IP "lcg01of \fB\-c\fP \fB\-n\fP\fIlogin\fP \fB\-h\fP\fIhost\fP \fB\-w\fP\fIwidth\fP \fB\-l\fP\fInum\fP \fB\-i\fP\fIindent\fP  \fBaccounting file\fP"
+.SH Diagnostics
+The \fBlf\fP field (default /dev/null) in the
+.PN /etc/printcap
+database specifies error logging file name.
+.SH Files
+.TP 15
+.PN /etc/printcap
+Printer capabilities database
+.TP
+.PN /dev/lp?
+.SH See Also
+lpr(1), pr(1), printcap(5), lpd(8), MAKEDEV(8), pac(8)
+.br
+``Line Printer Spooler Manual,''
+.I "ULTRIX Supplementary Documents, Volume 2: Programmer"

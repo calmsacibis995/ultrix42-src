@@ -1,0 +1,17 @@
+.TH gethostsex 3 RISC
+.SH Name
+gethostsex \- get the byte sex of the host machine
+.SH Syntax
+.B #include <sex.h>
+.br
+.B int gethostsex()
+.SH Description
+.NXR "gethostsex(3) reference page"
+.NXR "byte sex"
+The
+.PN gethostsex
+routine returns one of two constants, BIGENDIAN or LITTLEENDIAN,
+for the sex of the host machine.  These constants are in 
+.B sex.h.
+.SH See Also
+swapsex(3)

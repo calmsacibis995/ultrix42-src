@@ -1,0 +1,88 @@
+.\" SCCSID: @(#)rmdir.2	8.1	9/11/90
+.TH rmdir 2
+.SH Name
+rmdir \- remove a directory file
+.SH Syntax
+.nf
+.B rmdir(path)
+.B char *path;
+.fi
+.SH Description
+.NXR "rmdir system call"
+.NXR "directory" "removing"
+The
+.PN rmdir
+system call
+removes a directory file
+whose name is given by
+.I path.
+The directory must not have any entries other
+than dot (.) and dot-dot (..).
+.PP
+If one or more processes have the directory open when the last
+link is removed, the dot and dot-dot entries, if present, are
+removed before 
+.PN rmdir() 
+returns and no new entries may be created
+in the directory.  The directory, however, is not removed until
+all references to the directory have been closed.
+.SH Return Values
+A zero (0) is returned if the remove succeeds; otherwise, a \-1 is
+returned, and an error code is stored in the global location \fIerrno\fP\|.
+.SH Diagnostics
+The named file is removed unless one or more of the
+following are true:
+.TP 15
+[ENOTEMPTY]
+The named directory contains files other than dot and dot-dot. 
+.TP 15
+[EPERM]
+The directory containing the directory to be removed is marked
+sticky, and neither the containing directory nor the directory
+to be removed are owned by the effective user ID.
+.TP 15
+[ENOTDIR]
+A component of the path is not a directory.
+.TP 15
+[ENOENT]
+The named directory does not exist or
+.I path
+points to an empty string and the environment defined is POSIX or SYSTEM_FIVE.
+.TP 15
+[EACCES]
+Search permission is denied for a component of the
+.I path
+prefix.
+.TP 15
+[EACCES]
+Write permission is denied on the directory containing the link
+to be removed.
+.TP 15
+[EBUSY]
+The directory to be removed is the mount point for a mounted file system.
+.TP 15
+[EROFS]
+The directory entry to be removed resides on a read-only file system.
+.TP 15
+[EFAULT]
+The
+.I path
+points outside the process's allocated address space.
+.TP 15
+[ELOOP]
+Too many symbolic links were encountered in translating the pathname.
+.TP 15
+[ENAMETOOLONG]
+A component of a pathname exceeded 255 characters, or an entire
+pathname exceeded 1023 characters.
+.TP 15
+[EIO]
+An I/O error occurred while deleting the directory entry or
+deallocating the inode.
+.TP
+[ETIMEDOUT]
+A connect request or remote file operation failed because the connected party
+did not properly respond after a period of time that is dependent
+on the communications protocol.
+.SH See Also
+mkdir(2), unlink(2)

@@ -1,0 +1,41 @@
+.\" SCCSID: @(#)syscall.2	8.1	9/11/90
+.TH syscall 2 VAX
+.SH Name
+syscall \- indirect system call
+.SH Syntax
+.nf
+.BR "syscall(number, arg, ...)" 
+.fi
+.SH Description
+.NXR "syscall system call"
+.NXR "system call" "performing indirect"
+The
+.PN syscall
+system call
+performs the system call whose assembly language
+interface has the specified
+.I number,
+register arguments
+.I r0
+and
+.IR r1 ,
+and further arguments
+.IR arg .
+.PP
+The 
+.I r0 
+value of the system call is returned.
+.SH Restrictions
+There is no way to simulate system calls
+such as 
+.PN pipe ,
+which return values in register 
+.IR r1 .
+.SH Diagnostics
+When the C-bit is set,
+.PN syscall
+returns \-1 and sets the
+external variable 
+.I errno.
+.SH See Also
+errno(2), pipe(2)

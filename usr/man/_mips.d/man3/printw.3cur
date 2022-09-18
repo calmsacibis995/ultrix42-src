@@ -1,0 +1,106 @@
+.TH printw 3cur 
+.SH Name
+printw, mvprintw, mvwprintw, wprintw \- formatted write to a window
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int printw(fmt [, arg] ...)
+.br
+.B
+char \(**fmt;
+.PP
+.B
+int wprintw(win, fmt [, arg] ...)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+char \(**fmt;
+.PP
+.B
+int mvprintw(y, x, fmt [, arg] ...)
+.br
+.B
+int y, x;
+.br
+.B
+char \(**fmt;
+.PP
+.B
+int mvwprintw(win, y, x, fmt [, arg] ...)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int y, x;
+.br
+.B
+char \(**fmt;
+.SH Description
+.NXR "printw subroutine"
+.NXR "wprintw subroutine"
+.NXR "mvprintw subroutine"
+.NXR "mvwprintw subroutine"
+.NXA "printf subroutine" "printw subroutine"
+The
+.PN printw
+routine
+adds a string to the default window starting at the current 
+cursor position.
+This routine causes the string 
+that would normally be output by 
+.PN printf 
+to be output by 
+.PN addstr .
+.PP
+The routine
+.PN wprintw
+adds a string to the specified window starting at the current 
+cursor position.
+This routine causes the string
+that would normally be output by 
+.PN printf 
+to be output by 
+.PN waddstr .
+.PP
+The routine
+.PN mvprintw
+adds a string to the default window starting at the specified 
+cursor position.
+This routine causes the string
+that would normally be output by 
+.PN printf 
+to be output by 
+.PN addstr .
+.PP
+The routine
+.PN mvwprintw
+adds a string to the specified window starting at the specified 
+cursor position.
+This routine causes the string
+that would normally be output by 
+.PN printf 
+to be output by 
+.PN waddstr .
+.PP
+All these routines are analogous to 
+.PN printf .
+It is advisable to use the field width options of 
+.PN printf  
+to avoid leaving unwanted characters on the screen from earlier calls.
+.SH Return Values
+The
+.PN printw ,
+.PN mvprintw ,
+.PN mvwprintw ,
+and
+.PN wprintw
+functions return OK on success and ERR on error.
+.SH See Also
+addstr(3cur), waddstr(3cur), printf(3s)

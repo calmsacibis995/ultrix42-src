@@ -1,0 +1,76 @@
+.\" SCCSID: @(#)yacc.1	8.1	9/11/90
+.\" SCCSID: @(#)yacc.1	8.1	9/11/90
+.TH yacc 1 
+.SH Name
+yacc \- yet another compiler-compiler
+.SH Syntax
+.B yacc
+[\fB\-vd\fR] \fIgrammar\fR
+.SH Description
+.NXR "yacc compiler"
+.NXA "yacc compiler" "lex program generator"
+.NXR "compiler" "creating"
+The
+.PN yacc
+command converts a context-free grammar into a set of
+tables for a simple automaton which executes an
+left recursive parsing algorithm.
+The grammar may be ambiguous;
+specified precedence rules are used to break ambiguities.
+.PP
+The output file, 
+.PN y.tab.c ,
+must be compiled by the C compiler
+to produce a program
+.IR yyparse .
+This program must be loaded with the lexical analyzer program,
+.IR yylex ,
+as well as
+.I main
+and
+.IR yyerror ,
+an error handling routine.
+These routines must be supplied by the user; 
+.PN lex(1)
+is useful for creating lexical analyzers usable by
+.PN yacc .
+.SH Options
+.IP \fB\-d\fR 0.3i
+Writes all define statements to 
+.PN y.tab.h
+file.  This allows source files other than 
+.PN y.tab.c
+to access the token codes.
+.IP \fB\-v\fR 0.3i
+Writes description of parsing tables and report
+of grammatical conflicts to
+.PN y.output
+file.  
+.SH Diagnostics
+The number of reduce-reduce and shift-reduce conflicts
+is reported on the standard output;
+a more detailed report is
+found in the 
+.PN y.output file .
+Similarly, if some rules are not reachable from the
+start symbol, this is also reported.
+.SH Restrictions
+Because file names are fixed, at most one
+.PN yacc
+process can be active in a given directory at
+a time.
+.SH Files
+.ta \w'yacc.tmp, yacc.acts 'u
+y.output
+.br
+y.tab.c
+.br
+y.tab.h	defines for token names
+.br
+yacc.tmp, yacc.acts	temporary files
+.SH See Also
+lex(1)
+.br
+"YACC \- Yet Another Compiler Compiler"
+.I ULTRIX Supplementary Documents
+Vol. II:Programmer 

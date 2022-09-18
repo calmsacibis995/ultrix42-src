@@ -1,0 +1,105 @@
+.TH insch 3cur 
+.SH Name
+insch, mvinsch, mvwinsch, winsch \- insert character
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int insch(ch)
+.br
+.B
+chtype ch;
+.PP
+.B
+int winsch(win, ch)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+chtype ch;
+.PP
+.B
+int mvinsch(y, x, ch)
+.br
+.B
+int y, x;
+.br
+.B
+chtype ch;
+.PP
+.B
+int mvwinsch(win, y, x, ch)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int y, x;
+.br
+.B
+chtype ch;
+.SH Description
+.NXR "insch macro"
+.NXR "mvinsch macro"
+.NXR "mvwinsch macro"
+.NXR "winsch macro"
+.PP
+The 
+.PN insch
+routine inserts the
+character 
+.PN ch
+at the current cursor
+position on the default window.
+.PP
+The 
+.PN mvinsch
+routine inserts the
+character 
+.PN ch
+at the specified cursor
+position on the default window.
+.PP
+The 
+.PN winsch
+routine inserts the
+character 
+.PN ch
+at the current cursor
+position on the specified window.
+.PP
+The 
+.PN mvwinsch
+routine inserts the
+character 
+.PN ch
+at the specified cursor
+position on the specified window.
+.PP
+All the routines cause the following actions.
+All characters from the cursor position
+to the right edge are moved one space to the right. 
+The last character on the line is always lost, 
+even if it is a blank.
+The cursor position does not change after the insert is 
+completed.
+.PP
+The
+.PN insch ,
+.PN mvinsch
+and 
+.PN mvwinsch
+routines
+are macros.
+.SH Return Values
+The
+.PN insch ,
+.PN mvinsch ,
+.PN mvwinsch ,
+and
+.PN winsch
+functions return OK on success and ERR on error.

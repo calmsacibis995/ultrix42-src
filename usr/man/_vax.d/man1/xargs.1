@@ -1,0 +1,244 @@
+.TH xargs 1
+.SH Name
+xargs \- construct argument list and execute command 
+.SH Syntax
+.NXR "xargs command"
+.B xargs
+[\fIflags\fR] [ \fIcommand\fR [\fIinitial-arguments\fR] ]
+.SH Description
+The command
+.PN xargs
+combines fixed
+.I initial-arguments
+with arguments read from standard input to execute a specified
+.I command
+one or more times.  The number of arguments read when a 
+.I command
+is invoked and how they are combined
+is determined by the options specified.
+.PP
+The specified
+.I command,
+(which can be a Shell file)
+is searched for using ones' \fB$PATH\fR specification.
+If
+.I command
+is not specified,
+.B /bin/echo
+is used.
+.PP
+Arguments read from standard input are defined as contiguous
+strings of characters delimited by one or more blanks, tabs, or newlines;
+empty lines are always discarded.
+Blanks and tabs can be embedded as part of an argument if they contain
+an escape character or if they are quoted.
+Characters enclosed in quotes (single or double) are taken literally,
+and the delimiting quotes are removed; a backslash (\\)
+escapes the next character.
+.SH Options
+Each argument list begins with the
+.IR initial-arguments,
+followed by arguments read from standard input, with the exception
+of the 
+.B \-i
+option.  See the description of the 
+.BR \-i 
+option for more information.
+.PP
+The options
+.BR \-i ,
+.BR \-l ,
+and
+.BR \-n
+determine how arguments are selected when each command is invoked.
+If none of these options are specified, the
+.I initial-arguments
+are followed by arguments read continuously from standard input until 
+the internal buffer is full; then,
+.I command
+executes with the accumulated arguments.  This process repeats
+until no arguments exist.  When conflicts arise, such
+as the 
+.B \-l
+option used with the
+.BR \-n,
+the last option has precedence. The options values are as follows:
+.TP 6
+.BI \-l number
+Execute 
+.I command 
+for each non-empty
+.I number
+lines of arguments from standard input.
+When command is invoked for the final time, 
+it has fewer lines of arguments if fewer than a specified
+.I number
+remain.
+A line ends with the first newline unless
+the last character of the line is a blank or a tab;
+a trailing blank or tab signals continuation through the next non-empty line.
+If
+.I number
+is is not specified, the value 1 is assumed.
+The option
+.B \-x
+is forced.
+.TP 6
+\fB\-i\fR\fIreplstr\fR \fB(Insert mode)\fR
+Execute
+.I command
+for each line from standard input,
+taking the entire line as a single argument and inserting it in
+.I initial-arguments\^
+for each occurrence of
+.IR replstr .
+A maximum of five arguments specified in 
+.I initial-arguments
+can contain one or more occurrence of
+.IR replstr .
+Blanks and tabs at the beginning of each line are discarded.
+A constructed arguments cannot exceed 255 characters and the option
+.B \-x
+is a forced.
+A 
+.B {|}
+is assumed for
+.I replstr
+if not specified.
+.TP 6
+.BI \-n number
+Execute
+.I command
+using as many standard input arguments as possible, up to the specified
+.I number
+arguments maximum.
+Fewer arguments are used if their total size is greater than
+.I size
+characters, and when the last command is invoked, fewer
+.I number
+of arguments remain.
+If the option
+.B \-x
+is also include, each specified
+.I number
+of arguments must fit in the
+.I size
+limitation, or else
+.I xargs
+terminates execution.
+.TP 6
+.B \-t (Trace mode)
+Echo the
+.I command\^
+and each constructed argument list to file descriptor 2
+prior to their execution.
+.TP 6
+.B \-p (Prompt mode)
+Asks the user whether or not 
+.I command\^
+should be executed each time 
+.I command
+is invoked. Trace mode (\c
+.B \-t\c
+) is turned on to print the command instance to be executed,
+followed by a \fB?.\|.\|.\fP prompt.
+A reply of
+.B y
+executes the command; any other response
+does not invoke that particular
+.IR command.
+.TP 6
+.B \-x
+Causes the command
+.I xargs
+to terminate if an argument list is greater than the specified
+.I size
+of characters; the option
+.B \-x
+is forced by the options
+.B \-i
+and
+.BR \-l .
+When the options
+.BR \-i ,
+.BR \-l ,
+or
+.B \-n
+are included, the total length of all arguments must be within the specified
+.I size
+limit.
+.TP 6
+.BI \-s size
+The maximum size of each argument list is set to
+.I size
+characters;
+.I size
+must be a positive integer less than or equal to 470. If
+.B \-s
+is not included, 470 is the default.
+Note that the character count for
+.I size
+includes one extra character for each argument and the count of characters 
+in the command name.
+.TP 6
+.BI \-e eofstr
+The option
+.I eofstr
+is taken as the logical end-of-file string.
+Underscore (\|_\|) is assumed for
+the logical \fB\s-1EOF\s+1\fR string
+if \fB\-e\fR is not specified.
+The value
+\fB\-e\fR without
+.I eofstr
+specified turns off the logical \fB\s-1EOF\s+1\fP string capability;
+the underscore is taken literally.
+The command
+.I xargs
+reads standard input until either end-of-file or the logical 
+\fB\s-1EOF\s+1\fP string is encountered.
+.PP
+The command
+.I xargs
+terminates if it receives a return code of
+.B \-1
+from 
+.IR command 
+or if it cannot execute
+.IR command .
+When
+.I command
+is a Shell program, it should explicitly
+.I exit
+with an appropriate value to avoid returning with
+.BR \-1 .
+See 
+.MS sh 1
+for more information.
+.SH Examples
+The following example moves all files from directory $1 to directory $2
+and echoes the move command prior to executing it:
+.PP
+ls \|$1 \|| \|xargs \|\-i \|\-t \|mv \|$1/{\|} \|$2/{\|}
+.PP
+The following example combines the output of the parenthesized commands 
+onto one line, which is then echoed to the end of file \fIlog\fP:
+.PP
+(logname; \|date; \|echo \|$0 \|$\(**) \|| \|xargs \|>>log
+.PP
+In the next example, the user is prompted to specify which files in the
+current directory are to be archived.  The first example archives the
+files one at a time; the second example archives groups of files:
+.PP
+\ \|\ \|ls \|| \|xargs \|\-p \|\-l \|ar \|r \|arch
+.sp
+\ \|\ \|ls \|| \|xargs \|\-p \|\-l \|| \|xargs \|ar \|r \|arch
+.PP
+The following example executes
+.IR diff "(1)"
+with successive
+pairs of arguments originally typed as Shell arguments:
+.PP
+echo \|$\(** \|| \|xargs \|\-n2 \|diff
+.SH See Also
+sh(1).

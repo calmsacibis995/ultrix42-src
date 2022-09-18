@@ -1,0 +1,40 @@
+.TH uuid_gen 3ncs
+.SH Name
+uuid_gen \- generate a new UUID
+.SH Syntax
+.nf
+#include <idl/c/uuid.h>
+
+void uuid_$gen(\fIuuid\fP)
+uuid_$t *\fIuuid\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/uuid.ins.pas'\fR
+.\"
+.\"\fBprocedure uuid_$gen(\fR
+.\"	\fBout \fIuuid\fB: uuid_$t);\fR
+.\".DE
+.SH Arguments
+.TP  
+\fIuuid\fR
+A pointer to a UUID structure to be filled in.
+.SH Description
+The 
+.PN uuid_$gen
+routine returns a new UUID.  Typically used when creating a new remote 
+application.  
+.NXR "Operations on Universal Unique Identifiers" "uuid_gen"
+.SH Examples
+The following routine returns as
+.B new_uuid
+a new UUID:
+.EX
+uuid_$gen (&new_uuid);
+.EE
+.SH Files
+.PN /usr/include/idl/uuid.idl
+.br
+.PN /usr/include/idl/c/uuid.h
+.SH See Also
+intro(3ncs)

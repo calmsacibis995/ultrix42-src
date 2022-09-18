@@ -1,0 +1,65 @@
+.\" SCCSID: @(#)frexp.3	6.3	8/30/89
+.TH frexp 3
+.SH Name
+frexp, ldexp, modf \- split into mantissa and exponent
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double frexp(\fIvalue, eptr\fP)
+.B double \fIvalue\fP;
+.B int *\fIeptr\fP;
+.PP
+.B double ldexp(\fIvalue, exp\fP)
+.B double \fIvalue\fP;
+.PP
+.B double modf(\fIvalue, iptr\fP)
+.B double \fIvalue, *iptr\fP;
+.SH Description
+.NXR "frexp subroutine"
+.NXR "ldexp subroutine"
+.NXR "modf subroutine"
+.NXR "mantissa" "splitting into"
+.NXR "exponent" "splitting into"
+The
+.PN frexp
+subroutine
+returns the mantissa of a double 
+.I value
+as a double quantity,
+.I x,
+of magnitude less than 1.0 and greater than or equal to
+0.5 (0.5 <= |x| < 1) and stores an integer 
+.I n
+such that
+.I value
+=
+\fIx\fP*2**\fIn\fP
+indirectly through 
+.I eptr.
+.PP
+The
+.PN ldexp
+returns the quantity
+\fIvalue*2**\fIexp\fP.
+.PP
+The
+.PN modf
+returns the positive fractional part of
+.I value
+and stores the integer part indirectly
+through 
+.I iptr.
+.SH Return Values
+If 
+.PN ldexp
+would cause overflow, \(+-HUGE_VAL
+is returned (according to the sign of
+.IR value )
+and
+.I errno
+is set to ERANGE.  If
+.PN ldexp
+would cause underflow, 0 is returned and
+.I errno
+is set to ERANGE.

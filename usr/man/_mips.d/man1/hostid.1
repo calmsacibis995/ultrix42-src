@@ -1,0 +1,26 @@
+.\" SCCSID: @(#)hostid.1	8.1	9/11/90
+.TH hostid 1
+.SH Name
+hostid \- set or print identifier of current host system
+.SH Syntax
+.B hostid
+[\|\fIidentifier\fR\|]
+.SH Description
+.NXR "hostid command"
+.NXR "host ID" "setting in hexadecimal"
+.NXR "host ID" "printing in hexadecimal"
+.NXA "host ID" "host name"
+.NXA "system" "host ID"
+.NXA "system" "host name"
+.NXAM "hostid command" "gethostid system call"
+.NXAM "hostid command" "sethostid system call"
+The
+.PN hostid
+command prints the identifier of the current host in hexadecimal.
+This numeric value is expected to be unique across all hosts and
+is normally set to the host's Internet address.
+The super-user can set the hostid by giving a hexadecimal
+argument.  This is usually done in the startup script 
+.PN /etc/rc.local .
+.SH See Also
+gethostid(2), sethostid(2)

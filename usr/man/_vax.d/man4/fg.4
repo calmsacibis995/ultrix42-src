@@ -1,0 +1,50 @@
+.TH fg 4 VAX
+.SH Name
+fg \- VCB03 - Midrange VAX color video subsystem
+.SH Syntax
+.B "device fg0 at ibus? flags 0x0f vector fgvint
+.SH Description
+.NXS "fg interface" "color video subsystem"
+.NXR "color video subsystem"
+The VCB03 is a high-performance, full-page, double-buffered video
+subsystem capable of Z-buffering.  The device consists of a 2048 bits
+wide x 2048 bits long x 8 or 24 plane frame buffer, a set of
+proprietary video chips for bitmap modification and video output,
+onboard VAX CPU and floating point accelerator, a 3D Transformation
+Engine, 1280 wide x 1024 long 19-inch color video monitor, keyboard,
+and a mouse or tablet.
+.PP
+The subsystem device driver supports a hybrid terminal with three
+minor devices.  The first device emulates a glass tty with a screen
+that appears as a 80-column by 60-row page that scrolls from the
+bottom.  This device is capable of being configured as the system
+console.
+.PP
+The second minor device number is reserved for the pointer.  This
+device is a source of pointer state changes.  (A state change is
+defined as an X/Y axis pointer movement or button change.)  When
+opened, the driver couples movements of the pointer with the cursor.
+Pointer position changes are filtered and translated into cursor
+position changes in an exponential manner.  Rapid movements result in
+large cursor position changes.  All cursor positions are range checked
+to ensure that the cursor remains on the display.
+.PP
+The third minor device is opened in the raw mode by default.  Opening
+the third device makes the driver function like a pseudo-tty in that
+the output destined for the first minor device is channeled to the
+third instead.
+.PP
+The Hold Screen key is supported. The driver treats this
+key as if CTRL/S or CTRL/Q is typed.
+Pressing the Hold Screen key suspends the output
+if it is not already suspended. The output
+will be resumed by pressing this key again
+(if the output was suspended).
+.SH Files
+/dev/console
+.br
+/dev/fg0
+.br
+/dev/fgscreen
+.SH See Also
+fc(4), ttys(5), MAKEDEV(8)

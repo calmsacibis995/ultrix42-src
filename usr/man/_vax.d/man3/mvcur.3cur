@@ -1,0 +1,13 @@
+.TH mvcur 3cur 
+.SH Name
+mvcur \- low-level cursor movement
+.SH Syntax
+.B
+mvcur(oldrow, oldcol, newrow, newcol)
+.br
+.B
+int oldrow, oldcol, newrow, newcol;
+.SH Description
+.NXR "mvcur subroutine"
+This function 
+controls low-level cursor motion with optimization.

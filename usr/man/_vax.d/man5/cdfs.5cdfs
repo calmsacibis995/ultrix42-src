@@ -1,0 +1,53 @@
+.\" SCCSID: @(#)cdfs.5	7.1	4/26/90
+.TH cdfs 5cdfs
+.SH Name 
+cdfs \- The CD-ROM (Compact Disc Read Only Memory) File System 
+.SH Description
+.NXR "cdfs file"
+.NXR "CDFS - CD-ROM File System"
+The ISO 9660 standard describes volume and file structures for information
+exchange on CD-ROM's. CDFS supports mounting, as another local file system
+type, CD-ROM's which comply to the standard. Once mounted, files and
+directories recorded on the CD-ROM become accessible in a read-only manner
+through system calls and commands. Support of the standard is limited
+to level 2 interchange with the exeception of multiple volume semantics, 
+according to ISO 9660.
+Refer to the international standard ISO 9660-1988 for addtional information
+pertaining to the actual standard.
+.PP
+The
+.PN CDFS
+file system behaves the same as any read-only file system, and 
+additionally supports the following semantics.
+The
+.PN CDFS
+can be exported by NFS, and supports users being able to mount other
+file system types (UFS, NFS, CDFS) onto directories recorded on the CDFS
+volume. Volumes recorded in ISO 9660-1988 (interchange level 2)
+or High Sierra Group (HSG) format are supported. The data of a mounted
+volume which is recorded as part of a multiple volume set or consists of
+a single volume set is made available.
+Both local and remote execution is supported for non-interleaved
+files. Data contained in files recorded in interleave mode and
+non-interleave mode is available through read(2). If demand page execution 
+of interleaved files is required, the user can either copy the file
+to magnetic storage, or execute the file over NFS.
+.PP
+Since
+.PN CDFS
+is a configurable kernel option, the following two lines must exist
+in the systems configuration file:
+.nf
+
+   options CDFS
+
+   pseudo-device	cdfs
+
+.fi
+If the system configuration does not contain the above lines,
+refer to the 
+\fIGuide to Configuration File Maintenance\fP
+for a detailed explaination of how to
+modify the configuration file and rebuild a kernel.
+.SH See Also
+mount(8cdfs)

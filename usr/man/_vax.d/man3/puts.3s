@@ -1,0 +1,53 @@
+.\" SCCSID: @(#)puts.3s	8.1	9/11/90
+.TH puts 3s 
+.SH Name
+puts, fputs \- put a string on a stream
+.SH Syntax
+.B #include <stdio.h>
+.PP
+.B puts(s)
+.br
+.B char *s;
+.PP
+.B fputs(s, stream)
+.br
+.B char *s;
+.br
+.SM
+.B FILE
+.B *stream;
+.SH Description
+.NXR "puts subroutine"
+.NXR "fputs subroutine"
+.NXR "stream" "putting string on"
+The
+.PN puts
+subroutine copies the null-terminated string
+.I s
+to the standard output stream
+.B stdout
+and appends a
+new line character.
+.PP
+The
+.PN fputs
+subroutine copies the null-terminated string
+.I s
+to the named output
+.IR stream .
+.PP
+Neither routine copies the terminal null character.
+.SH Restrictions
+The
+.PN puts
+subroutine appends a new line,
+while
+.PN fputs
+does not.
+.SH See Also
+fopen(3s),
+gets(3s),
+putc(3s),
+printf(3s),
+ferror(3s)
+fread(3s) 

@@ -1,0 +1,51 @@
+.TH insertln 3cur 
+.SH Name
+insertln, winsertln \- insert line
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int insertln(\|)
+.PP
+.B
+int winsertln(win)
+.br
+.B
+WINDOW \(**win;
+.SH Description
+.NXR "insertln macro"
+.NXR "winsertln subroutine"
+The 
+.PN insertln
+routine inserts
+a blank line above the current line in the 
+default
+window.
+All lines below and including the current line are moved down.  
+The bottom line is lost and the
+current line becomes blank.
+The (y, x) coordinates are unchanged.
+.PP
+The 
+.PN winsertln 
+routine inserts
+a blank line above the current line on the 
+specified
+window.
+All lines below and including the current line are moved down.  
+The bottom line is lost and the
+current line becomes blank.
+The (y, x) coordinates are unchanged.
+.PP
+The routine 
+.PN insertln
+is a macro.
+.SH Return Values
+The
+.PN insertln
+and
+.PN winsertln
+functions return OK on success and ERR on error.

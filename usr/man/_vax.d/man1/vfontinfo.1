@@ -1,0 +1,45 @@
+.\" SCCSID: @(#)vfontinfo.1	8.1	9/11/90
+.TH vfontinfo 1 VAX "" Unsupported
+.SH Name
+vfontinfo \- inspect and print out information about UNIX fonts
+.SH Syntax
+.br
+.B vfontinfo
+[
+.B \-v
+]
+.I fontname
+[
+.I characters
+]
+.SH Description
+The
+.PN vfontinfo
+command allows you to examine a font in the UNIX format.
+It prints out
+all the information in the font header and information about every
+non-null (width > 0) glyph.
+This can be used to make sure the font
+is consistent with the format.
+.PP
+The
+.I fontname
+argument is the name of the font you wish to inspect.
+It writes to standard output.
+If it can't find the file in your working directory, it looks in
+.PN /usr/lib/vfont
+(the place most of the fonts are kept).
+.PP
+The
+.IR characters ,
+if given, specify certain characters to show.
+If omitted, the entire font is shown.
+.SH Options
+.IP \-v
+Displays the bits of the glyph itself 
+as an array of X's and spaces,
+in addition to the header information.
+.SH See Also
+vpr(1), vfont(5)
+.br
+.I The Berkeley Font Catalog

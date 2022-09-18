@@ -1,0 +1,52 @@
+#
+# @(#)xterm.ti	4.2	(ULTRIX)	12/20/90
+#
+#************************************************************************
+#*									*
+#*       Copyright (c) Digital Equipment Corporation, 1988, 1990	*
+#*									*
+#*   All Rights Reserved.  Unpublished rights  reserved  under  the	*
+#*   copyright laws of the United States.				*
+#*									*
+#*   The software contained on this media  is  proprietary  to  and	*
+#*   embodies  the  confidential  technology  of  Digital Equipment	*
+#*   Corporation.  Possession, use, duplication or dissemination of	*
+#*   the  software and media is authorized only pursuant to a valid	*
+#*   written license from Digital Equipment Corporation.		*
+#*									*
+#*   RESTRICTED RIGHTS LEGEND   Use, duplication, or disclosure  by	*
+#*   the U.S. Government is subject to restrictions as set forth in	*
+#*   Subparagraph (c)(1)(ii)  of  DFARS  252.227-7013,  or  in  FAR	*
+#*   52.227-19, as applicable.						*
+#*									*
+#************************************************************************
+#
+# This software is translated from termcap xterm/xterms software
+# recieved from the Massachusetts Institute of Technology (MIT),
+# Cambridge, Massachusetts.
+#
+# the vax workstation vs100 terminals.
+#
+# @(#)termcap   X10/6.6 11/7/86, plus :am for long lines
+xterm|vs100|xterm terminal emulator (X window system),
+	cr=^M, cud1=^J, nl=^J, bel=^G, home=\E[H,
+	cols#80, lines#65,
+	clear=\E[H\E[2J, cub1=^H, am, cup=\E[%i%p1%d;%p2%dH,
+	cuf1=\E[C, cuu1=\E[A, el=\E[K, ed=\E[J,
+	cud=\E[%p1%dB, cuu=\E[%p1%dA, cub=\E[%p1%dD,
+	cuf=\E[%p1%dC, km,
+	smso=\E[7m, rmso=\E[m, smul=\E[4m, rmul=\E[m,
+	bold=\E[1m, rev=\E[7m, sgr0=\E[m,
+	kcuu1=\EOA, kcud1=\EOB,
+	kcuf1=\EOC, kcub1=\EOD, kbs=^H,
+	kf1=\EOP, kf2=\EOQ, kf3=\EOR, kf4=\EOS, ht=^I, ind=\n, ri=\EM,
+	MT, smkx=\E[?1h\E=, rmkx=\E[?1l\E>,
+	is2=\E[r\E[m\E[2J\E[H\E[?7h\E[?1;3;4;6l,
+	rs2=\E[r\E<\E[m\E[2J\E[H\E[?7h\E[?1;3;4;6l, xenl,
+	il=\E[%p1%dL, dl1=\E[%p1%dM, il1=\E[L, dl1=\E[M,
+	ich1=\E[@, dch1=\E[P,
+	IC=\E[%p2%d@, DC=\E[%p1%dP, hs, tsl=\E[?E\E[?%i%p2%dT,
+	fsl=\E[?F, es, ds=\E[?E,
+xterms|vs100s|xterm terminal emulator (small screen 24x80) (X window system),
+	cols#80, lines#24, use=xterm,
+#

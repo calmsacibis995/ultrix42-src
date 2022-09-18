@@ -1,0 +1,404 @@
+#!/bin/sh
+#
+# SCCSID	"@(#)buildmini	4.2 (ULTRIX) 10/16/90"
+#
+# Usage example: sh buildmini -local ra3b /pulib/mips/Ultrix
+# or: sh buildmini -remote server ra3b server_mnt local_mnt /pulib/mips/Ultrix
+#
+# Buildmini - The Procedure to build a memory file system for installation.
+#--------------------------------------------------------------------------
+# 	Modification History
+#
+# 005 - 16-OCT-1990 - ccb
+#	build miniroot using .sas utilities for space savings
+#
+# 004 - APR 18, 1989 - Jon Wallace
+#	Merge mips and vax architectures into one script.
+#
+# 003 - Nov, 1987 - Tom Tresvik
+#		Integrate with build process.  can now be called
+#		by buildultrix.
+#
+# 002 - July, 1986 	- Lea Gottfredsen &  Tungning Cherng
+#		Added the network remote installation support
+#
+# 001 - April 24, 1986  by Tungning Cherng
+#	  	Revised for the V2.0 generic installtion.
+#
+#	Based on the V1.2 'buildmini' - by Greg Tarsa and Bob Fontaine.
+#
+
+PATH=.:/etc:/bin:/usr/bin:/usr/ucb
+export PATH
+umask 022
+
+MACHTYPE=`/bin/machine`
+case $MACHTYPE in
+mips)
+
+	# We must have 3 or 6 command line args
+	
+	USAGE_ERR=0
+	case $# in
+	3)	REMOTE=0
+		OPTION=$1
+		MINIROOT=$2		# for example, ra3b
+		MASTERROOT=$3		# for example, /pulib/mips/Ultrix
+		if [ ${OPTION} != -l -a ${OPTION} != -local ] ; then
+			USAGE_ERR=1 ;
+		fi
+		;;
+	6)	REMOTE=1
+		OPTION=$1
+		REMOTE_SERVER=$2	# for example, wisper
+		REMOTE_DEV=$3		# for example, ra3b
+		REMOTE_MNT=$4		# for example, /pulib/mips/ROOT_mnt
+		LOCAL_MNT=$5		# for example, /pulib/mips/ROOT_mnt
+		MASTERROOT=$6		# for example, /pulib/mips/Ultrix
+		if [ ${OPTION} != -r -a ${OPTION} != -remote ] ; then
+			USAGE_ERR=1 ;
+		fi
+		;;
+	*)	USAGE_ERR=1
+		;;
+	esac
+	if [ ${USAGE_ERR} = 1 ] ; then
+   	echo "Usage example: sh buildmini -local ra3b /pulib/mips/Ultrix"
+   	echo " or: sh buildmini -remote server ra3b server_mnt local_mnt /pulib/mips/Ultrix"
+   	exit 1
+	fi
+
+	DEST=${MASTERROOT}/usr/sys/dist/kitimages
+	MINISZ=3072		# Same as /sys/conf/SAS.* "pseudo device md"
+
+	#
+	# test the environment, can we access the device and write to the
+	# destination directory
+	#
+
+	if [ ${REMOTE} = 0 ] ; then
+		[ -f /dev/${MINIROOT} ] ||
+		{
+			echo "/dev/${MINIROOT} does not exist"
+			exit 1
+		}
+	fi
+
+	[ -d $DEST ] || mkdir $DEST
+	( > ${DEST}/foo ) ||
+	{
+		echo "Cannot write ${MASTERROOT}/usr/sys/dist/kitimages"
+		exit 1
+	}
+	rm -f ${DEST}/foo
+
+	#
+	# The environment looks ok so let's proceed
+	#
+
+	#echo -n "ARE YOU SURE YOU WANT TO DESTROY /dev/${MINIROOT}? y/n"
+	#read xx
+	#case $xx in
+	#y|Y)
+	#	;;
+	#*)
+	#	exit 1
+	#	;;
+	#esac
+	
+	if [ ${REMOTE} = 0 ] ; then
+		umount /dev/${MINIROOT} > /dev/null 2>&1
+
+		HOMEDIR=`pwd`
+		echo "Making and checking the Mini ROOT file system on ${MINIROOT}"
+
+		#
+		# The partition for MINISZ blocks must be zeroed for the sake
+		# of compression when building standalone kit images.
+		#
+		echo 'a' > junk
+		dd if=junk of=/dev/$MINIROOT ibs=${MINISZ}b conv=sync
+		rm junk
+
+		mkfs /dev/r${MINIROOT} ${MINISZ} ${MINISZ} 1 4096 512 ||
+		{ 
+			echo "Cannot make newfs on ${minitype}" 
+			exit 1 
+		}
+
+		[ -d /MINI_mnt ] || mkdir /MINI_mnt
+		echo "Mounting "${MINIROOT}" on /MINI_mnt."
+		mount /dev/${MINIROOT} /MINI_mnt ||
+		{
+			echo "Cannot mount the Mini ROOT file system"
+			rmdir /MINI_mnt
+			exit 1
+		}
+		cd /MINI_mnt
+	else
+		cd ${LOCAL_MNT}
+	fi
+	rm -rf lost+found
+
+	#
+	# Install files to the Mini ROOT file system
+	#
+	echo "Starting the build of the Mini ROOT."
+	#
+	# make top level directories
+	for K in bin etc tmp dev mnt
+	{
+		mkdir $K
+	}
+	chmod 777 tmp
+
+	#
+	# copy the needed programs (from the real root).
+	# (We may want to strip them for space).
+
+	cp ${MASTERROOT}/usr/sys/dist/.miniprofile .profile
+	cp ${MASTERROOT}/usr/sys/dist/install.1 .
+	cp ${MASTERROOT}/usr/mdec/bootblks .			
+
+	for prog in geometry finder btd log
+	{
+		cp ${MASTERROOT}/sys/dist/$prog bin	
+		strip bin/$prog > /dev/null 2>&1
+	}
+
+	cp ${MASTERROOT}/sys/dist/gethost . ; strip ./gethost > /dev/null 2>&1
+	cp ${MASTERROOT}/usr/ucb/rsh bin ; strip bin/rsh > /dev/null 2>&1
+
+	for prog in mkfs halt mount mknod fsck umount ufs_mount chpt \
+		ifconfig protocols services passwd svc.conf
+
+	{
+		cp ${MASTERROOT}/etc/$prog etc
+		strip etc/$prog > /dev/null 2>&1
+	}
+
+
+	for prog in sh sync mkdir stty echo test expr rm dd mt chmod init \
+		restore hostname ed machine
+	{
+		cp ${MASTERROOT}/bin/$prog bin
+		strip bin/$prog > /dev/null 2>&1
+	}
+
+	cd dev
+	cp ${MASTERROOT}/dev/MAKEDEV ./MAKEDEV
+	./MAKEDEV std
+	
+	if [ ${REMOTE} = 0 ] ; then
+		cd /MINI_mnt
+	else
+		cd ${LOCAL_MNT}
+	fi
+	ln bin/test bin/[	#put the square bracket into the directory
+	ln bin/stty bin/STTY
+	(cd etc ; ln ../bin/init init)
+	
+	df .
+	cd ${DEST}
+	if [ ${REMOTE} = 0 ] ; then
+		echo "Unmounting and checking "${MINIROOT}"."
+		umount /dev/${MINIROOT}
+		fsck /dev/r${MINIROOT}
+
+		echo "Building standalone images..."
+		dd if=/dev/r$MINIROOT of=MINIROOT count=${MINISZ}
+		#make -f ${MASTERROOT}/usr/sys/dist/make.sas MEMFS=MINIROOT \
+		#MASTERROOT=$MASTERROOT DISTROOT=${MASTERROOT} clean all 
+		cd ${MASTERROOT}/usr/sys/MIPS/SAS
+		${MASTERROOT}/usr/sys/dist/fsmrg ${DEST}/MINIROOT vmunix
+		${MASTERROOT}/usr/sys/dist/mksastape vmunix ${DEST}/TK50.1
+
+		cd ${HOMEDIR}
+		rmdir /MINI_mnt
+	else
+		echo "Unmounting and checking "${MINIROOT}"."
+		rsh ${REMOTE_SERVER} umount /dev/${REMOTE_DEV}
+		rsh ${REMOTE_SERVER} fsck /dev/${REMOTE_DEV}
+
+		echo "Building standalone images..."
+		rsh ${REMOTE_SERVER} dd if=/dev/r$REMOTE_DEV count=${MINISZ} \
+			> MINIROOT
+		#make -f ${MASTERROOT}/usr/sys/dist/make.sas MEMFS=MINIROOT \
+		#MASTERROOT=$MASTERROOT DISTROOT=${MASTERROOT} clean all 
+		cd ${MASTERROOT}/usr/sys/MIPS/SAS
+		${MASTERROOT}/usr/sys/dist/fsmrg ${DEST}/MINIROOT vmunix
+		${MASTERROOT}/usr/sys/dist/mksastape vmunix ${DEST}/TK50.1
+	fi
+	echo "Buildmini done."
+	;;
+
+vax)
+
+	# Usage: example: sh buildmini ra1 /library/Ultrix
+	#
+	PATH=.:/etc:/bin:/usr/bin:/usr/ucb
+	export PATH
+	umask 022
+
+	# We must have 2 command line args
+
+	case $# in
+	2)	;;
+	*)	echo "Usage: example: sh buildmini ra1 /library/Ultrix"
+		exit 1
+		;;
+	esac
+	
+	MINIROOT=$1		# for example, ra11b
+	MASTERROOT=$2		# for example, /library/Ultrix
+	DEST=${MASTERROOT}/usr/sys/dist/kitimages
+	MINISZ=2048		# Same as /sys/conf/SAS.* "pseudo device md"
+
+	#
+	# test the environment, can we access the device and write to the
+	# destination directory
+	#
+
+	[ -f /dev/${MINIROOT} ] ||
+	{
+		echo "/dev/${MINIROOT} does not exist"
+		exit 1
+	}
+
+	[ -d $DEST ] || mkdir $DEST
+	( > ${DEST}/foo ) ||
+	{
+		echo "Cannot write ${MASTERROOT}/usr/sys/dist/kitimages"
+		exit 1
+	}
+	rm -f ${DEST}/foo
+
+	#
+	# The environment looks ok so let's proceed
+	#
+
+	umount /dev/${MINIROOT} > /dev/null 2>&1
+
+	HOMEDIR=`pwd`
+	echo "Making and checking the Mini ROOT file system on ${MINIROOT}"
+
+	#
+	# The partition for MINISZ blocks must be zeroed for the sake
+	# of compression when building standalone kit images.
+	#
+	echo 'a' > junk
+	dd if=junk of=/dev/$MINIROOT ibs=${MINISZ}b conv=sync
+	rm junk
+
+	mkfs /dev/r${MINIROOT} ${MINISZ} ${MINISZ} 1 4096 512 ||
+	{ 
+		echo "Cannot make mewfs on ${minitype}" 
+		exit 1 
+	}
+
+	[ -d /MINI_mnt ] || mkdir /MINI_mnt
+	echo "Mounting "${MINIROOT}" on /MINI_mnt."
+	mount /dev/${MINIROOT} /MINI_mnt ||
+	{
+		echo "Cannot mount the Mini ROOT file system"
+		rmdir /MINI_mnt
+		exit 1
+	}
+	cd /MINI_mnt
+	rm -rf lost+found
+
+	#
+	# Install files to the Mini ROOT file system
+	#
+	echo "Starting the build of the Mini ROOT."
+	#
+	# make top level directories
+	for K in bin etc tmp dev mnt
+	{
+		mkdir $K
+	}
+	chmod 777 tmp
+
+	#
+	# copy the needed programs (from the real root).
+	# (We may want to strip them for space).
+	
+	cp ${MASTERROOT}/usr/sys/dist/.miniprofile .profile
+	cp ${MASTERROOT}/usr/sys/dist/install.1 .
+	cp ${MASTERROOT}/usr/mdec/bootblks .			
+	
+	for prog in geometry finder btd log
+	{
+		cp ${MASTERROOT}/sys/dist/$prog bin	
+		strip bin/$prog > /dev/null 2>&1
+	}
+
+	cp ${MASTERROOT}/sys/dist/gethost . ; strip ./gethost > /dev/null 2>&1
+	cp ${MASTERROOT}/usr/ucb/rsh bin ; strip bin/rsh > /dev/null 2>&1
+
+	for prog in mkfs halt mount mknod fsck umount ufs_mount chpt \
+		ifconfig protocols services passwd svc.conf
+
+	{
+		cp ${MASTERROOT}/etc/$prog etc
+		strip etc/$prog > /dev/null 2>&1
+	}
+
+
+	for prog in sh sync mkdir stty echo test expr rm dd mt chmod init \
+		restore hostname ed machine ls radisk rzdisk
+	{
+		cp ${MASTERROOT}/bin/$prog bin
+		strip bin/$prog > /dev/null 2>&1
+	}
+
+	# pick up "special" (smaller) versions of init, fsck, ifconfig
+	[ -f ${MASTERROOT}/bin/init.sas ] &&
+	{
+		cp ${MASTERROOT}/bin/init.sas bin/init
+		strip bin/init > /dev/null 2>&1
+	}
+	[ -f ${MASTERROOT}/etc/fsck.sas ] &&
+	{
+		cp ${MASTERROOT}/etc/fsck.sas etc/fsck
+		strip etc/fsck > /dev/null 2>&1
+	}
+	[ -f ${MASTERROOT}/etc/ifconfig.sas ] &&
+	{
+		cp ${MASTERROOT}/etc/ifconfig.sas etc/ifconfig
+		strip etc/ifconfig > /dev/null 2>&1
+	}
+
+	cd dev
+	cp ${MASTERROOT}/dev/MAKEDEV ./MAKEDEV
+	${MASTERROOT}/etc/mknod console c 0 0
+	${MASTERROOT}/etc/mknod kmem c 3 1
+	${MASTERROOT}/etc/mknod tty c 2 0
+	${MASTERROOT}/etc/mknod null c 3 2
+	${MASTERROOT}/bin/chmod 666 tty null
+	
+	cd /MINI_mnt
+	ln bin/test bin/[	#put the square bracket into the directory
+	ln bin/stty bin/STTY
+	
+	cd ${DEST}
+	echo "Unmounting and checking "${MINIROOT}"."
+	umount /dev/${MINIROOT}
+	fsck /dev/r${MINIROOT}
+	
+	echo "Building standalone images..."
+	dd if=/dev/r$MINIROOT of=MINIROOT count=${MINISZ}
+	make -f ${MASTERROOT}/usr/sys/dist/make.sas MEMFS=MINIROOT \
+	MASTERROOT=$MASTERROOT DISTROOT=${MASTERROOT} clean all 
+	cd ${MASTERROOT}/usr/sys/VAX/SAS.net
+	${MASTERROOT}/usr/sys/dist/fsmrg ${DEST}/MINIROOT vmunix
+	cd ${MASTERROOT}/usr/sys/VAX/SAS.gen
+	${MASTERROOT}/usr/sys/dist/fsmrg ${DEST}/MINIROOT vmunix
+
+	cd ${HOMEDIR}
+	
+	rmdir /MINI_mnt
+	echo "Buildmini done."
+	;;
+esac
+

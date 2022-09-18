@@ -1,0 +1,101 @@
+.\" SCCSID: @(#)eli.8	2.1	3/10/87
+.TH eli 8
+.SH Name
+eli \- error log initialization program
+.SH Syntax
+.B eli [ 
+.I options\fB ]
+.SH Description
+.NXR "eli command"
+.NXAM "eli command" "errlog file"
+.NXR "error logging" "initializing"
+The 
+.PN eli 
+command initializes error logging.  This command enables error logging
+of hardware and system-related error packets, or error messages, from
+the kernel errorlog buffer.  It can also disable error logging,
+reconfigure error logging parameters, or initialize the kernel errorlog
+buffer.
+.SH Options
+.TP
+.B \-d
+Disables error logging.
+.TP
+.B \-e
+Enables error logging in multiuser mode.
+.TP
+.B \-f
+Forces the subsequent option; the system will not prompt.  This is
+the only 
+.PN eli 
+command option you can use with another option.
+.TP
+.B \-h
+Prints information about the 
+.PN eli 
+command.
+.TP
+.B \-i
+Initializes the kernel errorlog buffer.  The previous contents of the
+errorlog buffer are lost.
+.TP
+.B \-l
+Logs a one-line status message to the kernel errorlog buffer.
+.TP
+.B \-n
+Only supported for local error logging.  Disables logging error 
+packets to disk by the 
+.PN elcsd
+daemon. High priority error messages continue to be printed at 
+the console.  Note that error log packets can be viewed by using the
+.PN uerf \-\|n
+option in real time, but are never written to the disk.  For this
+reason, this option is rarely used. 
+.TP
+.B \-q
+Suppresses the periodic display, on the console, of the missed error 
+message that results from a full kernel errorlog buffer.
+.TP
+.B \-r
+Reconfigures error logging.  Use this option after changing the
+.PN /etc/elcsd.conf
+file.
+.TP
+.B \-s
+Enables error logging in single-user mode.
+.TP
+.B \-w
+Enables the missed error message to appear on the console every 15
+minutes.  This option is the opposite of 
+.PN \-q . 
+.SH Examples
+This example logs a one-line message into the errorlog file.
+.EX
+eli \-f \-l "This is a test message"
+.EE
+This example logs a message, up to and including the first new line,
+from the file 
+.PN myfile :
+.EX
+eli \-f \-l < myfile > /dev/null
+.EE
+.SH Restrictions
+You must have superuser privileges to use the 
+.PN eli 
+command.
+.sp
+Only the \fB\-f\fR option can be used with other 
+.PN eli
+options.
+You must use the syntax shown in the examples above.
+.SH Diagnostics 
+.B "eli: Request Aborted."
+.br
+The requested action was aborted.  The reason for the aborted command is
+included with the output. 
+.SH Files
+.PN /etc/elcsd.conf	
+.SH See Also
+elcsd.conf(5), elcsd(8), uerf(8)
+.br
+.I "Guide to the Error Logger" 

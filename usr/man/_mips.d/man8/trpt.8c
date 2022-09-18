@@ -1,0 +1,97 @@
+.\" SCCSID: @(#)trpt.8c	8.1	9/11/90
+.TH trpt 8c
+.SH Name
+trpt \- transliterate protocol trace
+.SH Syntax
+.B trpt
+[
+.B \-a
+] [
+.B \-s
+]  [
+.B \-t
+] [
+.B \-j
+] [
+.B \-p
+.I hex-address 
+]
+[ 
+.I system 
+[ 
+.I core 
+] ]
+.SH Description
+.NXR "trpt command"
+.NXAM "setsockopt system call" "trpt command"
+.NXS "transliterate protocol trace" "trpt command"
+The
+.PN trpt
+command 
+interrogates the buffer of TCP trace records created
+when a socket is marked for debugging 
+and prints a readable description of these records.
+.SH Options
+When no options are supplied, 
+.PN trpt
+prints all the trace records found in the system
+grouped according to TCP connection protocol control
+block (PCB).  The following options may be used to
+alter this behavior:
+.IP \-s
+In addition to the normal output,
+prints a detailed description of the packet
+sequencing information.
+.IP \-t
+In addition to the normal output,
+prints the values for all timers at each
+point in the trace.
+.IP \-j
+Gives a list of the protocol control block
+addresses for which there are trace records.
+.IP \-p
+Shows only trace records associated with the protocol
+control block whose address follows.
+.IP \-a
+In addition to the normal output,
+prints the values of the source and destination
+addresses for each packet recorded.
+.PP
+The recommended use of
+.PN trpt
+is to isolate 
+the problem and enable debugging on the
+socket(s) involved in the connection.
+Find the address of the protocol control blocks
+associated with the sockets using the 
+.B \-A
+option to 
+.MS netstat 1 .
+Then run
+.PN trpt
+with the
+.B \-p
+option, supplying the associated
+protocol control block addresses.  If there are
+many sockets using the debugging option, the
+.B \-j
+option may be useful in checking to see if
+any trace records are present for the socket in
+question.
+.PP
+If debugging is being performed on a system or
+core file other than the default, the last two
+arguments may be used to supplant the defaults.
+.SH Diagnostics
+.B "no namelist"
+.br
+The system image does not
+contain the proper symbols to find the trace buffer.
+.PP
+Other diagnostic messages are self-explanatory.
+.SH Files
+.PN /vmunix
+.br
+.PN/dev/kmem
+.SH See Also
+netstat(1), setsockopt(2)

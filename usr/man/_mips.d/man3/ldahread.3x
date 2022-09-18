@@ -1,0 +1,37 @@
+.TH ldahread 3x RISC
+.SH Name
+ldahread \- read the archive header of a member of an archive file 
+.SH Syntax
+.nf
+.ta \w'\s-1LDFILE\s+1\ \ \ 'u
+.B #include <stdio.h>
+.B #include <ar.h>
+.B #include <filehdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h>
+.PP
+.BR "int ldahread (" "ldptr, arhead" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR "\s-1ARCHDR\s+1 \(**" arhead ;
+.fi
+.DT
+.SH Description
+If 
+.BI \s-1TYPE\s+1( ldptr )
+is the archive file magic number, the
+.PN ldahread
+function reads the archive header of the common object file 
+currently associated with
+.I ldptr
+into the area of memory beginning at
+.IR arhead .
+.PP
+The
+.PN ldahread
+function returns success or failure.  If 
+.BI \s-1TYPE\s+1( ldptr )
+does not represent an archive file or if it cannot read the archive header,
+.PN ldahread
+fails.
+.SH See Also
+intro(3x), ldclose(3x), ldopen(3x), ar(5), ldfcn(5)

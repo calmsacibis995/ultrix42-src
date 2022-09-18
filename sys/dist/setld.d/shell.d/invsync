@@ -1,0 +1,141 @@
+#!/bin/sh5
+#
+#	invsync.sh5 -
+#		inventory synchronization program
+#
+#
+#			Copyright (c) 1990 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)invsync	4.2 (ULTRIX)	10/16/90";
+#
+#	000	16-oct-1990	ccb
+#		bugfixes. integrate udetect call
+#
+
+CDPATH= ;export CDPATH		# assure no surprises.
+PATH=/install.tmp:/etc/stl:/etc:/bin:/usr/bin:/usr/adm/bin:/usr/ucb
+
+:	-Main
+#		main routine
+#
+
+Main()
+{
+	cd  /usr/etc/subsets
+
+	# Establish a list of subsets which must be syncronized,
+	#  taken in install-order.
+
+	SYNCLIST=`ls -rt *.inv | sed 's/\.inv//g'`
+	# determine which of these are installed
+	INSTALLED=
+	for S in $SYNCLIST
+	{
+		[ -f $S.lk ] &&
+			INSTALLED="$INSTALLED $S"
+	}
+
+	set -- $INSTALLED
+
+
+	# sort the initial inventory ascending by pathname
+	Y=$1
+	echo "Initial Subset: $Y"
+	sort -o $Y.#syn +9 -10 $Y.inv
+
+	# Iteratively synchronize inventories 2 at a time.
+	#  the oldest two are synchronized into one which
+	#  is in turn used as the oldest in the next iteration
+	#
+
+	while [ $# -gt 1 ]
+	do
+		# pop the first two from the list.
+		X=$1 Y=$2
+		shift
+
+		mv $X.#syn $X.syn 2> /dev/null
+
+		# get original copies the inventories
+		#  if we haven't already and sort them
+		[ -f $X.syn ] ||
+		{
+			sort -o $X.syn +9 -10 $X.inv &
+			SORTPID=$!
+		}
+
+		[ -f $Y.syn ] ||
+			sort -o $Y.syn +9 -10 $Y.inv
+
+		(Wait SORTPID)
+
+		# synchronize the inventory pair
+		echo "Synchronize $Y...\c"
+		usync $X.syn $Y.syn > $Y.#syn
+		echo "done."
+
+		rm -f $X.syn
+	done
+
+	mv $Y.#syn MSI
+	(cd /;/etc/stl/udetect) < MSI > CFI
+}
+
+
+
+:	-Wait
+#		intelligent wait routine
+#
+#	given:	$1 - the name of the variable contianing the pid of the
+#			process to wait for (yes, this uses call-by-reference)
+#		[$2 - $n] - optional string to eval if wait fails
+#	does:	wait on the specified PID if contents of $1 is not null
+#		if wait returns !0 status, eval remainder of command line
+#		clear contents of variable specified in $1
+#	return:	exit status of the wait
+
+Wait()
+{
+	VAR=$1
+	shift
+
+	# was there a first arg?
+	[ ! "$VAR" ] && return 0
+
+	eval VAL=\$$VAR
+
+	# was the value of the named variable set?
+	[ ! "$VAL" ] && return 0
+
+	# clear the value from the named variable
+	eval $VAR=
+
+	wait $VAL ||
+	{
+		STAT=$?
+		eval $*
+		return $STAT
+	}
+}
+
+ARGS=$*
+
+[ "$INVSYNC_DEBUG" ] || Main $ARGS
+echo OK
+

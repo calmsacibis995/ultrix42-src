@@ -1,0 +1,161 @@
+.TH nfslogsum 8 "" "" Unsupported
+.SH Name
+nfslogsum \- summarize nfswatch log file
+.SH Syntax
+.B /usr/etc/nfslogsum
+[
+.I \-n
+] [
+.B \-v
+] [
+.I logfile
+]
+.SH Description
+.NXR "nfslogsum command"
+The 
+.PN nfslogsum
+command summarizes log files produced by the
+.PN nfswatch
+program.
+By default the log file
+.PN nfswatch.log
+is summarized;
+an alternate log file can be specified on the command line.
+.PP
+Each
+.PN nfswatch
+log file can contain one or more log sessions,
+each indicated by a header which is printed when logging is turned on.
+For each log session,
+.PN nfslogsum
+tallies up the interval packet totals and prints out a one-page summary
+of the log session.
+Total packets and percentages are tabulated for each category and
+displayed.
+.SH Options
+.TP
+.B \-n
+Tells
+.PN nfslogsum
+to read only the first
+.I n
+entries in the log file.
+This is useful for summarizing log files in cumulative ``chunks''.
+.TP
+.B \-v
+Produces a ``verbose'' summary of the log file.
+In addition to the summary information printed as described above,
+a summary of how many calls to each NFS procedure were made on each
+file system and individual file is printed.
+This summary information is divided into three sections of six columns
+each.  The columns are headed by the names of the NFS procedures;
+these are described briefly below:
+.IP "\fB\s-1NULLPROC\s0\fP"
+Do nothing.
+This procedure is provided to allow server response testing and timing.
+.IP "\fB\s-1GETATTR\s0\fP"
+Get file attributes (for example, type,
+mode,
+number of links,
+owner's uid,
+owner's gid,
+size,
+access,
+modification and change times).
+This procedure is used by the
+.MS stat 2
+system call,
+as well as several others.
+.IP "\fB\s-1SETATTR\s0\fP"
+Set file attributes  (mode,
+owner's uid,
+owner's gid,
+size in bytes,
+access and modification times).
+This procedure is used by system calls such as
+.MS chmod 2 ,
+.MS chown 2 ,
+.MS truncate 2 .
+.IP "\fB\s-1GETROOT\s0\fP"
+Get file system root.
+This procedure is obsolete,
+and has been replaced by a \s-1MOUNT\s0 Protocol procedure.
+.IP "\fB\s-1LOOKUP\s0\fP"
+Look up file name.
+This procedure is used to obtain an initial file handle for
+use in current and future requests on that file,
+and is used by many different system calls.
+.IP "\fB\s-1READLINK\s0\fP"
+Read from symbolic link.
+This procedure is used by the
+.B readlink
+system call,
+and by the kernel.
+.IP "\fB\s-1READ\s0\fP"
+Read data from file.
+This procedure is used by the
+.MS read 2
+system call.
+.IP "\fB\s-1WCACHE\s0\fP"
+Write to cache.
+Unused in the current NFS protocol revision.
+.IP "\fB\s-1WRITE\s0\fP"
+Write data to file.
+This procedure is used by the
+.MS write 2
+system call.
+.IP "\fB\s-1CREATE\s0\fP"
+Create file.
+This procedure is used by the
+.MS creat 2
+and
+.MS open 2
+system calls.
+.IP "\fB\s-1REMOVE\s0\fP"
+Remove file.
+This procedure is used by the
+.MS unlink 2
+system call.
+.IP "\fB\s-1RENAME\s0\fP"
+Rename file.
+This procedure is used by the
+.B rename
+system call.
+.IP "\fB\s-1LINK\s0\fP"
+Create link to file.
+This procedure is used by the
+.MS link 2
+system call.
+.IP "\fB\s-1SYMLINK\s0\fP"
+Create symbolic link to file.
+This procedure is used by the
+.MS symlink 2
+system call.
+.IP "\fB\s-1MKDIR\s0\fP"
+Create directory.
+This procedure is used by the
+.MS mkdir 2
+system call.
+.IP "\fB\s-1RMDIR\s0\fP"
+Remove directory.
+This procedure is used by the
+.MS rmdir 2
+system call.
+.IP "\fB\s-1READDIR\s0\fP"
+Read entries from directory.
+Generally only one \s-1READDIR\s0 call is needed per directory,
+since a variable number of entries can be returned.
+.IP "\fB\s-1STATFS\s0\fP"
+Get file system attributes (transfer size,
+block size,
+blocks in use,
+blocks free).
+.SH Restrictions
+The 
+.I nfslogsum
+command is extremely sensitive to the format of the log file produced by
+.PN nfswatch .
+The log file should not be edited or changed before feeding it to
+.PN nfslogsum .
+.SH See Also
+nfswatch(8)

@@ -1,0 +1,119 @@
+.\" SCCSID: @(#)sizer.8	8.1	9/11/90
+.TH sizer 8
+.SH Name
+sizer \- a program that sizes system hardware
+.SH Syntax
+.B /etc/sizer
+[
+.I options
+]
+.SH Description
+.NXR "sizer program"
+.NXR "system" "sizing"
+The 
+.PN sizer 
+program reports various items of information about a kernel file 
+and the running system.  
+It is also used to create a system configuration file in the 
+doconfig command.
+.SH Options
+.IP \fB-b\fR 5
+Create a boot command file for the current system disk.  
+The
+.PN sizer 
+program
+creates the appropriate 
+.PN defboo 
+and 
+.PN askboo 
+command files in 
+.PN /usr/sys/*.cons.  
+These files can then be used to update the systems console media.  
+This only applies for VAX 8600, VAX 780, VAX 6200, and VAX 3400 cpus. 
+This also applies for the VAX 750 and VAX 8200 only if the system 
+disk is connected to an HSC.
+.IP \fB-c\fR
+Return the CPU type of the running cpu.
+.IP "\fB-t\fR \fItimezone\fP"
+Use 
+.I timezone
+in the config file.
+.IP \fB-wt\fR
+Returns the workstation display type.
+.IP \fB-wu\fR
+Returns the workstation display units.
+.IP "\fB-k\fR \fIimage\fP"
+Use the indicated kernel file instead of 
+.PN /vmunix .
+This is useful when
+the running system is not 
+.PN /vmunix
+or you wish information about a
+system that is not running.
+.IP "\fB-n\fR \fIfilename\fP"
+Creates a configuration file.  The system must be running the 
+.PN /vmunix
+kernel unless the 
+.PN \-k
+option is used. The 
+.PN \-n
+option creates a configuration file in 
+.PN /tmp/filename
+and also a file required for 
+.PN MAKEDEV 
+called 
+.PN /tmp/filename.devs .
+.IP
+NOTE: The user should run 
+.PN doconfig
+to build a new kernel.
+.IP \fB-r\fR
+Return only the name of the root device and partition.
+.IP \fB-s\fR
+Return only the CPU subtype of the running cpu.  This only applies
+to VAX cpus. It returns 
+following values for the following cpus:
+.RS 8
+.IP "Returned " 10
+.PD 0
+.IP Value
+\fBCPU\fR
+.sp
+.IP 11
+VAX8800
+.IP 10
+VAX8700
+.IP " 9"
+VAX8550
+.IP " 8"
+VAX8500
+.IP " 6"
+VAX8300
+.IP " 5"
+VAX8200
+.IP " 4"
+VAXstation/MVAX 2000/3100
+.IP " 3"
+VAX60
+.IP " 1"
+MVAXII, VAX3x00, VAX62xx
+.RE
+.PD
+.PP
+The value 0 is returned for all other cpu types.
+.SH Files
+.PN /usr/sys/780cons/defboo.cmd
+.br
+.PN /usr/sys/8200cons/defboo.com
+.br
+.PN /usr/sys/8600cons/defboo.com
+.br
+.PN /usr/sys/780cons/askboo.cmd
+.br
+.PN /usr/sys/8200cons/askboo.com
+.br
+.PN /usr/sys/8600cons/askboo.com
+.SH See Also
+config(8), doconfig(8)
+.br
+.I "ULTRIX Advanced Installation Guide"

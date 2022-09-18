@@ -1,0 +1,21 @@
+.TH putp 3cur 
+.SH Name
+putp \- pad and output a string
+.SH Syntax
+.B
+putp(str)
+.br
+.B
+char *str;
+.SH Description
+.NXR "putp subroutine"
+The 
+.PN putp 
+routine outputs the string
+.PN str
+one character at a time.
+The routine 
+.PN putchar 
+is used to control the output. 
+.SH See Also
+putchar(3s)

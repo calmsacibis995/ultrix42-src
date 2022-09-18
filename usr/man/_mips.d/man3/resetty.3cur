@@ -1,0 +1,28 @@
+.TH resetty 3cur 
+.SH Name
+resetty, savetty \- restore/save terminal modes
+.SH Syntax
+.br
+.B
+int resetty(\|)
+.PP
+.B
+int savetty(\|)
+.SH Description
+.NXR "resetty subroutine"
+.NXR "savetty subroutine"
+The
+.PN savetty
+routine 
+saves the current state of the terminal modes in a buffer.
+The routine
+.PN resetty
+restores the state of the terminal
+modes to what it was at the last call to 
+.PN savetty .
+.SH Return Values
+The
+.PN resetty
+and 
+.PN savetty
+functions return OK on success and ERR on error.

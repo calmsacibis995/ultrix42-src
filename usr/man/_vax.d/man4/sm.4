@@ -1,0 +1,83 @@
+.\" SCCSID: @(#)sm.4	8.2	3/28/91
+.TH sm 4 VAX
+.SH Name
+sm \- Small VAX monochrome video subsystem
+.SH Syntax
+.B "device sm0 at uba0 csr 0x200f0000 flags 0x0f  vector smvint"
+.SH Description
+.NXS "sm interface" "monochrome video subsystem"
+.NXR "monochrome video subsystem"
+A Small VAX monochrome video subsystem
+provides a half-page or full-page, user-accessible bitmap
+display for graphics applications.
+The device consists of a 128-Kbyte block of dual port RAM,
+a VSXXX-AA mouse or VSXXX-AB tablet, and a 19-inch video monitor.
+.PP
+The subsystem device driver
+supports a hybrid terminal with three minor devices.
+The first minor device emulates a glass tty with a
+screen that appears as a 120-column
+by 80-row page that scrolls from the bottom.
+This device is capable of being configured as the system console.
+.PP
+The second minor device is reserved for the mouse.
+This device is a source of mouse state changes.
+(A state change is defined as an X/Y axis
+mouse movement or button change.)
+When opened, the driver couples movements of the mouse with the cursor.
+Mouse position changes are filtered and translated into cursor position
+changes in an exponential manner.
+Rapid movements result in large cursor position changes.
+All cursor positions are range
+checked to ensure that the cursor remains on
+the display.
+.PP
+The third minor device provides an access path for console output
+that does not disturb the graphics display.
+The caller can open the device 
+.PN /dev/smscreen .
+When this device is open, the Small VAX monochrome driver
+redirects console device output to the input buffer of this device.
+This mechanism disables
+console output on the Small VAX monochrome screen and saves
+the output for 
+later display. This preserves the graphic display integrity.
+.PP
+Input and output on the first and third minor devices are processed by
+the standard line disciplines.
+.PP
+If there is not a special cable (BCC08) on serial port 
+3 (printer port), and
+the optional video board is not present
+(or failed the self-test), the system
+will then use the monochrome video as the system console.
+All input/output destined for 
+.PN /dev/console
+will use the monochrome video
+instead.  (This is done by overwriting the device switch tables.)
+There is a second set of device switch entries configured that may 
+be used as an additional terminal,
+.PN tip/uucp 
+(hardwire, modem, or autodialer)
+connection, or user dial-up access.
+For further information, see 
+.MS ss 4 .
+.sp
+The Hold Screen key is supported.
+The Small VAX monochrome driver treats this
+key as if CTRL/S or CTRL/Q is typed.
+Pressing the Hold Screen key suspends the output
+if it is not already suspended. The output
+will be resumed by pressing this key
+again (if the output was suspended).
+.sp
+.in \-5
+.PP
+.SH Files
+.PN /dev/console
+.br
+.PN /dev/mouse
+.br
+.PN /dev/smscreen
+.SH See Also
+ss(4), ttys(5), MAKEDEV(8)

@@ -1,0 +1,336 @@
+.\" SCCSID: @(#)arff.8v	8.1	9/11/90
+.TH arff 8v VAX
+.SH Name
+arff \- archiver for RT-11 format devices
+.SH Syntax
+.B /etc/arff \fIkey\fB
+.SH Description
+.NXB "arff command"
+.NXA "file" "archive file" 
+.NXB "RT-11 format device" "archiving"
+.NXB "archive file" "saving on console diskette"
+.NXB "archive file" "restoring on console diskette"
+The 
+.PN arff
+command manipulates RT-11 formatted devices, such as the
+console media on VAX computers, or RT-11 formatted device images
+stored as a file on your ULTRIX system.
+The 
+.I key
+argument is
+a single letter, possibly followed by one or more 
+letters. Possible values for \fIkey\fR follow:
+.SH Keys
+.NXR "arff command" "keys"
+.IP \fBd\fR .3i
+Name files to be deleted from the RT-11 device.
+Note that protected files cannot be deleted.
+Wild cards are available with this function.
+At least one RT-11 file name or wild card specification must be given.
+.IP \fBi\fR .3i
+The RT-11 device is initialized.
+The RT-11 device home block and directory segments are rewritten.
+This effectively deletes all files on the RT-11 device.
+.IP "" .3i
+Exactly one argument must be given instead of a file name.
+This argument is a comma-separated list of parameters to use in
+initializing the device:
+.RS 
+.IP 1. .3i
+The first parameter is the device size in blocks (8 to 65535);
+this parameter must be given.
+.IP 2. .3i
+The second parameter is the directory size in segments (1 to 31);
+this parameter may be omitted.
+.IP 3. .3i
+The third parameter is the volume identification (1 to 12 characters);
+this parameter may be omitted.
+.IP 4. .3i
+The fourth parameter is the volume owner (1 to 12 characters);  this
+parameter may be omitted.
+.IP 5. .3i
+The fifth parameter is the number of extra words per directory entry
+(0 to 500); this parameter may be omitted.
+.RE
+.IP "" .3i
+Parameters may be omitted by not placing a value between the separating
+commas.
+Trailing commas need not be provided.
+.IP "" .3i
+The default value for the number of directory segments depends on the
+specified device size.
+For sizes up to 640 blocks, 1 directory segment is assumed;  for
+641 to 1280 blocks, 2 segments; 1281 to 2560 blocks, 4 segments;
+2561 to 5120 blocks, 8 segments; 5121 to 10240 blocks, 16 segments;
+and 10241 or more blocks, 31 segments.
+This approximates, but does not duplicate, the RT-11 defaults.
+.IP "" .3i
+The default value for the volume identification is RT11A; for the volume
+owner, blanks;  and for the number of extra words per directory segment,
+0.
+The ``system identification'' in the home block is set 
+to ``DEC ULTRIX'';
+this cannot be changed by command options.
+.IP \fBp\fR .3i
+The named files are protected against deletion.
+Wild cards are available with this function.
+If no RT-11 file names or wild card specifications are given,
+all files on the RT-11 device are protected against deletion.
+.IP \fBr\fR .3i
+The \fIkey-arguments\fR name files to be replaced on the RT-11 device.
+If the named files do not exist on the RT-11 device, they are added
+to the RT-11 device.
+Wild cards are not available with this function.
+.IP \fBt\fR .3i
+The \fIkey-arguments\fR name files to be listed.
+Wild cards are available with this function.
+If no RT-11 file names or wild card specifications are given, all files
+on the RT-11 device are listed.
+.IP \fBu\fR .3i
+The \fIkey-arguments\fR name files to be made 
+unprotected against deletion.
+Wild cards are available with this function.
+If no RT-11 file names or wild card specifications are given,
+all files on the RT-11 device are protected against deletion.
+.IP \fBx\fR .3i
+The \fIkey-arguments\fR name files to be
+extracted from the RT-11 device.
+Wild cards are available with this function.
+If no RT-11 file names or wild card specifications are given, all files
+on the RT-11 device are extracted into the current working
+directory.
+.IP \fBb\fR .3i
+A boot block is written to an RT-11 device. Currently this works
+on VAX 8600 media only.  The \fIkey-arguments\fR name the
+monitor program file and the device handler program file, in that
+order. The default files if no \fIkey-arguments\fR are
+specified are rt11fb.sys and dl.sys.  The
+monitor program file and the device handler file
+are
+first extracted from the RT-11 device and a boot block is constructed.
+The default or named files will not be extracted
+if the ``n'' (no extract) modifier is given.
+.SH Key Modifiers
+.NXR "arff command" "key modifiers"
+The \fIkey-modifier\fR letters and their effects are:
+.IP \fBc\fR .3i
+Create new directory.
+This modifier indicates that a new (one-segment) directory is to be
+created on the RT-11 device.
+This modifier may be specified only with the \fBr\fR (replace) function.
+The home block is not modified, and, if corrupt, will remain corrupt.
+.IP \fBf\fR .3i
+File name.
+This modifier indicates that the first file name specified in the
+command is the name of a native file which contains an RT-11 device
+image.
+This file is used rather than the default of 
+/dev/bootdev (the
+real device name should be linked to this).
+This modifier may be specified with any function.
+.IP \fBh\fR .3i
+Home block corrupt.
+This modifier indicates that the home block of the RT-11 volume is
+known to be corrupt.
+Directory information contained in the home block is ignored in
+favor of usually valid assumptions.
+This modifier may be necessary when dealing with RT-11 format
+volumes created by the arff program supplied with 4.2bsd and
+ULTRIX Version 1.0.
+.IP "" .3i
+Note that if the home block is noticed to be corrupt and this modifier
+is not given, a warning message is issued and this modifier is assumed.
+.IP \fBm\fR .3i
+No sector mapping.
+This modifier indicates that the device driver mapping is to be used.
+If this modifier is not given on ULTRIX systems, the RX01 mapping
+used by the Digital proprietary operating systems is applied to the
+RT-11 device image.
+This modifier should not be specified when the RT-11 device image is
+the VAX-11/780 or VAX-11/785  RX01 diskette or a physical
+image thereof, and should be specified in all other cases.
+On operating system other than ULTRIX, this modifier is assumed
+and its specification has no effect.
+This modifier may be specified with any function.
+.IP \fBp\fR .3i
+Printable files.
+This modifier indicates that the files transferred to and from the
+RT-11 device are printable text files.
+When extracted from the RT-11 device, NUL characters are deleted and
+CR LF sequences are replaced by newline.
+When replaced into the RT-11 device, newline is replaced by CR LF
+sequences.
+When this modifier is not specified, trailing NUL characters are
+deleted on extraction, and sufficient NUL characters to fill out a
+block are appended on replacement.
+This modifier may be specified only with the \fBr\fR (replace) and
+\fBx\fR (extract) functions.
+.IP \fBv\fR .3i
+Verbose.
+When specified with the \fBt\fR (list) function, the listing produced
+is that which would be produced by the RT-11 command
+.EX
+DIRECTORY /FULL /POSITION /VOLUME /COLUMNS:2
+.EE
+rather than the RT-11 command
+.EX
+DIRECTORY /BRIEF /COLUMNS:6 
+.EE
+When specified with the \fBi\fR (initialize) function, the volume
+parameters specified and implied by the defaulting rules are written
+to the standard output.
+When specified with the \fBr\fR (replace), \fBx\fR (extract),
+\fBd\fR (delete),
+\fBp\fR (protect), or \fBu\fR (unprotect) functions, the names of the
+files affected are listed on the standard output as they are processed.
+.IP \fBn\fR .3i
+No extract.
+Do not extract the monitor program and the handler code from the
+RT-11 device prior to writing a boot block. Used only on VAX 8600
+RT-11 device and with the ``b'' option given above.
+.SH File Names
+.NXR "arff command" "specifying RT-11 file names"
+Most of the functions take a list of file names specifying the files
+upon which the functions are to be performed.
+RT-11 file names may be specified in three formats:
+.IP "\fBRT-11 file names\fR" .3i
+These consist of one to six characters followed by a period followed
+by zero to three characters.
+The characters must be in the set A-Z, 0-9, and dollar sign.
+The characters before the period are known as the
+.IR filename ;
+the characters before the period are known as the
+.IR extension .
+.IP "\fBRT-11 wild card specifications\fR" .3i
+These consist of zero to six characters optionally followed by a period
+optionally followed by one to three characters.
+The characters must be in the set A-Z, 0-9, dollar sign, percent sign,
+and asterisk.
+Percent sign will match any single character in the RT-11 file names
+on the RT-11 volume;  asterisk will match zero or more characters in
+the RT-11 file names on the RT-11 volume.
+An RT-11 wild card specification may be distinguished from an RT-11
+file name by the lack of a filename, the lack of a period and extension,
+or the use of at least one * or % wild card character.
+A null filename is equivalent to *.
+No string is equivalent to *.*.
+.IP "\fBNative file names\fR" .3i
+These consist of one or more characters optionally followed by a
+period optionally followed by one or more characters.
+If no period appears, the file name must be at least seven characters
+long.
+Native file names generate RT-11 file names as follows:
+If there is no period or if there are at least seven characters before
+the first period, the filename is the first six characters and the
+extension is up to the next three characters, terminated by the end of
+the native file name or the appearance of a period.
+If there are one to six characters before the first period, the filename
+is those characters and the extension is up to the next three characters,
+terminated by the end of the native file name or the appearance of
+another period.
+.PP
+In any format, path information may be prepended.
+.PP
+When native file names are generated (for the extract function), the
+form of the generated file name depends upon the file name argument
+specified.
+All prepended path information is present verbatim.
+If the argument is an RT-11 wild card specification, the last component
+of the full path name is the lowercase equivalent of the RT-11 file
+name.  Otherwise, the last component of the full path name is exactly
+that specified in the argument, with uppercase and lowercase intact.
+Thus, 
+.PN /usr/include/ 
+as an argument to the extract function would extract
+all files on the RT-11 device (a null specification is equivalent to
+the *.* wild card), and store them in the directory 
+.PN /usr/include 
+with
+file names the lowercase equivalent of the RT-11 file names;  but
+.PN /usr/include/Makefile 
+as an argument to the extract function would
+extract the RT-11 file MAKEFI.LE and store it as 
+.PN /usr/include/Makefile .
+.SH Examples
+.NXR(e) "arff command"
+The following example
+produces a full listing of the files on the RT-11 device image in the
+file ``device_image''.
+.EX
+arff tvf device_image
+.EE
+The following example
+produces a short listing of the files with extension ``C'' on
+the RT-11 device image in the file ``device_image''.
+.EX
+arff tf device_image .c
+.EE
+.\"The following example
+.\"extracts all files from the RT-11 device at the standard place (see
+.\"the discussion of the \fBf\fR
+.\"modifier) and places them both in the directory
+.\"/usr/users/kmd and in the current working directory.
+.\"The file names generated are the lowercase equivalent of the RT-11
+.\"file names.
+.\".EX
+.\"arff x /usr/users/kmd/ "
+.\".EE
+The following example
+extracts the file FILENAME.C from the RT-11 device at the standard
+place and places it in the file 
+.PN /usr/users/kmd/FILENAME.C 
+(with
+uppercase).
+.EX
+arff x /usr/users/kmd/FILENAME.C
+.EE
+The following example
+protects all files on the RT-11 device at the standard place
+against deletion.
+.EX
+arff p
+.EE
+The following example
+unprotects all files on the RT-11 device at the standard place
+with extension ``OBJ'' against deletion, and notes each file
+so unprotected on the standard output.
+.EX
+arff uv .obj
+.EE
+The following example causes an error message.
+.EX
+arff d
+.EE
+.\"The following example
+.\"deletes all unprotected files on
+.\"the RT-11 device at the standard place.
+.\".EX
+.\"arff d "
+.\".EE
+The following example
+initializes the file test_device to be an RT-11 device image with two
+directory segments, 494 total blocks, and one extra word per directory
+entry.
+.EX
+arff ivf test_device 494,2,,,1
+.EE
+The following example
+extracts the files rt11fb.sys and dl.sys from the RT-11 device,
+constructs a boot block, and writes the boot block back to the device.
+.EX
+arff bm
+.EE
+The following example 
+uses the files rt11a.sys and dd.sys to contruct a boot block for
+an RT-11 device. This boot block is then written to the device.
+.EX
+arff bnm rt11a.sys dd.sys
+.EE
+.SH Files
+.TP 15
+.PN /tmp/arff*	
+RT-11 file image for the ``replace'' function
+.NXE "arff command"
+.NXE "RT-11 format device" "archiving"
+.NXE "archive file" "saving on console diskette"
+.NXE "archive file" "restoring on console diskette"

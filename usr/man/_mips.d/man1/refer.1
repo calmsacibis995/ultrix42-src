@@ -1,0 +1,218 @@
+.\" SCCSID: @(#)refer.1	8.2	10/24/90
+.TH refer 1
+.SH Name
+refer \- find and format bibliographic references 
+.SH Syntax
+.B refer
+[\fB\-a\fR] [\fB\-b\fR] [\fB\-c\fR] [\fB\-e\fR] [\fB\-f\fIn\fR\|] 
+[\fB\-k\fIx\fR\|] [\fB\-l\fIm,n\fR\|] [\fB\-n\fR] [\fB\-p\fI bib\fR\|] 
+[\fB\-s\fIkeys\fR\|] [\fB\-B\fIl.m\fR\|] [\fB\-P\fR] [\fB\-S\fR] 
+[\|\fIfile...\fR\|]
+.SH Description
+.NXR "refer preprocessor"
+.NXR "bibliography" "searching"
+.NXR "refer preprocessor" "addbib program"
+.NXR "refer preprocessor" "sortbib command"
+.NXR "refer preprocessor" "roffbib text processor"
+.NXR "refer preprocessor" "lookbib command"
+.NXR "nroff text processor" "refer preprocessor"
+.NXR "footnote" "formatting"
+.NXR "endnote" "formatting"
+The
+.PN refer
+command
+is a preprocessor for
+.PN *roff
+that finds and formats references for footnotes or endnotes.
+It is also the base for a series of programs designed to
+index, search, sort, and print stand-alone bibliographies,
+or other data entered in the appropriate form.
+.PP
+Given an incomplete citation with sufficiently precise keywords,
+.PN refer
+will search a bibliographic database for references
+containing these keywords anywhere in the title, author, journal, and
+so forth.
+The input file (or standard input)
+is copied to standard output,
+except for lines between .[ and .] delimiters,
+which are assumed to contain keywords,
+and are replaced by information from the bibliographic database.
+The user may also search different databases,
+override particular fields, or add new fields.
+The reference data, from whatever source, are assigned to a set of
+.PN *roff
+strings.
+Macro packages such as
+.MS ms 7
+print the finished reference text from these strings.
+By default references are flagged by footnote numbers.
+.SH Options
+.NXR "refer preprocessor" "options"
+The following options are available:
+.IP \fB\-a\fIr\fR 12
+Reverses order of first
+author names. For example, Jones, J. A. instead of J. A. Jones.
+If
+.I n
+is omitted all author names are reversed.
+.IP \fB\-B\fIl.m\fR 
+Bibliography mode.
+Take a file composed of records separated by blank lines,
+and turn them into
+.B *roff
+input.
+Label
+.I l
+is turned into the macro
+.I \&.m
+with
+.I l
+defaulting to
+.B %X
+and
+.I \&.m
+defaulting to
+.B \&.AP
+(annotation paragraph).
+.IP \fB\-b\fR 
+Creates bare entries:  no flags, numbers, or labels.  
+.IP \fB\-c\fIkeys\fR 
+Capitalizes fields whose key letters are in string.  
+.IP \fB\-e\fR 
+Accumulates all references in one list.  
+Default is to create references where encountered in text.  
+Accumulate them until a sequence of the form
+.EX
+  .[
+  $LIST$
+  .]
+.EE
+.br
+is encountered, and then write out all references collected so far.
+.IP \fB\-f\fIn\fR 
+Set the footnote number to
+.I n
+instead of the default of 1 (one).
+With labels rather than numbers,
+this flag is a no-op.
+.IP \fB\-k\fIx\fR 
+Uses specified label in place of numbering for each reference data 
+line beginning %
+.I x
+:.  By default 
+.I x
+is 
+.B L.
+.IP \fB\-l\fIm,n\fR 
+Instead of numbering references, use labels made from
+the senior author's last name and the year of publication.
+Only the first
+.I m
+letters of the last name
+and the last
+.I n
+digits of the date are used.
+If either
+.I m
+or
+.I n
+is omitted the entire name or date respectively is used.
+.IP \fB\-P\fR 
+Places punctuation marks .,:;?! after the reference signal,
+rather than before.
+(Periods and commas used to be done with strings.)
+.IP \fB\-n\fR 
+Do not search the default file /usr/dict/papers/Ind.
+If there is a REFER environment variable,
+the specified file is searched instead of the default file;
+in this case the
+.B \-n
+flag has no effect.
+.IP \fB\-p\fIbib\fR 
+Specifies file to be searched before
+.PN /usr/dict/papers.  
+.IP \fB\-S\fR 
+Produce references in the Natural or Social Science format.
+.IP \fB\-s\fIkeys\fR 
+Uses specified key in sorting references.  
+Implies
+.BR \-e .
+The key-letters in
+.I keys
+may be followed by a number to indicate how many such fields
+are used, with
+.B +
+taken as a very large number.
+The default is
+.B AD
+which sorts on the senior author and then date; to sort, for example,
+on all authors and then title use
+.BR \-sA+T .
+.PP
+To use your own references,
+put them in the format described below.
+They can be searched more rapidly by running
+.MS indxbib 1
+on them before using
+.PN refer .
+Failure to index results in a linear search.
+When
+.PN refer
+is used with the
+.PN eqn ,
+.PN neqn
+or
+.PN tbl
+preprocessors
+.PN refer
+should be first, to minimize the volume
+of data passed through pipes.
+.PP
+The
+.PN refer
+preprocessor and associated programs
+expect input from a file of references
+composed of records separated by blank lines.
+A record is a set of lines (fields),
+each containing one kind of information.
+Fields start on a line beginning with a ``%'',
+followed by a key-letter, then a blank,
+and finally the contents of the field,
+and continue until the next line starting with ``%''.
+The output ordering and formatting of fields
+is controlled by the macros specified for
+.PN *roff
+(for footnotes and endnotes) or
+.PN roffbib
+(for stand-alone bibliographies).
+For a list of the most common key-letters
+and their corresponding fields, see
+.MS addbib 1 .
+An example of a
+.PN refer
+entry is given below.
+.SH Restrictions
+.NXR "refer preprocessor" "restricted"
+Blank spaces at the end of lines in bibliography fields
+will cause the records to sort and reverse incorrectly.
+Sorting large numbers of references causes a core dump.
+.SH Examples
+.EX
+%A   M. E. Lesk
+%T   Some Applications of Inverted Indexes on the \s-1UNIX\s0 System
+%B   UNIX Programmer's Manual  \"TITLE_EXEMPT\"
+%V   2b
+%I   Bell Laboratories
+%C   Murray Hill, NJ
+%D   1978
+.EE
+.SH Files
+.TP 20
+.PN /usr/dict/papers
+directory of default publication lists
+.TP
+.PN /usr/lib/refer  
+directory of companion programs
+.SH See Also
+addbib(1), sortbib(1), roffbib(1), indxbib(1), lookbib(1)

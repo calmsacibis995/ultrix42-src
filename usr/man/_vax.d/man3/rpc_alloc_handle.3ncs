@@ -1,0 +1,104 @@
+.TH rpc_alloc_handle 3ncs
+.SH Name
+rpc_alloc_handle \- create an RPC handle (client only)
+.SH Syntax
+.nf
+#include <idl/c/rpc.h>
+
+handle_t rpc_$alloc_handle(\fIobject, family, status)\fP
+uuid_$t *\fIobject\fP;
+unsigned long \fIfamily\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBfunction rpc_$alloc_handle(\fR
+.\"	\fBin \fIobject\fB: uuid_$t;\fR
+.\"	\fBin \fIfamily\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t): handle_t;\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIobject\fR
+The UUID of the object to be accessed.
+If there is no specific object, specify \fBuuid_$nil\fR.
+.TP 20
+\fIfamily\fR
+The address family to use in communications to access the object.
+Currently, only
+.B socket_$ internet
+is supported.
+.TP 20
+\fIstatus\fR
+The completion status.  
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$alloc_handle
+routine creates an unbound RPC handle that identifies a particular object
+but not a particular server or host.
+.NXR "Interface to the Remote Procedure Call" "rpc_alloc_handle"
+.PP
+If a remote procedure call is made using the unbound handle,
+it will effect a broadcast to all Local Location Brokers (LLBs) on the local
+network.  If the call's interface and the object identified by the handle
+are both registered with any LLB,
+that LLB forwards the request to the registering server.
+The client RPC runtime library returns the first response that it receives
+and binds the handle to the first responding server.
+.SH Examples
+The following statement allocates a handle that identifies the Acme 
+company's payroll database object:
+.EX
+h = rpc_$alloc_handle (&acme_pay_id, socket_$internet, &status);
+.EE
+.SH Diagnostics
+This section lists status codes for errors returned by this 
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$comm_failure\fR
+The client was unable to get a response from the server.
+.TP 20
+\fBrpc_$unk_if\fR
+The requested interface is not known.
+It is not registered in the server,
+the version number of the registered interface is
+different from the version number specified in the request,
+or the UUID in the request does not match the UUID of the registered interface.
+.TP 20
+\fBrpc_$cant_create_sock\fR
+The RPC runtime library was unable to create a socket.
+.TP 20
+\fBrpc_$cant_bind_sock\fR
+The RPC runtime library created a socket but was unable to bind it to a socket address.
+.TP 20
+\fBrpc_$wrong_boot_time\fR
+The server boot time value maintained by the client
+does not correspond to the current server boot time.
+The server was probably rebooted while the client program was running.
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$you_crashed\fR
+This error can occur if a server has crashed and restarted.
+A client RPC runtime library sends the error to the server
+if the client makes a remote procedure call before the server crashes,
+then receives a response after the server restarts.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs), rpc_free_handle(3ncs), rpc_set_binding(3ncs)

@@ -1,0 +1,48 @@
+.TH sinh 3m RISC
+.SH Name
+sinh, cosh, tanh \- hyperbolic functions
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double sinh(x)
+.B double x;
+.PP
+.B float fsinh(x)
+.B float x;
+.PP
+.B double cosh(x)
+.B double x;
+.PP
+.B float fcosh(x)
+.B float x;
+.PP
+.B double tanh(x)
+.B double x;
+.PP
+.B float ftanh(x)
+.B float x;
+.fi
+.SH Description
+These functions compute the designated hyperbolic functions for 
+double and float data types.
+.SS Error
+Below 2.4 
+.I ulps 
+(unit in the last place).
+.SH Diagnostics
+The
+.PN sinh 
+and 
+.PN cosh 
+functions return
++\(if
+(and
+.I sinh\^
+may return
+-\(if
+for negative
+.IR x )
+if the correct value would overflow.
+.SH See Also
+math(3m)

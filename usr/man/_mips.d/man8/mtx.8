@@ -1,0 +1,141 @@
+.\" SCCSID: @(#)mtx.8	6.3	1/4/90
+.TH mtx 8 
+.SH Name
+mtx \- generic magtape exerciser
+.SH Syntax
+.B /usr/field/mtx
+.B [
+.I options
+.B ]
+.BI \-a dev
+.br
+.B /usr/field/mtx
+.B [
+.I options
+.B ]
+.BI \-s dev
+.br
+.B /usr/field/mtx
+.B [
+.I options
+.B ]
+.BI \-l dev
+.br
+.B /usr/field/mtx
+.B [
+.I options
+.B ]
+.BI \-v dev
+.SH Description
+.NXR "mtx exerciser"
+.NXR "magnetic tape" "testing data"
+The 
+.PN mtx 
+exerciser will write, read, and validate random
+data on the specified magnetic tape device from beginning
+of tape (BOT) to end of tape (EOT).
+There are four record length modes in which to run 
+the
+.PN mtx
+exerciser.  The modes are short (512 bytes),
+long (10240 bytes), variable (512-20480 bytes), and 
+all of these three in sequence. 
+.PP
+The exerciser will run 
+until 
+.CT C
+or a kill \-15 \fIpid\fR is
+sent to the process. 
+.PP
+A logfile is made in 
+.PN /usr/field
+for you to examine and then remove. If there are errors
+in the logfile, check the 
+.PN /usr/adm/syserr/syserr.<hostname> 
+file, where the driver and kernel error 
+messages are saved.
+.PP
+An enhanced tape exerciser called 
+.PN tapex 
+provides more comprehensive tape
+testing than this exerciser.  Refer to 
+.MS tapex 8
+for a complete description.
+.SH Options
+.NXR "mtx exerciser" "options"
+The \fImtx\fR options are:
+.IP \fB\-h\fR 1i
+Print help message for the 
+.PN mtx 
+command.
+.IP \fB\-o\fIfile\fR 1i
+Save diagnostic output in \fIfile\fR.
+.IP \fB\-t\fIi\fR
+Run time in minutes (\fIi\fR). 
+The default is to run until the process receives
+a 
+.CT C
+or kill \-15 \fIpid\fR.
+.IP \fB\-r\fIj\fR
+Record length for long-record test.  May range from 1 - 20480;
+the default is 10240 bytes.
+.IP \fB\-f\fIk\fR
+Size of file in records. 
+The default is \-1, go to end-of-tape. 
+.SH Arguments
+You must specify one of the following function flags and
+its argument to the
+.PN mtx
+exerciser.
+.IP \fB\-a\fIdev\fR 1i
+Perform short, long, and variable-length record tests
+on the \fIdev\fR, a raw device name and unit number.  For
+example, \fB\-armt0h\fR.
+.IP \fB\-s\fIdev\fR 1i
+Perform short (512-byte) record length test.  The \fIdev\fR
+argument is a raw device name and unit number.  For example,
+\fB\-srmt0h\fR.
+.IP \fB\-l\fIdev\fR 1i
+Perform long (10240-byte) record length test.  The \fIdev\fR
+argument is a raw device name and unit number.  For example
+\fB\-lrmt0h\fR.
+.IP \fB\-v\fIdev\fR 1i
+Perform variable record length test (records vary from 512 bytes
+to 20480 bytes).  The \fIdev\fR argument is a raw device name
+and unit number.  For example, \fB\-vrmt0h\fR.
+.SH Restrictions 
+If there is a need to run a system exerciser over an NFS link or on a diskless
+system there are some restrictions.  For exercisers that need to write into a file
+system, such as 
+.MS fsx 8 ,
+the target file system must be writable by root.  Also the directory, in which any
+of the exercisers are executed, must be writable by root because temporary
+files are written into the current directory.  These latter restrictions are
+sometimes difficult to overcome because often NFS file systems are mounted in a
+way that prevents root from writing into them.  Some of the restrictions may be
+overcome by copying the exerciser to another directory and then executing it.  
+.PP
+The following restrictions apply to the SCSI tape drives.
+The Magnetic Tape Exerciser (MTX) runs the tape in start/stop mode; that is,
+the tape does not stream. Therefore, MTX should not run for extended
+periods of time (two hours maximum run time). In addition, MTX does not
+handle the end of tape properly.
+.SH Examples
+.NXR "mtx exerciser" "example"
+This example runs short, long, and variable-length tests
+on rmt0h until the process receives a
+.CT C
+or
+kill \-15 \fIpid\fR:
+.EX
+% /usr/field/mtx \-armt0h
+.EE
+The following example runs a long-record length test on
+rmt0h for 240 minutes in the background:
+.EX
+% /usr/field/mtx \-lrmt0h \-t240 &
+.EE
+.SH See Also
+tapex(8)
+.br
+.I "Guide to System Exercisers"

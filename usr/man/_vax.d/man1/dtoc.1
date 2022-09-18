@@ -1,0 +1,119 @@
+.TH dtoc 1
+.SH Name
+dtoc \- unpack objects from a DOTS file
+.SH Syntax
+.B dtoc
+[
+.B \-f
+] [
+.B \-p
+] [[
+.I object.dots 
+] 
+.I directory
+]
+.SH Description
+.NXR "dtoc command"
+The
+.PN dtoc
+command unpacks the contents of a Data Object Transport Syntax (DOTS)
+file or standard input.
+.PP
+.I object.dots
+can be either a file name, or a minus sign (\-).  If a
+minus sign (\-) is specified, or if no
+file name is present,
+.PN dtoc
+reads from the standard input.
+If
+.I directory
+is specified, the contents of the DOTS input is unpacked and
+stored in the specified directory.  If
+.I directory
+is not specified, the content of the DOTS input is unpacked into the current
+directory.  The names of the files created are written to standard output.
+.PP
+A DOTS file may contain a data object which consists of more than one
+component.  Therefore, it is possible that more than one output file
+may be generated.  As the object is unpacked, duplicate file or
+directory names may be encountered.  If a duplicate is encountered, a
+new output file is generated with a sequential number appended to its
+name.  For example, if
+.PN dtoc
+discovers an existing file
+.PN foo.ddif
+during unpacking,
+.PN foo.ddif.1
+is created.
+.PP
+As an object is unpacked, the external references within each object
+component are updated.  Because DOTS files may have originated from
+non-ULTRIX systems, names of components may be modified as components
+are unpacked.  References to those renamed components are updated
+accordingly.
+.SH Options
+.TP 5
+.B \-f
+Suppresses output of unpacked file names.
+.TP 
+.B \-p
+Causes only the name of the primary input file to be written to standard output.
+.SH Implementation
+.sp
+.SS Standard Input
+If a minus sign (\-) is specified, or if no parameters are specified,
+.I standard input
+is read until a
+.CT D
+or
+.B EOF
+(end of file) is read.  It cannot be specified more than once.  The
+contents of
+.I standard input
+must conform to the syntax of a single DOTS file.
+.PP
+.SS Reconstitution Of Names
+Object file names and file names of referenced components may be
+modified as objects are extracted or unpacked.  If names are modified,
+the references in the unpacked objects are updated.  The handling of
+names depends in part on the name-type of the object, as follows:
+.RS
+.PP
+.B ULTRIX file names
+.IP
+Names are unmodified.
+.PP
+.B VMS file names
+.IP
+The set of rules is as follows:
+.RS
+.IP
+Convert uppercase letters to lower case.
+.IP
+Convert dollar signs ($) to underscores (_) because dollar signs have
+meaning on ULTRIX systems.
+.IP
+Ignore disk volume and directory specifications, if they are present,
+because they are not likely to be meaningful on ULTRIX systems.
+.IP
+Append duplicate file names with a period and a unique number.
+.IP
+Leave all other characters alone.
+.RE
+.RE
+.SH Restrictions
+A DOTS file is expected to contain only a single primary DDIF or DTIF
+object in this release.  Any subsequent objects in the DOTS file are
+external references of the primary object.
+.PP
+.SH Diagnostics
+The exit status is 0 if all objects were unpacked successfully, and 1
+if any of the objects could not be unpacked.  Consult
+.I standard error
+to see what failed, and why.
+.PP
+If a nonexistent target directory is specified,
+.PN dtoc
+returns error status.
+.SH See Also
+ctod(1), DDIF(5), DTIF(5), DOTS(5)

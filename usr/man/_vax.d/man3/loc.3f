@@ -1,0 +1,14 @@
+.\" SCCSID: @(#)loc.3f	8.1	9/11/90
+.TH loc 3f VAX "" Unsupported
+.SH Name
+loc \- return the address of an object
+.SH Syntax
+.B function loc (arg)
+.SH Description
+.NXR "loc subroutine (FORTRAN)"
+.NXR "address" "returning for object"
+The returned value will be the address of
+.I arg.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a

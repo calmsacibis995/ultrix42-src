@@ -1,0 +1,66 @@
+.\" SCCSID: @(#)rpcinfo.8nfs	8.1	9/11/90
+.TH rpcinfo 8nfs
+.SH Name
+rpcinfo \- report remote procedure call (RPC) information
+.SH Syntax
+.B "/etc/rpcinfo \-p"
+[ 
+.I host 
+]
+.br
+.B "/etc/rpcinfo \-u"
+.I host program-number
+[ 
+.I version-number 
+]
+.br
+.B "/etc/rpcinfo \-t"
+.I host program-number
+[ 
+.I version-number 
+]
+.SH Description
+.NXR "rpcinfo command"
+.NXR "RPC server" "reporting information"
+The
+.PN rpcinfo
+command makes a remote procedure call (RPC) call 
+to an RPC server and displays its findings
+based on the specified options.  The
+.I program-number
+argument can be either a name or a number.  If no version is given,
+it defaults to 1.
+.SH Options
+.TP
+.B \-p
+Probe the portmapper 
+.MS portmap 8nfs ,
+running on
+.I host,
+and print a list of all registered RPC programs.
+If 
+.I host
+is not specified, 
+.PN rpcinfo
+defaults to the value returned by either
+.MS hostname 1 
+or
+.MS gethostname 2 .
+.TP
+.B \-u
+Make an RPC call to procedure 0 of
+.I program-number
+using the user datagram protocol (UDP), and report whether a response
+was received.
+.TP
+.B \-t
+Make an RPC call to procedure 0 of
+.I program-number
+using the transmission control protocol (TCP), and report whether a
+response was received.
+.SH Files
+.TP 15
+.PN /etc/rpc
+Names for RPC program numbers
+.SH See Also
+hostname(1), tcp(4p), udp(4p), portmap(8nfs)

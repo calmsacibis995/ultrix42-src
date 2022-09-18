@@ -1,0 +1,61 @@
+.TH wctomb 3int
+.SH Name
+wctomb \- converts a character of type 
+wchar_t
+to a multibyte character.
+.SH Syntax
+#include <stdlib.h>
+.PP
+int wctomb \fI(s, wchar)\fR
+.br
+char\fI *s;\fR
+.br
+wchar_t\fI wchar;\fR
+.SH Arguments
+.TP 8
+.I s
+The
+.I s
+argument is a pointer to the resulting multibyte character object.
+.PP
+.TP 8
+.I wchar
+The 
+.I wchar
+argument is a value of type
+wchar_t.
+.SH Description
+.NXR "wide character to multibyte character conversion function"
+The 
+.PN wctomb() 
+function determines the number of bytes
+needed to represent the multibyte character corresponding to the character
+code of type 
+wchar_t 
+whose value is \fIwchar\fR.
+It stores the
+multibyte character representation
+in the array object pointed to by \fIs\fR (if \fIs\fR is not a null pointer).
+At most MB_CUR_MAX characters are stored.
+This function is affected by the LC_CTYPE category of the
+current locale.
+.SH Return Value
+If \fIs\fR is a null pointer, the 
+.PN wctomb() 
+function returns a zero value.
+If \fIs\fR is not a null pointer, the 
+.PN wctomb() 
+function returns:
+.RS 3
+.IP \(bu 3 
+- -1, if the value
+of \fIwchar\fR does not correspond
+to a valid multibye character
+.IP \(bu 3 
+The number of bytes that comprise the multibyte character corresponding
+to the value of \fIwchar\fR.  In no case is the value returned 
+greater than the value of the MB_CUR_MAX macro.
+.RE
+.SH See Also
+mblen(3int), mbtowc(3int), mbstowcs(3int), setlocale(3int),
+wcstombs(3int)

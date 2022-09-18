@@ -1,0 +1,272 @@
+
+		***** SYSTEM EXERCISERS *****
+
+The following system exercisers are currently available to exercise
+and test the system.
+
+	cmx		Commications exerciser
+	dskx		Disk exerciser
+	fsx 		File system exerciser	(requires "fsxr" also)
+	lpx 		Line printer exerciser
+	memx 		Memory exerciser	(requires "memxr" also)
+	mtx 		Mag tape exerciser
+	netx		Tcp/ip net exerciser
+	shmx		Shared memory exerciser	(requires "shmxb" also)
+
+These exercisers are in the /usr/field directory. To run these
+exercisers you must be logged in as "super user" (root) and then
+change directory to /usr/field. The exercisers can be run singly 
+to exercise a device, in mulitplies to exercise a whole subsystem 
+(disk,tape), or all together exercising the whole system.
+
+All the exercisers have the following common options:
+
+[-h]     Will print help information about the command.  
+
+[-t#]    To specify the time in minutes to run.
+
+[-ofile] Will specify a filename in which to save the diagnostics
+	 of an exerciser upon termination of the exercise. This
+	 should not be necessary though because the logfiles will
+	 remain in /usr/field directory.
+NOTE: The network exerciser doesn't have the -ofile option.
+
+All exercisers will run in the  foregroud or background. To terminate
+the exerciser send a SIGINT "^C" in foreground or "kill -2 pid" or a
+SIGTERM "kill -15 pid" or "kill %job#" in the background.
+
+When the exercises terminate, diagnostics are printed on the terminal.
+Also a logfile for each exerciser is left in the /usr/field directory
+so you can review them later, also if your terminal is a video you have
+a record. You should than delete the logfiles afterwards. The exercisers
+will allow 9 logfiles to exist before telling you to remove some.
+
+The exerciser logfiles will have start/stop, error and statistical
+information. The error information will be user level, you must also
+run the report generator on the error log file in /usr/adm/syserr for
+errors reported by the device drivers or system. The error log file
+will also have start and stop times of the exercisers.
+The error numbers, signal numbers and discriptions are in "intro (2)"
+and "sigvec (2)" of section 2 of the progammers manual.
+By looking at both the "logfiles" and error log file when you have
+errors you should be able to determine what device/area has a problem
+and take appropriate action.  
+
+Notes on individual exercisers:
+
+CMX:
+
+The "cmx" exerciser will write/read/validate random data and packet
+lengths on a given comm. line. The line[s] under test "must" have a
+loop back connector attach. to the distribution panel or the cable.
+Also the line[s] under test must be disable in the /etc/ttys file.
+
+The comm. exerciser has one primary option:
+
+[-l ## ##] Will specify which lines to test. Where line to test is
+	   taken from the /dev directory minus tty.
+           (i.e. 00 03 07 21 22 52 74 etc.)
+
+     (-l <space> line to test <space> line to test etc.)
+
+     
+But not the pseudo devices p*,q*,r*,s*,t*,u*!!!
+And not the lta devices major number 39!!!
+
+
+DSKX:
+
+The "dskx" exerciser checks to see if a file system is mounted,
+and if so, gives the operator the option of continuing or aborting.
+
+NOTE: This check is dependent on the standard Utrix-32 disk
+      partitioning.
+
+	a-------
+	b       
+	d---   c
+	e  g    
+	f___    
+	h_______
+
+The disk has 8 partitions as seen above and some of them over lap
+others as with g & c. The exerciser will check for the presence of
+any super blocks. If any are present the exerciser will ask you if
+you really wish to test this disk.  Answer "NO" and the exerciser
+will abort. If there are no super blocks the exerciser will consider
+the disk pack scratch media.
+
+
+The disk exerciser has three primary options:
+
+[-pdev#part] Will perform random seeks/writes/reads/validates of
+	     random data and block sizes. Only the partition
+	     given is tested.
+
+[-cdev#] Will perform random seeks/writes/reads/validates of random
+	 data and block sizes. All disk partitions except "c" are
+	 tested.
+
+
+[-rdev#] Will perform ONLY random seeks/reads on all partitions
+         except "c". It's safe to use on a disk with a file systems.
+
+dev# - device name raw or buffered and number (i.e. rra2, hp0)
+part - partition [a - h] 
+
+The "c" partition can't be test because the bad block information would
+be corrupted for older disk types like rm03 & rp06. 
+
+The "dskx" will also print the statistics every # minutes if the
+[-d#] option is chosen.  
+
+
+FSX:
+
+The "fsx" exerciser will currently spawn 20 processes and each
+process will create/write/close/open/read/validate/close/unlink
+a test file of random data.
+
+The file system exerciser has two primary options:
+
+[-p#] Will specify the number of processes to spawn.
+      (max. 250, default: 20) 
+
+[-fpath] Will specify a given pathname of a directory on a file
+	 system to test. (i.e. -f/usr or -f/mnt)
+	 The default is the current directory /usr/field.
+
+
+LPX:
+
+The "lpx" exerciser will output a rolling character pattern to the
+line printer. If the device is offline the exerciser will attempt 
+to start up in 1 minute intervals, until it's successful or is killed.  
+Once it starts, it will print 5 pages of a rolling character pattern,
+then pause for 15 minutes and then repeat the sequence again.
+
+The line printer exerciser has two primary options:
+
+[-p#] Will specify the pause period in # minutes, the pause period
+      will only exercise controller, saving paper. 
+      (default: 15, 0 no pause)
+      
+[-ddev#] Will specify the line printer to test as per /dev directory. 
+	 (i.e. lp, lp1)
+
+NOTE: The line printer queue of the printer to be tested should be 
+      disabled before you start testing. The line printer control
+      program "/etc/lpc" is used to accomplish this task. But you may 
+      have to look at "/etc/printcap" file to determine the spool queue
+      first. This will stop other jobs from starting up and interfering 
+      with the testing.
+
+
+MEMX:
+
+The "memx" exerciser will currently spawn 20 processes and each 
+one will exercise "total_memory/20" (default) bytes of memory. 
+The exerciser will run a one's and zero's, a zero's and one's 
+and random data patterns in the allocated memory under test.
+
+The memory exerciser will automatically start the "shmx" exerciser.
+
+The memory exerciser has three primary options:
+
+[-s]  Disable shared memory testing.
+
+[-m#] Will specify the memory size to test by each process.
+      (default: total_memory/20)
+
+[-p#] Will specify the number of processes to spawn. 
+      (max. 20, default: 20)
+
+WARNING: Be aware that the memx exerciser is restricted by the size
+	 of swap space available. So the size of swap space and the
+	 size of internal memory available will determine how many
+	 processes can run on the system. If there is 16Mbytes of
+	 swap space and 16Mbytes of memory all the swap space would
+	 be used if all 20 (default) spawned processes were running.
+	 That would mean "NO" other processes could execute. So on
+	 systems with larger amounts of memory and small swap space
+	 restricting the number of "memx" processes and/or size of
+	 memory being tested "MUST" be done.
+
+
+MTX:
+
+The "mtx" exerciser will write/read/validate random data on a
+magtape device from BOT to EOT.
+
+The magtape exerciser has six primary options:
+
+[-r#] Will specify record length in bytes for long record
+      exercise. (100-20480, default: 10240)
+
+[-f#] Will specify file length in number of records.
+      (default: -1 EOT)
+
+[-sdev#] Will perform a the short record test. This test will
+	 writes/reads/validates 512 byte records.
+
+[-ldev#] Will perform a the long record test. This test will 
+	 writes/reads/validates 10240 byte records. (default)
+
+[-vdev#] Will perform a the varible record length test. This test
+	 writes/reads/validates random record lengths of 512 to
+	 20280 bytes.
+
+[-adev#] Will perform short,long and variable record lenght tests.
+
+dev# - raw device name, number and high or low density(rmt[0-3]h or rmt[8-11]l)
+
+
+NETX:
+
+The "netx" exerciser sets up a stream socket connection to the
+"miscd" server in the tcp/ip internet domain. With connection
+made the netx exerciser writes random data to the miscd server
+the server loops the data back to netx and the data is read and
+verified against the data written out. The netx exerciser runs
+in conjunction with miscd server. The netx exerciser by default
+will use the port number of the echo tcp service in the /etc/services
+file. Make sure that the echo tcp service is enabled in the /etc/
+inetd.conf file (no '#' in front of that echo service).
+
+The "netx" exerciser has two primary options:
+
+[-p#] (optional) Specify port number to use in the internet domain. 
+      (port# < 32768)
+
+nodename - remote or local system host name running the server.
+
+SHMX:
+
+The "shmx" exerciser starts up "shmxb" process and these two
+processes then share the memory segments between themselves.
+They read/compare each others data patterns and then write a
+new pattern.
+The "shmx" exerciser is automatically invoked by the "memx" 
+exerciser.
+You can start the "shmx" exerciser by itself also.
+
+The "shmx" exerciser has three primary options:
+
+[-m#] (optional) Specify size in bytes of memory segment
+      (default: SMMAX/6) SMMAX system define
+
+[-s#] (optional) Specify number of shared memory segments (1-6)
+      (default: 6)
+
+[-v]  (optional) Use fork, default vfork
+
+SYSCRIPT:
+
+The "syscript" is a shell script that will ask you which exercisers
+you wish to run, how long to run them, and how many of each exerciser
+to run. You can exercise a device, subsystem, or the whole system with
+this script.
+Naturally you can start up all the exercisers manually giving them the
+time paramater and put them in the background yourself, which ever is
+easiest for you.
+

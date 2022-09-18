@@ -1,0 +1,42 @@
+.TH deleteln 3cur 
+.SH Name
+deleteln, wdeleteln \- remove line from window
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B
+int deleteln(\|)
+.PP
+.B
+int wdeleteln(win)
+.br
+.B
+WINDOW \(**win;
+.SH Description
+.NXR "deleteln subroutine"
+.NXR "wdeleteln subroutine"
+The
+.PN deleteln
+routine 
+deletes the current line of the default window.
+All lines below the current line are moved up one line.
+The bottom line of the window is cleared.
+The cursor position does not change.
+.PP
+The routine 
+.PN wdeleteln
+deletes the current line of the specified window.
+All lines below the current line are moved up one line.
+The bottom line of the window is cleared.
+The cursor position does not change.
+.PP
+The routine
+.PN deleteln
+is a macro.
+.SH Return Values
+The 
+.PN deleteln
+and
+.PN wdeleteln
+functions return OK on success and ERR on error.

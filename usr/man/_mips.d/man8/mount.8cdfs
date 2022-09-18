@@ -1,0 +1,150 @@
+.\" SCCSID: @(#)mount.8cdfs	7.1	4/26/90
+.TH mount 8cdfs
+.SH Name
+mount, umount \- mount and unmount a ISO 9660 (CD-ROM) File System (CDFS)
+.SH Syntax
+.B /etc/mount \-t cdfs [
+.B \-r
+.B \-o 
+.I options 
+.B ] 
+.I device directory
+.PP
+.B /etc/umount [
+.B \-v ] 
+.I directory
+.SH Description
+.NXR "mount command (CDFS)"
+.NXR "umount command (CDFS)"
+.NXR "CDFS file system" 
+.NXR "file system"
+The
+.PN mount
+command allows you to mount an ISO 9660 or High Sierra (HSG) formatted 
+file system onto a directory.
+Once a file system or directory has been mounted,
+it is treated as a file system.
+.PP
+The argument
+.I device 
+must refer to a block special file.
+.PP
+The file
+.I directory
+must exist and must be a directory.
+It becomes the name of the newly mounted file system.
+.PP
+General users can mount file systems with certain restrictions
+in addition to those listed in 
+.MS mount 8 .
+.PP
+The
+.PN umount
+command unmounts the file system that was previously
+mounted on the specified directory.
+.SH Options
+.NXR "mount command (CDFS)" "options"
+.IP \fB\-r\fR 12
+Indicates that the file system
+is to be mounted read only. Please note this is
+a mandatory option, and is appended to the mount
+string if not present.
+.IP \fB\-v\fR
+Tells what did or did not happen.
+(Verbose flag)
+.IP "\fB\-o \fIoptions\fR"
+Specifies 
+.I options
+as a sequence of comma-separated words from the list below.
+The defaults are:
+.sp .5
+\fBro,defperm,pgthresh=64\fR
+.sp .5
+The CDFS options are:
+.IP \fBdefperm\fR 14
+Files and directories recorded on an ISO 9660 formatted
+file system may or may not have permission bits. This
+options ignores these permissions bits, if present, and
+defaults all file and directory permissions to the value
+0666, with a zero UID (owned by root). This is a default
+option since the permissions on most of the existing ISO 9660 
+formatted CD-ROM's do not map into the UID scheme ULTRIX uses.
+.IP \fBnodefperm\fR
+Use the on-disk permission bits, if present. If a file or
+directory is not recorded with permissions bits, the 0666
+default is used.
+.IP \fBnoversion\fR
+If a file recorded on an ISO 9660 formatted file system contains
+a version string, strip off the ';#' extension. This option should
+be used in conjunction with mounting a CD-ROM containing MS-DOS
+applications.
+.PP
+The option for
+.PN umount
+is:
+.IP \fB\-v\fR
+Tells what did or did not happen.
+(Verbose flag)
+.SH Restrictions
+.NXR "mount command (CDFS)" "restricted"
+If mounting of an ISO 9660 or HSG volume fails with
+.EX 0
+cdfs_mount: Operation Not Supported
+.EE
+refer to the 
+.MS cdfs 5cdfs
+reference  page for details pertaining to
+the correct system configuration file options which must exist
+prior to using the CDFS.
+.PP
+If the directory on which a file system is to be mounted is a
+symbolic link,
+the file system is mounted on 
+the directory to which the symbolic link refers,
+rather than being mounted on top of the symbolic link itself.
+.SH Examples
+.NXR "mount command (CDFS)"
+.\" The
+.\" .PN cdfs_mount
+.\" is not the suggested interface.
+The
+.PN mount
+command invokes
+.PN cdfs_mount
+to do its work.
+A sample
+.PN mount
+command is:
+.EX 0
+# mount \-t cdfs \-o pgthresh=100 /dev/rz3c /cdrom
+.EE
+.\" This would be translated to \fBcdfs_mount\fP as:
+.\" .EX 0
+.\" cdfs_mount \-o pgthresh=100 /dev/rz3c /cdrom
+.\" .EE
+To mount the ISO 9660 formatted file system on the block device
+.PN /dev/rz3c
+onto the local directory
+.PN /cdfs
+with the file version strings stripped,
+type:
+.EX 0
+# mount \-t cdfs \-o noversion /dev/rz3c /cdfs
+.EE
+.\" The
+.\" .PN cdfs_umount
+.\" is not the suggested interface.
+.\" The 
+.\" .PN umount 
+.\" command invokes
+.\" .PN cdfs_umount
+.\" to do its work.
+.SH Files
+.TP 15
+.PN /etc/fstab
+File system information file
+.TP
+.PN /etc/cdfs_mount
+CDFS-specific mount program
+.SH See Also
+getmnt(2), mount(2), fstab(5), mount(8), umount(8), cdfs(5cdfs)

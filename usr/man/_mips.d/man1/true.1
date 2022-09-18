@@ -1,0 +1,33 @@
+.\" SCCSID: @(#)true.1	8.1	9/11/90
+.TH true 1
+.SH Name
+true, false \- provide test for status values
+.SH Syntax
+.B true
+.br
+.B false
+.SH Description
+.NXR "false command"
+.NXR "true command"
+.NXA "sh command interpreter" "false command"
+.NXR "Bourne shell" "sh command interpreter"
+The
+.PN true
+and
+.PN false
+commands are usually used in a Bourne shell script.
+They test for the appropriate status "true" or "false" before running 
+(or failing to run) a list of commands.  
+.SH Examples
+.EX
+while true 
+do
+     command list 
+done
+.EE
+.SH Diagnostics
+The
+.PN true 
+command has exit status zero.
+.SH See Also
+csh(1), sh(1)

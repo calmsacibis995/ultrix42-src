@@ -1,0 +1,98 @@
+.\" SCCSID: @(#)setuid.3	8.1	9/11/90
+.\"
+.TH setuid 3
+.SH Name
+setuid, seteuid, setruid, setgid, setegid, setrgid \- set user and group ID
+.SH Syntax
+.nf
+.B #include <\fIsys/types.h\fP>
+.B #include <\fIunistd.h\fP>
+.PP
+.B setuid(\fIuid\fP)
+.B uid_t \fIuid\fP;
+.B seteuid(\fIeuid\fP)
+.B uid_t \fIeuid\fP;
+.B setruid(\fIruid\fP)
+.B uid_t \fIruid\fP;
+.PP
+.B setgid(\fIgid\fP)
+.B gid_t \fIgid\fP;
+.B setegid(\fIegid\fP)
+.B gid_t \fIegid\fP;
+.B setrgid(\fIrgid\fP)
+.B gid_t \fIrgid\fP;
+.fi
+.SH Description
+.NXR "setuid subroutine"
+.NXR "seteuid subroutine"
+.NXR "setruid subroutine"
+.NXR "setgid subroutine"
+.NXR "setegid subroutine"
+.NXR "setrgid subroutine"
+.NXR "real user ID" "setting"
+.NXR "effective user ID" "setting"
+.NXR "real group ID" "setting"
+.NXR "effective group ID" "setting"
+The
+.PN setuid
+subroutine sets both the real and effective
+user ID of the current process to the ID specified.
+Likewise, the
+.PN setgid
+subroutine sets the real and effective
+group ID of the current process to the ID specified.
+.PP
+The
+.PN seteuid
+subroutine sets the effective user ID of the current process,
+while the
+.PN setegid
+subroutine sets the effective group ID of the current process.
+.PP
+The
+.PN setruid
+subroutine sets the real user ID of the current process,
+while the
+.PN setrgid
+subroutine sets the real group ID of the current process.
+.PP
+These calls are only permitted to the super-user
+or if the argument is the real or effective ID.
+.SH Environment
+.PP 
+.B POSIX
+.br
+.B SYSTEM_FIVE
+.br
+When your program is compiled in POSIX or System V mode the following semantics
+apply when using the
+.PN setuid
+or
+.PN setgid
+functions:
+.PP 
+If the process is the super-user the real, effective, and saved
+set (as described in
+.MS execve 2 )
+user/group ID are set to
+.I uid.
+.PP 
+If the process is not the super-user, but
+.I uid
+is equal to the real or the saved set user/group ID, the
+effective user/group ID is set to
+.I uid.
+The real and saved set user/group ID remain unchanged.
+.PP 
+.B POSIX
+.br 
+In POSIX mode, the
+.PN setuid
+function returns a value of type uid_t. The
+.PN setgid
+function returns a value of type gid_t.
+.SH Return Values
+Zero is returned if the user ID or group ID is set;
+\-1 is returned otherwise.
+.SH See Also
+setreuid(2), setregid(2), getuid(2), getgid(2)

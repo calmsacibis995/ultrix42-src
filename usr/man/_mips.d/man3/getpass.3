@@ -1,0 +1,47 @@
+.\" SCCSID: @(#)getpass.3	8.1	9/11/90
+.TH getpass 3 
+.SH Name
+getpass \- read a password
+.SH Syntax
+.nf
+.B char *getpass(prompt)
+.B char *prompt;
+.fi
+.SH Description
+.NXR "getpass subroutine"
+.NXA "getpass subroutine" "crypt subroutine"
+.NXR "password" "reading"
+The
+.PN getpass
+subroutine
+reads a password from the file 
+.PN /dev/tty ,
+or if that cannot be opened, from the standard input,
+after prompting with the null-terminated string
+.I prompt
+and disabling echoing.
+The 
+.PN getpass
+subroutine can return up to 
+.PN PASS_MAX 
+characters. 
+.PN PASS_MAX 
+is defined in
+.PN /usr/include/sys/limits.h. 
+A pointer is returned to a null-terminated string
+of at most 16 characters.
+.SH Environment
+When your program is compiled using the System V environment,
+if the file 
+.PN /dev/tty
+cannot be opened, a NULL
+pointer is returned.  An interrupt will terminate
+input and send an interrupt signal to the calling
+process before returning.
+.SH Restrictions
+The return value points to static data
+whose content is overwritten by each call.
+.SH Files
+.PN /dev/tty
+.SH See Also
+.PN crypt (3)

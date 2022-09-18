@@ -1,0 +1,37 @@
+#!/bin/sh
+#
+#	@(#)ULTPGMR040.scp	4.1	(ULTRIX)	7/2/90
+#
+#	set up programmer subset.
+#
+#	000	ccb	28-jan-1987
+#		built to accomodate crypt.
+
+UK=usr/kits
+UL=usr/lib
+
+case "$ACT" in
+POST_[AL])
+	# is crypt installed?
+	[ -f usr/etc/subsets/ULCCRYPT???.lk ] &&
+	{
+		# update libcg and libc_p
+		echo " Updating libcg.a with encryption modules..." &
+		cp $UK/ruserpass.og.crypt $UK/ruserpass.o &
+		cp $UK/crypt.og.crypt $UK/crypt.o
+		wait
+		ar r $UL/libcg.a $UK/ruserpass.o $UK/crypt.o
+		ranlib $UL/libcg.a &
+		echo " Updating libc_p.a with encryption modules..." &
+		cp $UK/ruserpass.op.crypt $UK/ruserpass.o &
+		cp $UK/crypt.op.crypt $UK/crypt.o
+		wait
+		ar r $UL/libc_p.a $UK/ruserpass.o $UK/crypt.o
+		ranlib $UL/libc_p.a &
+		rm -f $UK/crypt.o $UK/ruserpass.o
+	}
+	wait
+	exit 0
+	;;
+esac
+

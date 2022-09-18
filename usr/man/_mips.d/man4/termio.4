@@ -1,0 +1,728 @@
+.TH termio 4
+.SH Name
+termio \- System V terminal interface
+.SH Description
+.PP
+This section specificly describes the System V terminal
+interface.
+A general description of the available terminal interfaces
+is provided in
+.MS tty 4 .
+.PP
+When a terminal file is opened,
+it normally causes
+the process to wait until a connection is established.
+In practice, users' programs seldom open these
+files; they are opened by
+.PN getty
+and become a user's
+standard input, output, and error files.
+The very first terminal file opened
+by the process group leader of a terminal
+file not already associated with a process group
+becomes the
+.I control terminal
+for that process group.
+The control terminal plays a special
+role in handling quit and interrupt signals, as discussed
+later.
+The control terminal is inherited by a child process during a
+.MS fork 2 .
+A process can break this association by changing its
+process group using
+.MS setpgrp 2 .
+.PP
+A terminal associated with one of these files ordinarily
+operates in full-duplex mode.
+Characters can be typed at any time,
+even while output is occurring.  They are only lost when the
+system's character input buffers become completely
+full, which is rare,
+or when the user has accumulated the maximum allowed number of
+input characters that have not yet been read by some program.
+Currently, this limit is (MAX_INPUT) characters,
+as defined in
+.PN <limits.h> .
+When the input limit is reached, all the
+saved characters are thrown away without notice.
+.PP
+Normally, terminal input is processed in units of lines.
+A line is delimited by a newline (ASCII LF)
+character, an end-of-file (ASCII EOT) character,
+or an end-of-line character.
+This means that a program attempting
+to read is suspended until an entire line has been
+typed.
+No matter how many characters are requested
+in the read call, at most one line will be returned.
+It is not, however, necessary to read a whole line at
+once; any number of characters can be
+requested in a read, even one, without losing information.
+.PP
+Some characters have special meaning when input.
+For example, during input
+.I erase
+and
+.I kill,
+processing is normally done.  
+The erase character erases the last character typed, except that it will
+not erase beyond the beginning of a line.  Typically the 
+erase character is the number sign (#).
+The kill character kills (deletes) the entire input line, and optionally
+outputs a newline character.
+The default kill character is the at sign (@).  Both characters operate on a
+key-stroke basis, independently of any backspacing or tabbing.
+Both the erase and kill characters
+can be entered literally by preceding them with
+the escape character
+.RB ( \e ).
+In this case the escape character is not read.
+The erase and kill characters can be changed.
+.PP
+Certain characters have special functions on input.
+These functions and their default character values
+are summarized as follows:
+.TP "\w'START\ \ \ 'u"
+.PN INTR
+(Rubout or ASCII DEL)
+generates an
+.I interrupt
+signal that is sent to all processes
+with the associated control terminal.
+Normally, each such process is forced to terminate,
+but arrangements can be made either to
+ignore the signal or to receive a
+trap to an agreed-upon location;
+see
+.MS signal 3 .
+.TP
+.PN QUIT
+(CTRL/| or ASCII FS)
+generates a
+.I quit
+signal.
+Its treatment is identical to the interrupt signal
+except that, unless a receiving process has
+made other arrangements, it is not only terminated
+but a core image file
+(called
+.BR core )
+is created in the current working directory.
+.TP
+.PN ERASE
+The number sign (#) erases the preceding character.
+It will not erase beyond the start of a line,
+as delimited by an NL, EOF, or EOL character.
+.TP
+.PN KILL
+The at sign (@) deletes the entire line,
+as delimited by an NL, EOF, or EOL character.
+.TP
+.PN EOF
+(CTRL/D or ASCII EOT) can
+be used to generate an end-of-file
+from a terminal.
+When received, all the characters
+waiting to be read are immediately passed to
+the program, without waiting for a newline,
+and the EOF is discarded.
+Thus, if there are no characters waiting, which
+is to say the EOF
+occurred at the beginning of a line,
+zero characters are passed back,
+which is the standard end-of-file indication.
+.TP
+.PN NL
+(ASCII LF) is the normal line delimiter.
+It can not be changed or escaped.
+.TP
+.PN EOL
+(ASCII NUL) is an additional line delimiter, like NL.
+It is not normally used.
+.TP
+.PN STOP
+(CTRL/S or ASCII DC3)
+can be used to temporarily suspend output.
+It is useful with CRT
+terminals to prevent output from
+disappearing before it can be read.
+While output is suspended, STOP
+characters are ignored and not read.
+.TP
+.PN START
+(CTRL/Q or ASCII DC1)
+is used to resume output that has been suspended by a STOP
+character.
+While output is not suspended, START
+characters are ignored and not read.
+The START/STOP characters
+can not be changed or escaped.
+.TP
+.PN MIN
+Used to control terminal I/O when the ICANON flag is not set in the c_lflag.
+Input processing behaves as described in the 
+.B "MIN/TIME Interaction"
+section that follows.
+.TP
+.PN TIME
+Used to control terminal I/O when the ICANON flag is not set in the c_lflag.
+Input processing behaves as described in the 
+.B "MIN/TIME Interaction"
+section that follows.
+.PP
+The character values for INTR, QUIT, ERASE, KILL, EOF, MIN, TIME, and
+EOL can be changed to suit individual tastes.  The ERASE, KILL, and EOF
+characters can be escaped by a preceding backslash (\\) character, in
+which case no special function is performed.
+.PP
+When one or more
+characters are written, they are transmitted
+to the terminal as soon as previously-written characters
+have finished typing.
+Input characters are echoed by putting them in the output queue
+as they arrive.
+If a process produces characters more rapidly than they can be typed,
+it is suspended when its output queue exceeds some limit.
+When the queue has drained down to some threshold,
+the program is resumed.
+.PP
+When the carrier signal from the data-set drops, a
+.I hang-up
+signal, SIGHUP, is sent to all processes
+that have this terminal
+as the control terminal.
+Unless other arrangements have been made,
+this signal causes the processes to terminate.
+If the hang-up signal is ignored, any subsequent read
+returns with an end-of-file indication.
+Thus, programs that read a terminal and test for
+end-of-file can terminate appropriately when
+hung up on.
+.PP
+Several
+.MS ioctl 2
+system calls apply to terminal files.
+The primary calls use the following structure,
+defined in 
+.PN <termio.h> :
+.PP
+.ta .6i 1.3i 1.8i 2.6i
+.nf
+struct	termio {
+	unsigned	short	c_iflag;	/\(** input modes \(**/
+	unsigned	short	c_oflag;	/\(** output modes \(**/
+	unsigned	short	c_cflag;	/\(** control modes \(**/
+	unsigned	short	c_lflag;	/\(** local modes \(**/
+	char		c_line;		/\(** line discipline \(**/
+	unsigned	char	c_cc[\s-1NCC\s+1];	/\(** control chars \(**/
+};
+.fi
+.PP
+The special control characters are defined by the array
+.IR c_cc .
+The initial values
+for each function are as follows:
+.ta 13n
+.nf
+VINTR	DEL
+VQUIT	FS
+VERASE	#
+VKILL	@
+VEOF	EOT
+VEOL	NUL
+VMIN	6
+VTIME	1
+.fi
+.PP
+The
+.I c_iflag
+field describes the basic terminal input control:
+.PP
+.ta 13n
+.nf
+IGNBRK	Ignore break condition.
+BRKINT	Signal interrupt on break.
+IGNPAR	Ignore characters with parity errors.
+PARMRK	Mark parity errors.
+INPCK	Enable input parity check.
+ISTRIP	Strip character.
+INLCR	Map NL to CR on input.
+IGNCR	Ignore CR.
+ICRNL	Map CR to NL on input.
+IUCLC	Map uppercase to lowercase on input.
+IXON	Enable start/stop output control.
+IXANY	Enable any character to restart output.
+IXOFF	Enable start/stop input control.
+.fi
+.PP
+If IGNBRK is set, the break condition
+(a character framing error, with data all zeros)
+is ignored, that is, not put on the input queue
+and therefore not read by any process.
+Otherwise, if BRKINT is set,
+the break condition generates an interrupt signal
+and flushes both the input and output queues.
+If IGNPAR is set,
+characters with other framing and parity errors are ignored.
+.PP
+If PARMRK is set, a character with
+a framing or parity error that is not ignored
+is read as the three-character sequence:
+0377, 0, X,
+where X is the data of the character received in error.
+To avoid ambiguity in this case,
+if ISTRIP is not set,
+a valid character of 0377 is read as 0377, 0377.
+If PARMRK is not set,
+a framing or parity error that is not ignored
+is read as the character NUL (0).
+.PP
+If INPCK is set,
+input parity checking is enabled.
+If INPCK is not set,
+input parity checking is disabled.
+This allows output parity generation, without
+input parity errors.
+.PP
+If ISTRIP is set,
+valid input characters are first stripped to seven bits.
+Otherwise, all eight bits are processed.
+.PP
+If INLCR is set, a received NL character is translated into a CR character.
+If IGNCR is set, a received CR character is ignored (not read).
+Otherwise, if ICRNL is set, a received CR character is translated into a
+NL character.
+.PP
+If IUCLC is set,
+a received uppercase letter is translated
+into the corresponding lowercase letter.
+.PP
+If IXON is set, start/stop output control is enabled.  A received STOP
+character suspends output and a received START
+character restarts output.
+All start/stop characters are ignored and not read.
+If IXANY is set, any input character restarts output
+that has been suspended.
+.PP
+If IXOFF is set, the system transmits START/STOP
+characters when the input queue is
+nearly empty/full.
+.PP
+The initial input control value is
+all-bits-clear.
+.PP
+The
+.I c_oflag
+field specifies the system treatment of output:
+.PP
+.ta 13n
+.nf
+OPOST	Postprocess output.
+OLCUC	Map lower case to upper on output.
+ONLCR	Map NL to CR-NL on output.
+OCRNL	Map CR to NL on output.
+ONOCR	No CR output at column 0.
+ONLRET	NL performs CR function.
+OFILL	Use fill characters for delay.
+OFDEL	Fill is DEL or else NUL.
+.sp
+NLDLY	Select newline delays:
+NL0	Newline delay type 0. 
+NL1	Newline delay type 1.
+.sp
+CRDLY	Select carriage-return delays:
+CR0	Carriage-return delay type 0. 
+CR1	Carriage-return delay type 1.
+CR2	Carriage-return delay type 2.
+CR3	Carriage-return delay type 3.
+.sp
+TABDLY	Select horizontal-tab delays:
+TAB0	Horizontal-tab delay type 0.
+TAB1	Horizontal-tab delay type 1.
+TAB2	Horizontal-tab delay type 2.
+TAB3	Expand tabs to spaces.
+.sp
+BSDLY	Select backspace delays:
+BS0	Backspace delay type 0.
+BS1	Backspace delay type 1.
+.sp
+VTDLY	Select vertical-tab delays:
+VT0	Vertical-tab delay type 0.
+VT1	Vertical-tab delay type 1.
+.sp
+FFDLY	Select form-feed delays:
+FF0	Form-feed delay type 0.
+FF1	Form-feed delay type 1.
+.DT
+.fi
+.PP
+If OPOST is set,
+output characters are post-processed
+as indicated by the remaining flags,
+otherwise characters are transmitted without change.
+.PP
+If OLCUC is set,
+a lowercase letter is transmitted as
+the corresponding uppercase letter.
+This function is often used in conjunction with IUCLCS.
+.PP
+If ONLCR is set, the NL character is transmitted as the CR-NL
+character pair.
+If OCRNL is set, the CR character is transmitted as the NL
+character.
+If ONOCR is set, no CR
+character is transmitted when at column 0 (first position).
+If ONLRET is set, the NL
+character is assumed to do the carriage-return function;
+the column pointer is set to 0 and the delays specified
+for CR are used.  Otherwise, the NL character is assumed
+to do just the line-feed function;
+the column pointer remains unchanged.
+The column pointer is also set to 0, if the CR
+character is actually transmitted.
+.PP
+The delay bits specify how long
+transmission stops to allow for mechanical or other movement
+when certain characters are sent to the terminal.
+In all cases, a value of 0 indicates no delay.
+If OFILL is set,
+fill characters is transmitted
+for delay instead of a timed delay.
+This is useful for high baud rate terminals
+that need only a minimal delay.
+If OFDEL is set, the fill character is DEL,
+otherwise it is NUL.
+.PP
+If a form-feed or vertical-tab delay is specified,
+it lasts for about two seconds.
+.PP
+A newline delay lasts about 0.10 seconds.
+If ONLRET is set, the carriage-return delays are
+used instead of the newline delays.
+If OFILL is set, two fill characters is transmitted.
+.PP
+A carriage-return delay type 1 is dependent on the current column
+position.  The type 2 delay is about 0.10 seconds;
+the type 3 delay is about 0.15 seconds.
+If OFILL is set,
+delay type 1 transmits two fill characters;
+type 2 transmits four fill characters.
+.PP
+A horizontal-tab delay type 1 is dependent on the current
+column position.
+The type 2 delay is about 0.10 seconds.
+Type 3 specifies that tabs are to be expanded into spaces.
+If OFILL is set, two fill characters is transmitted for any delay.
+.PP
+A backspace delay lasts about 0.05 seconds.
+If SM OFILL is set, one fill character will be transmitted.
+.PP
+The actual delays depend on line speed and system load.
+.PP
+The initial output control value is all bits clear.
+.PP
+The
+.I c_cflag
+field describes the hardware control of the terminal:
+.PP
+.ta 13n
+.nf
+CBAUD	Baud rate:
+B0	Hang up
+B50	50 baud
+B75	75 baud
+B110	110 baud
+B134	134.5 baud
+B150	150 baud
+B200	200 baud
+B300	300 baud
+B600	600 baud
+B1200	1200 baud
+B1800	1800 baud
+B2400	2400 baud
+B4800	4800 baud
+B9600	9600 baud
+B19200	19200 baud
+B38400	38400 baud
+EXTA	External A (Same as B19200)
+EXTB	External B (Same as B38400)
+.sp
+CSIZE	Character size:
+CS5	5 bits
+CS6	6 bits
+CS7	7 bits
+CS8	8 bits
+CSTOPB	Send two stop bits, otherwise one.
+CREAD	Enable receiver.
+PARENB	Parity enable.
+PARODD	Odd parity, otherwise even.
+HUPCL	Hang up on last close.
+CLOCAL	Local line, otherwise dial-up.
+.fi
+.PP
+The CBAUD bits specify the baud rate.
+The zero baud rate, B0, is used to hang up the connection.
+If B0 is specified, the data-terminal-ready signal will not
+be asserted.
+Normally, this will disconnect the line.
+For any particular hardware, impossible speed changes
+are ignored.
+.PP
+The CSIZE
+bits specify the character size in bits
+for both transmission and reception.
+This size does not include the parity bit, if any.
+If CSTOPB is set, two stop bits are used;
+otherwise, only one stop bit is used.
+For example, at 110 baud, two stops bits are required.
+.PP
+If PARENB is set, parity generation and detection is enabled
+and a parity bit is added to each character.
+If parity is enabled,
+the PARODD flag specifies odd parity, if set.
+Otherwise, even parity is used.
+.PP
+If CREAD is set, the receiver is enabled.
+Otherwise, no characters will be received.
+.PP
+If HUPCL is set, the line will be disconnected
+when the last process with the line open closes it or terminates.
+That is, the data-terminal-ready signal will not be asserted.
+.PP
+If CLOCAL is set, the line is assumed to be a local, direct connection
+with no modem control.
+Otherwise, modem control is assumed.
+.PP
+The initial hardware control value after open is
+B300, CS8, CREAD, HUPCL.
+.PP
+The
+.I c_lflag
+field of the argument structure
+is used by the line discipline to control terminal functions.
+The basic line discipline (0) provides the following:
+.PP
+.ta 13n
+.nf
+ISIG	Enable signals.
+ICANON	Canonical input (erase and kill processing).
+XCASE	Canonical upper/lower presentation.
+ECHO	Enable echo.
+ECHOE	Echo erase character as BS-SP-BS.
+ECHOK	Echo NL after kill character.
+ECHONL	Echo NL.
+NOFLSH	Disable flush after interrupt or quit.
+.DT
+.fi
+.PP
+If ISIG is set,
+each input character is checked against the special
+control characters INTR, SWTCH, and QUIT.
+If an input character matches one of these control characters,
+the function associated with that character is performed.
+If ISIG is not set,
+no checking is done.
+Thus, these special input functions
+are possible only if ISIG is set.
+These functions can be disabled individually by changing
+the value of the control character to
+an unlikely or impossible value (for example, 0).
+.PP
+If ICANON is set,
+canonical processing is enabled.
+This enables the erase and kill edit functions,
+and the assembly of input characters into lines delimited by NL,
+EOF, and EOL.
+If ICANON is not set,
+read requests are satisfied directly
+from the input queue.
+A read is not satisfied until at least MIN
+characters have been received, or
+the timeout value, TIME, has expired between characters.
+This allows fast bursts of input to be read
+efficiently, while still allowing single
+character input.
+The MIN and TIME values are stored in the position for the EOF and EOL
+characters, respectively.
+The time value represents tenths of seconds.
+.PP
+If XCASE is set and if ICANON is set,
+an upper-case letter is accepted on input by preceding
+it with a backslash (\\), and is output preceded by a backslash (\\).
+In this mode, the following escape sequences are generated
+on output and accepted on input:
+.br
+.PP
+.nf
+for	\`	|	~	{	}
+use	\e\|\'	\e\|!	\e\|^	\e\|(	\e\|)
+.fi
+.PP
+For example,
+.B A
+is input as
+.BR \ea ,
+.B \en
+as
+.BR \e\en ,
+and
+.B \eN
+as
+.BR \e\e\en .
+.PP
+If ECHO is set, characters are echoed as received.
+.PP
+When ICANON is set, the following echo functions are possible.
+If ECHO and ECHOE are set, the erase character is echoed as ASCII
+BS SP BS, which clears the last character from a CRT screen.
+If ECHOE is set and ECHO is not set,
+the erase character is echoed as ASCII SP BS.
+If ECHOK is set, the NL character is echoed after the
+kill character to emphasize that the line
+is deleted.
+Note that an escape character preceding
+the erase or kill character removes any special function.
+If ECHONL is set, the NL
+character is echoed, even if ECHO is not set.
+This is useful for terminals
+set to local echo (so-called half duplex).
+Unless escaped, the EOF character is not echoed.
+Because EOT is the default EOF character,
+terminals that respond to EOT are prevented from hanging up.
+.PP
+If NOFLSH is set, the normal flush of the input and output queues
+associated with the quit, switch, and interrupt characters
+will not be done.
+.PP
+The initial line-discipline control value is
+all bits clear.
+.PP
+The
+.I c_line
+field of the argument structure
+is used to specify the line discipline.
+Support is provided for the basic termio line discipline only.
+For this reason, the value of this field is irrelevant and
+should be set to zero (0) by convention.
+.PP
+The primary
+.MS ioctl 2
+system calls have the form:
+.PP
+.B ioctl (fildes, command, arg)
+.br
+.B struct termio *arg;
+.PP
+The commands using this form are:
+.TP 13
+TCGETA
+Get the parameters associated with the terminal
+and store in the
+.I termio
+structure referenced by
+.IR arg .
+.TP
+TCSETA
+Set the parameters associated with the terminal
+from the structure referenced by
+.IR arg .
+The change is immediate.
+.TP
+TCSETAW
+Wait for the output to drain before
+setting the new parameters.
+This form should be used when changing parameters
+that will affect output.
+.TP
+TCSETAF
+Wait for the output to drain,
+then flush the input queue and
+set the new parameters.
+.PP
+Additional
+.MS ioctl 2
+calls have the form:
+.PP
+.B ioctl (fildes, command, arg)
+.br
+.B int arg;
+.PP
+The commands using this form are:
+.TP 13
+TCSBRK
+Wait for the output to drain.
+If
+.I arg
+is 0,
+send a break (zero bits for 0.25 seconds).
+.TP
+TCXONC
+Start/stop control.
+If
+.I arg
+is 0, suspend output;
+if 1, restart suspended output.
+.TP
+TCFLSH
+If
+.I arg
+is 0, flush the input queue;
+if 1, flush the output queue;
+if 2, flush both the input and output queues.
+.PP
+MIN/TIME Interaction
+.PP
+MIN represents the minimum number of characters that should be received 
+when the read is satisfied (that is, the characters are returned to the
+user).
+TIME is a timer of 0.10 second granularity used to time-out bursty and
+short-term data transmissions.  The four possible values for
+MIN and TIME and their interactions follow:
+
+1. 
+MIN > 0, TIME > 0.
+In this case, TIME
+serves as an intercharacter timer activated after the first character is
+received and reset upon receipt of each character.
+MIN and TIME interact as follows:
+.PP
+As soon as one character is received the intercharacter timer is started.
+.PP
+If MIN
+characters are received before the intercharacter timer expires, the
+read is satisfied.
+.PP
+If the timer expires before MIN
+characters are received, the characters received to that point are
+returned to the user.
+.PP
+A
+.MS read 2
+operation will sleep until the MIN and TIME 
+mechanism are activated by the receipt of the first character; thus,
+at least one character must be returned.
+.PP
+2.
+MIN > 0, TIME = 0.
+In this case, because TIME = 0, the timer plays no role and only
+MIN is significant.  A
+.MS read 2
+operation is not satisfied until MIN characters are received.
+.PP
+3.
+MIN = 0, TIME > 0.
+In this case, because MIN = 0, TIME
+no longer serves as an intercharacter timer, but now serves as a read
+timer that is activated as soon as the 
+.MS read 2
+operation is processed. A
+.MS read 2 
+operation is satisfied as soon as a single character is 
+received or the timer expires, in which case, the 
+.MS read 2
+operation would not return any characters.
+.PP
+4.
+MIN = 0, TIME = 0.
+In this case, return is immediate.  If characters are present,
+they are returned to the user.

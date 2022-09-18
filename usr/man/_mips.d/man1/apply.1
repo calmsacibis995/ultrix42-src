@@ -1,0 +1,79 @@
+.\" SCCSID: @(#)apply.1	8.1	9/11/90
+.TH apply 1
+.SH Name
+apply \- apply a command to a set of arguments
+.SH Syntax
+.B apply
+[\fB\-a\fIc\fR] [\fB\-\fIn\fR] \fIcommand args...\fR
+.SH Description
+.NXR "apply program"
+.NXR "command" "applying to arguments"
+The
+.PN apply
+program runs the named 
+.I command
+on each
+argument
+.I arg
+in turn.
+Normally arguments are chosen singly; the optional number
+.I n
+specifies the number of arguments to be passed to
+.I command.
+If
+.I n
+is zero,
+.I command
+is run without arguments once for each
+.I arg.
+Character sequences of the form %\fId\fP
+in
+.I command,
+where
+.I d
+is a digit from 1 to 9,
+are replaced by the
+\fId\fP'th following unused
+.I arg.
+If any such sequences occur,
+.I n
+is ignored,
+and the number of arguments passed to
+.I command
+is the maximum value of
+.I d
+in
+.I command.
+The percent sign (%) character can be changed by the
+.B \-a
+option.
+.SH Examples
+The following command line is similar to 
+.MS ls 1 :
+.EX
+apply echo *
+.EE
+The next example compares the specified a files to the specified
+b files:
+.EX
+apply \-2 cmp a1 b1 a2 b2 ...
+.EE
+The following example run the 
+.PN who
+command 5 times and links all files in the current directory to
+the directory
+.PN /usr/joe :
+.EX
+apply 'ln %1 /usr/joe' *
+.EE
+.SH Restrictions
+.NXR "apply program" "restricted"
+Shell metacharacters in
+.I command
+may have unexpected results; it is best to enclose complicated
+commands in single quotes (' ').
+.PP
+You cannot pass a literal, '%2', if the percent sign (%) is the
+argument expansion character.
+.SH See Also
+sh(1)

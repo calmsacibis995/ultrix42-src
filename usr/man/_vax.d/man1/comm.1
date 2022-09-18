@@ -1,0 +1,45 @@
+.\" SCCSID: @(#)comm.1	8.1	9/11/90
+.TH comm 1 
+.SH Name
+comm \- compare sorted data
+.SH Syntax
+.B comm
+[\fB\-\fR\|[\fB123\fR\|]\|] \fIfile1 file2\fR
+.SH Description
+.NXR "comm command"
+.NXR "file" "comparing"
+.NXR "comparing files with comm"
+The
+.PN comm
+command reads
+.I file1
+and
+.I file2,
+which should be ordered in ASCII collating sequence,
+and produces a three column output: lines only in
+.I file1;
+lines only in
+.I file2;
+and lines in both files.
+The file name `\-' means the standard input.
+.SH Options
+.IP \fB1\fR 0.3i
+Suppresses column one: lines in file1 only.
+.IP \fB2\fR 0.3i
+Suppresses column two: lines in file2 only.
+.IP \fB\3\fR 0.3i
+Suppresses column three: lines in file1 and file2.  
+.PP
+Thus
+.PN comm
+.B \-12
+prints only the lines common to the two files.
+And
+.PN comm
+.B \-23
+prints only lines in the first file but not in the second.  Finally,
+.PN comm
+.B \-123
+is not an option.
+.SH See Also
+cmp(1), diff(1), diff3(1), diffmk(1), join(1), uniq(1)

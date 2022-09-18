@@ -1,0 +1,74 @@
+.TH rpc_set_short_timeout 3ncs
+.SH Name
+rpc_set_short_timeout \- set or clear short-timeout mode (client only)
+.SH Syntax
+#include <idl/c/rpc.h>
+
+unsigned long rpc_$set_short_timeout(\fIhandle, state, status\fP)
+.nf
+handle_t \fIhandle\fP;
+unsigned long \fIstate\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBfunction rpc_$set_short_timeout(\fR
+.\"	\fBin \fIh\fB: handle_t;\fR
+.\"	\fBin \fIon\fB: unsigned32;\fR
+.\"	\fBout \fIst\fB: status_$t): unsigned32;\fR
+.\".DE
+.SH Arguments
+.TP
+\fIhandle\fR
+An RPC handle.
+.TP
+\fIon\fR
+If `true' (not zero), short-timeout mode is set on \fIhandle\fR. 
+If `false' (zero), standard timeouts are set.
+.TP
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$set_short_timeout
+routine
+sets or clears short-timeout mode on a handle.
+If a client uses a handle in short-timeout mode to make a remote procedure call,
+but the server does not respond, the call fails quickly.
+As soon as the server responds,
+standard timeouts take effect and apply for the remainder of the call.
+.NXR "Interface to the Remote Procedure Call" "rpc_set_short_timeout"
+.PP
+Calling 
+.PN rpc_$set_short_timeout
+with a value other than zero for \fIstate\fR
+sets short-timeout mode.
+Calling it with \fIstate\fR equal to zero, sets standard timeouts.
+Standard timeouts are the default.
+.PP
+This routine returns the previous setting of the timeout mode in
+.PN status\&.all .
+.SH Diagnostics
+This section lists status codes for errors returned by this
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs)

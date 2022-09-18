@@ -1,0 +1,93 @@
+.\" SCCSID: @(#)nm.1	8.1	9/11/90
+.TH nm 1 VAX
+.SH Name
+nm \- print program's name list
+.SH Syntax
+.B nm
+[\|\fIoptions\fR\|] [\|\fIfile\fR...\|]
+.SH Description
+.NXR "nm command"
+.NXR "archive file" "printing object files"
+.NXR "symbol table" "printing"
+.NXR "symbol type" "reference list"
+.NXA "ar program" "nm command"
+.NXAM "stab file" "nm command"
+The
+.PN nm
+command
+prints the name list (symbol table) of each object
+.I file
+in the argument list.  
+If an argument is an archive, a listing for each object
+file in the archive is produced.  If no
+.I file
+is given, the 
+.PN a.out
+file is used.
+.PP
+Each symbol name is preceded by its value, which is blank if undefined,
+and a letter.  The letter defines the symbol type:
+.IP \fBU\fR 5
+Undefined
+.IP \fBA\fR 
+Absolute
+.IP \fBT\fR 
+Text segment symbol
+.IP \fBD\fR 
+Data segment symbol
+.IP \fBB\fR 
+Bss segment symbol
+.IP \fBC\fR 
+Common symbol
+.IP \fBf\fR 
+File name
+.IP \fB\-\fR 
+For 
+.MS dbx 1
+symbol table entries (see
+.B \-a
+option below).
+.PP
+If the symbol is local (non-external), the letter is in lower case.
+The output is sorted alphabetically.
+.SH Options
+.NXR "nm command" "options"
+.IP \fB\-a\fR 5
+Displays all symbols including debug symbol table.  
+.IP \fB\-e\fR 
+Prints only global (external) symbols.
+.IP \fB\-f\fR 
+Displays all symbols including debug symbol table.  
+.IP \fB\-g\fR 
+Prints only global (external) symbols.
+.IP \fB\-n\fR 
+Sorts numerically rather than alphabetically.
+.IP \fB\-o\fR 
+Prepends file or archive element name to each output line.
+.IP \fB\-p\fR 
+Prints symbolic table order and does not sort.
+.IP \fB\-r\fR 
+Sorts in reverse order.
+.IP \fB\-u\fR 
+Displays only undefined symbols.
+.SH Diagnostics
+.NXR "nm command" "diagnostics"
+.TP 20
+.B "bad format"
+Indicates that the file is neither an archive file nor a .o
+file.
+.TP
+.B "cannot open"
+Indicates that the file could not be opened.
+.TP
+.B "invalid argument"
+Indicates that an invalid option was specified.
+.TP
+.B "no name list"
+Indicates that the file does not contain a symbol table.
+.TP
+.B "ran out of memory"
+Indicates that the string table in either the archive or .o
+file is too big.
+.SH See Also
+ar(1), ar(5), a.out(5), stab(5)

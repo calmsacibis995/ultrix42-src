@@ -1,0 +1,30 @@
+.\" SCCSID: @(#)kmem.4	8.1	9/11/90
+.\" SCCSID: @(#)kmem.4	8.1	9/11/90
+.TH kmem 4
+.SH Name
+kmem \- virtual main memory image
+.SH Description
+.NXR "kmem special file"
+.NXR "virtual main memory image"
+The
+.PN kmem
+special file is an image of the virtual main memory
+of the computer.
+It may be used, for example, to examine
+(and even to patch) the running system.
+.PP
+Byte addresses in
+.PN kmem
+are interpreted as virtual memory addresses.
+For VAXs,
+the per-process data for the current process is at virtual address
+7f\&f\&f\&f\&000(16).
+.SH Restrictions
+The
+.PN kmem
+memory file is accessed one byte
+at a time.
+.SH Files
+.PN /dev/kmem
+.SH See Also
+MAKEDEV(8)

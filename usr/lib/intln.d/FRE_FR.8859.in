@@ -1,0 +1,164 @@
+/*
+ * @(#)FRE_FR.8859.in	4.1
+ *
+ * This is the International UNIX data base for
+ *
+ * 	FRENCH		ISO8859.1
+ *
+ */
+
+CODESET FRE_FR.8859 :
+#include "ISO8859.cod"
+	/*
+	 * characters with different properties in french
+	 */
+	grave_a		: LOWER;
+	circ_a		: LOWER;
+	ae		: LOWER, DIPHTONG;
+	cedil_c		: LOWER;
+	acute_e		: LOWER;
+	grave_e		: LOWER;
+	circ_e		: LOWER;
+	dia_e		: LOWER;
+	circ_i		: LOWER;
+	dia_i		: LOWER;
+	tilde_n		: LOWER;
+	circ_o		: LOWER;
+	grave_u		: LOWER;
+	circ_u		: LOWER;
+	dia_u		: LOWER;
+	dia_y		: LOWER;
+
+	GRAVE_A		: UPPER;
+	CIRC_A		: UPPER;
+	AE		: UPPER, DIPHTONG;
+	CEDIL_C		: UPPER;
+	ACUTE_E		: UPPER;
+	GRAVE_E		: UPPER;
+	CIRC_E		: UPPER;
+	DIA_E		: UPPER;
+	TILDE_N		: UPPER;
+	CIRC_O		: UPPER;
+	GRAVE_U		: UPPER;
+	CIRC_U		: UPPER;
+	DIA_U		: UPPER;
+END.
+
+COLLATION:
+	/*
+	 * dictionary ordering of characters.
+	 */
+	PRIMARY: nul - space;
+	PRIMARY: dot;
+	PRIMARY: a, grave_a, circ_a, A, GRAVE_A, CIRC_A;
+	PRIMARY: b, B; PRIMARY: c, cedil_c, C, CEDIL_C;
+	PRIMARY: d, D;
+	PRIMARY: e, acute_e, grave_e, circ_e, dia_e, E, ACUTE_E, GRAVE_E, CIRC_E, DIA_E;
+	PRIMARY: f, F; PRIMARY: g, G; PRIMARY: h, H;
+	PRIMARY: i, circ_i, dia_i, I, CIRC_I, DIA_I;
+	PRIMARY: j, J; PRIMARY: k, K; PRIMARY: l, L; PRIMARY: m, M;
+	PRIMARY: n, tilde_n, N, TILDE_N;
+	PRIMARY: o, circ_o, O, CIRC_O;
+	PRIMARY: p, P; PRIMARY: q, Q; PRIMARY: r, R;
+	PRIMARY: s, S;
+	PRIMARY: t, T;
+	PRIMARY: u, grave_u, circ_u, dia_u, U, GRAVE_U, CIRC_U, DIA_U;
+	PRIMARY: v, V; PRIMARY: w, W; PRIMARY: x, X; 
+	PRIMARY: y, dia_y, Y;
+	PRIMARY: z, Z;
+	ae     = ( a, e);
+	AE     = ( A, E);
+	PRIMARY: REST;
+END.
+
+COLLATION CCOLL :
+	/*
+	 * complete dictionary ordering of characters.
+	 */
+	PRIMARY: nul - space;
+	PRIMARY: a, grave_a, circ_a;
+	PRIMARY: b; PRIMARY: c, cedil_c;
+	PRIMARY: d;
+	PRIMARY: e, acute_e, grave_e, circ_e, dia_e;
+	PRIMARY: f; PRIMARY: g; PRIMARY: h;
+	PRIMARY: i, circ_i, dia_i;
+	PRIMARY: j; PRIMARY: k; PRIMARY: l; PRIMARY: m;
+	PRIMARY: n, tilde_n;
+	PRIMARY: o, circ_o;
+	PRIMARY: p; PRIMARY: q; PRIMARY: r;
+	PRIMARY: s;
+	PRIMARY: t;
+	PRIMARY: u, grave_u, circ_u, dia_u;
+	PRIMARY: v; PRIMARY: w; PRIMARY: x; PRIMARY: y, dia_y;
+	PRIMARY: z;
+
+	PRIMARY: A, GRAVE_A, CIRC_A; 
+	PRIMARY: B; PRIMARY: C, CEDIL_C; 
+	PRIMARY: D; 
+	PRIMARY: E, ACUTE_E, GRAVE_E, CIRC_E, DIA_E;
+	PRIMARY: F; PRIMARY: G; PRIMARY: H; 
+	PRIMARY: I, CIRC_I, DIA_I; PRIMARY: J;
+	PRIMARY: K; PRIMARY: L; PRIMARY: M; 
+	PRIMARY: N, TILDE_N; 
+	PRIMARY: O, CIRC_O;
+	PRIMARY: P; PRIMARY: Q; PRIMARY: R; PRIMARY: S; PRIMARY: T;
+	PRIMARY: U, GRAVE_U, CIRC_U, DIA_U; 
+	PRIMARY: V; PRIMARY: W; PRIMARY: X; 
+	PRIMARY: Y;
+	PRIMARY: Z;
+	ae     = ( a, e);
+	AE     = ( A, E);
+	PRIMARY: REST;
+END.
+
+#include "FRE.strtab"
+
+CONVERSION tolower :
+	DEFAULT -> SAME;
+	/*
+	 * Below range depends on sequence of definition in ISO646 !
+	 */
+	A - Z	 -> a - z;
+	GRAVE_A	 -> grave_a;
+	CIRC_A	 -> circ_a;
+	AE	 -> ae;
+	CEDIL_C  -> cedil_c;
+	ACUTE_E	 -> acute_e;
+	GRAVE_E	 -> grave_e;
+	CIRC_E	 -> circ_e;
+	DIA_E	 -> dia_e;
+	CIRC_I	 -> circ_i;
+	DIA_I	 -> dia_i;
+	TILDE_N	 -> tilde_n;
+	CIRC_O	 -> circ_o;
+	GRAVE_U	 -> grave_u;
+	CIRC_U	 -> circ_u;
+	DIA_U	 -> dia_u;
+END.
+
+CONVERSION toupper :
+	DEFAULT -> SAME;
+	/*
+	 * Below range depends on sequence of definition in ISO646 !
+	 */
+	a - z	 -> A - Z;
+	grave_a	 -> GRAVE_A;
+	circ_a	 -> CIRC_A;
+	ae	 -> ae;
+	cedil_c	 -> CEDIL_C;
+	acute_e	 -> ACUTE_E;
+	grave_e	 -> GRAVE_E;
+	circ_e	 -> CIRC_E;
+	dia_e    -> DIA_E;
+	circ_i	 -> CIRC_I;
+	dia_i	 -> DIA_I;
+	tilde_n	 -> TILDE_N;
+	circ_o 	 -> CIRC_O;
+	grave_u	 -> GRAVE_U;
+	circ_u	 -> CIRC_U;
+	dia_u	 -> DIA_U;
+	dia_y	 -> Y;
+END.
+
+
+#include "ascterm.cnv"

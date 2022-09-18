@@ -1,0 +1,44 @@
+#!/bin/sh
+#
+#	@(#)make_client	4.1	(ULTRIX)	7/2/90
+#
+# Create a new root directory from the prototype
+#
+# usage: make_client hostname pathname
+#
+#ROOTS=/usr/adm/dlenv/roots
+ROOTS=$2
+if [ $# -ne 2 ]; then
+	echo "usage: $0 hostname pathname"
+	exit 1
+fi
+if [ ! -d $ROOTS ]; then
+	echo "No roots directory"
+	exit 1
+fi
+#
+# copy the proto directory
+#
+#mkdir $ROOTS/$1
+CLIROOT0=$1
+mkdir $CLIROOT0
+cd $ROOTS
+LIST=`ls |sed s/usr//`
+tar -cBpf - $LIST | (cd $1; tar -xBpf - ) || echo "tar failed"
+mkdir $1/usr
+#
+# Fix files in /etc
+#
+#cd etc
+#ed - rc.local <<END
+##/domainname/s/ [^ ]*\$/ sun/
+#w
+#q
+#END
+#ed - fstab <<END
+#g/hostname/s//$1/g
+#g/arch/s//$2/g
+#w
+#q
+#END
+#ypmatch `hostname` $1 hosts | sed -e 's/	*$//' >> hosts

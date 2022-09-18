@@ -1,0 +1,61 @@
+.TH rpc_free_handle 3ncs
+.SH Name
+rpc_free_handle \- free an RPC handle (client only)
+.SH Syntax
+.nf
+#include <idl/c/rpc.h>
+
+void rpc_$free_handle(\fIhandle, status\fP)
+handle_t \fIhandle\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$free_handle(\fR
+.\"	\fBin \fIhandle\fB: handle_t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP
+\fIhandle\fR
+The RPC handle to be freed.
+.TP
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$free_handle
+routine frees an RPC handle.
+This routine clears any association between the handle and a server or an object
+and releases the resources identified by the RPC handle.
+The client program cannot use a handle after it is freed.
+.NXR "Interface to the Remote Procedure Call" "rpc_free_handle"
+.SH Examples
+The following statement frees a handle:
+.EX
+rpc_$free_handle (handle, &status);
+.EE
+.SH Diagnostics
+This section lists status codes for errors returned by this 
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs), rpc_alloc_handle(3ncs), rpc_dup_handle(3ncs)

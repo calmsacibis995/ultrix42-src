@@ -1,0 +1,104 @@
+.TH rrpc_inq_stats 3ncs
+.SH Name
+rrpc_inq_stats \- obtain statistics about a server
+.SH Syntax
+#include <idl/c/rrpc.h>
+
+void rrpc_$inq_stats(\fIhandle, max_stats, stats, l_stat, status\fP)
+.nf
+handle_t \fIhandle\fP;
+unsigned long \fImax_stats\fP;
+rrpc_$stat_vec_t \fIstats\fP;
+unsigned long *\fIl_stat\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rrpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rrpc_$inq_stats(\fR
+.\"	\fBin \fIhandle\fB: handle_t;\fR
+.\"	\fBin \fImax_stats\fB: unsigned32;\fR
+.\"	\fBout \fIstats\fB: univ rrpc_$stat_vec_t;\fR
+.\"	\fBout \fIl_stat\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 10 
+\fIhandle\fR
+A remote procedure call (RPC)
+.I handle .
+.TP 10
+\fImax_stats\fR
+The maximum number of elements in the array of statistics.
+.TP 10
+\fIstats\fR
+An array of 32-bit integers representing statistics about the server.
+A set of \fBrrpc_$sv\fR constants defines indices for the elements in this array.
+The following list describes the statistic indexed by each \fBrrpc_$sv\fR constant:
+.RS 12
+.TP 10 
+\fBrrpc_$sv_calls_in\fR
+The number of calls processed by the server.
+.TP 10
+\fBrrpc_$sv_rcvd\fR
+The number of packets received by the server.
+.TP 10
+\fBrrpc_$sv_sent\fR
+The number of packets sent by the server.
+.TP 10
+\fBrrpc_$sv_calls_out\fR
+The number of calls made by the server.
+.TP 10
+\fBrrpc_$sv_frag_resends\fR
+The number of fragments sent by the server that duplicated previous sends.
+.TP 10
+\fBrrpc_$sv_dup_frags_rcvd\fR
+The number of duplicate fragments received by the server.
+.RE
+.TP
+\fIl_stat\fR
+The index of the last element in the returned array.
+.TP
+\fIstatus\fR
+The completion status.  
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rrpc_$inq_stats
+routine returns an array of integer statistics about a server.
+.NXR "Remote Remote Procedure Call" "rrpc_inq_stats"
+.SH Restrictions
+On the client side, because of the way the
+.PN rrpc_
+calls are defined and implemented
+in the run-time library
+.PN libnck.a ,
+you must explicitly call
+into the entry point vector table for the
+.PN rrpc_
+interface to
+send an
+.PN rrpc_
+request across the network. The
+following is an example of a call that works
+as desired:
+.EX
+(*rrpc_$client_epv.rrpc_$inq_stats)(handle,
+        (unsigned long) max_stats, stats, &l_stat ,&status);
+.EE
+.PP
+The server sidestub routine calls the entry oint
+.PN rrpc_$inq_stats
+on behalf of the client.  The results of the call are then
+passed back to the client.
+.SH Files
+.PN /usr/include/idl/c/rrpc.h
+.br
+.PN /usr/include/idl/rrpc.idl
+.SH See Also
+intro(3ncs)

@@ -1,0 +1,56 @@
+.TH lmfsetup 8
+.SH Name
+lmfsetup \- License Management Facility PAK registration script
+.SH Syntax
+.B /etc/lmfsetup
+[
+.I template
+]
+.NX R "License Management Facility commands"
+.NX R "lmf commands"
+.SH Description
+The
+.PN lmfsetup
+script allows you to register data supplied by a Product 
+Authorization Key (PAK).  The
+.PN lmfsetup
+script prompts you for the data associated with each of the fields on a
+PAK.
+When all the data has been entered, the License Management Facility 
+(LMF) ensures there are entries against all the mandatory fields, 
+and that the Checksum
+validates all the license data.
+If the data has been entered correctly, the PAK is registered in the
+License Database.
+If the data has been entered incorrectly, the appropriate error message is
+displayed and you are given the opportunity to re-enter the data.
+.PP
+The \fItemplate\fR option allows you to register license data from templates
+in
+.PN /usr/var/adm/lmf .
+A template containing a partially complete PAK is created by some
+products as part of their installation process.
+The script only prompts you for data on the fields that are empty in
+the template.
+If the script cannot find the specified template in
+.PN /usr/var/adm/lmf
+it searches the current directory.
+.PP
+The
+.PN lmfsetup
+script is provided as an alternative to the
+.PN lmf
+.PN register
+command.
+This displays a template, which includes the fields on the PAK, and
+invokes an editor so that you can add the license data to the appropriate
+field.
+The
+.PN lmf
+.PN register
+command also allows errors to be corrected without having to 
+re-enter all the data.
+.SH See Also
+lmf(8)
+.br
+.I "Guide to Software Licensing"

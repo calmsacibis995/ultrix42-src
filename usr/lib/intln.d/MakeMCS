@@ -1,0 +1,40 @@
+# @(#)MakeMCS	4.1	(ULTRIX)	7/2/90
+# Makefile for MCS international language databases.
+#
+#	20th Jan 88 - Created Martin Hills, EUEG.
+#	
+
+IC= /usr/bin/ic
+ICFLAGS=  -I../646 -v
+DESTROOT= 
+
+SOURCES	= ENG_GB.MCS.in FRE_FR.MCS.in GER_DE.MCS.in MCS.cod
+
+OBJECTS	= ENG_GB.MCS FRE_FR.MCS GER_DE.MCS
+
+HEADERS	= 
+
+all : ${OBJECTS}
+
+${OBJECTS}:
+	${IC} ${ICFLAGS} $@.in
+	chmod 444 $@
+	/etc/chown bin $@
+	chgrp system $@
+
+install : 
+
+clean :
+	rm -f ${OBJECTS}
+
+clobber : clean
+	rm -f ${SOURCES} Makefile
+
+sccsinfo :
+	sccs info
+
+sccsget :
+	sccs get SCCS
+
+.DEFAULT:
+	sccs get $<

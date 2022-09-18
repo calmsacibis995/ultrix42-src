@@ -1,0 +1,75 @@
+.\" SCCSID: @(#)aliases.5	8.1	9/11/90
+.TH aliases 5
+.SH Name
+aliases \- aliases file for sendmail
+.SH Description
+.NXR "aliases file" "format"
+.NXAM "sendmail program" "aliases file"
+The aliases file is an ASCII file that describes user ID 
+aliases that are used in
+.PN /usr/lib/sendmail .
+It is formatted as a series of lines in the following
+form:
+.EX
+name: name_1, name2, name_3, . . .
+.EE
+The
+.I name
+is the name to alias, and the
+.I name_n
+are the aliases for that name.
+Each 
+.PN alias
+is separated from the next by a new line.  
+.PP
+Continuation lines begin with white space.
+Comment lines begin with a number sign (#).
+.PP
+You can only assign aliases to local names.  Loops are not allowed
+because a message should be sent to a person only once.
+.PP
+After an alias has been applied, local and valid recipients who have a
+.PN \&.forward 
+file in their home directory can have messages forwarded to the
+list of users defined in that file.
+.PP
+This is only the raw data file; the actual information pertaining
+to aliases is placed into binary format in the files
+.PN /etc/aliases.dir
+and
+.PN /etc/aliases.pag
+using the program 
+.MS newaliases 1 .
+The 
+.PN newaliases
+command should be executed each time the aliases
+file changes.  This command allows the new changes to take effect.
+.SH Restrictions
+Because of restrictions in
+.MS dbm 3x ,
+a single alias cannot contain more than approximately 1000 bytes of 
+information.  You can specify longer aliases
+by chaining; that is, use a dummy name for the last name in
+the alias, which creates a continuation alias.
+.PP
+The 
+.PN aliases
+database may be distributed in a network by a naming service, 
+such as Yellow Pages or BIND/Hesiod.  See the
+.I Guide to Yellow Pages
+or the chapter on Hesiod in the
+.I Guide to BIND
+for setup information.
+.SH Files
+.PN /etc/aliases
+.SH See Also
+newaliases(1), dbm(3x), sendmail(8)
+.br
+"SENDMAIL Installation and Operation Guide",
+.I ULTRIX Supplementary Documents, 
+Vol. III: System Manager
+.br
+.I Guide to the BIND/Hesiod Service
+.br
+.I Guide to the Yellow Pages Service
+ 

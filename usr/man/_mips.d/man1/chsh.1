@@ -1,0 +1,39 @@
+.\" SCCSID: @(#)chsh.1	6.1	4/27/89
+.TH chsh 1
+.SH Name
+chsh \- change login shell
+.SH Syntax
+.B chsh
+[\fIloginname\fR]
+.SH Description
+.NXR "chsh program"
+.NXR "login shell field" "changing"
+The
+.PN chsh
+command is a command similar to
+.PN passwd ,
+except that it is used to change the login shell field of the password
+file rather than the password entry.
+The program will prompt you for a new shell. The shell name supplied must
+match one of the entries in /etc/shells. If no name is given the
+shell will be unchanged and the diagnostic "Login shell unchanged"
+will be printed.
+.PP
+An example use of this command is:
+.PP
+.EX
+	% \fBchsh\fP
+	Changing login shell for bill
+	Shell [/bin/csh]: \fBsh\fP
+.EE
+.SH Restrictions
+Both the new shell and the old shell must be found in /etc/shells to be
+able to change the shell.
+.PP
+If the passwd entry is distributed from another host
+.PN chsh
+will not modify it.
+.SH Files
+/etc/shells
+.SH See Also
+chfn(1), passwd(1), yppasswd(1yp), passwd(5yp)

@@ -1,0 +1,54 @@
+.\" SCCSID: @(#)tftpd.8c	8.1	9/11/90
+.TH tftpd 8c
+.SH Name
+tftpd \- DARPA Trivial File Transfer Protocol (TFTP) server
+.SH Syntax
+.B /usr/etc/tftpd [ \fB\-r \fIpathname\fR ]
+.SH Description
+.NXR "tftpd server"
+.NXAM "tftpd server" "tftpd program"
+.NXS "Trivial File Transfer Protocol server" "tftpd server"
+The server,
+.PN tftpd ,
+supports the DARPA Trivial File Transfer
+Protocol (TFTP).  The TFTP server is invoked when
+.MS inetd 8c
+receives a packet on
+the port indicated in the TFTP service description.
+The server is not normally started by default from
+.MS inetd 8c .
+.PP
+The use of
+.PN tftp
+does not require an account or password on the remote system.
+Because of the lack of authentication information, 
+.PN tftpd
+will allow only publicly readable files to be accessed.
+This extends the concept of public to include
+all users on all hosts that can be reached through the network.
+This may not be appropriate on all systems however, and its implications
+should be considered before enabling TFTP service.
+.PP
+The server should have the user ID with the lowest possible privilege.
+.SH Options
+.IP "\-\fBr \fIpathname\fR" 15
+The 
+.I pathname
+can be the choice of the user.  For example,
+.PN /guests/ftp
+would allow only files below
+.PN /guests/ftp
+to be copied using
+.PN tftp .
+.SH Restrictions
+This server is known only to be self consistent,
+that is, it operates with the user TFTP program,
+.MS tftp 1c .
+Because of the unreliability of the transport protocol
+(UDP) and the scarcity of TFTP implementations,
+it is uncertain whether it really works.
+.PP
+The search permissions of the directories leading to the files accessed
+are not checked.
+.SH See Also
+tftp(1c), services(5), inetd(8c)

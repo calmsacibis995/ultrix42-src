@@ -1,0 +1,59 @@
+.\" SCCSID: @(#)cuserid.3s	8.1	9/11/90
+.TH cuserid 3s
+.SH Name
+cuserid \- get character login name of the user
+.SH Syntax
+#include <stdio.h>
+.PP
+char \(**cuserid (s)
+.br
+char \(**s;
+.SH Description
+.NXR "cuserid subroutine"
+.NXA "cuserid subroutine" "getlogin subroutine"
+.NXR "login name" "getting character-string representation"
+The
+.PN cuserid
+subroutine
+generates a character-string representation of the login
+name of the owner of the current process.
+If
+.I s\^
+is a NULL
+pointer, this representation is generated in an
+internal static area, the address of which is returned.
+Otherwise,
+.I s\^
+is assumed to point to an array of at least
+.PN L_cuserid
+characters; the representation is left in this array.
+The constant
+.PN L_cuserid
+is defined in the <stdio.h> header file.
+.SH Return Values
+If the login name cannot be found,
+.PN cuserid
+returns a NULL
+pointer; if 
+.I s\^
+is not a NULL
+pointer, a null character
+(\e0)
+will be placed at
+s[0].
+.PP
+In POSIX mode, 
+if 
+.I s\^
+is not a NULL pointer, 
+.I s\^
+is the return value.
+.SH Environment
+When your program is compiled using the POSIX environment,
+.PN cuserid
+returns the name associated with the effective userid of the calling
+process.  When compiled in the BSD or System V environments, it returns
+the name associated with the login activity on the controlling terminal,
+if any.  Otherwise, it returns the same as in the POSIX environment.
+.SH See Also
+getlogin(3), getpwent(3)

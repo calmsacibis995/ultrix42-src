@@ -1,0 +1,11 @@
+/* LINTLIBRARY */
+
+char   *OfficialName(n) char *n; { return OfficialName(n); }
+char   *rp_string (c) { return rp_string (c); }
+int	x400s_end(t) { return x400s_end(t); }
+int	x400s_init(c,s,w,v,d) char *c,*s; { return x400s_init(c,s,w,v,d); }
+int	x400s_wadr(m,h,p) char *m,*h,*p; { return x400s_wadr(m,h,p); }
+int	x400s_waend() { return x400s_waend(); }
+int	x400s_winit(m,f) char *f; { return x400s_winit(m,f); }
+int	x400s_wtend() { return x400s_wtend(); }
+int	x400s_wtxt(b,l) char *b; { return x400s_wtxt(b,l); }

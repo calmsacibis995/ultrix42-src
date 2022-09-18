@@ -1,0 +1,72 @@
+#
+#
+machine		mips
+cpu		"DS5400"
+ident		"MIPSFAIR"
+timezone	5 dst 1
+maxusers	32
+maxuprc		50
+physmem		64
+processors	1
+scs_sysid	1
+
+options		QUOTA
+options		INET
+options		NFS
+options		UFS
+options		RPC
+options		SYS_TRACE
+options		DECNET
+options		LAT
+options		DLI
+
+makeoptions	ENDIAN="-EL"
+
+config vmunix root on se0
+
+pseudo-device	pty	64
+pseudo-device	inet
+pseudo-device	ether
+pseudo-device	loop
+pseudo-device	nfs
+pseudo-device	ufs
+pseudo-device	rpc
+pseudo-device	sys_trace
+pseudo-device	lat
+pseudo-device	lta	32
+pseudo-device	dli
+pseudo-device   decnet
+pseudo-device	scsnet
+
+adapter        ibus0     at  nexus ?   
+device         ln0       at  ibus0     vector lnintr  
+
+adapter        msi0      at  nexus ?   
+controller     dssc0     at  msi0      msinode 0
+controller     dssc1     at  msi0      msinode 1
+controller     dssc2     at  msi0      msinode 2
+controller     dssc3     at  msi0      msinode 3
+controller     dssc4     at  msi0      msinode 4
+controller     dssc5     at  msi0      msinode 5
+controller     dssc6     at  msi0      msinode 6
+
+adapter        uba0      at  nexus ?   
+controller     uda0      at  uba0      
+controller     uq0       at  uda0      csr 0172150   vector uqintr  
+controller     uda1      at  uba0      
+controller     uq1       at  uda1      csr 0160334   vector uqintr  
+controller     uda2      at  uba0      
+controller     uq2       at  uda2      csr 0160340   vector uqintr  
+controller     klesiu0   at  uba0      
+controller     uq16      at  klesiu0   csr 0174500   vector uqintr  
+tape           tms0      at  uq16      drive 0
+device         lp0       at uba?       csr 0177514   vector lpintr
+#device         qe0       at  uba0      csr 0174440   vector qeintr  
+
+disk           ra0       at  mscp       drive 0
+disk           ra1       at  mscp       drive 1
+disk           ra2       at  mscp  	drive 2
+disk           ra3       at  mscp  	drive 3
+disk           ra4       at  mscp  	drive 4
+disk           ra5       at  mscp  	drive 5
+disk           ra6       at  mscp  	drive 6

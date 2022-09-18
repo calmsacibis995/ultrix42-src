@@ -1,0 +1,28 @@
+.TH term 5 RISC
+.SH Name  
+term \- terminal driving tables for nroff
+.SH Description
+.NXB "term file" "format"
+.NXAM "nroff text processor" "term file"
+The 
+.MS nroff 1
+command
+uses driving tables to customize its output for various types of
+output devices.  
+These driving tables are ASCII files
+installed in
+.PN /usr/lib/term/tabname ,
+where
+.I name
+is the name for that terminal type as given in 
+.MS term 7
+The file
+.PN /usr/lib/term/example
+describes the format of each field in the driving table.
+.SH Files
+\f(CW/usr/lib/term/example\fP	describes the format of each field
+.br
+\f(CW/usr/lib/term/tab\fIname\fR	driving tables
+.SH See Also
+term(7)
+.NXE "term file" "format"

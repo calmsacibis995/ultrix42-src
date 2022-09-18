@@ -1,0 +1,55 @@
+.\" SCCSID: @(#)stat.3f	8.1	9/11/90
+.TH stat 3f VAX "" Unsupported
+.SH Name
+stat, lstat, fstat \- get file status
+.SH Syntax
+.B integer function stat (name, statb)
+.br
+.B character*(*) name
+.br
+.B integer statb(12)
+.sp 1
+.B integer function lstat (name, statb)
+.br
+.B character*(*) name
+.br
+.B integer statb(12)
+.sp 1
+.B integer function fstat (lunit, statb)
+.br
+.B integer statb(12)
+.SH Description
+.NXR "stat subroutine (FORTRAN)"
+.NXR "lstat subroutine (FORTRAN)"
+.NXR "fstat subroutine (FORTRAN)"
+.NXR "file" "getting status"
+These routines return detailed information about a file.
+The
+.PN stat
+and
+.PN lstat
+routines return information about file
+.IR name .
+The
+.PN fstat
+subroutine
+returns information about the file associated with FORTRAN logical unit
+.I lunit.
+The order and meaning of the information returned in array
+.I statb
+is as described for the structure
+.PN stat
+under 
+.MS stat 2 .
+The spare values are not included.
+.SH Restrictions
+Pathnames can be no longer than MAXPATHLEN as defined in
+<sys/param.h>.
+.SH Return Values
+The value of either function will be zero if successful;
+an error code otherwise.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+stat(2), access(3f), perror(3f), time(3f)

@@ -1,0 +1,44 @@
+.\" SCCSID: @(#)quota.1	8.1	9/11/90
+.TH quota 1 
+.SH Name
+quota \- display disk usage and limits
+.SH Syntax
+.B quota
+[\fB\-qv\fR] [\|\fIuser...\fR\|]
+.SH Description
+.NXR "quota command"
+.NXR "disk" "displaying usage"
+.NXR "disk quota" "displaying"
+The
+.PN quota
+command displays users' disk usage and limits. 
+Only the super-user may use the optional
+.I user
+argument to view the limits of users other than
+himself.
+.PP
+The
+.PN quota
+command reports only on file systems which have
+disk quotas. 
+If 
+.PN quota
+exits with a non-zero status, one or more file
+systems are over quota.
+.SH Options
+.TP 5
+.B \-q
+Prints a message that
+contains information only
+on file systems where usage is over quota
+.TP
+.B \-v
+Displays users quotas on file systems
+where no storage is allocated.
+.SH See Also
+quota(2), edquota(8), quotaon(8), 
+.br
+"Disk Quotas in a UNIX Environment",
+.I ULTRIX Supplementary Documents
+.br
+Vol. III: System Manager 

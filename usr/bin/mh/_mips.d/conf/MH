@@ -1,0 +1,19 @@
+bin		/usr/bin/mh
+bboards	off
+etc		/usr/lib/mh
+cc        	cc
+mail		/usr/spool/mail
+ldoptions       -O
+manuals		none
+mts		sendmail/smtp
+options         ISI MHRC WHATNOW MHE
+options         BSD42 BERK
+options         NETWORK BIND RPATHS
+options         DPOP RPOP
+options         FOLDPROT='"0700"' MSGPROT='"0600"'
+options		TYPESIG='void' POPSERVICE='"pop"'
+options		SPRINTF='int'
+pop             on
+remove          rm -f
+x400            on
+editor          prompter

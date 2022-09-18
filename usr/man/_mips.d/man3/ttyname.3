@@ -1,0 +1,60 @@
+.\" SCCSID: @(#)ttyname.3	8.1	9/11/90
+.TH ttyname 3 
+.SH Name
+ttyname, isatty, ttyslot \- find terminal name
+.SH Syntax
+.B char *ttyname(filedes)
+.PP
+.B isatty(filedes)
+.PP
+.B ttyslot()
+.SH Description
+.NXR "ttyname subroutine"
+.NXR "isatty subroutine (standard C)"
+.NXR "ttyslot subroutine"
+.NXA "ttyname subroutine" "ctermid subroutine"
+.NXR "terminal" "finding name"
+The
+.PN ttyname
+subroutine
+returns a pointer to the null-terminated path name
+of the terminal device associated with file descriptor
+.I filedes
+(this is a system file descriptor and has nothing to do with the
+standard I/O FILE typedef).
+.PP
+The
+.PN isatty
+subroutine returns 1 if
+.I filedes
+is associated with a terminal device, 0 otherwise.
+.PP
+The
+.PN ttyslot
+subroutine returns the number of the entry in the
+.MS ttys 5
+file for the control terminal of the current process.
+.SH Restrictions
+The return value points to static data
+whose content is overwritten by each call.
+.SH Diagnostics
+The
+.PN ttyname
+subroutine
+returns a null pointer (0) if
+.I filedes
+does not describe a terminal device in directory 
+.PN /dev .
+.PP
+The
+.PN ttyslot
+subroutine returns 0 if 
+.PN /etc/ttys
+is inaccessible or if
+it cannot determine the control terminal.
+.SH Files
+/dev/\(**
+.br
+/etc/ttys
+.SH See Also
+ioctl(2), ttys(5)

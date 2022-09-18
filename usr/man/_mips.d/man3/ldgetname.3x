@@ -1,0 +1,48 @@
+.TH ldgetname 3x RISC
+.SH Name
+ldgetname \- retrieve symbol name for object file
+symbol table entry
+.SH Syntax
+.nf
+.B "#include <stdio.h>"
+.B "#include <filehdr.h>"
+.B "#include <sym.h>"
+.B "#include <ldfcn.h>"
+.fi
+.sp
+.nf
+\fB char *ldgetname (ldptr, symbol)
+LDFILE * ldptr ;
+pSYMR * symbol ;\fR
+.fi
+.SH Description
+The 
+.PN ldgetname
+function returns a pointer to the name associated with \fIsymbol\fP
+as a string.  The string is contained in a static buffer.
+Because the buffer can be overwritten
+by later calls to 
+.PN ldgetname , 
+the caller must copy the buffer if the name is to be saved.
+.PP
+If the name cannot be retrieved, 
+.PN ldgetname 
+returns null (defined in \fB<stdio.h>\fR) for an object file.
+This occurs in the following instances:
+.IP \(bu 5
+The string table cannot be found
+.IP \(bu 5
+The name's offset into the string table is beyond the
+end of the string table
+.PP
+Typically,
+.PN ldgetname 
+is called immediately after a successful call to 
+.PN ldtbread. The 
+.PN ldgetname 
+retrieves the name associated with the symbol table entry 
+filled by the function,
+.PN ldtbread .
+.SH See Also
+intro(3x), ldclose(3x), ldopen(3x), ldtbseek(3x), ldtbread(3x),
+ldfcn(5).

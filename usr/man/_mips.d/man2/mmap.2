@@ -1,0 +1,300 @@
+.TH mmap 2
+.SH Name
+mmap \- maps memory of a character device
+.SH Syntax
+#include <sys/types.h>
+.br
+#include <sys/mman.h>
+.nf
+
+caddr_t mmap(\fIaddr\fP, \fIlen\fP, \fIprot\fP, \fIflags\fP, \fIfd\fP, \fIoff\fP)
+caddr_t \fIaddr\fP;
+size_t \fIlen\fP;
+int \fIprot\fP;
+int \fIflags\fP;
+int \fIfd\fP;
+off_t \fIoff\fP;
+.fi
+.SH Arguments
+.TP 10
+\fIaddr\fP
+Specifies the address space of the calling process
+where 
+.PN mmap
+begins mapping the memory associated with the 
+specified character device.
+.TP 10
+\fIlen\fP
+Specifies the number of bytes to map.
+.TP 10
+\fIprot\fP
+Specifies the protection flag for the mapping.
+The protection
+flag is the bitwise inclusive OR of these valid protection flag bits
+defined in
+.PN mman.h :
+.PN PROT_READ
+or 
+.PN PROT_WRITE .
+.TP 10
+\fIflags\fP
+Specifies the mapping flag.
+The mapping flag is the bitwise inclusive OR of these valid flag mapping
+bits
+defined in
+.PN mman.h :
+.PN MAP_SHARED
+or
+.PN MAP_FIXED .
+.TP 10
+\fIfd\fP
+Specifies the file descriptor for the character device being mapped.
+.TP 10
+\fIoff\fP
+Specifies the offset in bytes into the character device's memory.
+.SH Description
+.NXR "memory mapping" "mmap call"
+.NXR "mmap call"
+The
+.PN mmap
+system call maps the memory of a character device 
+(\fIfd\fP)
+starting at a specified offset 
+(\fIoff\fP)
+for a specified number of bytes
+(\fIlen\fP)
+into the address space of the calling process.
+The
+.PN mmap
+routine does not map into private data, stack, or text segments.
+This routine does not replace any existing mappings.
+All the mapped regions are inherited by a child process on a fork.
+.PP
+When calling
+.PN mmap ,
+you need to:
+.IP \(bu 5
+Align the offset
+.IP
+You must align the offset
+(\fIoff\fP)
+on a page boundary as returned by the
+.PN getpagesize
+system call.
+.IP \(bu 5
+Indicate the number of bytes to map
+.IP
+The number of bytes to map
+(\fIlen\fP)
+need not be a multiple of the page size as returned by
+.PN getpagesize .
+However, 
+.PN mmap
+will round the value of
+\fIlen\fP
+to the nearest multiple of the page size as returned by
+.PN getpagesize
+and perform the mapping over whole pages.
+.IP \(bu 5
+Specify the protection for the mapping
+.IP
+You specify the protection for the mapping by ORing the
+\fIprot\fP
+argument with one or more of the constants
+.PN PROT_READ
+or
+.PN PROT_WRITE .
+If you specify only
+.PN PROT_READ ,
+both VAX and RISC architectures will grant read access.
+If you specify only
+.PN PROT_WRITE ,
+then both VAX and RISC architectures
+will grant read and write access.
+.IP \(bu 5
+Indicate the address at which the mapping occurs
+.IP
+The
+\fIaddr\fP
+and
+\fIflags\fP
+arguments are used by 
+.PN mmap
+to determine the actual address at which
+the mapping is done.
+You specify the mapping flag by ORing the
+\fIflags\fP
+argument with one or more of the constants
+.PN MAP_FIXED
+or
+.PN MAP_SHARED .
+.IP
+Based on the values you specify for
+\fIaddr\fP
+and
+\fIflags\fP,
+.PN mmap
+performs the mapping as follows:
+.IP - 15
+If
+\fIaddr\fP
+is equal to zero, 
+.PN mmap
+selects the address at which the mapping is
+done.
+.IP - 15
+If
+\fIaddr\fP
+is not equal to zero and
+you specified
+.PN MAP_FIXED ,
+the mapping is done at the address specified in
+\fIaddr\fP.
+You can obtain the boundary on which
+\fIaddr\fP
+must be aligned by calling the
+.PN getsysinfo
+system call.
+.IP - 15
+If
+\fIaddr\fP
+is not equal to zero and
+you did not specify
+.PN MAP_FIXED , 
+the mapping is done at the address rounded down to the boundary returned
+by
+.PN getsysinfo .
+The value returned by
+.PN getsysinfo
+is machine-dependent.
+.SH Restrictions
+You must observe the following restrictions when calling
+.PN mmap :
+.IP \(bu 5
+Maximum number of mapped regions for each process
+.IP
+The shared memory functionality upon which
+.PN mmap
+is implemented requires that you not
+exceed the maximum number of
+shared memory segments allowed for each process.
+The default value is six shared memory segments for each process.
+You can configure (in the system configuration file)
+the number of shared memory segments for each process by
+using the constant
+.PN SMSEG .
+.IP \(bu 5
+Maximum number of mapped regions on the system
+.IP
+The shared memory functionality imposes a limit on the maximum number of
+mapped regions on the system.
+The default limit is 100,
+sufficient to support a maximum configuration of
+all devices that can be mapped.
+The maximum configuration is 2*21 devices (2 VME adapters, 21 devices for
+each
+bus).
+.IP \(bu 5
+A process mapping the same region of device memory
+.IP
+A process cannot map the same region of device memory more than once
+into its address space.
+This limitation is a result of the lack of multiple attach capability
+for shared memory.
+However, a single process can map different regions of device memory
+simultaneously into its address space.
+Two regions of memory are identical only if they start at the same
+offset in device memory and are of the same length.
+.IP \(bu 5
+Use of
+the
+.MS mprotect 2
+system call 
+.IP
+The
+.PN mprotect
+system call
+does not work on the addresses mapped by a call to
+.PN mmap .
+The reason is that
+.PN mprotect
+does not work for shared memory and therefore cannot be used
+to change protection for the address space mapped by
+.PN mmap .
+.SH Return Value
+If successful,
+.PN mmap
+returns the address where the mapping was done.
+Otherwise, it returns \-1
+and sets the
+\fIerrno\fP
+argument to one of the errors listed in the Diagnostics section.
+.SH Diagnostics
+The call to
+.PN mmap 
+fails if one or more of the following is true:
+.TP 10
+[EBADF]
+The device, represented by the file descriptor
+\fIfd\fP,
+is not open.
+.TP 10
+[EACCES]
+The device, represented by the file descriptor
+\fIfd\fP,
+is not open for read operations and you specified
+the protection flag
+.PN PROT_READ
+in
+\fIprot\fP.
+Or, the device is not open for write operations and you specified the
+protection flag
+.PN PROT_WRITE
+in
+\fIprot\fP.
+.TP 10
+[ENXIO]
+Addresses in the range [
+\fIoff\fP,
+\fIoff\fP
++
+\fIlen\fP
+]
+are invalid for this device,
+represented by the file descriptor
+\fIfd\fP.
+.TP 10
+[EINVAL]
+You did not specify either
+.PN MAP_SHARED
+or
+.PN MAP_FIXED
+in the
+\fIflags\fP
+argument.
+.TP 10
+[EINVAL]
+You did not specify either
+.PN PROT_READ
+or
+.PN PROT_WRITE
+in the
+\fIprot\fP
+argument.
+.TP 10
+[EINVAL]
+The file descriptor,
+\fIfd\fP,
+is not a valid file descriptor for a character device.
+.TP 10
+[ENODEV]
+The file descriptor,
+\fIfd\fP,
+refers to a device that does not support the
+.PN mmap
+system call.
+.TP 10
+[ENOMEM]
+There is not enough room in the address space to perform the mapping.
+.SH See Also
+getpagesize(2), getsysinfo(2), mmapalignment(1), munmap(2)

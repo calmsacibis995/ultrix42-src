@@ -1,0 +1,427 @@
+.TH krb_svc_init 3krb
+.SH Name
+krb_svc_init, krb_get_svc_in_tkt, krb_get_pw_in_tkt \- Kerberos authentication 
+initialization routines
+.SH Syntax
+.nf
+.nj
+ \fB#include <krb.h>\fP
+ \fB#include <des.h>\fP
+.PP
+ \fBkrb_svc_init\fP  (\fIuser, instance, realm, lifetime,\fP 
+                      \fIsrvtab_file, tkt_file\fP)
+ \fBchar\fP	\fI*user, *instance, *realm\fP;
+ \fBint\fP	\fIlifetime\fP;
+ \fBchar\fP	\fI*srvtab_file\fP, \fI*tkt_file\fP;
+.PP
+ \fBkrb_get_svc_in_tkt\fP  (\fIuser, instance, realm, service,\fP
+                            \fIservice_instance, lifetime,\fP
+                            \fIsrvtab_file\fP)
+ \fBchar\fP	\fI*user, *instance, *realm, *service,\fP; 
+ \fBchar\fP     \fI*service_instance\fP;
+ \fBint\fP	\fIlifetime\fP;
+ \fBchar\fP	\fI*srvtab_file\fP;
+.PP
+ \fBkrb_get_pw_in_tkt\fP  (\fIuser, instance, realm, service,
+                              service_instance, lifetime,
+                              password\fP)
+ \fBchar\fP	\fI*user, *instance, *realm,\fP; 
+ \fBchar\fP     \fI*service, *service_instance\fP;
+ \fBint\fP	\fIlifetime\fP;
+ \fBchar\fP	\fI*password\fP;
+.PP
+.fi
+.SH Arguments
+.TP 9
+.I user
+For
+.PN krb_get_svc_in_tkt
+and
+.PN krb_get_pw_in_tkt ,
+the primary name of the principal that is obtaining a ticket that will
+authenticate it to principal, \fIservice\fP.  For
+.PN krb_svc_init ,
+the primary name of the principal that is obtaining a ticket to communicate
+with the ticket-granting service.
+.TP
+.I instance
+For
+.PN krb_get_svc_in_tkt
+and
+.PN krb_get_pw_in_tkt ,
+the instance name of the principal that is obtaining
+a ticket that will authenticate it to principal, \fIservice\fP.
+For
+.PN krb_svc_init ,
+the instance name of the principal that is obtaining a ticket to communicate
+with the ticket-granting service.
+.TP
+.I realm
+For
+.PN krb_get_svc_in_tkt
+and
+.PN krb_get_pw_in_tkt ,
+the realm name of the principal that is obtaining
+a ticket that will authenticate it to principal, \fIservice\fP.
+For
+.PN krb_svc_init ,
+the realm name of the principal that is obtaining a ticket to communicate with
+the ticket-granting service.
+.TP
+.I service
+The primary name of the service for which a ticket will
+be obtained.
+.TP
+.I service_instance
+The instance of the service for which a ticket will be
+obtained.
+.TP
+.I lifetime
+The number of five-minute intervals for which the obtained
+ticket should be valid.  Values greater than 255 will be
+set to 255.  Values greater than the maximum lifetime
+allowed for tickets given to the requesting principal
+will be set to the maximum lifetime allowed.  The maximum
+lifetime of the tickets granted to a principal is determined
+when the principal is added to the Kerberos database.
+.TP
+.I srvtab_file
+The path name of the file that contains the
+key of the principal obtaining a ticket.  If this value
+is set to the NULL pointer, the default service table (srvtab) file
+value is used.  The default srvtab file value is set by
+default	to
+.PN /etc/srvtab ,
+although this value can be changed by
+a call to the
+.PN krb_set_srvtab_string
+function.  (Refer to
+.PN krb_set_tkt_string(3krb) ). 
+.TP	
+.I tkt_file
+The path name of the file into which the credentials and
+tickets of the user or service should be placed.  If the \fItkt_file\fP
+parameter is equal to the NULL pointer, then the
+default ticket file value is used.  The default ticket file
+value is set equal to
+.PN /var/dss/kerberos/tkt/tkt.[\fIuid\fP] \fRwhere 
+.PN uid
+is the user ID of the process that calls the above
+functions.  The default	ticket file value can be changed by
+the
+.PN krb_set_tkt_string(3krb)
+function call.\fP
+.TP
+.I password
+The password of the principal that is obtaining
+a ticket that will authenticate it to principal, \fIservice\fP.
+If the password input is the NULL string, then
+.PN krb_get_pw_in_tkt
+will prompt for a password on 
+.PN stdout
+and read the password from 
+.PN stdin .
+.SH Description
+.NXR "Kerberos routines" "krb_svc_init"
+.NXR "Kerberos routines" "krb_get_svc_in_tkt"
+.NXR "Kerberos routines" "krb_get_pw_in_tkt"
+The
+.PN krb_svc_init(3krb)
+routines are designed to obtain for the requesting
+principal a ticket to communicate with a specific service.  They require
+that the password/key of the requesting principal be
+either available as an argument, or available from 
+the \fIsrvtab_file\fP argument or
+from 
+.PN stdin .
+Since the 
+.PN krb_svc_init(3krb)
+routines always require
+a password, they are best used to obtain the
+ticket used to communicate with the ticket-granting service.  The 
+ticket-granting ticket is used by the other Kerberos routines
+to obtain tickets to communicate with principals other than the
+ticket-granting service, without needing the key of
+the principal.
+.PP
+The
+.PN krb_sendauth(3krb)
+routines as well as the 
+.PN kerberos(3krb)
+routines will not work as intended without the presence of a ticket-granting
+ticket.
+.PP
+The routines of
+.PN krb_svc_init(3krb)
+are as follows:
+.sp 2 
+.IP krb_svc_init
+.PP
+For the principal with a primary name of \fIuser\fP, an instance name
+of \fIinstance\fP, and a realm name of \fIrealm\fP, the 
+.PN krb_svc_init
+routine
+obtains a ticket that the principal can use to communicate with
+the ticket-granting service.  The key of the principal is read
+from \fIsrvtab_file\fP and the ticket obtained is placed 
+in \fItkt_file\fP.
+.PP
+If the \fIrealm\fP argument is equivalent to the NULL string, then the
+realm of which the local host is a member, is used by default.
+If \fIlifetime\fP is equivalent to 0, then the default lifetime, 255, is
+used.
+If \fIsrvtab_file\fP is not equivalent to the NULL string, then the
+\fIsrvtab_file\fP parameter is used as the service table (srvtab) file 
+name and the
+default srvtab file is set equal to the \fIsrvtab_file\fP parameter.
+If \fIsrvtab_file\fP is equivalent to NULL, then the default srvtab
+file is used.  If the \fItkt_file\fP parameter is not equivalent to the
+NULL string, then the \fItkt_file\fP parameter is used as the ticket
+file name and the default ticket file is set equal to the
+\fItkt_file\fP parameter.  If the \fItkt_file\fP parameter is NULL, then the
+default ticket file value is used.
+.PP
+.PN krb_svc_init
+returns INT_OK if
+.PN krb_svc_init
+has successfully obtained a ticket-granting ticket.  The following is a list
+of most of the error values returned from
+.PN krb_svc_init
+and their possible cause:
+.TP 9
+KFAILURE
+The
+.PN /etc/krb.conf
+file (see
+.PN krb.conf(5krb) )
+cannot be opened or it is not properly
+formed, or
+.br
+The service table (srvtab) file does not exist, or
+.br
+A read of the srvtab file failed, or
+.br
+The srvtab file is badly formatted, or
+.br
+The srvtab file did not contain the key	of the principal
+with primary name, \fIuser\fP, or
+.br
+A write to the ticket file failed.
+.TP 9
+SKDC_CANT
+A Kerberos server must be contacted so that
+.PN krb_svc_init
+can perform its function, but
+the attempt cannot be made because a socket
+cannot be opened or bound, or
+there is no Kerberos server listed in 
+.PN /etc/krb.conf .
+.TP 9
+SKDC_RETRY
+A Kerberos server needs to be contacted, but 
+none responded even after several attempts.
+.TP 9
+INTK_PROT
+Kerberos protocol version mismatch.  The version of the
+Kerberos protocol supported by 
+.PN krb_svc_init
+does not match
+the Kerberos protocol version supported by the 
+.PN kerberos(8krb)
+daemon.
+.TP 9
+INTK_BADPW
+The ticket returned by the 
+.PN kerberos
+daemon did not decrypt
+correctly.  This is usually caused by an incorrect
+service password.
+.TP 9
+INTK_ERR
+The ticket sent from the 
+.PN kerberos
+daemon was not a ticket
+to communicate with the ticket-granting service, or
+.br
+The ticket file cannot be accessed, or
+.br
+The ticket file could not be created, or
+.br
+A write operation to the ticket file failed.
+.TP 9
+TKT_FIL_LCK
+The ticket file could not be locked for access.
+.sp 2 
+.IP krb_get_svc_in_tkt
+.PP
+For the principal with a primary name of \fIuser\fP, an instance name
+of \fIinstance\fP and a realm name of \fIrealm\fP, the 
+.PN krb_get_svc_in_tkt
+routine obtains a ticket to communicate with the principal that
+has a primary name of \fIservice\fP and an instance name of
+\fIservice_instance\fP.  The key of the requesting primary is read from
+the file \fIsrvtab_file\fP and the tickets are placed in the default
+ticket file.  If the \fIsrvtab_file\fP argument is equivalent to the
+NULL string, then the default srvtab file value is used instead
+of the \fIsrvtab_file\fP parameter.  The default srvtab file value and
+default ticket file value can be changed respectively by
+.PN krb_set_srvtab_sting
+and
+.PN krb_set_tkt_string .
+To obtain the
+ticket-granting ticket, the \fIservice\fP parameter must be set equal
+to "krbtgt" and the \fIservice_instance\fP argument must be set equal
+to the realm name of the local realm.
+.PP
+.PN krb_get_svc_in_tkt
+returns INT_OK if 
+.PN krb_get_svc_in_tkt
+has successfully obtained a ticket to communicate with principal, \fIservice\fP.
+The following is a list of most of the error values returned from
+.PN krb_get_svc_in_tkt
+and their possible causes:
+.TP 9
+KFAILURE
+The
+.PN /etc/krb.conf
+file cannot be opened or it is not properly
+.br
+formed, or
+.br
+A read of the service table (srvtab) file failed, or
+.br
+The srvtab file did not contain the key	of the principal
+with primary name, \fIuser\fP, or
+.br
+A write to the ticket file failed.
+.TP 9
+SKDC_CANT
+A Kerberos server must be contacted in order
+for
+.PN krb_svc_init
+to perform its function, but
+the attempt cannot be made because a socket
+cannot be opened or bound, or
+there is no Kerberos server listed in 
+.PN /etc/krb.conf .
+.TP 9
+SKDC_RETRY
+A Kerberos server needs to be contacted but
+none responded even after several attempts.
+.TP 9
+INTK_PROT
+Kerberos protocol version mismatch.  The version of the
+Kerberos protocol supported by 
+.PN krb_get_svc_in_tkt
+does not match
+the Kerberos protocol version supported by the 
+.PN kerberos
+daemon.
+.TP 9
+INTK_BADPW
+The ticket returned by the 
+.PN kerberos
+daemon did not decrypt
+correctly.  This is usually caused by an incorrect
+service password.
+.TP 9
+INTK_ERR
+The ticket sent from the 
+.PN kerberos
+daemon was not a ticket
+to communicate with the ticket-granting service, or
+.br
+The ticket file cannot be accessed, or
+.br
+The ticket file could not be created, or
+.br
+A write operation to the ticket file failed.
+.TP 9
+TKT_FIL_LCK
+The ticket file could not be locked for access.
+.sp 2 
+.IP krb_get_pw_in_tkt
+.PP
+For the principal with a primary name of \fIuser\fP, an instance name
+of \fIinstance\fP, and a realm name of \fIrealm\fP, 
+the
+.PN krb_get_pw_in_tkt
+routine
+obtains a ticket to communicate with the principal with a primary
+name of \fIservice\fP and an instance name of \fIservice_instance\fP.
+The key of
+the principal must be input either as the \fIpassword\fP parameter or,
+if the password field is equivalent to the NULL string, the password
+must be input from
+.PN stdin .
+.PP
+The tickets that are obtained are placed in the default ticket
+file.  The default ticket file can be changed by the
+.PN krb_set_tkt_string
+function.  To obtain the ticket-granting
+ticket, the \fIservice\fP parameter must be set equal to "krbtgt" and
+the \fIservice_instance\fP argument must be set equal to the realm name
+of the local realm.
+.PP
+.PN krb_get_pw_in_tkt
+returns INT_OK if 
+.PN krb_get_pw_in_tkt
+has
+successfully obtained a ticket to communicate with principal, \fIservice\fP.
+The following is a list of most of the error values returned from
+.PN krb_get_pw_in_tkt
+and their possible causes:
+.TP 9
+KFAILURE
+.PN /etc/krb.conf
+file cannot be opened or it is not properly
+formed.
+A write to the ticket file failed.
+.TP 9
+SKDC_CANT
+A Kerberos server must be contacted in order
+for 
+.PN krb_svc_init
+to perform its function but
+the attempt cannot be made because a socket
+cannot be opened or bound, or
+there is no Kerberos server listed in 
+.PN /etc/krb.conf .
+.TP 9
+SKDC_RETRY
+A Kerberos server needs to be contacted but
+none responded even after several attempts.
+.TP 9
+INTK_PROT
+Kerberos protocol version mismatch.  The version of the
+Kerberos protocol supported by 
+.PN krb_get_pw_in_tkt
+does not match
+the Kerberos protocol version supported by the 
+.PN kerberos
+daemon.
+.TP 9
+INTK_BADPW
+The ticket returned by the 
+.PN kerberos
+daemon did not decrypt
+correctly.  This is usually caused by an incorrect
+user password.
+.TP 9
+INTK_ERR
+The ticket sent from the 
+.PN kerberos
+daemon was not a ticket
+to communicate with the ticket-granting service, or
+.br
+The ticket file cannot be accessed, or
+.br
+The ticket file could not be created, or
+.br
+A write operation to the ticket file failed.
+.TP 9
+TKT_FIL_LCK
+The ticket file could not be locked for access.
+.SH See Also
+krb_get_lrealm(3krb), krb_set_tkt_string(3krb), kerberos(3krb),
+krb_sendauth(3krb), kerberos(8krb)

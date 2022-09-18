@@ -1,0 +1,43 @@
+.TH clrtobot 3cur 
+.SH Name
+clrtobot, wclrtobot \- clear to end of screen
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B
+int clrtobot(\|)
+.PP
+.B
+int wclrtobot(win)
+.br
+.B
+WINDOW \(**win;
+.SH Description
+.NXR "clrtobot macro"
+.NXR "wclrtobot subroutine"
+.PP
+The
+.PN clrtobot
+routine 
+begins at the current cursor position in the default window
+and changes the remainder of the
+screen to blanks. The current cursor position is also
+changed to a blank.
+.PP
+The 
+.PN wclrtobot
+routine
+begins at the current cursor position in the specified window
+and changes the rest of the screen to blanks, including the 
+current cursor position.
+.PP
+The routine
+.PN clrtobot
+is a macro.
+.SH Return Values
+The
+.PN clrtobot
+and
+.PN wclrtobot
+functions return OK on success and ERR on error.

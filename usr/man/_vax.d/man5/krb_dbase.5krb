@@ -1,0 +1,138 @@
+.TH krb_dbase 5krb
+.SH Name
+krb_dbase \- ASCII version of the Kerberos database 
+.SH Description
+.NXR "Kerberos files" "krb_dbase"
+All of the Kerberos tools, including
+the 
+.PN kerberos
+daemon, access a version of the Kerberos 
+database that is stored in
+an
+.PN ndbm \-formatted
+file.  See the
+.PN ndbm(3)
+reference page for more information.
+Files in 
+.PN ndbm
+format are not user readable.
+To examine the Kerberos database, it
+is necessary to convert the 
+.PN ndbm
+database into an ASCII-formatted file with
+.PN kdb_util(8krb) .
+A file in 
+.PN krb_dbase
+format is an ASCII-formatted version of the Kerberos database.
+.PP
+Each line in a 
+.PN krb_dbase \-formatted
+file lists the
+attributes associated with a single Kerberos principal.
+The following list describes the fields as they appear
+from left to right in a 
+.PN krb_dbase
+file.  A blank
+entry in the database is indicated by an asterisk (*).
+.sp 2 
+\fBKerberos primary name\fP:
+The primary name is the first part of the principal name
+that the line describes.  It is usually
+equivalent to the name of the application or user that is
+associated with	the principal.
+.PP
+\fBKerberos instance name\fP:
+The instance name is the second section of the principal name
+that the line describes.  It is usually
+equivalent to the name of the machine on which an application
+runs.  If the primary name references a user, the instance name is blank.
+.PP
+\fBMaximum ticket lifetime\fP:
+The third entry is the maximum lifetime of a ticket
+produced for the principal  by the ticket-granting service.  
+The number stored in
+the 
+.PN krb_dbase
+file indicates the number of 5-minute intervals
+for which the ticket is valid.  For example, if the maximum ticket
+lifetime of a principal is 10, any ticket that the principal
+acquires from the ticket-granting service will expire in a maximum of 
+50 minutes.  The maximum
+ticket lifetime corresponds to a value of 255 (21 hours
+and 15 minutes).
+.PP
+\fBKerberos database key version\fP:
+The master key of the Kerberos
+database is used to encrypt sections of the Kerberos database.
+This master key can be changed. 
+The fourth entry is the version number associated with the master
+key of the Kerberos database.  
+.PP
+\fBPrincipal key version\fP:
+The key associated with the principal can also change.
+The fifth field records the version number of
+the key associated with the principal.
+.PP
+\fBAttributes\fP:
+The attributes field is not currently used by the
+ULTRIX implementation of Kerberos.  It should always be zero.
+.PP
+\fBKey of the principal\fP:
+The key of the principal is stored in the seventh and eighth fields.
+It is encrypted with the master
+database key.
+.PP
+\fBExpiration time\fP:
+The date
+on which the 
+principal's entry in the Kerberos database will expire
+is stored in the ninth field.
+The
+first four digits of the date indicate the year in which the
+entry will expire. The next two digits indicate the month, 
+the seventh and eighth digits
+indicate the day, and the last four digits indicate the hour and
+minute at
+which the entry will expire.  For example, an entry
+of the form 198909171755 indicates that the principal's
+entry will expire on September 17, 1989 at 5:55 in the
+afternoon.
+.PP
+\fBModification time\fP:
+The modification field stores the date on which the
+principal's entry in the Kerberos database was last changed.
+It is stored in the same format as the expiration time.
+.PP
+\fBModifier's name\fP:
+The eleventh field stores the name of the utility
+that last modified the principal's entry.
+Only
+.PN db_creation
+and a blank
+entry are possible in the modifier's name field.  A blank entry
+indicates that the field was added by
+.PN kdb_edit(8krb) .
+A modifier name field that states that the entry was
+produced by 
+.PN db_creation
+indicates that the entry was added
+by 
+.PN kdb_init(8krb)
+when the database was created.
+.PP
+\fBModifier's instance\fP:
+The twelfth field indicates the instance of
+the utility that last modified the principal's entry.
+This field is always blank.
+.SH Examples
+The following is an example of an entry form of a
+.PN krb_dbase \-formatted
+file for host,
+.PN cactus .
+.EX (WIDE
+kprop cactus 255 2 1 0 8f68f19 a941c6d 200001010459 198909171755 * *
+.EE
+.SH Files
+.PN /var/dss/kerberos/dbase/dbase 
+.SH See Also
+ndbm(3), kdb_init(8krb), kdb_edit(8krb), kdb_destroy(8krb), kdb_util(8krb)

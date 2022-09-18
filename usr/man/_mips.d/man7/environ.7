@@ -1,0 +1,104 @@
+.\" SCCSID: @(#)environ.7	8.1	9/11/90
+.TH environ 7
+.SH Name
+environ \- user environment
+.SH Syntax
+.B extern char **environ;
+.SH Description
+.NXR "environ global variable"
+An array of strings, called the environment, is made available by
+.PN execve 
+when a process begins.  By convention, these strings have the form
+.RI `` name = value ''.
+.NXR "environment" "strings"
+The following names are used by various commands:
+.NXR "PATH string"
+.TP "\w'TERMCAP 'u"
+PATH
+The sequence of directory prefixes that
+.PN sh , 
+.PN time , 
+and 
+.PN nice 
+apply in searching for a file known by an incomplete path name.
+The prefixes are separated by a colon (:).
+The 
+.MS login 1 
+command sets 
+.PN PATH=:/usr/ucb:/bin:/usr/bin .
+.NXR "HOME string"
+.TP
+HOME
+A user's login directory, set by
+.PN login
+from the password file 
+.PN passwd .
+.NXR "TERM string"
+.TP
+TERM
+The kind of terminal for which output is to be prepared.
+This information is used by commands, such as 
+.PN nroff 
+or 
+.PN plot ,
+which may exploit special terminal capabilities.  See 
+.PN /etc/termcap
+in 
+.MS termcap 5 
+for a list of terminal types.
+.NXR "SHELL string"
+.TP
+SHELL
+The file name of the user's login shell.
+.NXR "TERMCAP string"
+.TP
+TERMCAP
+The string describing the terminal in TERM
+or the name of the termcap file.  For further information, see
+.MS termcap 5 
+and
+.MS termcap 3x .
+.NXR "EXINIT string"
+.TP
+EXINIT
+A startup list of commands read by 
+.PN ex , 
+.PN edit , 
+and 
+.PN vi .
+.NXR "USER string"
+.TP
+USER
+The login name of the user.
+.NXR "PRINTER string"
+.TP
+PRINTER
+The name of the default printer to be used by 
+.PN lpr , 
+.PN lpq ,
+and 
+.PN lprm .
+.PP
+Further names may be placed in the environment by the
+.PN export
+command and ``name=value'' arguments in 
+.PN sh , 
+or by the
+.PN setenv
+command if you use 
+.PN csh .
+Arguments can also be placed in the environment at the point of an
+.PN execve .
+It is unwise to conflict with certain 
+.PN sh 
+variables that are frequently exported by 
+.PN .profile 
+files:
+.PN MAIL ,
+.PN PS1 ,
+.PN PS2 ,
+and
+.PN IFS .
+.SH See Also
+csh(1), ex(1), login(1), sh(1), execve(2), system(3), termcap(3x),
+passwd(5), termcap(5)

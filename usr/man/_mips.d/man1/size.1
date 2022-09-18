@@ -1,0 +1,42 @@
+.TH size 1 RISC
+.SH Name
+size \- prints the section size of an object file
+.SH Syntax
+.B "size [-o -d -x -A -B -V] [ file1 ... filen ]"
+.SH Description
+The \fBsize\fR command
+prints information about the \fItext, rdata, data,
+sdata, bss\fR and
+\fIsbss\fR sections of each file.
+The file can be an object or an archive.
+If you do not specify a file, 
+\fBsize\fR uses 
+.I a.out
+as the default.
+.SH Options
+The
+.B \-o,
+.B \-x,
+and
+.B \-d
+options print the size in octal, hexadecimal, and decimal,
+respectively.
+.PP
+The
+.B \-A
+and
+.B \-B
+options specify AT&T System V style output or Berkeley (4.3BSD) 
+style output, respectively. 
+The version of UNIX running at your site determines the default.
+System V style, which is more verbose than Berkeley, dumps the  
+headers of each section.
+The Berkeley version prints size information for each
+section, regardless of whether the file exists, and prints the 
+total in hexadecimal and
+decimal.
+.PP
+The
+.B \-V
+option prints the version of \fBsize\fR that you are using.
+

@@ -1,0 +1,4 @@
+% Copyright (c) 1988 by DEC, Maynard, Mass.  All rights reserved.
+statusdict begin/defaultoutputpositioning where{pop
+defaultoutputpositioning{outputposition 1 add maxoutputposition 1 add mod
+setoutputposition}if}if end

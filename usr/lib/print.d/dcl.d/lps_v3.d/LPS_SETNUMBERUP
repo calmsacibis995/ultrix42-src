@@ -1,0 +1,79 @@
+%! LPS$$SETNUMBERUP device control library module
+% Version V1.2
+%
+% Copyright (c) 1987, 1988, 1989 by DEC, Maynard, Mass.  All rights reserved.
+% Patent Pending.
+
+/lps$page-layup-dict 150 dict def lps$page-layup-dict begin/N{cvx bind
+executeonly def}dup exec/e{exch def}N/d{exch cvi def}N/B{dup 3 1 roll N
+exec}N/a{{pop}repeat}N/t{1 add}N/c{1 sub}N/h{statusdict begin returnstatus
+end}N[/showpage/copypage/erasepage/initmatrix/initgraphics/initclip
+/currentmatrix/setmatrix/gsave/grestore/grestoreall/save/restore/nulldevice
+]/l e/r/b/f/g/i/j/k/m/n/o/p/q/s/u l{dup where{exch get}{pop null}ifelse
+def}forall statusdict begin/newsheet where{pop/newsheet load}{{}}ifelse/v e
+end[/11x17tray/a3tray/a4tray/a5tray/b4tray/b5tray/executivetray/ledgertray
+/legaltray/lettertray]/w e/x/y/z/A/C/D/E/F/G/H w{dup statusdict exch
+known{statusdict exch get def}{pop pop}ifelse}forall statusdict
+begin/setpapertray dup where{exch get}{pop{pop}}ifelse end/I e true/J e
+1/set-first-page{c/K d}B true/set-lines-around-pages{/L e}B
+true/set-firstside-alternates{/M e}B()/set-default-margin-flip{/O
+e}B/set-margin-flip{/P e false/Q e}N true/Q e 36 36 36 36/set-margins{/R
+e/S e/T e/U e}B 1/set-number-up{/V d}B true/set-orientation{/W
+e}B/set-page-grid{/X d/Y d true/Z e}N false/Z e(rd)/set-page-order{/# e}B
+612 792/set-page-size{/$ e/? e}B/set-pages-per-sheet{c/@ d}N 612
+792/set-sheet-size{/^ e/& e}B 0/* e .1/| e/!{/_ e -{S}{& R sub + sub}ifelse
+_ ;{: mod}{, idiv}ifelse - not{neg}if . W and{t}if + mul add `{^ U sub '
+sub}{T}ifelse _ ;{: idiv}{, mod}ifelse `{neg}if . W not and{t}if ' mul
+add}N/"{0 1 ~ c{gsave ! translate NN concat Ne dup scale matrix
+currentmatrix grestore}for}N matrix/Nd e matrix/NB e/Na{/Nt e/Nc e Nd m Nh
+Nc get NB invertmatrix Nd concatmatrix Nt copy}N/Nl{[/newpath load{{/moveto
+load}{/lineto load}{/curveto load}{/closepath load}pathforall}stopped{4 a
+mark 0 h}if]}N/Nr{cvx exec}N/Nb{true/Nf e L{Ng}if Ni ~ mod @ eq{j Nj u i
+false/Nf e Ni ~ idiv t ~ mul Nk mod}{Ni t}ifelse/Ni e M{Nm not/Nm
+e}if}N/Ng{j o Nj Nn newpath 0 0 No moveto ? 0 No lineto ? $ No lineto 0 $
+No lineto closepath p | setlinewidth stroke i}N/No{transform 2{1.000001 mul
+floor .5 add exch}repeat itransform}N/Np{J{Nb Nq}if Ns}N/Nu{J{@ 0 eq P()eq
+and{Ng s}{mark 8 h Ni Nb Nv}ifelse}if}N/Nq{J{j n Nn Nw 1 setgray fill
+i}if}N/Nx{Ny v Nz}N/NA{Nm}N/Nn{J{Nh Ni get k}{p}ifelse}N/Ns{o Nn
+NC}N/ND{J{Ni Nd Na NE Nd concatmatrix exch copy}{m}ifelse}N/NF{J{NE Nd
+invertmatrix Nd concatmatrix Nh Ni get Nd concatmatrix}if k}N/NC{Nl Nd m n
+Nn Nw clip k Nr}N 32 array/NG e 32 array/NH e/NI{NG 0 Ni put NH 0 J put
+1/NJ e}N/Nv{/Nc e Ni Nc ne{Nl clippath Nl Nc Nd Na Nh Ni get Nd
+concatmatrix k n Nr clip Nr}if}N/NK{NG NJ Ni put NH NJ J put NJ t/NJ e
+j}N/NL{i NJ 0 gt{NJ c/NJ e}if NH NJ get/J e NG NJ get Nv}N/NM{g 0/NJ e NH
+NJ get/J e NG 0 get Nv}N/NO{NH NJ J put f NI}N/NP{NG 0 get Ni Nf Nm 5 4
+roll b/Nm e/Nf e/Ni e NH NJ get/J e Nv}N/NQ{r false/J e}N/NR{$ mul exch ?
+mul exch 2 copy gt NS NT gt xor dup 4 1 roll{NS exch div exch NT exch
+div}{NT exch div exch NS exch div exch}ifelse 2 copy lt{pop true}{exch pop
+false}ifelse}N/NU{0/Ne e V/NV e{0/NW e 1 1 NV{dup NV exch div dup dup floor
+eq{2 copy NR exch dup NW gt{dup/NW e dup Ne gt{/Ne e/NX e dup/. e{exch}if/,
+d/: d NV/~ e}{5 a}ifelse}{5 a}ifelse}{2 a}ifelse}for ? NW mul $ NW mul mul
+NV mul NS NT mul div .75 gt{exit}if NV t/NV e}loop}N/do-page-layup{matrix
+currentmatrix/NE e/Nj[currenttransfer/settransfer cvx]N & S sub R sub/NS e
+^ U sub T sub/NT e NS 0 lt NT 0 lt or{mark 26 returnstatus stop}if NS NT
+mul 1 lt{mark 18 returnstatus stop}if Z{Y X W not{exch}if 2 copy NR/NX e/Ne
+e/. e .{exch}if/, e/: e : , mul dup/~ e/V e}{NU}ifelse/@ where{pop}{V c/@
+e}ifelse @ V ge{mark 32 returnstatus V c/@ e}if K @ gt{mark 40 returnstatus
+0/K e}if(rd7 ru6 ld5 lu4 dr3 ur2 dl1 ul0)# search{2 a token{exch pop/NY
+e}if}if . W xor not{[5 7 4 6 1 3 0 2]NY get/NY e}if NY 1 and 0 ne/` e NY 2
+and 0 ne/- e NY 4 and 0 ne/; e Q{O/P e}if ? $ .{exch}if , mul/NZ e : mul/N0
+e NX{NT NZ Ne mul sub 2 div dup U add/U e T add/T e}{NS N0 Ne mul sub 2 div
+dup S add/S e R add/R e}ifelse ? Ne mul $ Ne mul .{exch}if/' e/+ e[.{W{0 1
+-1 0}{0 -1 1 0}ifelse}{1 0 0 1}ifelse 0 0]/NN e[" P(t)search{3 a U T/U e/T
+e true}{pop false}ifelse P(l)search{3 a S R/S e/R e true}{pop false}ifelse
+or{"}if]dup length/Nk e/Nh e 1 1 idtransform abs exch abs 2 copy lt{exch}if
+pop | 2 div add Ne div * 2 copy lt{exch}if pop/* e Nz save/N1 e
+NI}N/Nz{K/Ni e false/Nf e true/Nm e Ns}N/Nw{newpath 0 0 No * add exch * add
+exch moveto ? 0 No * add exch * sub exch lineto ? $ No * sub exch * sub
+exch lineto 0 $ No * sub exch * add exch lineto closepath}N/flush-pages{Ny
+Nz}N/Ny{Nf{Nj Nq u}if}N statusdict maxlength dict dup/N2 e begin
+statusdict{def}forall/setpapertray{//lps$page-layup-dict begin @ 0
+eq{I}{pop mark 48 returnstatus}ifelse Ns Nq end}/setpapertray where{pop
+N}{pop pop}ifelse/x/y/z/A/C/D/E/F/G/H w{{//lps$page-layup-dict begin @ 0 eq
+0{mark 48 returnstatus}ifelse Ns Nq end}dup length array copy dup 5 5 4
+roll cvx 1 array astore cvx put 1 index where{pop N}{pop pop}ifelse}forall
+end/N3{{//lps$page-layup-dict begin 0 end}4 array copy dup 2 5 4 roll cvx
+put N}N l length t dict/plu-hooks e plu-hooks begin N2/statusdict
+e/NQ/NP/NO/NM/NL/NK/NF/ND/NC/Ns/Nn/Nq/Nu/Np l{N3}forall end N2
+begin/Nx/newsheet N3/NA/firstside N3 end cvi set-number-up
+end/lps$page-layup? true def

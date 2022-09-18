@@ -1,0 +1,78 @@
+.\" SCCSID: @(#)chdir.2	8.1	9/11/90
+.TH chdir 2
+.SH Name
+chdir \- change working directory
+.SH Syntax
+.nf
+chdir(\fIpath\fP)
+.br
+char *\fIpath;\fP
+.fi
+.SH Description
+.NXR "chdir system call" 
+.NXA "chdir system call" "chroot system call"
+.NXR "working directory" "changing"
+The
+.I path
+is the pathname of a directory.  The
+.PN chdir
+system call causes this directory
+to become the current working directory, which is
+the starting point for pathnames that do not begin at the root directory
+(/). 
+.PP
+For a directory to become the current directory,
+the process must have execute (search) access to the directory.
+.SH Return Values
+Upon successful completion, a value of 0 is returned.
+Otherwise, a value of \-1 is returned and \fIerrno\fP is set to indicate
+the error.
+.SH Environment
+Differs from the System V definition in that ELOOP is a 
+possible error condition.
+.SH Diagnostics
+The
+.PN chdir
+system call
+fails and the current working directory is unchanged under the following
+conditions:
+.TP 15
+[ENOTDIR]
+A component of the pathname is not a directory.
+.TP 15
+[ENAMETOOLONG]
+A component of a pathname exceeds 255 characters, or
+an entire path name exceeds 1023 characters.
+.TP 15
+[ENOENT]
+The named directory does not exist or the path points to an
+empty string and the environment defined is POSIX or SYSTEM_FIVE.
+.TP 15
+[EACCES]
+Search permission is denied for any component of
+the path name.
+.TP 15
+[EFAULT]
+The
+.I path
+points outside the process's allocated address space.
+.TP 15
+[ELOOP]
+Too many symbolic links were encountered in translating
+the pathname.
+.TP 15
+[EIO]
+An I/O error occurred while reading from or writing to the file
+system.
+.TP 15
+[ESTALE]
+The file handle given in the argument was invalid.  The file 
+referred to by that file handle no longer exists or has been revoked.
+.TP 15
+[ETIMEDOUT]
+A connect request or remote file operation failed
+because the connected party
+did not properly respond after a period
+of time that is dependent on the communications protocol.
+.SH See Also
+chroot(2)

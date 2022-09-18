@@ -1,0 +1,172 @@
+.TH exp 3m RISC
+.ds nn \fINaN\fR
+.ds up \fIulp\fR
+.SH Name
+exp, expm1, log, log10, log1p, pow \- exponential, logarithm, power
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double exp(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float fexp(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double expm1(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float fexpm1(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double log(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float flog(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double log10(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float flog10(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double log1p(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float flog1p(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double pow(\fIx,y\fP)
+.B double \fIx,y\fP;
+.fi
+.SH Description
+.NXR "exp function"
+.NXR "fexp function"
+.NXR "expm1 function"
+.NXR "fexpm1 function"
+.NXR "log function"
+.NXR "flog function"
+.NXR "log10 function"
+.NXR "flog10 function"
+.NXR "log1p function"
+.NXR "flog1p function"
+.PP
+The 
+.PN exp
+and 
+.PN fexp
+functions return the exponential function of \fIx\fP
+for double and float data types, respectively.
+.PP
+The 
+.PN expm1 
+and 
+.PN fexpm1
+functions return exp(\fIx\fP\)-1 accurately, including tiny \fIx\fP for double
+and float data types, respectively.
+.PP
+The
+.PN log
+and
+.PN flog
+functions return the natural logarithm of \fIx\fP
+for double and float data types, respectively.
+.PP
+The 
+.PN log10
+and 
+.PN flog10
+functions return the logarithm of \fIx\fP to base 10
+for double and float data types, respectively.
+.PP
+The 
+.PN log1p
+and
+.PN flog1p
+functions return log(1+\fIx\fP) accurately, including tiny \fIx\fP
+for double and float data types, respectively.
+.PP
+The
+.PN pow
+function returns 
+.I x**y.
+.NXR "pow function"
+.SS Error (due to roundoff) 
+The 
+.PN exp ,
+.PN log ,
+.PN expm1 ,
+and 
+.PN log1p
+functions are accurate to within 
+an \*(up, and 
+.PN log10 
+is accurate to within approximately 2 \*(ups;
+an \*(up is one \fIU\fRnit in the \fIL\fRast \fIP\fRlace.
+.PP
+The 
+.PN pow
+function is accurate to within 2 \*(ups when its
+magnitude is moderate, but becomes less accurate as the 
+.PN pow 
+result approaches the overflow or underflow thresholds. 
+Theoretically, as these thresholds are approached, almost as many bits
+could be lost from the result as are indicated in the exponent field of
+the floating-point format for the resultant number.  In other words, up
+to 11 bits for an IEEE 754 double-precision floating-point number.  
+However, testing has never verified loss of precision as drastic as 11
+bits.  The worst cases have shown accuracy of results to within 
+300 \*(ups for IEEE 754 double-precision floating-point numbers.  In
+general, a
+.PN pow
+(integer, integer) result is exact until it is larger than 2**53
+(for IEEE 754 double-precision floating-point).
+.SH Return Values
+All of the double precision functions return \*(nn if
+.I x
+or
+.I y
+is \*(nn.
+.PP
+The 
+.PN exp
+function returns HUGE_VAL when the correct value would overflow,
+and zero when the correct value would underflow.
+.PP
+The 
+.PN log
+and
+.PN log10
+functions 
+return \*(nn when
+.I x
+is less than or equal to zero or when the correct value would overflow.
+.PP
+The
+.PN pow
+function returns \*(nn if
+.I x
+or
+.I y
+is \*(nn.  When both
+.I x
+and
+.I y
+are zero, 1.0 is returned.  When
+.I x
+is negative and
+.I y
+is not an integer, \*(nn is returned.  If
+.I x
+is zero and
+.I y
+is negative, -HUGE_VAL is returned.
+.PP
+The
+.PN sqrt
+function returns \*(nn when
+.I x
+is negative.
+.SH See Also
+math(3m)

@@ -1,0 +1,157 @@
+.\" Copyright (C) BULL, Digital Equipment Co., SIEMENS 1986,1987,1988
+.\" SCCSID: @(#)iconv.1	19.1 89/01/19
+.TH iconv 1
+.SH Name 
+iconv \- international codeset conversion
+.SH Syntax
+.B iconv
+[\fB\-d\fR] \fB-f\fR \fIfromcodeset\fR \fB-t\fR \fItocodeset\fR [\fIfile...\fR]
+.br
+.SH Description
+The
+.PN iconv
+command converts the encoding of characters in its input
+from one codeset to another codeset.  The \fIfromcodeset\fP
+argument specifies the codeset used to encode the data in the input;
+that is, it specifies the input codeset.  The \fItocodeset\fP
+argument specifies the codeset to which you want the input data 
+converted; that is, it specifies the output codeset.
+The 
+.PN iconv
+command performs the conversion by reading rules from a
+conversion table you
+create.  The command reads its input from standard input or from one or more 
+files named on the command line.
+The command writes its output to standard output.
+.PP
+You define conversion rules in a
+conversion table. The conversion rules specify how 
+.PN iconv
+converts a particular character 
+or group of characters, which are called tokens. 
+The conversion table is a text file that contains two lists.
+In the left-hand list, you specify each token you want 
+.PN iconv
+to convert.  In the right-hand list, you specify the token you want
+.PN iconv
+to create in the output file. For example, if you issued the following 
+command:
+.EX
+% iconv \-fupper \-tlower conversion_file
+.EE
+.PP
+This command uses the conversion table located in the file 
+.PN /usr/lib/intln/conv/upper_lower , 
+that specifies how to convert from an uppercase codeset to a lowercase 
+codeset. The following shows part of the conversion table: 
+.EX 0
+#
+# Converts from uppercase to lowercase
+#
+#	Input token		Output token
+#	-------------		------------------
+	     A				a
+	     B				b
+	     C				c
+	     D				d
+	     E				e
+	     F				f
+	     G				g
+          .
+          .
+          .
+	     Z				z
+#
+# Convert tabs to spaces using octal
+#
+	    \\011		       \\040\\040\\040
+#
+# Convert the A umlaut to lowercase
+#
+             A\(..                        a\(..
+.EE
+.PP
+Each line in the conversion table must contain two strings, an input token and
+an output token.  The tokens must be delimited with spaces or tabs.
+The backslash
+character ( \\\ ) either causes the 
+.PN iconv
+command to recognize a character it normally ignores or introduces
+a three digit octal constant.  All octal constants in the conversion
+table must contain three digits.  
+Lines that begin with a hash symbol (#) are comments.
+The 
+.PN iconv 
+command ignores comment lines and blank lines.  
+.PP
+You name the conversion table file using the name of the input
+codeset, an underscore, and the name of the output codeset.
+For example, if your input codeset is ISO646 and your output codeset is 
+ISO8859, you might name the conversion table file
+.PN 646_8859 .
+.PP
+The 
+.PN iconv
+command searches for the conversion table file in the directory specified by
+the 
+.PN ${ICONV}/conv
+pathname.
+If the ${ICONV} environment variable is undefined,
+the 
+.PN iconv
+command searches the 
+.PN /usr/lib/intln/conv
+directory. 
+.PP
+The operation of the 
+.PN iconv
+command is 8-bit transparent.
+.SH Options
+.IP \fB\-d\fR 0.3i
+Deletes any characters that are omitted from the conversion table.
+By default, the
+.PN iconv
+command sends characters that are omitted to the output file without 
+modifying them.
+.IP \fB\-f\fR 0.3i
+Specifies the name of the input codeset.
+.IP \fB\-t\fR 0.3i
+Specifies the name of the output codeset.
+.SH Restrictions  
+The conversion table file name can contain no more than 255 characters.
+You may need to truncate the name of the input codeset or output codeset 
+when you name the conversion table file.
+.SH Examples 
+The following shows an example of using the 
+.PN iconv
+command:
+.EX 0
+.UI "% " "iconv \-f646 \-t8859 mydatafile > newdatafile"
+.EE
+.PP
+This command converts the data in
+.PN mydatafile
+from ISO646 encoding to ISO8859
+encoding.  The 
+.PN iconv 
+command reads the conversion table from the 
+.PN ${ICONV}/conv/646_8859
+file.  If the ${ICONV} environment variable is undefined, the
+.PN iconv
+command uses the
+.PN /usr/lib/intln/conv/646_8859 
+file. If that file does not exist, the 
+.PN iconv
+command issues an error message and does not convert the data file.
+The 
+.PN iconv
+command writes the results  of any conversion it performs to the file
+.PN newdatafile
+.SH Files
+.PN /usr/lib/conv/\fIfromcodeset_tocodeset\fP
+.br
+.PN ${ICONV}/conv/\fIfromcodeset_tocodeset\fP
+.SH See Also
+environ(5int) 
+.br
+\fIGuide to Developing International Software\fP

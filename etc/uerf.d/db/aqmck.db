@@ -1,0 +1,264 @@
+# @(#)aqmck.db	4.2   (ULTRIX)   10/10/90
+
+sseg
+id cds
+name MCK9000_CDS
+doc "9000 machine check cds"
+label "MCK INFO"
+elements
+	mck9000_length mck9000_type mck9000_id mck9000_err_summ
+	mck9000_sys_summ mck9000_vaddr mck9000_paddr mck9000_misc_info
+	mck9000_pc psl vec_vpsr
+
+sitem
+name mck9000_length
+size 1
+type long
+class integer
+display decimal
+label "LENGTH"
+
+sitem
+name mck9000_type
+size 1
+type register
+class composite
+display nil
+label "TYPE"
+map
+	field
+size 1
+class coded
+map
+	0 "EBOX generated machine check"
+	1 "SPU generated machine check"
+
+
+sitem
+name mck9000_id
+size 1
+type long
+class integer
+display decimal
+label "mchkid"
+
+sitem
+name mck9000_err_summ
+size 1
+type long
+class integer
+display hex
+label "ERR SUMM"
+map
+	field
+size 1
+class coded
+map
+	1 "SOLID"
+	field
+size 1
+class coded
+map
+	1 "mem mod"
+	field
+size 1
+class coded
+map
+	1 "reg mod"
+	field
+size 1
+class coded
+map
+	1 "I/O ref"
+	field
+size 1
+class coded
+map
+	1 "fpd"
+	field
+size 1
+class coded
+map
+	1 "reg pe"
+	field
+size 2
+class filler
+	field
+size 1
+class coded
+map
+	1 "spare"
+	field
+size 1
+class coded
+map
+	1 "spare"
+	field
+size 1
+class coded
+map
+	1 "rsvd"
+	field
+size 5
+class filler
+	field
+size 1
+class coded
+map
+	1 "mb pend wrt"
+	field
+size 1
+class coded
+map
+	1 "mb addr flt"
+	field
+size 1
+class coded
+map
+	1 "mb data flt"
+	field
+size 1
+class coded
+map
+	1 "mb wrtbck flt"
+	field
+size 1
+class coded
+map
+	1 "ib pend gpr"
+	field
+size 1
+class coded
+map
+	1 "ib lost pc"
+	field
+size 1
+class coded
+map
+	1 "rds"
+	field
+size 1
+class coded
+map
+	1 "bad data flag"
+	field
+size 1
+class coded
+map
+	1 "vbox abort"
+	field
+size 1
+class coded
+map
+	1 "vbox reg pe"
+	field
+size 4
+class filler
+	field
+size 1
+class coded
+map
+	1 "error insertion in progress"
+	field
+size 1
+class coded
+map
+	1 "spare"
+
+sitem
+name mck9000_sys_summ
+size 1
+type register
+class composite
+display nil
+label "SYS SUMM"
+map
+	field
+size 4
+class integer
+display hex
+label "mbox"
+	field
+size 4
+class integer
+display hex
+label "ibox"
+	field
+size 4
+class integer
+display hex
+label "ebox"
+	field
+size 4
+class integer
+display hex
+label "vbox"
+	field
+size 2
+class integer
+display hex
+label "mem"
+	field
+size 1
+class integer
+display hex
+label "scu"
+
+sitem
+name mck9000_vaddr
+size 1
+type long
+class integer
+display hex
+label "virtual addr"
+
+sitem
+name mck9000_paddr
+size 1
+type long
+class integer
+display hex
+label "physical addr"
+
+sitem
+name mck9000_misc_info
+size 1
+type register
+class composite
+display nil
+label "misc info"
+map
+	field
+size 2
+class integer 
+display hex
+label "PA<33:32>"
+	field
+size 1
+class coded 
+map
+	1	"PA VALID"
+	field
+size 1
+class coded 
+map
+	1	"VA VALID"
+	field
+size 11
+class integer 
+display hex
+label "REGISTER NUMBER"
+	field
+size 1
+class coded 
+map
+	1	"REGISTER NUMBER VALID"
+
+sitem
+name mck9000_pc
+size 1
+type long
+class integer
+display hex
+label "PC"
+

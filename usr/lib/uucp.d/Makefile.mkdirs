@@ -1,0 +1,181 @@
+# @(#)Makefile.mkdirs	4.1 (ULTRIX) 7/2/90 
+#
+# This makefile is needed by uucpsetup to make the appropriate
+# directories (mkdirs).
+#
+OWNER=uucp
+GROUP=daemon
+#
+#
+########################################################################
+
+INSDIR=${DESTROOT}/usr/var/uucp
+BIN=${DESTROOT}/usr/bin
+MYPATH=
+SPOOLBASE=${DESTROOT}/usr/var/spool
+PUBDIR=${DESTROOT}/usr/var/spool/uucppublic
+SPOOL=${DESTROOT}/usr/var/spool/uucp
+XQTDIR=${DESTROOT}/usr/var/spool/uucp/.XQTDIR
+OLDLOG=${DESTROOT}/usr/var/uucp/.OLD
+DISTRIB= L-devices L-dialcodes L.cmds L.sys LIST.DAY \
+	LIST.HOUR LIST.LONGHALL LIST.NOON LIST.NIGHT L_stat Makefile \
+	README USERFILE uucp.day uucp.hour uucp.longhall \
+	uucp.night uucp.noon uucp.week
+
+restore:
+	-chmod u+w $(BIN)/uucp
+	-mv $(BIN)/OLDuucp $(BIN)/uucp
+	/etc/chown $(OWNER) $(BIN)/uucp
+	chmod 4111 $(BIN)/uucp
+	-chmod u+w $(BIN)/uux
+	-mv $(BIN)/OLDuux $(BIN)/uux
+	/etc/chown $(OWNER) $(BIN)/uux
+	chmod 4111 $(BIN)/uux
+	-chmod u+w $(INSDIR)/uuxqt
+	-mv $(INSDIR)/OLDuuxqt $(INSDIR)/uuxqt
+	/etc/chown $(OWNER) $(INSDIR)/uuxqt
+	chmod 4111 $(INSDIR)/uuxqt
+	-chmod u+w $(INSDIR)/uucico
+	-mv $(INSDIR)/OLDuucico $(INSDIR)/uucico
+	/etc/chown $(OWNER) $(INSDIR)/uucico
+	chmod 4111 $(INSDIR)/uucico
+	-chmod u+w $(BIN)/uulog
+	-mv $(BIN)/OLDuulog $(BIN)/uulog
+	/etc/chown $(OWNER) $(BIN)/uulog
+	chmod 4111 $(BIN)/uulog
+	-chmod u+w $(INSDIR)/uuclean
+	-mv $(INSDIR)/OLDuuclean $(INSDIR)/uuclean
+	/etc/chown $(OWNER) $(INSDIR)/uuclean
+	chmod 4111 $(INSDIR)/uuclean
+	-chmod u+w $(BIN)/uupoll
+	-mv $(BIN)/OLDuupoll $(BIN)/uupoll
+	chown $(OWNER) $(BIN)/uupoll
+	chmod 4111 $(BIN)/uupoll
+	-chmod u+w $(BIN)/uudecode
+	-mv $(BIN)/OLDuudecode $(BIN)/uudecode
+	chown $(OWNER) $(BIN)/uudecode
+	chmod 111 $(BIN)/uudecode
+	-chmod u+w $(BIN)/uuencode
+	-mv $(BIN)/OLDuuencode $(BIN)/uuencode
+	chown $(OWNER) $(BIN)/uuencode
+	chmod 111 $(BIN)/uuencode
+	-chmod u+w $(BIN)/uusend
+	-mv $(BIN)/OLDuusend $(BIN)/uusend
+	chown $(OWNER) $(BIN)/uusend
+	chmod 4111 $(BIN)/uusend
+	rm -f $(BIN)/ruusend
+	ln $(BIN)/uusend $(BIN)/ruusend
+	-chmod u+w $(BIN)/uuname
+	-mv $(BIN)/OLDuuname $(BIN)/uuname
+	/etc/chown $(OWNER) $(BIN)/uuname
+	chmod 4111 $(BIN)/uuname
+	-chmod u+w $(BIN)/uustat
+	-mv $(BIN)/OLDuustat $(BIN)/uustat
+	/etc/chown $(OWNER) $(BIN)/uustat
+	chmod 4111 $(BIN)/uustat
+	-chmod u+w $(INSDIR)/uusub
+	-mv $(INSDIR)/OLDuusub $(INSDIR)/uusub
+	chmod 100 $(INSDIR)/uusub
+	/etc/chown $(OWNER) $(INSDIR)/uusub
+	-chmod u+w $(INSDIR)/uumonitor
+	-mv $(INSDIR)/OLDuumonitor $(INSDIR)/uumonitor
+	chmod 04111 $(INSDIR)/uumonitor
+	/etc/chown $(OWNER) $(INSDIR)/uumonitor
+	-chmod u+w $(INSDIR)/uumkspool
+	-mv $(INSDIR)/OLDuumkspool $(INSDIR)/uumkspool
+	chmod 04111 $(INSDIR)/uumkspool
+	/etc/chown $(OWNER) $(INSDIR)/uumkspool
+	-chmod u+w $(INSDIR)/uurespool
+	-mv $(INSDIR)/OLDuurespool $(INSDIR)/uurespool
+	chmod 04111 $(INSDIR)/uurespool
+	/etc/chown $(OWNER) $(INSDIR)/uurespool
+	-chmod u+w $(INSDIR)/uucompact
+	-mv $(INSDIR)/OLDuucompact $(INSDIR)/uucompact
+	chmod 04111 $(INSDIR)/uucompact
+	/etc/chown $(OWNER) $(INSDIR)/uucompact
+
+
+mkdirs:
+	@-if [ ! -d ${SPOOLBASE} ] ;\
+	then \
+		mkdir ${SPOOLBASE}; \
+		/etc/chown root ${SPOOLBASE}; \
+		chgrp system ${SPOOLBASE}; \
+		chmod 0755 ${SPOOLBASE}; \
+	else true; \
+	fi
+	@-if [ ! -d ${INSDIR} ] ;\
+	then \
+		mkdir ${INSDIR}; \
+		/etc/chown root ${INSDIR}; \
+		chgrp system ${INSDIR}; \
+		chmod 0755 ${INSDIR}; \
+	else true; \
+	fi
+	@-if [ ! -d ${SPOOL} ] ;\
+	then \
+		mkdir ${SPOOL}; \
+		/etc/chown ${OWNER} ${SPOOL}; \
+		chgrp ${GROUP} ${SPOOL}; \
+		chmod 0777 ${SPOOL}; \
+	else true; \
+	fi
+	@-if [ ! -d ${SPOOL}/sys ] ;\
+	then \
+		mkdir ${SPOOL}/sys; \
+		/etc/chown ${OWNER} ${SPOOL}/sys; \
+		chgrp ${GROUP} ${SPOOL}/sys; \
+		chmod 0755 ${SPOOL}/sys; \
+	else true; \
+	fi
+	-./uumkspool DEFAULT
+	@-if [ ! -d ${SPOOL}/TM. ] ;\
+	then \
+		mkdir ${SPOOL}/TM.; \
+		/etc/chown ${OWNER} ${SPOOL}/TM.; \
+		chgrp ${GROUP} ${SPOOL}/TM.; \
+		chmod 0755 ${SPOOL}/TM.; \
+	else true; \
+	fi
+	@-if [ ! -d ${SPOOL}/STST. ] ;\
+	then \
+		mkdir ${SPOOL}/STST.; \
+		/etc/chown ${OWNER} ${SPOOL}/STST.; \
+		chgrp ${GROUP} ${SPOOL}/STST.; \
+		chmod 0755 ${SPOOL}/STST.; \
+	else true; \
+	fi
+	@-if [ ! -d ${PUBDIR} ] ;\
+	then \
+		mkdir ${PUBDIR}; \
+		/etc/chown ${OWNER} ${PUBDIR}; \
+		chgrp ${GROUP} ${PUBDIR}; \
+		chmod 0777 ${PUBDIR}; \
+	else true; \
+	fi
+	@-if [ ! -d ${XQTDIR} ] ;\
+	then \
+		mkdir ${XQTDIR}; \
+		/etc/chown ${OWNER} ${XQTDIR}; \
+		chgrp ${GROUP} ${XQTDIR}; \
+		chmod 0755 ${XQTDIR}; \
+	else true; \
+	fi
+	-rm -rf ${DESTROOT}/usr/lib/uucp
+	-ln -s ../var/uucp ${DESTROOT}/usr/lib/uucp
+#	-mkdir $(OLDLOG)
+#	chmod 777 $(OLDLOG)
+#	/etc/chown $(OWNER) $(OLDLOG)
+#	chgrp $(GROUP) $(OLDLOG)
+
+
+text:
+	for i in ${DISTRIB}; do \
+	install -c ../$$i ${INSDIR}/$$i; done
+	install -c -m 644 -o ${OWNER} -g ${GROUP} /dev/null ${SPOOL}/ERRLOG
+	install -c -m 644 -o ${OWNER} -g ${GROUP} /dev/null ${SPOOL}/LOGFILE
+	install -c -m 644 -o ${OWNER} -g ${GROUP} /dev/null ${PUBDIR}/.hushlogin
+	install -c -m 644 -o ${OWNER} -g ${GROUP} /dev/null ${INSDIR}/INSECURE
+	install -c -m 644 -o ${OWNER} -g ${GROUP} /dev/null ${INSDIR}/R_stat
+
+

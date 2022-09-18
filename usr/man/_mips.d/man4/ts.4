@@ -1,0 +1,47 @@
+.\" SCCSID: @(#)ts.4	8.2	1/24/91
+.TH ts 4
+.SH Name
+ts \- TS11/TS05/TU80 magnetic tape interface
+.SH Syntax
+.B "controller zs0 at uba? csr 0172520 vector tsintr"
+.br
+.B "tape ts0 at zs0 drive 0"
+.SH Description
+.NXS "ts interface" "TS11 magnetic tape interface"
+.NXS "ts interface" "TS05 magnetic tape interface"
+.NXS "ts interface" "TU80 magnetic tape interface"
+.NXR "TS11 magnetic tape interface"
+.NXR "TS05 magnetic tape interface"
+.NXR "TU80 magnetic tape interface"
+The TS11 combination provides a standard tape drive
+interface as described in
+.MS mtio 4 .
+The TS11 operates only at 1600 bpi, and only one transport
+is possible per controller.
+.SH Diagnostics
+.B "ts%d: no write ring"
+.br
+An attempt was made to write on the tape drive
+when no write ring was present.
+This message is written on the terminal of
+the user who tried to access the tape.
+.PP
+.B "ts%d: not online"
+.br
+An attempt was made to access the tape while it
+was off line.
+This message is written on the terminal of the user
+who tried to access the tape.
+.PP
+.B "ts%d: hard error bn%d"
+.br
+A hard error occurred on the tape at block \fIbn\fR.
+Additional register information may be gathered from
+the system error log file,
+.PN /usr/adm/syserr/syserr.<hostname>.
+.SH Files
+.PN /dev/rmt???
+.br
+.PN /dev/nrmt???
+.SH See Also
+mtio(4), nbuf(4), MAKEDEV(8), uerf(8)

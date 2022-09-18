@@ -1,0 +1,59 @@
+.TH socket_family_to_name 3ncs
+.SH Name
+socket_family_to_name \- convert an integer address family to a textual name
+.SH Syntax
+#include <idl/c/socket.h>
+
+void socket_$family_to_name(\fIfamily, name, nlength, status\fP)
+.nf
+unsigned long \fIfamily\fP;
+socket_$string_t \fIname\fP;
+unsigned long *\fInlength\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/socket.ins.pas'\fR
+.\"
+.\"\fBprocedure socket_$family_to_name(\fR
+.\"	\fBin \fIfamily\fB: unsigned32;\fR
+.\"	\fBout \fIname\fB: socket_$string_t;\fR
+.\"	\fBin out \fInlength\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIfamily\fR
+The integer representation of an address family.
+.TP 20
+\fIname\fR
+The textual name of \fIfamily\fR.  Currently, only \fBip\fR is
+supported.
+.TP 20
+\fInlength\fR
+On input, the maximum length, in bytes, of the name to be returned.
+On output, the actual length of the returned name.
+.TP 20
+\fIstatus\fR
+The completion status. If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN socket_$family_to_name
+routine converts the integer representation of an address family to
+a textual name for the family.
+.NXR "Operations on Socket Addresses" "socket_family_to_name"
+.ig
+.SH External Variables
+This section describes external variables used in \fBsocket_$\fR routines.
+.TP 20
+..
+.SH Files
+.PN /usr/include/idl/socket.idl
+.br
+.PN /usr/include/idl/c/socket.h
+.SH See Also
+intro(3ncs)

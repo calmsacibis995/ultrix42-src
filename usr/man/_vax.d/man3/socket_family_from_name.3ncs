@@ -1,0 +1,69 @@
+.TH socket_family_from_name 3ncs
+.SH Name
+socket_family_from_name \- convert an address family name to an integer
+.SH Syntax
+#include <idl/c/socket.h>
+
+unsigned long socket_$family_from_name(\fIname, nlength, status\fP)
+.nf
+socket_$string_t \fIname\fP;
+unsigned long \fInlength\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/socket.ins.pas'\fR
+.\"
+.\"\fBfunction socket_$family_from_name(\fR
+.\"	\fBin \fIname\fB: socket_$string_t;\fR
+.\"	\fBin \fInlength\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t): unsigned32;\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIname\fR
+The textual name of an address family.
+Currently, only \fBip\fR is supported.
+.TP 20
+\fInlength\fR
+The length, in bytes, of \fIname\fR.
+.TP 20
+\fIstatus\fR
+The completion status. If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful. 
+.SH Description
+The 
+.PN socket_$family_from_name
+routine returns the integer representation of
+the address family specified in the text string \fIname\fR.
+.NXR "Operations on Socket Addresses" "socket_family_from_name"
+.ig
+.SH External Variables
+This section describes external variables used in this \fBsocket_$\fR routine.
+.TP 20
+..
+.SH Examples
+The server program for the banks example, 
+.PN /usr/examples/banks/bankd.c
+accepts a textual family name as its first argument.  The program uses
+the following
+.PN socket_$family_from_name
+routine to convert this name to the corresponding integer
+representation:
+.EX
+family = socket_$family_from_name
+              (argv[1], (long)strlen(argv[1]), &status);
+.EE
+.ig
+.SH Status Codes
+This section lists status codes for errors returned by \fBsocket_$\fR routines.
+..
+.SH Files
+.PN /usr/include/idl/socket.idl
+.br
+.PN /usr/include/idl/c/socket.h
+.SH See Also
+intro(3ncs), socket_family_to_name(3ncs), socket_from_name(3ncs), socket_to_name(3ncs)

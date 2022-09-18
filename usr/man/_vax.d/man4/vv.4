@@ -1,0 +1,85 @@
+.\" SCCSID: @(#)vv.4	8.1	9/11/90
+.TH vv 4 VAX "" Unsupported
+.SH Name
+vv \- Proteon proNET 10 Megabit ring
+.SH Syntax
+.B "device vv0 at uba0 csr 0161000 vector vvrint vvxint"
+.SH Description
+The
+.PN vv
+interface provides access to a 10 Mb/s Proteon proNET ring network.
+.PP
+The network number to which the interface is attached must
+be specified with an SIOCSIFADDR ioctl before data can be
+transmitted or received.
+The host's address is discovered by putting the interface in
+digital loopback mode (not joining the ring)
+and sending a broadcast packet from which the source
+address is extracted.
+the Internet address of the interface would be 128.3.0.24.
+.PP
+The interface software implements error-rate limiting on
+the input side.
+This provides a defense against situations where other hosts
+or interface hardware failures cause a machine to be
+inundated with garbage packets.
+The scheme involves an exponential backoff where the input
+side of the interface is disabled for longer and longer periods.
+In the limiting case,
+the interface is turned on every two minutes or so to see
+if operation can resume.
+.PP
+If the installation is running CTL boards which use the old broadcast
+address of 0 instead of the new address of 0xff, the define OLD_BROADCAST
+should be specified in the driver.
+.PP
+If the installation has a Wirecenter, the define WIRECENTER should
+be specified in the driver.
+.BR N.B. :
+Incorrect definition of WIRECENTER can cause hardware damage.
+.PP
+The interface normally tries to use a ``trailer'' encapsulation
+to minimize copying data on input and output.  This may be
+disabled, on a per-interface basis, by setting the IFF_NOTRAILERS
+flag with an SIOCSIFFLAGS ioctl.
+.SH Diagnostics
+\fBvv%d: host %d\fP.
+.br
+The software announces the host
+address discovered during autoconfiguration.
+.PP
+\fBvv%d: can't initialize\fP.
+.br
+The software was unable to
+discover the address of this interface, so it deemed
+"dead" will not be enabled.
+.PP
+\fBvv%d: error vvocsr=%b\fP.
+.br
+The hardware indicated an error on
+the previous transmission.
+.PP
+\fBvv%d: output timeout\fP.
+.br
+The token timer has fired and the
+token will be recreated.
+.PP
+\fBvv%d: error vvicsr=%b\fP.
+.br
+The hardware indicated an error
+in reading a packet off the ring.
+.PP
+\fBen%d: can't handle af%d\fP.
+.br
+The interface was handed
+a message with addresses formatted in an unsuitable address
+family; the packet was dropped.
+.PP
+\fBvv%d: vs_olen=%d\fP.
+.br
+The ring output routine has been
+handed a message with a preposterous length.  This results in
+an immediate 
+.IR "panic: vs_olen" .
+.SH See Also
+intro(4n), inet(4f)

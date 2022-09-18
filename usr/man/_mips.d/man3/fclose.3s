@@ -1,0 +1,51 @@
+.\" SCCSID: @(#)fclose.3s	8.1	9/11/90
+.TH fclose 3s 
+.SH Name
+fclose, fflush \- close or flush a stream
+.SH Syntax
+#include <stdio.h>
+.PP
+fclose\^(\fIstream\fP)
+.br
+FILE *\fIstream\fP;
+.PP
+fflush\^(\fIstream\fP)
+.br
+FILE *\fIstream\fP;
+.SH Description
+.NXR "fclose subroutine"
+.NXR "fflush subroutine"
+.NXR "stream" "closing"
+.NXR "stream" "flushing"
+The
+.PN fclose
+routine causes any buffers for the named
+.I stream
+to be emptied, and the file to be closed.
+Buffers allocated by the standard input/output system
+are freed.  The
+.PN fclose
+routine is performed automatically upon
+calling
+.PN exit .
+.PP
+The
+.PN fflush
+routine causes any buffered data for the named output
+.I stream
+to be written to that file.  If 
+.I stream
+is NULL, all open output streams are flushed.  The stream remains open.
+.SH Diagnostics
+These functions return EOF if buffered data cannot be transferred to an
+output stream.
+.SH Environment
+If not called in POSIX mode, these functions return EOF if 
+.I stream
+is not associated with an output file.  In POSIX mode, if
+.I stream
+is associated with an input file, the file pointer is positioned
+following the last byte read from that
+.I stream.
+.SH See Also
+close(2), fopen(3s), setbuf(3s)

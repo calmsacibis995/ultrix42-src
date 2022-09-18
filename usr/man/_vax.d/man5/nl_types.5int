@@ -1,0 +1,31 @@
+.TH nl_types 5int
+.SH Name
+nl_types - language support database data types
+.SH Syntax
+.B #include <nl_types.h>
+.SH Description
+.NXR "nl_types files"
+Two international data types, nl_catd and nl_item, are available for you to use in language
+support databases.  These datatypes are defined in the
+.PN <nl_types.h>
+file.
+.PP
+The nl_catd datatype is used by the message catalog functions, 
+.PN catopen ,
+.PN catgets ,
+and
+.PN catclose .
+Variables of this datatype store message catalog descriptors.
+.PP
+The
+.PN nl_langinfo
+call uses the nl_item data type.  Variables of this datatype store
+data that gives information about the current locale setting.  For
+example, a data item might specify how to format the dates and times
+for the current locale.  The data is stored in the
+.PN <langinfo.h>
+file.
+.SH See Also
+intro(3int), catgetmsg(3int), catgets(3int), catopen(3int), nl_langinfo(3int)
+.br
+.I "Guide to Developing International Software"

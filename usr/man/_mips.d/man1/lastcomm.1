@@ -1,0 +1,68 @@
+.\" SCCSID: @(#)lastcomm.1	8.1	9/11/90
+.TH lastcomm 1
+.SH Name
+lastcomm \- show last commands executed in reverse order
+.SH Syntax
+.B lastcomm
+[\|\fIcommand name...\fR\|] [\|\fIuser name...\fR\|] [\|\fIterminal name...\fR\|]
+.SH Description
+.NXR "lastcomm command"
+.NXA "lastcomm command" "last command"
+.NXR "command" "showing executed"
+The
+.PN lastcomm
+command gives information on previously executed commands.
+With no arguments,
+.PN lastcomm
+prints information about all the commands recorded
+during the current accounting file's lifetime.
+If called with arguments, only accounting entries with a
+matching command
+name, user name, or terminal name are printed.
+The following example produces a listing of all the
+executions of commands named
+.PN a.out
+by user
+.I root
+on the terminal
+.IR ttyd0 :
+.EX
+lastcomm a.out root ttyd0
+.EE
+.PP
+For each process entry, the following are printed:
+.sp
+.RS 10
+The name of the user who ran the process.
+.sp
+Flags, as accumulated by the accounting facilities in the system.
+.sp
+The command name under which the process was called.
+.sp
+The amount of cpu time used by the process (in seconds).
+.sp
+The time the process exited.
+.RE
+.PP
+The flags are encoded as follows: 
+.sp
+.RS 10
+``S'' indicates the command was
+executed by the super-user
+.sp
+``F'' indicates the command ran after
+a fork, but without a following 
+.IR exec 
+.sp
+``C'' indicates the command was run in PDP-11 compatibility mode
+(VAX only)
+.sp
+``D'' indicates the command terminated with the generation of a
+.I core
+file
+.sp
+``X'' indicates the command was terminated with the signal
+SIGTERM
+.RE
+.SH See Also
+last(1), sigvec(2), acct(5), core(5)

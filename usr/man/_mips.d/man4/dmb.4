@@ -1,0 +1,114 @@
+.\" SCCSID: @(#)dmb.4	2.4	8/19/87
+.TH dmb 4
+.SH Name
+dmb \- DMB32 communications multiplexor
+.SH Syntax
+.B "device dmb0 at vaxbi? node? flags 0x????"
+.br
+.ti +0.5i
+.B "vector dmbsint dmbaint dmblint"
+.SH Description
+.NXR "DMB32 communications interface"
+.NXA "DMB32 communications interface" "DMB32 serial printer interface"
+.NXS "dmb interface" "DMB32 communications interface"
+A
+DMB32
+device provides eight asynchronous communication lines with modem control.
+The device driver also supports a connection to a line printer
+through the line printer port of the
+DMB32.
+.PP
+Each line attached to a
+DMB32
+serial line port behaves as described
+in
+.MS tty 4 .
+Input and output for each line may independently be set to run at any
+of 16 speeds.  See
+.MS tty 4
+for the encoding.
+.PP
+Bit
+.I i
+of flags can be specified for a
+.PN dmb
+to say that a line 
+should be treated as a hardwired connection, with carrier always present.
+If bit
+.I i
+of flags is not set, the line operates under full modem control.
+Modem lines will operate in accordance to the CD (carrier detect),
+DSR (data set ready) and CTS (clear to send) leads.
+Thus, specifying ``flags 0x0004'' in the specification of
+.PN dmb0
+would cause line 2 on the DMB32 to be treated as hardwired,
+with carrier always present.
+In this example, the remainder of the lines will be modem control lines.
+.SH Restrictions
+The DMB32
+provides a synchronous port, but this is
+not supported by the driver.
+.SH Diagnostics
+.B "dmbinit: async lines unavailable"
+.br 
+This message is produced at system boot time, if the DMB32
+fails its internal self test, indicating that the asynchronous lines have
+failed to configure.
+.PP
+.B "dmbinit: printer port unavailable"
+.br 
+This message is produced at system boot time, if the DMB32
+fails its internal self test, indicating that the printer port
+failed to configure.
+.PP
+.B "dmb%d: fifo overflow"
+.br 
+The character input fifo overflowed
+before it could be serviced.  This can happen if the CPU is running
+with elevated priority for too long a period of time.
+Overflow errors can
+indicate that configuration constraints have been reached.
+.PP
+.B "dmb%d: DMA Error. tbuf = 0x%x"
+.br 
+A DMA output transfer failed.  This can be caused by a memory error
+or an invalid pte (page table entry).
+For a description of the error code in the
+``tbuf'' register, see the DMB32 documentation.
+.PP
+.B "dmb%d: DMB Hardware Error. TX.DMA.START failed"
+.br 
+The 
+.PN dmb 
+failed to clear the start bit.  Normally, this is cleared to signal
+that a DMA transfer has completed.
+.PP
+.B "dmb%d: Modem Error. tbuf = 0x%x"
+.br 
+Indicates a problem with a modem or its cable.
+For a description of the error code in the
+``tbuf'' register, see the DMB32 documentation.
+.PP
+.B "dmb%d: Internal Error. tbuf = 0x%x"
+.br 
+Indicates that the DMB32 detected an internal error.
+For a description of the error code in the
+``tbuf'' register, see the DMB32 documentation.
+.PP
+.B "hfBdmb%d: uio move error"
+.br 
+An error occurred when copying a printer buffer from user space
+to system space.
+.PP
+.B "dmbsint"
+.br 
+The unsupported synchronous port of the DMB32 interrupted because
+of a problem.  Check your interrupt vectors for a conflict with
+another device.
+.SH Files
+.PN /dev/tty??
+.TP 15
+.PN /dev/ttyd?
+(modem lines only)
+.SH See Also
+tty(4), MAKEDEV(8), dmbsp(4)

@@ -1,0 +1,139 @@
+.\" V4.0 source updated for V4.Titanium
+.\" 
+.\" Updated on 26.10.90 by Karen Campbell, OSCR-Europe  
+.\"
+.\" Submitted for FT 9-Nov-90.
+.\"
+.\" Print this document on a PostScript printer using the command line
+.\"	tbl filename | ditroff \-Tps \-man | devps | lpr
+.\"
+.\"
+.TH ansi_ps 8
+.SH Name
+ansi_ps, regis_ps, tek4014_ps \- datatype to PostScript translators
+.SH Syntax
+.B /usr/lib/lpdfilters/ansi_ps
+[
+.I options
+]
+.PP
+.B /usr/lib/lpdfilters/regis_ps
+[
+.I options
+]
+.PP
+.B /usr/lib/lpdfilters/tek4014_ps
+[
+.I options
+]
+.SH Description
+Each translator reads from standard input and writes to standard output.
+If the data type is to be printed on a PostScript printer with
+specialised support, the translator is invoked by
+.PN lpd
+using the
+.PN xlator_call
+script.
+Refer to
+.MS xlator_call 8 .
+.PP
+The
+.PN ansi_ps
+command is the ANSI to PostScript translator.
+.PP
+The
+.PN regis_ps
+command is the Regis to PostScript translator.
+.PP
+The
+.PN tek4014_ps
+command is the Tektronix 4014 to PostScript translator.
+.PP
+The ANSI translator implements DEC-STD-074-0
+.I (Printer System Reference Manual) \"TITLE_EXEMPT\"
+and conforms to ISO/DSI 6429, ISO/DSI 2022, and ANSI X3.4 standards.
+Escape sequences (documented in the translator reference manual) that do
+not begin with DEC are taken from the ISO/DSI 6429, ISO/DSI 2022 and ANSI X3.4
+standards. 
+Escape sequences that begin with DEC are legal extensions of DEC-STD-074-0.
+The ANSI translator implements a few of the escape sequences documented in 
+these standards.
+.PP
+.NXR "Postscript translator" "datatype"
+.NXR "translator" "Postscript"
+.PP
+The ANSI translator,
+.PN ansi_ps ,
+requires a preamble to be present in the printer, and is designed to 
+send this preamble to the printer.
+However, it is quicker if the TCP/IP Supporting Host Software loads the
+preamble at boot time.
+.PP
+For instructions on what to do to enable the TCP/IP Supporting Host software
+to load the preamble when it boots, and to disable the translator from
+sending the preamble, see the \fIRelease Notes\fP.
+.SH Options
+The valid options for the
+.PN ansi_ps
+translator are:
+.IP \fB\-e\fR .3i
+Interpret line feed as carriage return line feed.
+It is implemented by sending the control sequence string,
+.PN <CSI>20h
+to the translator before reading standard input.
+.IP \fB\-F\fIpagesize\fR .3i
+Select the size of the pages to be printed.
+The valid page sizes are: \fI letter, a, ledger, b, legal, executive, a5, 
+a4, a3, b5 \fRor\fI b4\fR.
+If the page size is not specified, \fIa4\fR is used.
+.IP \fB\-O\fIorientation\fR .3i
+Select the orientation of the text on the page.
+The valid orientations are:\fI portrait\fR or \fIlandscape\fR.
+If the orientation is not specified, \fIportrait\fR is used.
+.IP \fB\-m\fIoutput_mode\fR .3i
+Select the output mode of
+.PN ansi_ps .
+The output modes are:
+.sp 6p
+.PP
+.TS
+tab(@);
+lw(.1i) lw(.6i) lw(4i).
+ @\fI8f\fR@Full 8-bit output
+ @\fI7f\fR@7-bit output
+ @\fI8g\fR@GL/GR only
+ @\fI7g\fR@GL only
+.TE
+.PP
+.sp 6p
+.IP \& .3i
+If the output mode is not specified, \fI8f\fR is used.
+.IP \fB\-R\fIresource_string\fR .3i
+Inform
+.PN ansi_ps
+of a pre-loaded resource present in the PostScript 
+environment of the printer.
+Multiple \fB\-R\fR options may be passed.
+.IP \fB\-s\fR .3i
+Inhibit the final showpage.
+This allows more than one page to be printed on each sheet.
+.PP
+The valid options for the
+.PN regis_ps
+and
+.PN tek4014_ps
+translators are:
+.IP \fB\-F\fIpagesize\fR .3i
+Select the size of the pages to be printed.
+The valid page sizes are: \fIletter, a, ledger, b, legal, executive, a5, 
+a4, a3, b5\fR or \fIb4\fR.
+If the page size is not specified, \fIa4\fR is used.
+.IP \fB\-O\fIorientation\fR .3i
+Select the orientation of the text on the page.
+The valid orientations are: \fIportrait\fR or \fIlandscape\fR.
+If the orientation is not specified, \fIportrait\fR is used.
+.IP \fB\-s\fR .3i
+Inhibit the final showpage.
+This allows more than one page to be printed on each sheet.
+.SH See Also
+ln03rof(8), lpd(8), xlator_call(8)

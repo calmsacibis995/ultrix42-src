@@ -1,0 +1,129 @@
+.TH crypt 3 
+.SH Name
+crypt, crypt16, setkey, encrypt \- DES encryption
+.SH Syntax
+.nf
+.B char *crypt(\fIkey, salt\fP)
+.B char *\fIkey\fP, *\fIsalt\fP;
+.PP
+.B char *crypt16(\fIkey, salt\fP)
+.B char *\fIkey\fP, *\fIsalt\fP;
+.PP
+.B void setkey(\fIkey\fP)
+.B char *\fIkey\fP;
+.fi
+.SH Description
+.NXR "encryption" "crypt subroutine"
+.NXR "crypt subroutine" "encryption"  
+.NXR "NBS Data Encryption Standard"
+.NXR "Data Encryption Standard"
+The
+.PN crypt
+subroutine
+is the password encryption routine.
+It is based on the NBS Data Encryption Standard, with
+variations intended to frustrate use of hardware
+implementations of the DES for key search.
+.PP
+The first argument to
+.PN crypt
+is normally a user's typed password.
+The second is a 2-character string chosen from the
+set [a-zA-Z0-9./].
+The
+.I salt
+string is used to perturb the DES algorithm in one of 4096
+different ways, after which the password
+is used as the key to encrypt repeatedly a constant string.
+The returned value points to the encrypted password,
+in the same alphabet as the salt.
+The first two characters are the salt itself.
+.PP
+The
+.PN crypt16
+subroutine is identical to the
+.PN crypt
+function except that it will accept a password up to sixteen characters
+in length. It generates a longer encrypted password for use with enhanced
+security features.
+.PP
+The other entries provide primitive
+access to the actual DES algorithm.
+The argument of
+.PN setkey
+is a character array of length 64 containing only the characters
+with numerical value 0 and 1.
+If this string is divided into groups of 8,
+the low-order bit in each group is ignored,
+leading to a 56-bit key which is set into the machine.
+.PP
+The argument to the
+.PN encrypt
+entry is likewise a character array of length 64
+containing 0s and 1s.
+The argument array is modified in place
+to a similar array
+representing the bits of the argument after having been
+subjected to the DES algorithm using the \fIkey\fP set by
+.PN setkey .
+If
+.I edflag
+is 0, the argument is encrypted;
+if non-zero, it is decrypted.
+.SH Restrictions
+The return values from
+.PN crypt
+and
+.PN crypt16
+point to static data areas whose content is overwritten
+by each call.
+.SH Environment
+.SS Default Environment
+In the default environment
+on systems that do not have the optional encryption software installed
+the
+.PN encrypt
+function expects exactly one argument, the data to be encrypted. The
+.I edflag
+argument is not supplied and there is no way to decrypt data.
+If the optional encryption software is installed the
+.PN encrypt
+function behaves as it does in the POSIX environment.
+The syntax for the default environment follows:
+.RS 5
+.nf
+.B void encrypt(\fIblock\fP)
+.B char *\fIblock\fP;
+.fi
+.RE
+.SS POSIX Environment
+.PP
+In the POSIX environment the encrypt function always expects two arguments.
+The
+.PN encrypt
+function will set
+.I errno
+to ENOSYS
+and return if
+.I edflag
+is non-zero and the optional encryption software is not
+present.
+The syntax for the POSIX environment follows:
+.RS 5
+.nf
+.B void encrypt(\fIblock, edflag\fP)
+.B char *\fIblock\fP;
+.B int \fIedflag\fP;
+.fi
+.RE
+.PP
+In all cases the
+.PN setkey
+function will set
+.I errno
+to ENOSYS
+and return if the optional encryption software is not present.
+.SH See Also
+login(1), passwd(1), yppasswd(1yp), getpass(3), auth(5), passwd(5), passwd(5yp)
+.br
+\fIULTRIX Security Guide for Users and Programmers\fP

@@ -1,0 +1,54 @@
+.\" SCCSID: @(#)acct.5	4.1	12/9/88
+.TH acct 5 RISC
+.SH Name
+acct \- execution accounting file
+.SH Syntax
+.B #include <sys/acct.h>
+.SH Description
+.NXR "acct file" "format"
+.NXAM "acct system call" "acct file"
+The 
+.MS acct 2
+system call makes entries in an accounting file
+for each process that terminates.
+The accounting file is a sequence of entries whose layout,
+as defined by the include file, is:
+.EX 0
+typedef u_short comp_t
+struct  acct
+{
+        char    ac_comm[10];   /* Accounting command name */
+        comp_t  ac_utime;      /* Accounting user time */
+        comp_t  ac_stime;      /* Accounting system time */
+        comp_t  ac_etime;      /* Accounting elapsed time */
+        time_t  ac_btime;      /* Beginning time */
+        short   ac_uid;        /* Accounting user ID */
+        short   ac_gid;        /* Accounting group ID */
+        short   ac_mem;        /* average memory usage */
+        comp_t  ac_io;         /* number of disk IO blocks */
+        dev_t   ac_tty;        /* control typewriter */
+        char    ac_flag;       /* Accounting flag */
+};
+
+#define AFORK   0001    /* has executed fork, but no exec */
+#define ASU     0002    /* used super-user privileges */
+#define ACOMPAT 0004    /* used compatibility mode */
+#define ACORE   0010    /* dumped core */
+#define AXSIG   0020    /* killed by a signal */
+#define AHZ     64      /* the accuracy of data is 1/AHZ */
+
+#ifdef KERNEL
+struct  acct    acctbuf;
+struct  gnode   *acctp;
+#endif
+.EE
+If the process does an 
+.MS execve 2 ,
+the first 10 characters of the file name appear in
+.I ac_comm.
+The accounting flag contains bits indicating whether 
+.MS execve 2
+was ever accomplished and whether the process ever had 
+superuser privileges.
+.SH See Also
+acct(2), execve(2), sa(8)

@@ -1,0 +1,618 @@
+.TH forw 1mh
+.SH Name
+forw \- forward messages
+.SH Syntax
+.B forw
+[
+.I msgs
+] [
+.I "+folder"
+] [
+.I options
+]
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.\" .SH Arguments
+.\" .IP \fImsgs\fR 10
+.\" Specifies the number of the message or messages to be forwarded.
+.\" If you do not supply a number, the default is 
+.\" to take the current message.
+.\" More than one message can be specified by leaving spaces
+.\" between each separate number.
+.\" A range of messages can be indicated by using a dash.
+.\" If you specify more than one message, they are all placed
+.\" in one message to be forwarded.
+.\"
+.\"
+.\" .IP \fI+folders\fR 10
+.\" Specifies the folder of the forwarded message.
+.\" If this argument is not present, the default is to take the
+.\" current folder.
+.\" This argument can be used in conjunction with the 
+.\" .I msgs
+.\" argument.
+.\" ***END OF COMMENTS 
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "forw command"
+.NXR "forwarding messages"
+Use
+.PN forw
+to send one or more messages on to recipients who were not the original
+addressees.  
+All messages to be forwarded are encapsulated, 
+and a message header is added.
+Forwarded messages appear to originate from the forwarder and not the 
+sender of the original message.  
+.\" 
+.\" Info from old Arguments section
+.\"
+.PP
+You can specify the message which you want
+to forward by giving a
+.I msg
+argument.
+You can supply one or more message numbers, 
+or a range of messages.
+If you do not supply a message number,
+.PN forw
+takes the current message.
+You can also specify a message in another folder
+by giving the
+.I +folder
+argument.
+This argument can be used in conjunction with the \fImsg\fR
+argument.
+.\"
+.\" ***End of Arguments info
+.\"
+.PP
+An editor is invoked so that you can edit the forwarded message, 
+or add text before or after the encapsulated message.
+When you exit from the editor, you receive a prompt asking
+what you want to do with the completed draft.
+This prompt usually takes the form \f(CWWhat now?\fR
+See 
+.MS whatnow 1mh
+for more information on the options available.
+.PP
+If you forward a number of messages, 
+each forwarded message is encapsulated separately.
+When received, the message is suitable for expanding with 
+.MS burst 1mh .
+.PP
+By default, the mail system uses a standard message header 
+for forwarded messages.
+This is taken from the system file
+.PN /usr/lib/mh/forwcomps .
+You can supply your own header by creating a file called
+.PN forwcomps
+in your Mail directory.
+If this file exists, 
+.PN forw
+automatically uses the header in it when creating draft messages.
+.PP
+If you do not have a draft folder set up,
+.PN forw
+creates your new draft in a file called
+.PN draft
+in your Mail directory, usually
+.PN $HOME/Mail .
+This file must be empty before you can create a new draft,
+which means that you can only store one draft at a time.
+If it is not empty, the mail system will ask you
+what you want to do with the existing contents.
+The options are:
+.TP 10
+\f(CWquit\fR
+Aborts
+.PN forw ,
+leaving the draft intact.
+.TP 10
+\f(CWreplace\fR
+Replaces the existing draft with the appropriate message form.
+.\" .TP 10
+.\" \f(CWuse\fR
+.\" 
+.TP 10
+\f(CWlist\fR
+Displays the draft message.
+.TP 10
+\f(CWrefile\fR
+Refiles the existing draft message in the specified folder,
+and provides a new message form for you to complete.
+.PP
+If you want to be able to have more than one draft message at a time,
+you can set up a draft folder in your
+.PN \&.mh_profile .
+This allows you to keep as many unsent drafts as space
+allows,
+and still create new messages as you wish.
+To do this, make sure that the following line is in your
+.PN \&.mh_profile :
+.EX
+Draft-folder: +drafts
+.EE
+For more information on how to do this, see
+.MS mh_profile 5mh .
+.PP
+If you set up a draft folder,
+all draft messages are created in that folder.
+If you decide not to send the draft, by typing
+.PN quit
+at the \f(CWWhat now?\fR prompt,
+the message is stored in the draft folder.
+You can then re-edit the message, or send it at a later date,
+by using the
+.B \-use 
+option to the
+.PN comp
+command.
+.\"
+.\" ***COMMENTED OUT
+.ig
+.PP
+You can specify whether you wish to forward a
+message to X.400 or non-X.400 users by entering a
+value in the
+\f(CWX-mts:\fR
+field of the header.
+There are two valid entries:
+\f(CWx400\fR for messages to be forwarded to X.400 users;
+\f(CWsmtp\fR for messages to be forwarded to non-X.400 users.
+You can use upper- or lower-case letters, or a mixture
+of the two.
+You cannot forward a single message to
+both X.400 and non-X.400 users simultaneously; 
+you must choose one or the other.
+If you do not make an entry in the
+\f(CWX-mts:\fR
+field, or if you make an invalid entry,
+.PN forw
+assumes that the message is sent over non-X.400 transport.
+If you do enter a valid value in the
+\f(CWX-mts:\fR
+.R
+field, this will override
+any option you specify later by using the
+.B \-mts
+.I mtsname
+.R
+option with
+.PN send
+.R
+or
+.PN whom .
+.R
+If you wish to override the entry in the
+\f(CWX-mts:\fR
+.R
+field, you must edit the draft of your message to remove
+or change it.
+..
+.\" ***END OF COMMENTS
+.\"
+.PP
+If you use 
+.PN prompter 
+as your editor, you can specify the
+.B \-prepend
+option to 
+.PN prompter
+in the 
+.PN \&.mh_profile
+file.  
+If you do this, any text you add is entered before
+the forwarded messages.  
+See
+.MS prompter 1mh
+for details of the other
+.PN prompter
+options.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP \-annotate 10
+.PD 0
+.IP \-noannotate 10
+.PD
+Annotates the message you are forwarding.
+The following lines are added to the message that you
+are forwarding:
+.EX
+Forwarded: date
+Forwarded: address(es) 
+.EE
+The first line records the time at which the message
+was forwarded; the second records the addresses of the
+recipients of the forwarded message.
+.IP
+The 
+.PN forw
+command only annotates messages when they are successfully sent.
+If you do not send the message immediately and file 
+the unsent draft, it will not be annotated.
+It is also possible to confuse
+.PN forw
+by using 
+.PN push 
+to send the message, and renumbering it before it is sent,
+for example by using 
+.PN "folder \-pack" 
+to reorder the folder.
+.\"
+.\"
+.ig
+.IP \-digest\ \fIlist\fR
+***NO DOCUMENTATION ON THIS***
+..
+.\"
+.\"
+.IP "\-draftfolder \fIfoldername\fR" 10
+.PD 0
+.IP \-nodraftfolder 10
+.PD
+Specifies the folder in which the draft message is created.
+If you do not send the draft,
+the mail system will store it in this folder.
+.IP
+This option is usually set up in your
+.PN \&.mh_profile .
+See
+.MS mh_profile 5mh
+for more information.
+If you have this option set up, you can
+override it by using the 
+.B \-nodraftfolder
+option.
+.\"
+.\"
+.IP "\-draftmessage \fIfilename\fR" 10
+Specifies the file in which the draft message is created.
+If no absolute pathname is given, the file is assumed to be in
+your Mail directory, usually
+.PN $HOME/Mail .
+If you do not send the message, it is stored in the named file
+until you delete it, or send it at a later date.
+.\"
+.\"
+.IP "\-editor \fIeditorname\fR" 10
+Specify the editor that you want to use to edit your forwarded
+message.
+You can supply the name of any approved ULTRIX editor.
+.\"
+.\"
+.IP "\-filter \fIfilterfile\fR" 10
+Reformats (filters) the forwarded messages prior to inclusion in 
+the draft message.
+If you do not specify \fB\-filter\fR,
+the forwarded messages are included in the draft exactly as 
+they appear.
+This option allows you to re-format them according to instructions
+in a named filter file.
+This must be an mhl file; see 
+.MS mh-format 5mh
+for more information.
+.IP
+The
+.B \-format
+option also re-formats messages before 
+encapsulating them in the draft.
+However, 
+.B \-format 
+always re-formats according to the instructions in the default
+.PN mhl.forward
+file.
+The
+.B \-filter
+option allows you to use your own, named filter file to 
+format the messages.
+.\"
+.\"
+.IP "\-form \fIformfile\fR" 10
+Specifies the message header to be used in the draft message.
+If this option is present, 
+.PN forw 
+takes the header of the draft message
+from the named file.
+If this option is not present, the header is taken from the 
+.PN forwcomps 
+file in your Mail directory, or failing that, 
+from the mail system default header.
+However, the 
+.B \-form
+option overrides both of these.
+.\"
+.\"
+.IP \-format 10
+.PD 0
+.IP \-noformat 10
+.PD
+Reformats the messages to be forwarded before enclosing them
+in the draft message.
+If this option is not supplied, the forwarded messages
+are included in the draft exactly as they appear.
+With the
+.B \-format 
+option, the forwarded message is re-formatted according to the
+instructions in the 
+.PN mhl.forward
+file in your Mail directory.
+If this file does not exist, the message is formatted according to 
+the system file
+.PN /usr/lib/mh/mhl.forward .
+.\" 
+.\"
+.\" THIS FILE COMMENTED OUT
+.ig
+.EX
+width=80,overflowtext=,overflowoffset=10
+leftadjust,compress,compwidth=9
+Date:formatfield="%<(nodate{text})%|%(tws{text})%>"
+From:
+To:
+cc:
+Subject:
+:
+body:nocomponent,overflowoffset=0,noleftadjust,nocomp
+ress
+.EE
+..
+.\" END OF COMMENTING OUT
+.\"
+.\"
+The 
+.PN mhl.forward
+file is an mhl file; see
+.MS mh-format 5mh
+for more information.
+.IP
+You can also use the 
+.B \-filter
+.I filterfile
+option to re-format messages.
+The difference is that 
+.B \-format
+always takes its instructions from the
+.PN mhl.forward
+file.
+With \fB\-filter\fR,
+you can specify the name of the filter file you want to use.
+.\"
+.\"
+.IP \-help
+Prints a list of the legal options to this command.
+.\"
+.\"
+.IP \-inplace
+.PD 0
+.IP \-noinplace
+.PD
+Causes annotation to be done in place, to preserve
+links to the annotated message.
+This option only works with the 
+.B \-annotate
+option.
+.\"
+.\"
+.ig
+.IP \-issue\ \fInumber\fR
+***NO DOCUMENTATION ON THIS***
+..
+.\"
+.\"
+.IP \-noedit
+Suppresses editing of the draft message altogether.
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.ig
+.IP "\-template [ \fIeditorname\fB ]" 10
+.R
+Helps you to construct valid X.400 addresses in message headers.
+For each appropriate field, the
+.PN template
+program first asks whether you want to create
+an address in that field;
+if you do, it will prompt you for the individual
+attributes of an X.400 address.
+When you have completed all the addresses for your message,
+exit from the
+.B \-template
+utility, and the addresses are entered in the correct fields of
+your draft.
+You can then continue to edit the message in the usual way.
+You can specify your own choice of editor to fill in
+the template by using the
+.B \-template
+.I editorname
+option.
+This can be different from the editor you use for the
+body of the mail message.
+The default editor for
+.B \-template
+is
+.PN prompter .
+If you regularly use the same editor for the template
+you can specify it in the
+\f(CWTemplate\-Editor:\fR
+.R
+line of your
+.PN \&.mh_profile.
+.R
+See
+.MS template 1
+.R
+for more information.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.ig
+.IP "\-volume \fInumber\fR" 10
+***NO DOCUMENTATION ON THIS***
+..
+.\"
+.\"
+.IP "\-whatnowproc \fIprogram\fR" 10
+.PD 0
+.IP \-nowhatnowproc
+.PD
+Specifies an alternative
+.PN whatnow
+program.
+Normally,
+.PN forw
+invokes the default
+.PN whatnow
+program.
+See
+.MS whatnow 1mh
+for a discussion of available options.
+You can specify your own alternative
+to the default program using the
+.B \-whatnowproc
+.I program
+option.
+If you do specify your own program, you should not call it
+.PN whatnow .
+.IP
+You can suppress the
+.PN whatnow
+program entirely by using the
+.B \-nowhatnowproc
+option.
+However, as the program normally starts the initial edit, the
+.B \-nowhatnowproc
+option will prevent you from editing the message.
+.\"
+.\"
+.\" Specifies the 
+.\" .PN whatnow 
+.\" program that is used.
+.\" When you exit from the editor,
+.\" .PN forw
+.\" invokes the 
+.\" .PN whatnow
+.\" program.
+.\" See 
+.\" .MS whatnow 1mh
+.\" for details of the available options.
+.\" The invocation of this program can be inhibited by using the 
+.\" .B \-nowhatnowproc
+.\" option.
+.\" .IP
+.\" If the 
+.\" .PN whatnowproc
+.\" is 
+.\" .PN whatnow,
+.\" then 
+.\" .PN forw
+.\" uses its own built-in 
+.\" .PN whatnow ;
+.\" it does not actually run the 
+.\" .PN whatnow
+.\" program.
+.\" Hence, if you define your own 
+.\" .PN whatnowproc,
+.\" do not
+.\" call it 
+.\" .PN whatnow
+.\" since 
+.\" .PN forw
+.\" will not run it.
+.\" 
+.\"
+.\"
+.\"
+.\"
+.\"
+.PP
+The following are defaults for this command:
+.IP
+\fI+folder\fR
+defaults to the current folder
+.br
+\fImsgs\fR
+defaults to the current message
+.br
+.B \-noannotate
+.br
+.B \-nodraftfolder
+.br
+.B \-noformat
+.br
+.B \-noinplace
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:\fR+To determine your Mail directory
+Draft-Folder:\fR+To find the default draft folder
+Editor:\fR+To override the default editor
+.\"
+.\" Template-Editor:\fR+To override the default editor for the template
+.\"
+Msg-Protect:\fR+To set mode when creating a new message (draft)
+fileproc:\fR+Program to refile the message
+mhlproc:+\fRProgram to filter messages being forwarded
+whatnowproc:+\fRProgram to ask the \*(lqWhat now?\*(rq questions
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN /usr/lib/mh/forwcomps
+The default system template for forwarded messages.
+.TP
+.PN <mh\-dir>/forwcomps
+The user-supplied alternative to the default system template.
+.\"
+.\" .TP
+.\" .PN /usr/lib/mh/digestcomps
+.\" The default message template used with \fB\-digest\fR.
+.\"
+.TP
+.PN <mh\-dir>/digestcomps
+The user-supplied alternative to the system message template 
+used with \fB\-digest\fR.
+.TP
+.PN /usr/lib/mh/mhl.forward
+The default message filter.
+.TP
+.PN <mh\-dir>/mhl.forward
+The user-supplied alternative to the default system message filter.
+.TP
+.PN $HOME/\&.mh_profile
+The user profile.
+.TP
+.PN <mh\-dir>/draft
+The draft file.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+comp(1mh), dist(1mh), refile(1mh), repl(1mh), send(1mh), 
+.\" template(1),
+whatnow(1mh)
+.br
+\fIProposed Standard for Message Encapsulation\fR (RFC 934)

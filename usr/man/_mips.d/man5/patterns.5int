@@ -1,0 +1,208 @@
+.TH patterns 5int
+.SH Name
+patterns \- patterns for use with internationalization tools
+.SH Syntax
+See the Description section.
+.SH Description
+.NXR "patterns" "files"
+The patterns file contains the patterns that must be matched for 
+the internationalization tools
+.PN extract ,
+.PN strextract ,
+and
+.PN strmerge .
+.PP
+The pattern file in the following example is the default patterns file located
+in 
+.PN /usr/lib/intln/patterns .
+.PP
+.EX
+# This is the header to insert at the beginning of the first new 
+# source file
+
+$SRCHEAD1							\fB(1)\fP
+\\#include <nl_types.h>
+nl_catd _m_catd;
+\\
+
+# The header to insert at the beginning of the rest of the new 
+# source files
+
+$SRCHEAD2							\fB(2)\fP
+\\#include <nl_types.h>
+extern nl_catd _m_catd;
+\\
+
+# This is the header to insert at the beginning of the message 
+# catalogues
+
+$CATHEAD							\fB(3)\fP
+\\$ /*
+\\$  * X/OPEN message catalogue
+\\$  */
+\\
+\\$quote "
+
+# This is how patterns that are matched will get rewritten.
+
+$REWRITE							\fB(4)\fP
+catgets(_m_catd, %s, %n, %t)
+
+# Following is a list of the sort of strings we are looking for.
+# The regular expression syntax is based on regex(3).
+
+$MATCH								\fB(5)\fP
+
+# Match on strings containing an escaped "
+"[^\\\\]*\\\\"[^"]*"
+
+# Match on general strings
+"[^"]*"
+
+# Now reject some special C constructs.
+
+$REJECT							\fB(6)\fP
+# the empty string
+""0
+
+# string with just one format descriptor
+"%."
+"%.\\."
+
+# string with just line control in
+"\\\\."
+
+# string with just line control and one format descriptor in
+"%.\\\\."
+"\\\\.%."
+
+# ignore cpp include lines
+\\#[  ]*include[  ]*".*"
+\\#[  ]*ident[  ]*".*"
+
+# reject some common C functions and expressions with quoted 
+# strings
+[sS][cC][cC][sS][iI][dD]\\[\\][  ]*=[  ]*".*"
+open[  ]*([^,]*,[^)]*)
+creat[  ]*([^,]*,[^)]*)
+access[  ]*([^,]*,[^)]*)
+chdir[  ]*([^,]*,[^)]*)
+chmod[  ]*([^,]*,[^)]*)
+chown[  ]*([^,]*,[^)]*)
+
+# Reject any strings in single line comments
+/\\*.*\\*/
+
+# Print a warning for initialised strings.
+
+$ERROR initialised strings cannot be replaced		\fB(7)\fP
+char[^=]*=[  ]*"[^"]*"
+char[^=]*=[  ]*"[^\\\\]*\\\\"[^"]*"
+char[ ]*\\**[A-Za-z][A-Za-z0-9]*\\[[^\\]*\\][ ]*=[  {]*"[^"]*"
+char[ ]*\\**[A-Za-z][A-Za-z0-9]*\\[[^\\]*\\][ ]*=[  {]*"[^\\\\]*\\\\"[^"\]*"
+.EE
+.PP 
+The default patterns file is divided into the following sections:
+.IP (1) 5
+In the $SRCHEAD1 section, the 
+.PN strmerge 
+and
+.PN extract 
+commands place text in this section at the beginning of the first new
+source program, which is prefixed by 
+.PN nl_ .
+These commands define the native language file descriptors that point to the 
+message catalog.   
+.IP (2) 5
+In the $SRCHEAD2 section, the 
+.PN strmerge
+and 
+.PN extract
+commands place text in this section at the beginning of the second and 
+remaining source programs. These commands also define the native language file
+descriptors that point to the message catalog. $SRCHEAD2 contains the 
+external declaration of the nl file descriptor. 
+.IP (3) 5
+In the $CATHEAD section, the  
+.PN strmerge
+and 
+.PN extract
+commands place text in this section at the beginning of the message
+catalog. 
+.IP (4) 5
+In the $REWRITE section, you specify how the
+.PN strmerge 
+and 
+.PN extract
+commands should replace the extracted strings in the new source program. You 
+can supply three options to the 
+.PN catgets 
+command:
+.RS
+.IP %s 5
+This option increments the set number for each source. This option applies 
+only if you are using the
+.PN strmerge
+command.
+For more information on set numbers, see the 
+.MS catgets 3int
+reference page.
+.IP %n 5
+This option increments the message number for each string extracted. This 
+option applies if you are using either the
+.PN strmerge
+or
+.PN extract 
+commands.
+.IP %t 5
+This option expands the text from the string extracted. The string can be a 
+error message or the default string extracted and printed by the 
+.PN catgets 
+command. For example, if you want an error message to appear when 
+.PN catgets 
+is unable to retrieve the message from the message catalog, you would include 
+the following line:
+.EX
+catgets(_m_catd, %s, %n, "BAD STRING")
+.EE
+.IP
+When 
+.PN catgets
+fails, it returns the message BAD STRING.  
+.RE
+.IP (5) 5
+In the $MATCH section, you specify the patterns in the form of a regular
+expression that you want the 
+.PN strextract ,
+.PN strmerge , 
+and
+.PN extract 
+commands to find and match.  The regular expression follows the same syntax
+rules as defined in 
+.MS regex 3
+reference page. 
+.IP (6) 5
+In the $REJECT section, you specify the matched strings that you do 
+not want the 
+.PN strmerge
+and 
+.PN extract
+commands to replace in your source program.  The regular expression follows 
+the same syntax rules as defined in 
+.MS regex 3
+reference page. 
+.IP (7) 5
+In the $ERROR section, the 
+.PN strextract ,
+.PN strmerge , 
+and
+.PN extract 
+commands look for bad matches and notify you with a warning
+message. The regular expression follows the same syntax rules as defined in the
+.MS regex 3
+reference page. 
+.SH See Also
+intro(3int), extract(1int), strextract(1int), strmerge(1int), trans(1int), 
+regex(3)
+.br
+.I Guide to Developing International Software

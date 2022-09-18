@@ -1,0 +1,42 @@
+# @(#)Make646	4.1	(ULTRIX)	7/2/90
+# Makefile for ISO646 international language databases.
+#
+#	20th Jan 88 - Created Martin Hills, EUEG.
+#	
+
+IC= /usr/bin/ic
+ICFLAGS=  -v
+DESTROOT=
+
+SOURCES	= ASCII.cod ASCII.in ENG.inc ENG_GB.646.in FRE.strtab FRE_FR.646.in \
+	  GER.inc GER_DE.646.in ISO646.cod ISO646.inc ISO_646.in \
+	  toupper.cnv tolower.cnv
+
+OBJECTS	= ASCII ENG_GB.646 FRE_FR.646 GER_DE.646 ISO_646
+
+HEADERS	= 
+
+all : ${OBJECTS}
+
+${OBJECTS}:
+	${IC} ${ICFLAGS} $@.in
+	chmod 444 $@
+	/etc/chown bin $@
+	chgrp system $@
+
+install : 
+
+clean :
+	rm -f ${OBJECTS}
+
+clobber : clean
+	rm -f ${SOURCES} Makefile
+
+sccsinfo :
+	sccs info
+
+sccsget :
+	sccs get SCCS
+
+.DEFAULT:
+	sccs get $<

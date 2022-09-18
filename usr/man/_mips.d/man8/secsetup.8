@@ -1,0 +1,65 @@
+.TH secsetup 8
+.SH Name
+secsetup \- enable the enhanced security features
+.SH Syntax
+.B /usr/etc/sec/secsetup
+.SH Description
+.NXR "secsetup command"
+The
+.PN secsetup
+command is an interactive facility that allows you to enable the
+enhanced security features on your system.
+You must first have loaded the enhanced security subset onto
+your system before running the command.
+.PP
+The
+.PN secsetup
+command allows you to configure your system either for security auditing,
+trusted path, enhanced login, or any combination of those features.
+In addition, the
+.PN secsetup
+command may add lines to the
+.PN /etc/rc.local
+file.
+.NT
+To remove entries from the
+.PN /etc/rc.local
+you must edit it by hand.
+The
+.PN secsetup
+command only adds lines to this file if they aren't already present.
+.NE
+You can run
+.PN secsetup
+while the system is in multiuser mode (however, some inconsistencies
+may result from this.  See the 
+.I "Security Guide for Administrators"
+for more information).
+To run
+.PN secsetup ,
+type the following
+and then answer the questions that follow:
+.EX
+# \fB/usr/etc/sec/secsetup\fP
+.EE
+Depending on the security features chosen, when
+.PN secsetup
+completes
+you may need to replace your system's kernel and reboot the system.
+For example, chosing either the security auditing or trusted path
+feature may require you to re-build your kernel.
+.PP
+.SH Files
+.PN /etc/sec/audit_events
+.br
+.PN /etc/auth
+.br
+.PN /etc/passwd
+.br
+.PN /etc/rc.local
+.br
+.PN /etc/svc.conf
+.SH See Also
+set_audit_mask(8), auth(5), svc.conf(5)
+.br
+.I "Security Guide for Administrators"

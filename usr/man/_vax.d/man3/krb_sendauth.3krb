@@ -1,0 +1,697 @@
+.TH krb_sendauth 3krb
+.SH Name
+krb_sendauth, krb_recvauth \- Kerberos authentication library routines.
+.SH Syntax
+.nf
+.nj
+ \fB#include <krb.h>
+ #include <des.h>
+ #include <netinet/in.h>\fP
+.PP
+ \fBint krb_sendauth\fP (\fIoptions, fd, tkt_authen, f_service,
+                            f_inst, f_realm, checksum, msg_data,
+                            cred, schedule, l_addr, f_addr, 
+                            version_in\fP)
+ \fBlong\fP			\fIoptions\fP;
+ \fBint\fP			\fIfd\fP;
+ \fBKTEXT\fP		\fItkt_authen\fP;
+ \fBchar\fP			\fI*f_service\fP;
+ \fBchar\fP			\fI*f_instance\fP;
+ \fBchar\fP			\fI*f_realm\fP;
+ \fBu_long\fP			\fIchecksum\fP;
+ \fBMSG_DAT\fP		\fI*msg_data\fP;
+ \fBCREDENTIALS\fP	\fI*cred\fP;
+ \fBKey_schedule\fP		\fIschedule\fP;
+ \fBstruct sockaddr_in\fP	\fI*l_addr\fP;
+ \fBstruct sockaddr_in\fP	\fI*f_addr\fP;
+ \fBchar\fP			\fI*version_in\fP;
+.PP
+ \fBint krb_recvauth\fP (\fIoptions, fd, tkt_authen_out, l_service, 
+                            l_instance, f_addr, l_addr, ad,
+                            srvtab_file, schedule, version_out\fP)
+ \fBlong\fP			\fIoptions\fP;
+ \fBint\fP			\fIfd\fP;
+ \fBKTEXT\fP		\fItkt_authen_out\fP;
+ \fBchar\fP			\fI*l_service\fP;
+ \fBchar\fP			\fI*l_instance\fP;
+ \fBstruct sockaddr_in\fP	\fI*f_addr\fP;
+ \fBstruct sockaddr_in\fP	\fI*l_addr\fP;
+ \fBAUTH_DAT\fP  		\fI*ad\fP;
+ \fBchar\fP			\fI*srvtab_file\fP;
+ \fBKey_schedule\fP		\fIschedule\fP;
+ \fBchar\fP			\fI*version_out\fP;			
+.ig ++
+.PP
+ \fBint krb_net_write\fP \fI(fd, buf, len)\fP
+	\fBint\fP	\fIfd;\fP
+	\fBchar\fP	\fI*buf;\fP
+	\fBint\fP	\fIlen;\fP
+.PP
+ \fBint krb_net_read\fP \fI(fd, buf, len)\fP
+	\fBint\fP	\fIfd;\fP
+	\fBchar\fP	\fI*buf;\fP
+	\fBint\fP	\fIlen;\fP
+.++
+.PP
+.fi
+.SH Arguments
+.TP 8
+.I options
+Defined in 
+.PN /usr/include/krb.h .
+To specify multiple options, construct the \fIoptions\fP argument as
+a bitwise-OR of the desired options.
+The options are as follows:
+.br
+.ne 4
+.RS
+.TP 9
+KOPT_DONT_MK_REQ
+.PN krb_sendauth
+will not use the 
+.PN krb_mk_req
+function (see
+.PN kerberos(3krb) )
+to produce the ticket-authenticator pair, \fIauthen_tkt\fP.
+Instead, the ticket-authenticator pair is read from the argument,
+\fItkt_authen\fP.
+.TP 9
+.sp 2
+KOPT_DONT_CANON
+.PN krb_sendauth
+will not convert the instance name, \fIf_instance\fP, to canonical form.
+If KOPT_DONT_CANON is not set, the instance name used is the output from
+.PN krb_get_phost
+(see
+.PN krb_get_lrealm(3krb) )
+with argument \fIf_instance\fP as input.
+.TP 9
+KOPT_DO_MUTUAL
+.PN krb_sendauth
+and
+.PN krb_recvauth
+provide authentication on both ends of the network connection.
+Otherwise, the caller of
+.PN krb_sendauth
+is authenticated to the caller of
+.PN krb_recvauth ,
+but the caller of 
+.PN krb_recvauth
+is not authenticated to the caller of
+.PN krb_sendauth .
+For mutual authentication to occur, both
+.PN krb_sendauth
+and
+.PN krb_recvauth
+must be called with this option set.
+.RE
+.TP
+.I f_service 
+Character pointer to the primary name of the foreign
+principal.  The local principal is the principal that calls
+the above routines.  The foreign principal is the
+principal with which the local principal is attempting to
+communicate.  If KOPT_DONT_MK_REQ is set and KOPT_DO_MUTUAL
+is not, then \fIf_service\fP should be set equal to the NULL pointer.
+.TP
+.I f_instance
+Character pointer to the instance name of the foreign
+principal.  If KOPT_DONT_MK_REQ is set and KOPT_DO_MUTUAL
+is not, then \fIf_instance\fP should be set equal to the NULL pointer.
+.TP
+.I f_realm
+Character pointer to the realm name of the foreign principal.
+If the \fIf_realm\fP parameter is set equal to the NULL pointer,
+then the local realm is used as the \fIf_realm\fP.  If
+KOPT_DONT_MK_REQ is set and KOPT_DO_MUTUAL is not,
+then \fIf_service\fP should be set equal to the NULL pointer.
+.TP
+.I l_service
+Character pointer to the primary name of the local
+principal.
+.TP
+.I l_instance
+Character pointer to the instance name of the local
+principal. 
+.TP
+.I fd
+The file descriptor used to send data to the foreign
+principal, or the file descriptor from which data from
+the foreign principal can be read.  In either case, the
+file descriptor must be associated with a socket that uses
+blocking I/O.
+.TP
+.I tkt_authen
+Pointer to the text structure in which the Kerberos
+library routines build the ticket-authenticator pair.  This
+structure is designed to be included within the 
+.PN krb_sendauth
+message sent to the foreign principal
+to authenticate the local principal's identity to the
+foreign principal.  This structure can be either input to
+.PN krb_sendauth
+or output from 
+.PN krb_sendauth
+depending on whether
+KOPT_DONT_MK_REQ is set or not set.  In either case, storage
+must be allocated for \fItkt_authen\fP.
+.TP
+.I tkt_authen_out
+Pointer to the ticket-authenticator pair that
+.PN krb_recvauth
+reads from within the 
+.PN krb_sendauth 
+message.  The 
+.PN krb_sendauth
+message is sent by 
+.PN krb_sendauth
+to the local principal to authenticate the foreign
+principal to the local principal.  Storage must be allocated for
+\fItkt_authen_out\fP.
+.TP
+.I checksum
+Input to 
+.PN krb_sendauth ;
+\fIchecksum\fP is packaged in the
+.PN krb_sendauth
+message that is sent to the foreign principal.
+It serves as a secret piece of data that can only be known to
+the foreign principal if the foreign principal is
+authenticated as the foreign principal.  It is used to
+facilitate mutual authentication, so if the KOPT_DO_MUTUAL is
+not set, the value of this argument is inconsequential.  If
+both KOPT_DONT_MK_REQ and KOPT_DO_MUTUAL are set, then the 
+\fIchecksum\fP parameter must be equal to the checksum value
+used by
+.PN krb_mk_req
+in the creation of the ticket-authenticator pair, \fIauthen_tkt\fP.
+.TP
+.I msg_data
+Pointer to a structure which is filled with
+the mutual authentication message sent by 
+.PN krb_recvauth
+and
+interpreted by 
+.PN krb_sendauth .
+The message sent from 
+.PN krb_sendauth
+to 
+.PN krb_recvauth ,
+the message that includes the ticket-authenticator pair,
+authenticates only the caller of 
+.PN krb_sendauth
+to the caller of 
+.PN krb_recvauth .
+An additional
+message, the one returned by 
+.PN krb_sendauth
+inside \fImsg_data\fP,
+must be sent by 
+.PN krb_recvauth
+and interpreted by 
+.PN krb_sendauth
+in order to authenticate the caller of 
+.PN krb_recvauth
+to the
+caller of 
+.PN krb_sendauth .
+If the KOPT_DO_MUTUAL option is set,
+space must be allocated for the	\fImsg_data\fP structure.  Otherwise,
+since no message will be sent from 
+.PN krb_recvauth
+to 
+.PN krb_sendauth ,
+the \fImsg_data\fP parameter should be set equivalent to the NULL
+pointer.
+.TP
+.I cred
+a pointer to a credentials structure that is output
+from 
+.PN krb_sendauth .
+The credentials structure includes the ticket that the local principal uses to
+authenticate to the foreign principal as well as other authentication
+information associated with the foreign principal.
+If the KOPT_DO_MUTUAL option is
+set, space must be allocated for the \fIcred\fP structure and
+the \fIcred\fP structure will be filled in by 
+.PN krb_sendauth .
+Otherwise, the \fIcred\fP structure will not be filled in by
+.PN krb_sendauth ,
+so the \fIcred\fP parameter should be set equivalent
+to the NULL pointer.
+.TP
+.I schedule
+a key schedule, derived from the session key
+between the local and foreign principals, that is output from
+.PN krb_sendauth
+and 
+.PN krb_recvauth .
+If the KOPT_DO_MUTUAL option is
+set, the key schedule will be filled in; otherwise, the
+key schedule will not be filled.  In any
+case, space must be allocated for the key schedule.
+.TP
+.I f_addr
+the address of the socket that the foreign
+principal is using to communicate with the local principal.
+If the KOPT_DO_MUTUAL option is not set on a call to 
+.PN krb_sendauth ,
+then the \fIf_addr\fP parameter should be set equivalent to the NULL
+pointer.  \fIf_addr\fP should never be set to NULL on a call to
+.PN krb_recvauth .
+.TP
+.I l_addr
+the address of the socket that the local principal
+is using to communicate with the foreign principal.  If
+the KOPT_DO_MUTUAL option is not set, the \fIl_addr\fP parameter
+should be set equivalent to the NULL pointer.
+.TP
+.I ad
+a pointer to the AUTH_DAT structure that describes the authentication
+association between the local and foreign principals.  Since it is output from
+.PN krb_recvauth ,
+space for the \fIad\fP structure must be allocated.
+.TP
+.I srvtab_file
+path name of the file that contains the
+key of the principal obtaining a ticket.
+If this value is set equal to a string of zero length, 
+.PN srvtab_file[0] ='\\\\0',
+the default service 
+table file (srvtab) value is used.  If
+this value is set equal to the NULL pointer, then the key of the service
+is not read from the srvtab file, but is read from storage space
+internal to the libraries.  The \fIsrvtab_file\fP parameter cannot be set
+to the NULL string on the first call to
+.PN krb_sendauth .
+The default srvtab file value is set to
+.PN /etc/srvtab
+although this value can be changed by
+a call to the 
+.PN krb_set_srvtab_string
+function (see
+.PN krb_set_tkt_string(3krb) ).
+.TP
+.I version_in
+An application-specific version string input to 
+.PN krb_sendauth .
+This argument allows the caller of 
+.PN krb_sendauth
+to pass an
+application-specific version string, within the 
+.PN krb_sendauth
+message format, that the caller of 
+.PN krb_recvauth
+can use to match
+against its own version string.  The version string can
+be up to KRB_SENDAUTH_VLEN characters long and, in addition,
+it can be set equal to the NULL string.
+.TP
+.I version_out
+An application-specific version string output from 
+.PN krb_recvauth .
+This argument allows the caller of 
+.PN krb_recvauth
+to receive
+the application-specific version string included in the 
+.PN krb_sendauth
+message that was sent by the foreign principal.
+The version string can be up to KRB_SENDAUTH_VLEN characters
+long.
+.SH Description
+.NXR "Kerberos routines" "krb_sendauth"
+.NXR "Kerberos routines" "krb_recvauth"
+The 
+.PN krb_sendauth(3krb)
+routines are designed to be used by applications that
+communicate over a network, require the authentication of both
+parties across the communications path, and which support "on-the-wire"
+protocols that have no room for authentication information.  The
+.PN krb_sendauth(3krb)
+routines are designed to perform only the authentication of
+the first message sent between such applications.  Therefore, the
+.PN krb_sendauth(3krb)
+routines should be used before any other communication occurs
+between the authenticating principals.  
+.PP
+After the communications
+channel between the applications has been established, but before any
+communication takes place, and before the "on-the-wire" protocol of the
+application comes into effect,
+.PN krb_sendauth
+creates
+a message which can authenticate the caller of 
+.PN krb_sendauth ,
+"A", to the
+caller of 
+.PN krb_recvauth ,
+"B".
+.PN krb_sendauth
+then sends the message to
+"B" where it is read from the communications channel by 
+.PN krb_recvauth .
+.PP
+Next,
+.PN krb_recvauth
+attempts to authenticate "A" by producing a response
+to "A" which, depending upon the value of KOPT_DO_MUTUAL and the
+success of the authentication of "A" by 
+.PN krb_recvauth , 
+will contain
+either an error code, a code indicating	success, or a mutual
+authentication message.
+.PN krb_recvauth
+sends the response and returns to "B".  
+.PN krb_sendauth
+receives the
+message from "B", tries to authenticate "B" if KOPT_DO_MUTUAL is set, and
+then returns to "A".  
+.PP
+Since the authentication information is sent
+between the applications before the "on-the-wire" protocol of the 
+application comes into effect, the application must develop some
+method of distinguishing between the new authenticated initial message
+exchange and an old unauthenticated initial message exchange.
+.PP
+The
+.PN krb_sendauth(3krb)
+routines make extensive
+use of the locally defined data types KTEXT, MSG_DAT,
+CREDENTIALS, and Key_schedule.  For specific information on
+the definitions of these data types, see the \f(CWdes.h\fP and
+\f(CWkrb.h\fP files.
+.PP
+The routines found in the 
+.PN krb_sendauth(3krb) 
+library are
+.PN krb_sendauth
+and
+.PN krb_recvauth :
+.IP krb_sendauth
+.PP
+The 
+.PN krb_sendauth
+function is designed to authenticate a
+local principal, "A", to the principal specified by the
+\fIf_service\fP, \fIf_instance\fP, and \fIf_realm\fP parameters, "B",
+and to allow
+the authentication of "B" to "A" as well.  
+.PN krb_sendauth
+uses file descriptor \fIfd\fP, to send the authentication
+message that will authenticate "A" to principal "B".
+It returns, in the \fItkt_authen\fP parameter, the
+ticket-authenticator pair used to authenticate "A" to "B".  The
+\fIversion_in\fP parameter contains an application-specific version
+string which is transmitted to "B" along with the authentication
+message.
+.PP		
+If mutual authentication is selected as an option, the file
+descriptor, \fIfd\fP will be used to receive a mutual authentication
+message from "B".
+To allow the mutual authentication to take place, \fIl_addr\fP and
+\fIf_addr\fP must be set equal to the address of the sockets which
+the local and foreign principals use to communicate.
+A value known only to "A" must be input to 
+.PN krb_sendauth
+as the \fIchecksum\fP parameter.  As the result
+of mutual authentication, \fIcred\fP will be filled with data
+describing the authentication information associated with "B", 
+\fIschedule\fP will be set equal to the key_schedule of the
+session key between "A" and "B", and \fImsg_data\fP will be set equal
+to the mutual authentication message sent from "B" to "A". 
+.PP
+\fIfd\fP must be a file descriptor associated with a
+blocking socket.  Otherwise, 
+.PN krb_sendauth
+will not function
+correctly.
+.PP
+If "A" has been correctly authenticated to "B" and mutual
+authentication was not chosen as an option, or if "A" has been
+correctly authenticated to "B", and "B" correctly authenticated
+to "A" and mutual authentication was chosen as an option, then 
+KSUCCESS is returned by
+.PN krb_sendauth .
+.PP
+The following is a list of most of the error values from
+.PN krb_sendauth .
+Since 
+.PN krb_sendauth
+calls other section 3 Kerberos routines (
+.PN 3krb ) 
+to perform its function, some of the error codes
+are references to the error codes of other functions:
+.TP 18
+SENDAUTH_OPNOTSUP
+The \fIoptions\fP bits sent to 
+.PN krb_sendauth
+contain a bit
+which is set, but does not correspond to an option.
+.TP 18
+SENDAUTH_WR
+.PN krb_sendauth
+could not write the authentication message
+to "B" using \fIfd\fP.
+.TP 18
+KFAILURE
+The
+.PN /etc/krb.conf
+file cannot be opened, or
+.br
+The 
+.PN /etc/krb.conf
+file (see
+.PN krb.conf(5krb) )
+is not formed properly, or
+.br
+An authentication message was sent from "A" to "B", but
+"B" could not successfully identify "A", or
+.br
+A mutual authentication message was sent from "B" to
+"A", but "A" could not successfully identify "B".
+.TP 18
+-1
+Negative one is returned if each byte of the
+session key does not have odd parity.
+.TP 18
+-2
+Negative two is returned if the session key is a weak
+key as defined by 
+.PN des_is_weak_key
+(see 
+.PN des_crypt(3krb) ).
+.TP 18
+NO_TKT_FIL 
+The ticket file does not exist.
+.TP 18
+TKT_FIL_ACC
+The ticket file cannot be opened or the ticket file
+cannot be accessed.
+.TP 18
+TKT_FIL_LCK
+The ticket file could not be locked for access.
+.TP 18
+TKT_FIL_FMT
+The ticket file format is incorrect.
+.TP 18
+AD_NOTGT
+There is no ticket-granting-ticket in the ticket
+file that can be used to ask for a ticket to communicate
+with the foreign principal.
+.TP 18
+SKDC_CANT
+A Kerberos server must be contacted in order
+for
+.PN krb_sendauth
+to perform its function, but
+the attempt cannot be made because a socket
+cannot be opened or bound, or there is no Kerberos
+server listed in
+.PN /etc/krb.conf .
+.TP 18
+SKDC_RETRY
+A Kerberos server needs to be contacted, but
+none responded even after several retries.
+.TP 18
+INTK_PROT
+Kerberos protocol error.
+.TP 18
+GC_NOTKT
+Information concerning the foreign principal does not
+exist in the ticket file.
+.TP 18
+RECVMUT_OPNOTSUP
+The \fIoptions\fP bits sent to 
+.PN krb_recvmutual
+(see
+.PN krb_sendmutual(3krb) )
+contain a bit
+which is set, but does not correspond to an option.
+.TP 18
+RECVMUT_RD
+If the message cannot be read from the file descriptor
+\fIfd\fP, SENDMUT_RD is returned.
+.TP 18
+RD_AP_VERSION
+If the Kerberos version used to create the mutual
+authentication message is not supported by
+.PN krb_recvmutual ,
+then RD_AP_VERSION is returned.
+.TP 18
+RD_AP_MSG_TYPE
+If the message read from the file descriptor, \fIfd\fP,
+is not a mutual authentication message,
+RD_AP_MSG_TYPE is returned.
+.TP 18
+RD_AP_MODIFIED
+If the mutual authentication message has been modified
+between the "B" and "A" or it was in some way 
+incorrectly produced, RD_AP_MODIFIED is returned.
+.TP 18
+RD_AP_TIME
+Returned if the mutual authentication message is too old.
+.IP krb_recvauth
+.PP
+The 
+.PN krb_recvauth 
+function is designed to wait for a message
+from 
+.PN krb_sendauth
+on the file descriptor \fIfd\fP, receive the 
+message and attempt to authenticate the foreign principal, "A",
+to the local principal determined by the \fIl_service\fP and
+\fIl_instance\fP parameters.  The \fIsrvtab_file\fP must contain the
+private key of principal "B".  The 
+\fItkt_authen_out\fP parameter
+is filled with the ticket-authenticator pair sent within the
+.PN krb_sendauth
+message received by "B" from "A".  \fIad\fP is filled with
+information that describes the authentication association
+between "A" and "B".  \fIversion_out\fP is filled with the application
+version string included in the 
+.PN krb_sendauth
+message.
+.PP
+If mutual authentication is selected as an option, the file
+descriptor \fIfd\fP, will be used to send a mutual authentication
+message to "A".  To allow the mutual authentication to take
+place, \fIl_addr\fP and \fIf_addr\fP must be set equal to the address of
+the sockets that the local and foreign principals are using
+to communicate.  As the result of mutual authentication,
+\fIschedule\fP will be set equal to the key_schedule of the
+session key between "A" and "B".
+.PP
+\fIfd\fP must be a file descriptor that is associated with a
+blocking socket.  Otherwise, 
+.PN krb_recvauth 
+will not function
+correctly.
+.PP
+If "A" has been correctly authenticated to "B" and mutual
+authentication was not chosen as an option, or if mutual 
+authentication is an option and "A" has been
+correctly authenticated to "B" and "B" has sent a 
+mutual authentication message to "B", then KSUCCESS is returned
+by 
+.PN krb_recvauth .
+.PP
+The following is a list of most of the error values from
+.PN krb_recvauth.  Since 
+.PN krb_recvauth
+calls other section 3 Kerberos routines (
+.PN 3krb )
+to perform its function, some of the error codes
+are references to the error codes of other functions.
+.TP 18
+RECVAUTH_OPNOTSUP
+The \fIoptions\fP bits sent to 
+.PN krb_recvauth
+contain a bit
+which is set but does not correspond to an option.
+.TP 18
+RECVAUTH_RD
+.PN krb_recvauth
+could not read the authentication message
+sent to "B" using \fIfd\fP.
+.TP 18
+RECVAUTH_TKTLEN
+The length of the ticket-authenticator pair within
+the 
+.PN krb_sendauth
+message is longer than the maximum
+or less than or equal to 0.
+.TP 18
+RD_AP_VERSION
+The versions of Kerberos used by the caller of 
+.PN krb_sendauth
+is incompatible with the 
+.PN krb_recvauth
+version.
+.TP 18
+RD_AP_MSG_TYPE
+The ticket-authenticator pair given to 
+.PN krb_recvauth
+was not really a ticket-authenticator pair.
+.TP 18
+RD_AP_UNDEC
+The ticket could not be decyphered.  This error can be
+caused by a forged or modified message.
+.TP 18
+RD_AP_INCON
+The message given to 
+.PN krb_recvauth
+contains an internal
+inconsistency.  This could occur if the ticket
+in the ticket-authenticator pair does not match
+the authenticator.
+.TP 18
+RD_AP_BADD
+The ticket-authenticator pair cannot be used to 
+authenticate a principal from the address specified by
+\fIf_addr\fP. 
+.TP 18
+RD_AP_TIME
+The authenticator in the ticket-authenticator pair
+is too old to be used to authenticate the foreign
+principal.
+.TP 18
+RD_AP_NYV
+The time at which the ticket of the ticket-authenticator
+pair was created is too far ahead of the time of the
+local host of the local principal.
+.TP 18
+RD_AP_EXP
+The ticket is too old to be used.
+.TP 18
+-1
+Negative one is returned if the each byte of the
+session key does not have odd parity.
+.TP 18
+-2
+Negative two is returned if the session key is a weak
+key as defined by 
+.PN des_is_weak_key .
+.TP 18
+SENDMUT_OPNOTSUP
+The options bits sent to 
+.PN krb_sendmutual
+contains a bit
+which is set but does not correspond to an option.
+.TP 18
+SENDMUT_MAKMSG
+If there is an error in forming the mutual
+authentication message itself, SENDMUT_MAKMSG is
+returned.
+.TP 18
+SENDMUT_WR
+If the mutual authentication message cannot be
+written to the file descriptor \fIfd\fP, SENDMUT_WR is
+returned.
+.SH Restrictions
+.PN krb_sendauth
+and
+.PN krb_recvauth
+will not work properly on sockets set to nonblocking I/O mode.
+.SH See Also
+kerberos(3krb), krb_sendmutual(3krb), krb_svc_init(3krb), des_crypt(3krb,
+krb_get_lrealm(3krb), krb_set_tkt_string(3krb), krb.conf(5krb).

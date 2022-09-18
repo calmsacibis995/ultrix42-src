@@ -1,0 +1,56 @@
+.TH touch 1
+.SH Name
+touch \- update access and modification times of a file
+.SH Syntax
+.B touch
+[
+.B \-amcf
+] [ mmddhhmm[yy] ] \fIfiles\fR
+.SH Description
+.NXR "touch command"
+.NXR "file" "updating date"
+The
+.PN touch
+command causes the access and modification times of each
+argument to be updated.
+The file name is created if it does not already exist.
+If no time is specified, 
+the current time is used.
+For a more detailed explanation of how to specify
+the date and time, see 
+.MS date 1 .
+.PP
+The return code from
+.PN touch
+is the number of files for which the times could not
+be successfully modified,
+including files that did not exist and were not created.
+This utility runs under the SYSTEM_FIVE environment.  
+.SH Options
+.TP 5
+\fB\-a\fR 
+Causes
+.PN touch
+to update the access time.
+.TP 
+\fB\-c\fR
+Prevents
+.PN touch
+from creating the file if it did not
+previously exist.
+.TP 
+\fB\-f\fR
+Attempts to force the touch in spite of read and write restrictions
+on a 
+.I file.
+.TP
+\fB\-m\fR
+Causes 
+.PN touch
+to update the modification time.
+.PP
+Note that the default setting for the 
+.PN touch
+command is \fB\-am\fR.
+.SH See Also
+date(1), utime(2)

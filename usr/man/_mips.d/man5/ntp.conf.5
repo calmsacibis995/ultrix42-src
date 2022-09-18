@@ -1,0 +1,135 @@
+.TH ntp.conf 5
+.SH Name
+ntp.conf \- Network Time Protocol configuration file
+.SH Description
+The 
+.PN /etc/ntp.conf 
+.NXR "ntp.conf file" "described"
+.NXR "named configuration file" "described"
+file is the configuration file for the Network
+Time Protocol (NTP) daemon, 
+.PN ntpd .  
+This file must be configured on your system before running 
+.PN ntpd .  You must be superuser to modify this file .
+.NT
+Any host names that you specify in
+the 
+.PN /etc/ntp.conf
+file must have an entry in the
+.PN /etc/hosts
+file, or an entry in the master
+.PN hosts
+database, if the database is being served to your system
+by BIND/Hesiod or Yellow Pages.
+.NE
+.PP          
+The 
+.PN /etc/ntp.conf 
+file has four entry formats:
+.IP "trusting no" 5
+This entry guarantees that your system synchronizes
+only to the NTP servers identified in the peer and server 
+entries specified.  Digital recommends that all systems include
+the 
+.PN "trusting no" 
+entry.
+.IP "peer \fIserver\fP"
+This entry identifies \fIserver\fP as one of the NTP servers
+that your system trusts, and from which your system
+will accept time synchronization.   Your system may also
+provide time synchronization to this server.  Servers
+can be identified by host name or internet address.  
+.IP
+NTP servers should be configured with 
+.PN peer
+entries.  
+.IP "server \fIserver\fP"
+This entry identifies \fIserver\fP as one of the NTP servers
+that your system trusts, and from which your system
+will accept time synchronization.  Your system can not
+provide time synchronization to this server.  Servers 
+can be identified by host name or internet address.
+.IP
+NTP clients should be configured with 
+.PN server
+entries.
+.nf
+.IP "peer   /dev/null       LOCL    1       \-5      local"
+.fi
+This entry identifies your system as a local reference
+clock.  A local reference clock is the most accurate 
+system clock available at your site.  If you receive time
+synchronization from the Internet NTP service, you should not include
+this entry on any of your systems.  
+At most, one system in a set of nodes running 
+.PN ntpd 
+should be identified as a local reference clock. 
+.IP
+A host which specifies this entry should not specify any
+.PN peer
+or 
+.PN server
+entries.
+.SH Examples
+This is a sample configuration file for an NTP client which receives 
+time synchronization from the NTP servers: 
+.PN server1 , 
+.PN server2, 
+and  
+.PN server3.
+Lines beginning with a number sign (#) are comments.
+.EX
+#
+#               NTP  Configuration File
+#        This file is mandatory for the ntpd daemon
+#
+#
+#
+#   **  A L L  **
+#
+#  "trusting no" prevents this host from synchronizing
+#   to any host that is not listed below.  It is recommended
+#   that all hosts include the line "trusting no".
+#
+trusting no
+#
+#
+#    **  S E R V E R  **
+#
+#  If you are configuring a server, use "peer" entries to
+#  synchronize to other NTP servers.  For example, server1,
+#  server2, and server3.
+#  
+#peer		server1
+#peer		server2
+#peer		server3
+#
+#
+#
+#
+#    **  C L I E N T  **
+#
+#  If you are configuring a client, use "server" entries to
+#  synchronize to NTP servers.  For example, server1, server2,
+#  and server3.
+#
+server		server1
+server		server2
+server		server3
+#
+#
+#
+#    **  L O C A L   R E F E R E N C E   C L O C K  **
+#
+#  If you are configuring a local reference clock, include the
+#  following entry and the "trusting no" entry ONLY.
+#
+#peer	/dev/null	LOCL	1	-5	local
+# 	        
+.EE
+.SH See Also
+ntp(1), ntpd(8), ntpdc(8)
+.br
+\fIRFC 1129\(emInternet time synchronization:  The Network Time Protocol\fP
+.br
+.I "Introduction to Networking and Distributed System Services"

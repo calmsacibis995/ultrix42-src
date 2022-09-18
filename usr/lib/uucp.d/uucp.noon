@@ -1,0 +1,29 @@
+#!/bin/sh
+# @(#)uucp.noon	4.1 (ULTRIX) 7/2/90
+#
+umask 022
+L=/usr/spool/uucp/LOG.shells
+UUL=/usr/var/uucp
+
+trap ':' 1
+
+# start uucico for noon list
+if test -f $UUL/LIST.NOON
+then
+	for i in `sed -e 's/#.*//' $UUL/LIST.NOON`
+	do
+		echo "noon:$$: starting uucico for $i `date`" >>$L
+		#
+		# Create a dummy file so future uucico's will poll 
+		# if this attempt fails.
+		#
+		if test -d /usr/spool/uucp/sys/$i/C.
+		then
+			touch /usr/spool/uucp/sys/$i/C./C.${i}Q0000
+		else
+			touch /usr/spool/uucp/sys/DEFAULT/C./C.${i}Q0000
+		fi
+		$UUL/uucico -r1 -s$i
+	done
+fi
+echo "noon:$$:     complete `date`" >>$L

@@ -1,0 +1,155 @@
+.\"	@(#)dial.3c	5.2 of 5/18/82
+.TH dial 3c VAX "" Unsupported
+.SH Name
+dial \- establish an out-going terminal line connection
+.SH Syntax
+.B #include <dial.h>
+.PP
+int dial(\fIcall\fP)
+.br
+\s-1CALL\s+1 \(**\fIcall\fP;
+.PP
+void undial(\fIfd\fP)
+.br
+int \fIfd\fP;
+.SH Description
+The 
+.PN dial 
+routine
+returns a file-descriptor for a terminal line open for read/write.
+The argument to
+.PN dial 
+is a \s-1CALL\s+1 structure which is defined in the
+<dial.h> header file.
+.PP
+When finished with the terminal line,
+the calling program must invoke
+.PN undial
+to release the semaphore that has been set
+during the allocation of the terminal device.
+.PP
+The \s-1CALL\s+1 typedef in the 
+<dial.h> header file is:
+.EX
+typedef struct {
+	struct termio \(**attr;	/\(** pointer to termio attribute struct \(**/
+	int	baud;	/\(** transmission data rate \(**/
+	int	speed;	/\(** 212A modem: low=300, high=1200 \(**/
+	char	\(**line;	/\(** device name for out-going line \(**/
+	char	\(**telno;	/\(** pointer to tel-no digits string \(**/
+	int	modem;	/\(** specify modem control for direct lines \(**/
+} \s-1CALL\s+1;
+.EE
+The \s-1CALL\s+1 element
+.PN speed
+is intended only for use with
+an outgoing dialed call.
+.PP
+The \s-1CALL\s+1 element
+.PN baud
+is for the desired transmission
+baud rate.
+For example, one might set
+baud to 110 and speed
+to 300 (or 1200).
+.PP
+If the desired terminal line is a direct line, a string
+pointer to its device-name should be placed in the
+.PN line 
+element in the \s-1CALL\s+1 structure.
+Legal values for such terminal device names are kept in the
+L-devices file.
+In this case, the value of the
+.PN baud
+element need not be specified as it is determined
+from the
+L-devices
+file.
+.PP
+The
+.PN telno\^
+element is for a pointer to a character string
+representing the telephone number to be dialed.
+The termination symbol
+is supplied by the
+.PN dial
+function, and should not be included in the
+.PN telno
+string passed to
+.PN dial
+in the \s-1CALL\s+1 structure.
+.PP
+The \s-1CALL\s+1 element
+.PN modem
+is used to specify modem control for direct lines.
+This element should be non-zero if modem control is required.
+.PP
+The \s-1CALL\s+1 element
+.PN attr
+is a pointer to a
+.PN termio
+structure, as defined in the
+termio.h header file.
+A \s-1NULL\s+1 value for this pointer element may be passed to
+the
+.PN dial
+function, but if such a structure is included, the elements specified
+in it are set for the outgoing terminal line before the connection
+is established.
+This is often important for certain attributes
+such as parity and baud-rate.
+.SH Restrictions
+Including the
+.B <dial.h>
+header file automatically includes the
+.B <termio.h> header file.
+.PP
+An
+.MS alarm 3
+system call for 3600 seconds is made (and caught) within the
+.PN dial
+module for the purpose of ``touching'' the \fI\s-1LCK\s+1..\fP file
+and constitutes the device allocation semaphore for the terminal
+device.
+Otherwise,
+.MS uucp 1c
+may simply delete the \fI\s-1LCK\s+1..\fP entry on its 90-minute clean-up rounds.
+The alarm may go off while the user program is in a
+.MS read 2
+or
+.MS write 2
+system call, causing an apparent error return.
+If the user program expects to be around for an hour or more, error
+returns from
+.IR read s
+should be checked for \fB(errno==\s-1EINTR\s+1)\fP, and the
+.I read\^
+possibly reissued.
+.SH Diagnostics
+On failure, a negative value indicating the reason for
+the failure is returned.
+Mnemonics for these negative indices as listed here are defined
+in the <dial.h>
+header file.
+.sp 2
+.nf
+.ta .5i 1.3i 2.0i
+	\s-1INTRPT\s+1	\-1	/\(** interrupt occured \(**/
+	\s-1D_HUNG\s+1	\-2	/\(** dialer hung (no return from write) \(**/
+	\s-1NO_ANS\s+1	\-3	/\(** no answer within 10 seconds \(**/
+	\s-1ILL_BD\s+1	\-4	/\(** illegal baud-rate \(**/
+	\s-1A_PROB\s+1	\-5	/\(** acu problem (open() failure) \(**/
+	\s-1L_PROB\s+1	\-6	/\(** line problem (open() failure) \(**/
+	\s-1NO_L\s+1dv	\-7	/\(** can't open \s-1LDEVS\s+1 file \(**/
+	\s-1DV_NT_A\s+1	\-8	/\(** requested device not available \(**/
+	\s-1DV_NT_E\s+1	\-12	/\(** requested speed does not match \(**/
+	\s-1DV_NT_K\s+1	\-9	/\(** requested device not known \(**/
+	\s-1NO_BD_A\s+1	\-10	/\(** no device available at requested baud \(**/
+	\s-1NO_BD_K\s+1	\-11	/\(** no device known at requested baud \(**/
+.fi
+.SH Files
+\f(CW/usr/lib/uucp/L-devices\fP
+.br
+\f(CW/usr/spool/uucp/\s-1LCK\s+1..\fItty-device\fP
+.SH See Also
+uucp(1c), alarm(3), read(2), write(2), termio(7)

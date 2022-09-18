@@ -1,0 +1,452 @@
+.\" Copyright (c) 1990, Digital Equipment Corporation
+.\" This material based on work...
+.\" Copyright (c) 1990, OPEN SOFTWARE FOUNDATION, INC.
+.\" ALL RIGHTS RESERVED
+.TH pxtar 1
+.SH Name
+pxtar \- manipulates tape archives
+.SH Syntax
+.B pxtar
+.RB [ \-c
+|
+.B \-r
+|
+.B \-t
+|
+.B \-u
+|
+.BR \-x ]
+.RB [ \-BdFhilmMpsvw ] 
+.RB [ \-\c
+.IR number ]
+.RB [ b\c
+.IR blocks ]
+.RB [ \-C\c
+.I directory\fP
+\&.\&.\&.]
+.RB [ \-f\c
+.IR file ]
+.RB [ \-L\c
+.IR inputlist ]
+.RB [ \-N\c
+.IR blocks ]
+.RB [ \-S
+.IB blocks b
+|
+.B \-S 
+.I feet
+|
+.B \-S 
+.I feet 
+.BI @ density\c
+]
+.RI [ file
+\&.\&.\&.]
+.SH Description
+.NXR "tape archiver"
+.NXR "pxtar command"
+.NXR "files" "archival storage"
+.NXR "archival storage"
+The 
+.PN pxtar
+command writes files to or retrieves files from an 
+archive storage medium or an archive file.
+The 
+.PN pxtar 
+command looks for archives on
+the default device (usually tape), unless you
+specify another device or archive file with the \fB\-f\fP option.
+.PP
+Filenames must not be longer than
+257 characters and must not contain spaces.  Characters following the
+first space are ignored.
+Internally, the filename may be split into two pieces to fit into the
+header block.
+For more details,
+see Issue 3 of the 
+\fIX/Open\fP\*(TM\fI Portability Guide\fP, \"TITLE_EXEMPT\"
+\fIVolume 3\fP, \fIXSI Supplementary 
+Definitions\fP, section 18.5. \"TITLE_EXEMPT\"
+.PP
+When writing to an archive, 
+.PN pxtar
+uses a temporary file
+.Pn ( /tmp/tar* )
+and maintains in memory a table of files with
+several links.  You will receive an error message if 
+.PN pxtar
+cannot create the temporary file, or if there is not enough memory
+available to hold the link tables.
+.SH Function Keys
+You must supply one of the following five function keys to
+control the actions of 
+.PN pxtar :
+.TP 5
+\fB\-c\fP
+Creates a new archive and
+writes the files at the beginning of the archive. 
+.TP
+\fB\-r\fP
+Writes the file at the end of the archive.
+.TP
+\fB\-t\fP
+Lists the files in the order in which they appear
+in the archive.  Files may appear more than once.
+.TP
+\fB\-u\fP
+Adds file to the end of the
+archive only if it is not in the
+archive already or if it has been modified since it was written to the
+archive.  
+.TP
+\fB\-x\fP
+Extracts file from the archive.  If you specify a directory,
+.PN pxtar
+extracts all files in that directory from the archive.
+If you do not specify a file or a directory,
+.PN pxtar
+extracts all of the files from the archive.
+When an archive contains multiple copies of the same file,
+.PN pxtar
+extracts only the last one and overwrites all
+earlier ones.  If you have superuser authority (see the 
+.MS su 1
+reference page),
+.PN pxtar
+creates all files and directories with the same user and
+group IDs as on the tape.  If you do not have superuser authority,
+the files and directories have your user and group IDs.
+.SH Options
+The options to 
+.PN pxtar
+are listed below.
+In all cases, a directory argument refers to all the
+files and subdirectories, recursively, within that directory.
+Options without corresponding arguments may appear separately or be
+grouped together.  Options that take arguments may have them adjacent
+to the option letter or as the entire following argument.
+The \fB\-b\fR, \fB\-C\fR, \fB\-S\fR, and \fB\-f\fR options can accept
+optional spaces before their arguments.
+.TP 5
+\fB\-b\fP\fIblocks\fP
+Specifies the number of 512-byte blocks per record.
+The default is 20, which is appropriate for tape records.
+(The maximum is also 20.)  Due to the size of inter-record gaps, 
+tapes written with large blocking factors can hold much more data than
+tapes with only one block per record.
+.sp .5 
+The block size is determined automatically when tapes are read
+(function keys \fB\-x\fP or \fB\-t\fP).  When archives are
+updated with the \fB\-u\fP and \fB\-r\fP functions, the existing
+record size is used.  The 
+.PN pxtar
+command writes archives using
+the specified \fIblocks\fP value only when creating new archives
+with the \fB\-c\fP flag.
+.sp .5 
+For output to ordinary files with the \fB\-f\fP option, you can
+save disk space by using a blocking factor that matches the size of disk
+blocks (for example, \fB\-b4\fP for 2048-byte disk blocks).
+Ordinary files must be read using the same blocking factor used when
+they were created.
+.TP
+\fB\-B\fP
+Forces input and output blocking to 20 blocks per record.
+This option was added so that 
+.PN pxtar
+can work across
+communications channels where the blocking may not be
+maintained.
+.TP
+\fB\-C\fP\fIdirectory\fR
+Performs a 
+.PN chdir
+to a \fIdirectory\fR preceded by \fB\-C\fP.  This allows
+multiple directories not related by a close common parent to be
+archived using short relative pathnames.  For example, to
+archive files from 
+.PN /usr/include
+and 
+.PN /etc , 
+one might use the following command:
+.IP
+\  % \fBpxtar c \-C/usr/include \-C/etc\fR
+.TP
+\fB\-d\fP
+Suppress separate entries for directories, blocks and character
+special files, and FIFOs (First In First Out piped processes).
+When this option is specified, 
+.PN pxtar
+writes only ordinary
+files to an archive, and extracts only ordinary files and the directories
+required to contain them as determined by the pathnames in the archive.
+Normally, 
+.PN pxtar
+preserves the directory permission codes and restores empty
+directories, special files, and FIFOs with the \fB\-x\fP flag.
+.TP
+\fB\-f\fIfile\fP\fP
+Uses \fIfile\fP as the archive to be read or written.  When
+this option is not specified,
+.PN pxtar
+uses a system-dependent default filename of the
+form \f(CW/dev/rmt?h\fR
+(usually \f(CW/dev/rmt0h\fR).
+If the file specified is
+\fB\-\fR (minus), 
+.PN pxtar
+writes to standard output or reads
+from standard input.
+When writing to standard output, only the \fB\-c\fP
+flag can be used (\fB\-r\fP or \fB\-u\fP cannot be used). 
+.TP
+\fB\-F\fP
+Checks the file type before archiving.  SCCS, RCS, core, error
+files, filenames ending in 
+.PN \&.o
+and 
+.PN a\&.out
+files will
+not be archived.
+.TP
+\fB\-h\fP
+Forces 
+.PN pxtar
+to follow symbolic links
+as if they were normal files or directories.  Normally,
+.PN pxtar
+does not follow symbolic links.
+.TP
+\fB\-i\fP
+Ignores header checksum errors.  The 
+.PN pxtar
+command
+writes a file header containing a checksum for each file
+in the archive.  When this option is not specified, the system
+verifies the contents of the header blocks by
+recomputing the checksum, and aborts with a \fB`directory checksum
+error'\fR when a mismatch occurs.  When this option is specified,
+.PN pxtar
+logs the error and then scans forward until it finds a valid
+header block.  This permits restoring files from later volumes of a
+multi-volume archive without reading earlier volumes.
+.TP
+\fB\-l\fP
+Writes error messages to standard output if 
+.PN pxtar
+cannot
+resolve all of the links to the files archived.
+When you do not specify this option, the system does not display these
+messages.
+.TP
+\fB\-L\fP\fIinputlist\fP
+Writes the files listed in the \fIinputlist\fP file to the
+archive.  \fIinputlist\fP should contain one filename per line.  Files
+and directories from \fIinputlist\fR are treated recursively. If you include
+the name of a directory in \fIinputlist\fR, 
+.PN pxtar
+command writes
+the directory to the archive as well as the files and subdirectories
+to the archive.  If you also list files or directories on the command 
+line, the contents of
+\fIinputlist\fP are included after 
+.PN pxtar
+has written all
+the files or the directories and their subdirectories to the archive.
+.TP
+\fB\-m\fP
+Uses the time of extraction as the modification time.
+The default is to preserve the modification time of the files.
+.TP
+\fB\-M\fP
+Instructs 
+.PN pxtar
+not to cross mount points.
+The default is to cross mount points.
+.TP
+\fB\-N\fP\fIblocks\fP
+Allows 
+.PN pxtar
+to use very large clusters of blocks when it
+deals with streaming tape archives.  Note, however, that on input,
+.PN pxtar
+cannot automatically determine the block size of tapes
+with very long block sizes created with this option.  
+In the absence of a
+\fB\-N\fP\fIblocks\fP argument, the largest block size that 
+.PN pxtar
+can automatically determine is 20 blocks.
+.TP
+\fB\-p\fP
+Restores files to their original modes,
+ignoring the present \fIumask\fP.  "Set user ID" and sticky
+information will also be restored when extracted by the superuser.
+.TP
+\fB\-s\fP
+Tries to create a symbolic link 
+if 
+.PN pxtar
+fails in its attempt to link (regular link) two files. 
+.TP
+.PD 0
+\fB\-S \fIblocks\fBb\fP
+.TP
+\fB\-S \fIfeet\fP
+.TP
+.PD
+\fB\-S \fIfeet \fB@\fP\fIdensity\fP
+Specifies the number of 512-byte \fIblocks\fP per volume (first
+format), independent of the tape blocking factor.  You can also specify
+the size of the tape in feet by using the second form, and 
+.PN pxtar
+assumes a default density.  The third form allows you to
+specify both tape length and density.  Feet are assumed to be 11 inches
+long to be conservative.  This 
+option lets you deal more easily with
+multi-volume tape archives, where 
+.PN pxtar
+must be able to
+determine how many blocks fit on each volume.
+.sp .5
+Note that tape drives vary in density capabilities.  The
+\fIdensity\fP argument calculates the amount of data a system can
+fit on a tape.  This allows the correct amount of data to be
+written to a tape.
+.TP
+\fB\-v\fP
+Lists the name of each file as it is processed.  With
+the \fB\-t\fP flag, \fB\-v\fP gives more information
+about the tape entries, including file sizes, times of last modification,
+UID, and GID, and permissions.
+.TP
+\fB\-w\fP
+Displays the action to be taken followed by the filename, then waits
+for user confirmation.  If the response begins with \fBy\fR
+or \fBY\fR, the action is performed; otherwise, the file is ignored.
+.TP
+\fB\-\fInumber\fR
+Uses 
+\fB/dev/rmt\fInumber\fPh\fR
+instead of the default.  For
+example, \fB\-2\fR is the same as \fB\-f/dev/rmt2h\fR.
+The default unit is 
+\fB/dev/rmt0h\fR.
+.SH Restrictions
+There is no way to ask for any occurrence of a file other than the last.
+.PP
+There is no recovery from tape errors. 
+.PP
+Although anyone can archive special files, only a user with
+superuser authority can extract them from an archive.
+.PP
+Do not
+replace 
+.PN /bin/tar 
+with 
+.PN pxtar .
+Although the 
+.PN /bin/tar 
+and 
+.PN pxtar
+commands have much in common, they are
+not interchangeable.  The 
+.PN pxtar
+command provides
+compatibility and interoperability with XPG3 systems;  
+.PN pxtar 
+is not
+intended as a replacement for 
+.PN /bin/tar .  
+The 
+.PN /bin/tar
+command adds
+tape-label information to a tape archive, so 
+.PN /bin/tar 
+and 
+.PN pxtar
+have
+different formats for multiple-volume archives.  
+The 
+.PN /bin/tar
+command has
+several added switches that enable features used in the installation
+process and by 
+.PN setld .  
+Substituting the
+.PN pxtar 
+for the
+.PN /bin/tar
+causes the
+.PN setld 
+command to fail;  other commands may also be affected.  
+.SH Examples
+.IP \fR1. 
+To write \fIfile1\fR and \fIfile2\fR to a new archive
+on the default tape drive:
+.IP
+\  % \fBpxtar \-c \fIfile1 file2\fR
+.IP \fR2. 
+To extract all files that are in the 
+.PN /tmp
+directory from
+the archive file on the tape device 
+.PN /dev/rmt2
+and use the time
+of extraction as the modification time:
+.IP
+\  % \fBpxtar \-xm \-f/dev/rmt2 /tmp\fR
+.IP \fR3. 
+To create a new archive file that contains \fIfile1\fR and
+pass the archive file to the 
+.PN dd
+command to be written to
+the device 
+.PN /dev/rmt1 :
+.IP
+\  % \fBpxtar \-cvf \- \fIfile1\fP \(or dd of=/dev/rmt1\fR
+.IP \fR4. 
+To display the names of the files in the disk archive file
+.PN out.tar
+on the current directory:
+.IP
+\  % \fBpxtar \-vtf out\&.tar\fR
+.IP \fR5. 
+To expand the compressed archive file 
+.PN fil.tar.z ,
+pass the file to the 
+.PN pxtar
+command, and extract all files
+from the expanded archive file:
+.IP
+\  % \fBpcat fil\&.tar\&.z \(or pxtar \-xvf \-\fR
+.SH Compatibility Notes
+Multi-volume archives created by 
+.PN pxtar
+are not interchangeable
+with multi-volume archives created by 
+.PN tar ;
+single-volume archives are interchangeable.
+.PP
+The 
+.PN pxtar
+utility produces archives that follow the format requirements 
+specified in the IEEE 1003.1-1988 (\fIPOSIX\fP) standard
+and the \fIX/Open Portability Guide, Issue 3\fP.  \"TITLE_EXEMPT\"
+.SH Diagnostics
+\fBdirectory checksum error\fR 
+.br
+The \fB\-i\fP option was not specified, and a checksum error occurred.
+.SH Files
+.PD 0
+.TP 20
+.PN /usr/bin/pxtar
+Command path.
+.TP
+.PN /dev/rmt0
+Default archive name.
+.TP
+.PD
+.PN /tmp/tar*
+Temporary archive file.
+.SH See Also
+cat(1), dd(1)

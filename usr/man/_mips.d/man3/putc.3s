@@ -1,0 +1,75 @@
+.\" SCCSID: @(#)putc.3s	8.1	9/11/90
+.TH putc 3s 
+.SH Name
+putc, putchar, fputc, putw \- put character or word on a stream
+.SH Syntax
+.B #include <stdio.h>
+.PP
+.B int putc\^(\fIc, stream\fP)
+.nf
+.B char \fIc\fP;
+.B FILE \fI*stream\fP;
+
+.B putchar\^(\fIc\fP)
+
+.B fputc\^(\fIc, stream\fP)
+.B FILE \fI*stream\fP
+
+.B putw\^(\fIw, stream\fP)
+.B FILE \fI*stream\fP;
+.fi
+.SH Description
+.NXR "putc subroutine" 
+.NXR "standard IO" "subroutines for"
+.NXR "putchar subroutine"
+.NXR "putw subroutine"
+.NXR "fputc subroutine"
+.NXR "stream" "putting character on"
+.NXR "stream" "putting word on"
+The
+.PN putc
+routine appends the character
+.I c
+to the named output
+.IR stream .
+It returns the character written.
+.PP
+The
+.PN putchar(c)
+routine is defined as 
+.PN putc
+(c, stdout).
+.PP
+The
+.PN fputc
+routine behaves like 
+.PN putc ,
+but is a genuine function rather than a macro.
+.PP
+The
+.PN putw
+routine appends word (that is,
+.BR int )
+.I w
+to the output
+.IR stream .
+It returns zero. 
+The
+.PN putw
+routine neither assumes nor causes special alignment in the file.
+.SH Restrictions
+Because it is implemented as a macro,
+.PN putc
+treats a stream argument with side effects incorrectly.
+In particular, `putc\^(c, *f++)\^;' doesn't work as expected.
+.SH Diagnostics
+The
+.PN putc ,
+.PN putchar ,
+and
+.PN fputc
+functions return the constant EOF upon error.  The
+.PN putw
+function returns a non-zero value on error.
+.SH See Also
+fclose(3s), fopen(3s), fread(3s), getc(3s), printf(3s), puts(3s)

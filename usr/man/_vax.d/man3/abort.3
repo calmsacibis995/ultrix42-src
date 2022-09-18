@@ -1,0 +1,39 @@
+.\" SCCSID: @(#)abort.3	8.1	9/11/90
+.TH abort 3
+.SH Name
+abort \- generate an illegal instruction fault
+.SH Syntax
+.nf
+.B #include <stdlib.h>
+.PP
+.B void abort()
+.fi
+.SH Description
+.NXR "abort subroutine (standard C)"
+.NXR "process" "terminating with core dump"
+The
+.PN abort
+subroutine
+executes an instruction which is illegal in user mode.
+This causes a signal that normally terminates
+the process with a core dump, which may be used for debugging.
+.SH Diagnostics
+.PP
+.B Illegal instruction \- core dumped
+ \-  Bourne shell.
+.PP
+.B Illegal instruction (core dumped)
+ \-  C shell.
+.SH Environment
+When your program is compiled using the System V or POSIX environment,
+.PN abort
+closes open files before aborting the process with an IOT fault.
+.SH Restrictions
+The 
+.PN abort 
+function does not flush standard I/O buffers.  Use
+.MS fflush 3s .
+For further information, see
+.MS fclose 3s .
+.SH See Also
+adb(1), exit(2), sigvec(2), fclose(3s)

@@ -1,0 +1,27 @@
+.\" SCCSID: @(#)sigsuspend.3	2.4	8/10/87
+.TH sigsuspend 3
+.SH Name
+sigsuspend \- wait for signal (POSIX)
+.SH Syntax
+.ft B
+sigsuspend(sigmask)
+.br
+sigset_t *sigmask;
+.ft R
+.SH Description
+.NXR "sigsuspend system call"
+.NXA "sigblock system call" "sigsuspend system call"
+.NXR "signal" "releasing blocked"
+The
+.PN sigsuspend
+system call
+is the POSIX equivalent of the
+.MS sigpause 2
+system call. The behavior of this call is as described on the
+.MS sigpause 2
+reference page except,
+the signal mask is manipulated using the 
+.MS sigsetops 3
+functions.
+.SH See Also
+sigpause(2), sigaction(3), sigvec(2)

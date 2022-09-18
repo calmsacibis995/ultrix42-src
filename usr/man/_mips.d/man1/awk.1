@@ -1,0 +1,243 @@
+.\" SCCSID: @(#)awk.1	8.1	9/11/90
+.TH awk 1
+.SH Name
+awk \- pattern scanning and processing language
+.SH Syntax
+.B awk
+[\fB\-F\fIc\fR] [\fB\-f\fI prog\fR\|] [\fB-\fR] [\|\fIfile...\fR] 
+.SH Description
+.NXR "awk programming language"
+.NXA "awk programming language" "sed stream editor"
+.NXR "file" "processing matching text"
+.NXR "awk programming language" "statement list"
+The
+.PN awk
+command scans each input
+.I file
+for lines that match any of a set of patterns specified in
+.IR prog .
+With each pattern in
+.I prog
+there can be an associated action that will be performed
+when a line of a
+.I file
+matches the pattern.
+The set of patterns may appear literally as
+.I prog,
+or in a file
+specified as
+.B \-f
+.IR prog.
+.PP
+Files are read in order;
+if there are no files, the standard input is read.
+The file name `\-'
+means the standard input.
+Each line is matched against the
+pattern portion of every pattern-action statement;
+the associated action is performed for each matched pattern.
+.PP
+An input line is made up of fields separated by white space.
+(This default can be changed by using FS, as described below.)
+The fields are denoted $1, $2, ... ;
+$0 refers to the entire line.
+.PP
+.PP
+A pattern-action statement has the form
+.PP
+	pattern { action }
+.PP
+A missing { action } means print the line;
+a missing pattern always matches.
+.PP
+An action is a sequence of statements.
+A statement can be one of the following:
+.NXR "awk programming language" "statement list"
+.PP
+.nf
+	if ( conditional ) statement [ else statement ]
+	while ( conditional ) statement
+	for ( expression ; conditional ; expression ) statement
+	break
+	continue
+	{ [ statement ] ... }
+	variable = expression
+	print [ expression-list ] [ >expression ]
+	printf format [ , expression-list ] [ >expression ]
+	next	# skip remaining patterns on this input line 
+	exit	# skip the rest of the input
+.fi
+.PP
+Statements are terminated by
+semicolons, new lines or right braces.
+An empty expression-list stands for the whole line.
+Expressions take on string or numeric values as appropriate,
+and are built using the operators
++, \-, *, /, %,  and concatenation (indicated by a blank).
+The C operators ++, \-\-, +=, \-=, *=, /=, and %=
+are also available in expressions.
+Variables may be scalars, array elements
+(denoted
+x[i])
+or fields.
+Variables are initialized to the null string.
+Array subscripts may be any string,
+not necessarily numeric;
+this allows for a form of associative memory.
+String constants are quoted "...".
+.PP
+The 
+.I print
+statement prints its arguments on the standard output
+(or on a file if 
+.I >file
+is present), separated by the current output field separator,
+and terminated by the output record separator.
+The
+.PN printf
+statement formats its expression list according to the format.
+For further information, see 
+.MS printf 3s .
+.PP
+The built-in function
+.I length
+returns the length of its argument
+taken as a string,
+or of the whole line if no argument.
+.NXR "awk programming language" "built-in functions"
+There are also built-in functions
+.I exp,
+.I log,
+.I sqrt,
+and
+.IR int .
+The last truncates its argument to an integer.
+.IR substr(s,\ m,\ n)
+returns the 
+.IR n \-character
+substring of
+.I s
+that begins at position
+.IR m .
+The function
+.IR sprintf(fmt,\ expr,\ expr,\ ...)
+formats the expressions
+according to the
+.MS printf 3s 
+format given by
+.I fmt
+and returns the resulting string.
+.PP
+Patterns are arbitrary Boolean combinations
+(!, \(or\(or, &&, and parentheses) of 
+regular expressions and
+relational expressions.
+Regular expressions must be surrounded
+by slashes and are as in
+.IR egrep .
+Isolated regular expressions
+in a pattern apply to the entire line.
+Regular expressions may also occur in
+relational expressions.
+.PP
+A pattern may consist of two patterns separated by a comma;
+in this case, the action is performed for all lines
+between an occurrence of the first pattern
+and the next occurrence of the second.
+.PP
+.nf
+A relational expression is one of the following:
+.PP
+.nf
+	expression matchop regular-expression
+	expression relop expression
+.PP
+.fi
+where a relop is any of the six relational operators in C,
+and a matchop is either ~ (for contains)
+or !~ (for does not contain).
+A conditional is an arithmetic expression,
+a relational expression,
+or a Boolean combination
+of these.
+.PP
+The special patterns
+BEGIN
+and
+END
+may be used to capture control before the first input line is read
+and after the last.
+BEGIN must be the first pattern, END the last.
+.PP
+A single character
+.I c
+may be used to separate the fields by starting
+the program with
+.PP
+	BEGIN { FS = "c" }
+.PP
+or by using the
+.BI \-F c
+option.
+.PP
+Other variable names with special meanings
+include NF, the number of fields in the current record;
+NR, the ordinal number of the current record;
+FILENAME, the name of the current input file;
+OFS, the output field separator (default blank);
+ORS, the output record separator (default new line);
+and
+OFMT, the output format for numbers (default "%.6g").
+.SH Options
+.TP 10
+.B \-
+Used for standard input file.  
+.TP 10
+.BI \-F c
+Sets interfield separator to named character.  
+.TP 10
+.BI \-f prog
+Uses prog file for patterns and actions.  
+.SH Examples
+.NXR "awk programming language"
+Print lines longer than 72 characters:
+.EX
+	length > 72
+.EE
+.PP
+Print first two fields in opposite order:
+.EX
+	{ print $2, $1 }
+.EE
+.PP
+Add up first column, print sum and average:
+.EX
+		{ s += $1 }
+	END	{ print "sum is", s, " average is", s/NR }
+.EE
+.PP
+Print fields in reverse order:
+.EX
+	{ for (i = NF; i > 0; \-\-i) print $i }
+.EE
+.PP
+Print all lines between start/stop pairs:
+.EX
+	/start/, /stop/
+.EE
+.PP
+Print all lines whose first field is different from previous one:
+.EX
+	$1 != prev { print; prev = $1 }
+.SH Restrictions
+.NXR "awk programming language" "restricted"
+There are no explicit conversions between numbers and strings.
+To force an expression to be treated as a number add 0 to it;
+to force it to be treated as a string concatenate ""
+to it.
+.SH See Also
+lex(1), sed(1)
+.br
+"Awk \- A Pattern Scanning and Processing Language"
+.I ULTRIX Supplementary Documents
+Vol. II: Programmer

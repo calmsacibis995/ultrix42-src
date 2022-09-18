@@ -1,0 +1,126 @@
+.\" SCCSID: @(#)passwd.5yp	8.1	9/11/90
+.TH passwd 5yp
+.SH Name
+passwd \- password file description with the Yellow Pages service implemented
+.SH Description
+.NXR "passwd file (YP)" "format"
+The 
+.PN passwd
+file stores initial login information, including passwords
+for each user in the system.
+Regardless of whether or not the system has the Yellow Pages service
+implemented, the
+.PN passwd
+file contains the
+following information:
+.HP 10
+Name (login name, contains no uppercase)
+.br
+.ns
+.HP 10
+Encrypted password
+.br
+.ns
+.HP 10
+Numerical user ID
+.br
+.ns
+.HP 10
+Numerical group ID
+.br
+.ns
+.HP 10
+User's real name, office, extension, home phone.
+.br
+.ns
+.HP 10
+Initial working directory
+.br
+.ns
+.HP 10
+Program to use as Shell
+.PP
+The name can contain an ampersand (&), meaning insert the login name.
+This information is set by the
+.MS chfn 1
+command and used by the
+.MS finger 1
+command.
+.PP
+This is an ASCII file.  Each field within each user's entry
+is separated from the next by a colon.
+Each user is separated from the next by a new line.
+If the password field is null, no password is demanded;
+if the shell field is null, the system defaults to the 
+.PN /bin/sh
+shell.
+.PP
+This file resides in the 
+.PN /etc
+directory.
+Because of the encrypted
+passwords, it can and does have general read
+permission and can be used, for example,
+to map numerical user IDs to names.
+.PP
+Appropriate precautions must be taken to lock the
+.PN /etc/passwd
+file against simultaneous changes if it is to
+be edited with a text editor.
+The
+.PN vipw
+command does the necessary locking.
+.PP
+In a Yellow Pages environment, the
+.PN passwd
+file can also have a line beginning with a plus (+),
+which means to incorporate entries from the Yellow Pages data base.
+There are three styles of + entries:
+by itself, + means to insert the entire contents
+of the Yellow Pages password file at that point;
+.I +name
+means to insert the entry (if any) for
+.I name
+from the Yellow Pages at that point;
+.I +@name
+means to insert the entries for all members of the network group
+.I name
+at that point.
+If a + entry has a nonnull password, directory, gecos, or shell field,
+it will override what is contained in the Yellow Pages.
+The numerical user ID and group ID fields cannot be overridden.
+.SH Examples
+.PP
+Here is a sample 
+.PN /etc/passwd
+file:
+.EX
+root:q.mJzTnu8icF.:0:10:Privileged Account:/:/bin/csh
+jcj:6k/7KCFRPNVXg:508:10:JC Javert:/usr2/jcj:/bin/csh
++john:
++@documentation:no-login:
++:::Guest
+.EE
+.PP
+In this example, there are specific entries for users
+.I root
+and
+.I jcj,
+in case the Yellow Pages are temporarily out of service.
+Alternatively, a user may need specific login information on a given
+system that differs from the information contained in the Yellow Pages
+map for that user.
+The user, john,
+will have his password entry in the Yellow Pages
+incorporated without change.
+Anyone in the netgroup
+.I documentation
+will have their password field disabled,
+and anyone else will be able to log in with their usual password,
+shell, and home directory, but with a gecos field of
+.I Guest.
+.SH Files
+.PN /etc/passwd
+.SH See Also
+chfn(1), finger(1), login(1), passwd(1), crypt(3),
+getpwent(3), group(5), adduser(8), vipw(8)

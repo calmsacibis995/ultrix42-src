@@ -1,0 +1,330 @@
+.TH pg 1
+.SH Name
+pg \- file perusal filter for soft-copy terminals
+.SH Syntax
+.B pg
+.BI [\- number ]
+.B [\-p
+.IB string ]
+.B [\-cefs]
+.BI [+ linenumber ]
+.BI [+/ pattern /]
+.BR [ files ...]
+.SH Description
+.NXR "pg command"
+The
+.PN pg
+command is a filter that allows the examination
+of
+.I files
+one screenful
+at a time on a soft-copy terminal.
+When the file name is
+designated by a minus (\-) and/or NULL argument,
+the
+.PN pg
+command reads from the standard input.
+Each screenful is followed by a prompt.
+If the user types a carriage return, another page is displayed.
+.PP
+This command is different from previous paginators
+because it allows you to back up
+and review material that has already passed.
+.PP
+In order to determine terminal attributes,
+.PN pg
+scans the
+.MS terminfo 5
+data base for the terminal type specified by the
+environment variable
+TERM.
+If
+TERM
+is not defined,
+the terminal is assumed to be a
+dumb terminal.
+The
+.PN pg
+command takes responses that
+can be divided
+into three categories: those causing further perusal, those that
+search, and those that modify the perusal environment.
+.PP
+Commands causing further perusal normally take a preceding
+.IR address,
+which is an optionally signed number indicating the point from which
+further text should be displayed.
+This
+.I address
+is interpreted in either pages or lines depending
+on the command.
+A signed
+.I address
+specifies a point relative to the current page
+or line, and an unsigned
+.I address
+specifies an address relative
+to the beginning of the file.
+Each command has a default address that is used if none is provided.
+.PP
+The perusal commands and their defaults are as follows:
+.TP 20
+.RI (+1)< newline "> or <" blank >
+Causes one page to be displayed.
+The address is specified in pages.
+.TP
+.RB "(+1) " l
+Causes
+.PN pg
+to simulate scrolling the screen, forward or backward,
+the number of lines specified when used with a relative address.
+With an absolute address
+this command prints a screenful
+beginning at the specified line.
+.TP
+.RB "(+1) " d " or " ^D
+Simulates scrolling half a screen forward or backward.
+.PP
+The following perusal commands take no
+.IR address:
+.TP 20
+.BR . " or " ^L
+Causes the current page of text
+to be redisplayed.
+.TP
+.B $
+Displays the last window full in the file.
+Use with caution when the input is a pipe.
+.PP
+The following commands are available for searching for text patterns
+in the text.
+The regular expressions described in
+.MS ed 1
+are available.
+They must always be terminated by a
+.RI < newline >,
+even if the
+.I \-n
+option is specified.
+.TP 20
+.IB i / pattern /
+Searches forward for the
+.IR i th
+(default
+.IR i =1)
+occurrence
+of
+.IR pattern.
+Searching begins immediately after the current page and continues to the
+end of the current file, without wrap-around.
+.PP
+.IB i ^ pattern ^
+.PD 0
+.TP
+.IB i ? pattern ?
+Searches backwards for the
+.IR i th
+(default
+.IR i =1)
+occurrence of
+.IR pattern.
+Searching begins immediately before the current page
+and continues to the beginning of the current file, without
+wrap-around.
+The circumflex (^) notation is useful for Adds 100 terminals
+which do not
+handle the question mark (?) properly.
+.PD
+.PP
+After searching,
+.PN pg
+normally displays the line found at the top of the screen.
+This can be modified by appending m or b
+to the search
+command to leave the line found in the middle or at the bottom of
+the window from now on.
+The suffix t
+can be used to restore the original situation.
+.PP
+The user of
+.PN pg
+can modify the environment of perusal with the
+following commands:
+.TP 20
+.IB i n
+Begins perusing the
+.IR i th
+next file in the command line.
+The
+.I i
+is an unsigned number.  Default value is 1.
+.TP
+.IB i 
+Begins perusing the
+.IR i th
+previous file in the command line.
+.I i
+is an unsigned number.  Default is 1.
+.TP
+.IB i w
+Displays another window of text.
+If
+.I i
+is present, sets the window size to
+.IR i.
+.TP
+.BI "s " filename
+Saves the input in the named file.
+Only the current file being perused is saved.
+The white space between the
+.B s
+and
+.I filename
+is optional.
+This command must always be terminated by a
+.RI < newline >,
+even if the
+.I \-n
+option is specified.
+.TP
+.B h
+Helps by displaying an abbreviated summary of available commands.
+.TP
+.BR q " or " Q "
+Quits
+.PN pg .
+.TP
+\fB!\fIcommand\fR
+The
+.I command
+is passed to the shell, whose name is
+taken from the
+SHELL
+environment variable.
+If this is not available, the default shell is used.
+This command must always be terminated by a
+.RI < newline >,
+even if the
+.B \-n
+option is specified.
+.PP
+At any time when output is being sent to the terminal, the user can hit
+the quit key (normally control-\\) or the interrupt (break) key.
+This causes
+.PN pg
+to stop sending output and to display the prompt.
+The user may then enter one of the above commands in the normal manner.
+Unfortunately, some output is lost when this is done, because
+any characters waiting in the terminal's output queue are flushed
+when the quit signal occurs.
+.PP
+If the standard output is not a terminal, then
+.PN pg
+acts just like
+.MS cat 1 ,
+except that a header is printed before each file (if there is
+more than one).
+.SH Options
+The command line options are:
+.TP 15
+.I \-number
+Specifies the size (in lines)
+of the window that
+.PN pg
+is to use instead of the default.
+(On a terminal containing 24 lines, the default window size is 23).
+.TP
+.BI \-p " string"
+Causes
+.PN pg
+to use 
+.PN string
+as the prompt.
+If the prompt string contains a %d, the first occurrence
+of %d in the prompt is replaced
+by the current page number when the prompt is issued.
+The default prompt string is designated by a colon
+.RB (:) .
+.TP
+.B \-c
+Homes the cursor and clears the screen before displaying each page.
+This option is ignored if
+.B clear_screen
+is not defined for this terminal type in the
+.MS terminfo 5
+data base.
+.TP
+.B \-e
+Causes
+.PN pg
+.I not
+to pause at the end of each file.
+.TP
+.B \-f
+Inhibits
+.PN pg
+from splitting lines.
+Normally,
+.PN pg
+splits lines longer than the screen width,
+but some sequences of characters
+in the text being displayed
+(for example, escape sequences for underlining)
+generate undesirable results.
+The
+.I \-f
+option prevents the splitting of these sequences.
+.TP
+.B \-s
+Causes 
+.PN pg
+to print all messages and prompts in standout
+mode (usually inverse video).
+.TP
+.BI + linenumber
+Starts up at
+.IR linenumber.
+.TP
+.BI +/ pattern /
+Starts up at the first line containing
+the regular expression pattern.
+.SH Examples
+The following example shows how the
+.PN pg
+command is used reading system news:
+.EX
+news | pg \-p "(Page %d):"
+.EE
+.SH Notes
+While waiting for terminal input,
+.PN pg
+responds to
+.BR \s-1BREAK\s+1 ,
+.BR \s-1DEL\s+1 
+and the circumflex (^)
+by terminating execution.
+Between prompts, however, these signals interrupt
+.PN pg
+command's
+current task and place the user in prompt mode.
+These should be used with caution when input is being read from
+a pipe, since an interrupt is likely to terminate the other
+commands in the pipeline.
+.SH Restrictions
+Terminal tabs must be set every eight positions.
+.PP
+Using
+.PN pg
+as a filter with another command changes the terminal I/O
+options.  For example,
+.MS crypt 1 
+terminal settings may not be restored correctly.
+.SH Files
+.TP 22
+.PN /usr/lib/terminfo/*
+Terminal information data base
+.TP
+.PN /tmp/pg*
+Temporary file when input is from a pipe
+.SH See Also
+crypt(1), ed(1), grep(1), terminfo(5) 

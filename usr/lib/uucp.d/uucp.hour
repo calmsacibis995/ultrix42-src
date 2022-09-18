@@ -1,0 +1,94 @@
+#!/bin/sh
+# @(#)uucp.hour	4.1 (ULTRIX) 7/2/90
+umask 022
+L=/usr/spool/uucp/LOG.shells
+uul=/usr/var/uucp
+uu=/usr/spool/uucp
+
+trap ':' 1
+
+# Fire up execute daemons now.  Short delay allows command-specific daemons
+# to establish their lock files so general daemon won't grab their work.
+
+$uul/uuxqt -crnews &
+$uul/uuxqt -cunbatchnews &
+	sleep 15
+echo "hour:$$: starting general uuxqt `date`" >>$L
+$uul/uuxqt &
+
+# Start specific polls.
+#	If you have more dialers than systems listed in LIST.HOUR,
+#	and the number of systems is small (2-4), you may want to
+#	uncomment the line which puts the uucico in the background.
+#	
+
+if [ -f $uul/LIST.HOUR ]
+    then
+	for i in `sed -e 's/#.*//' $uul/LIST.HOUR`
+	 do
+		echo "hour:$$: starting uucico for $i `date`" >>$L
+		rm -f $uu/STST./STST.$i
+		#
+		# To put the uucico in the background,
+		# uncomment this next entry: 
+		# $uul/uucico -r1 -s$i &
+		# 
+		$uul/uucico -r1 -s$i  # and delete this one
+	 done
+    fi
+
+#
+# Start general poll.
+#
+#	Other hourly general polls are locked out until this one finishes.
+
+tries=0
+
+while tries=`expr $tries + 1` ; test $tries -le 3
+  do
+
+    echo $$ >$uu/LCK...$$
+
+    if    ln $uu/LCK...$$ $uu/LCK...hour
+        then
+	    echo "hour:$$: starting general uucico `date`" >>$L
+	    $uul/uucico -r1
+	    break
+        else
+	    echo "hour:$$: collision `date`" >>$L
+	    # send a harmless signal to lockholder to see if it still exists
+	    if    kill -CONT `cat $uu/LCK...hour`
+	        then
+		    # last-ditch safeguard--break the lock if old enough
+		    $uul/uuclean -pLCK... -n8 -d$uu
+	        else
+		    # lockholder is dead, remove stale lock, try again
+		    $uul/uuclean -pLCK...hour -n1 -d$uu
+	        fi
+        fi
+  done
+
+# wait for any site specific uucico's to finish 
+wait    
+
+# must be almost as careful while removing a lock as when creating it
+
+if    [ -f $uu/LCK...$$ ]
+    then
+	# refresh our lock through its link to avoid race conditions
+	echo ' ' >>$uu/LCK...$$
+
+	if    [ $$ -eq `cat $uu/LCK...hour` ]
+	    then
+		# this process still owns the lock, so it can remove it
+		rm -f $uu/LCK...hour
+	    fi
+
+	rm -f $uu/LCK...$$
+
+    else
+	# assume our lock has been broken
+	exit
+    fi
+
+echo  "hour:$$:     complete `date`" >>$L

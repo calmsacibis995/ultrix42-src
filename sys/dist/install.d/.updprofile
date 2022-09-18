@@ -1,0 +1,86 @@
+#!/bin/sh
+#
+#	.updprofile - intercept and complete update installation
+#
+#
+#			Copyright (c) 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#).updprofile	4.1	(ULTRIX)	7/2/90";
+#
+#	000	15-aug-1989	ccb
+#
+#	001	17-oct-1989	ccb
+#		remove V3.0/3.1 dependencies
+
+umask 22
+PATH="/usr/ucb:/bin:/usr/bin:/etc:/usr/local:/usr/new:/usr/hosts:."
+export PATH
+
+
+# get the device holding the root file system
+ROOT=`grep :/: /etc/fstab`
+ROOT=`(IFS=:;set xx $ROOT;echo $2)`
+ROOTDEV=`(IFS=/;set xx $ROOT;echo $3)`
+
+# fsck the root
+fsck -p $ROOT ||
+{
+	1>&2 echo "fsck of the root (/) file system failed."
+	exit 1
+}
+
+HOSTNAME=`cat /.hostname | dd conv=ucase 2> /dev/null`
+MACHINE=`/bin/machine | dd conv=ucase 2> /dev/null`
+
+# get the /usr file system up
+
+USR=`grep :/usr: /etc/fstab`
+USR=`(IFS=:;set xx $USR;echo $2)`
+
+fsck -p $USR ||
+{
+	1>&2 echo "fsck of usr (/usr) file system failed"
+	exit 1
+}
+mount /usr ||
+{
+	1>&2 echo "cannot mount /usr"
+	exit 1
+}
+
+ADVFLAG=1 /etc/doconfig ||
+{
+	1>&2 echo "doconfig failed"
+	exit 1
+}
+
+
+# get the new kernel
+mv /vmunix /genvmunix
+mv /sys/$MACHINE/$HOSTNAME/vmunix /
+mv /etc/rc.UPD /etc/rc
+rm -rf /usr/#updtmp /install.tmp /.hostname
+
+echo "
+	The update installation procedure is complete. Inspect the
+	system carefully before attempting to reboot.
+"
+
+mv -f /.realprofile /.profile
+

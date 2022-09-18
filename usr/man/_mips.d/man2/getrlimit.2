@@ -1,0 +1,146 @@
+.\" SCCSID: @(#)getrlimit.2	2.5	8/10/87
+.TH getrlimit 2
+.SH Name
+getrlimit, setrlimit \- control maximum system resource consumption
+.SH Syntax
+.ft B
+.nf
+#include <sys/time.h>
+#include <sys/resource.h>
+.PP
+.ft B
+getrlimit(resource, rlp)
+int resource;
+struct rlimit *rlp;
+.PP
+.ft B
+setrlimit(resource, rlp)
+int resource;
+struct rlimit *rlp;
+.fi
+.ft R
+.SH Description
+.NXR "getrlimit system call"
+.NXR "setrlimit system call"
+.NXR "process" "controlling resource consumption"
+Limits on the consumption of system resources by the current process
+and each process it creates can be obtained with the
+.PN getrlimit
+call and set with the
+.PN setrlimit
+call.  
+.PP
+The
+.I resource
+parameter is one of the following:
+.NXR "getrlimit system call" "parameter list"
+.TP 17
+RLIMIT_CPU
+the maximum amount of cpu time (in milliseconds) to be used by
+each process.
+.TP 17
+RLIMIT_FSIZE
+the largest size, in bytes, of any single file that may be created.
+.TP 17
+RLIMIT_DATA
+the maximum size, in bytes, of the data segment for a process.
+This limit defines how far a program can extend its break with the
+.PN sbrk 
+system call.
+.TP 17
+RLIMIT_STACK
+the maximum size, in bytes, of the stack segment for a process.
+This limit defines how far a program's stack segment can be extended,
+either automatically by the system or explicitly by a user, with
+the 
+.PN sbrk 
+system call.
+.TP 17
+RLIMIT_CORE
+the largest size, in bytes, of a 
+.I core
+file that may be created.
+.TP 17
+RLIMIT_RSS
+the maximum size, in bytes, to which a process's resident set size may
+grow when there is a shortage of free physical memory. 
+Exceeding this limit when free physical memory is in short supply
+results in an unfavorable
+scheduling priority being assigned to the process.
+.PP
+A resource limit is specified as a soft limit and a hard limit.
+When a soft limit is exceeded, a process may receive a signal
+(for example, if the cpu time is exceeded), but it will be allowed
+to continue execution until it reaches the hard limit (or modifies
+its resource limit).  The system uses just the soft limit field of the
+resources RLIMIT_CORE and RLIMIT_RSS. The 
+.I rlimit
+structure is used to specify the hard and soft limits on a resource, as
+shown:
+.NXR "soft limit" "specifying"
+.NXR "hard limit" "specifying"
+.EX
+struct rlimit {
+	int	rlim_cur;	/* current (soft) limit */
+	int	rlim_max;	/* hard limit */
+};
+.EE
+.PP
+Only the superuser may raise the maximum limits.  Other users
+may alter 
+.I rlim_cur
+within the range from 0 to 
+.I rlim_max
+or (irreversibly) lower
+.IR rlim_max .
+.PP
+An \*(lqinfinite\*(rq value for a limit is defined as RLIM_INFINITY
+(0x7\&f\&f\&f\&f\&f\&f\&f).
+.PP
+Because this information is stored in the per-process information,
+this system call must be executed directly by the shell if it
+is to affect all future processes created by the shell;
+.I limit
+is thus a built-in command to 
+.PN csh .
+.PP
+The system refuses to extend the data or stack space when the limits
+would be exceeded in the normal way: a
+.I break
+call fails if the data space limit is reached, or the process is
+killed when the stack limit is reached.  Because the stack cannot be
+extended, there is no way to send a signal.
+.PP
+A file I/O operation that creates too large a file 
+causes the SIGXFSZ signal to be generated. This condition normally terminates
+the process, but may be caught.
+When the soft cpu time limit is exceeded,
+a signal SIGXCPU is sent to the
+process.
+.SH Return Values
+A 0 return value indicates that the call succeeded, changing
+or returning the resource limit.   A return value of \-1 indicates
+that an error occurred, and an error code is stored in the global
+location \fIerrno\fP.
+.SH Environment
+.SS System Five
+When your program is compiled in the System V environment, the SIGXFSZ signal is not
+generated.
+.SH Diagnostics
+The 
+.PN getrlimit
+call fails under the following conditions:
+.TP 15
+[EFAULT]
+The address specified for \fIrlp\fP is invalid.
+.TP 15
+[EPERM]
+The limit specified to 
+.PN setrlimit
+would have raised the maximum limit value,
+and the caller is not the superuser.
+.TP 15
+[EINVAL]
+Resource is greater than or equal to RLIM_NLIMITS.
+.SH See Also
+csh(1), quota(2)

@@ -1,0 +1,110 @@
+.\" SCCSID: @(#)passwd.5	8.1	9/11/90
+.TH passwd 5 
+.SH Name
+passwd \- password file
+.SH Description
+.NXR "passwd file (general)" "format"
+.NXAM "passwd command" "passwd file (general)"
+The
+.PN passwd
+file is an ASCII file that contains the following information
+for each user:
+.sp
+.RS
+Login name
+.br
+Password field
+.br
+User ID
+.br
+Group ID
+.br
+User's real name, office, extension, home phone
+.br
+Initial working directory
+.br
+Program to use as Shell
+.RE
+.PP
+Each line in the
+.PN passwd
+file represents a user entry.
+Each field within a user entry
+is separated from the next by a colon.
+Each user entry is separated from the next by a new line.
+If the password field is null, no password is demanded;
+if the Shell field is null, then 
+.PN /bin/sh
+is used.
+.PP
+This file resides in directory 
+.PN /etc .
+Because the password, if present, is encrypted, the
+.PN passwd
+file has general read
+permission and can be used, for example,
+to map user IDs to names.
+.PP
+The ``user's real name'' can contain an ampersand (&), meaning 
+insert the login name.  This information is set by the
+.MS chfn 1
+command and used by the 
+.MS finger 1 
+command.
+.PP
+Appropriate precautions must be taken to lock the file against changes
+if it is to be edited with a text editor.
+The
+.PN vipw
+command does the necessary locking.
+.PP
+If the system is running UPGRADE security level and an asterisk appears 
+in the password field, or if the system is running ENHANCED level, then the 
+content of the password field is ignored and the password for the account
+is located in the authentication database. See
+.MS auth 5
+and the
+.I "Security Guide for Administrators"
+for more information.
+.PP
+The files 
+.PN /etc/passwd.dir 
+and 
+.PN /etc/passwd.pag , 
+if they exist, contain
+the hashed version of the 
+.PN /etc/passwd 
+file.  If present, they are used by the 
+.PN getpwnam
+and 
+.PN getpwuid 
+functions to retrieve entries rapidly.  See 
+.MS mkpasswd 8 
+for more information.
+.PP
+The 
+.PN passwd
+database can be distributed in a network by a naming service, 
+such as Yellow Pages or BIND/Hesiod.  See the
+.I Guide to the Yellow Pages Service
+or the 
+.I Guide to the BIND/Hesiod Service
+for setup information.
+.SH Restrictions
+The ``name'' can contain only lowercase ASCII characters a to z and the 
+numbers 0 to 9.
+.SH Files
+.PN /etc/passwd
+.br
+.PN /etc/passwd.dir 
+.br
+.PN /etc/passwd.pag
+.SH See Also
+chfn(1), finger(1), login(1), passwd(1), crypt(3), getpwent(3),
+auth(5), group(5), adduser(8), mkpasswd(8), vipw(8) 
+.br
+.I "Guide to the BIND/Hesiod Service"
+.br
+.I "Guide to the Yellow Pages Service"
+.br
+.I "Security Guide for Administrators"

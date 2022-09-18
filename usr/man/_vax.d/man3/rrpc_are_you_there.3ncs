@@ -1,0 +1,53 @@
+.TH rrpc_are_you_there 
+.SH Name
+rrpc_are_you_there \- check whether a server is answering requests
+.SH Format
+.NXR ".NXR "Remote Remote Procedure Call Interface "rrpc_are_you_there"
+.nf
+\fB#include <rrpc.h>\fR
+.sp
+\fBvoid rrpc_$are_you_there(\fR \fIhandle\fB,\fR *\fIstatus\fB)\fR
+.nf
+\fBhandle_t \fIhandle\fP;
+\fBstatus_$t *\fIstatus\fP;
+.fi
+.SH Arguments
+.TP 20
+\fIhandle\fR
+A remote procedure call (RPC) handle.
+.TP 20
+\fIstatus\fR
+The completion status.
+.SH Description
+The 
+.PN rrpc_$are_you_there
+call checks whether a server is answering requests.
+.SH Restrictions
+On the client side, because of the way the
+.PN rrpc_
+calls are defined and implemented
+in the run-time library 
+.PN libnck.a ,
+you must explicitly call
+into the entry point vector table for the 
+.PN rrpc_
+interface to
+send an 
+.PN rrpc_
+request across the network. The
+following is an example of a call that works
+as desired.
+.EX
+(*rrpc_$client_epv.rrpc_$are_you_there)(handle, &status);
+.EE
+.PP
+The server side stub routine calls the entry point 
+.PN rrpc_$are_you_there
+on behalf of the client.  The results of the call are then
+passed back to the client.
+.SH Files
+.PN /usr/include/idl/c/rrpc.h
+.br
+.PN /usr/include/idl/rrpc.idl
+.SH See Also
+intro(3ncs)

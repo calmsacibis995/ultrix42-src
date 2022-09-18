@@ -1,0 +1,686 @@
+#!/bin/sh5
+#
+# @(#)doconfig	4.4	(ULTRIX)	2/28/91
+#
+# 009 - Jan, 1991 - Jon Wallace
+#	Removed the zic command from this script because of incompati-
+#	bility with the date command, and of the process used in this
+#	script.
+#
+#	Changed date example to reflect the current year.
+#
+# 008 - Aug, 1990 - Jon Wallace
+#	Put in functionality to allow bind hostnames as the system
+#	name.
+#
+# 007 - Feb, 1990 - Jon Wallace
+#		Fixed Time problem by repositioning zic command.
+#		Restructured time zone entry by asking user for
+#		time *east* of Greenwich.
+#
+# 006 - May, 1989 - Jon Wallace
+#		Added zic(8) support.
+#
+# 005 - Mar, 1989 - Jon Wallace
+#		Changed hierarchy of directories for merged pool.
+#		Merged VAX and MIPS doconfig scripts into one.
+#
+# 004 - Dec, 1988 - Jon Wallace
+#		* Added user interface for disk placement of swap, dump,
+#			etc, during interactive use on Pmax.
+#		* Added Console_type subroutine to remove UWS opition
+#			from config file, if machine is not worksystem.
+#
+# 003 - May, 1987  - Donnie Cherng
+#		* Added the environment for the diskless.
+#		- p : If the root path is not /, give a full path root.
+#		- c : for a specific config file.
+#		- e : a edit script for the new config file.
+#
+# 002 - Mar, 1987  - Tungning Cherng
+#		* Added the flag for installation use.
+#		-i : doconfig -i [sysname] [timezone day light saving area}
+#		-n : set for the sysname.
+#		-t : set for the date and time
+#		* Fix the time for the Non-EST USA area.
+#
+# 001 - June, 1986 - Tung-Ning Cherng
+#		* Added the advanced installation flag.
+#		* system name can be mixed with upper and lower case.
+#		* Timezone for the area may be a negative number.
+#
+#	Edited prompts on Aug. 5, 1986 by Al Wojtas
+#
+# 000 - May, 1986 - Bob Fontaine
+#		Revised for V2.0 installation from V1.2
+#
+#
+########################################################################
+# Subroutines #
+###############
+
+set -h  # hash subr references
+
+: Ticker - Put time stamps on screen
+Ticker()
+{
+	(
+		while :
+		do
+			echo "    working ..... \c"
+			date
+			sleep 120
+		done
+	)&
+	TICKPID=$!
+}
+
+
+: Unticker - Stop time stamps to screen
+Unticker()
+{
+	[ -n "$TICKPID" ] &&
+	{
+		(
+		kill -15 $TICKPID
+		wait $TICKPID
+		TICKPID=
+		)&
+	}
+}
+
+
+: Getconfigname - Get the config name out of sysname
+Getconfigname()
+{(
+	IFS=.
+	set $1
+	IFS=
+	echo $1 | dd conv=ucase 2>/dev/null
+)}
+
+
+########################################################################
+# Set Variables #
+#################
+
+MACHTYPE=`/bin/machine`
+case "$MACHTYPE" in
+vax )	KERNELPATH="/sys/VAX"
+	CONFIGPATH="/sys/conf/vax"
+	;;
+mips)	KERNELPATH="/sys/MIPS"
+	CONFIGPATH="/sys/conf/mips"
+	;;
+esac
+
+case "$ADVFLAG" in
+"" )
+	TMP="/tmp"
+	;;
+
+* )	TMP="/install.tmp"
+	;;
+esac
+
+PATH=/bin:/usr/bin:/usr/ucb:/etc:.
+export PATH
+umask 022
+trap 15
+LL="
+"
+CFLAG=0			# -c flag
+DTFLG=0			# day and time flag
+NAMEFLG=0		# sysname flag
+CONFKERN=1		# do the doconfig
+ROOTPATH=/		# Rootpath is root
+NEWCONFIG=true		# creates new config file
+EDITOR=${EDITOR-ed}	# Editor is set by environment or `ed` by default
+USAGE="Usage: $0 [-c config_file ] [-p path ][-e ed_script]"
+
+case $# in
+0 )	 # for the doconfig command
+	NAMEFLG=1; DTFLG=1
+	;;
+esac
+
+while test $# -gt 0
+do 
+	case $1 in
+	-i )	# for installation purpose
+		shift
+		SYSNAME=$1
+		shift
+		TIMEZONE=`echo $*`
+		CONFIGNAME=`Getconfigname $SYSNAME`
+		break
+		;;
+	-n )	# called system name for installation purpose
+		NAMEFLG=1
+		CONFKERN=0
+		break
+		;;
+	-t )	# called time date  for installation purpose
+		DTFLG=1
+		CONFKERN=0
+		break
+		;;
+	-c )	# config file name
+		CFLAG=1
+		CONFIGNAME=$2
+		shift; shift
+		NEWCONFIG=false
+		;;
+	-e )	#edit file script
+		EDITFILE=$2
+		shift; shift
+		;;
+	-p )	# Path for diskless
+		ROOTPATH=$2
+		shift; shift
+		;;
+	-? )
+		echo "$0: no such option"
+		echo $USAGE
+		exit 1
+		;;
+	* )	
+		echo $USAGE
+		exit 1
+		;;
+	esac
+done
+
+case $CFLAG in
+1 )
+	[ -f $CONFIGPATH/$CONFIGNAME ] ||
+	{
+		echo "The config file $CONFIGPATH/$CONFIGNAME does not exist."
+		exit 1
+	} 
+	;;
+esac
+
+PWD=`/bin/pwd`
+case $NAMEFLG in
+1 )
+	#Set system name	
+	echo "${LL} *** SYSTEM NAME SPECIFICATION *** "
+	while : true
+	do
+	    echo "
+Select the name of your system using alphanumeric characters. 
+The first character must be a letter.   For example, tinker.${LL} 
+Enter your system name:  \c"
+	    read SYSNAME
+	    SYSNAME=`echo $SYSNAME`
+	    check=`expr $SYSNAME : '\([a-zA-Z][a-zA-Z0-9.]*\)' 2> /dev/null`
+	    case $SYSNAME in
+	    "" )
+		continue ;;
+	    $check  ) ;;
+	    * )
+		echo "
+You specified $SYSNAME as your system name, which is not valid. 
+Read the following prompt and this time type a valid system name:"
+		continue ;;
+	    esac
+	    CONFIGNAME=`Getconfigname $SYSNAME`
+	    echo "
+You selected ${SYSNAME} as the name of your system.
+Is this correct? (y/n) [y]: \c"
+	    read resp
+	    resp=`echo $resp`
+	    case $resp in
+		y* | Y* | "")
+			break
+	    		;;
+		*)
+			;;
+    	    esac
+	done
+	if test -s $CONFIGPATH/$CONFIGNAME
+	then
+	 	echo "
+A system with that name already exists. Replace it? (y/n) [n]: \c"
+	 	read resp
+		resp=`echo $resp`
+	 	case $resp in
+		[yY]* ) ;;
+		*)
+		    echo "Using existing $CONFIGPATH/$CONFIGNAME file. . ."
+		    cp $CONFIGPATH/$CONFIGNAME /tmp/$CONFIGNAME
+		    NEWCONFIG=false
+		    DTFLG=0
+		    ;;
+	 	esac
+	fi
+	echo "$SYSNAME $CONFIGNAME" > /tmp/realsysname
+	;;
+esac
+
+case $DTFLG in
+1 )
+	# Set the system date
+	echo "${LL}*** DATE AND TIME SPECIFICATION *** "
+	while : true
+	do
+    		echo "
+The current date and time should be specified using the following
+format:
+
+	yymmddhhmm
+
+Use two digits for year (yy), month (mm), day (dd), hour (hh), and
+minute (mm).  Enter the time in 24-hour format.  For example, 11:30
+p.m. on May 3, 1991 would be entered as:
+
+	9105032330
+
+Enter the date and time: \c"
+		read tnc
+		tnc=`echo $tnc`
+		case $tnc in
+		T) 	tnc=		#testing only
+	   		break
+	   		;;
+		"")
+	   		echo "You MUST specify a date and time. ${LL}"
+	   		;;
+		*)
+			date $tnc > /dev/null 
+	 		case $? in 
+	 		0 )	break ;;
+	 		* )	;;
+	 		esac
+	  		;;
+		esac
+	done
+	
+	while : true
+	do
+		echo "
+*** TIME ZONE SELECTION ***
+	
+Select the time zone for your area, using the options listed in the
+table below.  You can also enter the number of hours (-12 to 12) in
+time east of Greenwich.
+
+  Selection	Time Zone 
+---------------------------------
+      e		Eastern
+      c		Central
+      m		Mountain
+      p		Pacific
+      g		Greenwich
+---------------------------------
+"
+		echo "Enter your choice: \c"
+		read zone
+		zone=`echo $zone`
+		case ${zone} in
+		e|E)
+			hourswest=5
+			;;
+		c|C)
+			hourswest=6
+			;;
+		m|M)
+			hourswest=7
+			;;
+		p|P)
+			hourswest=8
+			;;
+		g|G)
+			hourswest=0
+			;;
+		[0-9] | 1[0-2] )
+			hourswest="-${zone}"
+			;;
+		-[1-9] | -1[0-2] )
+			hourswest=`expr $zone : '[-]\(.*\)'`
+			;;
+		"")
+			echo ""
+			continue
+			;;
+		*)
+		   	echo "
+Sorry, ${zone}, is not a valid timezone option.  Please enter
+one of the menu options listed below."
+		   	continue
+		   	;;
+		esac
+		break
+	done
+
+	while : true
+	do
+		echo "
+Does your area alternate between Daylight Savings and Standard
+time? (y/n) [y]: \c"
+		read dst
+		dst=`echo $dst`
+		case ${dst} in
+		[yY]*|"")
+		   	echo "
+
+Select your geographic area for Daylight Savings Time, using the
+options in the table below.
+
+  Selection	Geographic Area 
+--------------------------------
+      u		USA
+      a		Australia
+      e		Eastern Europe
+      c		Central Europe
+      w		Western Europe
+--------------------------------
+"
+			while : true
+			do
+				echo "Enter your choice [u]: \c"
+				read dst
+				dst=`echo $dst`
+				case ${dst} in
+				u|U|"") dst=1; geog=u ;;
+				a|A) dst=2 ; geog=a;;
+				w|W) dst=3; geog=w ;;
+				c|C) dst=4; geog=c ;;
+				e|E) dst=5; geog=e ;;
+				*)
+					echo "
+You typed an invalid geographic area. Please type u for USA, a for
+Australia, e for Eastern Europe, c for Central Europe, or w for Western
+Europe. ${LL}"
+					continue
+					;;
+				esac
+				break
+			done
+			;;
+		[nN]*)
+			dst=n; geog=n
+			;;
+		*)
+			echo ""
+			continue
+			;;
+		esac
+		break
+	done
+	case ${dst} in
+	"" | n) 
+		TIMEZONE=$hourswest
+		;;
+	*)  
+		TIMEZONE="$hourswest dst ${dst}" 
+		;;
+	esac
+
+	#
+	# Because the timezone in the kernel is in the east of USA,
+	# time needs to be adjusted.
+	# 
+	tt=`expr $hourswest : '-\(.*\)' '|' $hourswest`
+	tttt=`expr $tt '*' 60`
+	case $hourswest in
+	0 )  	tttt=0000	
+		;;
+	1 ) 	tttt=00${tttt}	
+		;;
+	-1 ) 	tttt=-00${tttt}
+		;;
+	-* )	tttt=-0${tttt}	
+		;;
+	* )	tttt=0${tttt}	
+		;;
+	esac
+	# In case timezone and dst do not match 
+	tnc=`date +%y\%m\%d\%H\%M.%S`
+	date $tnc-$tttt$geog >/dev/null 2>&1 
+	echo "${LL}The current date and time is `date`"
+	echo "$TIMEZONE" > /tmp/timezone # XXX for the installation 
+      ;;
+esac
+
+case $CONFKERN in
+0 )	
+	exit 0
+	;;
+esac
+	
+# Create or modify the config file 
+case $NEWCONFIG in
+true )
+	echo "${LL}*** SYSTEM CONFIGURATION PROCEDURE ***"
+	if egrep -s "^/bin/hostname" /etc/rc.local
+	then
+		# Found, replace it with a new one
+		sed "/^\/bin\/hostname.*/s/hostname.*/hostname ${SYSNAME}/"\
+		/etc/rc.local > /etc/rc.tmp
+	else
+		# Not found, add it at the top
+		echo "/bin/hostname ${SYSNAME}" |
+		cat - /etc/rc.local > /etc/rc.tmp
+	fi
+	mv /etc/rc.tmp /etc/rc.local
+	chmod 644 /etc/rc.local
+	/bin/hostname ${SYSNAME}
+
+	sizer -n ${CONFIGNAME} -t "$TIMEZONE"
+	cp /tmp/$CONFIGNAME $CONFIGPATH/$CONFIGNAME
+	;;
+
+false )
+	cp $CONFIGPATH/$CONFIGNAME /tmp/$CONFIGNAME
+	;;
+esac
+
+case $EDITFILE in
+"" )	;;
+* )
+	if test -f $EDITFILE 
+	then
+		ed - $CONFIGPATH/$CONFIGNAME <$EDITFILE >/tmp/ed$$.err 2>&1
+		egrep -s "^\?" /tmp/ed$$.err && 
+		{
+			echo "Error: Command errors in the ed script for 'doconfig'."
+			exit 1
+		}
+		cp $CONFIGPATH/$CONFIGNAME /tmp/$CONFIGNAME
+	fi
+	;;
+esac
+
+[ -d $KERNELPATH/$CONFIGNAME ] || mkdir $KERNELPATH/$CONFIGNAME
+
+#
+# Iterations of the configuration process
+# start here.
+#
+trap '
+while : true
+do
+	echo "Do you want to quit (y/n) []: \c"
+	read ans 
+	ans=`echo $ans`
+	case $ans in
+	[yY] )
+		trap '' 1 2 3
+		Unticker
+		exit 1
+		;;
+	[Nn] )
+		break
+		;;
+	esac
+done ' 1 2 3	
+	
+case $ADVFLAG in
+"" | 1 | 3 )
+	echo "
+Do you want to edit the configuration file? (y/n) [n]: \c"
+	read resp
+	resp=`echo $resp`
+	case $resp in
+	"" | [nN]*)
+		;;
+	*)
+		while : true
+		do
+		echo "
+Using $EDITOR to edit the configuration file.  Press return when ready,
+or type 'quit' to skip the editing session: \c"
+		read resp
+		resp=`echo $resp`
+		case $resp in
+		"" )
+			if $EDITOR /tmp/${CONFIGNAME}
+			then
+				cp /tmp/${CONFIGNAME} $CONFIGPATH/${CONFIGNAME}
+				break
+			fi
+			;;
+		quit )
+			break
+			;;
+		* )
+			continue
+			;;
+		esac
+		done
+		;;
+	esac
+	;;
+esac
+
+while : true
+do
+    #
+    # Perform the actual Configuration using files
+    # and information from the configuration dialogue.
+    #
+    # This code is convoluted because config does not always
+    # return an error status when it gets errors, particularly
+    # syntax errors.  This code greps the error output of config
+    # for various signs of error and fails the configuration if
+    # it finds them.
+    #
+echo "
+*** PERFORMING SYSTEM CONFIGURATION *** "
+	cd $CONFIGPATH
+	config $CONFIGNAME 2>&1 > /tmp/config$$
+	case $? in
+	0 )
+		rm /tmp/config$$
+		if cd $KERNELPATH/$CONFIGNAME
+		then 
+			Ticker
+			make clean 2>&1 > /dev/null 
+			if (make depend vmunix 2>&1) > errs
+			then
+				Unticker
+				break	# successful configuration
+			else
+				Unticker
+				echo "
+An error has occurred during system configuration.  A partial listing
+of the error log file (./errs) follows:
+"
+				tail -20 errs
+			fi
+		fi
+		;;
+
+	* )
+		echo "${LL}Configuration file has errors."
+		cat /tmp/config$$
+		rm /tmp/config$$	
+		true
+		;;
+	esac
+
+    echo "
+Do you want to edit the configuration file? (y/n) [y]: \c"
+    read resp
+    resp=`echo $resp`
+    case $resp in
+    	# We have to spell out all permutations of no
+	# to allow acceptance of editors starting with 'n'.
+	n* | N*)
+	    ;;
+	*)
+	    while : true
+	    do
+		echo "
+Using $EDITOR to edit the configuration file.  Press return when ready,
+or type 'quit' to skip the editing session: \c"
+		read resp
+		resp=`echo $resp`
+		case $resp in
+		"" )
+			if $EDITOR /tmp/${CONFIGNAME}
+			then
+				cp /tmp/${CONFIGNAME} $CONFIGPATH/${CONFIGNAME}
+				break
+			fi
+			;;
+		quit )
+			break
+			;;
+		* )
+			continue
+			;;
+		esac
+	    done
+	    ;;
+    esac
+done
+
+trap '' 1 2 3
+
+case ${NEWCONFIG} in
+true)
+
+	# Make the special devices
+	# If this is the second pass, then we have to
+	# delete all of the previous interation's
+	# new devices and restore the originals.
+	#
+	echo "
+*** DEVICE SPECIAL FILE CREATION *** "
+	cd /dev
+	rm -f /dev/*mt* 
+	Ticker
+	(sh -v /tmp/${CONFIGNAME}.devs 2>&1) > MAKEDEV.log
+	Unticker
+	case $ADVFLAG in
+		"" )
+			echo "
+A log file listing Special Device Files is located in /dev/MAKEDEV.log"
+			;;
+		* )
+			;;
+	esac
+	;;
+esac
+
+cd $PWD
+sync
+
+case $ROOTPATH in
+/ ) 	ROOTPATH=
+	;;
+esac
+
+case $ADVFLAG in
+	"") echo "
+
+The new kernel is $KERNELPATH/$CONFIGNAME/vmunix"
+	break ;;
+	*)
+	;;
+esac
+
+exit 0 

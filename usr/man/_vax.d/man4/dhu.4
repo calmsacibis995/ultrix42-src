@@ -1,0 +1,66 @@
+.\" SCCSID: @(#)dhu.4	2.6	8/19/87
+.TH dhu 4 VAX
+.SH Name
+dhu \- DHU11 communications interface
+.SH Syntax
+.B "device dhu0 at uba? csr 0160440 flags 0x???? vector dhurint dhuxint"
+.SH Description
+.NXS "dhu interface" "DHU11 communications interface"
+.NXR "DHU11 communications interface" 
+A DHU11 provides 16 communication lines with modem control.
+.PP
+Each line attached to the DHU11 communications multiplexer
+behaves as described in
+.MS tty 4 .
+Input and output for each line can be set independently
+to run at any of 16 speeds.
+See
+.MS tty 4
+for the coding.
+.PP
+Bit
+.I i
+of flags can be specified for a DHU11
+to say that a line is not properly
+connected and that the
+line should be treated as hard-wired with carrier
+always present.  
+Thus, specifying ``flags 0x0004'' in the specification of 
+.PN dhu0
+would cause the third line tty02 to be treated in this way.
+.SH Diagnostics
+.B "dhu%d %d: DMA ERROR"
+.br 
+The indicated channel failed to transfer DMA
+data within 21.3 microseconds of the bus request being acknowledged or
+there was a memory parity error.
+This is often followed by a UNIBUS adapter
+error, which occurs most frequently when the UNIBUS is heavily loaded
+and when devices such as rk07s, which monopolize the bus, are present.
+.PP
+.B "dhu%d: DHU HARDWARE ERROR.  TX.DMA.START failed"
+.br 
+The 
+.PN dhu 
+failed to clear the start bit.  Normally, this is cleared to signal 
+that a DMA transfer has completed.
+.PP
+.B "dhu%d: DIAG. FAILURE"
+.br 
+The DHU11 failed the diagnostics that
+run at initialization time.
+.PP
+.B "dhu%d: recv. fifo overflow" 
+The character input fifo overflowed
+before it could be serviced.  This can happen if a hard error occurs
+when the cpu is running with elevated priority.  Interrupts are
+disabled, and the system then prints a message on the console.
+.SH Files
+.TP 15
+.PN /dev/tty??
+
+.TP
+.PN /dev/ttyd?
+(modem lines only)
+.SH See Also
+tty(4), MAKEDEV(8)

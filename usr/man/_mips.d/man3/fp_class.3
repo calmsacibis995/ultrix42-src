@@ -1,0 +1,52 @@
+.TH fp_class 3 RISC
+.SH Name
+fp_class \- classes of IEEE floating-point values
+.SH Syntax
+.nf
+.B #include <fp_class.h>
+.PP
+.B int fp_class_d(double \fIx\fP);
+.sp +.5
+.B int fp_class_f(float \fIx\fP);
+.fi
+.SH Description
+.NXR "fp_class routine" "RISC only"
+These routines are used to determine the class of IEEE 
+floating-point values.
+They return one of the constants in the 
+file 
+.PN <fp_class.h>
+and never cause an exception, even for signaling NaNs.
+These routines are to implement the recommended function
+.RI class( x )
+in the appendix of the IEEE 754-1985 standard for binary floating-point
+arithmetic.
+The constants in
+.PN <fp_class.h>
+refer to the following classes of values:
+.sp
+.ta \w'FP_POS_DENORM\ \ 'u
+\fBConstant	Class\fP
+.sp .5
+FP_SNAN	Signaling NaN (Not-a-Number)
+.br
+FP_QNAN	Quiet NaN (Not-a-Number)
+.br
+FP_POS_INF	+\(if (positive infinity)
+.br
+FP_NEG_INF	-\(if (negative infinity)
+.br
+FP_POS_NORM	positive normalized nonzero
+.br
+FP_NEG_NORM	negative normalized nonzero
+.br
+FP_POS_DENORM	positive denormalized
+.br
+FP_NEG_DENORM	negative denormalized
+.br
+FP_POS_ZERO	+0.0 (positive zero)
+.br
+FP_NEG_ZERO	-0.0 (negative zero)
+.SH Also See
+ANSI/IEEE Std 754-1985, 
+IEEE Standard for Binary Floating-Point Arithmetic

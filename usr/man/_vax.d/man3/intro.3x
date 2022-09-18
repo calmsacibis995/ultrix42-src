@@ -1,0 +1,35 @@
+.\" SCCSID: @(#)intro.3x	8.1	9/11/90
+.TH intro 3x
+.SH Name
+intro \- introduction to miscellaneous library functions
+.SH Description
+.NXR "intro(3x) keyword"
+.NXR "library function" "miscellaneous"
+These functions constitute minor libraries and other miscellaneous
+runtime facilities.  Most are available only when programming in
+C.
+.PP
+The list below includes libraries which provide
+device-independent plotting functions,
+terminal-independent screen management routines
+for two-dimensional nonbitmap display terminals, 
+functions for managing data bases with inverted indexes,
+and sundry routines used in executing commands on remote
+machines.  The routines
+.PN getdiskbyname ,
+.PN rcmd ,
+.PN rresvport ,
+.PN ruserok ,
+and
+.PN rexec
+reside in the standard C runtime library \*(lq\-lc\*(rq.
+All other functions are located in separate libraries
+indicated in each manual entry.
+.SH Files
+.nf
+.PN /lib/libc.a
+.PN /usr/lib/libdbm.a
+.PN /usr/lib/libtermcap.a
+.PN /usr/lib/libcurses.a
+.PN /usr/lib/lib2648.a
+.PN /usr/lib/libplot.a

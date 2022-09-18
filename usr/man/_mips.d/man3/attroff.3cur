@@ -1,0 +1,214 @@
+.TH attroff 3cur 
+.SH Name
+attroff, attron, attrset, standend, standout, wstandend, wstandout, wattroff,
+wattron, wattrset \- attribute manipulation
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int attroff(attrs)
+.br
+.B
+int attrs;
+.PP
+.B
+int wattroff(win, attrs)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int attrs;
+.PP
+.B
+int attron(attrs)
+.br
+.B
+int attrs;
+.PP
+.B
+int wattron(win, attrs)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int attrs;
+.PP
+.B
+int attrset(attrs)
+.br
+.B
+int attrs;
+.PP
+.B
+int wattrset(win, attrs)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int attrs;
+.PP
+.B
+int standend(\|)
+.PP
+.B
+wstandend(win)
+.br
+.B
+WINDOW \(**win;
+.PP
+.B
+int standout(\|)
+.PP
+.B
+int wstandout(win)
+.br
+.B
+WINDOW \(**win;
+.SH Description
+.NXR "attroff macro"
+.NXR "attron macro"
+.NXR "attrset macro"
+.NXR "standend subroutine"
+.NXR "standout subroutine"
+.NXR "wstandend subroutine"
+.NXR "wstandout subroutine"
+.NXR "wattroff subroutine"
+.NXR "wattron subroutine"
+.NXR "wattrset subroutine"
+These routines manipulate the current attributes of a window.
+.PP
+The routine
+.PN attroff
+turns off the named attributes (\c
+.PN attrs)
+of the default window
+without turning any other attributes on or off.
+.PP
+The routine
+.PN attron
+turns on the named attributes 
+of the default window
+without affecting any other attributes.
+.PP
+The routine
+.PN attrset
+sets the current attributes of the default window to
+the named attributes
+.PN attrs ,
+which is of the type
+.PN chtype , 
+and is defined in the 
+.PN <cursesX.h> 
+header file.
+.PP
+The routine
+.PN standout
+switches on the best highlighting mode available on the terminal
+for the default window and it is
+functionally the same as
+.PN attron(A_STANDOUT).
+.PP
+The routine
+.PN standend
+switches off all highlighting associated with the default window.
+It is functionally the same as 
+.PN attrset (0),
+in that it turns off all attributes.
+.PP
+The routine
+.PN wattroff
+switches off the named attributes,
+.PN attrs ,
+for the specified window.
+Other attributes are not changed.
+.PP
+The routine
+.PN wattron
+turns on the named attributes 
+of the specified window
+without affecting any others.
+.PP
+The routine
+.PN wattrset
+sets the current attributes of the specified window to
+.PN attrs .
+.PP
+The routine
+.PN wstandout
+switches on the best highlighting mode available on the terminal
+for the specified window.
+Functionally it is the same as
+.PN wattron(A_STANDOUT).
+.PP
+The routine
+.PN wstandend
+switches off all highlighting associated with the specified window.
+Functionally it
+is the same as 
+.PN wattrset (0);
+that is, it turns off all attributes.
+.SH Attributes
+.PP
+Attributes can be any combination of
+A_STANDOUT,
+A_REVERSE,
+A_BOLD,
+A_DIM,
+A_BLINK 
+and
+A_UNDERLINE.
+These constants are defined in the 
+.PN <cursesX.h>
+header file.
+They are also described  
+in the 
+.I
+Guide to X/Open Curses Screen-Handling.
+.R
+Attributes
+can be combined with the C language | 
+.PN (or)
+operator.
+.PP
+The current attributes of a window are applied to all characters that
+are written into the window with 
+.PN addch 
+or
+.PN waddch  .
+Attributes are properties of the character, 
+and move with the character
+through any scrolling and insert/delete line/character operations.
+Within the restrictions set by the terminal hardware
+they will be
+displayed as the graphic rendition of characters put on the screen.
+.PP
+The routines
+.PN attroff, 
+.PN attron
+and 
+.PN attrset
+are macros.
+.SH Return Values
+The
+.PN attroff ,
+.PN wattroff ,
+.PN attron ,
+.PN wattron ,
+.PN attrset ,
+.PN wattrset ,
+.PN standend ,
+.PN wstandend ,
+.PN standout ,
+and
+.PN wstandout 
+functions return OK on success and ERR on error.
+.SH See Also
+addch(3cur) 
+.br
+.I "Guide to X/Open Curses Screen-Handling"

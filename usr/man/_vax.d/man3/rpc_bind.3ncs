@@ -1,0 +1,83 @@
+.TH rpc_bind 3ncs
+.SH Name
+rpc_bind \- allocate an RPC handle and set its binding to a
+server (client only)
+.SH Syntax
+.nf
+#include <idl/c/rpc.h>
+
+handle_t rpc_$bind(\fIobject, sockaddr, slength, status)\fP
+uuid_$t *\fIobject\fP;
+socket_$addr_t *\fIsockaddr\fP;
+unsigned long \fIslength\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBfunction rpc_$bind(\fR
+.\"	\fBin \fIobject\fB: uuid_$t;\fR
+.\"	\fBin \fIsockaddr\fB: socket_$addr_t;\fR
+.\"	\fBin \fIslength\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t): handle_t;\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIobject\fR
+The UUID of the object to be accessed.
+If there is no specific object, specify \fBuuid_$nil\fR.
+.TP 20
+\fIsockaddr\fR
+The socket address of the server.
+.TP 20
+\fIslength\fR
+The length, in bytes, of \fIsockaddr\fR.
+.TP 20
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$bind
+routine creates a fully bound RPC handle that identifies a particular
+object and server.  This routine is equivalent to an 
+.PN rpc_$alloc_handle
+routine followed by an 
+.PN rpc_$set_binding
+routine.
+.NXR "Interface to the Remote Procedure Call" "rpc_bind"
+.SH Examples
+The following statement binds the binop client to the specified object
+and socket address.
+The \fBloc\fR parameter is the result of a previous call to
+.PN rpc_$name_to_sockaddr
+which converted the host name and port number to a socket address. 
+.EX
+rh = rpc_$bind (&uuid_$nil, &loc, llen, &status);
+.EE
+.SH Diagnostics
+This section lists status codes for errors returned by this 
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$cant_bind_sock\fP
+The RPC runtime library created a socket but was unable to bind
+it to a socket address.
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs), rpc_clear_binding(3ncs), rpc_clear_server_binding(3ncs), rpc_set_binding(3ncs)

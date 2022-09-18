@@ -1,0 +1,84 @@
+#ifndef lint
+static	char	*sccsid = "@(#)utime.c	4.1	(ULTRIX)	7/3/90";
+#endif lint
+
+/************************************************************************
+ *									*
+ *			Copyright (c) 1985, 1988 by			*
+ *		Digital Equipment Corporation, Maynard, MA		*
+ *			All rights reserved.				*
+ *									*
+ *   This software is furnished under a license and may be used and	*
+ *   copied  only  in accordance with the terms of such license and	*
+ *   with the  inclusion  of  the  above  copyright  notice.   This	*
+ *   software  or  any  other copies thereof may not be provided or	*
+ *   otherwise made available to any other person.  No title to and	*
+ *   ownership of the software is hereby transferred.			*
+ *									*
+ *   This software is  derived  from  software  received  from  the	*
+ *   University    of   California,   Berkeley,   and   from   Bell	*
+ *   Laboratories.  Use, duplication, or disclosure is  subject  to	*
+ *   restrictions  under  license  agreements  with  University  of	*
+ *   California and with AT&T.						*
+ *									*
+ *   The information in this software is subject to change  without	*
+ *   notice  and should not be construed as a commitment by Digital	*
+ *   Equipment Corporation.						*
+ *									*
+ *   Digital assumes no responsibility for the use  or  reliability	*
+ *   of its software on equipment which is not supplied by Digital.	*
+ *									*
+ ************************************************************************/
+/************************************************************************
+ *			Modification History				*
+ *									*
+ *	David L Ballenger, 29-Mar-1985					*
+ * 0001	Use definitions from <sys/time.h> and real interface for 	*
+ *	utimes().							*
+ *									*
+ *	Mark A. Parenti, 04-Sep-1987					*
+ * 0002	Move definition of utimbuf to utime.h. Needed for POSIX		*
+ *	compliance.							*
+ *									*
+ *	Mark A. Parenti, 28-Jan-1988					*
+ * 0003	Change interface to utimes() system call.  The utimes() call	*
+ *	will now handle the case of NULL time correctly, so call with	*
+ *	NULL if we are called with NULL.  This change make utime()	*
+ *	behavior compliant with POSIX and SVID.				*
+ *									*
+ ************************************************************************/
+
+/*
+	utime -- system call emulation for 4.2BSD
+
+	last edit:	14-Dec-1983	D A Gwyn
+*/
+
+#include	<sys/types.h>
+#include	<sys/time.h>
+#include	<utime.h>
+
+extern int	utimes();
+extern long	time();
+
+#define NULL	0
+
+int
+utime( path, times )
+	char	*path;			/* file to be updated */
+	struct utimbuf *times; 		/* -> new access/mod times */
+	{
+	struct timeval	tv[2];
+
+	if ( times == NULL )
+		{
+		return( utimes(path, (struct timeval *)0));
+		}
+	else {
+		tv[0].tv_sec = times->actime;
+		tv[0].tv_usec = 0L;
+		tv[1].tv_sec = times->modtime;
+		tv[1].tv_usec = 0L;
+		return utimes( path, tv );
+	}
+	}

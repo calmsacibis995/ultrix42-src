@@ -1,0 +1,545 @@
+%!PS-Adobe-2.0
+%%Title: PostScript Digital Logo Font, v1.0
+%%Creator: Ned Batchelder
+%%CreationDate: 6-Nov-87
+%%DocumentFonts: Symbol
+%%DocumentSuppliedFonts: DigitalLogo
+%%EndComments
+%
+%		    DIGITAL INTERNAL USE ONLY
+% 
+% INTRODUCTION:
+% This rendition of the Digital logo was prepared by Ned Batchelder using 
+% Adobe Illustrator and hand manipulation of the resulting PostScript code.
+% Photographic masters of the logo were obtained from David Comberg in the
+% Graphic Design Group. Additional consultation was provided by Elliot
+% Hendrickson, one of the original designers of the logo.
+% 
+% USE:
+%
+% This file defines a new PostScript font, called /DigitalLogo. It consists
+% of four characters:
+%
+%    (d) is the entire Digital logo,
+%    (u) is the Ultrix Logo,
+%    (t) is a small trademark symbol,
+%    (T) is a large trademark symbol.
+%
+% The font is designed so that the argument to scalefont is the height
+% of the logo. There is no extra white space around the logo at all. The
+% trademarks are designed to be shown right after the logo, and they
+% align themselves. The only correct strings to show with this font are
+% (d), (dt), (dT), (u), (ut), and (uT).
+%
+%
+% There is an entry
+% (named GapWidth) in the font dictionary which gives the unscaled width of
+% the gap between the blocks. This distance is given because it is used as a
+% unit to determine how much space to leave around the logo.
+% 
+% HISTORY:
+% The logo was designed in 1957 by Elliot Hendrickson, who was then working
+% as an independent designer. He was contracted by DEC to do a brochure, and
+% DEC wanted a logo to accompany it. The logo up to then had been the letters
+% DEC in blocks the shape of the plug-in cards that DEC had been producing.
+% Elliot re-worked the logo, incorporating letters which were hand-drawn for 
+% the purpose by Arthur Hover(?). The logo has been maintained since then in 
+% conventional technology, ie, film masters. There was at least one reworking 
+% of the logo at some point.
+% 
+% The masters I received had a number of interesting features. The boxes were
+% not all the same width, and there seemed to be no logic to which boxes were
+% wider. The 'g' was the narrowest, and the 'i' and 'l' were second widest.
+% Also, the two 'i's were not exactly the same shape. On ten-inch masters,
+% (one box to an 8=x11 sheet), the boxes were not rectangles, but were very
+% slightly tapered in wierd ways. I assume that the tapering is the result of
+% too many reproductions, but the difference in widths may have been
+% deliberate at some time. Elliot reports that when he drew it, all boxes
+% were the same width. I have retained the different widths in my version,
+% since the experts I had at hand did not seem to think I should make them
+% uniform.
+% 
+% Please feel free to use this logo, but keep in mind the following:
+% 
+% 1. This code is for INTERNAL USE ONLY.
+% 2. I am not entirely happy with the final shapes of the letters, and am
+% hoping to improve them. Please allow for future updates to this code.
+% 3. Only use this logo within the guidelines of the Corporate Identity
+% program. If you use this font precisely as is, you can't get in much
+% trouble. Don't take the shapes and do strange things with them. 
+% In particular, the Identity states that the logo is a one-color logo: The
+% letters are actually holes in the blocks, through which the background can
+% be seen. Do not modify this code so that the letters are always white.
+% 
+% Edit history:
+% 
+% 21-Sep-87 nmb	    Created as a standalone file with demo.
+%  6-Nov-87 nmb	    Converted to font form.
+%  2-Jan-88 thoms   Added Ultrix logo bound to "u" (Adrian Thoms, EUEG)
+%      "             (borrowed from business card kit by Ichiri Fujiura)
+
+%%BeginFont: DigitalLogo
+11 dict begin
+
+/FontInfo 3 dict def
+FontInfo begin
+    /Notice
+(The Digital logo is a registered trademark of Digital Equipment Corporation.
+The Ultrix logo is a registered trademark of Digital Equipment Corporation.
+)
+    def
+    /FullName (Digital logo) def
+    /version (1.0) def
+    end
+
+/FontType 3 def				% This is a user-defined font
+/FontMatrix matrix def			% Use an identity transform
+%/FontBBox [ 0 0 3.383 1 ] def		% Logo itself is biggest
+/FontBBox [ 0 0 4.1111 1 ] def		% Ultrix logo is now biggest
+/GapWidth .070 def			% The width of the gap between boxes
+
+/Encoding 256 array def
+0 1 255 { //Encoding exch /.notdef put } bind for
+
+Encoding
+dup (d) 0 get /DEC-logo put		% (d) gives digital logo
+dup (t) 0 get /smalltrademark put	% (t) gives small trademark
+dup (u) 0 get /ultrix put		% (u) gives Ultrix logo
+    (T) 0 get /largetrademark put	% (T) gives large trademark
+
+/Work 15 dict def			% for doing work in font.
+
+/BuildChar {
+    exch begin				% Use the font dictionary
+	//Work begin
+	    //Encoding exch get		% Look up the character name
+	    load			% Pull out the procedure
+	    exec			% Run it.
+	    end				% Work
+	end				% fontdict
+    } bind def
+
+Work begin
+
+/.notdef {} def
+
+%
+% - `DEC-logo' -
+%
+% Images a DEC logo with the lower left corner at the current origin, with a
+% height of one unit, in the current color.
+% 
+
+/m /moveto load def
+/l /lineto load def
+/c /curveto load def
+
+/DEC-logo {
+    3.383 0 0 0 3.383 1 setcachedevice
+    {	% D
+	% d counter
+	.2930 .3513 m
+	.2932 .3217 .2587 .2758 .2167 .2757 c
+	.1719 .2759 .1280 .3165 .1280 .3977 c
+	.1280 .4801 .1718 .5225 .2153 .5227 c
+	.2587 .5225 .2932 .4760 .2930 .4407 c
+	closepath
+	% d outside
+	.2953 .5787 m
+	.2953 .7600 l
+	.3843 .7600 l
+	.3843 .1960 l
+	.2923 .1960 l
+	.2923 .2220 l
+	.2848 .2144 .2531 .1813 .1990 .1813 c
+	.1426 .1812 .0417 .2282 .0417 .3977 c
+	.0417 .5414 .1171 .6157 .2067 .6157 c
+	.2399 .6157 .2725 .6039 .2953 .5787 c
+	closepath
+	% d box
+	.432 0.0 m
+	.432 1.0 l
+	.000 1.0 l
+	.000 0.0 l
+	closepath
+	} exec
+    {	% I
+	% i box
+	.927 0.0 m
+	.927 1.0 l
+	.502 1.0 l
+	.502 0.0 l
+	closepath
+	% i body
+	.6695 .196 m
+	.6695 .600 l
+	.7595 .600 l
+	.7595 .196 l
+	closepath
+	% i dot
+	.6695 .655 m
+	.6695 .755 l
+	.7595 .755 l
+	.7595 .655 l
+	closepath
+	} exec
+    {	% G
+	% g counter
+	1.2813 .4478 m
+	1.2813 .4837 1.2409 .5208 1.2035 .5208 c
+	1.1713 .5208 1.1215 .5003 1.1215 .4084 c
+	1.1215 .3105 1.1827 .2962 1.2030 .2962 c
+	1.2433 .2962 1.2813 .3239 1.2813 .3667 c
+	closepath
+	% g box
+	0.997 1.0 m
+	1.415 1.0 l
+	1.415 0.0 l
+	0.997 0.0 l
+	closepath
+	% g outside
+	1.2822 .5609 m
+	1.2729 .5742 1.2424 .6044 1.1988 .6044 c
+	1.1311 .6043 1.0367 .5652 1.0367 .3955 c
+	1.0368 .2617 1.1437 .2168 1.1876 .2168 c
+	1.2350 .2167 1.2702 .2443 1.2798 .2547 c
+	1.2798 .2126 l
+	1.2798 .1815 1.2479 .1511 1.1945 .1511 c
+	1.1485 .1512 1.1437 .1807 1.1437 .1953 c
+	1.0497 .1953 l
+	1.0497 .1486 1.0798 .0804 1.1888 .0803 c
+	1.2864 .0803 1.3186 .1176 1.3325 .1316 c
+	1.3442 .1434 1.3617 .1758 1.3617 .2017 c
+	1.3617 .6 l
+	1.2823 .6 l
+	closepath
+	} exec
+    {	% I
+	% i box
+	1.910 0.0 m
+	1.910 1.0 l
+	1.485 1.0 l
+	1.485 0.0 l
+	closepath
+	% i body
+	1.6525 .196 m
+	1.6525 .6 l
+	1.7425 .6 l
+	1.7425 .196 l
+	closepath
+	% i dot
+	1.6525 .655 m
+	1.6525 .755 l
+	1.7425 .755 l
+	1.7425 .655 l
+	closepath
+	} exec
+    {	% T
+	% t
+	2.2128 .7525 m
+	2.1305 .7525 l
+	2.1305 .6071 l
+	2.0874 .6071 l
+	2.0874 .5396 l
+	2.1305 .5396 l
+	2.1305 .2852 l
+	2.1305 .2367 2.1554 .1986 2.2248 .1987 c
+	2.2573 .1987 2.2560 .1985 2.2842 .2034 c
+	2.2842 .2874 l
+	2.2658 .2842 2.2601 .2829 2.2511 .2832 c
+	2.2338 .2837 2.2128 .2898 2.2128 .3206 c
+	2.2128 .5395 l
+	2.2780 .5395 l
+	2.2780 .6071 l
+	2.2128 .6071 l
+	closepath
+	% t box
+	2.404 0.0 m
+	1.980 0.0 l
+	1.980 1.0 l
+	2.404 1.0 l
+	closepath
+	} exec
+    {	% A
+	% a box
+	2.474 0.0 m
+	2.474 1.0 l
+	2.888 1.0 l
+	2.888 0.0 l
+	closepath
+	% a outside
+	2.5439 .4728 m
+	2.6210 .4728 l
+	2.6210 .5138 2.6422 .5353 2.6826 .5353 c
+	2.7470 .5354 2.7449 .5067 2.7448 .4708 c
+	2.7050 .4553 2.7087 .4557 2.6480 .4419 c
+	2.5709 .4241 2.5237 .3911 2.5236 .3112 c
+	2.5237 .2331 2.5793 .1914 2.6420 .1915 c
+	2.7048 .1914 2.7178 .2117 2.7438 .2290 c
+	2.7438 .1978 l
+	2.8422 .1978 l
+	2.8190 .2352 2.8251 .2425 2.8249 .2706 c
+	2.8250 .2926 2.8249 .5080 2.8249 .5080 c
+	2.8250 .5507 2.8028 .5768 2.7883 .5855 c
+	2.7521 .6071 2.7074 .6097 2.6826 .6098 c
+	2.5945 .6096 2.5438 .5653 2.5439 .4728 c
+	closepath
+	% a counter
+	2.7448 .3946 m
+	2.7448 .3401 l
+	2.7448 .3152 2.7145 .2670 2.6550 .2669 c
+	2.6260 .2668 2.6098 .2883 2.6097 .3162 c
+	2.6098 .3442 2.6335 .3657 2.6536 .3697 c
+	2.6745 .3739 2.7226 .3862 2.7448 .3946 c
+	closepath
+	} exec
+    {	% L
+	% l box
+	3.383 0.0 m
+	3.383 1.0 l
+	2.958 1.0 l
+	2.958 0.0 l
+	closepath
+	% l
+	3.1255 .196 m
+	3.1255 .765 l
+	3.2155 .765 l
+	3.2155 .196 l
+	closepath
+	} exec
+    fill
+    } bind def
+
+%
+% % pct `trademark' --
+%
+% Borrow the sans-serif trademark symbol from /Symbol. AFM file says:
+%	C 228 ; WX 786 ; N trademarksans ; B 5 293 725 673 ;
+% We scale it down to pct percent of the height of the logo and superscript 
+% it some, and voila!
+%
+
+/trademark {
+    /s exch .380 div def
+    /w s .725 mul .070 add def
+    /u 1 .673 s mul sub def
+    w 0 0 u w 1 setcachedevice
+    /Symbol findfont s scalefont setfont
+    .070 u m					% Superscript it
+    (\344) show
+    } bind def
+
+% 
+% These are two different trademarks (just different sizes).
+%
+
+/smalltrademark { .15 trademark } def
+/largetrademark { .25 trademark } def
+
+/ultrix
+{
+	4.1111 0.0000 0.0000 0.0000 4.1111 1.0000 setcachedevice
+    {   % U
+	0.0000 1.0000 moveto
+	0.0000 0.0000 0.4444 0.0000 0.4444 arcto pop pop pop pop
+	0.8889 0.0000 0.8889 1.0000 0.4444 arcto pop pop pop pop
+	0.8889 1.0000 lineto
+	0.6111 1.0000 lineto
+	0.6111 0.2778 0.3333 0.2778 0.1667 arcto pop pop pop pop
+	0.2778 0.2778 0.2778 1.0000 0.1667 arcto pop pop pop pop
+	0.2778 1.0000 lineto
+	closepath
+    } exec
+
+    {	% L
+	1.0000 1.0000 moveto
+	1.0000 0.0000 lineto
+	1.6111 0.0000 lineto
+	1.6111 0.2778 lineto
+	1.2778 0.2778 lineto
+	1.2778 1.0000 lineto
+	closepath
+    } exec
+
+    {	% T
+	1.3889 1.0000 moveto
+	1.3889 0.7778 lineto
+	1.6667 0.7778 lineto
+	1.6667 0.0000 lineto
+	1.9444 0.0000 lineto
+	1.9444 0.7778 lineto
+	2.0556 0.7778 lineto
+	2.2778 1.0000 lineto
+	closepath
+    } exec
+
+    {	% R
+	2.3889 1.0000 moveto
+	2.8333 1.0000 2.8333 0.6667 0.3333 arcto pop pop pop pop
+	2.8333 0.3333 2.5000 0.3333 0.3333 arcto pop pop pop pop
+	2.8333 0.0000 lineto
+	2.3889 0.0000 lineto
+	2.0556 0.3333 lineto
+	2.0556 0.5556 lineto
+	2.5556 0.5556 2.5556 0.6667 0.1111 arcto pop pop pop pop
+	2.5556 0.7778 2.1667 0.7778 0.1111 arcto pop pop pop pop
+	2.1667 0.7778 lineto
+	closepath
+    } exec
+
+    {	% I
+	2.8333 1.0000 moveto
+	2.8333 0.0000 lineto
+	3.1111 0.0000 lineto
+	3.1111 1.0000 lineto
+	closepath
+    } exec
+
+    {	% X
+	3.1111 0.0000 moveto
+	3.1111 0.0767 lineto
+	3.4444 0.5378 lineto
+	3.1667 1.0000 lineto
+	3.5000 1.0000 lineto
+	3.6278 0.7911 lineto
+	3.7778 1.0000 lineto
+	3.8333 1.0000 lineto
+	closepath
+    } exec
+    {
+	3.7778 0.0000 moveto
+	4.1111 0.0000 lineto
+	3.8278 0.4722 lineto
+	3.6444 0.2222 lineto
+	closepath
+    } exec
+    fill
+} bind def
+
+
+end						% Work dictionary
+
+currentdict					% Get the font dict
+end						% Close it up
+/DigitalLogo exch definefont pop		% Define the font.
+
+%%EndFont
+%%Title: LPS$$FLAGPAGE.PS
+% COPYRIGHT ) DEC 1986, 1987 ALL RIGHTS RESERVED
+%%Creation Date: 13-Jun-1986
+%%Bounding Box: 0 0 612 792
+/lps$enter-standard-state where
+{ pop lps$enter-standard-state }
+{ save /PageSave exch def }
+ifelse
+/lps$flagdict 120 dict def lps$flagdict begin 
+% generally used defs
+/inch {72 mul} def  /lmarg 0.75 inch def    /rmarg 7.75 inch def
+/tab1 2.0 inch def  /wfull rmarg lmarg sub def  /windent rmarg tab1 sub def
+/itty 8 def /medium1 10 def /medium2 12 def /big1 18 def /bigger 26 def
+/huge 34 def /border 5 def
+/bold /Helvetica-Bold findfont def  /plain /Helvetica findfont def
+/pf8 plain itty scalefont  def  /pf10 plain medium1 scalefont  def
+/bf12 bold medium2 scalefont  def  /bf18 bold big1 scalefont  def 
+% Adrian Thoms: hacked for Ultrix
+/logo18 /DigitalLogo findfont big1 scalefont def
+%%
+/bf26 bold bigger scalefont  def  /bf34 bold huge scalefont  def
+/center { dup stringwidth pop 2 div 4.25 inch exch  sub ypos moveto } bind def 
+/nextline { /ypos ypos fontheight 1.3 mul sub def } bind def
+/downalittle {/ypos ypos 0.3 inch sub def} bind def
+/chop {  /width_to_fit exch def    /text exch def    /print_proc exch def
+  /index 0 def    /strlen text length def
+  /do_a_line { text prevchar index prevchar sub getinterval print_proc
+    /prevchar index def  /accum 0 def  } def
+  /do_many_lines { /prevchar 0 def   /accum 0 def
+    { text index 1 getinterval stringwidth pop  accum add    /accum exch def
+    accum width_to_fit gt  {do_a_line} if
+    /index index 1 add def   index strlen eq {exit} if } loop
+    text prevchar strlen prevchar sub    getinterval print_proc } def 
+    text stringwidth pop width_to_fit gt {do_many_lines} {text print_proc} 
+   ifelse  }  def 
+/join2str {/str2 exch def /str1 exch def str1 length str2 length add string
+   /newstring exch def str1 newstring copy pop /index str1 length def
+   newstring index str2 putinterval newstring }  def   
+/get_marg { sfact mul sub } def                                            
+/sfonts {   /srnd { sfact mul round sfact div } def
+  /itty itty srnd def /medium1 medium1 srnd def /medium2 medium2 srnd
+  def /big1 big1 srnd def /bigger bigger srnd def /huge huge srnd def } def 
+/difpage { clippath pathbbox /ury exch def /urx exch def /lly exch def 
+  /llx exch def urx llx sub 612 div  dup ury lly sub 792 div dup 3 1 roll ge 
+  { exch pop} {pop} ifelse   dup 1.0 dup 3 1 roll ge { exch pop } {pop} ifelse 
+  /sfact exch def   ury lly sub 792 get_marg /upy exch def urx llx sub 612 
+  get_marg 2 div /overx exch def overx upy translate sfact dup scale     
+  sfact 1.0 ne {sfonts} if } def % difpage
+% individual components of page
+/do_jobnumber { /bigjob {bf34 setfont /fontheight huge def 0.6 setgray
+  jobstr nextline center show  0 setgray    nextline} def
+  /smalljob {bf26 setfont /fontheight bigger def jobstr
+  nextline center show  nextline} def   (JOB ) tjobnum join2str
+  /jobstr exch def 
+  tjobnum () ne { jfswitch (JOB) eq {bigjob} {smalljob} ifelse } if
+  }  def
+/do_jfname { jfswitch (FILE) eq {0.6 setgray} if 
+   bf26 setfont /fontheight bigger def
+   {xpos ypos moveto center show nextline} the_jfname wfull   chop
+   0 currentgray ne {0 setgray} if } def 
+/do_value { { tab1 ypos moveto show nextline} value windent chop  } def
+/do_sectionitem { value () ne { lmarg ypos moveto label show do_value} if } def 
+/do_sectionb { bf12 setfont  /fontheight medium2 def
+   /resety { the_filespec stringwidth pop  windent  div ceiling
+   4 lt {/ypos 5.0 inch def} {/ypos 5.5 inch def}   ifelse } def 
+   the_filespec () eq {/ypos 4.5 inch def} {resety} ifelse
+   the_account     (Account:)     the_uic     (Owner UIC:)
+   tmodified     (Last modified:)     the_filespec     (File:) 
+   1 1 4 {pop  /label exch def /value exch def do_sectionitem } for
+   /ypos ypos 0.5 inch sub def } def 
+/do_sectionc { pf10 setfont    /fontheight medium1 def  
+jfswitch (FILE) eq { /tdatestart () def } if
+tdatestart   (Started:) 
+   tprintnode (Printer node:) the_printq (Printer queue:) tdatesubmit
+   (Submitted:) the_submitq (Submit queue:)  the_priority  (Priority:)
+   tlongrec () eq {/recstring tlongrec def}
+   {/recstring tlongrec ( bytes)  join2str def} ifelse 
+   t_filelen () eq {/filelen_str t_filelen def}
+   {/filelen_str  t_filelen ( blocks)  join2str def} ifelse
+   recstring (Longest record:) filelen_str (Length:)
+   1 1 8 { pop /label exch def /value exch def do_sectionitem} for } def 
+/do_border {  burst (BURST) eq { clippath pathbbox /addabit{ border 3 mul add}
+   def /subabit {border 3 mul sub} def newpath  /ury exch def /urx exch def    
+   /lly exch def /llx exch def  border setlinewidth 2 setlinecap 
+   llx addabit lly addabit moveto urx subabit lly addabit lineto urx subabit 
+   ury subabit lineto  llx addabit ury subabit lineto llx addabit lly addabit 
+   lineto  stroke } if } def
+/do_flagpage {    do_border %
+   the_note () eq {/ypos 10.0 inch def}  {/ypos 10.3 inch def} ifelse	%
+   pf8 setfont  /fontheight itty def    () the_note ne                
+      { /the_note_string (NOTE: ) the_note join2str def
+      {lmarg ypos moveto show nextline} the_note_string wfull chop} if %
+   jfswitch (JOB) eq {downalittle} if 
+      bf26 setfont   /xpos lmarg def   /fontheight bigger def
+     nextline  the_clientuser ( ) search { 3 1 roll pop pop} if  center show %
+   downalittle    do_jobnumber    downalittle    do_jfname    do_sectionb
+   do_sectionc
+   bf12 setfont lmarg 1.0 inch moveto (Digital Equipment Corporation) show %
+%% more of Adrian's hacks
+   logo18 setfont    lmarg 0.6 inch  moveto   (ut) show
+%      vmsvers show %
+   bf18 setfont
+%%
+   (PrintServer 40) dup rmarg  exch stringwidth pop sub 0.7 inch moveto show %
+   showpage
+    } bind def 
+%%End flagpage defs, start execution
+/burst exch def
+/jfswitch exch def /the_note exch def /the_clientuser exch def
+/tjobnum exch def /the_jfname exch def /the_filespec exch def
+/tmodified exch def /the_uic exch def /the_account exch def
+/t_filelen exch def /tlongrec exch def /the_priority exch def
+/the_submitq exch def /tdatesubmit exch def /the_printq exch def
+/tprintnode exch def /tdatestart exch def /vmsvers exch def % end pops
+statusdict begin papersize end pop (lettertray) ne {difpage} if
+do_flagpage end 
+/lps$exit-standard-state where { pop lps$exit-standard-state } 
+{ PageSave restore } ifelse
+%%End of file lps$$flagpage

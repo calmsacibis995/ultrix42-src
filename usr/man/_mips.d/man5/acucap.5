@@ -1,0 +1,229 @@
+.\" SCCSID: @(#)acucap.5	2.2	6/4/87
+.TH acucap 5 
+.SH Name
+acucap \- Automatic call unit capabilities file
+.SH Description
+.NXR "acucap file" "format"
+.NXR "modem" "list of autodial types"
+.NXR "uucp utility" "acucap file and"
+.NXR "tip command" "acucap file and"
+The 
+.PN acucap
+file lists the types of autodial modems 
+and describes their attributes. 
+.PP
+The 
+.MS tip 1c
+program searches the
+.PN acucap 
+file when it encounters an 
+.PN at
+field in the 
+.MS remote 5
+file description. If the 
+.PN at
+string matches a name
+entry in 
+the 
+.PN acucap
+file, the 
+.PN tip
+and
+.PN uucp
+generic dialing routines 
+are used to place an outgoing 
+call according to the attributes specified for the modem in
+the 
+.PN acucap
+file.
+.PP
+The 
+.MS uucp 1c
+program uses the same procedure for deciding how to
+activate an autodialer modem, except that 
+.PN uucp
+searches for
+the brand
+name field of the 
+.PN /usr/lib/uucp/L-devices
+file 
+in the
+.PN acucap
+database.
+.PP
+Each line in the file describes how to
+dial a given
+type of modem. This description consists of strings, time delays,
+and flags that are used 
+to control the action of any modem.
+Fields are separated by a colon (:).
+Entries that end in a backslash character (\e) followed by a newline are
+continued on the next line.
+.PP
+The first entry is the name or names of the modem.  If there is more
+than one name for a modem, the names are separated by vertical bars
+(|).
+.PP
+The fields of the description follow the name.  A
+field name followed by an equal sign (=) indicates 
+that a string value follows.  A field
+name followed by a pound sign (#) indicates that a numeric value
+follows. A field
+name followed by the separating colon (:) represents a Boolean.
+.SH Options
+.NXR "acucap file" "field definitions"
+The fields following the name of the modem define the capabilities
+of the modem.  Capabilities are either 
+strings (str), numbers (num), or Boolean
+flags (bool).  A string capability is specified as
+.IR capability = value ;
+for example, ``ss=^A^B''.  A numeric capability is specified by
+.IR capability # value ;
+for example, ``sd#1''.
+A Boolean capability is specified by simply listing
+the capability.  Strings that are not specified cause nothing to be issued.
+.NXR "acucap file" "field definitions"
+.TP 10
+.B ab (str)
+Abort string.  This string is sent to the
+modem if 
+.MS tip 1c
+is aborted.
+.TP 10
+.B cd (num)
+Completion delay.  This number gives the time to wait 
+between completion string
+characters (in seconds, unless the 
+.PN ls
+Boolean is specified).
+.TP 10
+.B cr (bool)
+Setting this Boolean causes the program to 
+wait in the generic dial routine until the modem senses 
+a carrier.
+.TP 10
+.B co (str)
+A modem command string which instructs the modem to change from the 
+default speed to the speed specified by the \fBxs\fR field.
+.TP 10
+.B cs (str)
+Completion string.  The modem issues this string after 
+receiving and responding to synchronization
+and dial strings.
+.TP 10
+.B da (num)
+Dial acknowledge.  This number gives the time 
+to wait before looking for a dial
+response (in seconds).
+.TP 10
+.B db (bool)
+Debug mode.  Setting this Boolean causes the generic 
+dialer to give more information
+as it dials.
+.TP 10
+.B dd (num)
+Dial delay.  This number gives the time 
+between dial characters (in seconds) unless the
+.PN ls
+Boolean is specified.
+.TP 10
+.B di (str)
+Dial initialization.  This string is used to start a dialing sequence
+(placed just before the number to dial.)
+.TP 10
+.B dr (str)
+Dial response.  The modem sends this string
+if a dialing sequence
+that was just issued is successful.
+.TP 10
+.B ds (str)
+Disconnect string.  This string is sent to 
+the modem when 
+.MS tip 1c
+is finally disconnected.
+.TP 10
+.B dt (str)
+Dial termination.  This string is used to terminate a dialing
+sequence (placed just after the number to dial.)
+.TP 10
+.B fd (num)
+Full delay.  This number is the time 
+to wait for a carrier to be detected
+(in seconds).  If the call is not completed in this time,
+an error is returned.
+.TP 10
+.B hu (bool)
+This Boolean causes the modem to hang up the phone if 
+the line goes away.
+.TP 10
+.B is (num)
+This number specifies the speed the modem must be initialized
+at.  The conversation speed will later be set as specified by
+the \fBxs\fR field.
+.TP 10
+.B ls (bool)
+Use an internal sleep routine
+rather than 
+.MS sleep 3
+for delays.  Thus, all delays are given in microseconds rather
+than seconds.
+.TP 10
+.B os (str) 
+Online string.  The modem sends this string after carrier has been
+detected.
+.TP 10
+.B rd (bool)
+Causes a 1-second delay after toggling dtr.  This action will only
+be taken if the \fBre\fR flag is also set.
+.TP 10
+.B re (bool)
+This Boolean causes the modem to toggle dtr (data terminal ready)
+before beginning synchronization. 
+It is used to reset the present condition of the modem. 
+.TP 10
+.B rs (str)
+Replacement string.  This string is a single character that will be
+substituted for an equal sign
+(=) or dash (-) in the number to be dialed.  Used so
+that delay characters can be represented uniformly, but
+allowing the correct delay character to be passed to
+a given modem.
+.TP 10
+.B sd
+(num) Synchronization delay.  This number gives the time 
+between synchronization
+characters (in seconds unless the 
+.PN ls
+Boolean is specified.)
+.TP 10
+.B si (bool)
+This modem is attached to an interface that cannot return
+any characters until carrier is detected.  Digital's
+DMF32 interface acts in this way.
+.TP 10
+.B sr (str)
+Synchronization response.  What the modem sends in response
+to a synchronization string.
+.TP 10
+.B ss (str)
+Synchronization string. 
+The first string the modem expects to receive; a check to 
+see if the modem is operating.
+.TP 10
+.B xs (num)
+Specifies the speed the modem will operate at after initialization at
+the default speed per the \fBis\fR field.
+.SH Examples
+The following example shows an entry for a Digital DF03
+modem:
+.NXR(e) "acucap file" "entry"
+.EX
+df03|DF03|dec df03:\e
+	:cr:hu:re:di=^A^B:dd#1:os=A:ds=^A:fd#40:
+.EE
+.SH Files
+.TP 15
+.PN /etc/acucap 
+Shared autodial modem data base
+.SH See Also
+tip(1c), uucp(1c)

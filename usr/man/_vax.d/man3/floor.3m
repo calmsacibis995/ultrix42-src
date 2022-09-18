@@ -1,0 +1,75 @@
+.\" SCCSID: @(#)floor.3m	8.1	9/11/90
+.TH floor 3m VAX
+.SH Name
+fabs, floor, ceil, fmod, rint \- absolute value, floor, ceiling, 
+floating point remainder, and round-to-nearest functions 
+.SH Syntax 
+.nf
+.B #include <math.h>
+.PP
+.B double floor(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double ceil(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double fabs(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double fmod (\fIx, y\fP)
+.B double \fIx, y\fP;
+.PP
+.B double rint(\fIx\fP)
+.B double \fIx\fP;
+.fi
+.SH Description
+.NXR "fabs subroutine"
+.NXR "floor subroutine"
+.NXR "ceil subroutine"
+.NXR "rint subroutine"
+.NXR "floor function" "returning integer"
+.NXR "ceiling function" "returning integer"
+.NXR "absolute value function"
+.NXR "floating point remainder"
+.NXR "round-to-nearest function"
+The
+.PN fabs 
+routine returns the absolute value |\|x\||.
+.PP
+The
+.PN floor 
+routine returns the largest integer no greater than x.
+.PP
+The
+.PN ceil
+routine returns the smallest integer no less than x.
+.PP
+The
+.PN fmod
+routine returns the floating point remainder of the division of
+.I x\^
+by
+.IR y :
+zero if
+.I y\^
+is zero or if
+.I x/y\^
+would overflow;
+otherwise the number
+.I f\^
+with the same sign as
+.IR x ,
+such that
+.I "x = iy + f"
+for some integer
+.IR i ,
+and
+.RI | \|f "| < |" \|y |\|.
+.PP
+The
+.PN rint 
+routine
+returns the integer (represented as a double precision number)
+nearest x in the direction of the prevailing rounding mode.
+.SH See Also
+abs(3), intro(3m)

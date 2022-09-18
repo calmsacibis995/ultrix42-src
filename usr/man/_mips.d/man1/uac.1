@@ -1,0 +1,34 @@
+.\" SCCSID: @(#)uac.1	6.3	8/29/89
+.TH uac 1 RISC
+.SH Name
+uac \- Unaligned Access Message Control
+.SH Syntax
+.br
+.B uac [s] [p]
+.I value
+.SH Description
+.NXR "uac command"
+The
+.PN uac
+command controls the printing of "Fixed up unaligned data access for
+pid nnn at pc 0xAddr" messages.  The command is used to set or
+display the flag that controls printing the message for the
+system or for the parent process of the user, which is typically a shell.
+.PP
+If \fIvalue\fR is present, the flag is set; otherwise, the current
+flag setting is displayed.  The \fIvalue\fR can be either a zero (0), 
+which turns the flag off, or a one (1), which turns the flag on.
+If both the system and the user flags are on (set, 1) the 
+unaligned data access errors are reported to the user.  
+If either flag is off (not set, 0), the unaligned
+data access errors are not reported.
+.SH Options
+The following options can be used with the 
+.PN uac
+command:
+.IP \fBs\fR 5
+Set/display the current flag setting for the system.
+.IP \fBp\fR
+Set/display the current flag setting for the parent process.
+.SH Restrictions
+You must be superuser to set the system flag.

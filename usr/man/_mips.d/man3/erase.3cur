@@ -1,0 +1,34 @@
+.TH erase 3cur 
+.SH Name
+erase, werase \- copy blanks into window
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B
+int erase(\|)
+.PP
+.B
+int werase(win)
+.br
+.B
+WINDOW \(**win;
+.SH Description
+.NXR "erase macro (curses)"
+.NXR "werase subroutine"
+The
+.PN erase
+routine copies blanks to every position in the default window,
+the
+.PN werase
+routine copies blanks to every position in the specified window.
+.PP
+The routine
+.PN erase
+is a macro.
+.SH Return Values
+The
+.PN erase
+and
+.PN werase
+functions return OK on success and ERR on error.

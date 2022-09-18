@@ -1,0 +1,69 @@
+.\" SCCSID: @(#)fork.2	8.1	9/11/90
+.TH fork 2
+.SH Name
+fork \- create a new process
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.B #include <unistd.h>
+.PP
+.B pid = fork()
+.B pid_t pid;
+.fi
+.SH Description
+.NXR "fork system call"
+.NXR "process" "creating"
+The
+.PN fork
+system call causes creation of a new process.
+The new process (child process) is an exact copy of the
+calling process except for the following:
+.IP \(bu 5
+The child process has a unique process ID.
+.IP \(bu 5
+The child process has a different parent process ID (that is,
+the process ID of the parent process).
+.IP \(bu 5
+The child process has its own copy of the parent's descriptors.
+These descriptors reference the same underlying objects, so that,
+for instance, file pointers in file objects are shared between
+the child and the parent, so that a 
+.MS lseek 2
+on a descriptor in the child process can affect a subsequent
+.I read
+or
+.I write
+by the parent.
+This descriptor copying is also used by the shell to
+establish standard input and output for newly created processes
+as well as to set up pipes.
+.IP \(bu 5
+The child processes resource utilizations are set to 0.
+For further information, see 
+.MS setrlimit 2 .
+.SH Return Values
+Upon successful completion, 
+.PN fork
+returns a value
+of 0 to the child process and returns the process ID of the child
+process to the parent process.  Otherwise, a value of \-1 is returned
+to the parent process, no child process is created, and the global
+variable \fIerrno\fP is set to indicate the error.
+.SH Diagnostics
+The
+.PN fork
+system call
+fails and no child process are created under the following conditions:
+.TP 15
+[EAGAIN]
+The system-imposed limit {PROC_MAX} on the total
+number of processes under execution would be exceeded.
+.TP 15
+[EAGAIN]
+The system-imposed limit {CHILD_MAX} on the total number of
+processes under execution by a single user would be exceeded.
+.TP 15
+[ENOMEM]
+There is insufficient swap space for the new process.
+.SH See Also
+execve(2), wait(2)

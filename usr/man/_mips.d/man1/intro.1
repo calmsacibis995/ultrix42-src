@@ -1,0 +1,59 @@
+.\" SCCSID: @(#)intro.1	8.1	9/11/90
+.\" SCCSID: @(#)intro.1	8.1	9/11/90
+.TH intro 1
+.SH Name
+intro \- introduction to commands
+.SH Description
+.NXR "intro(1) keyword"
+This section describes publicly accessible commands in alphabetic order.
+Certain distinctions of purpose are made in the headings:
+.TP 10
+(1)
+Commands of general utility.
+.TP
+(1c)
+Commands for communication with other systems.
+.TP
+(1g)
+Commands used primarily for graphics and computer-aided design.
+.TP
+(1int)
+Commands used for internationalization.  For more information
+see 
+.MS internat 1int .
+.TP
+(1mh)
+Commands specific to the Message Handler.
+.TP
+(1ncs)
+Commands used for NCS (Network Computing System).
+.TP
+(1sh5)
+Commands interpreted by the sh5 (System V Release 2) shell.
+.TP
+(1yp)
+Commands specific to the Yellow Pages (YP) service.
+.PP
+.NT Note
+Commands related to system maintenance used to appear in
+section 1 reference pages and were distinguished by (1m) at the top of the
+page.  These reference pages now appear in section 8.
+.SH Diagnostics
+.NXR "diagnostics" "explained"
+Upon termination each command returns two bytes of status,
+one supplied by the system giving the cause for
+termination and, in the case of normal termination,
+one supplied by the program.  For more information, see
+.MS wait 1
+and 
+.MS exit 2 .
+The former byte is 0 for normal termination; the latter
+is customarily 0 for successful execution.  
+A nonzero status indicates a problem such as erroneous parameters,
+or bad or inaccessible data.
+It is called variously exit code, exit status, or
+return code, and is described only where
+special conventions are involved.
+.NXR "exit status" "defined"
+.NXR "return code" "exit status"
+.NXR "exit code" "exit status"

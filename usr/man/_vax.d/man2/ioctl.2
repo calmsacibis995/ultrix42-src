@@ -1,0 +1,81 @@
+.\" SCCSID: @(#)ioctl.2	8.1	9/11/90
+.TH ioctl 2
+.SH Name
+ioctl \- control device
+.SH Syntax
+.nf
+.ft B
+#include <sys/ioctl.h>
+.PP
+.ft B
+ioctl(d, request, argp)
+int d, request;
+char *argp;
+.fi
+.ft R
+.SH Description
+.NXR "file descriptor" "controlling"
+.NXR "ioctl system call"
+The
+.PN ioctl
+call performs a variety of functions
+on open descriptors.  In particular, many operating
+characteristics of character special files (for example, terminals)
+can be controlled with 
+.PN ioctl
+requests.
+Certain 
+.PN ioctl
+requests
+operate on a number of device types. These include
+informational 
+.PN ioctl
+requests, such as
+.PN devio
+and 
+.PN nbuf .
+The descriptions of various devices in the
+.I Reference Pages, Section 4: Special Files
+discuss how
+.PN ioctl
+applies to them. Also consult <sys/ioctl.h> 
+for more information.
+.PP
+An 
+.PN ioctl
+.I request
+has encoded in it whether the argument is an \*(lqin\*(rq parameter
+or \*(lqout\*(rq parameter, 
+and the size of the argument \fIargp\fP in bytes.
+Macros and defines used in specifying an 
+.PN ioctl
+.I request
+are located in the file <sys/ioctl.h>.
+.SH Return Values
+If an error has occurred, a value of \-1 is returned, and
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+The
+.PN ioctl
+call fails under the following conditions:
+.TP 15
+[EBADF]
+The \fId\fP is not a valid descriptor.
+.TP 15
+[ENOTTY]
+The \fId\fP is not associated with a character
+special device.
+.TP 15
+[ENOTTY]
+The specified request does not apply to the kind
+of object which the descriptor \fId\fP references.
+.TP 15
+[EINVAL]
+The \fIrequest\fP or \fIargp\fP is not valid.
+.TP 15
+[EFAULT]
+The \fIargp\fR points to memory that is not part of the process'
+address space.
+.SH See Also
+execve(2), fcntl(2), devio(4), intro(4n), mu(4), nbuf(4), tty(4)

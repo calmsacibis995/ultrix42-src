@@ -1,0 +1,96 @@
+.\" SCCSID: @(#)netgroup.5yp	8.1	9/11/90
+.TH netgroup 5yp
+.SH Name
+netgroup \- list of network groups
+.SH Description
+.NXR "netgroup file" "format"
+.NXA "exports file" "netgroup file"
+.NXA "exports file" "hosts file"
+.NXA "netgroup file" "getnetgrent subroutine"
+.NXR "network group" "defining"
+The
+.PN netgroup
+file defines network-wide groups
+used for permission checking when doing
+remote mounts, remote logins, and remote shells.
+For remote mounts, the information in the 
+.PN netgroup
+file is used to classify machines;
+for remote logins and remote shells,
+it is used to classify users.
+Each line of the
+.PN netgroup
+file defines a group and has the following format:
+.PP
+.I groupname member1,...,member_n
+.PP
+Each member is either another group name or a combination
+of the host name, user name, and domain name.
+.PP
+Any of the three fields can be empty,
+in which case a wildcard is assumed.
+For example,
+to define a group to which everyone belongs, the following entry
+could appear in the 
+.PN netgroup
+file:
+.EX
+universal (,,)
+.EE
+.PP
+Field names that begin with something other
+than a letter, digit, or underscore
+(such as ``-'') work in the opposite way.
+For example:
+.EX
+justmachines	(analytica,-,suez)
+justpeople	(-,babbage,suez)
+.EE
+.PP
+The machine
+.I analytica
+belongs to the group
+.I justmachines
+in the domain
+.I suez,
+but no users belong to it.
+Similarly, the user
+.I babbage
+belongs to the group 
+.I justpeople
+in the domain
+.I suez,
+but no machines belong to it. 
+.PP
+Network groups are part of the Yellow Pages data base
+and are accessed through these files:
+.PP
+.nf
+\f(CW/etc/yp/\fIdomainname\fP/netgroup.dir
+\f(CW/etc/yp/\fIdomainname\fP/netgroup.pag
+\f(CW/etc/yp/\fIdomainname\fP/netgroup.byuser.dir
+\f(CW/etc/yp/\fIdomainname\fP/netgroup.byuser.pag
+\f(CW/etc/yp/\fIdomainname\fP/netgroup.byhost.dir
+\f(CW/etc/yp/\fIdomainname\fP/netgroup.byhost.pag
+.fi
+.PP
+\fRThese files can be created from 
+.PN /etc/netgroup
+using 
+.MS makedbm 8yp .
+.SH Files
+\f(CW/etc/netgroup
+.br
+\f(CW/etc/yp/\fIdomainname\fP/netgroup.dir
+.br
+\f(CW/etc/yp/\fIdomainname\fP/netgroup.pag
+.br
+\f(CW/etc/yp/\fIdomainname\fP/netgroup.byuser.dir
+.br
+\f(CW/etc/yp/\fIdomainname\fP/netgroup.byuser.pag
+.br
+\f(CW/etc/yp/\fIdomainname\fP/netgroup.byhost.dir
+.br
+\f(CW/etc/yp/\fIdomainname\fP/netgroup.byhost.pag
+.SH See Also
+getnetgrent(3yp), makedbm(8yp), ypserv(8yp)

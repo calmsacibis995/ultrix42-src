@@ -1,0 +1,22 @@
+.\" SCCSID: @(#)tty.1	8.1	9/11/90
+.TH tty 1
+.SH Name
+tty \- print current terminal name
+.SH Syntax
+.B tty
+[\fB\-s\fR]
+.SH Description
+.NXA "stty command" "tty command"
+.NXR "tty command"
+.NXR "terminal" "getting pathname"
+The
+.PN tty
+command
+prints the pathname of the user's terminal unless the \-s
+(silent) is given. In either case, the exit value is zero if the
+standard input is a terminal and one if it is not.
+.SH Options
+.IP \fB\-s\fR 0.3i
+Suppresses pathname.
+.SH Diagnostics
+Prints `not a tty' if the standard input file is not a terminal.

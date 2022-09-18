@@ -1,0 +1,432 @@
+.ds MA MH
+.TH whatnow 1mh
+.SH Name
+whatnow \- prompting front-end for send
+.SH Syntax
+.B whatnow
+[
+.I options
+] [
+.I file
+]
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.\" .SH Arguments
+.\" .IP \fIfile\fR 10
+.\" The file on which 
+.\" .PN whatnow 
+.\" is run.
+.\" This argument allows you to specify a named file;
+.\" if you want to run
+.\" .PN whatnow
+.\" on an existing message, use the 
+.\" .B \-draftfolder
+.\" and
+.\" .B \-draftmessage
+.\" options.
+.\" If you do not give an absolute pathname (one beginning with
+.\" a / or \&./ or \&.\&./ ),
+.\" .PN whatnow
+.\" assumes that the named file is in your current 
+.\" working directory.
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "whatnow command"
+After you have finished editing a draft message in
+.PN comp ,
+.PN dist ,
+.PN forw
+or
+.PN repl , 
+the 
+.PN whatnow
+program prompts you for the next required action.  
+Press <Return> at the \f(CWWhat now?\fR prompt 
+to see a list of the available responses.  
+These responses are:
+.EX
+display [\fIoptions\fP]
+edit [\fIeditor\fP] [\fIoptions\fP]
+list [\fIoptions\fP]
+push [\fIoptions\fP]
+quit [\-delete]
+refile [\fIoptions\fP] +folder
+.\"
+.\" send [\-mts \fImtsname\fP] [\fIoptions\fP]
+.\" whom [\-mts \fImtsname\fP] [\fIoptions\fP]
+.\"
+.\" ***LAST TO LINES REPLACED BY NEXT TWO
+.\"
+send  [\fIoptions\fP]
+whom  [\fIoptions\fP]
+.EE
+For more information on the options available with 
+these commands, see the following reference pages:
+.MS refile 1mh ,
+.MS send 1mh ,
+.MS whom 1mh . 
+.PP
+Use \f(CWdisplay\fR
+if you have been using
+.PN repl
+or 
+.PN dist
+and want to see the original message.
+Use \f(CWedit\fR
+if you want to continue editing the draft.
+Use \f(CWlist\fR
+to display the draft message.  
+If you use \f(CWpush\fR,
+.PN send 
+operates in the background and frees your terminal 
+while the message is being sent.
+.PP
+Use \f(CWquit\fR
+to exit from
+.PN whatnow
+and to save the draft message.  
+The
+.B \-delete
+option to \f(CWquit\fR
+will exit from
+.PN whatnow
+and delete the draft message.
+.PP
+Use \f(CWrefile\fR
+.I +folder
+to refile the draft message in a specified folder.  
+The \f(CWsend\fR
+response will cause the message to be delivered.  
+Use \f(CWwhom\fR
+to find out who will receive the mail when it is sent.
+.PP
+Unless the 
+.B \-noedit
+option is given,
+the editor starts when 
+.PN whatnow 
+is invoked.
+.PP
+For the \f(CWedit\fR response,
+you can specify an editor if you wish to override
+the editor specified in your 
+.PN \&.mh_profile
+.R
+file.
+If you specify an editor with the \f(CWedit\fR response, 
+any valid option to the editor is valid.
+Similarly,
+for the \f(CWsend\fR and \f(CWwhom\fR responses,
+any valid option to \f(CWsend\fR and \f(CWwhom\fR commands,
+respectively, are valid.
+.\"
+.\"
+.\" 
+.\" ***COMMENTED OUT
+.ig
+.PP
+You can use the 
+.B \-mts 
+.I mtsname
+option with
+.PN send
+or
+.PN whom
+to specify either the X.400 or
+non-X.400 transport system.
+The
+.I mtsname
+argument takes one of two forms:
+.B \-mts\ x400
+indicates that the message is
+sent over the X.400 system;
+.B \-mts\ smtp
+is used for non-X.400 mail.
+You can use upper- or lower-case letters,
+or a combination of the two.
+You cannot send the same message over both X.400 and 
+non-X.400 transport systems.
+If there is an \f(CWX-mts:\fR
+.R
+field in the header of the 
+draft message, an entry in this field overrides any 
+.B \-mts
+.I mtsname
+option.
+See
+.MS send 1mh
+.R
+and
+.MS whom 1mh
+.R
+for more information.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.PP
+For the \f(CWpush\fR
+response,
+use any valid option to 
+.PN send .
+MH invokes 
+.PN send
+with the 
+.B \-push
+option.
+.PP
+For the \f(CWrefile\fR
+response,
+any valid option to the 
+.PN fileproc
+is valid.
+The
+.PN fileproc
+is the element of your mail profile
+which defines the program used to 
+refile messages in another folder.
+For more information,
+see 
+.MS mh_profile 5mh .
+.PP
+For the \f(CWdisplay\fR
+and \f(CWlist\fR
+responses,
+any valid argument to the 
+.PN lproc
+is valid.
+If any non-option arguments are present,
+then the pathname of the draft is excluded 
+from the argument list given to the 
+.PN lproc
+(this is useful for listing another MH message).
+The
+.PN lproc
+is the element in your mail profile which defines 
+the program used to display draft messages on your screen.
+For more information, see
+.MS mh_profile 5mh .
+.PP
+See 
+.MS mh_profile 5mh
+for further information
+about how editors are used by MH.
+It also describes 
+.PN lproc 
+and
+.PN fileproc
+and shows how complex variables can be used to direct
+the actions performed by
+.PN whatnow .
+.\" 
+.\" ***Info from old Arguments section
+.\"
+.PP
+Although
+.PN whatnow
+is usually invoked by other commands,
+you can use it as a separate command.
+You can run 
+.PN whatnow 
+on a named file by specifying the file as the
+.I file 
+argument.
+If you do not give an absolute pathname (one beginning with
+a / or \&./ or \&.\&./ ),
+.PN whatnow
+assumes that the named file is in your current
+working directory.
+If you want to run
+.PN whatnow
+on an existing message, use the
+.B \-draftfolder
+and
+.B \-draftmessage
+options.
+.\"
+.\" ***End of old Arguments stuff
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-draftfolder \fI+folder\fR" 10
+.PD 0
+.IP \-nodraftfolder 10
+.PD
+Specifies the folder in which 
+.PN whatnow
+searches for the draft message.
+By default, the current message in the named folder 
+is used.
+If you wish to specify another message, use the
+.B \-draftmessage
+option.
+For more information on using a draft folder, see
+.MS comp 1mh .
+The
+.B \-draftfolder
+option can be set up in your user profile;
+see
+.MS mh_profile 5mh 
+for more information.
+.\"
+.\"
+.IP \-draftmessage\ \fImsg\fR
+Specifies the draft message to be used.
+If you specify a folder with the
+.B \-draftfolder 
+option, the 
+.B \-draftmessage
+option takes the number of a message in that folder.
+If you do not specify a folder, 
+.B \-draftmessage
+takes the name of a file.
+If you do not give an absolute pathname (one beginning with
+a / or \&./ or \&.\&./ ),
+.B \-draftmessage 
+assumes that the file is located in your Mail directory.
+(This is different from the 
+.I file
+argument to 
+.PN whatnow ,
+which assumes that the file you name is in your 
+current working directory.)
+.\"
+.\"
+.IP \-editor\ \fIeditorname\fR
+Specifies the name of the editor you want to use
+to edit the draft message.
+Any legal ULTRIX editor can be specified.
+This option is used only if you select the \f(CWedit\fR
+response to the \f(CWWhat now?\fR prompt.
+.\"
+.\"
+.IP \-help
+Prints a list of the valid options for this command.
+.\"
+.\"
+.IP \-noedit
+Prevents the initial invocation of an editor
+when an MH command is run.
+Normally, when you enter an MH command such as
+.PN comp ,
+.PN dist ,
+.PN forw ,
+or
+.PN repl ,
+the 
+.PN whatnow
+program is called to start the initial edit 
+of the draft message.
+If you add this option to the \f(CWwhatnow\fR
+entry in your 
+.PN \&.mh_profile ,
+the initial edit of the draft message is disabled.
+This is a convenient way of disabling this edit 
+for all MH commands, rather than adding the
+.B \-noedit
+entry to the entries for the individual commands in
+.PN \&.mh_profile .
+.\"
+.\"
+.IP \-prompt\ \fIstring\fR
+Specifies the prompt used by
+.PN whatnow .
+The prompt you receive when you invoke 
+.PN whatnow
+can be specified as a string with this option.
+If the prompt contains spaces, you must enclose 
+the entire string in double quotes (" ").
+The default prompt is \f(CWWhat now?\fR
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+If the \f(CWsendproc\fR entry in your
+.PN \&.mh_profile 
+is 
+.PN send ,
+.PN whatnow
+uses a built-in program rather than running the regular
+.PN send .
+If you define your own \f(CWsendproc\fR program, 
+you should not not call it 
+.PN send ,
+as 
+.PN whatnow 
+will not run it.
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+In the following example,
+.PN whatnow
+takes the current message in the folder
+.PN +drafts ,
+and asks what you want to do with it:
+.EX
+% \f(CBwhatnow -draftfolder +drafts\fR
+\f(CWWhat now?
+.EE
+.PP
+In the following example, 
+.PN whatnow
+takes message 6 from the folder 
+.PN +drafts :
+.EX
+% \f(CBwhatnow -draftfolder +drafts -draftmessage 6
+\f(CWWhat now?
+.EE
+.PP
+The following example sets the prompt to be \f(CWNow What?\fR:
+.EX
+% \f(CBwhatnow -prompt "Now What?"\fR
+\f(CWNow what?
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS 
+tab(+);
+l l.
+Path:+To determine your MH directory 
+Draft-Folder:+To find the default draft folder
+Editor:+To override the default editor
+\fIlasteditor\fR-next:+To name an editor to be used after 
++exit from \fIlasteditor\fR
+fileproc:+Program to refile the message
+lproc:+Program to list the contents of a message
+sendproc:+Program to send the message
+whomproc:+Program to determine who a message would go to
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/\&.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+comp(1mh), send(1mh), whom(1mh)

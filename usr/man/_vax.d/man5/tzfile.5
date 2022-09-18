@@ -1,0 +1,85 @@
+.TH tzfile 5
+.SH Name
+tzfile \- time zone information
+.SH Syntax
+.B #include <tzfile.h>
+.SH Description
+The time zone information files used by
+.PN tzset
+begin with bytes reserved for future use,
+followed by three 4-byte values of type
+``long'', written in a ``standard'' byte order
+(the high-order byte of the value is written first).
+These values are,
+in order:
+.IP tzh_timecnt 15
+The number of transition times for which data is stored
+in the file.
+.IP tzh_typecnt
+The number of local time types for which data is stored
+in the file (must not be zero).
+.IP tzh_charcnt
+The number of characters of ``time zone abbreviation strings''
+stored in the file.
+.IP
+This header is followed by
+.PN tzh_timecnt
+4-byte values of type ``long'',
+sorted in ascending order.
+These values are written in ``standard'' byte order.
+Each is used as a transition time (as returned by
+.PN time
+at which the rules for computing local time change).
+Next come
+.PN tzh_timecnt
+1-byte values of type ``unsigned char''.
+Each one tells which of the different types of local time types
+described in the file is associated with the same-indexed 
+transition time.
+These values serve as indices into an array of
+.I ttinfo
+structures that appears next in the file; 
+these structures are defined as follows:
+.EX
+struct ttinfo {	
+	long          tt_gmtoff;
+	int           tt_isdst;
+	unsigned int  tt_abbrind;
+};
+.EE
+Each structure is written as a 4-byte value for
+.PN tt_gmtoff
+of type ``long'',
+in a standard byte order, followed by a 1-byte value for
+.PN tt_isdst
+and a 1-byte value for
+.PN tt_abbrind .
+In each structure,
+.PN tt_gmtoff
+gives the number of seconds to be added to GMT,
+.PN tt_isdst
+tells whether
+.PN tm_isdst
+should be set by
+.PN localtime
+and
+.PN tt_abbrind
+serves as an index into the array of time zone abbreviation characters
+that follows the
+.PN ttinfo
+structure or structures in the file.
+.PP
+The
+.PN localtime
+call uses the first standard-time
+.PN ttinfo
+structure in the file
+(or simply the first
+.PN ttinfo
+structure, in the absence of a standard-time structure)
+if either
+.PN tzh_timecnt
+is zero or the time argument is less than the first transition time recorded
+in the file.
+.SH See Also
+ctime(3)

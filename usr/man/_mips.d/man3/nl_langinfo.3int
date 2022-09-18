@@ -1,0 +1,100 @@
+.TH nl_langinfo 3int
+.SH Name
+nl_langinfo \- language information
+.SH Syntax
+.B #include <nl_types.h>
+.br
+.B #include <langinfo.h>
+.PP
+.B char *nl_langinfo (\fIitem\fP)
+.br
+.B nl_item \fIitem\fP;
+.SH Description
+.NXR "nl_langinfo subroutine"
+The function
+.PN nl_langinfo
+returns a pointer to a null-terminated string containing information relevant 
+to a particular language or cultural area. The language is identified by the 
+last successful call to the appropriate
+.PN setlocale
+category.  
+The categories are shown in the following table and are defined in
+.PN <langinfo.h> .
+.PP
+For instance, the following example
+would return a pointer to the string representing the abbreviated name for
+the first day of the week, as defined by
+.PN setlocale
+category
+.PN LC_TIME :
+.EX
+nl_langinfo (ABDAY_1);
+.EE
+.PP
+If the
+.PN setlocale
+category has not been called successfully,
+.PN langinfo
+data for a supported language is not available, or 
+.PN item
+is not defined, then
+.PN nl_langinfo
+returns a pointer to an empty (null) string.
+In the C locale, the return value is the American English string 
+defined in the following table:
+.PP
+.TS
+tab(@);
+lp-1v-1fHB lp-1v-1fHB lp-1v-1fHB lp-1v-1fHB
+lp-1v-1 lp-1v-1 lp-1v-1 lp-1v-1 .
+.sp 6p
+_
+.sp 6p
+Identifier@Meaning@C locale@Category
+.sp 6p
+_
+.sp 6p
+NOSTR@Negative response@no@LC_ALL
+YESSTR@Positive response@yes@LC_ALL
+D_T_FMT@Default date and time format@%a %b %d@
+@@%H:%M:%S %Y@LC_TIME
+D_FMT@Default date format@%m/%d/%y@LC_TIME
+T_FMT@Default time format@%h:%m:%s@LC_TIME
+@
+DAY_1@Day name@Sunday@LC_TIME
+DAY_2@Day name@Monday@LC_TIME
+\&....@....@....@....
+DAY_7@Day name@Saturday@LC_TIME
+@
+ABDAY_1@Abbreviated day name@Sun@LC_TIME
+ABDAY_2@Abbreviated day name@Mon@LC_TIME
+ABDAY_3@Abbreviated day name@Tue@LC_TIME
+\&....@....@....@....
+ABDAY_7@Abbreviated day name@Sat@LC_TIME
+@
+MON_1@Month name@January@LC_TIME
+MON_2@Month name@February@LC_TIME
+MON_3@Month name@March@LC_TIME
+\&....@....@....@....
+MON_12@Month name@December@LC_TIME
+@
+ABMON_1@Abbreviated month name@Jan@LC_TIME
+ABMON_2@Abbreviated month name@Feb@LC_TIME
+\&....@....@....@....
+ABMON_12@Abbreviated month name@Dec@LC_TIME
+@
+RADIXCHAR@Radix character@.@LC_NUMERIC
+THOUSEP@Thousands separator@ @LC_NUMERIC
+CRNCYSTR@Currency format@ @LC_MONETARY
+AM_STR@String for AM@AM@LC_TIME
+PM_STR@String for PM@PM@LC_TIME
+EXPL_STR@Lower case exponent character@e@LC_NUMERIC
+EXPU_STR@Upper case exponent character@E@LC_NUMERIC
+.sp 6p
+_
+.TE
+.PP
+.SH See Also
+intro(3int), ic(1int), setlocale(3int), environ(5int), nl_types(5int)
+.br
+.I Guide to Developing International Software

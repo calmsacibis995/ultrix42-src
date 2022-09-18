@@ -1,0 +1,102 @@
+.\" SCCSID: @(#)lpx.8	8.1	9/11/90
+.TH lpx 8 
+.SH Name
+lpx \- line printer exerciser
+.SH Syntax
+.B /usr/field/lpx
+[
+.B \-h
+] [
+.BI \-o file
+.B ] [
+.BI \-p n
+.B ] [
+.BI \-t m
+.B ] 
+.BI \-d dev
+.SH Description
+.NXR "lpx exerciser"
+.NXR "line printer" "testing"
+The line printer exerciser outputs a rolling character
+pattern to the printer. Five pages are output and then
+the printer will pause for 15 minutes (default).  Then
+5 more pages are output, followed by a pause.  This
+pattern continues until the process receives a
+.CT C
+or a kill \-15 \fIpid\fR.
+.PP
+Disable the line printer queue of the printer to be tested
+before running
+.PN lpx .
+Check the 
+.PN /etc/printcap
+file to determine the line printer queue,
+and then run line printer control
+program 
+.PN /etc/lpc
+to disable the printer.
+This will stop other jobs from interfering with the
+testing.
+.SH Arguments
+You must specify the following function flag and its
+argument to the
+.PN lpx
+exerciser:
+.IP \fB\-d\fIdev\fR .5i
+The line printer device name and unit number
+to test as listed in the
+.PN /dev
+directory.  For example, lp, lp1.
+.SH Options
+.NXR "lpx exerciser" "options"
+The 
+.PN lpx
+options are:
+.IP \fB\-h\fR .5i
+Prints the help messages for the 
+.PN lpx 
+command.
+.IP \fB\-o\fIfile\fR
+Saves the output diagnostics in \fIfile\fR.
+.IP \fB\-p\fIn\fR
+Sets pause for \fIn\fR minutes.  During the pause period,
+.PN lpx
+will
+only exercise the controller, saving paper. 
+The default value for \fIn\fR is 15.  A value of \fIn\fR = 0 
+indicates no pause.
+.IP \fB\-t\fIm\fR
+Specifies the run time in minutes (\fIm\fR). 
+The default is to run
+.PN lpx
+until the process receives a
+.CT C 
+or kill \-15 \fIpid\fR.
+.SH Restrictions 
+If there is a need to run a system exerciser over an NFS link or on a diskless
+system there are some restrictions.  For exercisers that need to write into a file
+system, such as 
+.MS fsx 8 ,
+the target file system must be writable by root.  Also the directory, in which any
+of the exercisers are executed, must be writable by root because temporary
+files are written into the current directory.  These latter restrictions are
+sometimes difficult to overcome because often NFS file systems are mounted in a
+way that prevents root from writing into them.  Some of the restrictions may be
+overcome by copying the exerciser to another directory and then executing it.  
+.SH Examples
+.NXR "lpx exerciser" "examples"
+The following example causes
+.PN lpx
+to exercise lp1 until the process receives a
+.CT C
+or kill \-15 \fIpid\fR.
+.EX
+% /usr/field/lpx \-dlp1 
+.EE
+The following example exercises lp for 120 minutes in
+the background.
+.EX
+% /usr/field/lpx \-t120 \-dlp &
+.EE
+.SH See Also
+.I "Guide to System Exercisers"

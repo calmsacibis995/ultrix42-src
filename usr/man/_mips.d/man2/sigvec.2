@@ -1,0 +1,370 @@
+.\" SCCSID: @(#)sigvec.2	2.3	6/8/87
+.TH sigvec 2 RISC
+.ie t .ds d \(dg
+.el .ds d \z'|+'
+.ie t .ds b \(bu
+.el .ds b @
+.SH Name
+sigvec \- software signal facilities
+.SH Syntax
+.nf
+.B #include <signal.h>
+.PP
+.B struct sigvec {
+.B	void		(*sv_handler)();
+.B	sigset_t	sv_mask;
+.B	int		sv_flags;
+.B };
+.PP
+.B sigvec(sig, vec, ovec)
+.B int sig;
+.B struct sigvec *vec, *ovec;
+.fi
+.SH Description
+.NXB "sigvec system call"
+.NXB "signal handler" "assigning"
+The system defines a set of signals that can be delivered to a process.
+Signal delivery resembles the occurrence of a hardware interrupt:
+the signal is blocked from further occurrence, the current process 
+context is saved, and a new one is built.  A process can specify a
+handler to which a signal is delivered, or specify that a signal is to be 
+blocked or ignored .
+A process can also specify that a default action is to be taken
+by the system when a signal occurs.
+Normally, signal handlers execute on the current stack
+of the process.  This can be changed, on a per-handler basis,
+so that signals are taken on a special
+signal stack.
+.PP
+All signals have the same priority.
+Signal routines execute with the signal that caused their
+invocation blocked, but other signals can occur.
+A global signal mask defines the set of signals currently 
+blocked from delivery
+to a process.  The signal mask for a process is initialized
+from that of its parent (normally, 0).  It
+can be changed with a
+.MS sigblock 2
+or
+.MS sigsetmask 2
+call, or when a signal is delivered to the process.
+.PP
+When a signal
+condition arises for a process, the signal is added to a set of
+signals pending for the process.  If the signal is not currently
+blocked by the process, it is delivered to the process.  When a signal
+is delivered, the current state of the process is saved,
+a new signal mask is calculated (as described later), 
+and the signal handler is invoked.  The call to the handler
+is arranged so that, if the signal handling routine returns
+normally, the process resumes execution in the context
+from before the signal's delivery.
+If the process wishes to resume in a different context, it
+must arrange to restore the previous context itself.
+.PP
+When a signal is delivered to a process, a new signal mask is
+installed for the duration of the process's signal handler
+(or until a
+.PN sigblock
+or
+.PN sigsetmask
+call is made).
+This mask is formed by taking the current signal mask,
+adding the signal to be delivered, and ORing
+in the signal mask associated with the handler to be invoked.
+.PP
+The
+.PN sigvec
+System call assigns a handler for a specific signal.  If
+.I vec
+is nonzero, it
+specifies a handler routine and mask
+to be used when delivering the specified signal.
+Further, if the SV_ONSTACK bit is set in
+.IR sv_flags ,
+the system delivers the signal to the process on a signal stack,
+specified with 
+.MS sigstack 2 .
+If 
+.I ovec
+is nonzero, the previous handling information for the signal
+is returned to the user.
+.PP
+The following is a list of all signals
+with names as in the include file 
+.PN <signal.h> :
+.NXR "sigvec system call" "signal list"
+.PP
+.nf
+.ta \w'SIGVTALRM 'u +\w'15*  'u
+SIGHUP	1	Hangup
+SIGINT	2	Interrupt
+SIGQUIT	3*	Quit
+SIGILL	4*	Illegal instruction
+SIGTRAP	5*	Trace trap
+SIGIOT	6*	IOT instruction
+SIGEMT	7*	EMT instruction
+SIGFPE	8*	Floating point exception
+SIGKILL	9	Kill (cannot be caught, blocked, or ignored)
+SIGBUS	10*	Bus error
+SIGSEGV	11*	Segmentation violation
+SIGSYS	12*	Bad argument to system call
+SIGPIPE	13	Write on a pipe with no one to read it
+SIGALRM	14	Alarm clock
+SIGTERM	15	Software termination signal
+SIGURG	16.	Urgent condition present on socket
+SIGSTOP	17+	Stop (cannot be caught, blocked, or ignored)
+SIGTSTP	18+	Stop signal generated from keyboard
+SIGCONT	19.	Continue after stop (cannot be blocked)
+SIGCHLD	20.	Child status has changed
+SIGTTIN	21+	Background read attempted from control terminal
+SIGTTOU	22+	Background write attempted to control terminal
+SIGIO	23.	I/O is possible on a descriptor (see fcntl(2))
+SIGXCPU	24	Cpu time limit exceeded (see setrlimit(2))
+SIGXFSZ	25	File size limit exceeded (see setrlimit(2))
+SIGVTALRM	26	Virtual time alarm (see setitimer(2))
+SIGPROF	27	Profiling timer alarm (see setitimer(2))
+SIGWINCH	28.  Window size change
+SIGLOST	29	Lock not reclaimed after server recovery
+SIGUSR1	30	User-defined signal 1
+SIGUSR2	31	User-defined signal 2
+SIGCLD		System V name for SIGCHLD
+SIGABRT		X/OPEN name for SIGIOT
+.fi
+.PP
+The signals marked with asterisks (*) in this list cause a core image
+if not caught or ignored.  Explanations of the meaning of the periods (.)
+and plus signs (+) are included in the following paragraph.
+.PP
+Once a signal handler is installed, it remains installed
+until another
+.PN sigvec
+call is made or an 
+.MS execve 2
+is performed.
+The default action for a signal can be reinstated by setting
+.I sv_handler
+to SIG_DFL. This default is termination
+(with a core image for signals marked with asterisks (*)),
+except for signals marked with periods (.) or plus signs (+).
+Signals marked with periods (.) are discarded if the action
+is SIG_DFL. Signals marked with plus signs (+) cause the process to stop.
+If
+.I sv_handler
+is SIG_IGN, the signal is subsequently ignored,
+and pending instances of the signal are discarded.
+.PP
+If a caught signal occurs
+during certain system calls,
+the call is normally restarted.
+The call can be forced to terminate prematurely with an
+EINTR error return, by setting the SV_INTERRUPT bit in
+.IR sv_flags .
+The affected system calls are
+.PN read ,
+.PN write ,
+or
+.PN ioctl
+on a slow device (such as a terminal, but not a file),
+.PN flock ,
+and
+.PN wait .
+.PP
+After a 
+.PN fork 
+or
+.PN vfork ,
+the child inherits
+all signals, the signal mask, the signal stack,
+and the restart/interrupt flags.
+.PP
+The
+.PN execve
+system call resets all
+caught signals to default action and
+resets all signals to be caught on the user stack.
+Ignored signals remain ignored,
+the signal mask remains the same;
+signals that interrupt system calls continue to do so.
+.PP
+The mask specified in 
+.I vec
+is not allowed to block SIGKILL, SIGSTOP, or SIGCONT.  This
+is done silently by the system.
+.PP
+The SV_INTERRUPT flag is not available in ULTRIX 2.0 or earlier versions.
+Therefore, it should not be used if backward compatibility is needed.
+.SH Return Values
+A zero (0) value indicates that the call succeeded.  A \-1 return value
+indicates an error occurred, and
+.I errno
+is set to indicated the reason.
+.SH Diagnostics
+.NXR "sigvec system call" "diagnostics"
+The
+.PN sigvec
+system call
+fails and no new signal handler is installed, if one
+of the following occurs:
+.TP 15
+[EFAULT]
+Either
+.I vec
+or 
+.I ovec
+points to memory that is not a valid part of the process
+address space.
+.TP 15
+[EINVAL]
+.I Sig
+is not a valid signal number.
+.TP 15
+[EINVAL]
+An attempt is made to ignore or supply a handler for SIGKILL
+or SIGSTOP.
+.TP 15
+[EINVAL]
+An attempt is made to ignore SIGCONT (by default SIGCONT
+is ignored).
+.SH Notes 
+The handler routine can be declared:
+.EX
+void handler(sig, code, scp)
+int sig, code;
+struct sigcontext *scp;
+.EE
+Here
+.I sig
+is the signal number.
+MIPS hardware exceptions are mapped to specific signals as defined by
+the following table.
+.I Code
+is a parameter that is either a constant or zero.  The
+.I scp
+is a pointer to the
+.I sigcontext
+structure (defined in
+.PN <signal.h> ,
+that is the context at the time of the signal and is
+used to restore the context, if the signal handler returns.
+.PP
+The following defines the mapping of MIPS hardware exceptions to signals
+and codes.  All of these symbols are defined in either
+.RI < signal.h >
+or
+.RI < mips/cpu.h >:
+.PP
+.ta \w'     User Single Step (used by debuggers)   'u +\w'15*  'u +8n
+.nf
+.B Hardware exception	Signal	Code
+.sp +.5
+Integer overflow	SIGFPE	EXC_OV
+Segmentation violation	SIGSEGV	SEXC_SEGV
+Illegal instruction	SIGILL	EXC_II
+Coprocessor unusable	SIGILL	SEXC_CPU
+Data bus error	SIGBUS	EXC_DBE
+Instruction bus error	SIGBUS	EXC_IBE
+Read address error	SIGBUS	EXC_RADE
+Write address error	SIGBUS	EXC_WADE
+User breakpoint (used by debuggers)	SIGTRAP	BRK_USERBP
+Kernel breakpoint (used by prom)	SIGTRAP	BRK_KERNELBP
+Taken branch delay emulation 	SIGTRAP	BRK_BD_TAKEN
+Not taken branch delay emulation	SIGTRAP	BRK_BD_NOTTAKEN
+User single step (used by debuggers)	SIGTRAP	BRK_SSTEPBP
+Overflow check	SIGTRAP	BRK_OVERFLOW
+Divide by zero check	SIGTRAP	BRK_DIVZERO
+Range error check	SIGTRAP	BRK_RANGE
+.fi
+.PP
+When a signal handler is reached, the program counter in the signal context
+structure
+.RI ( sc_pc )
+points at the instruction that caused the exception, as modified by the
+.I "branch delay"
+bit in the
+.I cause
+register.
+The
+.I cause
+register at the time of the exception is also saved in the sigcontext
+structure
+.RI ( sc_cause ).
+If the instruction that caused the exception is at a valid user address, it
+can be retrieved with the following code sequence:
+.EX
+if(scp->sc_cause & CAUSE_BD){
+    branch_instruction = *(unsigned long *)(scp->sc_pc);
+    exception_instruction = *(unsigned long *)(scp->sc_pc + 4);
+}
+else
+    exception_instruction = *(unsigned long *)(scp->sc_pc);
+.EE
+CAUSE_BD is defined in
+.PN <mips/cpu.h> .
+.PP
+The signal handler can fix the cause of the exception and re-execute the
+instruction, emulate the instruction and then step over it, or perform some
+nonlocal redirection, such as a
+.PN longjump()
+or an
+.PN exit() .
+.PP
+If corrective action is performed in the signal handler and the instruction
+that caused the exception would then execute without a further exception, the
+signal handler simply returns and re-executes the instruction (even when the
+.I "branch delay"
+bit is set).
+.PP
+If execution is to continue after stepping over the instruction that caused the
+exception, the program counter must be advanced.  If the
+.I "branch delay"
+bit is set, the program counter is set to the target of the branch. 
+Otherwise, it is incremented by four.  
+This can be done with the following code sequence:
+.EX
+if(scp->sc_cause & CAUSE_BD)
+    emulate_branch(scp, branch_instruction);
+else
+    scp->sc_pc += 4;
+.EE
+.I Emulate_branch()
+modifies the program counter value in the sigcontext structure to the target
+of the branch instruction.  See
+.MS emulate_branch 3
+for more details.
+.PP
+For SIGFPE's generated by floating-point instructions
+.RI ( code
+== 0) the
+.I "floating-point control and status"
+register at the time of the exception is also saved in the sigcontext structure
+.RI ( sc_fpc_csr ).
+This register has the information on which exceptions have occurred.
+When a signal handler is entered, the register contains the value at the time
+of the exception but with the
+.I "exceptions bits"
+cleared.
+On a return from the signal handler, the exception bits
+in the floating-point control and status register are also cleared so
+that another SIGFPE will not occur (all other bits are restored from
+.IR sc_fpc_csr ).
+.PP
+For SIGSEGV and SIGBUS errors, the faulting virtual address is saved in
+.I sc_badvaddr
+in the signal context structure.
+.PP
+The SIGTRAPs caused by
+.PN break
+instructions noted in the previous table and all other yet to be defined
+.PN break
+instructions fill the
+.I code
+parameter with the first argument to the
+.PN break
+instruction (bits 25-16 of the instruction).
+
+.SH See Also
+kill(1), kill(2), ptrace(2), sigblock(2), sigpause(2), sigsetmask(2),
+sigstack(2), setjmp(3), siginterrupt(3), tty(4)
+.NXE "sigvec system call"
+.NXE "signal handler" "assigning"

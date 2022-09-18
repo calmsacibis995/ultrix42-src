@@ -1,0 +1,29 @@
+.\" SCCSID: @(#)uptime.1	8.1	9/11/90
+.TH uptime 1
+.SH Name
+uptime \- display system status
+.SH Syntax
+.B uptime [-w]
+.SH Description
+.NXA "uptime command" "w command"
+.NXR "uptime command"
+.NXR "system" "showing uptime"
+.NXR "system" "showing run queue average"
+The
+.PN uptime 
+command prints the current time, the length of time the system has been up,
+the number of current users, and the average number of jobs in the run 
+queue in the last 1, 5, and 15 minute periods.  
+It is, essentially, the first line 
+of a 
+.MS w 1
+command.
+The 
+.B \-w
+option provides the same output as the 
+.PN w
+command.
+.SH Files
+/vmunix	system name list
+.SH See Also
+w(1)

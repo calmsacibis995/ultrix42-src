@@ -1,0 +1,240 @@
+.\" SCCSID: @(#)term.5	8.1	9/11/90
+.TH term 5 VAX
+.SH Name
+term \- terminal driving tables for nroff
+.SH Description
+.NXR "term file" "format"
+.NXAM "nroff text processor" "term file"
+The 
+.MS nroff 1
+command
+uses driving tables to customize its output for various types of
+output devices.  
+These driving tables are written
+as C programs, compiled, and installed in
+\f(CW/usr/lib/term/tab\fIname\fR,
+where
+.I name
+is the name for that terminal type as given in 
+.MS term 7 .
+The structure of the tables is as follows:
+.EX
+#define	INCH	240
+struct {
+	int bset;
+	int breset;
+	int Hor;
+	int Vert;
+	int Newline;
+	int Char;
+	int Em;
+	int Halfline;
+	int Adj;
+	char *twinit;
+	char *twrest;
+	char *twnl;
+	char *hlr;
+	char *hlf;
+	char *flr;
+	char *bdon;
+	char *bdoff;
+	char *ploton;
+	char *plotoff;
+	char *up;
+	char *down;
+	char *right;
+	char *left;
+	char *codetab[256\-32];
+	char *zzz;
+} t;
+.EE
+.PP
+The meanings of the various fields are:
+.NXR "term file" "field definitions"
+.TP 10
+.I bset\^
+Bits to set in the
+.I c_oflag\^
+field of the
+.PN termio\^
+structure
+before output.
+For further information, see
+.MS tty 4 .
+.TP 10
+.I breset\^
+Bits to reset in the
+.I c_oflag\^
+field of the
+.PN termio\^
+structure
+before output.
+.TP 10
+.I Hor\^
+Horizontal resolution in fractions of an inch.
+.TP 10
+.I Vert\^
+Vertical resolution in fractions of an inch.
+.TP 10
+.I Newline\^
+Space moved by a newline (linefeed) character in fractions
+of an inch.
+.TP 10
+.I Char\^
+Quantum of character sizes, in fractions of an inch
+(that is, a character is a multiple of Char units wide).
+.TP 10
+.I Em\^
+Size of an em in fractions of an inch.
+.TP 10
+.I Halfline\^
+Space moved by a half-linefeed (or half-reverse-linefeed)
+character in fractions of an inch.
+.TP 10
+.I Adj\^
+Quantum of white space, in fractions of an inch
+(that is, white spaces are a multiple of Adj units wide).
+.IP
+Note: if this is less than the size of the space
+character (in units of Char; see the following 
+fields for how the sizes of characters are defined),
+.PN nroff\^
+outputs
+fractional spaces using plot mode.  Also, if the
+.PN \-e
+option to
+.PN nroff
+is used, 
+.PN nroff 
+sets Adj equal to Hor.
+.TP 10
+.I twinit\^
+Set of characters used to initialize the terminal
+in a mode suitable for
+.PN nroff .
+.TP 10
+.I twrest\^
+Set of characters used to restore the terminal to
+normal mode.
+.TP 10
+.I twnl\^
+Set of characters used to move down one line.
+.TP 10
+.I hlr\^
+Set of characters used to move up one-half line.
+.TP 10
+.I hlf\^
+Set of characters used to move down one-half line.
+.TP 10
+.I flr\^
+Set of characters used to move up one line.
+.TP 10
+.I bdon\^
+Set of characters used to turn on hardware boldface mode,
+if any.
+.TP 10
+.I bdoff\^
+Set of characters used to turn off hardware boldface mode,
+if any.
+.TP 10
+.I iton\^
+Set of characters used to turn on hardware italics mode,
+if any.
+.TP 10
+.I itoff\^
+Set of characters used to turn off hardware italics mode,
+if any.
+.TP 10
+.I ploton\^
+Set of characters used to turn on hardware plot mode
+(for Diablo type mechanisms), if any.
+.TP 10
+.I plotoff\^
+Set of characters used to turn off hardware plot mode
+(for Diablo type mechanisms), if any.
+.TP 10
+.I up\^
+Set of characters used to move up one resolution unit
+(Vert) in plot mode, if any.
+.TP 10
+.I down\^
+Set of characters used to move down one resolution unit
+(Vert) in plot mode, if any.
+.TP 10
+.I right\^
+Set of characters used to move right one resolution unit
+(Hor) in plot mode, if any.
+.TP 10
+.I left\^
+Set of characters used to move left one resolution unit
+(Hor) in plot mode, if any.
+.TP 10
+.I codetab\^
+Definition of characters needed to print an
+.PN nroff\^
+character
+on the terminal.
+The first byte is the number of
+character units (Char) needed to hold the
+character; that is, ``\\001'' is one unit wide, ``\\002'' is two
+units wide, and so on.  The high-order bit (0200) is on if
+the character is to be underlined in underline mode
+(.ul).
+The rest of the bytes are the characters
+used to produce the character in
+question.  If the character has the sign (0200) bit on,
+it is a code to move the terminal in plot mode.  It is
+encoded as:
+.RS
+.IP "0100 bit on" 15
+Vertical motion
+.IP "0100 bit off" 15
+Horizontal motion
+.IP "040 bit on" 15
+Negative (up or left) motion
+.IP "040 bit off" 15
+Positive (down or right) motion
+.IP "037 bits" 15
+Number of such motions to make
+.RE
+.TP 10
+.I zzz\^
+A zero terminator at the end
+.PP
+All quantities that are in units of fractions of an inch should
+be expressed as
+.RI INCH* num / denom ,
+where
+.I num\^
+and
+.I denom\^
+are respectively the numerator and denominator of the fraction; that is, 
+1/48 of an inch would be written as ``INCH1/48''.
+.PP
+If any sequence of characters does not pertain to the output device,
+that sequence should be given as a null string.
+.PP
+The source code for the terminal
+.I name\^
+is in 
+\f(CW/usr/src/usr.bin/nroff/term/tab\fIname\fR.
+When a new terminal type is added, the file 
+.PN maketerms.c
+should be updated to include the source to that driving table (use #include).
+Note that the various terminal types are grouped into ``parts'' labelled
+PART1, PART2, and PART3.
+If necessary, more parts can be added.  Users can make other changes to
+.PN maketerms.c 
+as needed.
+The makefile 
+.PN terms.mk
+in that directory should then be updated.
+.SH Files
+.TP 25
+\f(CW/usr/lib/term/tab\fIname\fP
+Driving tables
+.TP
+\f(CWtab\fIname\fP.c
+Source for driving tables
+.SH See Also
+tty(4), term(7)

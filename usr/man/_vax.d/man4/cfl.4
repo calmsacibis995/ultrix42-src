@@ -1,0 +1,27 @@
+.\" SCCSID: @(#)cfl.4	8.1	9/11/90
+.\" SCCSID: @(#)cfl.4	8.1	9/11/90
+.TH cfl 4 VAX
+.SH Name
+cfl \- RX01 console interface
+.SH Description
+.NXR "fl keyword" "cfl keyword"
+.NXR "cfl keyword"
+.NXR "RX01 console interface"
+This is a simple interface to the RX01
+floppy disk unit, which is part of the console
+LSI-11 subsystem for the VAX-11/780 ( VAX-11/785).
+Access is given to the entire
+floppy, consisting of 77 tracks of 26 sectors of 128 bytes.
+.PP
+All I/O is raw; the seek addresses in raw transfers should be a multiple
+of 128 bytes and a multiple of 128 bytes should be transferred,
+as in other ``raw'' disk interfaces.
+.SH Restrictions
+Multiple console floppies are not supported.
+.PP
+If a write is given with a count not a multiple of 128 bytes,
+the trailing portion of the last sector will be zeroed.
+.SH Files
+.PN /dev/floppy
+.SH See Also
+MAKEDEV(8)

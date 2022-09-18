@@ -1,0 +1,58 @@
+.\" SCCSID: @(#)css.4	8.1	9/11/90
+.TH css 4 VAX "" Unsupported
+.SH Name
+css \- DEC IMP-11A LH/DH IMP interface
+.SH Syntax
+.B "pseudo-device imp"
+.br
+.B "device css0 at uba0 csr 0167600 flags 10 vector cssrint cssxint"
+.SH Description
+The 
+.PN css
+device provides a Local Host/Distant Host
+interface to an IMP.  It is normally used when participating
+in the DARPA Internet.  The controller itself is not accessible
+to users, but instead provides the hardware support to the IMP
+interface described in
+.MS imp 4 .
+When configuring, the 
+.PN imp
+pseudo-device is also included.
+.SH Diagnostics
+.BR "css%d: not alive" .
+.br
+The initialization routine was entered even though the device
+did not autoconfigure.  This is indicates a system problem.
+.PP
+.BR "css%d: can't initialize" .
+.br
+Insufficient UNIBUS resources existed to initialize the device.
+This is likely to occur when the device is run on a buffered
+data path on an 11/750 and other network interfaces are also
+configured to use buffered data paths, or when it is configured
+to use buffered data paths on an 11/730 (which has none).
+.PP
+.BR "css%d: imp doesn't respond, icsr=%b" .
+.br
+The driver attempted to initialize the device, but the IMP
+failed to respond after 500 tries.  Check the cabling.
+.PP
+.BR "css%d: stray output interrupt csr=%b" .
+.br
+An interrupt occurred when no output had previously been started. 
+.PP
+.BR "css%d: output error, ocsr=%b icsr=%b" .
+.br
+The device indicated a problem sending data on output.
+.PP
+.BR "css%d: recv error, csr=%b" .
+.br
+The device indicated a problem receiving data on input.
+.PP
+.BR "css%d: bad length=%d" .
+.br
+An input operation resulted in a data transfer of less than
+0 or more than 1008 bytes of
+data into memory (according to the word count register).
+This should never happen as the maximum size of a host-IMP
+message is 1008 bytes.

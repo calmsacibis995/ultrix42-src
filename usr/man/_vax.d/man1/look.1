@@ -1,0 +1,43 @@
+.\" SCCSID: @(#)look.1	8.1	9/11/90
+.TH look 1
+.SH Name
+look \- find lines in sorted data
+.SH Syntax
+.B look
+[\fB\-df\fR] \fIstring\fR [\|\fIfile\fR\|]
+.SH Description
+.NXR "look command"
+.NXR "file" "finding pattern"
+.NXA "grep command" "look command"
+.NXA "sort command" "look command"
+The
+.PN look
+command consults a sorted
+.I file
+and prints all lines that begin with
+.IR string .
+It uses binary search.
+B
+.SH Options
+The options 
+.B d
+and
+.B f
+affect comparisons as in
+.MS sort 1 .
+If no
+.I file
+is specified, 
+.PN /usr/dict/words
+is assumed with collating sequence
+.B \-df.
+.IP \fB\-d\fR 5
+Uses dictionary order:
+only letters, digits,
+tabs and blanks can be compared.
+.IP \fB\-f\fR 
+Folds uppercase to lowercase (compares equally).   
+.SH Files
+/usr/dict/words
+.SH See Also
+grep(1), sort(1)

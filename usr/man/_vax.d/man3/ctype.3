@@ -1,0 +1,114 @@
+.\" SCCSID: @(#)ctype.3	2.7	8/13/87
+.TH ctype 3 
+.SH Name
+isalpha, isupper, islower, isdigit, isxdigit, isalnum, isspace, ispunct, isprint, isgraph, iscntrl, isascii \- character classification macros
+.SH Syntax
+.B #include <ctype.h>
+.PP
+.B int isalpha (\fIc\fP)
+.PP
+.B int c;
+.SH Description
+.NXR "ctype keyword"
+.NXR "isalpha subroutine"
+.NXR "isupper subroutine"
+.NXR "islower subroutine"
+.NXR "isdigit subroutine"
+.NXR "isalnum subroutine"
+.NXR "isspace subroutine"
+.NXR "ispunct subroutine"
+.NXR "isprint subroutine"
+.NXR "isprint subroutine"
+.NXR "isgraph subroutine"
+.NXR "iscntrl subroutine"
+.NXR "isascii subroutine"
+.NXR "ASCII character" "classifying"
+.PP
+These macros classify character-coded integer values according to the rules of the coded character set (codeset) identified by the last successful call to
+.PN setlocale
+category
+.PN LC_CTYPE .
+All macros return non-zero for true and zero for false.
+.PP
+If
+.PN setlocale
+category
+.PN LC_CTYPE
+has not been called successfully, or if character classification information is not available for a supported language, then characters are classified according to the rules of the ASCII 7-bit coded character set, returning 0 for values above octal 0177.
+.PP
+The macro
+.PN isascii 
+provides a result for all integer values.
+The rest provide a result for EOF and values in the character range of the codeset identified by the last successful call to
+.PN setlocale
+category
+.PN LC_CTYPE .
+.TP 15n
+.PN isalpha
+.I c
+is a letter
+.TP
+.PN isupper
+.I c
+is an uppercase letter
+.TP
+.PN islower 
+.I c
+is a lowercase letter
+.TP
+.PN isdigit
+.I c
+is a digit
+.TP
+.PN isxdigit
+.I c
+is a hexadecimal digit, by default [0-9], [A-F], or [a-f]
+.TP
+.PN isalnum
+.I c
+is an alphanumeric character
+.TP
+.PN isspace
+.I c
+is a space, tab, carriage return, new line, or form feed
+.TP
+.PN ispunct
+.I c
+is a punctuation character (neither control, alphanumeric, nor space)
+.TP
+.PN isprint
+.I c
+is a printing character, by default code 040(8) (space) through 0176 (tilde)
+.TP
+.PN isgraph
+.I c
+is a printing character, like
+.PN isprint
+except false for space
+.TP
+.PN iscntrl
+.I c
+is a delete character (0177) or ordinary control character
+(less than 040) except for space characters
+.TP
+.PN isascii
+.I c
+is an ASCII character, code less than 0200
+.SS International Environment
+.IP LC_CTYPE 15
+If this environment variable is set and valid,
+.PN ctype
+uses the international language database named in the definition to 
+determine character classification rules.
+.IP LANG
+If this environment variable is set and valid, 
+.PN ctype
+uses the international language database named in the definition to determine
+the character classification rules. If 
+.PN LC_CTYPE
+is defined, that definition supercedes the definition of 
+.PN LANG .
+.SH See Also
+conv(3), setlocale(3), stdio(3s), environ(5int), ascii(7)
+.br
+.I "Guide to Developing International Software"

@@ -1,0 +1,17 @@
+This directory contains the lat directory which contains the
+lat include files. These are here simply to help make compiling easier.
+making lpd always fails beacause the include files in /sys/lat can
+never be found.
+
+To make use of this directory log in as root.
+
+rmdir /sys/lat
+ln -s /usr/src/usr.lib/lpr/sys/lat /sys/lat
+make lpd
+rm /sys/lat
+mkdir /sys/lat
+
+
+Dave Gray
+
+This is directory is not really part of anything.

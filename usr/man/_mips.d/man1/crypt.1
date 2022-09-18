@@ -1,0 +1,120 @@
+.TH crypt 1
+.SH Name
+crypt \- encode/decode (available only if the Encryption layered product is installed)
+.SH Syntax
+.B crypt 
+.I key 
+.B < input.File > output.File
+.SH Description
+.NXR "encryption" "crypt command" 
+.NXR "crypt command" "encryption"  
+This reference page describes software that is available only
+if the Encryption layered product is installed.
+.PP
+The
+.PN crypt
+command reads from the standard input and writes
+on the standard output.
+You must supply a
+.I key 
+which selects a particular transformation.
+If no password is given,
+.PN crypt
+demands a 
+.I key
+from the terminal and turns
+off printing while the 
+.I key
+is being typed in.
+The
+.PN crypt
+command
+encrypts and decrypts with the same 
+.I key.
+.PP
+Files encrypted by
+.PN crypt
+are compatible with those treated by the ed, 
+ex and vi editors in encryption mode.
+.PP
+The security of encrypted files depends on three factors:
+the fundamental method must be hard to solve,
+direct search of the 
+.I key 
+space must be infeasible, and
+sneak paths by which 
+.I keys
+or clear text can become
+visible must be minimized.
+.PP
+The
+.PN crypt
+command
+implements a one-rotor machine designed along the lines
+of the German Enigma, but with a 256-element rotor.
+Methods of attack on such machines are known, but not widely;
+moreover the amount of work required is likely to be large.
+.PP
+The transformation of a 
+.I key 
+into the internal
+settings of the machine is deliberately designed to
+be expensive, for example, to take a substantial fraction of
+a second to compute.
+However,
+if 
+.I keys
+are restricted to 
+three lowercase letters,
+then encrypted files can be read by expending only
+a substantial fraction of
+five minutes of machine time.
+.PP
+Since the 
+.I key 
+you choose is an argument to the
+.PN crypt
+command,
+it is potentially visible to users executing ps(1)
+or a derivative.
+To minimize this possibility,
+.PN crypt
+destroys any record of the 
+.I key
+immediately upon entry.
+The most vulnerable aspect of 
+.PN crypt
+is the choice of 
+.I keys
+and 
+.I key
+security.
+
+.ne 10
+.SH Examples
+The following examples use KEY as the key to encrypt and decrypt files.
+The first example encrypts the file
+.PN plain.File , 
+naming the resulting encrypted file 
+.PN crypt.File .
+The second example decrypts the file 
+.PN crypt.File , 
+naming the resulting decrypted file
+.PN decrypt.File .
+The third example prints the encrypted file in clear text.
+.EX
+crypt KEY < plain.File > crypt.File
+.EE
+.EX
+crypt KEY < crypt.File > decrypt.File
+.EE
+.EX
+crypt KEY < crypt.File | pr
+.EE
+.SH Files
+.TP 12
+.PN /dev/tty 
+for typed 
+.I key
+.SH See Also
+ed(1), ex(1), vi(1), xsend(1), crypt(3), makekey(8)

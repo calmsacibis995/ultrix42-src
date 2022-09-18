@@ -1,0 +1,83 @@
+.TH rpc_clear_server_binding 3ncs
+.SH Name
+rpc_clear_server_binding \- unset the binding of an RPC handle to a
+server (client only)
+.SH Syntax
+.nf
+#include <idl/c/rpc.h>
+
+void rpc_$clear_server_binding(\fIhandle, status\fP)
+handle_t \fIhandle\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$clear_server_binding(\fR
+.\"	\fBin \fIhandle\fB: handle_t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20 
+\fIhandle\fR
+The RPC handle whose binding is being cleared.
+.TP 20
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$clear_server_binding
+routine removes the association between an RPC
+handle and a particular server (that is, a particular port number),
+but does not remove the associations with an object and with a host
+(that is, a network address).
+This call replaces a fully bound handle with a bound-to-host handle.
+A bound-to-host handle identifies an object located on a particular host
+but does not identify a server exporting an interface to the object.
+.NXR "Interface to the Remote Procedure Call" "rpc_clear_server_binding"
+.PP
+If a client uses a bound-to-host handle to make a remote procedure call,
+the call is sent to the Local Location Broker (LLB) forwarding port
+at the host identified by the handle.
+If the call's interface and the object identified by the handle
+are both registered with the host's LLB,
+the LLB forwards the request to the registering server.
+When the client RPC runtime library receives a response,
+it binds the handle to the server.
+Subsequent remote procedure calls that use this handle
+are then sent directly to the bound server's port.
+.PP
+The 
+.PN rpc_$clear_server_binding
+routine is useful for client error recovery
+when a server dies.
+The port that a server uses when it restarts
+is not necessarily the same port that it used previously;
+therefore, the binding that the client was using may not be correct.
+This routine enables the client to unbind from the dead server
+while retaining the binding to the host.
+When the client sends a request,
+the binding is automatically set to the server's new port.
+.SH Diagnostics
+This section lists status codes for errors returned by this 
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.SH Files
+.PN /usr/include/idl/rpc.idl
+.br
+.PN /usr/include/idl/c/rpc.h
+.SH See Also
+intro(3ncs), rpc_bind(3ncs), rpc_clear_binding(3ncs), rpc_set_binding(3ncs)

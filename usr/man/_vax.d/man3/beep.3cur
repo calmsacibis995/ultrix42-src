@@ -1,0 +1,36 @@
+.TH beep 3cur 
+.SH Name
+beep, flash \- generate audiovisual alarm
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int beep(\|)
+.PP
+.B
+int flash(\|)
+.SH Description
+.NXR "beep subroutine"
+.NXR "flash subroutine"
+The 
+.PN beep
+routine sounds the audible alarm on the terminal, if possible, 
+otherwise it flashes the screen.
+.PP
+The routine 
+.PN flash
+flashes the screen, if possible, 
+otherwise it sounds the audible alarm.
+.PP
+If neither signal can be used on a 
+particular terminal,
+nothing happens.
+.SH Return Values
+The 
+.PN beep
+and
+.PN flash
+functions return OK on success and ERR on error.

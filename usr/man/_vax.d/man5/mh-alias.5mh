@@ -1,0 +1,224 @@
+.TH mh-alias 5mh
+.SH Name
+mh-alias \- alias file for MH message system
+.SH Description
+.NXR "mh-alias file"
+.NXR "MH system" "alias file"
+Aliasing allows you to send mail to a person or group of persons 
+without typing their complete mail address.
+Both your MH personal alias file and
+the system alias file for mail delivery, 
+.PN /usr/lib/mh/MailAliases ,
+process aliases in the same way.
+You can specify the name of your personal alias file in your 
+.PN \&.mh_profile .
+.PP
+A line of the alias file can have the following formats:
+.EX
+alias : address-group
+alias ; address-group
+< alias-file
+.EE
+.PP
+The first line of the example is the standard format.
+The alias appears at the start of the line, 
+followed by a colon, followed by the address or addresses
+that it represents.
+.PP
+If the alias is terminated with a semicolon (;)
+instead of a colon (:), the mail system outputs both 
+the alias and the address-list in the correct format.
+.PP
+If the line starts with a \f(CW<\fR,
+the file named after the \f(CW<\fR 
+is read for more alias definitions.
+The reading is done recursively, so a
+\f(CW<\fR
+can occur in the beginning of an alias file with the expected results.
+.PP
+Addresses can be expressed in the following formats:
+.EX
+alias: address1, address2, address3, ...
+alias: <file
+alias: =ULTRIX-group
+alias: +ULTRIX-group
+alias: *
+.EE
+.PP
+Addresses are normally given in a list,
+separated by a comma and one or more spaces.
+If the list goes over one line,
+you can create a continuation line by placing a back-slash (\e)
+immediately before the new-line character.
+.PP
+If the address-group begins with a \f(CW<\fR,
+the file named after the \f(CW<\fR is read 
+and its contents added to the address list for the alias.
+.PP
+If the address-group starts with an 
+\f(CW=\fR,
+then the file 
+.PN /etc/group
+is consulted for the ULTRIX-group named after the 
+\f(CW=\fR.
+Each login name occurring as a member of the group is added to the
+address list for the alias.
+.PP
+If the address-group starts with a 
+\f(CW+\fR,
+then the file 
+.PN /etc/group
+is consulted
+to determine the group-id of the ULTRIX-group named after the 
+\f(CW+\fR.
+Each login name occurring in the 
+.PN /etc/passwd
+file whose group-id is indicated by this group 
+is added to the address list for the alias.
+.PP
+If the address-group is simply 
+\f(CW*\fR,
+then the file 
+.PN /etc/passwd
+is consulted and all login names with a user-id 
+greater than a given number (usually 200) 
+are added to the address list for the alias.
+.PP
+Aliases are resolved at posting time in the following way.
+A list of all the addresses from the message is built and duplicate
+addresses are eliminated.
+If the message originated on the local host,
+then alias resolution is performed for those addresses in the message
+that have no host specified.
+For each line in the alias file,
+aliases are compared against all of the existing addresses.
+If there is a match, the matched alias is removed from the address list, 
+and each new address in the address-group is added to the address list, 
+if it is not already on the list.
+.PP
+The alias itself is not usually output;
+the address-group that the alias maps to is output instead.
+However, if the alias is terminated with a semicolon (;) 
+instead of a colon (:), both the alias and the address 
+are output in the correct format.
+This makes replies possible, because in MH aliases and
+personal aliases are unknown to the mail transport system.
+.\"
+.\" .PP
+.\" Because the alias file is read line by line, 
+.\" forward references work; 
+.\" but backward references are not recognized, 
+.\" so there is no recursion.
+.\"
+.PP
+MH alias files are expanded into the headers of messages posted.
+This aliasing occurs first, at posting time,
+without the knowledge of the message transport system.
+In contrast, once the message transport system is given a message 
+to deliver to a list of addresses, 
+for each address that appears to be local,
+a system-wide alias file is consulted.  
+These aliases are not expanded into the headers of messages delivered.
+.PP
+An alias file must not reference itself directly, 
+or indirectly through another
+alias file, using the 
+\f(CW<file\fR 
+construct.
+.\"
+.\"
+.SS Using Aliasing
+To use aliasing in MH, you need to set up a personal alias file.
+It can have any name, but it is usually called 
+.PN aliases ,
+and is usually located in your Mail directory.
+To set up the file, you need to perform the following steps.
+.PP
+First, add the following line to your
+.PN \&.mh_profile :
+.EX
+Aliasfile: aliases
+.EE
+If you have chosen a different name for your file, 
+you should use this instead of
+.PN aliases .
+If your file is in a directory other than your Mail directory,
+you must supply the full pathname.
+.PP
+Next, create the file 
+.PN aliases
+in your Mail directory.
+.PP
+You can now start to add aliases to your 
+.PN aliases
+file.
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+This section gives an example of an alias file, 
+followed by an explanation of the entries:
+.EX
+sgroup: fred, fear, freida
+fred: frated@UCI
+ULTRIX-committee: <ultrix.aliases
+staff: =staff
+wheels: +wheel
+everyone: *
+.EE
+.PP
+On the first line of the example,
+\f(CWsgroup\fR
+is defined as an alias for the three names
+\f(CWfrated@UCI\fR,
+\f(CWfear\fR,
+and
+\f(CWfreida\fR.
+On the second line of the example,
+\f(CWfred\fR
+is defined as an alias for
+\f(CWfrated@UCI\fR.
+Next, the definition of 
+\f(CWULTRIX-committee\fR
+is given by reading the file 
+\f(CWultrix.aliases\fR
+in your Mail directory.
+The alias
+\f(CWstaff\fR
+is defined as all users who are listed as members of the group 
+\f(CWstaff\fR
+in the 
+.PN /etc/group
+file.
+The alias
+\f(CWwheels\fR
+is defined as all users whose group-id in
+.PN /etc/passwd
+is equal to the group
+\f(CWwheel\fR.
+Finally, the alias
+\f(CWeveryone\fR
+is defined as all users with a user-id in
+.PN /etc/passwd
+greater than 200.
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN /usr/lib/mh/MailAliases
+System alias file.
+.TP 10 
+.PN $HOME/.mh_profile
+Your user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+ali(1mh), send(1mh), whom(1mh),
+group(5), passwd(5), 
+mh_profile(5mh), mtstailor(5mh),
+conflict(8mh), post(8mh)

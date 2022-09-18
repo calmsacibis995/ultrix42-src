@@ -1,0 +1,86 @@
+#!/bin/sh
+#	@(#)getimages	4.1 (ULTRIX) 7/2/90";
+#  Usage: example: sh getimages ULT024 /usr/release/build
+#
+#
+PATH=.:/etc:/bin:/usr/bin:/usr/ucb
+export PATH
+umask 022
+
+# We must have 2 command line args
+
+case $# in
+2)	;;
+*)	echo "Usage: example: getimages /usr/release/build ULT024"
+	exit 1
+	;;
+esac
+	
+MASTERROOT=$1				# for example, /usr/release/build
+PRODUCT=$2				# for example, ULT024
+KITPATH=/usr/release
+SOURCEDIR=${MASTERROOT}/usr/sys/dist/kitimages
+DESTDIR=${KITPATH}/${PRODUCT}
+
+#
+# Define the lists of images to be installed in bootdir.
+#
+SASKITS="
+	RL02.*
+	RX01.*
+	RX50.*
+	TK50.*
+	TU58.*
+"
+UWSKITS="
+     TK50.*
+"
+# Check to see if ROOT is needed
+# if not will exit
+[ -f ${KITPATH}/${PRODUCT}/${PRODUCT}.k ] ||
+{
+	echo "Kit production file does not exist - ${KITPATH}/${PRODUCT}/${PRODUCT}.k"
+	exit 1
+}
+LINE=`grep '^ROOT' ${KITPATH}/${PRODUCT}/${PRODUCT}.k`
+BOOTCK=`expr "$LINE" : '.*\(.\)$'`
+if [ "$BOOTCK" = 1 ] 
+then
+# Check to see IMAGES exists
+
+	[ -f ${SOURCEDIR}/ROOT ] ||
+	{
+		echo "File ${SOURCEDIR}/ROOT  Doesn't Exist. "
+		exit 1
+	}
+
+ 	[ -d ${DESTDIR}/bootdir ] || mkdir ${DESTDIR}/bootdir
+	echo "Copying the Generic ROOT image"
+	cp ${SOURCEDIR}/ROOT ${DESTDIR}
+	PROD=`expr $PRODUCT : '\(.*\)...$'`
+	if [ ${PROD} = "UWS" ]
+	then
+   		for image in $UWSKITS
+    		do
+			echo "Copying $image"
+			cp ${SOURCEDIR}/$image ${DESTDIR}/bootdir 
+		done
+	else
+		#
+		# Install files to bootdir 
+		#
+		for image in $SASKITS
+		do
+			echo "Copying $image"
+			cp ${SOURCEDIR}/$image ${DESTDIR}/bootdir 
+		done
+		cp ${MASTERROOT}/usr/sys/780cons/floppy ${DESTDIR}/bootdir/780cons
+		cp ${MASTERROOT}/usr/sys/750cons/750cons ${DESTDIR}/bootdir/750cons
+		cp ${MASTERROOT}/usr/sys/8200cons/8200cons ${DESTDIR}/bootdir/8200cons
+	fi
+else
+	echo "ROOT and BOOT Images are not required for ${PRODUCT} "
+ 	exit 1
+fi
+
+echo "Images for ${PRODUCT} have been copied to the release area."

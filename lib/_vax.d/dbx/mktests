@@ -1,0 +1,2493 @@
+#@(#)mktests	4.1	Ultrix	7/3/90
+#! /bin/csh -f
+#
+# csh file to create dbx test cases
+#
+# Assumes it is already in the appropriate dbx source directory.
+
+if (! -d tests) then
+    mkdir tests
+endif
+if (! -d tests/cc) then
+    mkdir tests/cc
+endif
+if (! -d tests/mod) then
+    mkdir tests/mod
+endif
+
+echo tests/Makefile
+rm -f tests/Makefile
+cat > tests/Makefile <<'endcat'
+#
+# Makefile for testing dbx.
+#
+
+TESTDBX = ../../tdbx
+
+passed:
+	@chdir mod; make TESTDBX=${TESTDBX}
+	@chdir cc; make TESTDBX=${TESTDBX}
+#	@chdir pc; make TESTDBX=${TESTDBX}
+#	@chdir f77; make TESTDBX=${TESTDBX}
+	@echo ""
+	@echo "passed tests"
+'endcat'
+
+echo tests/cc/Makefile
+rm -f tests/cc/Makefile
+cat > tests/cc/Makefile <<'endcat'
+#
+# Makefile for testing dbx.
+#
+
+.SUFFIXES:
+
+.SUFFIXES: .c .h .s .o .x .t .in .tst .out
+
+TESTDBX = ../../tdbx
+TESTS = \
+    bitfields.t enum.t struct.t user.t \
+    float.t reg.t own.t sleep.t nested.t \
+    strings.t call.t
+
+#
+# Suffix conventions:
+#
+#	.c	C source module
+#	.h	C definitions file
+#	.s	assembly code file
+#	.o	object file
+#	.x	executable file
+#	.t	dummy file represented last time tested
+#	.in	input for testing
+#	.tst	test output
+#	.out	expected output
+#
+
+.c.x:
+	cc -g $*.c -o $*.x
+
+.c.o:
+	cc -c -g $*.c
+
+.in.tst:
+	csh -f -c "${TESTDBX} $*.x < $*.in |& tail +3 > $*.tst"
+
+.x.t:
+	@echo "    $*"
+	@rm -f tmp
+	@csh -f -c "${TESTDBX} $*.x < $*.in |& tail +3 > tmp
+	@check tmp $*.out
+	@rm -f tmp
+	@rm -f $*.t
+	@touch $*.t
+
+passed: beforemsg ${TESTS}
+	@echo "passed C tests"
+
+beforemsg:
+	@echo ""
+	@echo "C tests:"
+
+strings.x: strings.c
+	cc -g -R strings.c -o strings.x
+
+bitfields.t: bitfields.x ${TESTDBX}
+enum.t: enum.x ${TESTDBX}
+struct.t: struct.x ${TESTDBX}
+user.t: user.x ${TESTDBX}
+float.t: float.x ${TESTDBX}
+reg.t: reg.x ${TESTDBX}
+own.t: own.x ${TESTDBX}
+sleep.t: sleep.x ${TESTDBX}
+nested.t: nested.x ${TESTDBX}
+call.t: call.x ${TESTDBX}
+
+strings.t: strings.x strings.core ${TESTDBX}
+	@echo "    $*"
+	@rm -f tmp
+	@${TESTDBX} $*.x $*.core < $*.in | tail +3 > tmp
+	@check -s tmp $*.out
+	@rm -f tmp
+	@rm -f $*.t
+	@touch $*.t
+
+strings.core:
+	-csh -f -c "limit coredumpsize 6m >& /dev/null; strings.x"
+	mv core strings.core
+'endcat'
+
+echo tests/cc/check
+rm -f tests/cc/check
+cat > tests/cc/check <<'endcat'
+#! /bin/csh -f
+
+#
+# check <test output> <expected output>
+#
+# Check to see if test output matches expected output.
+# If not, run diff and ask if differences are "ok".  If so,
+# install new output as expected output.
+#
+
+cmp -s $1 $2
+if ($status != 0) then
+    diff $1 $2
+    echo -n "ok? "
+    if ($< != y) then
+	exit 1
+    endif
+    mv $1 $2
+endif
+exit 0
+'endcat'
+
+echo tests/cc/bitfields.c
+rm -f tests/cc/bitfields.c
+cat > tests/cc/bitfields.c <<'endcat'
+typedef unsigned int uint;
+
+struct dot {
+    uint  cost		 :24;
+    uint  type	         : 3;
+    uint  dirToCenter	 : 3;
+    uint  pad		 : 1;
+    uint  pin		 : 1;
+    uint  traceback	 : 3;
+    uint  traceforward   : 3;
+    uint  expanded	 : 1;
+    uint  underDir	 : 3;
+    uint  underOffset	 : 4;
+    uint  start		 : 1;
+    uint  target	 : 1;
+    uint  owner		 : 6;
+    uint  segment	 : 7;
+    uint  intrinsicCost  : 3;
+};
+
+main()
+{
+    struct dot junk;
+
+    junk.owner = 63;
+    junk.segment = 1;
+    junk.intrinsicCost = 1;
+
+    printf("owner = %d, segment = %d, intrinsicCost = %d\n",
+	junk.owner, junk.segment, junk.intrinsicCost);
+    printf("done\n");
+    oldmain();
+}
+
+oldmain()
+{
+    struct {
+	int first;
+	int second;
+	int a : 8;
+	int b : 8;
+	int c;
+    } x;
+
+    x.first = 0;
+    x.second = 0;
+    x.a = 2;
+    x.b = 10;
+    x.c = 1;
+}
+'endcat'
+
+echo tests/cc/bitfields.in
+rm -f tests/cc/bitfields.in
+cat > tests/cc/bitfields.in <<'endcat'
+whatis x
+whatis x.a
+stop at 31
+run
+print junk
+print junk.owner, junk.segment, junk.intrinsicCost
+stop at 50
+cont
+print x
+print x.a
+print x.b
+print x.c
+'endcat'
+
+echo tests/cc/bitfields.out
+rm -f tests/cc/bitfields.out
+cat > tests/cc/bitfields.out <<'endcat'
+reading symbolic information ...
+struct {
+    int first;
+    int second;
+    int a : 8;
+    int b : 8;
+    int c;
+} x;
+int a : 8;
+[1] stop at 31
+[1] stopped in main at line 31
+   31       printf("done\n");
+(cost = 0, type = 0, dirToCenter = 0, pad = 0, pin = 0, traceback = 0, traceforward = 0, expanded = 0, underDir = 0, underOffset = 0, start = 0, target = 0, owner = 63, segment = 1, intrinsicCost = 1) 
+63 1 1 
+[3] stop at 50
+[3] stopped in oldmain at line 50
+   50   }
+(first = 0, second = 0, a = 2, b = 10, c = 1) 
+2 
+10 
+1 
+
+'endcat'
+
+echo tests/cc/enum.c
+rm -f tests/cc/enum.c
+cat > tests/cc/enum.c <<'endcat'
+typedef enum { RED, GREEN, BLUE } Color;
+
+main()
+{
+    Color c;
+
+    c = BLUE;
+    f(RED);
+}
+
+f(c)
+Color c;
+{
+    printf("c = %d\n", c);
+}
+'endcat'
+
+echo tests/cc/enum.in
+rm -f tests/cc/enum.in
+cat > tests/cc/enum.in <<'endcat'
+whatis Color
+whatis main.c
+stop in f
+run
+where
+print c
+print main.c
+quit
+'endcat'
+
+echo tests/cc/enum.out
+rm -f tests/cc/enum.out
+cat > tests/cc/enum.out <<'endcat'
+reading symbolic information ...
+typedef enum { RED, GREEN, BLUE } Color;
+Color c;
+[1] stop in f
+[1] stopped in f at line 13
+   13   {
+f(c = RED), line 13 in "enum.c"
+main(0x1, 0x7fffed78, 0x7fffed80), line 8 in "enum.c"
+RED 
+BLUE 
+'endcat'
+
+echo tests/cc/struct.c
+rm -f tests/cc/struct.c
+cat > tests/cc/struct.c <<'endcat'
+/*
+ * Test for C structures.
+ */
+
+/*
+ * A simple nested structure.
+ */
+
+struct simple {
+    int a;
+    char b;
+    double c;
+    struct {
+	int a;
+	char b;
+	double c;
+    } d;
+    int e;
+    char f;
+    double g;
+} simple;
+
+/*
+ * Mutually recursive structures, using typedefs.
+ */
+
+typedef struct first *First;
+typedef struct second *Second;
+
+struct second {
+    int b;
+    char c;
+};
+
+struct first {
+    int a;
+    Second p;
+};
+
+UseRecurStructs()
+{
+    struct first b, *p;
+    struct second list;
+
+    p = &b;
+    b.a = 3;
+    b.p = &list;
+    b.p->b = 4;
+    b.p->c = 'c';
+}
+
+/*
+ * Functions returning structures.
+ */
+
+struct simple f(x)
+int x;
+{
+    struct simple s;
+
+    s.a = x;
+    s.g = 3.14;
+    return s;
+}
+
+main()
+{
+    struct simple x;
+    struct simple *y;
+
+    UseRecurStructs();
+    x = f(3);
+    y = &x;
+}
+'endcat'
+
+echo tests/cc/struct.in
+rm -f tests/cc/struct.in
+cat > tests/cc/struct.in <<'endcat'
+whatis simple
+whatis $$simple
+whatis First
+whatis Second
+whatis first
+whatis second
+stop in UseRecurStructs
+run
+step
+step
+step
+step
+step
+print b
+print b.p
+print *(b.p)
+print b.p.b
+print b.p.c
+stop in f
+cont
+where
+step
+step
+step
+step
+step
+step
+print y
+print *y
+'endcat'
+
+echo tests/cc/struct.out
+rm -f tests/cc/struct.out
+cat > tests/cc/struct.out <<'endcat'
+reading symbolic information ...
+struct simple simple;
+struct simple {
+    int a;
+    char b;
+    double c;
+    struct {
+        int a;
+        char b;
+        double c;
+    } d;
+    int e;
+    char f;
+    double g;
+};
+typedef struct first *First;
+typedef struct second *Second;
+struct first {
+    int a;
+    struct second *p;
+};
+struct second {
+    int b;
+    char c;
+};
+[1] stop in UseRecurStructs
+[1] stopped in UseRecurStructs at line 41
+   41   {
+stopped in UseRecurStructs at line 45
+   45       p = &b;
+stopped in UseRecurStructs at line 46
+   46       b.a = 3;
+stopped in UseRecurStructs at line 47
+   47       b.p = &list;
+stopped in UseRecurStructs at line 48
+   48       b.p->b = 4;
+stopped in UseRecurStructs at line 49
+   49       b.p->c = 'c';
+(a = 3, p = 0x7fffecec) 
+0x7fffecec 
+(b = 4, c = '\0') 
+4 
+'\0' 
+[3] stop in f
+[3] stopped in f at line 58
+   58   {
+f(x = 3), line 58 in "struct.c"
+main(0x1, 0x7fffed74, 0x7fffed7c), line 72 in "struct.c"
+stopped in f at line 61
+   61       s.a = x;
+stopped in f at line 62
+   62       s.g = 3.14;
+stopped in f at line 63
+   63       return s;
+stopped in f at line 64
+   64   }
+stopped in main at line 73
+   73       y = &x;
+stopped in main at line 74
+   74   }
+0x7fffed1c 
+(a = 3, b = '\0', c = 0.0, d = (a = 0, b = '\0', c = 0.0), e = 4, f = 'c', g = 3.14) 
+
+'endcat'
+
+echo tests/cc/float.c
+rm -f tests/cc/float.c
+cat > tests/cc/float.c <<'endcat'
+/*
+ * Test of floats and doubles.
+ */
+
+double f(x)
+double x;
+{
+    return 3.14*x;
+}
+
+main()
+{
+    double x;
+    float y;
+
+    y = 3.0;
+    x = f(y);
+    return 0;
+}
+'endcat'
+
+echo tests/cc/own.c
+rm -f tests/cc/own.c
+cat > tests/cc/own.c <<'endcat'
+/*
+ * Test of static variables.
+ */
+ 
+static int ownx;
+
+main()
+{
+    ownx = 2;
+    f(3);
+    f(4);
+    return(0);
+}
+
+static int owny;
+
+f(x)
+int x;
+{
+    static int ownx;
+
+    ownx = x;
+}
+'endcat'
+
+echo tests/cc/own.in
+rm -f tests/cc/own.in
+cat > tests/cc/own.in <<'endcat'
+whatis ownx
+whereis owny
+stop in f
+run
+where
+print own.ownx, ownx
+step
+step
+print own.ownx, ownx
+cont
+step
+step
+where
+print own.ownx, ownx
+cont
+'endcat'
+
+echo tests/cc/reg.c
+rm -f tests/cc/reg.c
+cat > tests/cc/reg.c <<'endcat'
+struct blah {
+    int x;
+    int y;
+};
+
+main ()
+{
+    register int i;
+    register struct blah *p;
+    register char *s;
+    struct blah b;
+    int j;
+
+    s = "this is a test";
+    s += 5;
+    j = 0;
+    p = &b;
+    p->x = 3;
+    p->y = 4;
+    for (i = 0; i < 2; i++) {
+	j = i;
+	put(i);
+    }
+}
+
+static put(i)
+register int i;
+{
+    printf("%d ", i);
+}
+'endcat'
+
+echo tests/cc/same.c
+rm -f tests/cc/same.c
+cat > tests/cc/same.c <<'endcat'
+same ()
+{
+    printf("same function and module names\n");
+}
+
+main ()
+{
+}
+'endcat'
+
+echo tests/cc/user.c
+rm -f tests/cc/user.c
+cat > tests/cc/user.c <<'endcat'
+/*
+ * The user structure is a good test of the general symbol processing
+ * abilities of dbx.
+ */
+
+#include <sys/param.h>
+#include <sys/dir.h>
+#include <sys/user.h>
+
+main ()
+{
+}
+'endcat'
+
+echo tests/cc/user.in
+rm -f tests/cc/user.in
+cat > tests/cc/user.in <<'endcat'
+'endcat'
+
+echo tests/cc/float.in
+rm -f tests/cc/float.in
+cat > tests/cc/float.in <<'endcat'
+stop in main
+run
+step
+step
+print y
+print y + 2
+print 3.5*y
+stop in f
+cont
+where
+cont
+'endcat'
+
+echo tests/cc/user.out
+rm -f tests/cc/user.out
+cat > tests/cc/user.out <<'endcat'
+reading symbolic information ...
+
+'endcat'
+
+echo tests/cc/float.out
+rm -f tests/cc/float.out
+cat > tests/cc/float.out <<'endcat'
+reading symbolic information ...
+[1] stop in main
+[1] stopped in main at line 12
+   12   {
+stopped in main at line 16
+   16       y = 3.0;
+stopped in main at line 17
+   17       x = f(y);
+3.0 
+5.0 
+10.5 
+[3] stop in f
+[3] stopped in f at line 7
+    7   {
+f(x = 3.0), line 7 in "float.c"
+main(0x1, 0x7fffed74, 0x7fffed7c), line 17 in "float.c"
+
+execution completed, exit code is 0
+
+'endcat'
+
+echo tests/cc/reg.in
+rm -f tests/cc/reg.in
+cat > tests/cc/reg.in <<'endcat'
+stop in put
+run
+where
+print main.i, *(main.p), main.s
+cont
+where
+cont
+'endcat'
+
+echo tests/cc/reg.out
+rm -f tests/cc/reg.out
+cat > tests/cc/reg.out <<'endcat'
+reading symbolic information ...
+[1] stop in put
+0 1 [1] stopped in put at line 28
+   28   {
+put(i = 0), line 28 in "reg.c"
+main(0x1, 0x7fffed78, 0x7fffed80), line 22 in "reg.c"
+0 (x = 3, y = 4) "is a test" 
+[1] stopped in put at line 28
+   28   {
+put(i = 1), line 28 in "reg.c"
+main(0x1, 0x7fffed78, 0x7fffed80), line 22 in "reg.c"
+
+execution completed, exit code is 0
+
+'endcat'
+
+echo tests/cc/own.out
+rm -f tests/cc/own.out
+cat > tests/cc/own.out <<'endcat'
+reading symbolic information ...
+static int ownx;
+own.owny
+[1] stop in f
+[1] stopped in f at line 19
+   19   {
+f(x = 3), line 19 in "own.c"
+main(0x1, 0x7fffed78, 0x7fffed80), line 10 in "own.c"
+2 0 
+stopped in f at line 22
+   22       ownx = x;
+stopped in f at line 23
+   23   }
+2 3 
+[1] stopped in f at line 19
+   19   {
+stopped in f at line 22
+   22       ownx = x;
+stopped in f at line 23
+   23   }
+f(x = 4), line 23 in "own.c"
+main(0x1, 0x7fffed78, 0x7fffed80), line 11 in "own.c"
+2 4 
+
+execution completed, exit code is 0
+
+'endcat'
+
+echo tests/cc/signal.c
+rm -f tests/cc/signal.c
+cat > tests/cc/signal.c <<'endcat'
+/*
+ * Test of tracebacks from signal handlers.
+ */
+
+#include <stdio.h>
+#include <signal.h>
+
+int catch(), secondcatch();
+
+main()
+{
+    signal(SIGQUIT, catch);
+    kill(getpid(), SIGQUIT);
+    printf("back in main\n");
+}
+
+catch()
+{
+    printf("in catch\n");
+    sigsetmask(0);
+    signal(SIGQUIT, secondcatch);
+    kill(getpid(), SIGQUIT);
+    printf("back in catch\n");
+}
+
+secondcatch()
+{
+    printf("in secondcatch\n");
+}
+'endcat'
+
+echo tests/cc/sleep.c
+rm -f tests/cc/sleep.c
+cat > tests/cc/sleep.c <<'endcat'
+#include <stdio.h>
+
+main ()
+{
+    char token[80];
+
+    printf("about to sleep");
+    fflush(stdout);
+    sleep(2);
+    endnot();
+}
+
+endnot()
+{
+    printf("done\n");
+}
+'endcat'
+
+echo tests/cc/sleep.in
+rm -f tests/cc/sleep.in
+cat > tests/cc/sleep.in <<'endcat'
+run
+'endcat'
+
+echo tests/cc/nested.out
+rm -f tests/cc/nested.out
+cat > tests/cc/nested.out <<'endcat'
+reading symbolic information ...
+[1] stop at 20
+[1] stopped in $b1 at line 20
+   20   	j = j + i;
+$b1, line 20 in "nested.c"
+sub, line 20 in "nested.c"
+main(0x1, 0x7fffed74, 0x7fffed7c), line 10 in "nested.c"
+1 0 
+[3] stop at 24
+[3] stopped in sub at line 24
+   24   	j = j + i;
+sub, line 24 in "nested.c"
+main(0x1, 0x7fffed74, 0x7fffed7c), line 10 in "nested.c"
+11 0 
+3 
+
+'endcat'
+
+echo tests/cc/call.c
+rm -f tests/cc/call.c
+cat > tests/cc/call.c <<'endcat'
+/*
+ * Test program for dbx call command.
+ */
+
+int global;
+
+main (argc, argv)
+int argc;
+char *argv[];
+{
+    int main_local;
+
+    global = 2;
+    main_local = 19;
+    p1();
+    p2(main_local);
+    p3("test");
+}
+
+p1 ()
+{
+    printf("in p1\n");
+    global = 4;
+}
+
+p2 (from_main)
+int from_main;
+{
+    printf("in p2(%d)\n", from_main);
+    global = 9;
+}
+
+p3 (s)
+char s[];
+{
+    printf("in p3(%s)\n", s);
+    global = 10;
+}
+'endcat'
+
+echo tests/cc/nested.c
+rm -f tests/cc/nested.c
+cat > tests/cc/nested.c <<'endcat'
+/*
+ * Test of nested blocks.
+ */
+ 
+int i;
+
+main ()
+{
+    i = 3;
+    sub();
+}
+
+sub ()
+{
+    int i, j;
+
+    for (i = 1; i <= 10; i++) {
+	int j;
+
+	j = j + i;
+    }
+    j = 0;
+    for (i = 11; i <= 20; i++) {
+	j = j + i;
+    }
+}
+
+after ()
+{
+    int a;
+
+    a = 3;
+}
+'endcat'
+
+echo tests/cc/sleep.out
+rm -f tests/cc/sleep.out
+cat > tests/cc/sleep.out <<'endcat'
+reading symbolic information ...
+about to sleepdone
+
+execution completed, exit code is 0
+
+'endcat'
+
+echo tests/cc/nested.in
+rm -f tests/cc/nested.in
+cat > tests/cc/nested.in <<'endcat'
+stop at 20
+run
+where
+print sub.i, sub.j
+delete 1
+stop at 24
+cont
+where
+print sub.i, sub.j
+print .i
+'endcat'
+
+echo tests/cc/strings.c
+rm -f tests/cc/strings.c
+cat > tests/cc/strings.c <<'endcat'
+/*
+ * Test of displaying strings compiled into the text segment via -R.
+ */
+
+char str[] = "this is a test";
+
+main ()
+{
+    f("parameter test");
+}
+
+f (s)
+char *s;
+{
+    abort();
+}
+'endcat'
+
+echo tests/cc/strings.in
+rm -f tests/cc/strings.in
+cat > tests/cc/strings.in <<'endcat'
+where
+print str
+'endcat'
+
+echo tests/cc/arrays.c
+rm -f tests/cc/arrays.c
+cat > tests/cc/arrays.c <<'endcat'
+/*
+ * Test of debugging arrays in C.
+ */
+
+int a[10], *b;
+
+p (i, a, j)
+int i, a[], j;
+{
+    a[3] = i;
+    a[4] = j;
+}
+
+main ()
+{
+    int i;
+
+    b = a;
+    for (i = 0; i < 10; i++) {
+	a[i] = i;
+    }
+    p(4, a, 5);
+}
+'endcat'
+
+echo tests/cc/strings.out
+rm -f tests/cc/strings.out
+cat > tests/cc/strings.out <<'endcat'
+reading symbolic information ...
+abort at 0x9f
+f(s = "parameter test"), line 15 in "strings.c"
+main(0x1, 0x7fffed74, 0x7fffed7c), line 9 in "strings.c"
+"this is a test" 
+
+'endcat'
+
+echo tests/cc/arrays.in
+rm -f tests/cc/arrays.in
+cat > tests/cc/arrays.in <<'endcat'
+whatis p.a
+stop at 10
+run
+print .a
+step
+print a[3], a[4], a[5]
+step
+print .a
+'endcat'
+
+echo tests/cc/call.in
+rm -f tests/cc/call.in
+cat > tests/cc/call.in <<'endcat'
+call printf("starting")
+stop at 15
+run
+call p1()
+call p2(3)
+call p3("blah")
+call printf("main_local = %d", main_local)
+print main_local
+call call
+call call()
+call p1(3)
+call p2("blah")
+'endcat'
+
+echo tests/cc/call.out
+rm -f tests/cc/call.out
+cat > tests/cc/call.out <<'endcat'
+reading symbolic information ...
+starting
+printf returns successfully
+[2] stop at 15
+in p1
+in p2(3)
+in p3(blah)
+main_local = 19[2] stopped in main at line 15
+   15       p1();
+
+p1 returns successfully
+
+p2 returns successfully
+
+p3 returns successfully
+
+printf returns successfully
+19 
+call call
+         ^ syntax error
+"call" not call-able
+too many parameters in call to p1
+type mismatch for from_main in call to p2
+
+'endcat'
+
+echo tests/mod/Makefile
+rm -f tests/mod/Makefile
+cat > tests/mod/Makefile <<'endcat'
+#
+# Makefile for testing dbx.
+#
+
+.SUFFIXES:
+
+.SUFFIXES: .mod .def .pcd .s .o .x .t .in .tst .out
+
+MOD = mod
+TESTDBX = ../../tdbx
+TESTS = imports.t arrays.t records.t procvars.t sets.t \
+    nested.t reals.t call.t assign.t recur.t jsb.t stkcmds.t
+
+PROGS = imports.x arrays.x records.x procvars.x sets.x \
+    nested.x reals.x call.x assign.x recur.x jsb.x stkcmds.x
+
+#
+# Suffix conventions:
+#
+#	.mod	Modula-2 source
+#	.def	Modula-2 definitions file
+#	.pcd	P-code intermediate source
+#	.s	assembly code file
+#	.o	object file
+#	.x	executable file
+#	.t	dummy file represented last time tested
+#	.in	input for testing
+#	.tst	test output
+#	.out	expected output
+#
+
+.mod.x:
+	${MOD} -g $*.mod -o tmp
+	mv tmp $*.x
+
+.mod.o:
+	${MOD} -c -g $*.mod
+
+.def.mod:
+	touch $*.mod
+
+.in.tst:
+	csh -f -c "${TESTDBX} $*.x < $*.in |& tail +3 >! $*.tst"
+
+.x.t:
+	@echo "    $*"
+	@rm -f tmp
+	@csh -f -c "${TESTDBX} $*.x < $*.in |& tail +3 > tmp"
+	@check tmp $*.out
+	@rm -f tmp
+	@rm -f $*.t
+	@touch $*.t
+
+passed: ${PROGS} beforemsg ${TESTS}
+	@echo "passed Modula-2 tests"
+
+beforemsg:
+	@echo ""
+	@echo "Modula-2 tests:"
+
+IMPORTSOBJ = imports.o imported.o imptypes.o
+
+imports.x: ${IMPORTSOBJ}
+	${MOD} -g ${IMPORTSOBJ} -o tmp
+	mv tmp imports.x
+
+jsb.x: jsb.mod
+	${MOD} -O -g jsb.mod -o tmp
+	mv tmp jsb.x
+
+imports.t: imports.x ${TESTDBX}
+arrays.t: arrays.x ${TESTDBX}
+records.t: records.x ${TESTDBX}
+procvars.t: procvars.x ${TESTDBX}
+sets.t: sets.x ${TESTDBX}
+nested.t: nested.x ${TESTDBX}
+reals.t: reals.x ${TESTDBX}
+call.t: call.x ${TESTDBX}
+assign.t: assign.x ${TESTDBX}
+recur.t: recur.x ${TESTDBX}
+jsb.t: jsb.x ${TESTDBX}
+stkcmds.t: stkcmds.x ${TESTDBX}
+'endcat'
+
+echo tests/mod/check
+rm -f tests/mod/check
+cat > tests/mod/check <<'endcat'
+#! /bin/csh -f
+
+#
+# check <test output> <expected output>
+#
+# Check to see if test output matches expected output.
+# If not, run diff and ask if differences are "ok".  If so,
+# install new output as expected output.
+#
+
+cmp -s $1 $2
+if ($status != 0) then
+    diff $1 $2
+    echo -n "ok? "
+    if ($< != y) then
+	exit 1
+    endif
+    mv $1 $2
+endif
+exit 0
+'endcat'
+
+echo tests/mod/imports.in
+rm -f tests/mod/imports.in
+cat > tests/mod/imports.in <<'endcat'
+whereis v
+whereis p
+whatis main.p
+whatis main.T
+whatis main.OT
+whatis imported.p
+stop in imported.Blah
+run
+where
+'endcat'
+
+echo tests/mod/records.mod
+rm -f tests/mod/records.mod
+cat > tests/mod/records.mod <<'endcat'
+module main;
+type
+    Rec = record
+	charValue : char;
+	intValue : integer;
+	subrange : [0..1000];
+	realValue : real;
+    end;
+var
+    r : Rec;
+begin
+    r.charValue := 'c';
+    r.intValue := 3;
+    r.subrange := 10;
+    r.realValue := 3.4;
+end main.
+'endcat'
+
+echo tests/mod/records.in
+rm -f tests/mod/records.in
+cat > tests/mod/records.in <<'endcat'
+whatis Rec
+whatis r
+run
+print r
+print r.realValue, r.subrange, r.intValue, r.charValue
+'endcat'
+
+echo tests/mod/imports.mod
+rm -f tests/mod/imports.mod
+cat > tests/mod/imports.mod <<'endcat'
+module main;
+from imptypes import RT;
+import imported;
+type
+    RT = pointer to record
+	i, j : integer;
+    end;
+var
+    p : imported.T;
+    q : imported.OT;
+    r : RT;
+begin
+    new(r);
+    r^.i := 3;
+    r^.j := 4;
+    imported.Blah;
+end main.
+'endcat'
+
+echo tests/mod/imported.def
+rm -f tests/mod/imported.def
+cat > tests/mod/imported.def <<'endcat'
+definition module imported;
+export qualified Blah, T, OT;
+export v;
+
+type
+    OT;
+    T = record
+	a, b : integer;
+    end;
+
+var v : integer;
+
+procedure Blah ;
+
+end imported.
+'endcat'
+
+echo tests/mod/imported.mod
+rm -f tests/mod/imported.mod
+cat > tests/mod/imported.mod <<'endcat'
+implementation module imported;
+
+type
+    OT = integer;
+var
+    p : OT;
+
+procedure Blah;
+begin
+    p := 3;
+end Blah;
+
+end imported.
+'endcat'
+
+echo tests/mod/imports.out
+rm -f tests/mod/imports.out
+cat > tests/mod/imports.out <<'endcat'
+reading symbolic information ...
+.v
+mem.modmalloc.p mem.Storage_DEALLOCATE.p mem.Storage_ALLOCATE.p imported.p main.p
+var p : main.T;
+type T = record
+    a : integer;
+    b : integer;
+end;
+type OT = integer;
+var p : integer;
+[1] stop in Blah
+[1] stopped in Blah at line 8 in file "imported.mod"
+    8   procedure Blah;
+Blah, line 8 in "imported.mod"
+_init(0x1, 0x7fffed74, 0x7fffed7c), line 16 in "imports.mod"
+
+'endcat'
+
+echo tests/mod/records.out
+rm -f tests/mod/records.out
+cat > tests/mod/records.out <<'endcat'
+reading symbolic information ...
+type Rec = record
+    charValue : char;
+    intValue : integer;
+    subrange : 0..1000;
+    realValue : real;
+end;
+var r : Rec;
+
+execution completed, exit code is 0
+(charValue = 'c', intValue = 3, subrange = 10, realValue = 3.4) 
+3.4 10 3 'c' 
+
+'endcat'
+
+echo tests/mod/arrays.mod
+rm -f tests/mod/arrays.mod
+cat > tests/mod/arrays.mod <<'endcat'
+module main;
+type
+    Color = (RED, BLUE, GREEN);
+var
+    a : array [1..10] of integer;
+    i : integer;
+    b : array Color of integer;
+    c : Color;
+
+procedure p (i : integer; var a : array of integer; j : integer);
+begin
+    a[3] := i;
+    a[4] := j;
+end p;
+
+begin
+    for i := 1 to 10 do
+	a[i] := i;
+    end;
+    p(4, a, 5);
+    b[BLUE] := 3;
+    c := RED;
+end main.
+'endcat'
+
+echo tests/mod/sets.in
+rm -f tests/mod/sets.in
+cat > tests/mod/sets.in <<'endcat'
+whatis Color
+whatis ColorSet
+stop in p
+run
+step
+where
+step
+print sets.s
+step
+step
+where
+print sets.s
+'endcat'
+
+echo tests/mod/arrays.in
+rm -f tests/mod/arrays.in
+cat > tests/mod/arrays.in <<'endcat'
+whatis p.a
+stop at 12
+run
+print a
+print a[3], a[4], a[5]
+step
+step
+where
+print b, c
+'endcat'
+
+echo tests/mod/arrays.out
+rm -f tests/mod/arrays.out
+cat > tests/mod/arrays.out <<'endcat'
+reading symbolic information ...
+(var parameter) a : array[integer] of integer;
+[1] stop at "arrays.mod":12
+[1] stopped in p at line 12 in file "arrays.mod"
+   12       a[3] := i;
+(1, 2, 3, 4, 5, 6, 7, 8, 9, 10) 
+4 5 6 
+stopped in p at line 13 in file "arrays.mod"
+   13       a[4] := j;
+stopped in _init at line 21 in file "arrays.mod"
+   21       b[BLUE] := 3;
+_init(0x1, 0x7fffed74, 0x7fffed7c), line 21 in "arrays.mod"
+(0, 0, 0) RED 
+
+'endcat'
+
+echo tests/mod/sets.mod
+rm -f tests/mod/sets.mod
+cat > tests/mod/sets.mod <<'endcat'
+module sets;
+type
+    Color = (RED, BLUE, GREEN);
+    ColorSet = set of Color;
+var
+    s : ColorSet;
+
+procedure p (var s : ColorSet);
+begin
+    s := ColorSet{RED, BLUE};
+end p;
+
+begin
+    p(s);
+    if BLUE in s then
+	s := s - ColorSet{BLUE};
+    end;
+end sets.
+'endcat'
+
+echo tests/mod/variants.mod
+rm -f tests/mod/variants.mod
+cat > tests/mod/variants.mod <<'endcat'
+module main;
+type
+    ElementType = (CHAR, INT, REAL);
+    VR = record
+	case tag : ElementType of
+	    CHAR:
+		charValue : char;|
+	    INT:
+		intValue : integer;|
+	    REAL:
+		realValue : real;
+	end;
+    end;
+var
+    vr : VR;
+begin
+    vr.tag := CHAR;
+    vr.charValue := 'c';
+    vr.tag := INT;
+    vr.intValue := 3;
+    vr.tag := REAL;
+    vr.realValue := 3.4;
+end main.
+'endcat'
+
+echo tests/mod/stkcmds.mod
+rm -f tests/mod/stkcmds.mod
+cat > tests/mod/stkcmds.mod <<'endcat'
+module main;
+var
+    i : integer;
+
+procedure p2 (i : integer);
+begin
+    if i < 5 then
+	p2(i+1);
+    end;
+end p2;
+
+procedure p1 (i : integer);
+begin
+    p2(i+1);
+end p1;
+
+begin
+    i := 0;
+    p1(i+1);
+end main.
+'endcat'
+
+echo tests/mod/procvars.in
+rm -f tests/mod/procvars.in
+cat > tests/mod/procvars.in <<'endcat'
+whatis q.t
+stop in p
+stop in q
+run
+step
+step
+print t
+cont
+where
+step
+step
+print j
+'endcat'
+
+echo tests/mod/nested.mod
+rm -f tests/mod/nested.mod
+cat > tests/mod/nested.mod <<'endcat'
+(*
+ * Test of nested procedures and modules.
+ *)
+
+module main;
+var
+    i : integer;
+
+procedure p (var i : integer);
+var
+    j : integer;
+
+    procedure nestedp (var j : integer);
+    var
+	i : integer;
+    begin
+	i := j + 2;
+	j := i;
+    end nestedp;
+
+begin
+    j := i + 1;
+    nestedp(j);
+    i := j;
+end p;
+
+begin
+    i := 3;
+    p(i);
+end main.
+'endcat'
+
+echo tests/mod/procvars.mod
+rm -f tests/mod/procvars.mod
+cat > tests/mod/procvars.mod <<'endcat'
+(*
+ * Test of procedure variables.
+ *)
+
+module main;
+
+procedure p (var i : integer);
+begin
+    i := 3;
+end p;
+
+procedure q ;
+var
+    t : procedure(var integer);
+    j : integer;
+begin
+    t := p;
+    t(j);
+    j := j + 1;
+end q;
+
+begin
+    q;
+end main.
+'endcat'
+
+echo tests/mod/procvars.out
+rm -f tests/mod/procvars.out
+cat > tests/mod/procvars.out <<'endcat'
+reading symbolic information ...
+var t : (class 23);
+[1] stop in p
+[2] stop in q
+[2] stopped in q at line 12 in file "procvars.mod"
+   12   procedure q ;
+stopped in q at line 17 in file "procvars.mod"
+   17       t := p;
+stopped in q at line 18 in file "procvars.mod"
+   18       t(j);
+p 
+[1] stopped in p at line 7 in file "procvars.mod"
+    7   procedure p (var i : integer);
+p(i = 0), line 7 in "procvars.mod"
+q, line 18 in "procvars.mod"
+_init(0x1, 0x7fffed74, 0x7fffed7c), line 23 in "procvars.mod"
+stopped in p at line 9 in file "procvars.mod"
+    9       i := 3;
+stopped in q at line 19 in file "procvars.mod"
+   19       j := j + 1;
+3 
+
+'endcat'
+
+echo tests/mod/sets.out
+rm -f tests/mod/sets.out
+cat > tests/mod/sets.out <<'endcat'
+reading symbolic information ...
+type Color = (RED, BLUE, GREEN);
+type ColorSet = set of Color;
+[1] stop in p
+[1] stopped in p at line 8 in file "sets.mod"
+    8   procedure p (var s : ColorSet);
+stopped in p at line 10 in file "sets.mod"
+   10       s := ColorSet{RED, BLUE};
+p(s = {}), line 10 in "sets.mod"
+_init(0x1, 0x7fffed78, 0x7fffed80), line 14 in "sets.mod"
+stopped in _init at line 15 in file "sets.mod"
+   15       if BLUE in s then
+{RED, BLUE} 
+stopped in _init at line 16 in file "sets.mod"
+   16   	s := s - ColorSet{BLUE};
+
+execution completed, exit code is 0
+exit(0x0) at 0x1602
+_init(0x1, 0x7fffed78, 0x7fffed80), line 16 in "sets.mod"
+{RED} 
+
+'endcat'
+
+echo tests/mod/imptypes.def
+rm -f tests/mod/imptypes.def
+cat > tests/mod/imptypes.def <<'endcat'
+definition module imptypes;
+export qualified RT;
+
+type
+    RT;
+
+end imptypes.
+'endcat'
+
+echo tests/mod/imptypes.mod
+rm -f tests/mod/imptypes.mod
+cat > tests/mod/imptypes.mod <<'endcat'
+implementation module imptypes;
+end imptypes.
+'endcat'
+
+echo tests/mod/jsb.out
+rm -f tests/mod/jsb.out
+cat > tests/mod/jsb.out <<'endcat'
+reading symbolic information ...
+[1] stop in p
+in p(3, blah, 4)
+[1] stopped in p at line 7 in file "jsb.mod"
+    7   procedure p (i : integer; s : array of char; j : integer);
+p(i = 3, s = 'blah', j = 4), line 7 in "jsb.mod"
+_init(0x1, 0x7fffed78, 0x7fffed80), line 15 in "jsb.mod"
+3 
+
+execution completed, exit code is 0
+
+'endcat'
+
+echo tests/mod/nested.in
+rm -f tests/mod/nested.in
+cat > tests/mod/nested.in <<'endcat'
+whereis i
+whereis j
+stop at 18
+run
+print i, j, main.i, p.i, p.j
+step
+print i, j, main.i
+cont
+print main.i
+'endcat'
+
+echo tests/mod/jsb.mod
+rm -f tests/mod/jsb.mod
+cat > tests/mod/jsb.mod <<'endcat'
+module main;
+
+from io import Writef, output;
+
+var global : integer;
+
+procedure p (i : integer; s : array of char; j : integer);
+begin
+    Writef(output, "in p(%d, %s, %d)\n", i, s, j);
+    global := 10;
+end p;
+
+begin
+    global := 3;
+    p(3, "blah", 4);
+end main.
+'endcat'
+
+echo tests/mod/nested.out
+rm -f tests/mod/nested.out
+cat > tests/mod/nested.out <<'endcat'
+reading symbolic information ...
+main.p.i main.p.nestedp.i main.i
+main.p.j main.p.nestedp.j
+[1] stop at "nested.mod":18
+[1] stopped in nestedp at line 18 in file "nested.mod"
+   18   	j := i;
+6 4 3 3 4 
+stopped in main.p at line 24 in file "nested.mod"
+   24       i := j;
+3 6 3 
+
+execution completed, exit code is 0
+6 
+
+'endcat'
+
+echo tests/mod/call.in
+rm -f tests/mod/call.in
+cat > tests/mod/call.in <<'endcat'
+stop at 15
+run
+call p1()
+call p2(3)
+call p3("blah", 3)
+call fprintf(IO_OUTPUT, "mainlocal = %d", mainlocal)
+print mainlocal
+call call
+call call()
+call p1(3)
+call p2("blah")
+'endcat'
+
+echo tests/mod/call.mod
+rm -f tests/mod/call.mod
+cat > tests/mod/call.mod <<'endcat'
+(*
+ * Test program for dbx call command.
+ *)
+
+module main;
+from io import writef, output;
+
+var global : integer;
+
+procedure startup ;
+var
+    mainlocal : integer;
+begin
+    global := 2;
+    mainlocal := 19;
+    p1();
+    p2(mainlocal);
+    p3("test", 3);
+end startup;
+
+procedure p1 ();
+begin
+    writef(output, "in p1\n");
+    global := 4;
+end p1;
+
+procedure p2 (frommain : integer);
+begin
+    writef(output, "in p2(%d)\n", frommain);
+    global := 9;
+end p2;
+
+procedure p3 (s : array of char; i : integer);
+begin
+    writef(output, "in p3(%s, %d)\n", s, i);
+    global := 10;
+end p3;
+
+begin
+    startup;
+end main.
+'endcat'
+
+echo tests/mod/call.out
+rm -f tests/mod/call.out
+cat > tests/mod/call.out <<'endcat'
+reading symbolic information ...
+[1] stop at "call.mod":15
+in p1
+in p2(3)
+in p3(blah, 3)
+mainlocal = 0[1] stopped in startup at line 15 in file "call.mod"
+   15       mainlocal := 19;
+
+p1 returns successfully
+
+p2 returns successfully
+
+p3 returns successfully
+
+fprintf returns successfully
+0 
+call call
+         ^ syntax error
+"call" not call-able
+too many parameters in call to p1
+type mismatch for frommain in call to p2
+
+'endcat'
+
+echo tests/mod/reals.mod
+rm -f tests/mod/reals.mod
+cat > tests/mod/reals.mod <<'endcat'
+(*
+ * Test of reals and longreals.
+ *)
+
+module main;
+var
+    x : longreal;
+    y : real;
+
+procedure f (x : real) : longreal;
+begin
+    return longfloat(3.14*x);
+end f;
+
+begin
+    y := 3.0;
+    x := f(y);
+end main.
+'endcat'
+
+echo tests/mod/reals.in
+rm -f tests/mod/reals.in
+cat > tests/mod/reals.in <<'endcat'
+print 3+4
+print 3.5+4.5
+stop in _init
+run
+next
+step
+print y
+print y + 2
+print 3.5*y
+stop in f
+cont
+where
+cont
+'endcat'
+
+echo tests/mod/reals.out
+rm -f tests/mod/reals.out
+cat > tests/mod/reals.out <<'endcat'
+reading symbolic information ...
+7 
+8.0 
+[1] stop in _init
+[1] stopped in _init at 0x6a
+0000006a  pushl	12(ap)
+stopped in _init at line 16 in file "reals.mod"
+   16       y := 3.0;
+stopped in _init at line 17 in file "reals.mod"
+   17       x := f(y);
+3.0 
+5.0 
+10.5 
+[3] stop in f
+[3] stopped in f at line 10 in file "reals.mod"
+   10   procedure f (x : real) : longreal;
+f(x = 3.0), line 10 in "reals.mod"
+_init(0x1, 0x7fffed74, 0x7fffed7c), line 17 in "reals.mod"
+
+execution completed, exit code is 0
+
+'endcat'
+
+echo tests/mod/assign.mod
+rm -f tests/mod/assign.mod
+cat > tests/mod/assign.mod <<'endcat'
+module main;
+from io import Writef, output;
+var a : array[1..100] of char;
+begin
+    a := "blah";
+    Writef(output, "%s", a);
+end main.
+'endcat'
+
+echo tests/mod/assign.in
+rm -f tests/mod/assign.in
+cat > tests/mod/assign.in <<'endcat'
+stop at 6
+run
+print a
+set a[1] = 'x'
+print a
+set a = "xyzzy"
+print a
+cont
+print a
+'endcat'
+
+echo tests/mod/assign.out
+rm -f tests/mod/assign.out
+cat > tests/mod/assign.out <<'endcat'
+reading symbolic information ...
+[1] stop at "assign.mod":6
+xyzzy[1] stopped in _init at line 6 in file "assign.mod"
+    6       Writef(output, "%s", a);
+'blah' 
+'xlah' 
+'xyzzy' 
+
+execution completed, exit code is 0
+'xyzzy' 
+
+'endcat'
+
+echo tests/mod/recur.mod
+rm -f tests/mod/recur.mod
+cat > tests/mod/recur.mod <<'endcat'
+module main;
+
+from io import Writef, output;
+
+procedure r (n : integer);
+begin
+    Writef(output, "blah\n");
+    if n > 0 then
+	r(n - 1);
+	Writef(output, "blah2\n");
+    end;
+end r;
+
+begin
+    r(5);
+end main.
+'endcat'
+
+echo tests/mod/stkcmds.in
+rm -f tests/mod/stkcmds.in
+cat > tests/mod/stkcmds.in <<'endcat'
+stop in p2
+run
+cont
+where
+func
+print i
+up
+func
+print i
+up
+func
+print i
+up
+func
+print i
+up
+func
+up
+down
+func
+down
+func
+down
+func
+down
+func
+down
+return
+func; return
+func; return
+func; return
+func; return
+func; return
+func; return
+func; return
+func; return
+'endcat'
+
+echo tests/mod/recur.in
+rm -f tests/mod/recur.in
+cat > tests/mod/recur.in <<'endcat'
+stop at 15
+run
+step
+next
+next
+next
+cont
+'endcat'
+
+echo tests/mod/recur.out
+rm -f tests/mod/recur.out
+cat > tests/mod/recur.out <<'endcat'
+reading symbolic information ...
+[1] stop at "recur.mod":15
+[1] stopped in _init at line 15 in file "recur.mod"
+   15       r(5);
+stopped in r at line 7 in file "recur.mod"
+    7       Writef(output, "blah\n");
+stopped in r at line 8 in file "recur.mod"
+    8       if n > 0 then
+stopped in r at line 9 in file "recur.mod"
+    9   	r(n - 1);
+blah
+blah
+blah
+blah
+blah
+blah
+blah2
+blah2
+blah2
+blah2
+blah2
+stopped in r at line 10 in file "recur.mod"
+   10   	Writef(output, "blah2\n");
+
+execution completed, exit code is 0
+
+'endcat'
+
+echo tests/mod/jsb.in
+rm -f tests/mod/jsb.in
+cat > tests/mod/jsb.in <<'endcat'
+stop in p
+run
+where
+print global
+cont
+'endcat'
+
+echo tests/mod/stkcmds.out
+rm -f tests/mod/stkcmds.out
+cat > tests/mod/stkcmds.out <<'endcat'
+reading symbolic information ...
+[1] stop in p2
+[1] stopped in p2 at line 5 in file "stkcmds.mod"
+    5   procedure p2 (i : integer);
+[1] stopped in p2 at line 5 in file "stkcmds.mod"
+    5   procedure p2 (i : integer);
+p2(i = 3), line 5 in "stkcmds.mod"
+p2(i = 2), line 8 in "stkcmds.mod"
+p1(i = 1), line 14 in "stkcmds.mod"
+_init(0x1, 0x7fffed74, 0x7fffed7c), line 19 in "stkcmds.mod"
+p2
+3 
+p2
+2 
+p1
+1 
+_init
+0 
+.
+not that many levels
+_init
+p1
+p2
+p2
+not that many levels
+[1] stopped in p2 at line 5 in file "stkcmds.mod"
+    5   procedure p2 (i : integer);
+p2
+[1] stopped in p2 at line 5 in file "stkcmds.mod"
+    5   procedure p2 (i : integer);
+p2
+stopped in p2 at line 8 in file "stkcmds.mod"
+    8   	p2(i+1);
+p2
+stopped in p2 at line 8 in file "stkcmds.mod"
+    8   	p2(i+1);
+p2
+stopped in p2 at line 8 in file "stkcmds.mod"
+    8   	p2(i+1);
+p2
+stopped in p2 at line 8 in file "stkcmds.mod"
+    8   	p2(i+1);
+p2
+stopped in p1 at line 14 in file "stkcmds.mod"
+   14       p2(i+1);
+p1
+stopped in _init at line 19 in file "stkcmds.mod"
+   19       p1(i+1);
+_init
+
+execution completed, exit code is 0
+
+'endcat'
+chmod 775 tests/{cc,mod}/check
+echo x - arrays.in
+sed 's/^X//' >tests/mod/arrays.in <<+E+O+F+
+Xwhatis main.p.a
+Xstop at 12
+Xrun
+Xprint a
+Xprint a[3], a[4], a[5]
+Xstep
+Xstep
+Xwhere
+Xprint b, c
++E+O+F+
+echo x - assign.in
+sed 's/^X//' >tests/mod/assign.in <<+E+O+F+
+Xstop at 6
+Xrun
+Xprint a
+Xset a[1] = 'x'
+Xprint a
+Xset a = "xyzzy"
+Xprint a
+Xcont
+Xprint a
++E+O+F+
+echo x - call.in
+sed 's/^X//' >tests/mod/call.in <<+E+O+F+
+Xstop at 15
+Xrun
+Xcall p1()
+Xcall p2(3)
+Xcall p3("blah", 3)
+Xcall fprintf(IO_OUTPUT, "mainlocal = %d", mainlocal)
+Xprint mainlocal
+Xcall call
+Xcall call()
+Xcall p1(3)
+Xcall p2("blah")
++E+O+F+
+echo x - imports.in
+sed 's/^X//' >tests/mod/imports.in <<+E+O+F+
+Xwhereis v
+Xwhereis p
+Xwhatis main.p
+Xwhatis main.T
+Xwhatis main.OT
+Xwhatis imported.p
+Xstop in imported.Blah
+Xrun
+Xwhere
++E+O+F+
+echo x - jsb.in
+sed 's/^X//' >tests/mod/jsb.in <<+E+O+F+
+Xstop in main.p
+Xrun
+Xwhere
+Xprint global
+Xcont
++E+O+F+
+echo x - nested.in
+sed 's/^X//' >tests/mod/nested.in <<+E+O+F+
+Xwhereis i
+Xwhereis j
+Xstop at 18
+Xrun
+Xprint i, j, main.i, p.i, p.j
+Xstep
+Xprint i, j, main.i
+Xcont
+Xprint main.i
++E+O+F+
+echo x - procvars.in
+sed 's/^X//' >tests/mod/procvars.in <<+E+O+F+
+Xwhatis main.q.t
+Xstop in main.p
+Xstop in main.q
+Xrun
+Xstep
+Xstep
+Xprint t
+Xcont
+Xwhere
+Xstep
+Xstep
+Xprint j
++E+O+F+
+echo x - reals.in
+sed 's/^X//' >tests/mod/reals.in <<+E+O+F+
+Xprint 3+4
+Xprint 3.5+4.5
+Xstop in _init
+Xrun
+Xnext
+Xstep
+Xprint y
+Xprint y + 2
+Xprint 3.5*y
+Xstop in f
+Xcont
+Xwhere
+Xcont
++E+O+F+
+echo x - records.in
+sed 's/^X//' >tests/mod/records.in <<+E+O+F+
+Xwhatis Rec
+Xwhatis main.r
+Xrun
+Xprint main.r
+Xprint main.r.realValue, main.r.subrange, main.r.intValue, main.r.charValue
++E+O+F+
+echo x - recur.in
+sed 's/^X//' >tests/mod/recur.in <<+E+O+F+
+Xstop at 15
+Xrun
+Xstep
+Xnext
+Xnext
+Xnext
+Xcont
++E+O+F+
+echo x - sets.in
+sed 's/^X//' >tests/mod/sets.in <<+E+O+F+
+Xwhatis Color
+Xwhatis ColorSet
+Xstop in sets.p
+Xrun
+Xstep
+Xwhere
+Xstep
+Xprint sets.s
+Xstep
+Xstep
+Xwhere
+Xprint sets.s
++E+O+F+
+echo x - stkcmds.in
+sed 's/^X//' >tests/mod/stkcmds.in <<+E+O+F+
+Xstop in p2
+Xrun
+Xcont
+Xwhere
+Xfunc
+Xprint i
+Xup
+Xfunc
+Xprint i
+Xup
+Xfunc
+Xprint i
+Xup
+Xfunc
+Xprint i
+Xup
+Xfunc
+Xup
+Xdown
+Xfunc
+Xdown
+Xfunc
+Xdown
+Xfunc
+Xdown
+Xfunc
+Xdown
+Xreturn
+Xfunc; return
+Xfunc; return
+Xfunc; return
+Xfunc; return
+Xfunc; return
+Xfunc; return
+Xfunc; return
+Xfunc; return
++E+O+F+
+echo x - arrays.out
+sed 's/^X//' >tests/mod/arrays.out <<+E+O+F+
+Xreading symbolic information ...
+X(var parameter) a : array[integer] of integer;
+X[1] stop at "arrays.mod":12
+X[1] stopped in main.p at line 12 in file "arrays.mod"
+X   12       a[3] := i;
+X(1, 2, 3, 4, 5, 6, 7, 8, 9, 10) 
+X4 5 6 
+Xstopped in main.p at line 13 in file "arrays.mod"
+X   13       a[4] := j;
+Xstopped in _init at line 21 in file "arrays.mod"
+X   21       b[BLUE] := 3;
+X_init(0x1, 0x7fffee34, 0x7fffee3c), line 21 in "arrays.mod"
+X(0, 0, 0) RED 
+X
++E+O+F+
+echo x - assign.out
+sed 's/^X//' >tests/mod/assign.out <<+E+O+F+
+Xreading symbolic information ...
+X[1] stop at "assign.mod":6
+Xxyzzy[1] stopped in _init at line 6 in file "assign.mod"
+X    6       Writef(output, "%s", a);
+X'blah' 
+X'xlah' 
+X'xyzzy' 
+X
+Xexecution completed, exit code is 0
+X'xyzzy' 
+X
++E+O+F+
+echo x - call.out
+sed 's/^X//' >tests/mod/call.out <<+E+O+F+
+Xreading symbolic information ...
+X[1] stop at "call.mod":15
+Xin p1
+Xin p2(3)
+Xin p3(blah, 3)
+Xmainlocal = 0[1] stopped in startup at line 15 in file "call.mod"
+X   15       mainlocal := 19;
+X
+Xp1 returns successfully
+X
+Xp2 returns successfully
+X
+Xp3 returns successfully
+X
+Xfprintf returns successfully
+X0 
+Xcall call
+X         ^ syntax error
+X"call" not call-able
+Xtoo many parameters in call to p1
+Xtype mismatch for frommain in call to p2
+X
++E+O+F+
+echo x - imports.out
+sed 's/^X//' >tests/mod/imports.out <<+E+O+F+
+Xreading symbolic information ...
+Ximported.v
+Xmem.MEMORY_DEALLOCATE.p mem.MEMORY_ALLOCATE.p mem.modmalloc.p mem.Storage_DEALLOCATE.p mem.Storage_ALLOCATE.p imported.p main.p
+Xvar p : main.T;
+Xtype T = record
+X    a : integer;
+X    b : integer;
+Xend;
+Xtype OT = integer;
+Xvar p : integer;
+X[1] stop in Blah
+X[1] stopped in Blah at line 8 in file "imported.mod"
+X    8   procedure Blah;
+XBlah, line 8 in "imported.mod"
+X_init(0x1, 0x7fffee34, 0x7fffee3c), line 16 in "imports.mod"
+X
++E+O+F+
+echo x - jsb.out
+sed 's/^X//' >tests/mod/jsb.out <<+E+O+F+
+Xreading symbolic information ...
+X[1] stop in main.p
+Xin p(3, blah, 4)
+X[1] stopped in main.p at line 7 in file "jsb.mod"
+X    7   procedure p (i : integer; s : array of char; j : integer);
+Xp(i = 3, s = 'blah', j = 4), line 7 in "jsb.mod"
+X_init(0x1, 0x7fffee38, 0x7fffee40), line 15 in "jsb.mod"
+X3 
+X
+Xexecution completed, exit code is 0
+X
++E+O+F+
+echo x - nested.out
+sed 's/^X//' >tests/mod/nested.out <<+E+O+F+
+Xreading symbolic information ...
+Xmain.p.i main.p.nestedp.i main.i
+Xmain.p.j main.p.nestedp.j
+X[1] stop at "nested.mod":18
+X[1] stopped in nestedp at line 18 in file "nested.mod"
+X   18   	j := i;
+X6 4 3 3 4 
+Xstopped in main.p at line 24 in file "nested.mod"
+X   24       i := j;
+X3 6 3 
+X
+Xexecution completed, exit code is 0
+X6 
+X
++E+O+F+
+echo x - procvars.out
+sed 's/^X//' >tests/mod/procvars.out <<+E+O+F+
+Xreading symbolic information ...
+Xvar t : (class 23);
+X[1] stop in main.p
+X[2] stop in main.q
+X[2] stopped in main.q at line 12 in file "procvars.mod"
+X   12   procedure q ;
+Xstopped in main.q at line 17 in file "procvars.mod"
+X   17       t := p;
+Xstopped in main.q at line 18 in file "procvars.mod"
+X   18       t(j);
+Xp 
+X[1] stopped in main.p at line 7 in file "procvars.mod"
+X    7   procedure p (var i : integer);
+Xp(i = 0), line 7 in "procvars.mod"
+Xq, line 18 in "procvars.mod"
+X_init(0x1, 0x7fffee30, 0x7fffee38), line 23 in "procvars.mod"
+Xstopped in main.p at line 9 in file "procvars.mod"
+X    9       i := 3;
+Xstopped in main.q at line 19 in file "procvars.mod"
+X   19       j := j + 1;
+X3 
+X
++E+O+F+
+echo x - reals.out
+sed 's/^X//' >tests/mod/reals.out <<+E+O+F+
+Xreading symbolic information ...
+X7 
+X8.0 
+X[1] stop in _init
+X[1] stopped in _init at 0x6a
+X0000006a  pushl	12(ap)
+Xstopped in _init at line 16 in file "reals.mod"
+X   16       y := 3.0;
+Xstopped in _init at line 17 in file "reals.mod"
+X   17       x := f(y);
+X3.0 
+X5.0 
+X10.5 
+X[3] stop in f
+X[3] stopped in f at line 10 in file "reals.mod"
+X   10   procedure f (x : real) : longreal;
+Xf(x = 3.0), line 10 in "reals.mod"
+X_init(0x1, 0x7fffee34, 0x7fffee3c), line 17 in "reals.mod"
+X
+Xexecution completed, exit code is 0
+X
++E+O+F+
+echo x - records.out
+sed 's/^X//' >tests/mod/records.out <<+E+O+F+
+Xreading symbolic information ...
+Xtype Rec = record
+X    charValue : char;
+X    intValue : integer;
+X    subrange : 0..1000;
+X    realValue : real;
+Xend;
+Xvar r : Rec;
+X
+Xexecution completed, exit code is 0
+X(charValue = 'c', intValue = 3, subrange = 10, realValue = 3.4) 
+X3.4 10 3 'c' 
+X
++E+O+F+
+echo x - recur.out
+sed 's/^X//' >tests/mod/recur.out <<+E+O+F+
+Xreading symbolic information ...
+X[1] stop at "recur.mod":15
+X[1] stopped in _init at line 15 in file "recur.mod"
+X   15       r(5);
+Xstopped in main.r at line 7 in file "recur.mod"
+X    7       Writef(output, "blah\n");
+Xstopped in main.r at line 8 in file "recur.mod"
+X    8       if n > 0 then
+Xstopped in main.r at line 9 in file "recur.mod"
+X    9   	r(n - 1);
+Xblah
+Xblah
+Xblah
+Xblah
+Xblah
+Xblah
+Xblah2
+Xblah2
+Xblah2
+Xblah2
+Xblah2
+Xstopped in main.r at line 10 in file "recur.mod"
+X   10   	Writef(output, "blah2\n");
+X
+Xexecution completed, exit code is 0
+X
++E+O+F+
+echo x - sets.out
+sed 's/^X//' >tests/mod/sets.out <<+E+O+F+
+Xreading symbolic information ...
+Xtype Color = (RED, BLUE, GREEN);
+Xtype ColorSet = set of Color;
+X[1] stop in sets.p
+X[1] stopped in sets.p at line 8 in file "sets.mod"
+X    8   procedure p (var s : ColorSet);
+Xstopped in sets.p at line 10 in file "sets.mod"
+X   10       s := ColorSet{RED, BLUE};
+Xp(s = {}), line 10 in "sets.mod"
+X_init(0x1, 0x7fffee34, 0x7fffee3c), line 14 in "sets.mod"
+Xstopped in _init at line 15 in file "sets.mod"
+X   15       if BLUE in s then
+X{RED, BLUE} 
+Xstopped in _init at line 16 in file "sets.mod"
+X   16   	s := s - ColorSet{BLUE};
+X
+Xexecution completed, exit code is 0
+Xexit(0x0) at 0x200e
+X_init(0x1, 0x7fffee34, 0x7fffee3c), line 16 in "sets.mod"
+X{RED} 
+X
++E+O+F+
+echo x - stkcmds.out
+sed 's/^X//' >tests/mod/stkcmds.out <<+E+O+F+
+Xreading symbolic information ...
+X[1] stop in p2
+X[1] stopped in p2 at line 5 in file "stkcmds.mod"
+X    5   procedure p2 (i : integer);
+X[1] stopped in p2 at line 5 in file "stkcmds.mod"
+X    5   procedure p2 (i : integer);
+Xp2(i = 3), line 5 in "stkcmds.mod"
+Xp2(i = 2), line 8 in "stkcmds.mod"
+Xp1(i = 1), line 14 in "stkcmds.mod"
+X_init(0x1, 0x7fffee34, 0x7fffee3c), line 19 in "stkcmds.mod"
+Xp2
+X3 
+Xp2
+X2 
+Xp1
+X1 
+X_init
+X0 
+X.
+Xnot that many levels
+X_init
+Xp1
+Xp2
+Xp2
+Xnot that many levels
+X[1] stopped in p2 at line 5 in file "stkcmds.mod"
+X    5   procedure p2 (i : integer);
+Xp2
+X[1] stopped in p2 at line 5 in file "stkcmds.mod"
+X    5   procedure p2 (i : integer);
+Xp2
+Xstopped in p2 at line 8 in file "stkcmds.mod"
+X    8   	p2(i+1);
+Xp2
+Xstopped in p2 at line 8 in file "stkcmds.mod"
+X    8   	p2(i+1);
+Xp2
+Xstopped in p2 at line 8 in file "stkcmds.mod"
+X    8   	p2(i+1);
+Xp2
+Xstopped in p2 at line 8 in file "stkcmds.mod"
+X    8   	p2(i+1);
+Xp2
+Xstopped in p1 at line 14 in file "stkcmds.mod"
+X   14       p2(i+1);
+Xp1
+Xstopped in _init at line 19 in file "stkcmds.mod"
+X   19       p1(i+1);
+X_init
+X
+Xexecution completed, exit code is 0
+X
++E+O+F+
+

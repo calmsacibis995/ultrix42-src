@@ -1,0 +1,369 @@
+.\" SCCSID: @(#)mount.8nfs	8.3	9/28/90
+.TH mount 8nfs
+.SH Name
+mount, umount \- mount and unmount a Network File System (NFS)
+.SH Syntax
+.B "/etc/mount [ \-t nfs \-f \-r \-v ] ["
+.I options 
+.B ] 
+.I device directory
+.PP
+.B /etc/umount [
+.B \-v ] 
+.I directory
+.SH Description
+.NXR "mount command (NFS)"
+.NXR "umount command (NFS)"
+.NXR "NFS file system" 
+.NXR "mountd daemon"
+.NXR "file system"
+The
+.PN mount
+command allows you to mount a file system or directory
+onto a directory.
+Once a file system or directory has been mounted,
+it is treated as a file system.
+.PP
+The argument
+.I device 
+can have one of the following forms:
+.IP
+\fIhost:remote_name\fR
+.IP
+\fIremote_name@host\fR
+.PP
+The
+.I remote_name
+is the name of a file system or subtree of a file system
+that has been exported by
+\fIhost\fR.
+The file
+.I directory
+must exist and must be a directory.
+It becomes the name of the newly mounted file system.
+.PP
+General users can mount file systems with certain restrictions
+in addition to those listed in 
+.MS mount 8 .
+.PP
+The
+.PN umount
+command unmounts the remote file system that was previously
+mounted on the specified directory.
+.SH Options
+See the
+.MS mount 8
+reference page for a description of the \fB\-t\fR option.
+.NXR "mount command (NFS)" "options"
+.IP \fB\-f\fR 12
+Fast unmount.
+The
+.B \-f
+option has no meaning for local file systems and directories.
+However,
+for remote file system types (such as NFS), the
+.B \-f
+option causes the client to unmount the remotely mounted file systems
+and directories without notifying the server.
+This can avoid the delay of waiting for acknowledgment
+from a server that is down.
+.IP \fB\-r\fR 12
+Indicates that the file system
+is to be mounted read only.
+.IP \fB\-v\fR
+Tells what did or did not happen.
+(Verbose flag)
+.IP "\fB\-o \fIoptions\fR"
+Specifies 
+.I options
+as a sequence of words, separated by commas,
+from the list that follows. 
+The default options are as follows:
+.sp .5
+\fBrw,hard,intr,retry=10,000,timeo=11,retrans=4, \\
+.br
+port=NFS_PORT,pgthresh=64\fR
+.sp .5
+Defaults for 
+.I rsize 
+and 
+.I wsize 
+are set by the kernel.
+The NFS options are as follows:
+.RS
+.PP
+.IP \fBbg\fR 14
+If the first mount attempt fails,
+retry the mount in the background the number of times specified
+(the default is 10,000 times).
+.IP \fBhard\fR
+Retry the NFS operation (not the \f(CWmount\fR)
+request until server responds.
+The
+.B hard
+option applies after the
+.PN mount
+has succeeded. 
+Use the 
+.B hard 
+option when mounting 
+.PN rw
+(read-write) file systems.
+.IP \fBintr\fR
+Allow 
+.B hard 
+mounted file system operations to be interrupted.
+.IP \fBnintr\fR
+Disallow 
+.B hard 
+mounted file system operations from being interrupted.
+.IP \fBnoexec\fR
+Binaries cannot be executed from this file system.
+.IP \fBnosuid\fR
+The
+.PN setuid
+and
+.PN setgid
+programs can not be executed from this file system.
+.IP \fBpgthresh=##\fR
+Set the paging threshold for this file system in kilobytes.
+.IP \fBport=\fIn\fR
+Set server IP port number to 
+.I n.
+.IP \fBretrans=\fIn\fR 
+Set number of NFS operation retransmissions (not the \f(CWmount\fR) to 
+.I n.
+The
+.B retrans=
+option applies after the
+.PN mount
+has succeeded.
+.IP \fBretry=\fIn\fR
+Set number of mount failure retries to 
+.I n.
+The
+.B retry=
+option applies to the
+.PN mount
+command, itself.
+.IP \fBro\fR
+Read-only.
+.IP \fBrsize=\fIn\fR
+Set read buffer size to 
+.I n 
+bytes.
+.IP \fBrw\fR
+Read/write.
+.IP \fBsoft\fR
+Return an error if the server does not respond to the NFS operation
+(not the \f(CWmount\fR)
+request.
+The
+.B soft
+option applies after the
+.PN mount
+has succeeded.
+Do not use the 
+.B soft
+option to mount
+.PN rw
+(read-write) file systems.
+.IP \fBtimeo=\fIn\fR
+Set NFS timeout to 
+.I n 
+tenths of a second.
+.IP \fBwsize=\fIn\fR
+Set write buffer size to 
+.I n
+bytes.
+.PP 
+The following options affect how quickly you see updates to a file or
+directory that has been modified by another host.  Increasing these 
+values will give you slightly better performance.  Decreasing these 
+values decreases the time it takes for you to see modifications made 
+on another host.
+If you are
+the only modifier of files under this mount point, you can increase
+these values.
+.IP \fBacdirmin=\fIn\fR 14
+Hold cached directory attributes for at least \fIn\fR seconds.
+The default is 30 seconds.
+.IP \fBacdirmax=\fIn\fR 14
+Hold cached directory attributes for no more than \fIn\fR seconds.
+The default is 60 seconds.  The maximum value allowed is 3600.
+.IP \fBacregmin=\fIn\fR 14
+Hold cached file attributes for at least \fIn\fR seconds.  The
+default is 3 seconds.
+.IP \fBacregmax=\fIn\fR 14
+Hold cached file attributes for no more than \fIn\fR seconds.
+The default is 60 seconds.  The maximum value allowed is 3600.
+.IP \fBactimeo=\fIn\fR 14
+Set all four attributes cache timeout values to \fIn\fR.
+.IP \fBnoac\fR 14
+Do not set attribute caching.  This is equivalent to 
+\fBactimeo=0\fR.
+.RE
+.PP
+The
+.PN bg
+option causes 
+.PN mount
+to run in the background if the server's
+.PN mountd
+daemon does not respond.  
+The
+.PN mount 
+command attempts each request \fBretry=\fIn\fR
+times before giving up.
+Once the file system is mounted,
+each NFS request made in the kernel waits
+\fBtimeo=\fIn\fR
+tenths of a second for a response.
+If no response arrives,
+the time-out is multiplied by 2 
+and the request is retransmitted.
+.PP
+When \fBretrans=\fIn\fR
+retransmissions have been sent with no reply, a
+.B soft
+mounted file system returns an error on the request and a
+.B hard
+mounted file system retries the request.
+If a 
+.B hard 
+mounted file system was mounted with the
+.PN intr
+option,
+an operation within that file system that is retrying
+(for example, the server is down) can be interrupted.
+File systems that are mounted 
+.PN rw
+(read-write)
+should use the 
+.B hard
+option.
+The number of bytes in a read or write request can be set with the
+.PN rsize
+and
+.PN wsize
+options. The values for 
+.PN rsize
+and
+.PN wsize
+must be between 512 and 8192, and be a multiple of 512.
+.PP
+The option for
+.PN umount
+is:
+.IP \fB\-v\fR
+Tells what did or did not happen.
+(Verbose flag)
+.SH Restrictions
+.NXR "mount command (NFS)" "restricted"
+If the directory on which a file system is to be mounted is a
+symbolic link,
+the file system is mounted on 
+the directory to which the symbolic link refers,
+rather than being mounted on top of the symbolic link itself.
+.PP
+The
+.PN /etc/nfs_mount
+and
+.PN /etc/nfs_umount
+commands should only be invoked by the
+.PN mount
+and
+.PN umount
+commands.
+It is recommended that users (and superusers) do not invoke the
+.PN nfs_mount
+and
+.PN nfs_umount
+commands. An exception to this rule is the use of the 
+.PN nfs_umount 
+.B \-b 
+command in the
+.PN /etc/rc.local 
+file. The 
+.PN nfs_umount 
+.B \-b 
+command broadcasts a message informing NFS servers that this machine
+no longer has any NFS filesystems mounted. This is done in case the
+machine had crashed while it had NFS filesystems mounted. The servers
+use this information to clean up their
+.PN rmtab 
+tables. The
+.PN nfssetup 
+command automatically adds the
+.PN nfs_umount
+.B \-b
+line to the
+.PN /etc/rc.local 
+file on NFS client systems.
+.SH Examples
+.NXR "mount command (NFS)"
+.\" The
+.\" .PN nfs_mount
+.\" is not the suggested interface.
+The
+.PN mount
+command invokes
+.PN nfs_mount
+to do its work.
+A sample
+.PN mount
+command is:
+.IP "" 5
+# \fBmount \-t nfs \-o hard,pgthresh=100 server:/usr /usr\fR
+.\" This would be translated to \fBnfs_mount\fP as:
+.\" .EX 0
+.\" nfs_mount \-o hard,pgthresh=100 server:/usr /usr
+.\" .EE
+.PP
+To mount the remote file system
+.PN /usr/src
+onto the local directory
+.PN /mnt
+with 1k transfer size,
+type:
+.IP "" 5
+# \fBmount \-t nfs \-o rsize=1024,wsize=1024 serv:/usr/src /mnt\fR
+.PP
+To mount the remote directory
+.PN /usr/src/code
+onto the local directory
+.PN /usr/src ,
+type:
+.IP "" 5
+# \fBmount \-t nfs serv:/usr/src/code /usr/src\fR
+.PP
+To 
+.B hard 
+mount a remote file system called
+.PN /usr/src
+onto the local directory
+.PN /usr/src ,
+type:
+.IP "" 5
+# \fBmount \-t nfs \-o hard serv:/usr/src /usr/src\fR
+.\" The
+.\" .PN nfs_umount
+.\" is not the suggested interface.
+.\" The 
+.\" .PN umount 
+.\" command invokes
+.\" .PN nfs_umount
+.\" to do its work.
+.SH Files
+.TP 20
+.PN /etc/fstab
+File system information file
+.TP
+.PN /etc/nfs_mount
+NFS-specific mount program
+.TP
+.PN /etc/nfs_umount
+NFS-specific unmount program
+.SH See Also
+getmnt(2), mount(2), fstab(5), exports(5nfs), mount(8),
+umount(8), mountd(8nfs), rmtab(5nfs), nfssetup(8nfs)

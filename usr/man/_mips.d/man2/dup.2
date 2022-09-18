@@ -1,0 +1,79 @@
+.\" SCCSID: @(#)dup.2	8.1	9/11/90
+.TH dup 2
+.SH Name
+dup, dup2 \- duplicate an open file descriptor
+.SH Syntax
+.nf
+newd = dup(\fIoldd\fP)
+int newd, \fIoldd\fP;
+.PP
+dup2(\fIoldd, newd\fP)
+int \fIoldd, newd\fP;
+.fi
+.SH Description
+.NXR "dup system call"
+.NXR "dup2 system call"
+.NXR "file descriptor" "duplicating"
+.NXR "file descriptor" "process reference table"
+The 
+.PN dup
+system call duplicates an existing object descriptor.
+The argument \fIoldd\fP is a small non-negative integer index in
+the per-process descriptor table.  The value must be less
+than the size of the table, which is returned by 
+.PN getdtablesize .
+The new descriptor,
+.I newd,
+returned by the call is the lowest numbered descriptor that is
+not currently in use by the process.
+.PP
+The object referenced by the descriptor does not distinguish
+between references using \fIoldd\fP and \fInewd\fP in any way.
+Thus, if \fInewd\fP and \fIoldd\fP are duplicate references to an open
+file, 
+.PN read ,
+.PN write ,
+and
+.PN lseek
+calls all move a single pointer into the file.
+If a separate pointer into the file is desired, a different
+object reference to the file must be obtained by issuing an
+additional 
+.PN open
+call.
+.PP
+In the second form of the call, specify the value of
+.IR newd
+needed. If this descriptor is already
+in use, the descriptor is first deallocated as if a
+.PN close
+call had been done.
+.SH Return Values
+The value \-1 is returned if an error occurs in either call.
+The external variable
+.I errno
+indicates the cause of the error.
+.SH Diagnostics
+The
+.PN dup
+and
+.PN dup2
+system calls fail under the following conditions:
+.TP 15
+[EBADF]
+The
+\fIoldd\fP or
+\fInewd\fP is not a valid active descriptor.
+.TP 15
+[EMFILE]
+Too many descriptors are active.
+.TP 15
+[EINTR]
+The
+.PN dup()
+or
+.PN dup2()
+function was terminated prematurely by a signal.
+.SH See Also
+accept(2), close(2), getdtablesize(2), lseek(2), open(2), pipe(2), read(2), socket(2),
+socketpair(2), write(2) 

@@ -1,0 +1,53 @@
+.TH move 3cur 
+.SH Name
+move, wmove \- move cursor in window
+.SH Syntax
+.br
+.B
+move(y, x)
+.PP
+.B
+wmove(win, y, x)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int y, x;
+.SH Description
+.NXR "move macro (curses)"
+.NXR "wmove subroutine"
+The 
+.PN move
+routine moves the
+cursor associated with the default window to the given 
+location (y, x), where
+.PN y
+is the row,
+and 
+.PN x
+is the column.
+This routine does not move the physical cursor of the terminal until 
+the 
+.PN refresh 
+routine is called.
+.PP
+The 
+.PN wmove
+routine moves the
+cursor associated with the specified window to the given 
+location (y, x).
+This does not move the physical cursor of the terminal until 
+the
+.PN wrefresh 
+routine is called.
+.PP
+For both routines
+the position specified is relative to the upper left corner of the window,
+which is (0,0).
+.PP
+The routine
+.PN move
+is a macro.
+.SH See Also
+refresh(3cur), wrefresh(3cur)

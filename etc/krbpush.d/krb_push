@@ -1,0 +1,24 @@
+#!/bin/sh
+# @(#)krb_push	4.1	(ULTRIX)	3/7/91
+#
+# The krb_push script pushes the Kerberos database to the Kerberos slave
+# servers.
+#
+KRB_DBASE=/var/dss/kerberos/dbase
+KRB_LOG=/var/dss/kerberos/log
+KRB_BIN=/var/dss/kerberos/bin
+
+if test -f $KRB_DBASE/principal.dir
+then 
+	if test -f $KRB_DBASE/dbase
+	then
+		find $KRB_DBASE/principal.pag -newer $KRB_DBASE/dbase -exec \
+			$KRB_BIN/kdb_util slave_dump $KRB_DBASE/dbase \; -exec \
+			$KRB_BIN/kprop $KRB_DBASE/dbase /etc/krb.slaves \
+				2>>$KRB_LOG/kprop.log 1>&2 \;
+	else
+		$KRB_BIN/kdb_util slave_dump $KRB_DBASE/dbase
+		$KRB_BIN/kprop $KRB_DBASE/dbase /etc/krb.slaves \
+			2>>$KRB_LOG/kprop.log 1>&2
+	fi
+fi

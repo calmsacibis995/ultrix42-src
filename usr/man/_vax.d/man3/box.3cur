@@ -1,0 +1,43 @@
+.TH box 3cur 
+.SH Name
+box \- draw box
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B
+int box(win, vert, hor)
+.br
+.B
+WINDOW *win;
+.br
+.B
+chtype vert, hor;
+.SH Description
+.NXR "box subroutine"
+The
+.PN box 
+routine
+draws a box around the edge of the window.
+The arguments 
+.PN vert
+and
+.PN hor
+are the vertical and horizontal 
+characters the box is to be drawn with.
+.PP
+If
+.PN vert
+and
+.PN hor
+are 0 or unspecified, 
+then default characters are used.
+.PP
+If scrolling is disabled and the window 
+encompasses the bottom right corner
+of the screen, 
+all corners are left blank to avoid an illegal scroll.
+.SH Return Values
+The
+.PN box
+function returns OK on success and ERR on error.

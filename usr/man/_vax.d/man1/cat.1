@@ -1,0 +1,85 @@
+.\" SCCSID: @(#)cat.1	3.1	11/23/87
+.TH cat 1
+.SH Name
+cat \- concatenate and print data
+.SH Syntax
+.B cat
+[
+.B \-b
+] [
+.B \-e
+] [
+.B \-n
+] [
+.B \-s
+] [
+.B \-t
+] [
+.B \-u
+] [
+.B \-v
+]
+.I file...
+.br
+.SH Description
+.NX R "cat command"
+.NX R "file" "displaying"
+The
+.PN cat
+command reads each
+.I file
+in sequence and displays it on the standard output.  Therefore, to
+display the file on the standard output you type:
+.EX
+cat file
+.EE
+To concatenate two files and place the result on the third you type:
+.EX
+cat file1 file2 > file3
+.EE
+To concatenate two files and append them to a third you type:
+.EX
+cat file1 file2 >> file3
+.EE
+If no input file is given, or if a minus sign (\-) is encountered as
+an argument,
+.PN cat
+reads from the standard input file.  Output is buffered in 1024-byte
+blocks unless the standard output is a terminal, in which case it is
+line buffered.  The
+.PN cat
+utility supports the processing of 8-bit characters.
+.SH Options
+.TP 5
+.B \-b
+Ignores blank lines and precedes each output line with its line number.
+.TP 
+.B \-e
+Displays a dollar sign ($) at the end of each output line.
+.TP 
+.B \-n
+Precedes all output lines (including blank lines) with line numbers.
+.TP 
+.B \-s
+Squeezes adjacent blank lines from output and single spaces output.
+.TP 
+.B \-t
+Displays non-printing characters (including tabs) in output.  In
+addition to those representations used with the
+.B \-v
+option, all tab characters are displayed as ^I.
+.TP 
+.B \-u
+Unbuffers output.
+.TP 
+.B \-v
+Displays non-printing characters (excluding tabs and newline)
+as the ^x.
+If the character is in the range octal 0177 to octal 0241, 
+it is displayed
+as M-x. The delete character (octal 0177)
+displays as ^?.  For example, 
+.CT X
+is displayed as ^X.
+.SH See Also
+cp(1), ex(1), more(1), pr(1), tail(1)

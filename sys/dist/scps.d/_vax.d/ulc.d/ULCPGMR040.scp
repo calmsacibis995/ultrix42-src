@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+#       @(#)ULCPGMR040.scp	4.1     (ULTRIX)        7/2/90
+#
+#
+#       000	jon		18-apr-1988
+#               first pass.
+#
+
+PATH="/bin:/usr/bin:/etc:/usr/ucb"
+export PATH
+
+# path dummies
+L=./lib
+
+case "$ACT" in
+POST_[AL])
+        # UPDATE LIBRARYS
+        # libc.a
+	mv $L/libc.a.crypt $L/libc.a
+
+        # update gross (dbx) archive
+	mv $L/libcg.a.crypt $L/libcg.a
+
+	# update profiling library
+	mv $L/libc_p.a.crypt $L/libc_p.a
+
+        exit 0
+        ;;
+
+*)      exit 0
+        ;;
+esac
+

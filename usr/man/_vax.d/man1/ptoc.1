@@ -1,0 +1,325 @@
+.\" SCCSID: @(#)ptoc.1	8.1	9/11/90
+.\" SCCSID: @(#)ptoc.1	8.1	9/11/90
+.TH ptoc 1 "" "" Unsupported
+.SH Name
+ptoc \- Pascal to C language translator
+.SH Syntax
+.B ptoc
+[
+.I filename
+]
+.SH Description
+The
+.PN ptoc
+(P to C) translator accepts as input a Pascal source file and
+produces on the standard output a C language translation.
+The Pascal input file must not contain any Pascal syntax errors.
+The
+.PN ptoc
+translator
+is not meant to be used as a Pascal debugging tool or as a Pascal
+syntax checker.
+The
+.PN ptoc
+translator
+does check for some common Pascal syntax errors. If it finds
+an error, it prints an error message and quits.
+.PP
+The
+.PN ptoc
+translator
+accepts standard Pascal 
+(as defined by the ANSI/IEEE770X3.97-1983 standard)
+with some extensions and restrictions detailed below.
+It outputs C code that conforms 
+to the portable C compiler,
+except as noted in the RESTRICTIONS section.
+The
+.PN ptoc
+translator
+converts all identifiers to lower case.  This is to conform with Pascal,
+which is not case sensitive.
+.PP
+The
+.PN ptoc
+translator
+will read header files, which are referenced by an include statement,
+to resolve symbol names that 
+are used in the Pascal file being translated.
+All Pascal header files which are part of the program being translated
+must be run through
+.I ptoc
+separately, to produce C format header files.
+.PP
+A word about Pascal variant records is in order.
+The C equivalent of a Pascal variant record is a union.
+A C union is implemented as a structure with a name, whereas
+a Pascal variant record is not named, nor does it introduce
+another structure level.  Furthermore, if two or more fields are
+grouped together in a Pascal variant,
+they do not require a nested record.
+In C, however, they must be grouped within a structure.
+These considerations add one or two extra reference
+levels in the C code compared 
+to the reference levels needed in the Pascal
+code.
+.PP
+A common practice in C is to use ``#defines'' to make these reference
+levels transparent in the code.  This technique is used
+by
+.PN ptoc.
+Thus, the extra structure levels required by C are transparent in the
+C code translation of the Pascal source code.   For example:
+.EX 0
+    Pascal                            C
+    ------                            -
+    q: record                         struct q {
+        i: integer;                       int i;
+        case boolean of                   union {
+        true: (qa: char;                      struct {
+               qb: integer);                      char uqa;
+        false: (qf: boolean);                     int uqb;
+        end;                                      } un1;
+                                              struct {
+                                                  char uqf;
+                                                  } un2;
+                                              } un;
+                                          };
+                                      #define qa un.un1.uqa
+                                      #define qb un.un1.uqb
+                                      #define qf un.un2.uqf
+.EE
+If a Pascal program has a variable with the same name as one of the
+field names within a variant record, then the define statement in the
+C translation will be applied to the variable as well as to the field
+within the variant.  One solution is to change the name of the Pascal
+variable before running
+.PN ptoc.
+If you do not change the conflicting variable name, 
+when you try to compile
+the C translation you may see strange errors such as ``warning:
+old-fashioned initialization'' or ``warning: illegal member use''.
+.SS Extensions
+The
+.PN ptoc
+translator
+handles a few extensions to standard Pascal which are features
+of ``popular'' versions of Pascal.  These extensions are detailed
+below.
+.SS Reserved Words
+The
+.PN ptoc
+translator
+accepts upper or lower case Pascal reserved words.
+.SS Compilation Units
+The
+.PN ptoc
+translator
+accepts the keyword ``module'' in place of the keyword ``program''.
+This is used at the top of a file of separately compiled procedures
+and functions.
+.SS Include Files
+Two formats of include files are accepted:
+.EX 0
+    Berkeley Pascal                     Alternate
+    ---------------                     ---------
+    #include "filename"                 %include 'filename'
+.EE
+.SS Declarations
+The ``_'' (underscore) character in symbol names is accepted syntax.
+Any underscores in symbol names will be kept in the C translation.
+.PP
+The ``$'' character in symbol names is accepted syntax.
+Symbol names may also start with the "$" character.
+All ``$'' characters in symbol names will simply be discarded and not
+output in the C translation.
+.PP
+Arrays of type ``varying'' are accepted and translated into character
+arrays in C.  For example:
+.EX 0
+    Pascal                              C
+    ------                              -
+    varid: varying[10] of char;         char varid[11];
+.EE
+.PP
+.PP
+The types ``double'', ``single'', ``quadruple'', and ``unsigned'', 
+are accepted and translated into corresponding C data types.
+For example:
+.EX 0
+    Pascal                              C
+    ------                              -
+    d: double;                          double d;
+    s: single;                          float s;
+    q: quadruple;                       double q;
+    u: unsigned;                        unsigned u;
+.EE
+Initializer values are allowed on variable declarations.
+The Pascal syntax is:
+.EX 0
+    Pascal                              C
+    ------                              -
+    varid: integer := const-expr;       int varid = const-expr;
+.EE
+Attributes associated with type and 
+variable declarations and procedure or
+function declarations are allowed.
+The attributes are simply discarded in the C translation.
+The accepted syntax is:
+.EX 0
+    type_id = [attribute-list] type;
+    variable_id: [attribute-list] type;
+    [attribute-list] procedure name(args);
+.EE
+.SS External Procedures
+The
+.PN ptoc
+translator
+recognizes the keywords ``external'', ``extern'', ``fortran'',
+and ``forward''
+on procedure and function declarations.  In the C translation, this
+will simply generate a function type definition.
+The syntax is:
+.EX 0
+    procedure name (params); external;
+.EE
+Mechanism-specifiers which are used to describe parameter attributes
+are recognized.  The mechanism-specifiers (%ref, %descr, %stdescr, %immed)
+are simply discarded in the C translation.  The accepted syntax is:
+.EX 0
+    procedure name (%REF param1: integer := %IMMED 0); external;
+.EE
+.SS Case Statement
+The
+.PN ptoc
+translator
+accepts the keyword ``otherwise'' as the default selection in a Pascal
+case statement.  This is translated to ``default''
+in the C switch statement.
+.SS Octal And Hexadecimal Numbers
+The
+.PN ptoc
+translator
+accepts octal and hex numbers as values for constant declarations and
+as valid numbers in expressions.
+The accepted syntax for constant declarations is:
+.EX 0
+    CONST
+        hexone = %x 'DEC';                      (* hex const *)
+        octone = %O '777';                      (* octal const *)
+.EE
+The accepted syntax in expressions is:
+.EX 0
+    i := %X'DEC';
+    if (i > %o'777')
+    then i := i * hexone + %x 'abc';
+.EE
+.SS Operators
+The
+.PN ptoc 
+translator
+accepts the operator ``rem'', and translates it 
+the same as the ``mod''
+operator.  This produces the ``%'' operator in C.
+.SH Restrictions
+.SS Syntax
+All Pascal source files and header 
+files must not contain any Pascal syntax
+errors.
+The
+.PN ptoc
+translator
+may dump core at runtime on some types of syntax errors in input files.
+.SS Arrays
+Lower bounds of Pascal arrays are ignored.  Only the upper bound is
+considered for the C translation.  The C translation will declare
+the array with enough space to index from 0 through the upper bound
+of the Pascal array.  A negative Pascal array bound will need
+special attention from the user,
+since C does not allow negative array bounds.
+.PP
+The
+.PN ptoc
+translator
+does not handle array bounds which are enumerated ``in place''.
+Constructs like this will produce a syntax error:
+.EX 0
+    A: array[(RED,WHITE,BLUE)] of integer;
+.EE
+The
+.PN ptoc
+translator
+does not translate array declarations where the base type of the array
+is in turn a complex type.  The base type of the array is set to
+``integer'' and a warning is printed.
+The following Pascal declaration is an example:
+.EX 0
+    A: array[1..10] of array[1..20] of char;
+.EE
+.SS Pointer Declarations
+Pascal allows type declarations of pointers to objects
+that are not defined yet.
+The
+.PN ptoc
+translator translates these to C and generates a warning message.
+It is illegal in C for a pointer type to reference an object that
+is not defined yet, so this will require the user to modify the C
+source translation.
+.SS Empty Records
+Pascal allows empty records.  These translate to empty structures in
+C.  Empty structures will produce syntax errors in C.  The user must
+edit these in the Pascal file or in the C translation.
+.SS Subrange Declarations
+Pascal allows types and variables of subrange types, which C does not.
+The
+.PN ptoc
+translator
+translates these into types or variables of the base type of the Pascal
+subrange.  For example:
+.EX 0
+    Pascal                              C
+    ------                              -
+    sr1: -10..10;                       int sr1;
+    sr2: 'a'..'z';                      char sr2;
+.EE
+.SS Write Statements
+The
+.PN ptoc
+translator
+does not handle all possible forms of Pascal write statements
+with complex variables.  If
+.PN ptoc
+complains about the syntax of a write statement, comment it out and
+translate it to C by hand.
+.SS Sets
+A Pascal set declaration becomes a plain variable in C, having the same type
+as the base type of the Pascal set.  For example:
+.EX 0 
+	Pascal                  C
+	------                  -
+	v: set of char;         char v;
+.EE
+Pascal statements using
+certain set constructs will translate into C code that will not compile.
+You will have to comment out the Pascal code and translate by hand, or
+edit the C code to correct it.  For example:
+.EX 0
+	Pascal                  C
+	------                  -
+	v := ['a','b','c'];     v = ['a']['b']['c'];
+.EE
+The
+.PN ptoc
+translator
+interprets the set construct as an array index and generates
+array index code.
+.SS Nested Procedures
+Pascal nested procedures are linearized.  The corresponding C functions
+are all at the same lexical level.  Variables that are defined at an
+outer procedure scope level and are referenced by a procedure at a
+nested scope level, will be undefined in the C translation of the
+nested procedure.
+Such variables must be declared global to all procedures in the Pascal
+source file or they must be passed as arguments to the nested procedure.
+.SH Files
+.PN /usr/bin/ptoc

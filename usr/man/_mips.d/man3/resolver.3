@@ -1,0 +1,224 @@
+.\" Copyright (c) 1985 Regents of the University of California.
+.\" All rights reserved.  The Berkeley software License Agreement
+.\" specifies the terms and conditions for redistribution.
+.\"
+.\"	@(#)resolver.3	1.7 (Berkeley) 5/27/86
+.\"
+.TH resolver 3
+.SH Name
+res_mkquery, res_send, res_init, dn_comp, dn_expand \- resolver routines
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.br
+.B #include <netinet/in.h>
+.br
+.B #include <arpa/nameser.h>
+.br
+.B #include <resolv.h>
+.PP
+.B "res_mkquery(\fIop, dname, class, type, data, datalen, newrr, buf, buflen\fP)"
+.br
+.B int \fIop\fP;
+.br
+.B char *\fIdname\fP;
+.br
+.B int \fIclass, type\fP;
+.br
+.B char *\fIdata\fP;
+.br
+.B int \fIdatalen\fP;
+.br
+.B struct rrec *\fInewrr\fP;
+.br
+.B char *\fIbuf\fP;
+.br
+.B int \fIbuflen\fP;
+.PP
+.B res_send(\fImsg, msglen, answer, anslen\fP)
+.br
+.B char *\fImsg\fP;
+.br
+.B int \fImsglen\fP;
+.br
+.B char *\fIanswer\fP;
+.br
+.B int \fIanslen\fP;
+.PP
+.B res_init()
+.PP
+.B dn_comp(\fIexp_dn, comp_dn, length, dnptrs, lastdnptr\fP)
+.br
+.B char *\fIexp_dn, *comp_dn\fP;
+.br
+.B int \fIlength\fP;
+.br
+.B char **\fIdnptrs, **lastdnptr\fP;
+.PP
+.B dn_expand(\fImsg, eomorig, comp_dn, exp_dn, length\fP)
+.br
+.B char *\fImsg, *eomorig, *comp_dn, exp_dn\fP;
+.br
+.B int \fIlength\fP;
+.SH Description
+The resolver routines are used for making,
+sending,
+.NXR "resolver routines"
+.NXR "resolver routines" "and BIND servers"
+and interpreting packets to BIND servers.
+Global information that is used by the
+resolver routines is kept in the variable
+.PN _res .
+Most of the values have reasonable defaults and you need not be
+concerned with them.
+The options are a simple bit mask and are or'ed in to enable.
+The options stored in
+.PN _res.options
+are defined in
+.PN /usr/include/resolv.h
+and are as follows:
+.IP RES_INIT 19
+True if the initial name server address and default domain name are
+initialized,
+for example if
+.PN res_init
+has been called.
+.IP RES_DEBUG
+Print debugging messages.
+.IP RES_AAONLY
+Accept authoritative answers only.
+.\" The
+.\" .B res_send
+.\" routine continues until it finds an authoritative answer
+.\" or finds an error.
+.\" Currently this is not implemented.
+.IP RES_USEVC
+Use TCP connections for queries instead of UDP.
+.IP RES_STAYOPEN
+This is used with
+.PN RES_USEVC
+to keep the TCP connection open between queries.
+This is useful only in programs that regularly do many queries.
+You should normally use UDP.
+.\" .IP RES_IGNTC
+.\" Unused currently (ignore truncation errors, for example,
+.\"  do not retry with TCP).
+.IP RES_RECURSE
+Set the recursion desired bit in queries.
+This is the default.
+The
+.PN res_send
+routine does not do iterative queries and expects the BIND server
+to handle recursion.
+.IP RES_DEFNAMES
+Append the default domain name to single label queries.
+This is the default.
+.PP
+The following lists the routines found in
+.PN /usr/lib/libc.a
+.IP res_init 16
+This routine reads the initialization file to get the default
+domain name and the Internet address of the initial hosts
+running the name server.
+If this line does not exist,
+the host running the resolver is tried.
+.IP res_mkquery
+This routine makes a standard query message and places it in
+.IR buf .
+The
+.I res_mkquery
+routine returns the size of the query or \-1 if the query is
+larger than
+.IR buflen .
+.RS
+.IP op
+The opcode is usually
+.PN QUERY ,
+but can be any of the query types defined in
+.IR nameser.h .
+.IP Dname
+This variable is the domain name.
+If
+.I dname
+consists of a single label and the
+.PN RES_DEFNAMES
+flag is enabled,
+which is the default,
+.I dname
+is appended with the current domain name.
+The current domain name is defined in a system file,
+but you can override it by using the environment variable
+.PN LOCALDOMAIN .
+.RE
+.\" .IP newrr
+.\" This routine is currently unused,
+.\" but is intended for making update messages.
+.sp
+.IP res_send
+This routine sends a query to the BIND servers and returns an answer.
+It calls the
+.PN res_init
+routine.
+If
+.PN RES_INIT
+is not set, 
+.PN res_send
+sends the query to the local name server,
+and handle timeouts and retries.
+The length of the message is returned or
+\-1 if there were errors.
+.IP dn_comp
+This routine compresses the domain name
+.I exp_dn
+and stores it in
+.IR comp_dn .
+The size of the compressed name is returned or \-1 if there were errors.
+The
+.I length
+is the size of the array pointed to by
+.IR comp_dn .
+.RS
+.IP dnptrs
+This variable is a list of pointers to previously compressed names
+in the current message.
+The first pointer points to
+the beginning of the message and the list ends with
+.PN NULL .
+.IP lastdnptr
+This is a pointer to the end of the array pointed to by
+.IR dnptrs .
+A side effect is to update the list of pointers for
+labels inserted into the message by
+.I dn_comp
+as the name is compressed.
+If
+.I dnptr
+is NULL, the names are not compressed.
+If
+.I lastdnptr
+is NULL, the list is not updated.
+.RE
+.IP dn_expand
+This routine expands the compressed domain name
+.PN comp_dn
+to a full BIND domain name.
+Expanded names are converted to upper case.
+.RS
+.IP msg
+This variable is a pointer to the beginning of the message.
+.IP exp_dn
+This variable is a pointer to a buffer of size
+.I length
+for the result.
+The size of the compressed name is returned or \-1 if there was an error.
+.RE
+.SH Files
+.PN /etc/resolv.conf
+.br
+.PN /usr/include/resolv.h
+.br
+.PN /usr/include/arpa/nameser.h
+.SH See Also
+named(8), resolv.conf(5)
+.br
+.I Guide to the BIND/Hesiod Service

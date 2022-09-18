@@ -1,0 +1,30 @@
+(*#@(#)parameters.def	4.1	Ultrix	7/17/90 *)
+(* $Header: parameters.def,v 1.5 84/05/19 11:40:02 powell Exp $ *)
+
+(* This module provides clean access to the command parameters *)
+
+DEFINITION MODULE parameters;
+
+EXPORT QUALIFIED NumParameters, GetParameter, GetEnvironment;
+
+VAR
+    (* NumParameters = argc = number of parameters counting name of the *)
+    (*  program (the 0th parameter) *)
+    NumParameters : cardinal;
+
+(* GetParameter copies the num'th parameter (starting at 0, which is the *)
+(*  program name) into the value array.  It sets length to the number of *)
+(*  characters stored in the array, < 0 if there aren't that many parameters *)
+(*  If there is room in value, it adds a 0C at the end *)
+PROCEDURE GetParameter(num : CARDINAL; VAR value : ARRAY OF CHAR;
+	VAR length: INTEGER);
+
+(* GetEnvironment copies the value of the environment variable with the *)
+(*  specified name into the value array.  It sets length to the number of *)
+(*  characters stored in the array, < 0 if that variable doesn't exist. *)
+(*  The value is the part after the = in the environment string. *)
+(*  If there is room in value, it adds a 0C at the end *)
+PROCEDURE GetEnvironment(name : ARRAY OF CHAR; VAR value : ARRAY OF CHAR;
+	VAR length: INTEGER);
+
+END parameters.

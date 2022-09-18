@@ -1,0 +1,35 @@
+.\" SCCSID: @(#)phones.5	8.1	9/11/90
+.TH phones 5
+.SH Name
+phones \- remote host phone number data base
+.SH Description
+.NXR "phones file" "format"
+.NXAM "tip command" "phones file"
+The file 
+.PN /etc/phones
+contains the system-wide
+private phone numbers for the 
+.MS tip 1c
+program.  This file is normally unreadable, and so can contain
+privileged information.  
+.PP
+The format of the file is a series of lines
+of the form: <system-name>[\ \et]*<phone-number>.  The system name is
+one of those defined in the 
+.MS remote 5
+file and the phone number is
+constructed from [0123456789-=*%].  The equal sign (=) and 
+the asterisk (*) characters are
+indicators to the autocall units to pause and wait for a second dial
+tone when going through an exchange.  The equal sign (=) is required by the
+DF02-AC; the asterisk (*) is required by the BIZCOMP 1030.
+.PP
+Only one phone number per line is permitted.  However, if more than
+one line in the file contains the same system name,
+.MS tip 1c
+attempts to dial each one in turn, until it establishes
+a connection.
+.SH Files
+.PN /etc/phones
+.SH See Also
+tip(1c), remote(5)

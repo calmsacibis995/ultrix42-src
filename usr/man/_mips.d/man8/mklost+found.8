@@ -1,0 +1,25 @@
+.\" SCCSID: @(#)mklost+found.8	8.1	9/11/90
+.TH mklost+found 8
+.SH Name
+mklost+found \- make a lost+found directory for fsck
+.SH Syntax
+.B /etc/mklost+found
+.SH Description
+.NXR "mklost+found command"
+.NXA "mkfs command" "mklost+found command"
+.NXR "lost+found directory" "creating"
+A 
+.PN lost+found
+directory
+is created in the current directory and a number of empty files
+are created therein and then removed so that there will be
+empty slots for
+.MS fsck 8 .
+This command should not normally be needed since 
+.MS mkfs 8 
+automatically creates the
+.PN lost+found
+directory when a new file system is created.
+.SH See Also
+fsck(8),
+mkfs(8)

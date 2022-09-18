@@ -1,0 +1,318 @@
+.TH lcp 8 
+.SH Name
+lcp \- Local Area Transport server (LAT) control program
+.SH Syntax
+.B /etc/lcp
+[
+.I options
+]
+.SH Description
+.NXR "lcp command"
+.NXS "Local Area Transport protocol" "LAT protocol"
+.NXR "LAT protocol"
+.NXR "lcp command" "parameters"
+.NXAM "lcp command" "lta pseudoterminal driver"
+The LAT control program,
+.PN lcp ,
+provides the essential functions
+to control and manage LAT terminal service. 
+It allows you to
+start and stop LAT service, modify and display configuration
+characteristics, and
+display and set error counters to zero.
+The following command is usually included in the
+.PN /etc/rc.local 
+file to automatically restart LAT service during reboot:
+.EX
+lcp \-s 
+.EE
+.SH Options
+The following options can be set with 
+.PN lcp :
+.TP 15
+.B \-s
+Starts LAT service. Enables connections from LAT terminal servers to 
+host. If LAT parameters have not been set, they take on default values
+specified in the 
+.PN \-r 
+option. 
+.TP 15
+.B \-r
+Resets LAT parameters to the following default values:
+.br
+multicast timer: 30 seconds
+.br
+nodename: hostname
+.br
+node description: ``ULTRIX''
+.br
+servicename: hostname
+.br
+service description: ``ULTRIX LAT SERVICE''
+.br
+.TP 15
+.B \-g
+Sets groups to \fIgrp1\fR, \fIgrp2\fR, ... , \fIgrpn\fR.
+A number or string of numbers can be used to set groups.
+The numbers used for each group must be less than or equal to 255.
+For example:
+.EX
+lcp \-g 128 
+
+or
+
+lcp \-g 56,5,102,10,20,30,40,50,60,...,
+110,150,200,210,255
+.EE
+A string of groups must be
+separated by commas with no spaces.  If the string exceeds the 
+width of the screen it must wrap over to the following line. 
+You cannot use a backslash (\\) or a carriage return
+to break a string.
+.TP 15 
+.B \-h	
+Sets a list of ttys (next argument) as being 
+available only for host-initiated connections.  
+A string of ttys must be
+separated by commas with no spaces.  If the string exceeds the 
+width of the screen, it must wrap over to the following line. 
+You cannot use a backslash (\\) or a carriage return
+to break a string.
+Each tty can optionally be associated
+with a specific port on a specific terminal
+server by following the tty name by the name 
+of the server and port, separated by colons.
+For example, the following command
+associates tty15 with the port named "PORT7"
+on the terminal server named "LAT_SERVER".
+.EX 	
+/etc/lcp \-h /dev/tty15:LAT_SERVER:PORT7
+.EE
+.TP 15 
+\-H	
+Sets a list of ttys (next argument) as being 
+available only for terminal server initiated 
+connections. 
+A string of ttys must be
+separated by commas with no spaces.  If the string exceeds the 
+width of the screen it must wrap over to the following line. 
+You cannot use a backslash (\\) or a carriage return
+to break a string.  
+.TP 15
+.B \-m    
+Sets multicast transmission timer to the specified time
+(next argument).
+A node advertises its presence
+to the LAT servers
+by sending out a multicast message over the network. The
+.I time 
+variable sets the interval between transmissions. Valid
+intervals range from 10 to 255 seconds, with a default of 30 seconds.
+.TP 15
+.B \-n    
+Sets node to the specified name (next argument).
+Specifies the name that your node will be
+known by. Although the Terminal Server keeps track of nodes without an
+associated nodename, a LAT node must have a nodename in order for a
+terminal user to establish a connection. A node can have a list of
+associated services and service ratings, specified 
+by up to 16 alphanumeric
+characters. Dollar ($) and underscore (_) characters are valid, but
+leading underscores and trailing colons are removed. The nodename must
+be unique on the Ethernet. The Terminal Server displays the nodename as
+a service if you type the 
+.PN "show services"
+command, and as a node if you type the 
+.PN "show nodes"
+command. The nodename default is the hostname.
+.TP 15
+.B \-N    
+Sets node description to the specified message (next
+argument).
+The node description allows for a
+short message to 
+be displayed to LAT users,
+providing news or additional node information.
+Specify up to 64 alphanumeric characters. 
+Dollar ($) and underscore (_) characters are valid, but
+leading underscores and trailing colons are removed.
+Leading ampersands (&) are not
+allowed. The default is ``ULTRIX''.
+You must enclose the string in double quotation marks (" ") if it
+contains one or more spaces. 
+.TP 15
+.B \-v	
+A service node advertises one or more services.  By default 
+the single service offered is the node name.  For example, node 
+.PN microv 
+by default offers service 
+.PN microv .  
+The 
+.PN \-v 
+option lets you change this default.  It also lets
+you cause the service node to advertise more 
+than one service and associate a given set of 
+LAT ttys with each service by appending a list of 
+minor device numbers to the service name. For 
+example, the following command causes the node to 
+offer two additional services, 
+"SERV1" and "SERV2": 
+.EX
+/etc/lcp \-v microv \-v SERV1:/dev/tty15,/dev/tty16\\ 
+-v SERV2:/dev/tty17,/dev/tty18,/dev/tty19
+.EE 
+Devices tty15 and tty16 are used for SERV1.  
+Devices tty17, tty18, and tty19 are used for SERV2.  
+All other LAT ttys are used for the 
+default service, 
+.PN microv . 
+.PP
+Note that normal LAT service is always 
+associated with the first 
+.PN \-v 
+option to appear.  Therefore, if you wish to advertise
+additional services you must define the service name
+for normal lat, even if you still want the default
+service name, as in the above example.
+.PP
+Every time you issue a new lcp command with the 
+.PN \-v 
+option, the new set of services that you define completely replaces any 
+previously defined services.  To discontinue a previously
+defined service, reissue lcp with the 
+.PN \-v 
+option without specifying that service.  
+For example, to discontinue the
+SERV1 service, use the following command:
+.EX
+/etc/lcp \-v microv \\
+-v SERV2:dev/tty17,dev/tty18,dev/tty19
+.EE
+.RE
+.TP 15 
+.B \-V	
+Sets service description to specified message (next argument).  
+It can be up to 64 characters in length.  You must enclose the
+string in double quotation marks (" ") if it contains
+one or more spaces.  If you are defining
+multiple services a given description 
+applies to the service name defined by the 
+corresponding 
+.PN \-v 
+option (the first 
+.PN \-V 
+option corresponds to the first 
+.PN \-v 
+option, and so on). For
+example, the following command 
+associates the description "ULTRIX LAT service"
+with the service name 
+.PN microv
+and description
+"service 1" with service name "SERV1".
+.EX 
+/etc/lcp \-v microv \-v SERV1:dev/tty15,dev/tty16\\  
+\-V "ULTRIX LAT service" \-V "service 1"
+.EE
+.TP 15
+.B \-t	  
+Stops LAT service. Disable connections from LAT terminal servers to 
+host.
+.TP 15
+.B \-d    
+Displays LAT characteristics. Shows the LAT parameters at their current
+setting. The following is an example of the output of the 
+.PN \-d 
+option:
+.EX
+% /etc/lcp \-d
+ 
+Node name: NODE 	Service name: NODE
+Node Identification: ULTRIX LAT service
+Service Identification: ULTRIX
+Groups: 0
+Multicast timer: 30 seconds
+LAT version: 5 eco: 0  LAT Protocol is active
+.EE
+.TP 15
+.B \-z    
+Reinitializes (zeroes out) error counters.
+To test system performance over a period of
+time, zero the counters and observe the information that accumulates.
+.TP 15
+.B \-c    
+Displays error counters in vertical format.  If an
+interval also is specified (next argument), displays
+error counters in horizontal format every interval seconds.
+The following is an example of the output of the 
+.PN \-c 
+option:
+.EX
+% /etc/lcp \-c
+67413 Frames received (rcv)
+   32 Duplicate frames received (rcvdup)
+89005 Frames transmitted (xmit)
+   62 Retransmissions (rexmit)
+    0 Illegal messages received (illmesg)
+    0 Illegal slots received (illslots)
+.EE
+.TP 15
+.B interval 
+Continuously displays error counters in horizontal format,
+waiting 
+.I interval
+seconds between each iteration. Quit by sending a keyboard interrupt.
+The following is an example of the output of the interval
+option: 
+.EX
+% /etc/lcp 10
+rcv     rcvdup  xmit    rexmit  illmesg  illslots
+67474   32      89066   62      0        0
+67483   32      89067   62      0        0
+67491   32      89073   62      0        0
+67502   32      89089   62      0        0
+.EE
+.TP 15 
+.B \-p	
+Shows which LAT server/port combination a
+specific LAT tty device is connected to.
+For example the following command
+displays which terminal server and port 
+are associated with tty15.
+.EX		
+/etc/lcp \-p /dev/tty15
+.EE 
+.SH Restrictions
+The service and node names cannot be more than 16 characters long.
+.PP
+The user must have read and write access to a terminal.
+.SH Error Counters
+.NXR "lcp command" "error counter list"
+The meaning of each error counter is explained below.
+.IP \fBrcv\fR 15
+Number of Ethernet LAT messages
+.br
+.IP \fBrcvdup\fR 15
+Number of duplicate messages received (normally
+indicates a system slowdown)
+.br
+.IP \fBxmit\fR 15
+Number of transmitted Ethernet LAT messages
+.br
+.IP \fBrexmit\fR 15
+Number of transmit frames that are sent more than once
+.br
+.IP \fBillmesg\fR 15
+Number of bad messages flagged by the LAT driver
+.IP \fBillslots\fR 15
+Number of bad transmission slots flagged by the driver
+.SH Diagnostics
+Messages indicating that user is not privileged or that LAT
+service is not loaded
+.SH Files
+.TP
+.PN /etc/ttys
+.TP
+.PN /etc/rc.local
+.SH See Also
+lta(4), ttys(5) 

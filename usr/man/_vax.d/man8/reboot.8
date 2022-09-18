@@ -1,0 +1,50 @@
+.\" SCCSID: @(#)reboot.8	8.1	9/11/90
+.TH reboot 8
+.SH Name
+reboot \- automatic reboot procedures 
+.SH Syntax 
+.B /etc/reboot
+[
+.B \-n
+] [
+.B \-q
+]
+.SH Description
+.NXR "reboot command"
+.NXA "reboot command" "rc command"
+.NXR "bootstrap procedure"
+.NXr "system" "rebooting"
+The ULTRIX system is booted by loading a kernel image, usually 
+.PN /vmunix ,
+into memory at location zero and transferring to zero.
+Because the system is not reenterable,
+the kernel image must be read in from disk 
+each time the system is bootstrapped.
+.PP
+When the reboot of a running system is desired,
+.PN shutdown
+is normally used.  If there are no users, 
+.PN /etc/reboot 
+can be used.  The
+.PN reboot
+command causes the disks to be synced, and then a multiuser
+reboot is initiated.  The system is 
+booted and an automatic disk check is performed.
+If the procedure succeeds, the system is then brought up for the users.
+.PP
+The system will reboot itself after a power failure or after a crash,
+provided auto-restart is enabled on your system.
+A consistency check of the file systems will be performed
+and, unless the check fails, the system will resume multiuser operations.
+.SH Options
+.IP \-n 5
+Prevents the disks from being synced.
+.IP \-q
+Reboots quickly and ungracefully, without shutting down running
+processes first.
+.SH Files
+.TP 15
+.PN /vmunix 
+System code
+.SH See Also
+crash(8v), fsck(8), halt(8), init(8), newfs(8), rc(8), shutdown(8) 

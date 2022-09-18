@@ -1,0 +1,206 @@
+.\" SCCSID: @(#)dd.1	4.1	12/9/88
+.TH dd 1 
+.SH Name
+dd \- copy and convert data
+.SH Syntax
+.B dd
+[\|\fIoption = value...\fR\|]  
+.SH Description
+.NXB "dd command"
+.NXR "file" "converting"
+The 
+.PN dd
+command copies an input file
+to an output with
+any requested conversions.  The
+.PN dd
+command is especially suited to I/O on the raw physical
+devices because it allows reading and writing in arbitrary
+record sizes.
+.PP 
+After completion,
+.PN dd
+reports the number of whole and partial input and
+output blocks.
+.PP
+This utility supports EOT handling which allows the use of
+multiple media.  The utility prompts for the next volume when it
+encounters the end of the current volume.
+.SH Options
+.NXB "dd command" "options"
+Where sizes (\fIn\fR) are given for an option, 
+the number may end
+with \fBk\fR for kilobytes (1024 bytes), \fBb\fR for
+blocks (512 bytes), or \fBw\fR for words (2 bytes).
+Also, two numbers may be separated by the character x to
+indicate a product.
+.IP \fBif=\fIname\fR 20
+Input file name.  The standard input is the default.
+.IP \fBof=\fIname\fR 20
+Output file name.  The standard output is the default.
+.IP \fBibs=\fIn\fR 20
+Input block size,
+.I n
+bytes. The default is 512 bytes.
+Some devices do not support greater than 65,535 bytes.
+.IP \fBobs=\fIn\fR 20
+Output block size,
+.I n
+bytes.  The default is 512 bytes.
+Some devices do not support greater than 65,535 bytes.
+.IP \fBbs=\fIn\fR 20
+Set both input and output block size to \fIn\fR bytes,
+superseding
+.B ibs
+and
+.BR obs .
+Also, if \fBbs\fR is specified,
+the copy is more efficient, since no blocking conversion is
+necessary.
+.IP \fBcbs=\fIn\fR 20
+Conversion buffer size, \fIn\fR bytes.  Use only if
+.BR ascii ,
+.BR unblock ,
+.BR ebcdic ,
+.BR ibm ,
+or
+.B block
+conversion is specified.  For
+.B ascii
+and
+.BR unblock , 
+\fIn\fR characters are placed into the conversion
+buffer, any specified character mapping is done, trailing blanks are trimmed
+and new line added before sending the line to the output.  For
+.BR ebcdic ,
+.BR ibm ,
+or
+.BR block ,
+characters are read into the conversion buffer, and blanks added to make
+an output record of size \fIn\fR bytes.
+.IP \fBskip=\fIn\fR 20
+Skip
+.I n 
+input records before starting to copy.
+.IP \fBfiles=\fIn\fR 20
+Copy
+.I n
+input files before terminating.  This option is useful only
+when the input is a magnetic tape or similar device.
+.IP \fBseek=\fIn\fR 20
+Seek
+.I n
+records from beginning of output file before copying.
+.IP \fBrbuf=\fIn\fR 20
+Use
+.I n
+buffers for reading from those raw devices that support
+n-buffered I/O.  (See Section 4 to check whether a
+specific device supports n-buffered I/O.)  All 
+.I n 
+reads are started and each read must complete before the
+data can be used.  This allows an n-buffered read-ahead
+on supported raw devices.
+.IP "" 20
+A default of eight read buffers are used if the read
+device supports n-buffered I/O and the write device
+does not.
+.IP "" 20
+The \fBrbuf\fR option cannot
+be used with the \fBwbuf\fR option.
+.IP \fBwbuf=\fIn\fR 20
+Use
+.I n
+buffers for writing from those raw devices that support
+n-buffered I/O.  (See Section 4 to check whether a
+specific device supports n-buffered I/O.)
+Each write is started but not known
+to be complete until all 
+.I n
+buffers have been used.  (This allows an n-buffered
+write-behind on supported raw devices).  
+.IP "" 20
+A default of eight write buffers are used if the write
+device supports n-buffered I/O.
+.IP "" 20
+The \fBwbuf\fR
+option cannot be used with the \fBrbuf\fR option.
+.IP \fBcount=\fIn\fR 20
+Copy only
+.I n 
+input records.
+.IP \fBconv=ascii\fR 20
+Convert EBCDIC to ASCII.
+.IP \fBconv=ebcdic\fR 20
+Convert ASCII to EBCDIC.
+.IP \fBconv=ibm\fR 20
+Slightly different map of ASCII to EBCDIC (see RESTRICTIONS).  
+.IP \fBconv=block\fR 20 
+Convert variable length records to fixed length.  
+.IP \fBconv=unblock\fR 20
+Convert fixed length records to variable length.
+.IP \fBconv=lcase\fR 20
+Map alphabetics to lower case.
+.IP \fBconv=ucase\fR 20
+Map alphabetics to upper case.
+.IP \fBconv=swab\fR 20
+Swap every pair of bytes.
+.IP \fBconv=noerror\fR 20
+Do not stop processing on an error.
+.IP \fBconv=sync\fR 20
+Pad every input record to
+.IR ibs .
+.IP \fBconv=nomulti\fR 20
+Disable multiple tape volumes.
+.IP \fBconv=sparse\fR 20
+Create a sparse output file.
+.IP "\fBconv=... , ...\fR" 20
+Include several arguments for the \fBconv\fR option, separated
+by commas (see example below).
+.NXE "dd command" "options"
+.SH Examples
+.NXR "dd command" "example"
+The following example shows how to read
+an EBCDIC tape blocked ten 80-byte
+EBCDIC card images per record into the ASCII file
+.I x:
+.EX
+dd if=/dev/rmt0h of=x ibs=800 cbs=80 conv=ascii,lcase
+.EE
+.PP
+Note the use of raw magtape.
+As noted in the DESCRIPTION, the
+.PN dd
+command is especially suited to I/O on the raw
+physical devices because it allows reading
+and writing in arbitrary record sizes.
+.SH Restrictions
+.NXR "dd command" "restricted"
+The ASCII/EBCDIC conversion tables are
+taken
+from the 256-character standard in
+the 
+.I
+Communications of the ACM, 
+.R
+November, 1968.
+.PP
+The \fBibm\fR conversion
+corresponds to certain IBM print train conventions.
+.PP
+One must specify ``conv=noerror,sync'' when copying
+raw disks with bad sectors to ensure that
+.I dd
+stays synchronized.
+.br
+On SCSI tape devices when reading a multi-volume tape set the command
+will exit normally upon hitting EOT on any volume rather than
+automatically unloading the volume and prompting for the next volume
+as is normal. The user should load the next volume and issue the command
+anew.
+.SH Diagnostics
+.NXR "dd command" "diagnostics"
+f+p records in(out): numbers of full and partial records read(written)
+.SH See Also
+cp(1), tr(1), nbuf(4)
+.NXE "dd command"

@@ -1,0 +1,19 @@
+.\" SCCSID: @(#)ct.4	8.1	9/11/90
+.TH ct 4 VAX "" Unsupported
+.SH Name
+ct \- phototypesetter interface
+.SH Syntax
+.B "device ct0 at uba0 csr 0167760 vector ctintr"
+.SH Description
+This provides an interface to a Graphic Systems C/A/T phototypesetter.
+Bytes written on the file specify font, size, and other control
+information as well as the characters to be flashed.  The
+coding is not described here.
+.PP
+Only one process may have this file open at a time.  It is write-only.
+.SH Files
+/dev/cat
+.SH See Also
+troff(1)
+.br
+Phototypesetter interface specification

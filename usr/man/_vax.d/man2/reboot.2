@@ -1,0 +1,77 @@
+.\" SCCSID: @(#)reboot.2	8.1	9/11/90
+.TH reboot 2
+.SH Name
+reboot \- reboot system or halt processor
+.SH Syntax
+.nf
+.B #include <sys/reboot.h>
+.PP
+.B reboot(\fIhowto\fP)
+.B int \fIhowto\fP;
+.fi
+.SH Arguments
+.TP 8
+.I howto
+The
+.I howto
+argument is a mask of options passed to the bootstrap program.
+.RS 8
+.PP
+The bits of
+.I howto
+are:
+.TP
+RB_HALT
+the processor is simply halted; no reboot takes place.
+RB_HALT should be used with caution.
+.TP
+RB_ASKNAME
+Interpreted by the bootstrap program itself, causing it to
+inquire as to what file should be booted.  Normally, the system is
+booted from the file \*(lqxx(0,0)vmunix\*(rq without asking.
+.TP
+RB_SINGLE
+Normally, the reboot procedure involves an automatic disk consistency
+check and then multi-user operations.  RB_SINGLE prevents the consistency
+check, rather simply booting the system with a single-user shell on
+the console.
+RB_SINGLE is interpreted by the
+init(8) program in the newly booted system.
+This switch is not available from the system call interface.
+.PP
+Only the superuser may
+.PN reboot
+a machine.
+.RE
+.SH Description
+.NXR "reboot system call"
+.NXR "system" "rebooting"
+The
+.PN reboot
+system call
+reboots the system, and is invoked automatically
+in the event of unrecoverable system failures.
+The system call interface permits only RB_HALT or RB_AUTOBOOT
+to be passed to the reboot program; the other flags
+are used in scripts stored on the console storage media or used
+in manual bootstrap procedures.
+When none of these options
+(for example, RB_AUTOBOOT) is given, the system is rebooted
+from file 
+.PN vmunix 
+in the root file system of unit 0
+of a disk chosen in a processor-specific way.
+Normally, an automatic consistency check of the disks is then performed.
+.SH Return Values
+If successful, this call never returns.  Otherwise, a \-1
+is returned, and an error is stored in the global variable
+.IR errno .
+.SH Diagnostics
+The 
+.PN reboot 
+call fails under the following condition:
+.TP 15
+[EPERM]
+The caller is not the superuser.
+.SH See Also
+crash(8v), halt(8), init(8), reboot(8)

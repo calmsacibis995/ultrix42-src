@@ -1,0 +1,249 @@
+.TH scan 1mh
+.SH Name
+scan \- produce a one-line-per-message scan listing
+.SH Syntax
+.B scan
+[
+.I +folder
+] [
+.I msgs
+] [
+.I options
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "scan command"
+.PP
+The 
+.PN scan
+command produces a one-line-per-message listing 
+of the messages in the current folder.  
+.PP
+You can scan a folder other than the current folder by using the 
+.I +folder
+argument. 
+You can use the 
+.I msgs
+argument to produce a scan listing of a number of messages 
+or a range of messages in the specified folder.  
+You can also use
+.PN scan
+in conjunction with a message sequence defined by
+.PN mark
+or 
+.PN pick .
+See
+.MS mark 1mh 
+for more information on sequences.
+.PP
+Each 
+.PN scan
+line contains the message number, the date, 
+the \f(CWFrom:\fR field, the \f(CWSubject:\fR field, 
+and, if room allows, some of the body of the message.
+The current message is marked with a plus sign (\f(CW+\fR).
+.PP
+The
+.PN scan
+command actually reads each of the specified messages 
+and parses them to extract the desired fields.
+If format errors are found in any of the messages during parsing, 
+.PN scan
+produces appropriate error messages.
+.PP
+Because MH has been configured with the BERK option,
+.PN scan
+has two additional options:
+.B \-reverse
+and
+.BR \-noreverse .
+In addition,
+.PN scan
+updates the MH context prior to starting the listing,
+so interrupting a long 
+.PN scan
+listing preserves the new context.  
+The default configuration file that is
+supplied with MH has the BERK option enabled.  
+.PP
+If 
+.PN scan
+encounters a message without a \f(CWDate:\fR field,
+the date is filled in with the last write date of the message,
+and an asterisk (\f(CW*\fR) is appended.
+This is useful for identifying unsent message drafts.
+Unsent drafts are not usually allowed to contain a \f(CWDate:\fR field,
+and are consequently marked with an asterisk in 
+.PN scan 
+listings.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-clear" 10
+.PD 0
+.IP "\-noclear" 10
+.PD
+Directs 
+.PN scan 
+to clear the screen.
+If the 
+.B \-clear
+switch is used and the output of
+.PN scan
+is directed to a terminal, then 
+.PN scan
+consults the \f(CW$TERM\fR and \f(CW$TERMCAP\fR
+environmental variables to determine your terminal type 
+in order to find out how to clear the screen prior to exiting.
+If the 
+.B \-clear
+switch is used and the output of
+.PN scan
+is not directed to a terminal, then 
+.PN scan
+sends a formfeed prior to exiting.
+.\"
+.IP "\-form \fIformatfile\fB" 10
+Re-formats the output of 
+.PN scan 
+according to the instructions in the named file.
+The named
+.I formatfile
+must be in
+.PN mh-format
+style; see 
+.MS mh-format 5mh
+for more details.
+.\"
+.IP "\-format \fIstring\fB" 10
+Re-formats the output of
+.PN scan
+according to the instructions in the string given.
+The string must be in 
+.PN mh-format
+style; see
+.MS mh-format 5mh
+for more details.
+You must place the 
+.I string
+argument to this command in double quotes (").
+.\"
+.IP "\-header" 10
+.PD 0
+.IP "\-noheader" 10
+.PD
+Produces a header line prior to the 
+.PN scan
+listing.  
+The header line displays the name of the folder 
+and the date and time. 
+This can be suppressed using the
+.B \-noheader
+option.
+.\"
+.IP "\-help" 10
+Prints a list of the valid options to this command.
+.\"
+.IP "\-reverse" 10
+.PD 0
+.IP "\-noreverse" 10
+.PD
+Lists the output from 
+.PN scan
+in reverse order, from the highest message number
+to the lowest.
+The 
+.B \-noreverse
+option lists messages in the conventional way,
+from lowest to highest numbers.
+The 
+.B \-noreverse
+option is the default.
+.\"
+.IP "\-width \fIcolumns\fB" 10
+Specifies the width of your screen, in columns.
+.\"
+.PP
+The defaults for this command are as follows:
+.IP
+.I +folder
+defaults to the current folder
+.br
+.I msgs
+defaults to all
+.br
+.\" ***Commented out
+.ig
+.B \-format
+defaults to 
+.PN ***???***
+.br 
+(***WHAT IS THE DEFAULT FORMAT FILE FOR scan???***)
+.br
+..
+.\" ***End of comments
+.B \-noheader
+.br
+.B \-width
+defaults to the width of the terminal
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+The following example produces a listing 
+of messages 11 through 15 in the folder 
+.PN +inbox :
+.EX
+% \f(CBscan +inbox 11-15\f(CW
+  11  18/01 ralph              Project Plan Meeting Monday<<This
+  12 -21/01 johnson            squash<<Thought i might postpone 
+  13  21/01 smith@ultrixhost   support from US during conversion
+  14  21/01 jjones@subone.dne  new forum for discussion of mail
+  15+ 21/01 calvin@hobbes.uuc  Re: new forum for discussion of m
+.EE
+In this listing, the plus sign (\f(CW+\fR)
+on message 15 indicates that it is the current message.
+The hyphen (\f(CW-\fR) on message 12 indicates that you
+have replied to the message.
+It is produced by the
+.B \-annotate 
+option to 
+.PN repl ;
+see
+.MS repl 1mh
+for more information.
+If there is sufficient room left on the line after the subject, 
+.PN scan
+fills the line with text from the body, preceded by \f(CW<<\fR,
+and terminated by \f(CW>>\fR if the body is sufficiently short.
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+lw(1.5i) l.
+Path:+To determine your Mail directory
+Alternate-Mailboxes:+To determine your mailboxes
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+inc(1mh), mark(1mh), pick(1mh), show(1mh), mh-format(5mh)

@@ -1,0 +1,69 @@
+#!/bin/sh
+# .rootprofile: the installation only.
+#
+# @(#).rootprofile	4.2	(ULTRIX)	2/28/91
+# Modification History
+# ~~~~~~~~~~~~~~~~~~~~
+# 002 - April 17 1989 - Jon Wallace
+#     -	Removed FIELD SERVICE password entry
+#     -	Added "rm -f vmunix.sas" and "rm -f netload"
+#
+# 001 - July 16, 1987 - Tungning Cherng
+#	pull out passwd command from the logfile.
+#
+# 000 - April, 1987 - Tungning Cherng created
+#	log the logfile install.log.
+#
+
+stty dec new prterase
+PATH=.:/install.tmp:/bin:/etc:/usr/bin:/usr/ucb
+HOME=/
+export PATH TERM HOME
+
+remoteflag=n
+[ -s /netstart ] &&
+{
+	remoteflag=y
+	chmod +x netstart
+	netstart
+	chmod 644 /etc/hosts
+}
+export remoteflag
+
+/install.tmp/eli -f -q > /dev/null 2>&1
+
+/tmp/log /install.log /bin/sh /install.tmp/install.2 
+case $? in
+0 )
+	# 
+	# set the Super User's password
+	# 
+	echo "
+*** SPECIFY THE SUPERUSER PASSWORD *** ${LL}
+The Guide to Installing ULTRIX instructs you on how to enter
+the superuser password. ${LL} "
+	
+	until /bin/passwd root
+	do
+    		echo "Trying again to set Super User password. . .${LL}  "
+	done
+	
+
+	/tmp/log /install.log /bin/sh /install.tmp/install.3
+	case $? in
+	0 )
+		sync; sync
+		mv /install.log /usr/adm/install.log 
+		rm -rf /install.tmp	# doconfig uses /install.tmp/.config
+		rm -f /vmunix.sas
+		rm -f /netload
+		mv real.profile .profile  
+		sync;sync
+		umount -a
+		[ -f /tmp/reboot ] || /etc/halt
+		echo "Rebooting the system ..."
+		/etc/reboot
+		;;
+	esac
+	;;
+esac

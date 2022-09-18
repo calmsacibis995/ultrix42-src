@@ -1,0 +1,146 @@
+.\" SCCSID: @(#)close.2	8.1	9/11/90
+.TH close 2
+.SH Name
+close \- delete a descriptor
+.SH Syntax
+.B close(\fIfd\fP)
+.br
+.B "int \fIfd\fP;"
+.SH Description
+.NXR "close system call"
+.NXA "close system call" "open system call"
+.NXA "file descriptor" "process reference table"
+.NXR "file descriptor" "deleting"
+The
+.PN close
+call deletes a descriptor from the per-process object
+reference table.
+If the descriptor is the last reference to the underlying object, then
+the object is deactivated.  For example, on the last close
+of a file, the current 
+.PN seek
+pointer associated with the file is lost.
+On the last close of a socket,
+.PN close
+discards 
+associated naming information and queued data. 
+On the last close of a file holding an advisory lock, the lock is released. 
+For further information, see
+.MS flock 2 .
+.PP
+A process's descriptors are automatically closed when a process exits, 
+but because each process can have a limited number of active
+descriptors,
+.PN close
+is necessary for programs that deal with many descriptors.
+.PP
+When a process forks, all descriptors for the new child process
+reference the same objects as they did in the parent process before the fork.
+For further information, see 
+.MS fork 2 .
+If a new process is then to be run using 
+.PN execve ,
+the process would normally inherit these descriptors.  Most
+of the descriptors can be rearranged with the
+.PN dup2 
+system call or deleted with
+.PN close
+before 
+.PN execve
+is called. However, if any descriptors are
+needed if the 
+.PN execve
+fails, they must be closed if the execve succeeds.
+For this reason, the call, fcntl(d, F_SETFD, 1), is provided. This call
+arranges that a descriptor is closed after a successful
+.PN execve
+call.
+The call, fcntl(d, F_SETFD, 0), restores the default,
+which is to not close the descriptor.
+.PP
+When 
+.PN close
+is used on a descriptor that refers to a
+remote file over NFS, and that file has been modified by
+using 
+.MS write 2 , 
+then any cached 
+.PN write
+data is flushed
+before 
+.PN close
+returns. If an asynchronous
+write error has occurred previously with this remote file, or
+occurred as part of the flush operation described above,
+then 
+.PN close 
+returns \-1 and errno will be set to the
+error code. The return code from 
+.MS close 2 
+should be inspected
+by any program that can 
+.PN write
+over NFS.
+.SH Return Values
+Upon successful completion, a value of 0 is returned.
+Otherwise, a value of \-1 is returned, and the global integer variable,
+.I errno,
+is set to indicate the error.  
+.SH Diagnostics
+The
+.PN close
+system call fails under the following conditions:
+.TP 15
+[EBADF]
+\fID\fP is not an active descriptor.  
+.TP 15
+[EINTR]
+The
+.PN close
+function was interrupted by a signal.
+.PP
+If an error occurs on an
+asynchronous write over NFS, the error cannot always 
+be returned from a
+.PN write
+system call.  The error code is returned on
+.PN close
+or
+.PN fsync . 
+The following are NFS-only error messages:
+.TP 15
+[EACCESS]
+The requested address is protected, and the current user
+has inadequate permission to access it.
+.TP 15
+[ENOSPC]
+There is no free space remaining on the file system containing
+the file.
+.TP 15
+[EDQUOT]
+The user's quota of disk blocks on the file system containing
+the file has been exhausted.
+.TP 15
+[EIO]
+An I/O error occurred while reading from or writing to the file
+system.
+.TP 15
+[EROFS]
+The file is on a read-only file system.
+.TP 15
+[ESTALE]
+The
+.I fd
+argument is invalid because the file referred
+to by that file handle no longer exists or has been revoked.
+.TP
+[ETIMEDOUT]
+A write operation failed
+because the server
+did not properly respond after a period
+of time that is dependent on the
+.MS mount 8nfs
+options.
+.SH See Also
+accept(2), execve(2), fcntl(2), flock(2), fsync(2),
+open(2), pipe(2), socket(2), socketpair(2), write(2)

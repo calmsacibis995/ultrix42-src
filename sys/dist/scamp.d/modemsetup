@@ -1,0 +1,362 @@
+#!/bin/sh5
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)modemsetup	4.2	(ULTRIX)	8/5/90"
+#
+#	000	Jonathan Wallace	1-Jun-1990
+#
+#
+#	001	James C. Overman	05-Aug-1990
+#	    Moved references to /tmp to /usr/tmp 
+#	    
+########################################################################
+#
+#
+set -h
+trap 'Original_State_Routine; exit 1' 1 2 3 18
+LL="
+"
+SWITCH=$1
+TTD=$2
+TTY=`expr $TTD : '.*\([0-9]\)'`
+TTY=tty0$TTY
+MVFLG=0
+ED_ERROR="
+
+Errors occured while attempting to edit the terminal initialization
+file /etc/ttys during this procedure. A temporary error file called
+/usr/tmp/ed_errs is created to trap any errors that might occur while
+attempting to add a terminal device using this procedure. Check
+/usr/tmp/ed_errs to determine the nature of the error, and then check
+/etc/ttys to see if a valid entry was made for tty00. Refer to the
+Guide to System Environment Setup for more information about the
+terminal initialization file /etc/ttys, it's format, and description 
+of it's entries; or contact your system administrator."
+
+###################
+# SH5 Subroutines #
+###################
+#############################################################
+#
+: Error_Routine - error handler from tty_stat program
+#
+# Return Code	Meaning
+#	0	Success
+#	1	Generic Failure
+#	2	Undefined
+#	3	grep failed to find tty in /etc/ttys
+#	4	more than one tty entry in /etc/ttys
+#	5	tty entry already turned on in /etc/ttys
+#
+#############################################################
+Error_Routine()
+{
+	case $1 in
+	3 )
+		clear
+		echo "
+$PROCEDURE_NAME
+
+Line $TTD does not exist in /etc/ttys file.  Check the file for
+corruption by refering to the Guide to System Environment Setup,
+Terminal Initialization File section.  
+
+Press <RETURN> to continue: \c"
+		read resp
+		return 1
+		;;
+	4 )
+		clear
+		echo "
+$PROCEDURE_NAME
+
+$TTD is defined more than once in the /etc/ttys file.
+________________________________________________________________________________"
+		cat /usr/tmp/tty_lines
+		echo "_______________________________________________________________________________
+
+This causes unpredictable results and is unsupported by this
+procedure.  You may want to take corrective action by manually
+editing the Terminal Initialization File /etc/ttys refering to
+the Guide to System Environment Setup, Terminal Initialization
+File section, for information about it's format, and description
+of it's entries; or contact your system administrator.
+
+Press <RETURN> to continue: \c"
+		read resp
+		return 1
+		;;
+	5 )
+		TTD_ERROR=`cat /usr/tmp/tty_stat`
+		while :
+		do
+			clear
+			echo "
+$PROCEDURE_NAME
+
+Line $TTD has already been activated for the following use:
+
+	$TTD - $TTD_ERROR
+
+If you want to override the current $TTD entry in /etc/ttys
+and create a new modem line on $TTD anyway, type 'y' to the
+confirmation request below. 
+
+Do you want to override the current $TTD entry? (y/n) [n]: \c"
+			read resp
+			case $resp in
+			[Nn]* | "" )
+				return 1
+				;;
+			[Yy]* )
+				return 0
+				;;
+			* )
+				;;
+			esac
+		done
+		;;
+	* )
+		clear
+		echo "
+$PROCEDURE_NAME
+
+Line $TTD is in an unknown state.  Check the entries of line $TTD
+in /etc/ttys by refering to the Guide to System Environment Setup,
+Terminal Initialization File section.
+
+Press <RETURN> to continue: \c"
+		read resp
+		return 1
+		;;
+	esac
+
+}
+
+
+###########################################################
+: Baud_Rate_Routine - User selects type of terminal to add
+###########################################################
+Baud_Rate_Routine()
+{
+	while :
+	do
+		clear
+		echo "
+$PROCEDURE_NAME
+
+Select a baud rate below, that matches the baud
+rate of the modem you will be using:
+
+	1 - 300
+	2 - 1200
+	3 - 2400
+
+	0 - None of the above
+
+Enter your choice [3]: \c"
+		read resp
+		case $resp in
+		0 )
+			exit 0
+			;;
+		1 )
+			BAUD=300
+			break
+			;;
+		2 )
+			BAUD=1200
+			break
+			;;
+		"" | 3 )
+			BAUD=2400
+			break
+			;;
+		* )
+			;;
+		esac
+	done
+}
+
+
+#################################################
+: Modem_On_Routine - Turn on modem in ttys
+#################################################
+Modem_On_Routine()
+{
+	clear
+	echo "
+$PROCEDURE_NAME
+
+Creating modem line on $TTD.....\c"
+
+	ed - /etc/ttys <<xxEOFxx >/usr/tmp/ed_errs
+	/^$TTD/d
+	i
+$TTD	"/etc/getty std.$BAUD"	dialup	on shared secure	#modem line
+.
+	w
+	q
+xxEOFxx
+
+	if [ -s /usr/tmp/ed_errs ]
+	then
+		echo "Error creating modem line! $ED_ERROR"
+		Original_State_Routine
+	else
+		kill -1 1
+		echo "done."
+	fi
+
+	echo "${LL}Press <RETURN> to continue: \c"
+	read resp
+}
+
+
+###################################################
+: Modem_Off_Routine - Turn off terminal in ttys
+###################################################
+Modem_Off_Routine()
+{
+	clear
+	echo "
+$PROCEDURE_NAME
+
+Removing modem line on $TTD.....\c"
+
+	ed - /etc/ttys <<xxEOFxx >/usr/tmp/ed_errs
+	/^$TTD/d
+	i
+$TTD	"/etc/getty std.9600"	vt100	off shared secure	#modem line
+.
+	w
+	q
+xxEOFxx
+
+	if [ -s /usr/tmp/ed_errs ]
+	then
+		echo "Error removing modem line! $ED_ERROR"
+	else
+		kill -1 1
+		echo "done."
+	fi
+
+	echo "${LL}Press <RETURN> to continue: \c"
+	read resp
+}
+
+
+##########################################################
+: File_Check_Routine - Make sure proper files are around.
+##########################################################
+File_Check_Routine()
+{
+	if [ ! -c /dev/$TTD ]
+	then
+		if [ ! -c /dev/$TTY ]
+		then
+			clear
+			echo "
+$PROCEDURE_NAME
+
+A file consistency check was unable to locate the file '/dev/$TTD'
+which is required in order to set up or use modem lines on this
+machine.  
+
+Check the '/dev' directory to verify whether '/dev/$TTD' actually
+exists.  If it does not, refer to the MAKEDEV(8) manpage, or contact
+your system administrator.
+
+Press <RETURN> to continue: \c"
+			read resp
+			exit 1
+		else
+			MVFLG=1
+			mv /dev/$TTY /dev/$TTD
+			chmod 666 /dev/$TTD
+		fi
+	fi
+}
+
+
+###############################################################
+: Original_State_Routine - Return /dev files to previous state
+###############################################################
+Original_State_Routine()
+{
+	case $MVFLG in
+	1 )
+		mv /dev/$TTD /dev/$TTY 2>/dev/null
+		chmod 640 /dev/$TTY 2>/dev/null
+		MVFLG=0
+		;;
+	esac
+}
+
+
+###########################################################
+# MAIN PROGRAM PROCEDURE ROUTINE #
+##################################
+while :
+do
+	case $SWITCH in
+	-A )
+		PROCEDURE_NAME="*** Modem Line Creation Procedure ***"
+		tty_scan $TTD
+		case $? in
+		0 )
+			;;
+		* )
+			Error_Routine $?
+			case $? in
+			1 )
+				exit 1
+				;;
+			esac
+			;;
+		esac
+		Baud_Rate_Routine
+		File_Check_Routine
+		Modem_On_Routine
+		break
+		;;
+	-R )
+		PROCEDURE_NAME="*** Modem Line Removal Procedure ***"
+		tty_scan $TTD
+		case $? in
+		0 | 5 )
+			;;
+		* )
+			Error_Routine $?
+			case $? in
+			1 )
+				exit 1
+				;;
+			esac
+			;;
+		esac
+		Modem_Off_Routine
+		break
+		;;
+	esac
+done
+
+exit 0

@@ -1,0 +1,24 @@
+.\" SCCSID: @(#)getcwd.3f	8.1	9/11/90
+.TH getcwd 3f VAX "" Unsupported
+.SH Name
+getcwd \- get pathname of current working directory
+.SH Syntax
+.B integer function getcwd (dirname)
+.br
+.B character*(*) dirname
+.SH Description
+.NXR "getcwd subroutine (FORTRAN)"
+.NXR "working directory" "getting pathname"
+The pathname of the default directory for creating and locating files
+will be returned in
+.I dirname.
+The value of the function will
+be zero if successful; an error code otherwise.
+.SH Restrictions
+Pathnames can be no longer than MAXPATHLEN as defined in
+<sys/param.h>.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+chdir(3f), perror(3f)

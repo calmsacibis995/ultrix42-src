@@ -1,0 +1,191 @@
+.\" V4.0 source updated for V4.Titanium 
+.\"
+.\" Updated on 26.10.90 by Karen Campbell, OSCR-Europe
+.\"
+.\" Submitted for FT 9-Nov-90.
+.\"
+.\" Print this document on a PostScript printer using the command line
+.\"     tbl filename | ditroff \-Tps \-man | devps | lpr
+.\"
+.TH ln03rof 8
+.SH Name
+ln03rof, ln03rof_isolatin1, ln03rof_decmcs \- LN03R ASCII to
+PostScript translation filters
+.SH Syntax
+.B /usr/lib/lpdfilters/ln03rof [\fB\-c\fP] [\fB\-n\fP\fIlogin\fP] [\fB\-h\fP
+\fIhost\fP] [\fB\-w\fP\fIwidth\fP] [\fB\-l\fP\fInum\fP] [\fB\-i\fP\fIindent\fP]  [\fIaccounting file\fP]
+.SH Description
+The 
+.PN ln03rof
+filter translates ASCII to PostScript,
+handles the device dependencies of a PostScript printer
+and performs some accounting functions. 
+PostScript printers print documents formatted in
+the PostScript Page Description Language only.
+.NXR "translation filters"
+.PP
+The
+.PN ln03rof_isolatin1
+and
+.PN ln03rof_decmcs
+filters are alternatives to
+.PN ln03rof ,
+and affect how ASCII documents are printed.
+They cause the encoding vectors for ISO Latin1 or DEC MCS to be used
+instead of the Adobe Standard Encoding Vector described in the 
+.I "LN03R PostScript Programmers Supplement."
+The
+.PN ln03rof
+filter uses idle cycles to cache the fonts when accessed by the standard
+encoding vector.
+The cached fonts cannot be used by
+.PN ln03rof_isolatin1
+or
+.PN ln03rof_decmcs
+which means that small jobs are slowed down.
+.PP
+The 
+.PN ln03rof
+filter is transparent to documents already formatted in PostScript.  The filter
+assumes that all other documents are plain ASCII and
+translates them into PostScript. 
+The decision to translate is based on the first two characters
+in the document. If they are `\fB%!\fP',
+the filter assumes the document
+has already been formatted in PostScript.
+If the first two characters are not `\fB%!\fP', the 
+filter assumes that the document is plain ASCII and translates it into 
+PostScript.
+The 
+.PN ln03rof
+filter ensures that the printer receives documents formatted in PostScript
+only.
+The 
+.PN ln03rof
+filter maintains accounting information only for documents that it translates. 
+You specify the accounting file with the \fBaf\fR 
+field in the
+.PN /etc/printcap
+file.  For further information, see 
+.MS printcap 5 .
+.PP
+You can specify the 
+.PN ln03rof
+filter in both the \fBof\fR and the \fBif\fR fields of the
+.PN /etc/printcap
+file. The specification of the filter in the 
+.PN /etc/printcap
+file determines how the 
+.MS lpr 1
+command affects the printed document. For example: 
+.IP \(bu 4
+If you specify it in the \fBof\fP field only and do not suppress banner pages,
+the filter \fIalways\fP translates the document into PostScript.
+.IP \(bu 4
+If you specify it in the \fBif\fP field and do not suppress banner pages,
+the document does not print.  In this case, the banner is sent directly
+to the printer. Since the banner is not formatted in PostScript,
+the printer cannot print the document and aborts the job. 
+.IP \(bu 4
+If you suppress the banner by including the \fBsh\fP
+field in 
+.PN /etc/printcap
+or by printing the file using the 
+.MS lpr 1
+with the \fB\-h\fP option,
+the document prints correctly. 
+.IP \(bu 4
+You can obtain the best results by specifying the filter in both
+the \fBof\fP and \fBif\fP fields.
+.PP
+The ASCII data type for PrintServer software uses the 
+.PN ln03rof
+filter.
+For more information about how the PostScript translator is invoked, see
+.MS xlator_call 8 .
+.PP
+The filter sets a landscape print mode with a smaller font if the width is
+greater than 80 columns.
+The default width for the
+.PN :pw#:
+entry in the
+.PN /etc/printcap
+file is 132.  To print using portrait mode, modify the
+.PN /etc/printcap
+file to include the following two entries:
+.EX
+:pl#66:\\
+:pw#80:\\
+.EE
+When printing in portrait mode, if the job page length is greater than 66
+a smaller font is used.  
+.PP
+For a more detailed discussion on filters see the
+``Line Printer Spooler Manual'' in the \"TITLE_EXEMPT\"
+\fISupplementary Documents, Volume 2: Programmer\fP.
+.SH Options
+The arguments passed to the filter depend on its use.
+.PP
+The \fBof\fP filter is called with the following arguments:
+.IP \fB\-l\fIlength\fR .3i
+Specify \fIlength\fR values from the \fBpl\fP field in the
+.PN /etc/printcap
+file .
+.IP \fB\-w\fIwidth\fR .3i  
+Specify \fIwidth\fP values from the \fBpw\fP field in the
+.PN /etc/printcap
+file.
+.PP
+The \fBif\fP filter is passed the following arguments:
+.IP \fB\-c\fR .3i
+Print control characters when you use the \fB\-l\fP option of 
+.MS lpr 1
+to print the file. 
+(Optional flag).
+.IP \fB\-h\fIhost\fR .3i
+Specify the host name of the job owner. 
+(Used to record accounting information).  
+.IP \fB\-i\fIindent\fR .3i
+Specify the amount of indentation to be used. 
+The last argument is the name of the accounting file 
+specified from the \fBaf\fP field in the 
+.PN /etc/printcap
+file. 
+.IP \fB\-l\fIlength\fR .3i 
+Specify \fIlength\fR value from the \fBpl\fR field in the
+.PN /etc/printcap
+file as it does with the \fBof\fR filter.
+Arguments may have different values if the \fB\-w\fP and/or
+\fB\-z\fP options of 
+.MS lpr 1
+were used to print the file. 
+.IP \fB\-n\fIlogin\fR .3i 
+Specify the login name of the job owner.
+(Used to record accounting information).
+.IP \fB\-w\fIwidth\fR .3i
+Specify \fIwidth\fR value from the \fBpw\fR field in the 
+.PN /etc/printcap
+file as it does with the \fBof\fR filter.
+Arguments may have different values if the \fB\-w\fP and/or
+\fB\-z\fP options of
+.MS lpr 1
+were used to print the file.
+These arguments only affect documents that are translated from ASCII 
+to PostScript.
+.SH Diagnostics
+The \fBlf\fP field (default /dev/null) in the 
+.PN /etc/printcap
+file specifies the error 
+logging file name.
+.SH Files
+.TP 15
+.PN /etc/printcap
+Printer capabilities database.
+.TP
+.PN /usr/lib/lpdfilters/xlator_call
+Shell script to invoke PostScript translators.
+.SH See Also
+lpr(1), pr(1), printcap(5), lpd(8), MAKEDEV(8), pac(8), xlator_call(8)
+.br
+"Line Printer Spooler Manual", \"TITLE_EXEMPT\"
+\fISupplementary Documents, Volume 2: Programmer\fP

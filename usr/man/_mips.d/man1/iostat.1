@@ -1,0 +1,74 @@
+.\" SCCSID: @(#)iostat.1	6.4	8/29/89
+.TH iostat 1
+.SH Name
+iostat \- report I/O statistics
+.SH Syntax
+.B iostat
+[
+.B \-c
+] [
+.B \-t 
+] [ \fIdisknames\fR\ ] [ \fIinterval\fR\ ] [ \fIcount\fR\ ]
+.SH Description
+.NXR "iostat command"
+.NXR "I/O statistics" "reporting"
+.NXR "terminal" "reporting I/O statistics"
+.NXR "disk" "reporting I/O statistics"
+.NXA "iostat command" "netstat command"
+.NXA "iostat command" "vmstat command"
+.NXA "I/O statistics" "terminal"
+.NXA "I/O statistics" "disk"
+The
+.PN iostat
+command reports I/O statistics for terminals, disks and cpus.  For terminals
+the number of input and output characters are counted.  
+For disks the number
+of 512 byte blocks per second and number of transfers per second are displayed.
+For cpus, it provides the percentage of time the system has
+spent in user mode, in user mode running low priority (niced) processes,
+in system mode, and idling.  On multiprocessor systems these cpu statistics
+represent a cumulative summary of all the cpus.
+.PP
+The optional
+.I disknames
+argument causes disk statistics to be displayed for the specified disks.
+If this argument is not specified then disk statistics will be displayed
+for the first 3 disks only.
+.PP
+The optional
+.I interval
+argument causes
+.PN iostat
+to report once each
+.I interval
+seconds.
+The first report is for all time since a reboot and each
+subsequent report is for the last interval only.
+.PP
+The optional
+.I count
+argument restricts the number of reports.
+.SH Options
+.IP \-c 5
+Displays the percentage of time each cpu spent in user mode,
+running low priority (nice'd) processes, in system mode, and
+idling.
+.IP \-t
+Displays the number of characters read from and written to terminals.
+.SH Examples
+This example will cause cpu and disk statistics for the 5 disks ra0, ra1, 
+ra2, ra3, and ra4.
+.EX
+     iostat ra0 ra1 ra2 ra3 ra4 
+.EE
+This example will cause cpu, terminal, and disk statistics for ra0 to be
+displayed and updated every 2 seconds.
+.EX
+     iostat \-t ra0 2
+.EE
+.SH Files
+.PN /dev/kmem
+.br
+.PN /vmunix
+.SH See Also
+vmstat(1), cpustat(1)

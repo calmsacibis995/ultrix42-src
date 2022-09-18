@@ -1,0 +1,208 @@
+.\" SCCSID: @(#)date.1	3.2	9/7/88
+.TH date 1
+.SH Name
+date \- print date and time
+.SH Syntax
+.B date
+[\-c | \-u] [ \fB+\fPformat ] [[yy[mm[dd]]]hhmm[.ss][\-[\-]tttt][z]]
+.SH Description
+.NXR "date command"
+.NXR "time command" "printing"
+.NXR "time" "setting"
+.NXR "date" "printing"
+.NXR "date" "setting"
+If no argument is given,
+or if the argument begins with \fB+\fP,
+the current date and time are printed.
+Otherwise, the current date is set.
+The first
+.I mm
+is the month number;\fR
+.I dd
+is the day number in the month;\fR
+.I hh
+is the hour number (24 hour clock);\fR
+the second
+.I mm
+is the minute number;\fR
+.I .ss
+the second;\fR
+-[-]\fItttt\fR
+is the minutes west of Greenwich;\fR
+a positive number means your time zone is west of Greenwich
+(for example, North and South America)
+and a negative number means it is east of Greenwich (for
+example Europe);
+.I z
+is a one letter code indicating the dst correction mode
+(n=none, u=usa, a=australian, w=western europe, m=middle europe,
+e=eastern europe);
+.I yy
+is the last 2 digits of the year number and is optional.
+The following example sets the date to Oct 8, 12:45 \s-1AM\s+1:
+.EX
+date\| 10080045
+.EE
+The current year is the default if no year is mentioned.
+The system operates in \s-1GMT\s0.
+The
+.PN date
+takes care of the conversion to and from
+local standard and daylight time.
+.PP
+If the argument begins with \fB+\fP,
+the output of
+.PN date
+is under the control of the user.
+The format for the output is similar to that of
+the first argument to
+.MS printf 3s .
+All output fields are of fixed size (zero padded
+if necessary).
+Each field descriptor is preceded by \fB%\fP
+and is replaced in the output by
+its corresponding value.
+A single \fB%\fP is encoded by \fB%%\fP.
+All other
+characters are copied to the output without change.
+The string is always terminated with a new-line character.
+.SH Options
+.TP
+.B \-c
+Perform operations using Coordinated Universal Time (UCT) instead
+of the default local time. The UCT does not use leap seconds so
+UCT is the same as GMT.
+.TP
+.B \-u
+Perform operations using Greenwich Mean Time (GMT) instead of the
+default local time.
+.TP
+.B + \fIformat\fR
+The following is a list of field Descriptors that can be used in the
+format (Note: date exits after processing format information) :
+.NXR "date command" "field descriptors"
+.RS 10
+.TP 5
+.B %a
+Locale's abbreviated weekday name
+.TP 
+.B %A
+Locale's full weekday name
+.TP 
+.B %b
+Locale's abbreviated month name
+.TP 
+.B %B
+Locale's full month name
+.TP 
+.B %c
+Locale's date and time representation
+.TP 
+.B %d
+Day of month as a decimal number (01\-31)
+.TP 
+.B %D
+Date (%m/%d/%y)
+.TP 
+.B %h
+Locale's abbreviated month name
+.TP 
+.B %H
+Hour as a decimal number (00\-23)
+.TP 
+.B %I
+Hour as a decimal number (01\-12)
+.TP 
+.B %j
+Day of year (001\-366)
+.TP 
+.B %m
+Number of month (01\-12)
+.TP 
+.B %M
+Minute number (00\-59)
+.TP 
+.B %n
+Newline character
+.TP 
+.B %p
+Locale's equivalent to AM or PM
+.TP 
+.B %r
+Time in AM/PM notation
+.TP 
+.B %S
+Second number (00\-59)
+.TP 
+.B %t
+Tab character
+.TP 
+.B %T
+Time (%H/%M/%S)
+.TP 
+.B %U
+Week number (00\-53), Sunday as first day of week
+.TP 
+.B %w
+Weekday number (0[Sunday]\-6)
+.TP 
+.B %W
+Week number (00\-53), Monday as first day of week
+.TP 
+.B %x
+Locale's date representation
+.TP 
+.B %X
+Locale's time representation
+.TP 
+.B %y
+Year without century (00\-99)
+.TP 
+.B %Y
+Year with century
+.TP 
+.B %Z
+Timezone name, no characters if no timezone
+.TP 
+.B %%
+%
+.RE
+.SH Examples
+.NXR(e) "date command"
+The following command line
+.EX
+date\| +%m/%d/%y
+.EE
+generates the following output
+.EX
+04/02/89
+.EE
+The following command line
+.EX
+date\| +"DATE: %m/%d/%y%nTIME: %H:%M:%S"
+.EE
+generates the following output
+.EX
+DATE: 04/02/89
+.br
+TIME: 14:45:05
+.EE
+The quotes (") are necessary because the \fIformat\fR contains blank
+characters. Use single quotes (') to prevent interpretation by the
+shell.
+.SH Diagnostics
+.NXR(c) "date command" "diagnostics"
+.TP .5i
+.B "Failed to set date: Not owner"
+You are not the super-user and you tryed to change the date.
+.NT CAUTION	 
+.NXR(c) "date command" "multiuser mode and"
+Do not change the date while the system is
+running in multiuser mode.
+.NE
+.SH Restrictions
+An attempt to set a date to before 1/1/1970 will result in 
+the date being set to 1/1/1970.
+.SH Files
+/dev/kmem
+

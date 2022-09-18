@@ -1,0 +1,337 @@
+.TH folder 1mh
+.SH Name
+folder \- set folder or display current folder name
+.SH Syntax
+.NXR "folder command"
+.NXR "Setting current folder"
+.B folder
+[
+.I +folder
+] [
+.I msg
+] [
+.I options
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+The 
+.PN folder
+command lets you set the current folder,
+or display information about it.
+It can also be used to manage the folder stack.  
+.PP
+If you use the
+.PN folder 
+command without a 
+.I +folder
+argument, information about the current folder
+is displayed on the screen.
+If you use 
+.PN folder 
+with the 
+.I +folder
+argument, the named folder
+is set to be the current folder.  
+Information about the named folder
+is also displayed on the screen.
+.PP
+If you use
+.PN folder
+with the 
+.I msg
+argument, it will set the specified message to be current.
+Information on the current folder is also displayed.
+You can use both the 
+.I +folder
+and
+.I msg
+arguments together in one command.
+.PP
+If you specify a 
+.I +folder
+that does not exist, you are asked 
+whether you want to create it.  
+This is a good way to create an empty folder for later use.  
+.PP
+The display is identical whether you set the folder 
+or display the contents of the current folder.  
+The following example shows the type of display that is produced.  
+The display lists the current folder, 
+the number of messages in it, 
+the range of the messages (low-high), 
+and the current message within the folder. 
+It also flags extra files if they exist.
+.EX
+                 inbox+ has   16 messages (   3-  22); cur=  15.
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-all" 10
+Displays information on all the folders in your Mail directory.
+The folders are listed alphabetically,
+with a line of information given for each folder.
+This is identical to the display produced by the
+.PN folders
+command.
+See
+.MS folders 1mh .
+.\"
+.IP "\-fast" 10
+.PD 0
+.IP "\-nofast"
+.PD
+Lists only the name of the current folder,
+with no additional information.
+This is faster because the folders need not be read.
+.\"
+.IP "\-header" 10
+.PD 0
+.IP "\-noheader" 10
+.PD
+Displays a header produced by the system, 
+in addition to the information about the current file.
+This header is identical to the one that appears
+at the top of the listing produced by
+.PN "folder -all"
+or by
+.PN folders .
+The header can be suppressed by using the
+.B \-noheader
+option.
+.\"
+.IP "\-help" 10
+Prints a list of the valid options to this command.
+.\"
+.IP "\-list" 10
+.PD 0
+.IP "\-nolist" 10
+.PD
+Lists the contents of the folder-stack.
+No 
+.I +folder
+argument is allowed with this option.
+The contents of the folder-stack are listed automatically
+when the
+.B \-pop
+or 
+.B \-push 
+option is used.
+This corresponds to the 
+.PN dirs
+operation in the C-shell.
+.\"
+.IP "\-pack" 10
+.PD 0
+.IP "\-nopack"
+.PD
+Re-numbers messages in the folder.
+Messages are re-numbered sequentially, 
+and any gaps in the numbering are removed.
+The default operation is
+\fB\-nopack\fR,
+which does not change the numbering in the folder.
+.\"
+.IP "\-pop" 10
+Discards the top of the folder-stack,
+after setting the current folder to that value.
+No 
+.I +folder
+argument is allowed with this option.
+This corresponds to the 
+.PN popd
+operation in the C-shell;
+see 
+.MS csh 1 .
+The 
+.B \-push
+and
+.B \-pop
+options are mutually exclusive:
+the last occurrence of either one overrides 
+any previous occurrence of the other.
+.\"
+.\"
+.\" *** -print option commented out
+.\" *** no information on it at this time
+.ig
+.IP "\-print" 10
+.PD 0
+.IP "\-noprint" 10
+.PD
+..
+.\"
+.IP "\-push" 10
+Pushes the current folder onto the folder-stack,
+and makes the 
+.I +folder
+argument into the current folder.
+If 
+.I +folder
+is not given, the current folder 
+and the top of the folder-stack are exchanged.
+This corresponds to the 
+.PN pushd
+operation in the C-shell; see 
+.MS csh 1 .
+The
+.B \-push
+switch and the
+.B \-pop
+switch are mutually exclusive:
+the last occurrence of either one overrides any previous occurrence of the
+other.
+.\"
+.IP "\-recurse" 10
+.PD 0
+.IP "\-norecurse" 10
+.PD
+Lists each folder recursively.
+Information on the current folder is displayed,
+followed by information on any sub-folders which it contains.
+.\"
+.IP "\-total" 10
+.PD 0
+.IP "\-nototal" 10
+.PD
+Displays only the total number of messages and folders
+in your Mail directory.
+This option does not print any information about the current folder.
+It can be suppressed using the 
+.B \-nototal
+option.
+.\"
+.\"
+.\"
+.PP
+The defaults for
+.PN folder
+are:
+.IP
+.I +folder
+defaults to the current folder
+.br
+.I msg
+defaults to none
+.br
+.B \-nofast
+.br
+.B \-noheader
+.br
+.B \-nototal
+.br
+.B \-nopack
+.br
+.B \-norecurse
+.\"
+.\"
+.\" *** -print option commented out
+.ig
+.br
+.B \-print
+is the default if
+.B \-list ,
+.B \-push
+or 
+.B \-pop
+are specified.
+..
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+The following example shows how 
+.PN folder
+can be used to change the current folder to
+.PN +test ,
+and display information on that folder.
+The plus sign (\f(CW+\fR) next to 
+.PN test
+indicates that it is now the current folder.
+.EX
+% \f(CBfolder +test\f(CW
+                  test+ has    2 messages (   1-   2); cur=   2.
+.EE
+.PP
+The next example shows the display produced by using the
+.B "\-all"
+option to
+.PN folder :
+.EX
+  Folder      # of messages (  range  ); cur  msg  (other files)
+    V2.3  has    3 messages (   1-   3).
+  adrian  has   20 messages (   1-  20); cur=   2.
+   brian  has   16 messages (   1-  16).
+   chris  has   12 messages (   1-  12).
+ copylog  has  242 messages (   1- 242); cur= 225.
+   inbox+ has   73 messages (   1- 127); cur= 127.
+     int  has    4 messages (   1-   4); cur=   2  (others).
+    jack  has   17 messages (   1-  17); cur=  17.
+
+
+             TOTAL= 387 messages in 8 folders.
+.EE
+.PP
+This display is identical to that produced by the
+.PN folders
+command.
+See
+.MS folders 1mh
+for an explanation of this display.
+.PP
+The next example shows how to use
+.PN folder 
+to create an empty folder:
+.EX
+% \f(CBfolder +test\f(CW
+Create folder "$HOME/Mail/test"? \f(CBy\f(CW
+          test+ has no messages.
+.EE
+.PP
+You can also use
+.PN folder 
+to create an empty sub-folder within an existing folder.
+The following example shows how you can create a sub-folder in the folder 
+.PN +test :
+.EX
+% \f(CBfolder +test/testtwo\f(CW
+Create folder "$HOME/Mail/test/testwo"? \f(CBy\f(CW
+          test/testtwo+ has no messages.
+.EE
+See
+.MS refile 1mh
+for more details of sub-folders.
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/\&.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine your MH directory
+Current-Folder:+To find the default current folder
+Folder-Protect:+To set mode when creating a new folder
+Folder-Stack:+To determine the folder stack
+lsproc:+Program to list the contents of a folder
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+csh(1), refile(1mh), mhpath(1mh)

@@ -1,0 +1,58 @@
+.TH ldfhread 3x RISC
+.SH Name
+ldfhread \- read the file header of a common object file
+.SH Syntax
+.nf
+.ta \w'LDFILE\ \ \ 'u
+.B #include <stdio.h>
+.ie '\*p'' \{\
+.B #include <filehdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h>
+\}
+.el \{\
+.B #include "\s-1INCDIR\s+1\/filehdr.h"
+.B #include "\s-1INCDIR\s+1\/syms.h"
+.B #include "\s-1INCDIR\s+1\/ldfcn.h"
+\}
+.PP
+.BR "int ldfhread (" "ldptr, filehead" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR "\s-1FILHDR\s+1 \(**" filehead ;
+.fi
+.DT
+.SH Description
+The 
+.PN ldfhread
+function
+reads the file header of the common object file 
+currently associated with
+.I ldptr .
+It reads the file header
+into the area of memory beginning at
+.IR filehead .
+.PP
+The
+.PN ldfhread
+function
+.RB "returns " \s-1success \s+1 " or " \s-1failure\s+1 .
+If \fIldfhread\fR cannot read the file header, 
+it fails.
+.PP
+Usually,
+.PN ldfhread
+can be avoided by using the macro
+.BI \s-1HEADER\s+1\*S( ldptr )
+defined in
+.B <ldfcn.h>
+see 
+.MS ldfcn 5 ).
+Note that the information in HEADER is swapped, if necessary.
+The information in any field,
+.IR fieldname ,
+of the file header can be accessed using
+.SM
+.BI HEADER\*S( ldptr ). fieldname\c
+\&.
+.SH See Also
+intro(3x), ldclose(3x), ldopen(3x), ldfcn(5).

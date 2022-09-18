@@ -1,0 +1,163 @@
+.TH odump 1 RISC
+.SH Name
+odump \- dumps selected parts of an object file
+.SH Syntax
+.B odump
+[ \fIoptions\fP ]
+.IR file ...
+.SH Description
+The
+.PN odump
+command
+dumps selected parts of each
+object \fIfile\fP.  This command works for object files and
+archives of object files.
+.SH Options
+The following options are available with the 
+.PN odump
+command:
+.TP \w'\fB\-d~number~~'u
+.B \-a
+Dumps the archive header for each member of the specified archive file.
+.TP
+.B \-f
+Dumps each file header.
+.TP
+.B \-g
+Dumps the global symbols from the symbol table of a
+RISC archive.
+.TP
+.B \-o
+Dumps each optional header.
+.TP
+.B \-h
+Dumps section headers.
+.TP
+.B \-i
+Dumps the symbolic information header.
+.TP
+.B \-s
+Dumps section contents.
+.TP
+.B \-r
+Dumps relocation information.
+.TP
+.B \-l
+Dumps line number information.
+.TP
+.B \-t
+Dumps symbol table entries.
+.TP
+.BI \-z name
+Dumps line number entries for the specified function \fIname\fR.
+.TP
+.BR \-c
+Dumps the string table.
+.TP
+.BR \-L
+Interpret and print the contents of the
+.I .lib
+sections.
+.TP
+.BR \-F
+Dumps the file descriptor table.
+.TP
+.BR \-P
+Dumps the procedure descriptor table.
+.TP
+.BR \-R
+Dumps the relative file index table.
+.PP
+The 
+.PN odump
+command accepts these modifiers with the options:
+.TP \w'\fB\-d~number~~'u
+.BI \-d \|number
+Dumps the section number or a range of sections starting at \fInumber\fP
+and ending either at the last section number or the \fInumber\fR 
+you specify with
+.BR +d.
+.TP
+.BI +d \|number
+Dumps sections in the range beginning with the
+first section or beginning
+with the section you specify with \fB\-d\fP.
+.TP
+.BI \-n \|name
+Dumps information only about the specified \fIname\fR.
+This
+modifier
+works with
+.BR \-h ,
+.BR \-s ,
+.BR \-r ,
+.BR \-l ,
+and 
+.BR \-t.
+.TP
+.BR \-p
+Does not print headers
+.TP
+.BI \-t \|index
+Dumps only the indexed symbol table entry. 
+You can also specify a range of symbol table entries by using the modifier
+.B \-t
+with the 
+.BR +t
+option. 
+.TP
+.BI +t \|index
+Dumps the symbol table entries in the specified range.   
+The range begins at the first symbol table entry or at the entry
+specified by
+.B \-t.
+The range ends with the specified indexed entry.
+.TP
+.B \-u
+Underlines the name of the file for emphasis.
+.TP
+.B \-v
+Dumps information symbolically rather than numerically (for example, 
+.SM Static
+rather than
+.BR "\s-10X02\s+1 )".
+You can use 
+.B \-v
+with all the options 
+except
+.B \-s.
+.TP
+.BI \-z \|name,number
+Dumps the specified line number entry or a range of line numbers.  The
+range starts at the
+.I number
+for the named function.
+.TP
+.BI \+z \|number
+Dumps line numbers for a specified range.  The range 
+starts at either the 
+.IR name " or " number
+specified 
+by 
+.BR \-z
+The range ends with the 
+.I number
+specified by
+.BR \+z .
+.PP
+Also, an option and its modifier can be separated by using 
+blanks.
+The name can be separated from the number that 
+modifies
+.B \-z
+by replacing the comma with a blank.
+.PP
+The
+.PN odump
+command 
+tries to format information in a helpful way,
+printing information in character,
+hexadecimal, octal, or decimal as appropriate.
+.SH See Also
+a.out(5), ar(5)
+.tr ~~

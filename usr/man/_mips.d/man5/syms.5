@@ -1,0 +1,69 @@
+.TH syms 5 RISC
+.SH Name
+syms \- MIPS symbol table
+.SH Syntax
+.B "#include < sym.h>"
+.br
+.B "#include < symconst.h>"
+.SH Description
+Unlike the COFF symbol table, the MIPS symbol table consists of
+many tables unbundling information.  The symbol table should be 
+viewed as a network-style database designed for space and access efficiency.
+.NXR "symbol table"
+.PP
+The following structures or tables appear in the MIPS symbol table:
+.TP 25
+\fBTABLE\fR
+\fBCONTENTS\fR
+.TP 25
+Symbolic header	
+Sizes and locations of all other tables
+.TP 25
+File descriptors
+Per file locations for other tables
+.TP 25
+Procedure descriptors	
+Frame information and location of procedure info
+.TP 25
+Local symbols	
+Local type, local variable, and scoping info
+.TP 25
+Local strings	
+String space for local symbols
+.TP 25
+Line numbers	
+Compacted by encoding, contains a line per instruction
+.TP 25
+Relative file descriptors	
+Indirection for interfile symbol access
+.TP 25
+Optimization symbols	
+To be defined
+.TP 25
+Auxiliary symbols	
+Variable data type information for each local symbol
+.TP 25
+External symbols	
+Loader symbols (global text and data)
+.TP 25
+External strings	
+String space for external symbols
+.TP 25
+Dense numbers	
+Index pairs (file, symbol) for compiler use
+.PP
+External and local symbols contain the standard concept of a symbol as
+follows:
+.EX
+struct
+{
+	long	iss;	/* index into string space */
+	long	value;	/* address, size, etc., depends on sc and st */
+	unsigned	st: 6;	/* symbol type (e.g. local, param, etc.) */
+	unsigned	sc: 5;	/* storage class (e.g. text, bss, etc.) */
+	unsigned	reserved: 1;
+	unsigned	index;	/* index to symbol or auxiliary tables */
+};
+.EE
+.SH See Also
+ldfcn(5)

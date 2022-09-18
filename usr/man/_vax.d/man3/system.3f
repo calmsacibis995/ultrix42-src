@@ -1,0 +1,38 @@
+.\" SCCSID: @(#)system.3f	8.1	9/11/90
+.TH system 3f VAX "" Unsupported
+.SH Name
+system \- execute an ULTRIX command
+.SH Syntax
+.B integer function system (string)
+.br
+.B character*(*) string
+.SH Description
+.NXR "system subroutine (FORTRAN)"
+.NXR "shell command" "issuing"
+The
+.PN system
+routine causes
+.I string
+to be given to your shell
+as input as if the string had been typed as a command.
+If environment variable SHELL
+is found, its value will be used as the command interpreter (shell);
+otherwise 
+.MS sh 1
+is used.
+.PP
+The current process waits until the command terminates.
+The returned value will be the exit status of the shell.
+See 
+.MS wait 2
+for an explanation of this value.
+.SH Restrictions
+The
+.I string
+cannot be longer than NCARGS\_R50 characters, as defined in
+<sys/param.h>.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+execve(2), wait(2), system(3)

@@ -1,0 +1,77 @@
+.TH rpc_clear_binding 3ncs
+.SH Name
+rpc_clear_binding \- unset the binding of an RPC handle to a host and
+server (client only)
+.SH Syntax
+.nf
+#include <idl/c/rpc.h>
+
+void rpc_$clear_binding(\fIhandle, status\fP)
+handle_t \fIhandle\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$clear_binding(\fR
+.\"	\fBin \fIhandle\fB: handle_t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP
+\fIhandle\fR
+The RPC handle whose binding is being cleared.
+.TP
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$clear_binding
+routine removes any association between an RPC handle and a particular 
+server and host, but it does not remove the association between the handle
+and an object.  This routine saves the RPC handle so that it can be reused
+to access the same object, either by broadcasting or after resetting
+the binding to another server.
+.NXR "Interface to the Remote Procedure Call" "rpc_clear_binding"
+.PP
+A remote procedure call made using an unbound handle
+is broadcast to all Local Location Brokers (LLBs) on the local network.
+If the call's interface and the object identified by the handle
+are both registered with any LLB,
+that LLB forwards the request to the registering server.
+The client RPC runtime library returns the first response that it receives
+and binds the handle to the first server that responded.
+.PP
+The 
+.PN rpc_$clear_binding
+routine is the inverse of the 
+.PN rpc_$set_binding
+routine.
+.SH Examples
+Clear the binding represented in \fIhandle\fR:
+.EX
+rpc_$clear_binding (handle, &status);
+.EE
+.SH Diagnostics
+This section lists status codes for errors returned by this
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs), rpc_bind(3ncs), rpc_clear_server_binding(3ncs), rpc_set_binding(3ncs)

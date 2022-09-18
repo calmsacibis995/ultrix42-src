@@ -1,0 +1,38 @@
+.\" SCCSID: @(#)sleep.1	8.1	9/11/90
+.\" SCCSID: @(#)sleep.1	8.1	9/11/90
+.TH sleep 1 
+.SH Name
+sleep \- suspend execution for a time
+.SH Syntax
+.B sleep
+\fItime\fR
+.SH Description
+.NXR "sleep command"
+.NXR "process" "suspending"
+The
+.PN sleep
+command suspends execution for
+.I time
+seconds.
+It is used to execute a command after a certain amount of time as in:
+.EX
+	(sleep 105; command)&
+.EE
+or to execute a command every so often, as in:
+.EX
+	while true
+
+	do
+
+		command
+
+		sleep 37
+
+	done
+.EE
+.SH Restrictions
+The
+.I time
+must be less than 2,147,483,647 seconds.
+.SH See Also
+setitimer(2), alarm(3), sleep(3)

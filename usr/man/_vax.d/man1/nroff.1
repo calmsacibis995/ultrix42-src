@@ -1,0 +1,126 @@
+.\" SCCSID: @(#)nroff.1	8.1	9/11/90
+.TH nroff 1
+.SH Name
+nroff \- format text
+.SH Syntax
+.B nroff
+[\|\fIoption...\fR\|] [\|\fIfile...\fR\|]
+.SH Description
+.NXR "nroff text processor"
+.NXAM "nroff text processor" "tk command"
+.NXAM "nroff text processor" "*roff text processor"
+.NXR "text processor" "for monospace output"
+The
+.PN nroff
+command formats text in the named
+.I files
+for typewriter-like devices.  For further information, see the
+appropriate *roff reference pages.
+The full capabilities of
+.PN nroff
+are described in the 
+"Nroff/Troff User's Manual" found in the
+\fISupplementary Documents, Volume 1: General User\fP.
+.PP
+If no
+.I file
+argument is present, the standard input is read.
+An argument consisting of a single minus
+.RB ( \- )
+is taken to be a file name corresponding to the standard input.
+.SH Options
+.NXR "nroff text processor" "options"
+The options, which may appear in any order so long as they appear
+before the files, are:
+.TP 12
+.BI \-o list
+Print only pages whose page numbers appear in the comma-separated
+.I list
+of numbers and ranges.  A range
+.IB N \- M
+means pages
+.I N
+through
+.IR M ;
+an initial
+.I \-N
+means from the beginning to page
+.IR N ;
+and a final
+.IR
+.IB N \-
+means from
+.I N
+to the end.
+.TP
+.BI \-n N
+Number first generated page
+.IR N .
+.TP
+.BI \-s N
+Stop every
+.I N
+pages.
+The
+.PN nroff
+command halts prior to every
+.I N
+pages (default
+.IR N =1)
+to allow paper loading or changing, and resumes upon
+receipt of a new line.
+.TP
+.BI \-m name
+Prepend the macro file
+.PN /usr/lib/tmac/tmac.name
+to the input
+.IR files .
+.TP
+.BI \-r aN
+Set register
+.I a
+(one-character) to
+.IR N .
+.TP
+.B \-i
+Read standard input after the input files are exhausted.
+.TP
+.B \-q
+Invoke the simultaneous input-output mode of the
+.B rd
+request.
+.TP
+.BI \-T name
+Prepare output for specified terminal.  Known
+.I names
+are the
+.I tabname
+files in 
+.PN /usr/lib/term .
+The 
+default name is tab37 for the Teletype Corporation Model 37 terminal.
+.TP
+.B \-e
+Produce equally-spaced words in adjusted lines,
+using full terminal resolution.
+.TP
+.B \-h
+Use output tabs during horizontal spacing
+to speed output and reduce output character count.
+Tab settings are assumed to be every 8 nominal character widths.
+.SH Files
+.ta \w'/usr/lib/tmac/tmac.*  'u
+/tmp/ta*	temporary file
+.br
+/usr/lib/tmac/tmac.*	standard macro files
+.br
+/usr/lib/term/*	terminal driving tables for
+.PN nroff
+.br
+.SH See Also
+col(1), tbl(1), term(5), man(7), me(7), ms(7), term(7)
+.br
+\fIThe Big Gray Book: The Next Step with ULTRIX\fP
+.br
+"Nroff/Troff User's Manual" and "A TROFF Tutorial" in the
+\fISupplementary Documents, Volume 1: General User\fP

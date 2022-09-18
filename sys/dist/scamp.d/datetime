@@ -1,0 +1,153 @@
+#!/bin/sh5
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)datetime	4.1	(ULTRIX)	7/27/90"
+#
+#	000	Jonathan Wallace	1-Jun-1990
+#
+########################################################################
+#
+#
+LL="
+"
+trap 'exit' 1 2 3 18
+
+: Check_Date_Routine
+Check_Date_Routine()
+{
+	DATETIME=$1
+	DATE=`expr $DATETIME : '\([0-9][0-9][0-9][0-9][0-9][0-9]\)'`
+	YY=`expr $DATE : '\([0-9][0-9]\)'`
+	MM=`expr $DATE : '[0-9][0-9]\([0-9][0-9]\)'`
+	DD=`expr $DATE : '.*\([0-9][0-9]\)'`
+	TIME=`expr $DATETIME : '.*\([0-9][0-9][0-9][0-9]\)'`
+	HH=`expr $TIME : '\([0-9][0-9]\)'`
+	MI=`expr $TIME : '[0-9][0-9]\([0-9][0-9]\)'`
+	CYEAR=`date +%y`
+	set Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+	shift `expr $MM - 1`
+	MMM=$1
+
+	if [ $YY -lt 70 ]
+	then
+		clear
+		echo
+		echo "Sorry, you cannot enter any date earlier than 1970."
+		return 1
+	fi
+
+	case $YY in
+	$CYEAR )
+		;;
+	* )
+		clear
+		echo "
+*** DATE AND TIME SPECIFICATION ***
+
+Warning:  Making date and time changes of more than a few minutes using
+this utility is not recommended.  For making large date and time changes,
+it is recommended that you shut down the system to single user mode, and
+then use the date (8) command to make the actual date/time change.
+
+Press <RETURN> to continue: \c"
+		read resp
+		clear
+		return 1
+		;;
+	esac
+}
+
+
+clear
+while : true
+do
+	echo "
+*** DATE AND TIME SPECIFICATION ***
+
+The current system date and time is `date`.
+
+
+The date and time should be specified using the following format:
+
+	yymmddhhmm
+
+Use two digits for year (yy), month (mm), day (dd), hour (hh), and
+minute (mm).  Enter the time in 24-hour format.  For example, 11:30
+p.m. on May 3, 1990 would be entered as:
+
+	9005032330
+
+Enter the date and time: \c"
+	read tnc
+	case $tnc in
+	T) 	
+		echo "
+The system date and time is now set to `date`.
+Is this correct? (y/n) [y]: \c"
+		read resp
+		case $resp in
+		"" | [Yy]* )
+			break
+			;;
+		* )
+			clear
+			;;
+		esac
+   		;;
+	"")
+		clear
+   		;;
+	[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9])
+		Check_Date_Routine $tnc
+		case $? in
+		1 )
+			continue
+			;;
+		esac
+		date $tnc > /dev/null 
+ 		case $? in 
+ 		0 )
+			echo "
+The system date and time is now set to `date`.
+Is this correct? (y/n) [y]: \c"
+			read resp
+			case $resp in
+			"" | [Yy]* )
+				break
+				;;
+			* )
+				clear
+				;;
+			esac
+			;;
+ 		* )
+			clear
+			echo "${LL}Sorry, '${tnc}', is not a valid date entry."
+			;;
+ 		esac
+  		;;
+	* )
+		clear
+		echo "${LL}Sorry, '${tnc}', is not a valid date entry."
+		;;
+	esac
+done
+

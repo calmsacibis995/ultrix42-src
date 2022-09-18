@@ -1,0 +1,159 @@
+.\" SCCSID: @(#)mount.8ufs	8.3	2/26/91
+.TH mount 8ufs
+.SH Name
+mount \- mount the local ULTRIX File System (UFS)
+.SH Syntax
+.B "/etc/mount [ \-t ufs \-r ] ["
+.I options
+.B ]
+.I device directory
+.SH Description
+.NXR "mount command"
+.NXR "ufs_mount command"
+.NXR "UFS" "mounting"
+The
+.MS mount 8ufs
+command announces to the system that a file system
+is present on the device
+.I device.
+The specified device must be a local device.
+The file
+.I directory
+must exist and it must be a directory.
+It becomes the name of the newly mounted file system.
+.PP
+.\" If invoked with \fB\-p\fP,
+.\" .PN ufs_mount
+.\" prints the list of mounted file systems reading standard input
+.\" for \fIstruct fs_data\fP records output from the
+.\" .I getmnt()
+.\" system call.  This option is used by the mount(8) command.
+.\" .PP
+.PP
+To further protect from system crashes,
+only file systems that have
+been cleanly checked by
+.MS fsck 8
+are mounted.
+In emergency situations,
+the superuser can override this requirement by using the
+.PN force
+option as shown below.
+.PP
+General users can mount file systems with certain restrictions
+in addition to those listed in
+.MS mount 8 .
+The file system must have the clean byte set.
+To ensure the clean byte is set,
+run the
+.MS fsck 8
+command on the file system first.
+You can also try the mount and if it fails,
+then run
+.PN fsck
+and then try the mount again.
+.PP
+Note that the user must have execute permissions on the device.
+.PP
+A successful ufs-mount may generate the following warning message:
+.EX
+"Warning, device has exceeded xxx threshold, fsck(8) is advised"
+.EE
+where xxx is which metric was exceeded to cause the clean byte 
+timeout factor to reach zero. See 
+.MS fsck 8
+for an explanation of the timeout algorithm.
+.PP
+Physically write-protected disks and magnetic tape file
+systems must be mounted read only
+or an error will occur at mount time.
+.SH Options
+See the 
+.MS mount 8 
+reference page for a description of the \fB\-t\fR option.
+.IP "\fB\-o \fIoptions\fR" 12
+Specifies 
+.I options
+as a sequence of comma-separated words from the list below.
+.RS
+.IP \fBforce\fR 14
+The superuser can force the mounting of unclean file systems.
+You should use the
+.PN force
+flag only in single-user mode when repairing
+or recovering damaged file systems.
+.IP \fBnodev\fR
+Block and character special devices
+cannot be accessed from this file system. If you are concerned with
+nfs security, all ufs file systems that will be exported via nfs should
+be ufs mounted with the 
+.PN nodev 
+option.
+.IP \fBnoexec\fR
+Binaries cannot be executed from this file system.
+.IP \fBnosuid\fR
+The
+.PN setuid
+and
+.PN setgid
+programs may not be executed from this file system. If you are concerned
+with nfs security, all ufs file systems that will be exported via nfs
+with the 
+.PN \-r=0
+option specified in the 
+.PN /etc/exports
+file should be
+ufs mounted with the \fBnosuid\fR option.
+.IP \fBpgthresh=##\fR
+Set the paging threshold for this file system in kilobytes.
+The default is 64 kilobytes.
+.IP \fBsync\fR
+All writes are immediately written to disk (synchronously)
+as well as to the
+buffer cache.
+For the
+.PN sync
+option to be meaningful,
+the file system must be mounted with write permissions.
+.RE
+.IP \-r 12
+Mounts 
+the \fIdevice\fP 
+on \fIdirectory\fP read only.
+.SH Restrictions
+The
+.PN /etc/ufs_mount
+command should only be invoked by the
+.PN mount
+command.
+Users (and superusers) should not invoke the
+.PN ufs_mount
+command.
+.SH Examples
+.\" The
+.\" PN ufs_mount
+.\" command is not the suggested interface.
+The
+.PN /etc/mount
+command calls
+.PN ufs_mount
+to do its work and is the preferred interface.
+A sample
+.PN mount
+command is:
+.IP "" 5
+# \fBmount \-t ufs \-o nodev,nosuid,noexec,pgthresh=100 /dev/ra0g /usr\fR
+.\" .PP
+.\" This would be translated to 
+.\" .PN ufs_mount 
+.\" as
+.\" .EX
+.\" ufs_mount \-o nodev,nosuid,noexec,pgthresh=100 /dev/ra0g /usr
+.\" .EE
+.\" .PP
+.SH Files
+.TP 20
+.PN /etc/ufs_mount
+UFS-specific mount program
+.SH See Also
+getmnt(2), mount(2), fsck(8), mount(8)

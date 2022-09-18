@@ -1,0 +1,36 @@
+.TH DOTS 5
+.SH Name
+DOTS \- Data Object Transport Syntax (DOTS) files
+.SH Description
+.NXR "DOTS"
+.NXR "Data Object Transport Syntax (DOTS) files"
+.NXR "file" "Data Object Transport Syntax (DOTS)"
+.NXR "DDIS/ASN.1 encoding"
+Data Object Transport Syntax (DOTS) is DDIS/ASN.1 encoding for 
+encapsulating the encoded interchange form of a number of related data
+objects.  Data objects must be related by having embedded references to
+other objects in the same DOTS encapsulation.  Typically,
+these embedded references
+depend on the storage address (for example, filename) of the
+referenced object.  Therefore, when the referenced object is
+moved from one location to another, the storage address must be
+updated.
+.PP
+The purpose of DOTS is to allow composite data objects to be
+moved from one location to another as a single object and to allow
+the necessary storage reference to be updated as part of the process.
+.PP
+The primary use for DOTS is moving multifile compound documents in
+which one DDIF or DTIF file may have reference data stored in a 
+physically separate file.  
+Mail is a major vehicle for moving DOTS objects.
+.PP
+The commands
+.PN ctod
+and
+.PN dtoc
+are used to pack and unpack DDIF and DTIF files.  The commands can also be
+used to copy a related set of DDIF or DTIF files, or both, from one location to 
+another.  
+.SH See Also
+ctod(1), dtoc(1), DDIF(5), DTIF(5), DDIS(5), CDA(5)

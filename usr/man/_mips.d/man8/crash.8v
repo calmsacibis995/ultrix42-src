@@ -1,0 +1,109 @@
+.\" SCCSID: @(#)crash.8v	3.1	11/24/87
+.TH crash 8v RISC
+.SH Name
+crash \- what happens when the system crashes
+.SH Description
+.NXR "crash keyword"
+.NXR "system crash"
+This section explains what happens when the system crashes and shows
+how to analyze crash dumps.
+.PP
+When the system crashes voluntarily it prints a message
+on the console in the form:
+.IP
+panic: explanation
+.PP
+The system takes a dump on a mass storage peripheral device or
+the network, and then invokes an automatic reboot procedure as
+described in
+.MS reboot 8 .
+Unless there is some unexpected inconsistency in the state
+of the file systems due to hardware or software failure, the system
+then resumes multi-user operations.
+If auto-reboot is disabled, the system halts at this point.
+.PP
+The system has a large number of internal consistency checks; if one
+of these fails, it prints a short message indicating
+which one failed.
+.PP
+The most common cause of system failures is hardware failure.  
+In all cases there is the possibility that hardware or software
+error produced the message in some unexpected way.  These 
+messages are the ones you are likely to encounter: 
+.NXR "system crash" "error messages"
+.TP 5
+.B IO err in push
+.ns
+.TP
+.B hard IO err in swap
+The system encountered an error when trying to write
+to the paging device
+or an error in reading critical information from a disk drive.
+Fix your disk if it is broken or unreliable.
+.TP
+.B timeout table overflow
+.ns
+Due to the current data structure, 
+running out of entries causes a crash.
+If this happens, make the timeout table bigger.
+.TP
+.B Exception Condition
+An unexpected system error has occurred.  The exception types are
+as follows:
+.PP
+.RS 5
+.TS
+.tab (@);
+lfHB lfHB
+lfR lfR .
+_
+.sp 4p
+Mnemonic@Description
+.sp 4p
+_
+.sp 6p
+INT@External interrupt
+MOD@TLB modification exception
+TLBL@TLB miss exception (load or instruction fetch)
+TLBS@TLB miss exception (store)
+AdEL@Address error exception (load or instruction fetch)
+AdES@Address error exception (store)
+IBE@Bus error exception (for an instruction fetch)
+DBE@Bus error exception (for a data load or store)
+Sys@Sys call exception
+Bp@Breakpoint exception
+CpU@Coprocessor unusable exception
+Ovf@Arithmetic overflow exception
+.sp 6p
+_
+.TE
+.RE
+.TP
+.B KSP not valid
+.ns
+This indicates either a problem in the system or 
+failing hardware.
+.TP
+.B init died
+The system initialization process has exited.  The only solution is the
+automatic reboot procedure described in
+.MS reboot 8 . 
+Until this is done, new users cannot log in.
+.PP
+When the system crashes, it attempts to write 
+an image of memory into the back end of the primary swap
+area.  After the system is rebooted, the program
+.MS savecore 8
+runs and preserves a copy of this core image and the current
+system in a specified directory for later access.  See
+.MS savecore 8
+for details.
+.PP
+To analyze a dump, you should begin by running
+.MS dbx 1
+with the 
+.PN \-k
+flag on the core dump.
+.NXR "crash dump" "analyzing"
+.SH See Also
+dbx(1), reboot(8), savecore(8)

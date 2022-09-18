@@ -1,0 +1,63 @@
+.\" SCCSID: @(#)L-devices.5	8.1	9/11/90
+.TH L-devices 5
+.SH Name
+L-devices \- devices used to connect to remote systems
+.SH Syntax
+.B /usr/lib/uucp/L-devices
+.SH Description
+.NXR "L-devices file" "format"
+.NXA "L.sys file" "L-devices file"
+.NXAM "uucp utility" "L-devices file"
+.NXR "remote system" "specifying devices for connecting"
+The
+.PN uucp
+utility uses the L-devices file.  The file contains information
+about call units and direct connections.  It is used to map specifiers
+in the
+.MS L.sys 5
+file to specific devices.
+.PP
+The format of each entry, with each field separated by blanks or
+tabs, is:
+.IP "" 1i
+\fItype line call-unit speed brand proto
+.IP \fItype\fR .7i
+A device type, such as ACU or DIR.  DIR indicates that this is a
+direct-connect, hard-wired line.
+.IP \fIline\fR .7i
+The device for the modem line or hard-wired line as named in
+.PN /dev , 
+such as cul0 or ttyab.  The special device files are assumed
+to be in the 
+.PN /dev 
+directory.
+.IP \fIcall-unit\fR .7i
+The automatic call unit associated with
+.IR line ,
+for example, cua0.
+Hard-wired lines should place the device for the line in this field,
+for example, ttyab.  The value for
+.I call-unit
+is usually the same as the value for
+.IR line .
+.IP \fIspeed\fR .7i
+The line speed.
+.IP \fIbrand\fR .7i
+The brand name of the modem or ACU.  Acceptable brands are
+DF02, DF03, or DF112 (for DIGITAL modems), Ventel, Hayes, and 
+Vadic.  For direct connection, place the word direct in this
+field.
+.IP \fIproto\fR .7i
+The preferred protocol type to use, for example, 
+.PN g
+or 
+.PN f .
+.SH Examples
+Here are some typical L-devices entries:
+.EX 0
+ACU cua0 cua0 300 DF02
+ACU cua1 cua1 1200 DF03
+ACU cua2 cua2 1200 DF112
+DIR ttyab ttyab 9600 direct
+.SH See Also
+.I "Guide to the uucp Utility"

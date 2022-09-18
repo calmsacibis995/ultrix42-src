@@ -1,0 +1,61 @@
+.TH pm 4 RISC
+.SH Name
+pm \- monochrome/color bitmap graphics
+.SH Syntax
+.B "device 	pm0 	at ibus?	vector pmvint"
+.SH Description
+The video subsystem provides a half page or full page,
+user-accessible bitmap display for graphics.
+The subsystem consists of a 256 Kbytes (monochrome) or a 1 Mbyte (color)
+block of dual port RAM, a mouse or tablet, a keyboard, and a 
+video monitor.
+.NXR "Graphics Subsystem" "pm"
+.PP
+The subsystem device driver
+supports a hybrid terminal with three minor devices.
+The first minor device emulates a glass tty with a
+screen that appears as an 80-column
+by 56-row page that scrolls from the bottom.
+This device is capable of being configured as the system console.
+.PP
+The second minor device is reserved for the mouse.
+This device is a source of mouse state changes.
+(A state change is defined as an X/Y axis
+mouse movement or button change.)
+When opened, the driver couples movements of the mouse with the cursor.
+Mouse position changes are filtered and translated into cursor position
+changes in an exponential manner.
+Rapid movements result in large cursor position changes.
+All cursor positions are range
+checked to ensure that the cursor remains on
+the display.
+.PP
+The third minor device provides an access path for console output
+that does not disturb the graphics display.
+The caller can open the device 
+.PN /dev/xcons .
+When this device is open, the graphics driver
+redirects console device output to the input buffer of this device.
+This mechanism disables
+console output on the screen and saves the output for 
+later display. This preserves the graphic display integrity.
+.PP
+Input and output on the first and third minor devices are processed by
+the standard line disciplines.
+.PP
+The Hold Screen key is supported. The graphics driver treats this
+key as if CTRL/S or CTRL/Q had been pressed. Pressing the Hold Screen key 
+suspends the output (if it is not already suspended). To resume the output,
+press the Hold Screen key again.
+.SH Files
+.TP 17
+.PN /dev/console
+Console terminal or graphics device
+.TP 17
+.PN /dev/mouse
+Mouse or tablet graphics device
+.TP 17 
+.PN /dev/xcons
+Console message window for workstation
+.SH See Also
+console(4), devio(4), tty(4), ttys(5), MAKEDEV(8)

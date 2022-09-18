@@ -1,0 +1,43 @@
+(*#@(#)memory.def	4.1	Ultrix	7/17/90 *)
+(* $Header: memory.def,v 1.2 84/05/19 11:39:58 powell Exp $ *)
+This module should not be compiled, but is supplied for documentation purposes.
+definition module memory;
+
+(* This is a dummy definition module to indicate what is in the built-in *)
+(* memory module.  Note that case is ignored in built-in identifiers *)
+
+(* The following note appears in Storage.def and memory.def *)
+
+(* NOTE:
+   Modula-2 generates code to validate pointers before dereferencing
+   them.  Storage allocated by the New operation has an extra word at
+   the beginning that points to the second word, which is where the
+   pointer points.  Thus, the pointer validation looks like
+	cmpl	rx,-4(rx)
+   The word is set up by the New operation, which calls Storage.ALLOCATE
+   asking for one more word than the user needs and sets things up.  Thus,
+   New and the pointer check work correctly with any ALLOCATE.  This is set
+   up whether compiling with -C or not, since some modules may do checking
+   and others not.
+
+   To avoid this check and eliminate the extra word, declare your pointers
+   as follows:
+    type
+	UncheckedPointer = pointer @nocheck to Oblivion;
+
+   If you need to call ALLOCATE instead of New, you must either declare the
+   pointers to be @nocheck, or import ALLOCATE and DEALLOCATE from memory.
+
+   Remember, memory.allocate and memory.deallocate are for checked memory,
+   Storage.ALLOCATE and Storage.DEALLOCATE are for @nocheck memory.
+*)
+
+from system import Address;
+
+export qualified Allocate, Deallocate;
+
+procedure Allocate(var p : Address; n : Cardinal);
+
+procedure Deallocate(var p : Address; n : Cardinal);
+
+end memory.

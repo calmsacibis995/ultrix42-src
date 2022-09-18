@@ -1,0 +1,13 @@
+
+% LPS$$SETSHEETSIZE device control library module
+% Version V1.0
+%
+% Copyright ) 1986 by DEC, Maynard, Mass.  All rights reserved.
+
+% Remember, you are still in lps$lpsdict.
+%
+% This module expects the stack to be: defaulted_string physical_size
+
+    /lps$sheet-size exch def
+    (not-defaulted) eq
+    {/lps$sheet-defaulted false def} if

@@ -1,0 +1,50 @@
+.TH def_prog_mode 3cur 
+.SH Name
+def_prog_mode, def_shell_mode \- save terminal modes
+.SH Syntax
+.B
+int def_prog_mode(\|)
+.PP
+.B
+int def_shell_mode(\|)
+.SH Description
+.NXR "def_prog_mode subroutine"
+.NXR "def_shell_mode subroutine"
+.NXA "def_prog_mode subroutine" "reset_prog_mode subroutine"
+.NXA "def_shell_mode subroutine" "reset_shell_mode subroutine"
+The
+.PN def_prog_mode
+routine
+saves the current terminal modes as the 
+.B program 
+if
+the terminal is running under 
+.PN curses. 
+The stored terminal modes are used by the 
+.MS reset_prog_mode 3cur
+routine.
+This function is used when the user makes a temporary exit from 
+.PN curses .
+.PP
+The routine
+.PN def_shell_mode
+saves the current terminal modes as the 
+.B shell 
+if
+the terminal is not running under 
+.PN curses .
+The stored terminal modes are used by the 
+.MS reset_shell_mode 3cur
+routine.
+.PP
+Both routines are called
+automatically by 
+.MS initscr 3cur .
+.SH Return Values
+The
+.PN def_prog_mode
+and
+.PN def_shell_mode
+functions return OK on success and ERR on error.
+.SH See Also
+initscr(3cur), reset_prog_mode(3cur), reset_shell_mode(3cur)

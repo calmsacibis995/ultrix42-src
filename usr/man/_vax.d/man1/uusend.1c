@@ -1,0 +1,52 @@
+.\" SCCSID: @(#)uusend.1c	8.1	9/11/90
+.\" SCCSID: @(#)uusend.1c	8.1	9/11/90
+.TH uusend 1c
+.SH Name
+uusend \- send a file to a remote host
+.SH Syntax
+.B uusend
+[
+.B \-m
+mode
+]
+sourcefile
+sys1!sys2!..!remotefile
+.SH Description
+.NXR "uusend command"
+.NXA "uucp utility" "uusend command"
+.NXR "file" "sending to remote host"
+The
+.PN uusend
+command sends a file to a given location on a remote system.
+The system need not be directly connected to the local
+system, but a chain of 
+.PN uucp(1c)
+links needs to connect the two systems.
+.PP
+The sourcefile
+can be ``-'',
+meaning to use the standard input.
+Both of these options are primarily intended for internal use of uusend.
+.PP
+The remotefile can include the ~userid syntax.
+.SH Options
+.IP "\fB\-\|m\fI mode\fR" 0.3i
+Specifies octal number for mode of file on the remote system.  Default is mode of
+input file.  
+.SH Restrictions
+All systems along the line must have the
+.PN uusend
+command available and allow remote execution of it.
+.PP
+Some uucp systems have a
+restriction where binary files cannot be the
+input to a 
+.PN uux(1c)
+command.
+If this exists in any system along the line,
+the file will show up severly distorted.
+.SH Diagnostics
+If anything goes wrong any further away than the first system down
+the line, you will never hear about it.
+.SH See Also
+uucp(1c), uuencode(1c), uux(1c)

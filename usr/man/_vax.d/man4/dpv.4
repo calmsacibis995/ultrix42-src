@@ -1,0 +1,47 @@
+.\" SCCSID: @(#)dpv.4	8.1	9/11/90
+.TH dpv 4
+.SH Name
+dpv \- dpv data communications interface
+.SH Syntax
+.B device dpv0 at uba0 csr 0170000 flags 0x0f vector dpvrint dpvxint
+.SH Description
+.NXR "dpv data communications interface"
+.NXAM "2780e emulator spooler" "dpv data communications interface"
+.NXAM "3780e emulator spooler" "dpv data communications interface"
+The 
+.PN dpv
+data communications
+interface is used only with the 2780/3780
+Terminal
+Emulator.  It has no programmable user interface.  
+.PP
+When a system
+is generated for 2780/3780 emulation on Q-bus host machines, 
+the 
+.PN dpv
+data communications must 
+be specified in the configuration file as 
+.PN dpv0 .
+.PP
+To boot a Q-bus device having
+2780/3780 emulation, the 
+.PN dpv 
+must be specified in 
+.PN rc.local.  
+This interface is specified by removing the comment sign from the command
+line already placed in the 
+.PN rc.local
+file:
+.EX
+#/etc/bscconfig dpv0 bsc 1
+.EE
+.PP
+The 
+.PN dpv 
+data communications interface is used with the DF126 modem. 
+.SH Files
+.PN /etc/rc.local
+.br
+.PN /etc/bscconfig
+.SH See Also
+2780e(1), 3780e(1), 2780d(8)

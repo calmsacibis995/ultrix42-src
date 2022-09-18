@@ -1,0 +1,53 @@
+.\" SCCSID: @(#)dgated.8	8.2	12/3/90
+.TH dgated 8 "" "" Unsupported
+.SH Name
+dgated \- Provide daemon login service via Decnet
+.SH Syntax
+.B /etc/dgated 
+.I host
+.SH Description
+.NXR "dgated daemon"
+The 
+.PN /etc/dgated
+daemon is spawned by 
+.MS dgate 1c
+on the gateway system (the intermediate ULTRIX DECnet host).
+.PP
+The program maintains the ownership of the master end of a pseudo
+terminal, operating as an intermediary between the DECnet login process
+and the client instantiation of the
+.PN dgate
+process.
+.PP 
+The 
+.PN dgated
+daemon also writes a
+.PN utmp 
+entry to record activity.
+.SH Diagnostics
+All diagnostic messages are written through 
+.MS syslog 3 .
+.PP
+.B "All network ports in use."
+.br
+A free pseudo terminal could not be found.
+.PP
+.B "Cannot fork" 
+.br
+A 
+.PN fork
+call failed.
+.PP
+.B "Cannot exec /usr/bin/dlogin"
+.br
+The 
+.PN dlogin
+routine could not be found.
+.SH Files
+.PN /etc/utmp
+.br
+.PN /usr/adm/wtmp
+.SH See Also
+dgate(1c), dlogin(1dn), fork(2), syslog(3) 
+.br
+DECnet-ULTRIX documentation

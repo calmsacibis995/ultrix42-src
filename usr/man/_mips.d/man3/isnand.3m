@@ -1,0 +1,27 @@
+.TH isnand 3m RISC
+.SH Name
+isnand, isnanf \- test for floating point NaN (Not-A-Number)
+.SH Syntax
+.B
+\#include <ieeefp.h>
+.PP
+.B int isnand (dsrc)
+.br
+.B double dsrc;
+.PP
+.B int isnanf (fsrc)
+.br
+.B float fsrc;
+.SH Description
+The
+.PN isnand 
+and 
+.PN isnanf
+routines return the value 1 for true if the argument dsrc or fsrc 
+is a NaN; otherwise they return the value 0 for false.  
+.PP
+Neither routine generates any exception, even for signaling NaNs.
+.PP
+The
+.PN isnan
+function is implemented as a macro included in <ieeefp.h>.

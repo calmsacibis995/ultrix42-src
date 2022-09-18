@@ -1,0 +1,30 @@
+.\" SCCSID: @(#)intro.3f	8.1	9/11/90
+.TH intro 3f VAX "" Unsupported
+.SH Name
+intro \- introduction to FORTRAN library functions
+.SH Description
+.NXR "intro(3f) keyword"
+.NXR "FORTRAN library" "introduction"
+.NXR "FORTRAN library" "defined"
+.NXR "SID" "FORTRAN library and"
+.PP
+This section describes those functions that are in the FORTRAN run time
+library.  The functions listed here provide an interface from 
+.PN f77
+programs to the system in the same manner as the C library does for C
+programs.  They are automatically
+loaded as needed by the FORTRAN compiler
+.MS f77 1 .
+.PP
+Most of these functions are in libU77.a. 
+Some are in libF77.a or libI77.a.
+A few intrinsic functions are described for the sake of completeness.
+.PP
+For efficiency, the SCCS ID strings are not normally included in the
+.PN a.out
+file. To include them, simply declare the following in any 
+.PN f77
+module:
+.EX
+external f77lid
+.EE

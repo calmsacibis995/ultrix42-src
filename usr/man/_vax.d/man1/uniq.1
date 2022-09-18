@@ -1,0 +1,70 @@
+.\" SCCSID: @(#)uniq.1	8.1	9/11/90
+.TH uniq 1 
+.SH Name
+uniq \- report repeated lines in a file
+.SH Syntax
+.B uniq
+[\fB\-udc\fR\|[\fB\+n\fR]\|[\fB\-n\fR]\|] [\fI\|input\fR\|[\fIoutput\fR\|]\|]
+.SH Description
+.NXR "uniq command"
+.NXA "uniq command" "sccsdiff command"
+.NXA "uniq command" "diff3 command"
+.NXA "uniq command" "diffmk command"
+.NXA "uniq command" "diff command"
+.NXA "uniq command" "comm command"
+.NXA "uniq command" "cmp command"
+.NXA "uniq command" "join command"
+.NXR "file" "comparing"
+The
+.PN uniq
+command reads the input file comparing adjacent lines.
+In the normal case,
+the second and succeeding copies of repeated lines are
+removed; the remainder is written on the output file.
+Note that repeated lines must be adjacent in order to be found. 
+For further information, see 
+.MS sort 1 .
+.SH Options
+.PP
+The
+.I n
+arguments specify skipping an initial portion
+of each line in the comparison:
+.IP \fB\-\fIn\fR 0.3i
+Skips specified number of fields.  
+A field is defined as a string of non-space, non-tab characters
+separated by tabs and spaces from its neighbors.
+.IP \fB\+\fIn\fR 0.3i
+Skips specified number of characters in addition to fields.  
+Fields are skipped before characters.
+.IP \fB\-c\fR 0.3i
+Displays number of repetitions, if any, for each line.  
+.IP \fB\-d\fR 0.3i
+Displays only lines that were repeated.  
+.IP \fB\-u\fR 0.3i
+Displays only unique (nonrepeated) lines.  
+.PP
+If the
+.B \-u
+flag is used, just the lines that are not repeated
+in the original file are output.  The
+.B \-d
+option specifies that one copy of
+just the repeated lines is to be written.
+The normal mode output is the union of the
+.B \-u
+and
+.B \-d
+mode outputs.
+.PP
+The
+.B \-c
+option supersedes
+.B \-u
+and
+.B \-d
+and generates an output report in default style
+but with each line preceded by a
+count of the number of times it occurred.
+.SH See Also
+comm(1), sort(1)

@@ -1,0 +1,55 @@
+.\" SCCSID: @(#)kill.1	8.1	9/11/90
+.\" SCCSID: @(#)kill.1	8.1	9/11/90
+.TH kill 1
+.SH Name
+kill \- send a signal to a process
+.SH Syntax
+.B kill
+[\-\fIsig\fR\|] \fIprocessid...\fR
+.br
+.B kill
+.B \-l
+.SH Description
+.NXR "kill command (general)"
+.NXR "process" "terminating"
+.NXAM "kill command (general)" "kill system call"
+The
+.PN kill
+command
+sends the TERM (terminate, 15) signal to the specified processes.
+If a signal name or number preceded by `\-' is given
+as first argument, that signal is sent instead of terminate.
+For further information, see 
+.MS sigvec 2 .
+.PP
+The terminate signal kills processes that do not catch the signal;
+`kill \-9 ...' is a sure kill, as the KILL (9) signal cannot be caught.
+By convention, if process number 0 is specified, all members
+in the process group (that is, processes resulting from 
+the current login) are signaled. 
+This works only if you use 
+.MS sh 1 
+and not if you use 
+.MS csh 1 .
+.NXR "kill command (general)" "restricted
+To kill a process it must either belong to you or
+you must be superuser.
+.PP
+The process number of an asynchronous process
+started with `&' is reported by the shell.
+Process numbers can also be found by using
+.MS csh 1 .
+It allows job specifiers ``%...''
+so process ID's are not as often used as
+.PN kill
+arguments.  See 
+.MS csh 1  
+for details.
+.SH Options
+.IP \fB\-l\fR 5
+Lists signal names.   
+The signal names are listed by
+`kill \-l', and are as given in /usr/include/signal.h,
+stripped of the common SIG prefix.
+.SH See Also
+csh(1), ps(1), kill(2), sigvec(2)

@@ -1,0 +1,45 @@
+.TH abs 3
+.SH Name
+abs, labs \- integer absolute value
+.SH Syntax
+.nf
+.B #include <stdlib.h>
+.br
+.B #include <stdlib.h>
+.PP
+.B long labs(\fIi\fP)
+.br
+.B long \fIi\fP;
+.PP
+.B int abs(\fIi\fP)
+.br
+.B int \fIi\fP;
+.PP
+.B long labs(\fIi\fP)
+.br
+.B long \fIi\fP;
+.fi
+.SH Description
+.NXR "abs subroutine (standard C)"
+.NXR "labs subroutine (ANSI C)"
+.NXR "absolute value function"
+The
+.PN abs
+and
+.PN labs
+functions return the absolute value of their integer operand.  The labs
+function does the same for a long int.
+.SH Restrictions
+Applying the 
+.PN abs
+or
+.PN labs
+function to the most negative integer generates a
+result which is the most negative integer.  That is, 
+.EX
+abs(0x80000000)
+.EE
+.PP
+returns 0x80000000 as a result.
+.SH See Also
+floor(3m) 

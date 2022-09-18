@@ -1,0 +1,556 @@
+# @(#)summary.db	4.2   (ULTRIX)   12/6/90
+
+sseg
+id SIS 1
+name SUM_DISK_SIS
+doc "Summary segment for disks"
+label nil
+elements
+    SUM_DEV_PRE SUM_DEV SUM_UNUM SUM_EVENT SUM_LED SUM_LBN SUM_CYL SUM_TRK SUM_SEC SUM_RP SUM_SERIAL
+
+sseg
+id SIS 2
+name AQ_CLK_SIS
+doc "Sum Seg for AQ CLK"
+label nil
+elements
+    SUM_CCR1
+
+sseg
+id SIS 3
+name AQ_PCS_SIS
+doc "Sum Seg for AQ PCS"
+label nil
+elements
+    SUM_IDREG SUM_XCPID
+
+sseg
+id SIS 4
+name AQ_SPM_SIS
+doc "Sum Seg for AQ SPM"
+label nil
+elements
+    SUM_BICSR SUM_BER
+
+sseg
+id SIS 5
+name AQ_CRD_SIS
+doc "Sum Seg for AQ CRD"
+label nil
+elements
+    SUM_SMC1
+
+sseg
+id SIS 6
+name AQ_SCM_SIS
+doc "Sum Seg for AQ SCM"
+label nil
+elements
+    SUM_BICSR SUM_BER SUM_GPR1 SUM_GPR2 SUM_SCCCSR SUM_CLKCTL SUM_DYRC
+
+sseg
+id SIS 7
+name AQ_SJA_SIS
+doc "Sum Seg for AQ SJA"
+label nil
+elements
+    SUM_SJCS SUM_FLAG SUM_DXCS
+
+sitem 
+id 734 
+name SUM_DEV_PRE 
+type SHORT_INDEX 
+class CODED 
+size 2 
+label NIL 
+display NIL 
+doc "DEVICE PREFIXES FOR SUMARIES"
+map 
+    1 SUM_RA "RA"
+    2 SUM_RC "RC"
+    3 SUM_RD "RD"
+    4 SUM_RX "RX"
+    5 SUM_RZ "RZ"
+    6 SUM_RMT "RMT"
+
+sitem 
+id 735 
+name SUM_DEV 
+type SHORT_INDEX 
+class CODED 
+size 2 
+label "DEVICE" 
+display NIL 
+doc NIL
+map 
+    1 S_RA80 "RA80"
+    2 S_RC25 "RC25"
+    3 S_RCF25 "RCF25"
+    4 S_RA60 "RA60"
+    5 S_RA81 "RA81"
+    6 S_RD51 "RD51"
+    7 S_RX50 "RX50"
+    8 S_RD52 "RD52"
+    9 S_RD53 "RD53"
+    10 S_RX33 "RX33"
+    11 S_RA82 "RA82"
+    12 S_RD31 "RD31"
+    13 S_RD54 "RD54"
+    14 S_RRD50 "RRD50"
+    15 S_RD32 "RD32"
+    16 S_RX18 "RX18"
+    17 S_RA70 "RA70"
+    18 S_RA90 "RA90"
+    19 S_RX35 "RX35"
+    20 S_RF30 "RF30"
+    21 S_RF71 "RF71"
+    22 S_SVS00 "SVS00"
+    23 S_RD33 "RD33"
+    24 S_ESE20 "ESE20"
+    25 S_RRD40 "RRD40"
+    26 S_RF31 "RF31"
+    27 S_RF72 "RF72"
+    28 S_RX23 "RX23"
+    29 S_RZ22 "RZ22"
+    30 S_RZ23 "RZ23"
+    31 S_RZ55 "RZ55"
+    32 S_RZ56 "RZ56"
+    33 S_RZ57 "RZ57"
+    34 S_RZXX "rzxx"
+    35 S_RZ24 "RZ24"
+    36 S_RA92 "RA92"
+    37 S_RRD41 "RRD41"
+    38 S_TA78 "TA78"
+    39 S_TU81 "TU81"
+    40 S_TK50 "TK50"
+    41 S_TA81 "TA81"
+    42 S_TA79 "TA79"
+    43 S_TA90 "TA90"
+    44 S_RV60 "RV60"
+    45 S_TF85 "TF85"
+    46 S_TF70 "TF70"
+    47 S_TK70 "TK70"
+    48 S_RV20 "RV20"
+    49 S_TZ30 "TZ30"
+    50 S_TZK50 "TZK50"
+    51 S_TZXX "TZXX"
+    52 S_TLZ04 "TLZ04"
+    53 S_TZ05 "TZ05"
+    54 S_TU_T6 "TBA"
+    55 S_TU_T7 "TBA"
+    56 S_TU_T8 "TBA"
+    57 S_TU_T9 "TBA"
+
+sitem 
+id 736 
+name SUM_UNUM 
+type SHORT 
+class INTEGER 
+size 2 
+label "UNIT" 
+display DECIMAL 
+doc "SUMMARY - UNIT NUM"
+map NIL 
+
+sitem 
+id 737 
+name SUM_EVENT 
+type SHORT 
+class INTEGER 
+size 2 
+label "EVENT" 
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 738 
+name SUM_LED 
+type SHORT 
+class INTEGER 
+size 2 
+label "LED" 
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 739 
+name SUM_LBN 
+type LONG 
+class INTEGER 
+size 4 
+label "..LBN.." 
+display DECIMAL 
+doc NIL
+map NIL 
+
+sitem 
+id 740 
+name SUM_CYL 
+type SHORT 
+class INTEGER 
+size 2 
+label "CYL." 
+display DECIMAL 
+doc NIL
+map NIL 
+
+sitem 
+id 741 
+name SUM_TRK 
+type SHORT 
+class INTEGER 
+size 2 
+label "TRK" 
+display DECIMAL 
+doc NIL
+map NIL 
+
+sitem 
+id 742 
+name SUM_SEC 
+type SHORT 
+class INTEGER 
+size 2 
+label "SEC" 
+display DECIMAL 
+doc NIL
+map NIL 
+
+sitem 
+id 743 
+name SUM_RP 
+type SHORT 
+class INTEGER 
+size 2 
+label "RP" 
+display DECIMAL 
+doc NIL
+map NIL 
+
+sitem 
+id 744 
+name SUM_SERIAL 
+type LONG 
+class INTEGER 
+size 4 
+label "SERIAL" 
+display DECIMAL 
+map NIL 
+doc NIL
+
+sitem 
+id 740 
+name SUM_CCR1
+type LONG 
+class INTEGER 
+size 4 
+label "..CCR1.." 
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 741 
+name SUM_IDREG
+type SHORT 
+class INTEGER 
+size 1 
+label "IDREG"    
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 742 
+name SUM_XCPID
+type SHORT
+class INTEGER 
+size 1 
+label "XCPID"    
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 743 
+name SUM_BICSR
+type LONG 
+class INTEGER 
+size 4 
+label ".BICSR.." 
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 744 
+name SUM_BER 
+type LONG 
+class INTEGER 
+size 4 
+label "..BER..." 
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 745 
+name SUM_SMC1
+type LONG 
+class INTEGER 
+size 4 
+label "..SMC1.." 
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 746 
+name SUM_GPR1
+type LONG 
+class INTEGER 
+size 4 
+label "..GPR1.." 
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 747 
+name SUM_GPR2
+type LONG 
+class INTEGER 
+size 4 
+label "..GPR2.." 
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 748 
+name SUM_SCCCSR
+type LONG 
+class INTEGER 
+size 4 
+label ".SCCCSR." 
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 749 
+name SUM_CLKCTL
+type LONG 
+class INTEGER 
+size 4 
+label ".CLKCTL." 
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 750 
+name SUM_DYRC
+type LONG 
+class INTEGER 
+size 4 
+label "..DYRC.." 
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 751 
+name SUM_SJCS
+type LONG 
+class INTEGER 
+size 4 
+label "..SJCS.." 
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 752 
+name SUM_FLAG
+type LONG 
+class INTEGER 
+size 4 
+label "..FLAG.." 
+display HEX 
+doc NIL
+map NIL 
+
+sitem 
+id 753 
+name SUM_DXCS
+type LONG 
+class INTEGER 
+size 4 
+label "..DXCS.." 
+display HEX 
+doc NIL
+map NIL 
+
+oitem 
+id 9 
+name SUM_DEV_DDPRE 
+type SHORT_index 
+class CODED 
+size 2 
+doc NIL
+map 
+    1 SUM_RA
+    2 SUM_RC
+    3 SUM_RC
+    4 SUM_RA
+    5 SUM_RA
+    6 SUM_RD
+    7 SUM_RX
+    8 SUM_RD
+    9 SUM_RD
+    10 SUM_RX
+    11 SUM_RA
+    12 SUM_RD
+    13 SUM_RD
+    14 SUM_RD
+    15 SUM_RD
+    16 SUM_RX
+    17 SUM_RX
+    18 SUM_RA
+    19 SUM_RA
+    20 SUM_RX
+    21 SUM_RA
+    22 SUM_RA
+    23 SUM_RA
+    24 SUM_RD
+    25 SUM_RA
+    26 SUM_RD
+    27 SUM_RA
+    28 SUM_RA
+
+oitem 
+id 24 
+name SUM_DEV_TPRE 
+type SHORT_index 
+class CODED 
+size 2 
+doc NIL
+map 
+    1 SUM_RMT
+    2 SUM_RMT
+    3 SUM_RMT
+    4 SUM_RMT
+    5 SUM_RMT
+    7 SUM_RMT
+    8 SUM_RMT
+    9 SUM_RMT
+    10 SUM_RMT
+    11 SUM_RMT
+    14 SUM_RMT
+    15 SUM_RMT
+
+oitem 
+id 25 
+name SUM_DEV_D 
+type short_index 
+class CODED 
+size 2 
+doc NIL
+map 
+    1 S_RA80
+    2 S_RC25
+    3 S_RCF25
+    4 S_RA60
+    5 S_RA81
+    6 S_RD51
+    7 S_RX50
+    8 S_RD52
+    9 S_RD53
+    10 S_RX33
+    11 S_RA82
+    12 S_RD31
+    13 S_RD54
+    14 S_RRD50
+    15 S_RD32
+    17 S_RX18
+    18 S_RA70
+    19 S_RA90
+    20 S_RX35
+    21 S_RF30
+    22 S_RF71
+    23 S_SVS00
+    24 S_RD33
+    25 S_ESE20
+    26 S_RRD40
+    27 S_RF31
+    28 S_RF72
+
+oitem 
+id 29
+name SUM_DEV_DZ 
+type short_index 
+class CODED 
+size 2 
+doc NIL
+map 
+    1 S_RX23
+    3 S_RZ22
+    4 S_RZ23
+    5 S_RZ55
+    6 S_RZ56
+
+oitem 
+id 33 
+name SUM_DEV_T 
+type short_index 
+class CODED 
+size 2 
+doc NIL
+map 
+    1 S_TA78
+    2 S_TU81
+    3 S_TK50
+    4 S_TA81
+    5 S_TA79
+    7 S_TA90
+    8 S_RV60
+    10 S_TF85
+    11 S_TF70
+    14 S_TK70
+    15 S_RV20
+
+oitem 
+id 69 
+name SUM_DEV_TZ 
+type short_index 
+class CODED 
+size 2 
+doc NIL
+map 
+    1 S_TZ30
+    2 S_TZK50
+    3 S_TZXX
+
+oitem 
+id 70 
+name SUM_DEV_DZPRE 
+doc "0"
+type short_index 
+class CODED 
+size 2 
+map 
+    1 SUM_RZ
+    2 SUM_RZ
+    3 SUM_RZ
+    4 SUM_RZ
+    5 SUM_RZ
+    6 SUM_RZ
+    7 SUM_RZ
+    8 SUM_RZ
+    9 SUM_RZ
+    10 SUM_RZ
+    11 SUM_RZ
+

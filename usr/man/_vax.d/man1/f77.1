@@ -1,0 +1,238 @@
+.\" SCCSID: @(#)f77.1	8.1	9/11/90
+.TH f77 1 VAX "" Unsupported
+.SH Name
+f77 \- Fortran 77 compiler
+.SH Syntax 
+.B f77
+[\|\fIoption...\fR\|] \fIfile\fR...
+.SH Description
+.NXB "f77 compiler"
+.NXA "f77 compiler" "ld command"
+.NXA "f77 compiler" "make command (general)"
+.NXA "prof command" "f77 compiler"
+.NXA "gprof command" "f77 compiler"
+.NXA "FORTRAN-77 compiler" "f77 compiler"
+The
+.PN f77
+command runs the ULTRIX Fortran 77 compiler.
+.SS Arguments
+The
+.PN f77
+command accepts several types of 
+.I file
+arguments:
+.PP
+Arguments whose names end with `.f' are taken to be
+Fortran 77 source programs;
+they are compiled, and
+each object program is left on the file in the current directory
+whose name is that of the source with `.o' substituted
+for '.f'.
+.PP
+Arguments whose names end with `.F' are also taken to be Fortran 77 source
+programs; these are first processed by the C preprocessor before being
+compiled by
+.PN f77 .
+.PP
+Arguments whose names end with `.r' or `.e' are taken to be Ratfor
+or EFL source programs respectively; these are first transformed by the
+appropriate preprocessor, then compiled by f77.
+.PP
+Arguments whose names end with `.c' or `.s'
+are taken to be C or assembly
+source programs and are compiled or assembled, producing a `.o' file.
+.PP
+Other arguments are taken to be F77-compatible object programs,
+typically produced by an earlier run, or libraries
+of F77-compatible routines.  These programs, together with the
+results of any compilations specified, are loaded in the order
+given to produce an executable program with the name ``a.out''.
+.PP
+Programs compiled with
+.PN f77
+produce memory dumps in file
+.PN core
+upon abnormal termination if the
+.B \-g
+option was specified during loading.
+If the environment variable
+.I f77_dump_flag
+is set to a value beginning with y or n, dumps
+for abnormal terminations are respectively forced or
+suppressed.
+.SH Options
+.NXR "f77 compiler" "options"
+The following options have the same meaning as in
+.MS cc 1 .
+See
+.MS ld 1
+for load-time options.
+.IP \fB\-c\fR 5
+Suppresses loading and produces `.o' files for each source 
+file.
+.IP \fB\-g\fR
+Produces additional symbol table information for
+.MS dbx 1
+and pass the
+.B \-lg
+flag to
+.MS ld 1
+so that on abnormal terminations, the memory image is written
+to file \fIcore\fP.
+Incompatible with
+.BR \-O .
+.IP "\fB\-o\fI output\fR"
+Name the final output file
+.I output
+instead of 
+.PN a.out.
+.IP \fB\-p\fR
+Prepare object files for profiling, see
+.MS prof 1 .
+.IP \fB\-pg\fR
+Causes the compiler to produce counting code in the manner of
+.B \-p,
+but invokes a run-time recording mechanism that keeps more extensive
+statistics and produces a
+.I gmon.out
+file at normal termination. An execution profile can then be generated
+by use of
+.MS gprof 1 .
+.IP \fB\-w\fR
+Suppresses all warning messages.
+If the option is `\-w66', only Fortran 66 compatibility warnings are suppressed.
+.IP \fB\-D\fIname=def\fR
+.IP \fB\-D\fIname\fR
+Defines the
+.I name
+to the C preprocessor, as if by `#define'. If no definition is given, the name
+is defined as "1". (`.F' suffix files only).
+.IP \fB\-I\fIdir\fR
+`#include' files whose names do not begin with `/' are always sought
+first in the directory of the
+.I file
+argument, then in directories named in
+.B \-I
+options, then in directories on a standard list. (`.F' suffix files only).
+.IP \fB\-O\fR
+Invoke an
+object-code optimizer.
+Incompatible with
+.BR \-g .
+.IP \fB\-S\fR
+Compiles the named programs, and leave the
+assembler-language output on corresponding files suffixed `.s'.
+(No `.o' is created.).
+.PP
+The following options are peculiar to
+.PN f77.
+.IP \fB\-d\fR
+Used for debugging the compiler.
+.IP \fB\-i2\fR
+On machines which support short integers, make the default integer constants
+and variables short.
+.RB ( \-i4
+is the standard value of this option). All logical quantities will be short.
+.IP \fB\-q\fR
+Suppresses printing of file names and program unit names during compilation.
+.IP \fB\-m\fR
+Apply the M4 preprocessor to each `.r' file before transforming
+it with the Ratfor or EFL preprocessor.
+.IP \fB\-onetrip\fR
+.IP \fB\-1\fR
+Compile DO loops that are performed at least once if reached.
+(Fortran 77 DO loops are not performed at all if the upper limit is smaller than the lower limit.)
+.IP \fB\-r8\fR
+Treat all floating point variables,
+constants, functions and intrinsics
+as double precision and all complex
+quantities as double complex.
+.IP \fB\-u\fR
+Make the default type of a variable `undefined' rather than using the default Fortran rules.
+.IP \fB\-v\fR
+Print the version number of the compiler, and the name of each pass as it
+executes.
+.IP \fB\-C\fR
+Compile code to check that subscripts are within declared array bounds.
+For multi-dimensional arrays, only the equivalent linear subscript is checked.
+.IP \fB\-F\fR
+Apply the C preprocessor to `.F' files, and the EFL, or Ratfor preprocessors
+to `.e' and `.r' files, put the
+result in the file with the suffix changed to `.f', but do not compile.
+.IP \fB\-E\fIx\fR
+Use the string 
+.I x
+as an EFL option in processing `.e' files.
+.IP \fB\-R\fIx\fR 
+Use the string 
+.I x
+as a Ratfor option in processing `.r' files.
+.IP \fB\-N\fR[\fBqxscn\fR]\fInnn\fR 
+Make static tables in the compiler bigger. The compiler will complain
+if it overflows its tables and suggest you apply one or more of these
+flags. These flags have the following meanings:
+.RS
+.TP
+.B q
+Maximum number of equivalenced variables. Default is 150.
+.TP
+.B x
+Maximum number of external names (common block names, subroutine and
+function names). Default is 200.
+.TP
+.B s
+Maximum number of statement numbers. Default is 401.
+.TP
+.B c
+Maximum depth of nesting for control statements (e.g. DO loops). Default is
+20.
+.TP
+.B n
+Maximum number of identifiers. Default is 1009.
+.RE
+.IP \fB\-U\fR 
+Do not convert upper case letters to lower case. The default is to convert
+Fortran programs to lower case except within character string constants.
+.SH Restrictions
+.NXR "f77 compiler" "restricted"
+Files longer than about 50,000 lines must be split up to
+be compiled.
+.SH Diagnostics
+.NXR "f77 compiler" "diagnostics"
+The diagnostics produced by
+.PN f77
+itself are intended to be self-explanatory.  Occasional
+messages may be produced by the loader.
+.SH Files
+.nf
+.ta \w'/usr/lib/libF77_p.a   'u
+file.[fFresc]	Input file
+file.o	Object file
+a.out	Loaded output
+./fort[pid].?	temporary
+/usr/lib/f77pass1	Compiler
+/lib/f1	Pass 2
+/lib/c2	Optional optimizer
+/lib/cpp	C preprocessor
+/usr/lib/libF77.a	Intrinsic function library
+/usr/lib/libI77.a	Fortran I/O library
+/usr/lib/libU77.a	ULTRIX interface library
+/usr/lib/libm.a	math library
+/lib/libc.a	C library, see section 3
+/usr/lib/libF77_p.a	Profiling intrinsic function library
+/usr/lib/libI77_p.a	Profiling Fortran I/O library
+/usr/lib/libU77_p.a	Profiling ULTRIX interface library
+/usr/lib/libm_p.a	Profiling math library
+/usr/lib/libc_p.a	Profiling C library, see section 3
+mon.out	File produced for analysis by 
+prof(1) 
+gmon.out	File produced for analysis by 
+gprof(1)
+.fi
+.SH See Also
+ar(1), cc(1), dbx(1), efl(1), fpr(1), fsplit(1), gprof(1),
+ld(1), prof(1), ranlib(1), ratfor(1), struct(1), intro(3f)
+.br
+"Introduction to the f77 I/O Library"
+and "A Portable Fortran 77 Compiler" in the
+\fISupplementary Documents, Volume 2: Programmer\fP

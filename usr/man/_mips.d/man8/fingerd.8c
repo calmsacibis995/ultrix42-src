@@ -1,0 +1,52 @@
+.TH fingerd 8c 
+.SH Name
+fingerd \- remote user information server
+.SH Syntax
+.B /etc/fingerd
+.SH Description
+.NXR "fingerd program" 
+The
+.PN fingerd
+program is a protocol that provides an interface to the
+Name and Finger programs at several network sites.
+The program returns an in depth 
+status report on either the system currently in use 
+or on a particular user whether that user is logged in or not.
+.PP
+The
+.PN fingerd
+program is never executed directly by a user, but rather by the
+ULTRIX Internet listener daemon 
+.PN /etc/inetd .
+When 
+.PN /etc/inetd 
+is listening on port 79, it passes any requests
+that it receives to 
+.PN /etc/fingerd .  
+Once 
+.PN fingerd
+receives control, it reads a
+single command line terminated by a
+.CT F
+which is passed to 
+.MS finger 1 .
+The
+.PN fingerd
+command closes its connections as soon as the output is finished.
+.PP
+If the line is null, for example a 
+.CT F 
+is sent, then 
+.PN finger
+returns a default report that lists all the users logged into
+the system at that moment.
+.PP
+If a user name is specified as 
+.PN eric^F , 
+for example, more extended information is listed for 
+only that particular user, whether he is logged in or not.
+Allowable names in the command line include both login names
+and user names.
+If a name is ambiguous, however, all possible derivations are returned.
+.SH See Also
+finger(1), services(5), inetd(8c)

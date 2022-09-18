@@ -1,0 +1,274 @@
+.\" SCCSID: @(#)fverify.8	6.2	8/30/89
+.TH fverify 8 
+.SH Name
+fverify \- verify software subsets
+.SH Syntax
+.B fverify [\-yn]
+.SH Description
+.NXR "fverify command"
+.NXR "setld" "verify software subsets"
+.NXR "software subset" "verifying"
+The
+.PN fverify
+command
+reads subset inventory records from
+standard input and verifies that the attributes for the files
+on the system match the
+attributes listed in the corresponding records. 
+Invoking
+.PN fverify
+with no arguments causes it to report errors to
+the standard output and prompt the user for confirmation
+before making corrections.
+.PP
+Missing files and inconsistencies
+in file size, checksum, user id, group id, mode,
+and file type are reported.
+If inconsistencies in user id,
+group id or mode are detected the user is asked if they are
+to be corrected. If a missing file is a directory, it will
+be created. All errors and informational messages are logged
+to the file
+.PN /var/adm/fverifylog .
+.PP
+The
+.PN setld
+utility uses
+.PN fverify
+when installing subsets to guarantee correct installation.
+.SH Options
+Specifying both options will cause the
+.B \-y
+option to be ignored.
+.TP
+.B \-n
+Error reporting only. When specified,
+.PN fverify
+reports errors and does not perform any fixes. 
+.TP
+.B \-y
+Fixes only. When specified, 
+.PN fverify
+fixes modes, UIDs and GIDs on any files which have incorrect
+values for these attributes. No user input is required.
+.SH Restrictions
+Problems with file size, file type, and file checksum cannot be
+corrected.
+.PP
+Because the subset inventories give file names as relative
+paths, run
+.PN fverify
+in the root directory to which the software is installed.
+.PP
+Many of the files on the system cannot be read or modified
+without appropriate privilege. Attempting to run
+.PN fverify
+without appropriate privilege may result in an excess of
+access errors being reported.
+.SH Examples
+To use
+.PN fverify
+to report verification problems with 
+the BASE subset on ULTRIX, Version 4.0 (VAX), use the following
+command: 
+.EX
+% \fBcd /\fP
+% \fB/etc/stl/fverify \-n </usr/etc/subsets/ULTBASE400.inv\fP
+.EE
+.PP
+To correct all problems with the same subset without
+being presented any prompts or diagnostic output, type:
+.EX
+% \fBcd /\fP
+% \fB/etc/stl/fverify \-y < /usr/etc/subsets/ULTBASE400.inv\fP
+.EE
+.PP
+To interactively repair verification problems with the COMM
+subset on ULTRIX, Version 4.0 (RISC), use the fverify command
+with no arguments:
+.EX
+% \fBcd /\fP
+% \fB/etc/stl/fverify < /usr/etc/subsets/UDTCOMM400.inv\fP
+.EE
+.SH Diagnostics
+.PP
+.B fverify: out of memory
+.br
+Not enough memory is available from the system.
+.PP
+.I pathname:
+.B cannot stat (\fIerror-message\fR)
+.br
+The file
+.I pathname
+is listed in the inventory but is not on the system.
+The
+.I error-message
+explains why.
+.PP
+.I pathname:
+.B file type `\fIx\fP' should be `\fIy\fP'
+.br
+The file is listed in the inventory as being of type `\fIy\fR',
+but the copy of the file on the disk is type `\fIx\fR'.
+The file type codes are:
+.sp
+.RS
+b  block device files
+.br
+c  character device files
+.br
+d  directory files
+.br
+f  regular files
+.br
+l  hard links
+.br
+p  fifos (named pipes)
+.br
+s  symbolic links
+.RE
+.sp
+.PP
+.I pathname:
+.B checksum
+.I n
+.B should be
+.I m
+.br
+There is a checksum error on
+.I pathname.
+The values
+.I n
+and
+.I m
+are the actual and expected values.
+.PP
+.I pathname:
+.B size
+.I n
+.B should be
+.I m
+.br
+The size of file
+.I pathname
+is not as expected. The numbers
+.I n
+and
+.I m
+are the actual and expected values.
+.PP
+.I pathname:
+.B gid
+.I n
+.B should be
+.I m
+.br
+The group id for
+.I pathname
+is not as expected. The group ids
+.I n
+and
+.I m
+are the actual and expected values.
+.PP
+.I pathname:
+.B uid
+.I n
+.B should be
+.I m
+.br
+The user id for
+.I pathname
+is not as expected. The user ids
+.I n
+and
+.I m
+are the actual and expected values.
+.PP
+.I pathname:
+.B permissions
+.I string1
+.B should be
+.I string2
+.br
+The permissions for
+.I pathname
+are not as expected.
+.I String1
+and
+.I string2
+are the actual and expected permissions. The format
+of
+.I string1
+and
+.I string2
+is the same as that used by the
+.PN ls
+command.
+.PP
+.B Creating directory
+.I pathname
+.br
+The directory
+.I pathname
+is listed in the input inventory but does not exist on the system.
+The 
+.PN fverify
+command will attempt to create the directory.
+.PP
+.B cannot correct
+.I pathname
+(\fIerror-message\fR)
+.br
+A problem reported with
+.I pathname
+could not be corrected. The
+.I error-message
+explains why.
+.PP
+.I pathname
+.B corrected
+.br
+A problem with
+.I pathname
+was successfully corrected.
+.PP
+.B Cannot create dir
+.I pathname
+(\fIerror-message\fR)
+.br
+The
+.PN fverify
+program could not create a directory it was attempting to create.
+The accompanying
+.I error-message
+explains why.
+.PP
+.I n
+.B verification errors encountered.
+.br
+.I m
+.B corrections performed.
+.br
+Before exiting, the
+.PN fverify
+program prints these statistics describing what had been done.
+.sp
+.PP
+The exit status from
+.PN fverify
+is the total number of errors detected minus the total number of
+successful fixes.
+.SH Files
+.TP 25 
+.PN /usr/etc/subsets/*.inv
+Subset inventory files
+.TP
+.PN /var/adm/fverifylog
+Log File
+.SH See Also
+ls(1), stl_inv(5), setld(8)
+.br
+.I Guide to Preparing Software for
+.I Distribution on ULTRIX Systems

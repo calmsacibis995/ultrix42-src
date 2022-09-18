@@ -1,0 +1,42 @@
+.\" SCCSID: @(#)quot.8	8.1	9/11/90
+.TH quot 8 
+.SH Name
+quot \- summarize file system ownership
+.SH Syntax
+.B /etc/quot
+[ \fIoption\fR ... ] 
+[ \fIfilesystem\fR ]
+.SH Description
+.NXR "quot command"
+.NXR "file system" "printing blocks per user"
+The
+.PN quot
+command prints the number of blocks in the named
+.I filesystem
+currently owned by each user.
+If no 
+.I filesystem
+is named, a default name is assumed.
+.SH Options
+.TP
+.B \-n
+Causes the pipeline
+.B "ncheck filesystem | sort +0n | quot \-n filesystem
+to produce a list of all files and their owners.
+.TP
+.B \-c
+Prints three columns giving the file size in blocks, the number of
+files of that size, and the cumulative total of blocks
+in that size or smaller file.
+.TP
+.B \-f
+Prints the count of number of files as well as the 
+space owned by each user.
+.SH Files
+.TP 15
+.PN /etc/passwd
+Used to get user names
+.PP
+The default file system varies with the system.
+.SH See Also
+du(1), ls(1)

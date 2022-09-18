@@ -1,0 +1,40 @@
+.\" SCCSID: @(#)cty.4	3.1	11/24/87
+.TH cty 4 VAX
+.SH Name
+cty \- extra serial line interface
+.SH Description
+.NXR "cty keyword"
+.NA "console interface" "serial line interface"
+.NXR "serial line interface" "adding"
+The extra serial lines are available to the processor through the
+console registers. These lines are available on the VAX 8100, 8200,
+8300, 8500, 8550, 8600, 8650, 8700, and 8800 machines and number three
+all total.
+They act like normal terminal lines, except for the VAX 8600 (8650), where
+the first line can also act as a remote console port and the other two
+lines are currently unused. Entries for these lines should be placed
+in 
+.PN /etc/ttys ,
+if they are used.
+.PP
+There are also certain workstation configurations that
+may use the console serial interface.  For MicroVAX workstation 
+configurations, calling 
+.MS MAKEDEV 8
+with the argument ttycp will create the device special file needed to 
+utilize the console interface.  
+Before using the serial line interface, it is important to consider the
+setting of the halt enable switch on a MicroVAX workstation.
+.PP
+.SH Restrictions
+In general, the lines are low-performance devices.
+They can be used as terminal ports, but, for each character
+sent or received, the CPU is interrupted. Thus, it is
+recommended that the extra serial lines
+be used at low baud rates (2400 baud or less), 
+so that console input and output do not severely impact system
+performance.
+.SH Files
+.PN /dev/ttyc?
+.SH See Also
+console(4), tty(4), MAKEDEV(8)

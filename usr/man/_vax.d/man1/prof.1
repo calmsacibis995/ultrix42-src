@@ -1,0 +1,96 @@
+.\" SCCSID: @(#)prof.1	8.1	9/11/90
+.TH prof 1 VAX
+.SH Name
+prof \- profile an object file
+.SH Syntax
+.B prof
+[\fB\-a\fR] [\fB\-l\fR] [\fB\-n\fR]
+[\fB\-z\fR] [\fB\-s\fR]
+[\fB\-v\fR]
+[\fIlow\fR\|[\fB\-\fIhigh\fR\|]\|]\|]
+[\fIfile1\fR\|[\fIfile2...\fR]\|]
+.SH Description
+.NXR "prof command"
+.NXA "plot command" "prof command"
+.NXAM "monitor subroutine" "prof command"
+.NXA "cc compiler" "prof command"
+.NXA "f77 compiler" "prof command"
+.NXR "profile file" "displaying data"
+The
+.PN prof
+command interprets the file produced by the
+.PN monitor(3)
+subroutine.
+Under default modes,
+the symbol table in the
+named object file
+(a.out
+default)
+is read and correlated with the
+profile file
+(mon.out
+default).
+For each external symbol, the percentage
+of time spent executing between that symbol
+and the next
+is printed (in decreasing order),
+together with the number of times that routine was called
+and the number of milliseconds per call.
+If more than one profile file is specified,
+the output represents the sum of the profiles.
+.SH Options
+.NXR "prof command" "options"
+In order for the number of calls to a routine to be tallied,
+the
+.B \-p
+option of
+.PN cc(1),
+.PN f77(1)
+or
+.PN pc(1)
+must have been given when the file containing the
+routine was compiled.
+This option also arranges for the
+profile file to be produced automatically.
+.IP \fB\-a\fR 5
+Displays all symbols rather than
+just external symbols.
+.IP \fB\-l\fR 
+Displays output by symbol value.  
+.IP \fB\-n\fR 
+Displays output by number of calls. 
+.IP \fB\-s\fR 
+Summary profile file is produced in mon.sum.
+This is useful only
+when more than one profile file is specified.
+.IP \fB\-v\fR 
+Produces graphic output for display by the
+.PN plot(1g) 
+filters.
+When plotting, the numbers
+.I low
+and 
+.I high,
+by default 0 and 100, may be given, which causes a selected
+percentage of the profile to be plotted
+with accordingly higher resolution.
+.IP \fB\-z\fR 
+Routines having zero usage, as indicated by call counts
+and accumulated time, are printed in the output.
+.SH Restrictions
+.NXR "prof command" "restricted"
+Beware of quantization errors.
+.PP
+The
+.PN f77
+command causes confusion because the entry points are 
+at the bottom of subroutines and functions.
+.SH Files
+.ta \w'mon.out  'u
+mon.out	for profile
+.br
+a.out		for namelist
+.br
+mon.sum	for summary profile
+.SH See Also
+cc(1), plot(1g), profil(2), monitor(3)

@@ -1,0 +1,52 @@
+.\" SCCSID: @(#)fork.3f	8.1	9/11/90
+.TH fork 3f VAX "" Unsupported
+.SH Name
+fork \- create a copy of this process
+.SH Syntax
+.B integer function fork()
+.SH Description
+.NXR "fork subroutine (FORTRAN)"
+.NXR "process" "copying"
+The
+.PN fork
+function creates a copy of the calling process.
+The only distinction between the two processes is that the value
+returned to one of them (referred to as the 'parent' process)
+will be the process ID of the copy.
+The copy is usually referred to as the 'child' process.
+The value returned to the 'child' process will be zero.
+.PP
+All logical units open for writing are flushed before the fork to avoid
+duplication of the contents of I/O buffers in the external file(s).
+.PP
+If the returned value is negative, it indicates an error and will be
+the negation of the system error code.
+See 
+.MS perror 3f .
+.PP
+A corresponding
+.PN exec
+routine has not been provided because there is no satisfactory way to
+retain open logical units across the exec.
+However, the usual function of
+.PN fork/exec
+can be performed using
+.MS system 3f .
+.if 0 \{
+A pipe can be opened to another process using the f77
+.PN open
+statement with
+.sp 1
+.ti +5
+.B "file=\(fm\fIprocess\fB\(fm, status=\(fmpipe\(fm, access=\(fmread\(fm"
+.br
+or
+.br
+.ti +5
+.B "file=\(fm\fIprocess\fB\(fm, status=\(fmpipe\(fm, access=\(fmwrite\(fm"
+\}
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+fork(2), kill(3f), perror(3f), system(3f), wait(3f)

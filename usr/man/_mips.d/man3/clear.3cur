@@ -1,0 +1,62 @@
+.TH clear 3cur 
+.SH Name
+clear, wclear \- clear window
+.SH Syntax
+.PP
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int clear(\|)
+.PP
+.br
+.B
+int wclear(win)
+.br
+.B
+WINDOW \(**win;
+.SH Description
+.NXR "clear macro"
+.NXR "wclear subroutine"
+The
+.PN clear
+routine 
+resets the entire default
+window to blanks and sets the current 
+.br
+(y, x) coordinates to (0, 0).
+.PP
+The routine 
+.PN wclear
+resets the entire specified
+window to blanks and sets the current 
+(y, x) coordinates to (0, 0).
+.PP
+The
+.PN clear
+routine
+assumes that the screen may have garbage on it that it doesn't know
+about. 
+The routine first calls
+.PN erase 
+which copies blanks to every position in the default window,
+and then
+.PN clearok ,
+which clears the physical screen completely on the next call
+to
+.PN refresh 
+for 
+.PN stdscr .
+.PP
+The routine 
+.PN clear
+is a macro.
+.SH Return Values
+The
+.PN clear
+and
+.PN wclear
+functions return OK on success and ERR on error.
+.SH See Also
+clearok(3cur), erase(3cur), refresh(3cur)

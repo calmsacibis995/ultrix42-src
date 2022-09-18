@@ -1,0 +1,62 @@
+.\" SCCSID: @(#)time.3	2.1	3/10/87
+.TH time 3
+.SH Name
+time, ftime \- get date and time
+.SH Syntax
+.nf
+.B #include <time.h>
+.PP
+.B "time_t time((time_t *)0)"
+.PP
+.B time_t time(\fItloc\fP)
+.B time_t *\fItloc\fP;
+.PP
+.B #include <sys/timeb.h>
+.PP
+.B void ftime(\fItp\fP)
+.B struct timeb *\fItp\fP;
+.fi
+.SH Description
+.NXR "time subroutine (standard C)"
+.NXR "ftime subroutine"
+.NXR "time" "getting"
+.NXR "date" "getting"
+The
+.PN time
+subroutine
+returns the time since 00:00:00 GMT, Jan. 1, 1970, measured
+in seconds.
+.PP
+If
+.I tloc
+is nonnull,
+the return value is also stored in the
+place to which
+.I tloc
+points.
+.PP
+The
+.PN ftime
+entry fills in a structure pointed to by its argument,
+as defined by <sys/timeb.h>:
+.EX
+
+struct timeb
+{
+        time_t   time;
+        unsigned short millitm;
+        short    timezone;
+        short    dstflag;
+};
+
+.EE
+.PP
+The structure contains the time since the epoch in seconds,
+up to 1000 milliseconds of more-precise interval,
+the local time zone
+(measured in minutes of time westward from Greenwich),
+and a flag that, if nonzero, indicates that
+Daylight Saving time applies locally
+during the appropriate part of the year.
+.SH See Also
+date(1), gettimeofday(2), settimeofday(2), ctime(3)

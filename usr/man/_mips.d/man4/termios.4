@@ -1,0 +1,1621 @@
+.TH termios 4
+.SH Name
+termios \- POSIX terminal interface
+.SH Description
+.NXR "terminal interface"
+.SH Interface Characteristics
+The POSIX terminal interface is provided to
+control asynchronous communications ports, pseudoterminals, and the special
+file,
+.PN /dev/tty .
+The ULTRIX operating system also provides a SVID termio
+terminal interface as defined in 
+.MS termio 4
+and a Berkeley terminal interface as defined in 
+.MS tty 4 .
+The following sections describe the general terminal interface as defined
+by the POSIX operating system specification.
+For a general overview of the various
+terminal interfaces, refer to the subsection entitled Terminal 
+interface definitions in 
+.MS tty 4 .
+.PP
+The POSIX termios specification defines a set of terminal-related
+functions and attributes 
+that facilitate the development of portable programs.  The specification
+allows for local extensions to the terminal interface.  Throughout this 
+description, all local extensions to the termios interface are noted.
+Programs that are written to be highly portable should avoid the usage of
+local extensions.
+.SH Opening a Terminal Device File
+When a terminal file is opened, it normally causes the process to wait until
+a connection is established.  In practice, application programs seldom open these 
+files; they are opened by special programs such as 
+.MS getty 8
+and become a user's standard input, output, and error files.
+.PP
+As described in 
+.MS open 2 ,
+opening a terminal device file with the O_NONBLOCK
+flag clear causes the process to block until the terminal device is ready
+and available.
+If CLOCAL mode is not set, blocking occurs until a connection is 
+established.
+If CLOCAL mode is set, or the O_NONBLOCK flag is specified in the
+.MS open 2 ,
+the
+.MS open 2
+returns a file descriptor, without waiting for a connection to be 
+established.
+.SH Process Groups
+A terminal may have a foreground process group associated with it.  This
+foreground process group plays a special role in handling signal-generating
+input characters, as discussed in the Special Characters description.
+.PP
+A command interpreter that is capable of
+supporting job control,
+.MS csh 1
+for example,
+can allocate the terminal to different jobs
+or process groups by placing related processes in a single process group and
+associating this process group with the terminal.
+A terminal's foreground
+process group can be set or examined by a process with sufficient privileges.
+The terminal interface aids in this allocation by restricting access to the
+terminal by processes that are not in the foreground process group.  See the Job
+Access Control description for more information.
+.SH The Controlling Terminal
+A terminal can belong to a process as its controlling terminal.  
+Each process of a session that has a controlling terminal has the same
+controlling terminal.  A terminal may be the controlling terminal for at most
+one session.  If a session leader has no controlling terminal and opens a 
+terminal device file that is not already associated with a session, without 
+using the O_NOCTTY 
+.MS open 2
+flag, the terminal then becomes the controlling terminal of the session leader.
+If a process that is not a session leader opens a terminal file, or the
+O_NOCTTY option is used with 
+.MS open 2 ,
+that terminal cannot become the controlling terminal of the calling
+process.  When a controlling terminal becomes associated with a session, its
+foreground process group is set to the process group of the session 
+leader.
+.PP
+The controlling terminal is inherited by a child process during a 
+.MS fork 2
+function.  A process relinquishes its controlling terminal when it 
+creates a new session with the 
+.MS setsid 2
+function, or when all file descriptors associated with the controlling terminal
+have been closed.
+.PP
+When a controlling process
+terminates, the controlling terminal
+is disassociated from the current session,
+allowing
+the terminal to be acquired as a controlling terminal by a new session 
+process group leader.
+Subsequent access to the terminal by other processes in the earlier session
+may be denied, with attempts to access the terminal treated as if a modem 
+disconnect had been sensed.
+.SH Closing a Terminal Device File
+When the last process that has the terminal line open closes the terminal
+line, the process waits for all output to clear and any input 
+is discarded.  The wait does not 
+exceed four minutes, preventing the line from becoming hung if a progress is
+not made in the final output.  After the final output has been transmitted, any
+pending input is flushed.  If HUPCL is set in the control modes, and the
+communications port supports a disconnect function, the terminal device 
+performs a disconnect.
+.SH Modem Disconnect
+When a modem disconnect is detected by the terminal interface
+for a controlling terminal, 
+and the CLOCAL bit is not set in the control flag, the SIGHUP signal
+is sent to all the controlling processes associated with the
+terminal.  Unless other arrangements have been made, this signal causes the
+controlling processes to terminate.  
+If SIGHUP is ignored or caught, any subsequent read
+returns with an end-of-file indication.  Thus, programs that read a terminal 
+file and test for end-of-file can terminate appropriately after a disconnect.
+Any subsequent 
+.MS write 2
+to the terminal device returns \-1 with 
+.I errno 
+set to [EIO], until the device
+is closed.
+.SH Terminal Access Control
+If a process is in the foreground process group (nonzero) of its
+controlling terminal (that is, if the process is a foreground process),
+.MS read 2
+operations are allowed as described in the Input Processing
+and Reading Characters description. 
+Any attempts by a process in a background process group to read from its
+controlling terminal causes its process group to receive a SIGTTIN
+signal, unless one of the following is true:  
+.IP \(bu 5
+If the reading process is ignoring or blocking the SIGTTIN signal.
+.IP \(bu 5
+If the process group of the reading process is orphaned, the
+.MS read 2
+returns \-1, with 
+.I errno 
+set to [EIO], and no signal is sent.
+.PP
+Attempts by a process in a background process group to write to its 
+controlling terminal causes the process group to receive 
+a SIGTTOU
+signal, unless one of the following is true:
+.IP \(bu 5
+If TOSTOP is not set, or if TOSTOP is set and the process is ignoring or 
+blocking the SIGTTOU signal, the process is allowed to write to the 
+terminal  and the SIGTTOU is not sent.  
+.IP \(bu 5
+If TOSTOP is set, and the process
+group of the writing process is orphaned, and the writing process is not
+blocking SIGTTOU, the
+.MS write 2
+returns \-1, with 
+.I errno 
+set to [EIO], and no signal is sent.
+.PP
+Certain calls that set terminal parameters are treated in the same fashion
+as
+.MS write 2 ,
+except that TOSTOP is ignored. That is, the effect is identical to that of
+terminal writes when TOSTOP is set.
+See the Control Functions description
+for more information.
+.SH Input Processing and Reading Characters
+A terminal device associated with a terminal device file operates in 
+full-duplex mode, so that characters can arrive while output is occurring.
+Each terminal device file has associated with it an input queue, in which
+incoming characters are stored by the system before being read by a process.
+The system imposes a limit (MAX_INPUT), on the number of bytes that can be
+stored in the input queue.  MAX_INPUT is limited to 256 characters.
+When ICANON is not set and
+the system's character input buffers become full, the input buffer is
+flushed without notice. This causes all the characters in the input queue
+to be lost.  If ICANON is set and the system's character input buffers become 
+full, the driver discards additional characters and echos a bell
+(ASCII BEL) to notify the user of the full condition.
+.PP
+Depending on whether or not the terminal device is in canonical mode or 
+noncanonical mode, two general types of input processing are available.
+See the Canonical Mode Input Processing and Noncanonical
+Mode Input Processing descriptions for more information.
+Additionally, input characters are processed
+according to the c_iflag and c_lflag fields. See the Input Modes and Local
+Modes descriptions.
+Such processing can include echoing, which, in general, means transmitting input
+characters immediately back to the terminal when they are received from the
+terminal.  This is useful for terminals that can operate in full-duplex mode.
+The manner in which characters are provided to a process reading from a 
+terminal device is dependent on whether the terminal file is in canonical
+or noncanonical mode.
+.PP
+Another dependency is whether or not the O_NONBLOCK is set by 
+.MS open 2 
+or 
+.MS fcntl 2 .  
+If the O_NONBLOCK flag is clear, then the read request
+is blocked until data is available or a signal has been received.  If 
+the O_NONBLOCK flag is set, then the read request completes, without 
+blocking, in one of the following ways:
+.IP \(bu 5
+If there is enough data available to satisfy the entire request,
+the read completes successfully and returns the number of bytes read.
+.IP \(bu 5
+If there is not enough data available to satisfy the entire request,
+the read completes successfully, having read as much data as
+possible and returns the number of bytes it was able to read.
+.IP \(bu 5
+If data is not available, the read returns a \-1, with
+.I errno 
+set to EAGAIN.
+.PP
+As stated previously, the availability of data is dependent on
+the input processing mode.  The input processing mode can be either
+canonical or non-canonical.  The following sections discuss
+these modes in detail.
+.SH Canonical Mode Input Processing
+In canonical mode input processing, terminal input is processed in units of
+lines.  A line is delimited by a new-line (\\n) character (ASCII LF),
+an end-of-file character (ASCII EOF), or a user-defined 
+end-of-line character (EOL) .
+See the description of Special Characters for more information 
+on EOF and EOL.
+.PP
+A read request cannot be satisfied until an
+entire line has been typed or a signal has been received.  Regardless of
+the number of characters requested in the read call, at most one line is
+returned.  However, it is not necessary to read a whole line at once; one
+or more characters can be requested in a read without losing information.
+.PP
+MAX_CANON (256) defines the maximum number of input characters the system
+can buffer in canonical mode.  When this limit is exceeded, the system 
+discards additional input.
+.PP
+Erase and kill processing occur when either the ERASE or KILL character
+is received.  This processing affects data in the
+input queue that has not been delimited by a new-line (NL), end-of-file
+(EOF), or end-of-line (EOL) character.  The data that is not delimited 
+creates the current line.  The ERASE character deletes the last 
+character in the current line, if there is any.
+The KILL character deletes all data in the current line, if there is any.
+The ERASE and KILL characters have no effect if there is no data in the 
+current line.
+The ERASE and KILL characters themselves are not placed in the input queue.
+.PP
+The reprint (RPRNT) character retypes pending input beginning on a new
+line.  Retyping is automatic, if characters that would normally
+be erased from the screen are interspersed with program output.
+.SH Noncanonical Mode Input Processing
+In noncanonical mode input processing, input characters are not assembled into
+lines, and erase and kill processing do not occur.  The values of the special
+characters MIN and TIME are used to determine how to process the characters
+received.  MIN and TIME are defined by the c_cc array of special control
+characters.
+.PP
+MIN represents the minimum number of characters that should be received when
+the read is satisfied (for example, the characters are returned to the user).
+TIME is a timer of 0.1 second granularity that is used to time out bursty 
+and short term data transmissions.  If MIN is greater than MAX_INPUT (256), the 
+value of MIN is truncated to be MAX_INPUT. The four possible values for MIN 
+and TIME and examples of their interactions are as follows:
+.PP
+1.
+MIN > 0, TIME > 0.
+.br
+In this case, TIME serves as an intercharacter timer and is 
+activated after the first character is received.  Because it is an 
+intercharacter timer, it is reset after a character is received.  The 
+interaction between MIN and TIME provokes the intercharacter time to start 
+as soon as one character is received. If MIN characters are received before 
+the intercharacter timer expires, the read is satisfied. 
+.PP
+If the timer expires before 
+MIN characters are received, the characters received
+to that point are returned to the user.  If TIME expires, at least 
+one character is returned, because the timer would not have been enabled unless
+a character was received.  The read blocks until the MIN and TIME 
+mechanisms are activated by the receipt of the first character, 
+or a signal is received.
+.PP
+2.
+MIN > 0, TIME = 0.
+.br
+In this case, the value of TIME is zero, the timer is inactive. However,
+MIN is significant.  A pending read is not satisfied until MIN 
+characters or a signal are received.  
+That is, the pending read sleeps until MIN characters
+are received.  A program that uses this example to read record-based 
+terminal I/O can indefinitely block the read operation.
+.PP
+3.
+MIN = 0, TIME > 0.
+.br
+In this case, because MIN = 0, TIME does not represent an intercharacter
+timer. Instead, it serves as a read timer that is activated as soon as the 
+.MS read 2
+function is processed.
+A read is satisfied as soon as a single character is received
+or the read timer expires.  Note, if the timer expires, a
+character is not returned.  If the timer does not expire, a read is only
+satisfied if a character is received.  For example, the read
+cannot block indefinitely waiting for a character. If a character is not
+received within TIME*0.1 seconds after the read is initiated, the read 
+returns a value of zero, having read no data.
+.PP
+4.
+MIN = 0, TIME = 0.
+.br
+In this case, only the  minimum number of characters requested or the 
+number of characters currently available are returned without waiting 
+for more characters to be input.  In this example, the return is 
+immediate.
+.PP
+The following list summarizes the previous examples:
+.IP \(bu 5
+The interactions of MIN
+and TIME are not symmetric.  For example, when MIN > 0 and TIME = 0,
+TIME has no effect.  However, if MIN = 0 and 
+TIME > 0, MIN is activated by the receipt of a single character.
+.IP \(bu 5
+When MIN > 0 and TIME > 0, TIME represents an intercharacter
+timer; when MIN = 0, TIME > 0, TIME represents a read timer.
+.PP
+The previous summary highlights the dual purpose of the MIN and TIME feature.  
+Cases 1 and 2 handle burst mode activity (such
+as file transfer programs) where a program would like to process at 
+least MIN characters at a
+time.  In case 1, the intercharacter timer is activated by a user 
+as a safety precaution. However, in case 2, it is turned off. 
+.PP
+Cases 3 and 4 exist to handle single character timed transfers.  These 
+examples are readily adaptable to screen-based applications that need 
+to know if a character is present in the input queue before refreshing 
+the screen.  In case 3, the read is timed. However, in case 4, it is not.
+.PP
+Note that MIN is always a minimum.  It does not denote
+a record length.  That is, if a program performs a read of 20 bytes, MIN
+has a value of 10, and there are 25 characters present, 20 characters
+are returned to the user.
+.SH Writing Characters and Output Processing
+When a process writes one or more characters to a terminal device file, 
+they are processed according to the c_oflag (see Output Modes).
+The terminal interface provides a buffering mechanism.  For example,
+when a call to 
+.MS write 2
+completes, all
+of the characters written have been scheduled for transmission to the device,
+but the transmission is not necessarily complete.  The characters are
+transmitted to the terminal as soon as previously written characters
+have output successfully.
+.SH Signal Handling
+Signals caught during a 
+.MS read 2 ,
+.MS write 2 ,
+or other operation on the file descriptor
+associated with the terminal file are handled appropriately, as described in
+.MS signal 3 .
+.SH Special Characters
+Certain characters have special functions on input or output.
+These functions are:
+.IP "\fBINTR\fR" 11
+Special character on input that is recognized if the ISIG flag
+is enabled.  Generates a SIGINT signal that is sent to all 
+processes in the foreground process group associated with
+the terminal. 
+If ISIG is set, the INTR character is discarded when processed.
+The default value is octal 0177.
+.IP "\fBQUIT\fR" 
+Special character on input that is recognized if the ISIG flag
+is enabled.  Generates a SIGQUIT signal that is sent to all
+processes in the foreground process group associated with
+the terminal. 
+If ISIG is set, the QUIT character is discarded when processed.
+The default value is CTRL/| (ASCII FS).
+.IP "\fBERASE\fR" 
+Special character on input that is recognized if the ICANON 
+flag is set.  Erases the last character in the current line.  It cannot
+erase beyond the start of a line, as delimited by an NL, EOF,
+or EOL character.  
+If ICANON is set, the ERASE character is discarded when processed.
+The default value is the number sign (#).
+.IP "\fBKILL\fR" 
+Special character on input that is recognized if the ICANON flag
+is set.  Deletes the entire line, as delimited by an NL, EOF, or
+EOL character. 
+If ICANON is set, the KILL character is discarded when processed.
+The default value is the at sign (@).
+.IP "\fBEOF\fR" 
+Special character on input that is recognized if the ICANON flag
+is set. This character is used to generate an end of file (EOF)
+from the terminal. 
+When received, all the characters waiting to be read are
+immediately passed to the program, without waiting for a newline,
+and the EOF is discarded.  Thus, if there are no characters
+waiting (that is, if the EOF occurred at the beginning of a line),
+a byte count of zero is returned from 
+.MS read 2 ,
+representing an end-of-file indication.  
+If ICANON is set, the EOF character is discarded when processed.
+The default value is CTRL/D (ASCII EOT).
+.IP "\fBNL\fR" 
+Special character on input that is recognized if the ICANON flag
+is set.  It is the assigned line delimiter (\\n).  It cannot be 
+changed.
+.IP "\fBEOL\fR" 
+Special character on input that is recognized if the ICANON flag
+is set.  It is an additional line delimiter, like NL.  The default
+value is POSIX_V_DISABLE, which is used to specify that this special
+character is ordinarily not used.
+.IP "\fBSUSP\fR" 
+Special character on input that is recognized if the ISIG flag is
+enabled.  Generates a SIGTSTP signal
+that is sent to all processes in the foreground process group
+associated with the terminal.  This signal is used by the
+job control code to change from the current job to the
+controlling job.  
+If ISIG is set, the SUSP character is discarded when processed.
+The default value is CTRL/Z (ASCII SUB).
+.IP "\fBSTOP\fR" 
+Special character on both input and output that is recognized if
+the IXON (input) or IXOFF (output) flag is set.
+Can be used to temporarily suspend output.  It is useful with CRT
+terminals to prevent output from disappearing before it can be
+read.  While output is suspended, STOP characters are ignored and
+not read.  
+If IXON is set, the STOP character is discarded when processed.
+The default value is CTRL/S (ASCII DC3).
+.IP "\fBSTART\fR" 
+Special character on both input and output that is recognized if 
+the IXON (input) or IXOFF (output) flag is set.  Can
+be used to resume output that has been suspended by a STOP 
+character.  While output is not suspended, START characters are
+ignored and not read.  
+If IXON is set, the STOP character is discarded when processed.
+The default value is CTRL/Q (ASCII DC1).
+.IP "\fBCR\fR" 
+Special character on input that is recognized if the ICANON flag is
+set.  The value is (\\r) and this value is not changeable.
+When ICANON and ICRNL are set and 
+IGNCR is not set, this character is translated into an NL,
+and it has the same effect as an NL character.
+.IP "\fBDSUSP\fR" 
+Special character on input used as a delayed suspend character.
+DSUSP is only recognized if the IEXTEN flag is set.
+Similar to the SUSP special character, a SIGTSTP signal is
+issued.  The process cannot actually stop until the
+next character is input.  
+If IEXTEN is set, the DSUSP character is discarded when processed.
+The default value is CTRL/Y (ASCII
+EM).
+.IP "\fBRPRNT\fR" 
+Special character on input used to force the present input line
+to be re-echoed to the terminal after a newline character.  
+RPRNT is only recognized if the IEXTEN flag is set.
+If IEXTEN is set, the RPRNT character is discarded when processed.
+The default value is CTRL/R (ASCII DC2).
+.IP "\fBFLUSH\fR" 
+Special character on input that causes output to the terminal
+to be flushed until another flush character is typed or more input
+is received on the terminal.  
+FLUSH is recognized only if the IEXTEN flag is set.
+If IEXTEN is set, the FLUSH character is discarded when processed.
+The default value is CTRL/O 
+(ASCII SI).
+.IP "\fBWERASE\fR" 
+Special character on input used to erase the preceding word
+of the input queue.  The word erase operation erases 
+characters up to (and not including) a TAB, NL, space, or backslash
+(\\) character.  Word erase cannot erase beyond the start of a
+line as delimited by NL, EOF, or EOL. 
+WERASE is only recognized if the IEXTEN flag is set.
+If IEXTEN is set, the WERASE character is discarded when processed.
+The default value is
+CTRL/W (ASCII ETB).
+.IP "\fBLNEXT\fR" 
+Special character on input used to disassociate any special
+meaning that the next input character has.  This allows for
+the input of characters that would otherwise be interpreted as
+special characters. 
+LNEXT is only recognized if the IEXTEN flag is set.
+If IEXTEN is set, the LNEXT character is discarded when processed.
+The default value is CTRL/V (ASCII SYN).
+.IP "\fBQUOTE\fR" 
+Special character on input used to enter a literal ERASE or
+KILL character.  The same functionality could be achieved through
+the use of the LNEXT character, but QUOTE is included for
+backward compatibility.  The default value is a backslash (\\).
+QUOTE is only recognized if the IEXTEN flag is set.
+If IEXTEN is set, the QUOTE character is discarded when processed.
+.PP
+The values for INTR, QUIT, ERASE, KILL, EOF, EOL, SUSP, START, STOP, 
+DSUSP, RPRNT, FLUSH
+WERASE, LNEXT, and QUOTE 
+are changeable to suit individual tastes.
+The following special characters are local extensions of DSUSP, RPRNT, FLUSH,
+WERASE, LNEXT, and QUOTE.
+.PP
+Special character functions can be disabled individually by setting them to
+the constant POSIX_V_DISABLE, which is defined to be zero.
+The POSIX_V_DISABLE character is always read if received, and never causes a 
+special character function.  With the exception of NL and EOL, the special
+characters cannot be passed up to the reading process.
+.PP
+If two or more special characters have the same value, the function performed
+when that character is received is undefined.  More than one special
+character can be set to POSIX_V_DISABLE to disable the control function
+normally associated with the special character.
+.SH Settable Parameters
+Routines that need to control certain terminal I/O characteristics can  do so
+by using the termios structure as defined in the header 
+.PN <termios.h> .  
+The members of this structure include:
+.EX
+        Member       Member     Description
+        Type         Name
+
+struct termios {
+	tcflag_t     c_iflag    /* input modes   */
+	tcflag_t     c_oflag    /* output modes  */
+	tcflag_t     c_cflag    /* control modes */
+	tcflag_t     c_lflag    /* local modes   */
+	cc_t         c_cc[NCCS] /* control chars */
+	cc_t         c_line;    /* line discipline */
+}
+.EE
+.PP
+The types tcflag_t and cc_t are defined in the header 
+.PN <termios.h> .
+.PP
+.B Input Modes
+.PP
+The c_iflag field describes the basic terminal input control:
+.PP
+.TS
+tab(@);
+lw(1i) lw(2i).
+_
+.sp 6p
+.HB
+Mask Name@Description
+.R
+.sp 6p
+_
+.sp 6p
+IGNBRK@T{
+Ignore the break condition.
+T}
+BRKINT@T{
+Signal interrupt on break.
+T}
+IGNPAR@T{
+Ignore characters with parity errors.
+T}
+PARMRK@T{
+Mark parity errors.
+T}
+INPCK@T{
+Enable input parity check.
+T}
+ISTRIP@Strip character.
+INLCR@T{
+Map NL to CR on input.
+T}
+IGNCR@Ignore CR.
+ICRNL@T{
+Map CR to NL on input.
+T}
+IXON@T{
+Enable start/stop output control.
+T}
+IXOFF@T{
+Enable start/stop input control.
+T}
+.sp 6p
+_
+.TE
+.PP
+A break condition is defined as a sequence of zero-valued bits that 
+continues for more than the time to send one byte.  The entire sequence
+of zero-valued bits is interpreted as a single break condition, even if
+it continues for a time equivalent to more than one byte.
+.PP
+If IGNBRK is set, a break condition 
+detected on input is ignored, that is, not put on the input queue and
+therefore not read by any process.  Otherwise, if BRKINT is set, the break
+condition generates a single SIGINT signal and flushes both the input and 
+output queues.  If neither IGNBRK or BRKINT is set, a break condition is read
+as a single \\0 (ASCII NUL), or, if PARMRK is set, as \\377,\\0,\\0.
+.PP
+If IGNPAR is set, a byte with a framing or parity error (other than break) is
+ignored.
+.PP
+If PARMRK is set and IGNPAR is not set, 
+a character with a framing or parity error (other than break)
+that is not ignored is given to the application as the 3-character 
+sequence \\377,\\0,X, where \\377, \\0 is a 2-character 
+flag preceding each 
+sequence and X is the data of the character received in error.  To avoid 
+ambiguity in this case, if ISTRIP is not set, a valid character of \\377 is
+given to the application as \\377, \\377.  If either IGNPAR or 
+PARMRK is set, a framing
+or parity error (other than break) that is not ignored is given to the 
+application as a single character \\0.
+.PP
+If INPCK is set, input parity checking is enabled.  If INPCK is not set, input
+parity checking is disabled, allowing output parity generation without input
+parity errors.  Parity checking can be enabled, even if
+parity checking is not enabled.    If parity detection is enabled, but 
+input parity checking is disabled, the hardware that
+connects to the terminal recognizes the parity bit, but the terminal
+special file does not check whether this bit is set correctly or not.
+.PP
+If ISTRIP is set, valid input characters are first stripped to seven bits; 
+otherwise, all eight bits are processed.
+.PP
+If INLCR is set, a received NL character is translated into a CR character.  If
+IGNCR is set, a received CR character is ignored (not read).  
+If IGNCR is not set and
+ICRNL is set, a received CR character is translated into a NL character.
+.PP
+If IXON is set, start/stop output control is enabled.  A received STOP 
+character suspends output and a received START character restarts output.  When
+IXON is set, START and STOP characters are not read, but merely perform flow
+control functions.  When IXON is not set, the START and STOP characters 
+are read.
+.PP
+If IXOFF is set, start/stop input control is enabled.  The system transmits
+STOP characters which cause the terminal device to stop
+transmitting data when the number of characters in the input
+queue attempt to exceed MAX_INPUT (256).  As soon as the device can 
+continue transmitting data without risk of an overflow, START characters are 
+transmitted which cause the terminal device to resume transmitting data.
+.PP
+The initial input control value after 
+.MS open 2
+is 0 (all settings off).
+.PP
+.B Output Modes
+.PP
+The c_oflag field specifies the terminal interface's treatment of output.
+Because OPOST is the only output flag defined by the POSIX standard, all of
+the other definitions are local extensions to the standard.  
+.PP
+.TS
+tab(@);
+lw(1i) lw(2i).
+_
+.sp 6p
+.HB
+Mask Name@Description
+.R
+.sp 6p
+_
+.sp 6p
+OPOST@Postprocess output.
+OLCUC@T{
+Map lower case to upper on output.
+T}
+ONLCR@T{
+Map NL to CR-NL on output.
+T}
+OCRNL@T{
+Map CR to NL on output.
+T}
+ONOCR@T{
+No CR output at column 0.
+T}
+ONLRET@T{
+NL performs CR function.
+T}
+OFILL@T{
+Use fill characters for delay.
+T}
+OFDEL@T{
+Fill is DEL, else NUL.
+T}
+
+NLDLY@T{
+Select new-line delays:
+T}
+NL0@T{
+New-line delay type 0.
+T}
+NL1@T{
+New-line delay type 1.
+T}
+
+CRDLY@T{
+Select carriage-return delays:
+T}
+CR0@T{
+Carriage-return delay type 0.
+T}
+CR1@T{
+Carriage-return delay type 1.
+T}
+CR2@T{
+Carriage-return delay type 2.
+T}
+CR3@T{
+Carriage-return delay type 3.
+T}
+
+TABDLY@T{
+Select horizontal-tab delays:
+T}
+TAB0@T{
+Horizontal-tab delay type 0.
+T}
+TAB1@T{
+Horizontal-tab delay type 1.
+T}
+TAB2@T{
+Horizontal-tab delay type 2.
+T}
+TAB3@T{
+Expand tabs to spaces.
+T}
+
+BSDLY@T{
+Select backspace delays:
+T}
+BS0@T{
+Backspace delay type 0.
+T}
+BS1@T{
+Backspace delay type 1.
+T}
+
+VTDLY@T{
+Select vertical-tab delays:
+T}
+VT0@T{
+Vertical-tab delay type 0.
+T}
+VT1@T{
+Vertical-tab delay type 1.
+T}
+
+FFDLY@T{
+Select form-feed delays:
+T}
+FF0@T{
+Form-feed delay type 0.
+T}
+FF1@T{
+Form-feed delay type 1.
+T}
+.sp 6p
+_
+.TE
+.PP
+If OPOST is set, output characters are post-processed as
+indicated by the remaining flags. Otherwise, characters are
+transmitted without change.
+.PP
+If OLCUC is set, a lowercase letter is
+transmitted as the corresponding uppercase letter.  This
+function is often used in conjunction with IUCLC.
+.PP
+If ONLCR is set, the NL character is transmitted as the CR-NL
+character pair.  If OCRNL is set, the CR character is
+transmitted as the NL character.  If ONOCR is set, no CR
+character is transmitted when at column 0 (first position).
+If ONLRET is set, the NL character is assumed to do the
+carriage-return function; the column pointer is set to
+0, and the delays specified for CR are used.  Otherwise
+the NL character is assumed to do just the line-feed function;
+the column pointer remains unchanged.  The column
+pointer is also set to 0 if the CR character is actually
+transmitted.
+.PP
+Delay bits specify transmission stops that allow mechanical or 
+other movement when certain characters are
+sent to the terminal.  In all cases, a value of 0 indicates
+no delay.  If OFILL is set, fill characters are 
+transmitted for delay instead of a timed delay.  This is
+useful for high baud rate terminals which need only a
+minimal delay.  If OFDEL is set, the fill character is DEL.
+Otherwise, it is NUL.
+.PP
+The delay specifications for NLDLY, CRDLY, TABDLY, BSDLY, VTDLY and
+FFDLY are meant to serve as masks for the respective delay field.
+.PP
+If a form-feed or vertical-tab delay is specified, either delay lasts
+approximately two seconds.
+.PP
+New-line delay lasts about 0.10 seconds.  If ONLRET is set,
+the carriage-return delays are used instead of the new-line
+delays.  If OFILL is set, two fill characters are transmitted.
+.PP
+Carriage-return delay for type 1 depends on the current
+column position, type 2 is approximately 0.10 seconds, and type 3 is
+approximately 0.15 seconds.  If OFILL is set, delay type 1 transmits
+two fill characters, and type 2, four fill characters.
+.PP
+Horizontal-tab delay type 1 depends on the current
+column position.  Type 2 is approximately 0.10 seconds.  Type 3
+specifies that tabs are to be expanded into spaces.  If
+OFILL is set, two fill characters are transmitted for
+any delay.
+.PP
+Backspace delay lasts about 0.05 seconds.  If OFILL is set,
+one fill character is transmitted.
+.PP
+The actual delays depend on line speed and system load.
+.PP
+The initial output control value after open(2) is 0 (all settings off).
+.PP
+.B Control Modes
+.PP
+The c_cflag field describes the hardware control of the terminal:
+.PP
+.TS
+tab(@);
+lw(1i) lw(2i).
+_
+.sp 6p
+.HB
+Mask Name@Description
+.R
+.sp 6p
+_
+.sp 6p
+CSIZE@Character size:
+CS5@5 bits
+CS6@6 bits
+CS7@7 bits
+CS8@8 bits
+
+CSTOPB@T{
+Send two stop bits, else one.
+T}
+CREAD@Enable receiver.
+PARENB@Parity enable.
+PARODD@T{
+Odd parity, else even.
+T}
+HUPCL@T{
+Hung up on last close.
+T}
+CLOCAL@T{
+Ignore modem status lines.
+T}
+TAUTOFLOW@T{
+Use hardware monitored flow control.
+T}
+.sp 6p
+_
+.TE
+.PP
+In addition, the input and output baud rates are also stored in the c_cflag 
+field.  The following values are supported:
+.PP
+.TS
+tab(@);
+ll.
+_
+.sp 6p
+.HB
+Name@Description
+.R
+.sp 6p
+_
+.sp 6p
+B0@Hang up
+B50@50 baud
+B75@75 baud
+B110@110 baud
+B134@134.5 baud
+B150@150 baud
+B300@300 baud
+B600@600 baud
+B1200@1200 baud
+B1800@1800 baud
+B2400@2400 baud
+B4800@4800 baud
+B9600@9600 baud
+B19200@19200 baud
+B38400@38400 baud
+.sp 6p
+_
+.TE
+.PP
+The following interfaces are provided for getting and setting the values
+of the input and output baud rates in the 
+.PN termios 
+structure.  The effects on
+the terminal device do not become effective until the 
+.PN tcsetattr() 
+function is successfully called.
+.EX
+speed_t cfgetospeed (termios_p)
+struct termios *termios_p;
+         
+int cfsetospeed (termios_p, speed)
+struct termios *termios_p;
+speed_t speed;
+
+speed_t cfgetispeed (termios_p)
+struct termios *termios_p;
+
+int cfsetispeed (termios_p, speed)
+struct termios *termios_p;
+speed_t speed;
+.EE
+The type speed_t is defined in 
+.PN <termio.h> .
+.PP
+The 
+.I termios_p 
+argument is a pointer to a termios structure that allows
+the c_cflag field to be manipulated.
+The cfgetospeed() returns the output baud rate stored in cflag.
+.PP
+Additionally, the
+cfsetospeed() sets the output baud rate stored in the cflag to speed.
+The zero baud rate, B0, is used to terminate the
+connection.  If B0 is specified, the modem control line can no longer be
+asserted.  Normally, this disconnects the line.
+Both cfsetispeed() and cfsetospeed() return a value of zero if successful
+and \-1 to indicate error.
+.PP
+The cfgetispeed() returns the input baud rate stored in cflag.
+.PP
+The cfsetispeed() sets the input baud rate stored in cflag to speed.  If the
+input baud rate is set to zero, the input baud rate is specified by the
+value of the output baud rate.  For any particular hardware, unsupported baud
+rates are ignored.  This refers to changes and baud rates not supported by
+the hardware, and to changes setting the input and output baud rates to
+different values if the hardware does not support this.
+.PP
+The CSIZE bits specify the character size in bits for both transmission and
+reception.  This size does not include the parity bit, if any.  If CSTOPB
+is set, two stop bits are used, otherwise one stop bit.  For example, at 
+110 baud, two stop bits are normally used.
+.PP
+If CREAD is set, the receiver is enabled.  Otherwise, no characters 
+are received.
+.PP
+If PARENB is set, parity generation and detection is enabled and a parity bit is
+added to each character.  If parity is enabled, PARODD specifies odd parity, if
+set. Otherwise, even parity is used.
+.PP
+If TAUTOFLOW is set, hardware monitored flow control is performed, if the
+hardware supports this functionality.  In this mode, the hardware terminal
+multiplexer suspends output upon receipt of a STOP character (ASCII DC3).
+The hardware resumes output after a START character (ASCII DC1) has been
+received.  The advantage of this mode is that it provides quick response to
+flow control characters which would be useful in preventing overflow
+of the terminal device's input buffer.  TAUTOFLOW is a local extension to the
+termios specification.
+.PP
+If HUPCL is set, the modem control lines for the port are lowered when the
+last process with the port open closes the port or the process terminates.
+The modem connection is broken.  If HUPCL is not set, the control lines
+are not altered.
+.PP
+If CLOCAL is set, a connection does not depend on the state of the modem status
+lines.
+If CLOCAL is clear, the modem status lines are monitored.
+CLOCAL is typically used by direct connect terminal lines.
+.PP
+Under normal circumstances, a call to the open(2) function waits for the
+modem connection to complete.  However, if the O_NONBLOCK flag is set,
+or, if CLOCAL has been set, the 
+.MS open 2
+function returns 
+immediately without waiting for the connection.
+For further information, see
+.MS open 2 .
+For those files on which the 
+connection has not been established, or on which a modem disconnect has
+occurred, and for which CLOCAL is not set, both 
+.MS read 2
+and 
+.MS write 2
+return a zero character count.  For 
+.MS read 2 ,
+this is equivalent to an end-of-file condition.
+.PP
+The initial hardware control value after open(2) is CS8, CREAD, HUPCL, B300.
+.PP
+.B Local Modes
+.PP
+The c_lflag field of the argument structure is used to control various 
+functions.
+.PP
+.TS
+tab(@);
+lw(1i) lw(3i).
+_
+.sp 6p
+.HB
+Mask Name@Description
+.R
+.sp 6p
+_
+.sp 6p
+ISIG@Enable signals
+ICANON@T{
+Canonical input (erase and kill processing).
+T}
+NOFLSH@T{
+Disable flush after interrupt, quit, or suspend.
+T}
+TOSTOP@T{
+Send SIGTTOU for background output.
+T}
+ECHO@Enable echo.
+ECHOE@T{
+Echo ERASE as an error-correcting backspace.
+T}
+ECHOK@Echo KILL.
+ECHONL@Echo \\n.
+IEXTEN@Enable extended (implementation defined) functions.
+TCTLECH@T{
+Echo input control chars as ^char, delete as ^?.
+T}
+TCRTKIL@T{
+BS-space-BS erase entire line on kill.
+T}
+TPRTERA@T{
+Hard-copy terminal erase mode using \char.
+T}
+.sp 6p
+_
+.TE
+.PP
+If ISIG is set, each input character is checked against the special control
+characters INTR, QUIT, and SUSP.  If an input 
+character matches one of these control characters, the function associated
+with that character is performed.  If ISIG is not set, no checking is done.
+Thus, these special input functions are possible only if ISIG is set.
+.PP
+If ICANON is set, canonical processing is enabled.  This enables the erase, 
+word erase, reprint,
+and kill edit functions, and the assembly of input characters into lines
+delimited by NL, EOF, and EOL, as described in Canonical Mode Input Processing.
+.PP
+If ICANON is not set, 
+.MS read 2
+requests are satisfied directly from the input
+queue.  A 
+.MS read 2
+is not satisfied until at least MIN characters have been
+received or the timeout value TIME expired between characters.  The time value
+represents tenths of seconds.  See the Noncanonical Mode Input Processing 
+section for more details.
+.PP
+If NOFLSH is set, the normal flush of the input and output queues associated 
+with the INTR, QUIT, and SUSP characters is not done.
+.PP
+If TOSTOP is set, the signal SIGTTOU is sent to the
+process group of a process that tries to write to its controlling terminal, if
+it is not in the foreground process group for that terminal.  This signal,
+by default, stops the members of the process group.  Otherwise, the output 
+generated by that process is output to the current output stream.  Processes
+that are holding or ignoring SIGTTOU signals are accepted and allowed to 
+produce output and the SIGTTOU signal is not sent.
+.PP
+If ECHO is set, input characters are echoed back to the terminal.  If ECHO is 
+not set, input characters are not echoed.
+.PP
+The echo functions (ECHOE, ECHOK, ECHONL, TCTLECH, TCRTKIL, and TPRTERA) are
+performed if ICANON is set.
+.PP
+If ECHOE and ICANON are set, 
+the ERASE character causes the terminal to erase the last
+character in the current line from the display, if possible.
+.PP
+If ECHOK and ICANON are set, the KILL character, either the terminal erases the
+line from the display or echoes the \\n character after the KILL character.
+.PP
+If ECHONL and ICANON are set, 
+the \\n character is echoed even if ECHO is not set.
+.PP
+If IEXTEN is set, implementation defined functions are recognized from the 
+input data.  In this manner the DSUSP, RPRNT, FLUSH, WERASE, LNEXT, and QUOTE
+special characters in the c_cc array are only recognized if the IEXTEN
+flag is set. 
+.PP
+If TCTLECH is set, all control characters are echoed as ^X, where X is the
+character obtained by adding the octal value of the character A (100) to
+the octal code for the control character.  In this context, a control character
+is defined to be a character whose octal value is less than 37.
+The following control characters
+are excluded from TCTLECH operations: ASCII NL, ASCII TAB, as well as control
+characters that are defined in the c_cc array but are not returned to 
+user programs (such as START and STOP).  
+TCTLECH is a local extension to the local modes.
+.PP
+If TCRTKIL is set, the response to a kill character is to erase the
+present input line through a sequence of backspace-space-backspace.
+TCRTKIL is a local extension to the local modes.
+.PP
+If TCRTERA is set, characters that are logically erased are printed out
+backwards preceded by a backslash (\\) and followed by a slash (/).  
+This mode is useful when a hard-copy terminal is in use.
+TCRTERA is a local extension to the local modes.
+.PP
+The initial local control value after 
+open (2) is 0 (all bits clear).
+.PP
+.B Special Control Characters
+.PP
+The special control characters values are defined by the array c_cc.  The
+subscript name and description for each element in both canonical and
+noncanonical modes are as follows.
+.PP
+.TS
+tab(@);
+ll.
+_
+.sp 6p
+.HB
+Subscript@Description
+.R
+.sp 6p
+_
+.sp 6p
+VINTR (INTR)@Interrupt character
+VQUIT (QUIT)@Quit character
+VERASE (ERASE)@Erase character
+VKILL (KILL)@Kill character
+VEOF (EOF)@T{
+End-of-file character
+T}
+VEOL (EOL)@T{
+End-of-line character
+T}
+VMIN (MIN)@T{
+Value for noncanonical reads
+T}
+VTIME (TIME)@T{
+Value for noncanonical reads
+T}
+VSTART (START)@Start character
+VSTOP (STOP)@Stop character
+VSUSP (SUSP)@Suspend character
+VDSUSP (DSUSP)@T{
+Delayed suspend character
+T}
+VRPRNT (RPRNT)@Reprint character
+VFLUSH (FLUSH)@Flush character
+VWERASE (WERASE)@Word erase character
+VLNEXT (LNEXT)@T{
+Literal next character
+T}
+VQUOTE (QUOTE)@T{
+Erase and kill quoting character
+T}
+.sp 6p
+_
+.TE
+.PP
+The following subscripts are local extensions to the c_cc array:
+VDSUSP, VRPRNT, VFLUSH, VWERASE, VLNEXT, and VQUOTE.
+The constant NCCS defines the total number of elements in the c_cc array.
+.PP
+Setting the value of a special character to POSIX_V_DISABLE causes that
+function to be disabled; that is, no input data will be recognized as the
+disabled special character.  If ICANON is not set, the value of POSIX_V_DISABLE
+has no special meaning for the VMIN and VTIME entries of the c_cc array.
+.PP
+.B Line Discipline
+.PP
+The c_line field of the termios data structure is used to
+specify the line discipline.  
+Support is provided for the
+basic termios line discipline only.  For this reason, the
+value of this field should be set to 
+the value TERMIODISC (the default value) by convention.  The value of c_line
+is reset to TERMIODISC by the system, if attempts are
+made to set c_line to other values.  This field is a local
+extension. 
+.PP
+.SH Control Functions
+.PP 
+The functions that are used to control the general terminal function are 
+described in this section.  
+Unless otherwise noted for a specific command, these functions are restricted
+from use by background processes.  Attempts to perform these operations  
+cause the process group to be sent a SIGTTOU signal.  If the calling process is
+blocking or ignoring SIGTTOU signals, the process is allowed to perform the
+operation and the SIGTTOU signal is not sent.
+.PP
+In all the functions, 
+.I fildes 
+is an 
+open 
+file descriptor.
+However, the functions affect the underlying terminal file, not just the
+open instance associated with the file descriptor.
+.PP
+.B Get and Set State
+.PP
+Functions: 
+.PN tcgetattr() ,
+.PN tcsetattr()
+.PP
+.B Syntax
+.EX
+#include <termios.h>
+
+int tcgetattr (fildes, termios_p)
+int fildes;
+struct termios *termios_p;
+
+int tcsetattr (fildes, optional_actions, termios_p)
+int fildes;
+int optional_actions;
+struct termios *termios_p;
+.EE
+.B Description
+.PP
+The 
+.PN tcgetattr() 
+function retrieves the parameters associated with the object
+referred to by 
+.I fildes 
+and store them in the 
+.PN termios 
+structure referenced by
+.I termios_p .
+This function is allowed from a background process; however, the
+information can be subsequently changed by a foreground process.
+.PP
+The 
+.PN tcsetattr() 
+function sets the parameters associated with the terminal
+from the 
+.PN termios 
+structure referenced by 
+.I termios_p 
+as follows:
+.IP \(bu 5
+If 
+.I optional_actions 
+is TCSANOW, the change occurs immediately.
+.IP \(bu
+If 
+.I optional_actions 
+is TCSADRAIN, the change occurs after all
+output written to 
+.I fildes 
+has been transmitted.  This function should
+be used when changing parameters that affect output.
+.IP \(bu
+If 
+.I optional_actions 
+is TCSADFLUSH, the change occurs after all
+output written to the object referred to by 
+.I fildes 
+has been transmitted,
+and all input that has been received but not read is discarded
+before the change is made.
+.PP
+.B Returns
+.PP
+Upon successful completion, a value of zero is returned.  Otherwise, a value
+of \-1 is returned and 
+.I errno 
+is set to indicate the error.
+.PP
+.B Errors
+.PP
+If any of the following conditions occur, the 
+.PN tcgetattr() 
+function returns \-1 and sets 
+.I errno 
+to the corresponding value:
+.IP "\fB[EBADF]\fP" 12
+The 
+.I fildes 
+argument is not a valid file descriptor.
+.IP "\fB[EINVAL]\fP"
+The device does not support the 
+.PN tcgetattr() 
+function.
+.IP "\fB[ENOTTY]\fP"
+The file associated with 
+.I fildes 
+is not a terminal.
+.PP
+If any of the following conditions occur, the 
+.PN tcsetattr() 
+function returns \-1 and sets 
+.I errno 
+to the corresponding value:
+.IP "\fB[EBADF]\fP" 12
+The 
+.I fildes 
+argument is not a valid file descriptor.
+.IP "\fB[EINVAL]\fP"
+The device does not support the 
+.PN tcsetatr() 
+function, or the 
+.I optional_actions 
+argument is not a proper value.
+.IP "\fB[ENOTTY]\fP"
+The file associated with 
+.I fildes 
+is not a terminal.
+.PP
+.B Line Control Functions
+.PP
+Functions: 
+.PN tcsendbreak() , 
+.PN tcdrain() , 
+.PN tcflush() , 
+.PN tcflow()
+.PP
+.B Syntax
+.EX
+#include <termios.h>
+
+int tcsendbreak (fildes, duration)
+int fildes;
+int duration;
+
+int tcdrain (fildes)
+int fildes;
+
+int tcflush (fildes, queue_selector)
+int fildes;
+int queue_selector;
+
+int tcflow (fildes, action)
+int fildes;
+int action;
+.EE
+.B Description
+.PP
+The 
+.PN tcsendbreak() 
+function sends a ``break'' that is a 
+continuous stream of zero-valued bits for a specific duration.  If duration
+is zero, it sends zero-valued bits for 0.25 seconds.  If duration is
+greater than zero, it sends zero-valued bits for duration*0.1 seconds.
+If the object referred to by 
+.I fildes 
+.is not an asynchronous serial connection,
+no break sequence is generated.
+.PP
+The 
+.PN tcdrain() 
+function waits until all output written to the object 
+referred to by 
+.I fildes 
+has been transmitted.
+.PP
+The 
+.PN tcflush() 
+function discards data written to the object referred to by
+.I fildes 
+but not transmitted, or data received but not read, depending on the 
+value of 
+.I queue_selector:
+.IP \(bu 5
+If 
+.I queue_selector 
+is TCIFLUSH, it flushes data received but not read.
+.IP \(bu 5
+If 
+.I queue_selector 
+is TCOFLUSH, it flushes data written but not
+transmitted.
+.IP \(bu 5
+If 
+.I queue_selector 
+is TCIOFLUSH, it flushes both data received but not
+read, and data written but not transmitted.
+.PP
+The 
+.PN tcflow() 
+function suspends transmission or reception of data on the 
+object referred to by 
+.I fildes , 
+depending on the value of 
+.I action:
+.IP \(bu 5
+If 
+.I action 
+is TCOOFF, it suspends output.
+.IP \(bu 5
+If 
+.I action 
+is TCOON, it restarts suspended output.
+.IP \(bu 5
+If 
+.I action 
+is TCIOFF, the system transmits a STOP character, which is
+intended to cause the terminal device to stop transmitting data to the
+system.
+.IP \(bu 5
+If 
+.I action 
+is TCION, the system transmits a START character, which is
+intended to cause the terminal device to resume transmitting data to the
+system.
+.IP \(bu 5
+The default on open of a terminal file is that neither its input nor its
+output is suspended.  
+.PP
+.B Returns
+.PP
+Upon successful completion, a value of zero is returned.  Otherwise, a value
+of \-1 is returned and 
+.I errno 
+is set to indicate the error.
+.PP
+.B Errors
+.PP
+If any of the following conditions occur, the 
+.PN tcsendbreak() 
+function returns \-1 and sets 
+.I errno 
+to the corresponding value:
+.IP "\fB[EBADF]\fP" 12
+The 
+.I fildes 
+argument is not a valid file descriptor.
+.IP "\fB[EINVAL]\fP" 
+The device does not support the 
+.PN tcsendbreak() 
+function.
+.IP "\fB[ENOTTY]\fP"
+The file associated with 
+.I fildes 
+is not a terminal.
+.PP
+If any of the following conditions occur, the 
+.PN tcdrain() 
+function returns \-1 and sets 
+.I errno 
+to the corresponding value:
+.IP "\fB[EBADF]\fP" 12
+The 
+.I fildes 
+argument is not a valid file descriptor.
+.IP "\fB[EINVAL]\fP"
+The device does not support the 
+.PN tcdrain() 
+function.
+.IP "\fB[ENOTTY]\fP"
+The file associated with 
+.I fildes 
+is not a terminal.
+.IP "\fB[EINTR]\fP"
+A signal interrupted the 
+.PN tcdrain() 
+function.
+.PP
+If any of the following conditions occur, the 
+.PN tcflush() 
+function returns \-1 and sets 
+.I errno 
+to the corresponding value:
+.IP "\fB[EBADF]\fP" 12
+The 
+.I fildes 
+argument is not a valid file descriptor.
+.IP "\fB[EINVAL]\fP"
+The device does not support the 
+.PN tcflush() 
+function, or the 
+.I queue_selector 
+argument is not a proper value.
+.IP "\fB[ENOTTY]\fP"
+The file associated with 
+.I fildes 
+is not a terminal.
+.PP
+If any of the following conditions occur, the 
+.PN tcflow() 
+function returns \-1 and sets 
+.I errno 
+to the corresponding value:
+.IP "\fB[EBADF]\fP" 12
+The 
+.I fildes 
+argument is not a valid file descriptor.
+.IP "\fB[EINVAL]\fP"
+The device does not support the 
+.PN tcflow() 
+function, or the
+.I action 
+argument is not a proper value.
+.IP "\fB[ENOTTY]\fP"
+The file associated with 
+.I fildes 
+is not a terminal.
+.PP
+.B Get Foreground Process Group Id
+.PP
+Function: 
+.PN tcgetpgrp()
+.PP
+.B Synopsis
+.EX 
+#include <sys/types.h>
+#include <termios.h>
+
+pid_t tcgetpgrp (fildes)
+int fildes;
+.EE
+.B Description
+.PP
+The 
+.PN tcgetpgrp() 
+function returns the value of the process group ID of the
+foreground process group associated with the terminal.
+.PP
+The 
+.PN tcgetpgrp() 
+function is allowed from a background process; however, the
+information can be subsequently changed by a foreground process.
+.PP
+.B Returns
+.PP
+Upon successful completion, 
+.PN tcgetpgrp() 
+retuns the process group ID of the
+foreground process group associated with the terminal.  Otherwise, a value
+of \-1 is returned and 
+.I errno 
+is set to indicate the error.
+.PP
+.B Errors
+.PP
+If any of the following conditions occur, the 
+.PN tcgetpgrp() 
+function returns \-1 and sets 
+.I errno 
+to the corresponding value:
+.IP "\fB[EBADF]\fP" 12
+The 
+.I fildes 
+argument is not a valid file descriptor.
+.IP "\fB[EINVAL]\fP"
+This function is not allowed for the device associated with the 
+.I fildes 
+argument.
+.IP "\fB[ENOTTY]\fP"
+The calling process does not have a controlling terminal or the file is
+not the controlling terminal.
+.PP
+.B Set Foreground Process Group ID
+.PP
+Function: 
+.PN tcsetpgrp()
+.PP
+.B Synopsis
+.EX
+#include <sys/types.h>
+#include <termios.h>
+
+int tcsetpgrp (fildes, pgrp_id)
+int fildes;
+pid_t pgrp_id;
+.EE
+.PP
+.B Description
+.PP
+If the process has a controlling terminal, the 
+.PN tcsetpgrp() 
+function sets
+the foreground process group ID associated with the terminal to 
+.I pgrp_id.
+The file associated with 
+.I fildes 
+must be the controlling terminal of the calling process,  
+and the controlling terminal must be currently associated with the session
+of the calling process.  The value of 
+.I pgrp_id 
+must match a process group
+ID of a process in the same session as the calling process.
+.PP
+.B Returns
+.PP
+Upon successful completion, 
+.PN tcsetpgrp() 
+returns a value of zero.  Otherwise, a
+value of \-1 is returned and 
+.I errno 
+is set to indicate the error.
+.PP
+.B Errors
+.PP
+If any of the following conditions occur, the 
+.PN tcsetpgrp()
+function returns \-1 and sets 
+.I errno 
+to the corresponding value:
+.IP "\fB[EBADF]\fP" 12
+The 
+.I fildes 
+argument is not a valid file descriptor.
+.IP "\fB[EINVAL]\fP"
+This function is not allowed for the device associated with the
+.I fildes 
+argument or the value of 
+.I pgrp_id 
+argument is less than or
+equal to zero, or exceeds {PID_MAX}.
+.IP "\fB[ENOTTY]\fP"
+The calling process does not have a controlling terminal or the file
+is not the controlling terminal, or the controlling terminal is no 
+longer associated with the session of the calling process.
+.IP "\fB[EPERM]\fP"
+The value of the 
+.I pgrp_id 
+argument does not match the process group ID of a 
+process in the same session as the calling process.
+.RE
+.SH See Also
+csh(1), stty(1), tset(1), ioctl(2), sigvec(2), setsid(2), termio(4), getty(8)

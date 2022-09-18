@@ -1,0 +1,76 @@
+.TH install-mh 8mh
+.SH Name
+install-mh \- initialize the MH environment
+.SH Syntax
+.B /usr/lib/mh/install-mh
+[
+.B \-auto
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "install-mh program"
+.NXR "MH environment" "initialization"
+When a user runs any MH program for the first time, 
+the program invokes
+.PN install-mh
+(with the 
+.B \-auto
+switch) 
+to query the user for the initial MH environment. 
+The user does not invoke this program directly.
+The program prompts for the name of the directory 
+to be designated as the user's Mail directory.
+If this directory does not exist, 
+.PN install-mh
+asks if it should be created.
+Normally, this directory should be under the user's home directory, 
+and has the default name of 
+.PN Mail .
+After 
+.PN install-mh
+has written the initial 
+.PN \&.mh_profile 
+for the user, control returns to the original MH program.
+.PP
+As with all MH commands,
+.PN install-mh
+first consults the 
+\f(CW$HOME\fR
+environment variable to determine the user's home directory.
+If 
+\f(CW$HOME\fR
+is not set, then the 
+.PN /etc/passwd
+file is consulted.
+.PP
+If the 
+.B \-auto
+option is used, the current folder is changed to 
+.PN +inbox .
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To set the user's MH directory
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+User profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also 
+mh_profile(5mh)

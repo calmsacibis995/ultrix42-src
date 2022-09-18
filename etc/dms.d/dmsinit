@@ -1,0 +1,233 @@
+#!/bin/sh5
+# @(#)dmsinit	4.3	(ULTRIX)	10/9/90
+#									
+# 			Copyright (c) 1989 by				
+# 		Digital Equipment Corporation, Maynard, MA		
+# 			All rights reserved.				
+# 									
+#    This software is furnished under a license and may be used and	
+#    copied  only  in accordance with the terms of such license and	
+#    with the  inclusion  of  the  above  copyright  notice.   This	
+#    software  or  any  other copies thereof may not be provided or	
+#    otherwise made available to any other person.  No title to and	
+#    ownership of the software is hereby transferred.			
+# 									
+#    The information in this software is subject to change  without	
+#    notice  and should not be construed as a commitment by Digital	
+#    Equipment Corporation.						
+# 									
+#    Digital assumes no responsibility for the use  or  reliability	
+#    of its software on equipment which is not supplied by Digital.	
+#
+# Modification History:
+# 000 - 10/3/88   Tungning Cherng Created
+# 
+HOME=/;
+PATH=/bin:/usr/ucb:/usr/bin:/etc:/usr/etc:.
+export HOME PATH
+stty dec new 
+
+DLPAR=etc
+
+set -h  # hash subr references
+
+arc=`/bin/machine`
+ARC=`echo $arc | dd conv=ucase 2>/dev/null`
+sysname=`hostname`
+. /$DLPAR/dlparam
+
+SYSTEM=/usr/sys
+DLSYS=/sys
+file $DLSYS | grep -s symbolic || [ ! -d $DLSYS ]
+case $? in 
+0 )
+    	echo "\nCreating kernel build environment at $DLSYS ..." 
+    	rm -f $DLSYS
+    	mkdir $DLSYS	
+    	cd ${SYSTEM}
+ 	for i in [A-Za-z]* 
+	do
+		[ $i = conf ] && {
+			mkdir ${DLSYS}/conf $DLSYS/conf/$arc
+			for j in `ls ${SYSTEM}/conf/$arc`
+			do 
+			ln -s ${SYSTEM}/conf/$arc/$j ${DLSYS}/conf/$arc/$j
+			done
+			continue
+		}
+		
+		[ $i = $ARC ] && {
+			mkdir $DLSYS/$i
+			for j in `ls $SYSTEM/$i`
+			do
+				ln -s $SYSTEM/$i/$j $DLSYS/$i/$j
+			done
+		}
+
+		[ ! -d $i ] && continue
+		ln -s ${SYSTEM}/$i ${DLSYS}/$i
+	done
+	;;
+esac
+
+SYSNAME=`echo $sysname | dd conv=ucase 2>/dev/null`
+timezone=`cat /$DLPAR/timezone`
+
+case $CLISWAP0 in
+*/dev/swap )
+	LOCAL=0	
+	;;
+* ) # local disk
+	LOCAL=1	
+	(cd /dev; ./MAKEDEV $CLISWAP0 >/dev/null 2>&1)
+ 	dd if=/dev/r${CLISWAP0} of=/dev/null count=1 2>/dev/null || {
+		echo "Cannot access the $CLISWAP0"
+		exit 1 
+	}
+	;;
+esac
+
+CONFNAME=$DLSYS/conf/$arc/$SYSNAME 
+[ -s $CONFNAME ] || {
+	sizer -n ${SYSNAME} -t "$timezone" 
+	cp /tmp/$SYSNAME $CONFNAME
+}
+
+[ -f $CONFNAME ] ||
+{
+	echo "The config file $SYSNAME does not exists"
+	exit 1
+}  
+	
+case $LOCAL in
+1 )
+	ed $CONFNAME <<xxEOFxx 1>/dev/null
+	/config/d
+i
+config	vmunix 	root on boot swap on ${CLISWAP0}
+.
+	w
+	q
+xxEOFxx
+	;;
+0 )
+	ed $CONFNAME <<xxEOFxx 1>/dev/null
+	/config/d
+i
+config 		vmunix root on boot
+.
+	w
+	q
+xxEOFxx
+	;;
+esac
+#
+# configure process
+#
+ADVFLAG=0
+export ADVFLAG
+doconfig -c $SYSNAME
+[ -f /tmp/${SYSNAME}.devs ] && (cd /dev; sh -v /tmp/${SYSNAME}.devs)
+
+GDEV="Non-graphic"	
+case $arc in
+vax )
+	WSD=`echo "ws_display_type/d" | adb /vmunix /dev/kmem |
+		awk 'NR == 2 {print $2}'`
+	case $WSD in
+	35 )	GDEV="qvss"	;;
+	49 )	GDEV="sm"	;;
+	42 )	GDEV="qdss"	;;
+	50 )	GDEV="sg"	;;
+	59 )	GDEV="fg"	;;
+	esac
+	;;
+mips )
+	file /dev/console > /tmp/cons$$
+	grep -s COLOR /tmp/cons$$ && GDEV="COLOR"
+	grep -s MONO /tmp/cons$$ && GDEV="MONO"
+
+esac
+/usr/ucb/netstat -i > /tmp/net$$
+Nioutp=`grep -w "$sysname" /tmp/net$$` || Nioutp=`grep -w "$CLIARP" /tmp/net$$`
+set -- $Nioutp; NI=$1
+[ "$NI" ] || echo "Cannot find the network interface."
+ifconfig $NI >/dev/null || echo "The ifconfig $NI command failed."
+rm /tmp/net$$
+
+cd /$DLPAR
+[ -s dms.scp ] && {
+	subs=`egrep "^ULT|^UWS|^UDT|^UDW" dms.scp` &&
+	for sub in $subs
+	do
+		setld -c $sub INSTALL
+	done
+}
+		
+cc -c netblk.c
+egrep -v "^GDEV|^NI" dlparam > /tmp/dlparam 
+echo "GDEV=\"$GDEV\"
+NI=\"$NI\"" >> /tmp/dlparam
+mv /tmp/dlparam dlparam
+
+CPU=`sizer -c`
+echo "Installing new kernel as /vmunix"
+mv $DLSYS/$ARC/$SYSNAME/vmunix /vmunix
+
+[ -s dms.scp ] && {
+	subs=`egrep -v "^ULT|^UWS|^UDT|^UDW" dms.scp` &&
+	for sub in $subs
+	do
+		setld -c $sub INSTALL
+	done
+}
+
+MSG1="After the system halts, type the following commands to"
+case $arc in
+vax )
+	echo "\n$MSG1 reboot \n"
+	case $NI in
+	se* | ln* )
+		echo "	>>> b esa0 " ;;
+	qe* )
+		echo "	>>> b xqa0 " ;;
+	esac
+	;;
+mips )
+	Unit=`expr $NI : '[a-zA-Z][a-zA-Z]*\([0-9][0-9]*\)'`
+        echo "\n$MSG1 set 
+the default bootpath to the network and reboot."
+
+        case $CPU in
+        DS5000* )
+               	/usr/diskless/showbootpt 
+        	cat /tmp/showbootmop
+		rm /tmp/showbootmop
+		;;
+        * )
+                echo "
+   	>> setenv bootpath mop($Unit) "
+                ;;
+        esac
+                            
+	case $CPU in
+	DS3100 )
+		echo "
+	>> auto	"
+		;;
+	* )
+		echo "
+	>> boot	"
+		;;
+	esac
+esac
+
+(cd /$DLPAR; rm -f gen.netblk.c dmsinit dms.scp)
+case $LOCAL in
+1 )
+	rm -f /dev/swap	
+	;;
+esac
+
+halt
+exit 0

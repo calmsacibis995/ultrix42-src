@@ -1,0 +1,30 @@
+.\" SCCSID: @(#)cal.1	8.1	9/11/90
+.TH cal 1
+.SH Name
+cal \- print calendar
+.SH Syntax
+.B cal
+[\|\fImonth\fR\|] \fIyear\fR
+.SH Description
+.NXR "cal command"
+.NXR "calendar" "printing"
+The
+.PN cal
+command prints a calendar for the specified year.
+If a month is also specified, a calendar
+just for that month is printed.
+The
+.I year
+can be between 1
+and 9999.
+The
+.I month
+is a number between 1 and 12.
+The following example produces a calendar
+for October 1988.
+.EX
+cal 10 1988
+.EE
+.SH Restrictions
+.NXR "cal command" "restricted"
+The year is always considered to start in January.

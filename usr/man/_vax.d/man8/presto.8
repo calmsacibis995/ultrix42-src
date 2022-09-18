@@ -1,0 +1,241 @@
+.TH presto 8 
+.SH Name
+presto \- control and monitor the Prestoserve file system accelerator 
+.SH Syntax
+.B /usr/etc/presto
+[
+\fIoptions\fR
+]
+.SH Description
+.NXR "presto command"
+The 
+.PN presto
+command allows you to get Prestoserve information and to administer 
+Prestoserve from a local machine that is running the Prestoserve software 
+or from a remote machine that is running the Prestoserve software.
+.PP
+If invoked with no options, 
+.PN presto
+displays the Prestoserve state (either UP, DOWN, or ERROR),
+the number of bytes of nonvolatile memory the Prestoserve cache is using,
+how long the cache has been enabled, the write cache efficiency, and the state 
+of the backup battery or batteries.
+.PP
+When the Prestoserve state is UP, Prestoserve
+improves I/O performance to accelerated file systems 
+by caching synchronous disk write operations to nonvolatile memory.
+.PP
+When the Prestoserve state is DOWN, 
+all I/O requests are passed to their intended devices.  
+Because the Prestoserve state is DOWN after a reboot, the
+.PN presto
+command should be added to your 
+.PN /etc/rc.local
+file to enable file system acceleration when the machine reboots.
+.PP
+If it detects a disk error during a write back, Prestoserve 
+enters the ERROR state and disables itself.  However, Prestoserve 
+continues to maintain the integrity of cached data.  Some possible disk
+error conditions are:  the disk drive is write protected or off line, 
+a cable problem exists, or a bad disk block exists.  
+.PP
+Also, if there is insufficient backup battery power, 
+Prestoserve will enter the ERROR state.
+.PP
+By default, all local writable file systems that are mounted 
+are accelerated when Prestoserve is brought up.
+.SH Options
+.IP "\-d [\fIfilesystem...\fR] [\fIblkdev...\fR]" 
+Disables Prestoserve and writes the Prestoserve cache data to the intended 
+disks.  Only those file systems specified by 
+\fIfilesystem\fR are disabled.  You can specify \fIfilesystem\fR as a
+mounted block device (for example, 
+.PN /dev/ra3g )
+or as a directory mount point (for example, 
+.PN /usr) .
+You can specify \fIblkdev\fR for an unmounted block device
+(for example, 
+.PN /dev/ra0c) .  
+If no file systems or
+block devices are specified, all accelerated file systems and unmounted block
+devices are disabled, and the Prestoserve state is set to DOWN.  
+.IP
+This option does not reset Prestoserve statistics. 
+.IP
+The \fB\-d\fR option takes effect before the \fB\-u\fR or \fB\-R\fR
+options.
+.IP "\-F"
+Writes the Prestoserve cache data to the intended disks,
+but leaves the cache data intact.  
+.IP
+If the option is used and the Prestoserve state is UP, then the cache
+data is written to the intended disks, and the state remains UP.  
+If the Prestoserve state is 
+DOWN, then there is no data to write to the disks, and the state remains
+DOWN.  If the state is ERROR, then the cache data is
+written to the intended disks if possible.  
+.IP
+Note that unlike the \fB\-R\fR
+option, the data in the Prestoserve cache remains after it is written to
+the intended disks.
+.IP "\-h \fIhostname\fR" 
+Invokes the specified operations on the remote machine \fIhostname\fR by 
+using an RPC protocol.  You can use the \fB\-h\fR option with other 
+.PN presto
+command options, but the protocol does not support the
+\fB\-R\fR or \fB\-L\fR
+options.  The remote machine must be running the 
+.PN prestoctl_svc
+daemon to allow the use of the \fB\-h\fR option.  However, 
+the remote machine must be running
+.PN prestoctl_svc
+.PN \-n
+option to allow the use of the 
+\fB\-h\fR option and the \fB\-u,\fR \fB\-d,\fR 
+and \fB\-s\fR administrative options.  See
+.MS prestoctl_svc 8
+for more details.
+.IP \-l 
+Lists the accelerated file systems and their mount points in a format
+similar to the 
+.PN mount 
+command.  This option can be used with either NFS client or server machines.
+.IP \-L 
+Lists all local and remote mounted file systems and their mount points,
+in addition to any block devices that have been accelerated.  Any 
+unusual Prestoserve state for a file system is displayed after the mount point.
+The unusual states include:
+.RS 
+.IP bounceio 10
+Instead of directly accessing the nonvolatile memory, the
+file system's device receives the Prestoserve data 
+only after the data is first copied to main memory.
+.IP disabled 10
+Prestoserve acceleration is not enabled on the file system.
+.IP error 10
+An error occurred using the file system,
+and the Prestoserve cache data has still not been written successfully
+to the intended disks.
+.RE
+.IP \-p 
+Prints Prestoserve information.  The information is grouped into two areas:
+the current Prestoserve state and the statistics for write, 
+read, and total operations.  For example:
+.EX
+# \f(CB/usr/etc/presto -p\fP
+dirty = 52, clean = 7, inval = 0, active = 2
+       count hit rate clean hits dirty hits allocations passes
+write:  1516      65%          0        989         511     15
+ read:     8       0%          0          0           0      8
+total:  1524      65%          0        989         511     23
+state = UP, size = 0x7e000 bytes
+statistics interval: 00:00:13  (13 seconds)
+write cache efficiency: 66%
+All batteries are ok
+.EE
+.IP
+The current Prestoserve statistics account for all Prestoserve buffers.
+A dirty buffer contains a disk block image that has not been written
+to disk.  A clean buffer contains a valid disk block image that has been 
+written to disk.  An inval buffer does not presently contain a disk block 
+image.  An active buffer is currently in transition to 
+disk, meaning that a write operation has started but has not completed on 
+that buffer.
+.IP
+For each Prestoserve cache read or write operation, Prestoserve increments
+a counter:
+.RS
+.IP \(bu 4
+The clean hits counter shows the number of hits (block matches) on the clean
+buffers.
+.IP \(bu 4
+The dirty hits counter shows the number of hits on the
+dirty buffers.  Each dirty hit represents a physical 
+disk write that was avoided entirely.
+.IP \(bu 4
+The allocations counter shows the number of new buffers that had to be allocated 
+for disk block images. 
+.IP \(bu 4
+The passes counter shows the number of I/O operations that Prestoserve
+passed directly to the real device driver.
+.RE
+.IP
+In addition, for each Prestoserve cache read or write operation, the 
+.PN "presto \-p"
+command displays the count, which is the sum of the four counters
+explained previously; the hit rate percentage, which is the ratio of clean hits 
+and dirty hits to the total count and which indicates the 
+effectiveness of the Prestoserve cache; and the write cache efficiency 
+percentage, which is computed from the ratio of 
+write dirty hits to the number of writes copied into the Prestoserve cache.
+.IP \-R 
+Writes the Prestoserve cache data to the intended disks, sets the Prestoserve 
+state to DOWN, purges all Prestoserve buffers, and
+resets the Prestoserve write and read statistics.  
+.IP
+Unlike the \fB\-d\fR option, the \fB\-R\fR
+option discards the Prestoserve cache data that could not be written to 
+the intended disks.  The option is useful when Prestoserve cache data 
+is not needed.  You should note that, because the \fB\-R\fR
+option destroys Prestoserve cache data, it should be used carefully. 
+.IP
+The \fB\-R\fR option takes effect before the \fB\-u\fR option.  
+.IP "\-s \fIsize\fR" 
+Sets the size of the Prestoserve cache to \fIsize\fR
+bytes.  The \fIsize\fR can be specified using the
+decimal or hexadecimal conventions.  For example, both 262144 and 0x40000
+represent 256 Kbytes. 
+.IP
+If the \fB\-s\fR
+option is used and the current Prestoserve state is UP, the state 
+is set to DOWN, the Prestoserve cache is resized, and the state is set
+to UP.
+.IP
+You may want to use the \fB\-s\fR 
+option to determine how Prestoserve performs with a reduced amount of
+nonvolatile memory.  Note that the size of the Prestoserve cache
+cannot be larger than the default maximum size.  If you specify 
+a \fIsize\fR that is larger than the default maximum size, the 
+default maximum size is used.  Refer to the appropriate
+appendix for your processor in the %%DRPresto%%
+for information about the default maximum size of nonvolatile memory.
+.IP "\-u [\fIfilesystem...\fR] [\fIblkdev...\fR]" 
+Sets Prestoserve state to UP, and enables acceleration.
+.IP
+Only those file systems specified by \fIfilesystem\fR are
+enabled.  You can specify \fIfilesystem\fR as a
+mounted block device (for example, 
+.PN /dev/ra3g )
+or as a directory mount point (for example, 
+.PN /usr) .  
+You can specify \fIblkdev\fR for an unmounted block device
+(for example, 
+.PN /dev/ra0c) .
+If no file systems are specified, all local 
+writable file systems that are mounted 
+will have Prestoserve enabled.  File systems that are presently
+accelerated will remain accelerated.
+.IP
+If the Prestoserve state was DOWN, this option 
+resets the Prestoserve statistics and buffers to their 
+initial values.  
+.IP
+If Prestoserve state was ERROR, Prestoserve attempts to
+write any blocks that are in the cache to the intended disks to make sure that
+the previous error condition has been corrected.
+.IP \-v 
+Specifies verbose mode.  This option prints extra information to standard 
+output.  The information can be used for debugging purposes.
+.SH Files
+.TP 18
+.PN /dev/pr0
+Generic Prestoserve control device.
+.TP 18
+.PN /etc/rc.local
+File where you add the 
+.PN "presto -u"
+command to accelerate file systems after a reboot.
+.SH See Also
+rc(8), prestoctl_svc(8), dxpresto(8X), presto(4)
+.br
+\fIGuide to Prestoserve\fP

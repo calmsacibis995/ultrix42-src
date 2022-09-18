@@ -1,0 +1,145 @@
+.TH nl_scanf 3int
+.SH Name 
+nl_scanf, nl_fscanf, nl_sscanf \- convert formatted input
+.SH Syntax 
+.B #include <stdio.h>
+.PP
+.B int nl_scanf (
+.I format
+[, 
+.I pointer
+] ...
+.B )
+.br
+.B char
+.IR *format ;
+.PP
+.B int nl_fscanf (
+.IR stream ,
+.I format 
+[,
+.I pointer
+] ...
+.B )
+.br
+.B FILE 
+.IR *stream ;
+.br
+.B char
+.IR *format ;
+.PP
+.B int nl_sscanf (
+.IR s , 
+.I format
+[,
+.I pointer
+] ...
+.B )
+.br
+.B char
+.IR *s , 
+.IR *format ;
+.SH Description 
+.NXR "nl_scanf subroutine"
+.NXR "nl_fscanf subroutine"
+.NXR "nl_sscanf subroutine"
+The international functions
+.PN nl_scanf ,
+.PN nl_fscanf ,
+and
+.PN nl_sscanf 
+are identical to and have been superceded by the
+international functions
+.PN scanf ,
+.PN fscanf ,
+and
+.PN sscanf 
+in 
+.I libi.
+You should use the 
+.PN scanf ,
+.PN fscanf ,
+and
+.PN sscanf 
+functions when you write new calls to convert formatted input in 
+international programs. For more information on these functions, see the 
+.MS scanf 3int
+reference page.
+.PP
+You can continue to use existing calls to the  
+.PN nl_scanf ,
+.PN nl_fscanf ,
+or 
+.PN nl_sscanf
+functions. These functions remain available for compatibility with XPG\-2
+conformant software, but may not be supported in future releases of 
+the ULTRIX system.
+.PP
+The 
+.PN nl_scanf ,
+.PN nl_fscanf ,
+and 
+.PN nl_sscanf
+international functions are similar to the 
+.PN scanf 
+standard I/O function. (For more information on the 
+.PN scanf 
+standard I/O function, see 
+.MS scanf 3s
+reference page.)  The difference is that the international functions 
+allow you to use the 
+.I %digit$
+conversion character in place of the 
+.I %
+character you use in the standard I/O functions. The 
+.I digit
+is a decimal digit
+.I n 
+from 1 to 9.  The international functions apply conversions to the 
+.I n
+th argument in the argument list, rather than to the next unused
+argument.
+.PP
+You can use the
+.I %
+conversion character in the international functions.  However, you cannot
+mix the 
+.I %
+conversion character with the
+.I %digit$
+conversion character in a single call.
+.SS International Environment
+.IP LC_NUMERIC 15
+If this environment is set and valid, 
+.PN nl_scanf
+uses the international language database named in the definition to
+determine radix character rules.
+.IP LANG 15
+If this environment variable is set and valid 
+.PN nl_scanf
+uses the international language database named in the definition to
+determine collation and character classification rules.  If
+.PN LC_NUMERIC 
+is defined, its definition supersedes the definition of
+LANG.
+.SH Examples
+The following shows an example of using the
+.PN nl_scanf
+function:
+.EX
+nl_scanf("%2$s %1$d", integer, string)
+.EE
+If the input contains `` january 9 '', the
+.PN nl_scanf
+function assigns 9 to 
+.I integer 
+and ``january'' to 
+.I string .
+.SH Return Values 
+These functions return either the number of items matched or EOF on
+end of input, along with the number of missing or invalid  data items.
+.SH See Also 
+intro(3int), setlocale(3), strtod(3), strtol(3), nl_printf(3int), printf(3int), 
+scanf(3int), getc(3s), printf(3s), scanf(3s) 
+.br
+.I Guide to Developing International Software

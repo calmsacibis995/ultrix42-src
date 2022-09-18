@@ -1,0 +1,41 @@
+.\" SCCSID: @(#)shutdown.2	8.1	9/11/90
+.TH shutdown 2
+.SH Name
+shutdown \- shut down full-duplex connection
+.SH Syntax
+.nf
+.ft B
+shutdown(s, how)
+int s, how;
+.fi
+.SH Description
+.NXR "shutdown system call"
+.NXR "socket" "shutting down full-duplex connection"
+The
+.PN shutdown
+call causes all or part of a full-duplex connection on
+the socket associated with
+.I s
+to be shut down.
+If \fIhow\fP is 0, further receives are disallowed.
+If \fIhow\fP is 1, further sends are disallowed.
+If \fIhow\fP is 2, further sends and receives are disallowed.
+.SH Return Values
+A zero (0) is returned if the call succeeds, \-1 if it fails.
+.SH Diagnostics
+The call succeeds unless:
+.TP 15
+[EBADF]
+The
+.I s
+argument is not a valid descriptor.
+.TP 15
+[ENOTSOCK]
+The 
+.I s
+argument is a file, not a socket.
+.TP 15
+[ENOTCONN]
+The specified socket is not connected.
+.SH See Also
+connect(2), socket(2)

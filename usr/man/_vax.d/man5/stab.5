@@ -1,0 +1,296 @@
+.SCCSID: @(#)stab.5	2.1	3/10/87
+.TH stab 5 VAX
+.SH Name
+stab \- symbol table types
+.SH Syntax
+.B "#include <stab.h>"
+.SH Description
+.NXB "stab file" "format"
+.NXA "a.out file" "stab file"
+The
+.PN stab.h
+file
+defines some values of the n_type field of the symbol table of
+.PN a.out
+files.
+These are the types for permanent symbols
+(that is, not local labels, and so on)
+used by the debugger
+.PN dbx
+and the Berkeley Pascal compiler 
+.MS pc 1 .
+Symbol table entries can be produced by the 
+.PN .stabs
+assembler directive, which allows you to specify a 
+double-quote delimited name, a symbol type,
+one char and one short of information about the symbol, and an unsigned
+long (usually an address).
+.PP
+To avoid having to produce an explicit label for the address field,
+the .stabd
+directive can be used to implicitly address the current location.
+If no name is needed, symbol table entries
+can be generated using the .stabn
+directive.
+The loader promises to preserve the order
+of symbol table entries produced by .stab directives.
+As described in 
+.MS a.out 5 ,
+an element of the symbol table
+consists of the following structure:
+.EX 0
+/*
+struct nlist {
+   union {
+        char   *n_name; /* for use when in-core */
+        long    n_strx; /* index into file string table */
+   } n_un;
+        unsigned char   n_type;    /* type flag */
+        char            n_other;   /* unused */
+        short           n_desc;    /* see struct desc, below */
+        unsigned        n_value;   /* address or offset or line */
+};
+.EE
+.PP
+The low bits of the n_type field are used to place a symbol into
+one segment, maximum, according to the following masks defined in 
+.PN <a.out.h> .
+If none of the segment bits are set, a symbol cannot be in any of these
+segments.
+.EX 0
+* Simple values for n_type.
+#define N_UNDF  0x0     /* undefined */
+#define N_ABS   0x2     /* absolute */
+#define N_TEXT  0x4     /* text */
+#define N_DATA  0x6     /* data */
+#define N_BSS   0x8     /* bss */
+
+#define N_EXT   01      /* external bit, or'ed in */
+.EE
+.PP
+The n_value field of a symbol is relocated by the linker,
+.PN ld ,
+as an address within the appropriate segment.
+N_value fields of symbols not in any segment are unchanged by the linker.
+In addition, the linker will discard certain symbols, according to rules
+of its own, unless the n_type field has one of the following bits set:
+.EX 0
+/*
+* Other permanent symbol table entries have some of the
+* N_STAB bits set.  These are given in <stab.h>
+*/
+#define N_STAB 0xe0 /* if any of these bits set, don't discard */
+.EE
+.PP
+This allows up to 112 (7 \(** 16) symbol types,
+split between the various segments.
+Some of these have already been claimed.
+The C compiler generates the following n_type values,
+where the comments give the use for
+.IR .stab s
+and the n_name, n_other, n_desc, and n_value fields
+of the given n_type: 
+.EX 0
+#define N_GSYM  0x20 /* global symbol: name,,0,type,0 */
+#define N_FNAME 0x22 /* procedure name (f77 kludge): name,,0 */
+#define N_FUN   0x24 /* procedure: name,,0,linenumber,address */
+#define N_STSYM 0x26 /* static symbol: name,,0,type,address */
+#define N_LCSYM 0x28 /* .lcomm symbol: name,,0,type,address */
+#define N_RSYM  0x40 /* register sym: name,,0,type,register */
+#define N_SLINE 0x44 /* src line: 0,,0,linenumber,address */
+#define N_SSYM  0x60 /* struct elt: name,,0,type,struct_offset */
+#define N_SO    0x64 /* source file name: name,,0,0,address */
+#define N_LSYM  0x80 /* local sym: name,,0,type,offset */
+#define N_SOL   0x84 /* #included file name: name,,0,0,address */
+#define N_PSYM  0xa0 /* parameter: name,,0,type,offset */
+#define N_ENTRY 0xa4 /* alt entry: name,linenumber,address */
+#define N_LBRAC 0xc0 /* lft bracket: 0,,0,nesting level,address */
+#define N_RBRAC 0xe0 /* rt bracket: 0,,0,nesting level,address */
+#define N_BCOMM 0xe2 /* begin common: name,, */
+#define N_ECOMM 0xe4 /* end common: name,, */
+#define N_ECOML 0xe8 /* end common (local name): ,,address */
+#define N_LENG  0xfe /* second stab entry with length information */
+.EE
+.PP
+The
+n_desc holds a type specifier in the form used
+by the Portable C Compiler,
+.MS cc 1 ,
+in which a base type is qualified in the following structure:
+.EX 0
+struct desc {
+	short	q6:2,
+		q5:2,
+		q4:2,
+		q3:2,
+		q2:2,
+		q1:2,
+		basic:4;
+};
+.EE
+.PP
+There are 4 qualifications, with q1 the most significant and q6 the least
+significant:
+.sp 4p
+.RS 3
+.PD 0
+.IP 0 5
+None
+.IP 1
+Pointer
+.IP 2
+Function
+.IP 3
+Array
+.RE
+.PD
+.PP
+The 16 basic types are assigned as follows:
+.sp 4p
+.PD 0
+.RS 3
+.IP 0 5
+Undefined
+.IP 1
+Function argument
+.IP 2
+Character
+.IP 3
+Short
+.IP 4
+Int
+.IP 5
+Long
+.IP 6
+Float
+.IP 7
+Double
+.IP 8
+Structure
+.IP 9
+Union
+.IP 10
+Enumeration
+.IP 11
+Member of enumeration
+.IP 12
+Unsigned character
+.IP 13
+Unsigned short
+.IP 14
+Unsigned int
+.IP 15
+Unsigned long
+.RE
+.PD 
+.PP
+The same information is encoded in a more useful form in the
+symbolic string.  The symbol's name is followed by a colon,
+which is followed by a description of the symbol's type.
+This begins with one of the following letters:
+.sp 4p
+.RS 3
+.PD 0
+.IP c
+Constant
+.IP f
+Local function
+.IP F
+Function name
+.IP G
+Global variable
+.IP p
+Argument (by value)
+.IP P
+External procedure
+.IP r
+Register variable
+.IP s
+Static variable
+.IP t 5 
+Typedef name
+.IP T
+Local variable
+.IP v
+Argument (by ref)
+.IP V
+Local static variable
+.IP "No letter"
+Local dynamic variable
+.RE
+.PD
+.PP
+This is followed by the variable's type, where \fItype\fR is any of
+the following:
+.IP \fIinteger\fR 16
+Same as previously defined type \fIinteger\fR
+.IP \fIinteger\fR=\fItype\fR
+Define type \fIinteger\fR to have form \fItype\fI
+.IP *\fItype\fR
+Pointer to \fItype\fR
+.IP r\fItype\fR;\fIlow\fR;\fIhigh\fR;
+Range of \fItype\fR from \fIlow\fR to \fIhigh\fR
+.IP a\fIrangetype\fR
+Array with bounds \fIrange\fR of \fItype\fR
+.IP e\fIname:value\fR,;
+Enumerated type.  The phrase "\fIname\fR:\fIvalue\fR," repeats as needed.
+.IP s\fIsizename\fR:\fItype,offset,size\fR;;
+.br
+Structure.  The \fIsize\fR is the number of bytes in the
+complete structure.  The phrase "\fIname:\fItype,offset,size\fR;"
+repeats as needed, giving the \fIoffset\fR from the start of the
+structure (in bits) and the \fIsize\fR in bits of each member.
+.IP u\fIsizename\fR:\fItype,offset,size\fR;;
+Union.  Analogous to structure entry.
+.IP S\fItype\fR
+Set of \fItype\fR.
+.IP f\fItype,integer\fR;\fItype,class\fR;	
+Function returning \fItype\fR with \fIinteger\fR parameters, described
+by the repeating "\fItype,class\fR;" phrase.
+.IP p\fIinteger\fR;\fItype,class\fR;
+Procedure\-like function
+.IP d\fItype\fR
+File of \fItype\fR
+.RE
+.PP
+The Berkeley Pascal compiler,
+.MS pc 1 ,
+uses the following n_type value:
+.PP
+.EX
+#define	N_PC	0x30	/* global pascal symbol: name,,0,subtype,line */
+.EE
+.PP
+The complier uses the following subtypes to do type checking across separately
+compiled files:
+.sp 4p
+.RS 3
+.PD 0
+.IP 1 5
+Source file name
+.IP 2
+Included file name
+.IP 3
+Global label
+.IP 4
+Global constant
+.IP 5
+Global type
+.IP 6
+Global variable
+.IP 7
+Global function
+.IP 8
+Global procedure
+.IP 9
+External function
+.IP 10
+External procedure
+.IP 11
+Library variable
+.IP 12
+Library routine
+.PD
+.SH See Also
+as(1), cc(1), dbx(1), ld(1), pc(1), a.out(5)
+.NXE "stab file" "format"

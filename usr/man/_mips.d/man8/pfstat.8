@@ -1,0 +1,223 @@
+.TH pfstat 8
+.\".UC 4
+.SH Name
+pfstat \- print packet filter status information
+.SH Syntax
+.B /usr/bin/pfstat
+[
+.B \-cdfkpqsv01234567
+]
+[ 
+.I system
+[ 
+.I corefile
+] ]
+.SH Description
+The 
+.PN pfstat
+command interprets the data structures of the packet filter
+.NXR "pfstat command"
+.NXR "packet filter" "pfstat command"
+driver
+.MS packetfilter 4 .
+If
+.I system
+is given, 
+the required namelist is taken from there; otherwise, it is taken from
+.PN /vmunix .
+If
+.I corefile
+is given, the data structures are sought there, otherwise
+in
+.PN /dev/kmem .
+(If
+.I corefile
+is a core dump,
+the 
+.PN \-k 
+option must be given.)
+.SH Options
+If no options are given, then all are assumed (except for
+the verbose option, 
+.PN \-v
+).
+.IP "c" 0.75i
+Counts.  Displays various counts (per ethernet unit) including
+number of packets sent and received, the number of packets dropped
+due to full input queues, the number of packets not wanted by any
+filter, and the number of packets missed by the interface.
+.IP "d" 0.75i
+Descriptors.  Displays OpenDescriptors for each minor device.
+.IP "f" 0.75i
+Filters.  Displays packet filters for each minor device.
+.IP "k" 0.75i
+Specifies the corefile is a crash dump, not a running system's
+.PN /dev/kmem . 
+.IP "p" 0.75i
+Parameters.  Displays device parameters including device type,
+header and address lengths, maximum transmission units (MTU),
+and interface and broadcast.
+addresses.
+.IP "q" 0.75i
+QueueElements.  Displays the QueueElements.
+.IP "s" 0.75i
+Scavenger.  Displays the FreeQueue and Scavenger statistics.
+.IP "v" 0.75i
+Verbose.  Displays information for minor devices not actually in use
+and complete queue information, only if this flag is given.
+.IP "<digit>" .75i
+Limits output to information about specified units. If no digits
+are given, all units are displayed.
+.SH Restrictions
+Some of the output is a bit cramped to fit on an 80-character line.
+It should be possible to get a less verbose but more readable listing.
+.PP
+Since things happen quickly, it is not likely that
+.PN pfstat
+will provide a consistent view of a running system.
+It is mostly useful for analyzing static or slowly-varying problems,
+not transient ones.
+.SH "Output Format"
+This section describes the information displayed in the output
+of the 
+.PN pfstat
+command under the headings
+.PN AllDescriptors ,
+.PN Filters ,
+and
+.PN QueueElts .
+.\".PD 0
+.PP
+.PN AllDescriptors
+.in .25i
+.RS
+.IP "#" 1.25i
+Minor device number for open descriptor.
+.IP LOC 1.25i
+Descriptor location.
+.IP LINK-QUEUE 1.25i
+Forward link to other descriptors.
+.IP STATE 1.25i
+Blank, or one of:
+.RS
+.IP wait .75i
+waiting for input, indefinite wait
+.IP timed .75i
+waiting for input, timed wait
+.IP tout .75i
+has timed out
+.\".IP "anything else" 1.25i
+.\"shouldn't happen
+.RE
+.IP WAIT-QUEUE 1.25i
+Addresses of ``Queue Elements'' for waiting packets.
+.IP "NQ'D" 1.25i
+Number of packets queued for input/maximum for this queue.
+.IP TOUT 1.25i
+Timeout duration in clock ticks (if the
+.PN \-v
+[Verbose] option is not given, then times may be expressed as
+minutes [with a trailing ``m''], hours [with a trailing ``h''],
+or simply ``long'', to keep the columns lined up.)
+.br
+.ne 1.5i
+.IP "MODE" 1.25i
+Shows which mode bits are set for the minor device; each bit is encoded
+as a single character:
+.RS
+.IP "H" .25i
+ENHOLDSIG
+.IP "B" .25i
+ENBATCH
+.IP "T" .25i
+ENTSTAMP
+.IP "P" .25i
+ENPROMISC
+.IP "N" .25i
+ENNONEXCL
+.IP "C" .25i
+ENCOPYALL
+.IP "?" .25i
+An unknown mode bit is set.
+.RE
+.IP "SIG" 1.25i
+Signal number to be delivered when a packet arrives.
+.IP PROC 1.25i
+Process to be signaled when a packet arrives.
+.IP PID 1.25i
+Process id which enabled the signal.
+.\".PD
+.RE
+.PP
+.\".PD 0
+.PP
+.PN Filters 
+.in .25i
+.RS
+.IP "#" 1.25i
+Minor device number of filter.
+.IP COUNT 1.25i
+Count of packets accepted by this filter.
+.IP DROPS 1.25i
+Count of ``recent'' drops for this filter.
+.IP PRI 1.25i
+Priority of filter.
+.IP LEN 1.25i
+Length of filter (in shortwords).
+.IP FILTER 1.25i
+See
+.MS packetfilter 4
+for interpretation of packet filters.
+.\".PD
+.PP
+.\".PD 0
+.RE
+.PP
+.PN QueueElts
+.in .25i
+.RS
+.IP LOC 1.25i
+Location of queue element.
+.IP LINK-QUEUE 1.25i
+Forward and backward links.
+.IP COUNT 1.25i
+Packet size.
+.IP REF 1.25i
+Reference count for queue element.
+.IP FLAGS 1.25i
+Per-packet flag bits set; each bit is encoded
+as a single character:
+.RS
+.IP "P" .25i
+ENSF_PROMISC
+.IP "B" .25i
+ENSF_BROADCAST
+.IP "M" .25i
+ENSF_MULTICAST
+.IP "T" .25i
+ENSF_TRAILER
+.IP "?" .25i
+An unknown flag bit is set.
+.RE
+.IP DROP 1.25i
+Count of packets dropped between the time previous packet was queued
+and the time this packet was queued.
+.IP TIME 1.25i
+Approximate time this packet was received.
+.\".PD
+.RE
+.SH Files
+.TP 15
+.PN /vmunix
+Namelist
+.TP
+.PN /dev/kmem
+Default source of tables
+.SH See Also
+netstat(1), packetfilter(4), pfconfig(8c), pstat(8)
+.\" K. Thompson
+.\" .I UNIX Implementation
+.\".SH Author
+.\"Jeffrey Mogul at Stanford, after work done by Mike Accetta at CMU, based
+.\"on
+.\".IR pstat (8).

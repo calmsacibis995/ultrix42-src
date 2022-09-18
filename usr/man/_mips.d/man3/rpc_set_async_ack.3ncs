@@ -1,0 +1,82 @@
+.TH rpc_set_async_ack 3ncs
+.SH Name
+rpc_set_async_ack \- set or clear asynchronous-acknowledgement mode (client only)
+.SH Syntax
+.nf
+#include <idl/c/rpc.h>
+
+void rpc_$set_async_ack (\fIstate\fP)
+unsigned long \fIstate\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$set_async_ack(\fR
+.\"\fBin \fIon\fB: unsigned32);\fR
+.\".DE
+.SH Arguments
+.TP 20
+.I state
+If "true" (nonzero), asynchronous-acknowledgement mode is set.
+If "false" (zero), synchronous-acknowledgement mode is set.
+.SH Description
+The 
+.PN rpc_$set_async_ack
+.NXR "Interface to the Remote Procedure Call" "rpc_set_async_ack"
+call sets or clears
+asynchronous-acknowledgement mode in a client.
+.PP
+.\".SS MS-DOS Systems and Systems with CPS
+.\"On MS-DOS systems and on systems that have Concurrent Programming Support,
+.\"\fBrpc_$set_async_ack\fR has no effect.
+.\"These systems always use asynchronous-acknowledgement mode.
+.\".SS Other Systems
+Synchronous-acknowledgement mode is the default.
+Calling
+.PN rpc_$set_async_ack
+with a nonzero value for 
+.I state
+sets asynchronous-acknowledgement mode.
+Calling it with a zero value for 
+.I state
+sets synchronous-acknowledgement mode.
+.PP
+After a client makes a remote procedure call and receives a reply from a server,
+the RPC runtime library at the client acknowledges its receipt of the reply.
+This
+"reply acknowledgement"
+can occur
+either synchronously (before the runtime library returns to the caller)
+or asynchronously (after the runtime library returns to the caller).
+.PP
+It is generally good to allow asynchronous reply acknowledgements.
+Asynchronous-acknowledgement mode can save
+the client runtime library from making explicit reply acknowledgements,
+because after a client receives a reply,
+it may shortly issue another call that can act as an implicit acknowledgement.
+.PP
+Asynchronous-acknowledgement mode requires that an
+"alarm"
+be set to go off sometime after the remote procedure call returns.
+Unfortunately, setting the alarm can cause two problems:
+.RS
+.IP 1  
+There may be only one alarm that can be set, and the application
+itself may be trying to use it.
+.IP 2  
+If, at the time the alarm goes off, the application is blocked
+in a system call that is doing I/O to a
+"slow device" (such as a terminal),
+the system call will return an error (with the EINTR errno);
+the application may not be coded to expect this error.
+If neither of these problems exists,
+the application should set asynchronous-acknowledgement mode to get
+greater efficiency.
+.RE
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs)

@@ -1,0 +1,79 @@
+.\" SCCSID: @(#)creatediskbyname.3x	6.2	8/30/89
+.TH creatediskbyname 3x
+.SH Name
+creatediskbyname \- get the disk description associated with a file name
+.SH Syntax
+.nf
+.B #include <disktab.h>
+.PP
+.B struct disktab *
+.B creatediskbyname(\fIname\fP)
+.B char *\fIname\fP;
+.fi
+.SH Description
+.NXR "creatediskbyname subroutine"
+.NXR "disk" "getting description"
+The
+.PN creatediskbyname
+subroutine
+takes the name of the character device special file representing a 
+disk device (for example, 
+.PN /dev/rra0a) 
+and returns a structure pointer
+describing its geometry information and the default
+disk partition tables.  It obtains this information by
+polling the controlling disk device driver.  
+The
+.PN creatediskbyname
+subroutine returns information only for MSCP and SCSI disks.
+.PP
+The 
+.PN <disktab.h> 
+file has the following form:
+.EX 0
+#define DISKTAB        "/etc/disktab"
+
+struct  disktab {
+      char   *d_name;          /* drive name */
+      char   *d_type;          /* drive type */
+      int    d_secsize;        /* sector size in bytes */
+      int    d_ntracks;        /* # tracks/cylinder */
+      int    d_nsectors;       /* # sectors/track */
+      int    d_ncylinders;     /* # cylinders */
+      int    d_rpm;            /* revolutions/minute */
+      struct partition {
+              int     p_size;   /* #sectors in partition */
+              short   p_bsize;  /* block size in bytes */
+              short   p_fsize;  /* frag size in bytes */
+        } d_partitions[8];
+};
+
+struct  disktab *getdiskbyname();
+struct  disktab *creatediskbyname();
+.EE
+.SH Diagnostics
+Successful completion of the 
+.PN creatediskbyname
+subroutine returns a pointer to a valid disktab structure.  Failure of
+this subroutine returns a null pointer.  The subroutine
+fails if it cannot obtain the necessary information from the device
+driver or disktab file.
+.PP
+A check is done to ensure that the disktab file exists and is readable.
+This check ensures that the subroutine is not being called
+because the disktab file was accidentally removed.  If there is no 
+disktab file, the subroutine fails.
+.PP
+The 
+.PN creatediskbyname
+subroutine also fails if it cannot determine disk geometry
+attributes by polling the driver.  This can occur if the disk is not
+an MSCP or SCSI disk.  In some cases where the disk consists
+of removable media and the media is not loaded, the 
+driver will be unable to determine disk attributes.
+.SH Restrictions
+The
+.PN creatediskbyname
+subroutine returns information only for MSCP and SCSI disks.
+.SH See Also
+getdiskbyname(3x), ra(4), rz(4), disktab(5)  

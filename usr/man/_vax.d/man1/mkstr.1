@@ -1,0 +1,80 @@
+.\" SCCSID: @(#)mkstr.1	8.1	9/11/90
+.TH mkstr 1
+.SH Name
+mkstr \- create an error message file 
+.SH Syntax
+.B mkstr
+[\fB\-\fR] \fImessagefile prefix file...\fR
+.SH Description
+.NXR "mkstr command"
+.NXR "C program" "creating error message file"
+The
+.PN mkstr
+command is used to create files of error messages.
+Its use can make programs with large numbers of error diagnostics much
+smaller, and reduce system overhead in running the program as the
+error messages do not have to be constantly swapped in and out.
+.PP
+The
+.PN mkstr
+command
+will process each of the specified
+.I files,
+placing a massaged version of the input file in a file whose name
+consists of the specified
+.I prefix 
+and the original name.
+A typical usage of
+.PN mkstr
+would be:
+.EX
+mkstr pistrings xx *.c
+.EE
+This command would cause all the error messages from the C source
+files in the current directory to be placed in the file
+.I pistrings
+and processed copies of the source for these files to be placed in
+files whose names are prefixed with
+.I xx.
+.PP
+To process the error messages in the source to the message file
+.PN mkstr
+keys on the string
+\%`error("'
+in the input stream.
+Each time it occurs, the C string starting at the `"' is placed
+in the message file followed
+by a null character and a new-line character.
+The null character terminates the message so it can be easily used
+when retrieved, the new-line character makes it possible to sensibly
+.PN cat
+the error message file to see its contents.
+The massaged copy of the input file then contains a
+.PN lseek
+pointer into the file which can be used to retrieve the message, that is:
+.EX 0
+char	filename[] =  "/usr/lib/pi_strings";
+int	file = \-1;
+
+error(a1, a2, a3, a4)
+{
+	char buf[256];
+
+	Bif (efil < 0) {
+		efil = open(efilname, 0);
+		if (efil < 0) {
+oops:
+			perror(efilname);
+			exit(2);
+		}
+	}
+	if (lseek(efil, (long) a1, 0) |\|| read(efil, buf, 256) <= 0)
+		goto oops;
+	printf(buf, a2, a3, a4);
+}
+.EE
+.SH Options
+.IP \fB\-\fR 0.3i
+Places error messages at the end of specified message file. 
+.SH See Also
+xstr(1), lseek(2)

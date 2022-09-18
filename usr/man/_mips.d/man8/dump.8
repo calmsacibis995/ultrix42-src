@@ -1,0 +1,224 @@
+.\" SCCSID: @(#)dump.8	8.1	9/11/90
+.TH dump 8
+.SH Name
+dump \- create file system dump
+.SH Syntax
+.B /etc/dump
+[ \fIkey\fR [ \fIargument\fR... ] \fIfilesystem\fR ]
+.SH Description
+.NXR "dump command"
+.NXR "file system" "incremental dumps"
+The
+.PN dump
+command copies all files changed after a certain date
+from a specified 
+.I filesystem
+to a file, a pipe, magnetic tapes, or disks. 
+The
+.I key
+specifies the date and other options to be used by 
+.PN dump .
+.PP
+Dumping a filesystem requires operator attention.  An operator
+must intervene when the end of a tape or disk is reached,
+when the end of the 
+.PN dump 
+occurs, or when an unrecoverable input disk
+read error occurs (if more than 32 read errors occur).
+In addition to alerting all operators in the operator group,
+.PN dump
+interacts with the operator at the control terminal when
+.PN dump 
+can no longer proceed, or if something is grossly wrong.
+All questions that 
+.PN dump
+poses must be answered by typing yes or no.
+.PP
+Because a full dump uses considerable system time,
+.PN dump
+checkpoints itself at the start of each tape or disk
+volume.  If writing that volume fails,
+.PN dump
+asks the operator to restart from the checkpoint after
+the present tape or disk has been replaced.
+.PP
+The
+.PN dump
+utility reports to the operator periodically, giving
+usually low estimates of the number of blocks to write,
+the number of tapes or disks the dump will take, the
+time to completion, and the time until the tape or
+disk must be changed.  The output is verbose, so
+that others know that the terminal controlling
+.PN dump
+is busy, and will be for some time.
+.PP
+This utility supports EOT handling which allows the use of
+multiple media.  The utility prompts for the next volume when it
+encounters the end of the current volume.
+.SH Options 
+.NXR "dump command" "keys"
+With the
+.PN dump
+command, you specify a string of one or more of the
+options described below.  If no options 
+are specified, the
+.I key
+.B 9u
+is assumed.
+.TP 8 
+.B  0\-9
+Specifies the dump level.
+All files 
+that were modified 
+since the last date stored
+in the file
+.PN /etc/dumpdates
+for the same filesystem at lesser levels will be dumped.
+If no date is determined by the level,
+the beginning of time is assumed.  Thus, the level 
+.B 0
+causes the entire filesystem to be dumped.
+.TP 8
+.B B
+Indicates that the next
+.I argument
+is a number that specifies the size, in 1024-byte blocks,
+of a storage medium, such as a diskette or removable disk
+cartridge.  See the first example.  
+.TP 8
+.B d
+Indicates that the density of the tape, expressed in bits 
+per inch, is taken from the next
+.I argument.
+This density is used in calculating the amount of tape
+used per reel.  The default density is 1600 bpi.
+.TP 8 
+.B f
+Places the dump on the file or device specified by the next
+.I argument.
+If the name of the file is \-,
+.PN dump 
+writes to standard output.
+The default dump device is
+.PN /dev/rmt0h .
+.TP 8
+.B n
+Notifies, by means similar to a
+.MS wall 1
+command,
+all users in the group operator when
+.PN dump
+needs operator attention.
+.TP 8 
+.B S 
+Prints output file size in bytes, or number of volumes for devices.
+See the third example.
+.TP 8
+.B s
+Indicates that the next
+.I argument
+specifies the size of the dump tape, in feet.  When
+the specified size is reached,
+.PN dump
+waits for the reel to be changed.  The default tape size
+is 2300 feet.
+.TP 8 
+.B u
+Writes the date of the beginning of the dump on the file
+.PN /etc/dumpdates
+if the 
+.PN dump
+completes successfully.  This file records a separate date for
+each filesystem and each dump level.  The format of
+.PN /etc/dumpdates
+consists of one free format record per line:
+filesystem name, increment level and
+.MS ctime 3
+format dump date.  The superuser can carefully edit
+.PN /etc/dumpdates
+to change any of the fields.
+.TP 8 
+.B W
+Tells the operator which file systems need to be dumped.
+This information is taken from the files
+.PN /etc/dumpdates
+and
+.PN /etc/fstab .
+The
+.B W
+option causes
+.PN dump
+to print out, for each file system in
+.PN /etc/dumpdates ,
+the most recent dump date and level,
+and highlights those file systems that should be dumped.
+If the 
+.B W
+option is used, all other options are ignored, and
+.PN dump
+exits immediately.
+.TP 8 
+.B w
+Lists only those filesystems that need to be dumped.
+.SH Examples
+This example dumps the filesystem
+.PN /dev/ra0a
+to RX50 diskettes.  The 
+.PN B
+option is needed when running
+.MS restore 8
+to read this dump.
+.EX
+dump 9Bf 400 /dev/rra2a /dev/ra0a
+.EE
+This example dumps the filesystem
+.PN /usr/users
+to a 6250 bpi tape on a TU78 tape drive:
+.EX
+dump 0undf 6250 /dev/rmt?h /usr/users
+.EE
+This example reports number of bytes to be output
+for a level 0 dump of the root
+file system. 
+Please note: the file test is not created.
+.EX
+dump 0Sf test /
+.EE
+.SH Restrictions
+.NXR "dump command" "restrictions"
+The 
+.PN dump
+programs returns a 1 on successful completion.
+.PP
+Sizes are based on 1600-bpi blocked tape.  
+.PP
+Anything fewer than 32 read errors on the filesystem
+are ignored.
+.PP
+Each reel requires a new process, so parent processes
+for reels already written remain until the entire
+tape is written.
+.SH Files
+.TP 15
+.PN /dev/rrp1g
+Default filesystem to dump from
+.TP
+.PN /dev/rmt0h
+Default tape unit to dump to
+.TP
+.PN /etc/dumpdates
+Dump date record
+.TP
+.PN /etc/fstab
+Dump table: file systems and frequency
+.TP
+.PN /etc/group
+Operator group definition
+.TP
+.PN /dev/tty
+Required for user interface
+.SH See Also
+dump(5), fstab(5), opser(8), restore(8), rrestore(8c)
+.br
+.I "Guide to Backup and Restore"

@@ -1,0 +1,78 @@
+.\" SCCSID: @(#)exit.2	2.1	3/10/87
+.TH exit 2
+.SH Name
+_exit \- terminate a process
+.SH Syntax
+.nf
+#include <stdlib.h>
+void _exit(\fIstatus\fP)
+int \fIstatus\fP;
+.fi
+.SH Description
+.NXR "_exit system call"
+.NXR "process" "terminating"
+The function,
+.PN _exit ,
+terminates a calling process with the following consequences:
+.IP \(bu 5
+All of the file descriptors open in the calling process are closed.
+.IP \(bu 5
+If the parent process of the calling process is executing a
+.PN wait ,
+it is notified of the calling process's termination and
+the low-order eight bits of \fIstatus\fP are made available to it.
+For further information, see
+.MS wait 2 .
+.IP \(bu 5
+The parent process ID of all of the calling process's existing child
+processes and zombie processes are also set to 1.   
+This means that the initialization process
+inherits each of these processes as well.
+For further information, see
+.MS intro 2 ,
+.IP \(bu 5
+Each attached shared memory segment is detached
+and the value of \fIshm_nattach\fP in the data structure
+associated with its shared memory identifier is decremented by 1.
+.IP \(bu 5
+For each semaphore for which the calling process has set
+a semadj value, (see 
+.MS semop 2 , 
+) that semadj value 
+is added to the semval of the specified semaphore.
+.IP \(bu 5
+If the process has a process, text, or data lock, an
+unlock is performed.
+.IP \(bu 5
+An accounting record is written on the accounting file
+if the system's accounting routine is enabled. For more information, see
+.MS acct 2 .
+.PP 
+Calling
+.PN _exit
+directly circumvents all cleanup.
+Most C programs call the library routine
+.MS exit 3 ,
+which performs cleanup actions in the standard I/O library before
+calling 
+.PN _exit .
+.PP
+.SH Environment
+.SS POSIX, System V
+The 
+.PN _exit
+function differs from the System V as well as POSIX definition in that even if
+the calling process is a process group leader, the SIGHUP 
+signal is not sent to each process that has a
+process group ID equal to that of the calling process.
+.PP
+The
+.PN _exit
+function also differs in that the  
+.PN exit
+routine is declared as type 
+.I int
+instead of type 
+.I void.
+.SH See Also
+fork(2), wait(2), exit(3), signal(3).

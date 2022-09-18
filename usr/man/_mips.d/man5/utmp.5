@@ -1,0 +1,57 @@
+.\" SCCSID: @(#)utmp.5	8.1	9/11/90
+.TH utmp 5 
+.SH Name
+utmp, wtmp \- login records
+.SH Syntax
+.B #include <utmp.h>
+.SH Description
+.NXR "utmp file" "format"
+.NXR "wtmp file" "format"
+.NXR "login" "recording"
+The
+.PN utmp
+file records information about who is currently using the system.
+The file is a sequence of entries with the following
+structure declared in the include file:
+.EX 0
+struct utmp {
+        char    ut_line[8];             /* tty name */
+        char    ut_name[8];             /* user id */
+        char    ut_host[16];            /* host name, if remote */
+        long    ut_time;                /* time on */
+};
+.EE
+.PP
+This structure gives the name of the special file
+associated with the user's terminal, the user's login name,
+and the time of the login in the form of 
+.MS time 3c .
+.PP
+The
+.PN wtmp
+file records all logins and logouts.
+A null user name indicates a logout on the associated terminal.
+A terminal referenced with a tilde (~) indicates that the
+system was rebooted at the indicated time.
+The adjacent pair of entries with terminal names
+referenced by a vertical bar (|) or a right brace (})
+indicate the system-maintained
+time just before and just after a
+.PN date
+command has changed the system's timeframe.
+.PP
+The
+.PN wtmp
+file is maintained by 
+.MS login 1
+and 
+.MS init 8 .
+Neither of these programs creates the file,
+so, if it is removed, record-keeping is turned off.  It is summarized by
+.MS ac 8 .
+.SH Files
+.PN /etc/utmp
+.br
+.PN /usr/adm/wtmp
+.SH See Also
+last(1), lastcomm(1), login(1), who(1), ac(8), init(8)

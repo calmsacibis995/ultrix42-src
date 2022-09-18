@@ -1,0 +1,237 @@
+.\" SCCSID: @(#)nfsstat.8nfs	8.1	9/11/90
+.TH nfsstat 8nfs
+.SH Name
+nfsstat \- display Network File System (NFS) statistics
+.SH Syntax
+.B /usr/etc/nfsstat 
+[
+.B \-cnrsz
+]
+[ \fBvmunix.\fIn\fR ]
+[ \fBcore.\fIn\fR ]
+.SH Description
+.NXR "nfsstat command"
+.NXS "Network File System" "NFS"
+.NXS "Remote Procedure Call" "RPC"
+.NXR "NFS" "displaying statistics"
+.NXR "RPC" "displaying statistics"
+The
+.PN nfsstat
+command displays statistical information about the
+Network File System (NFS) and
+Remote Procedure Call (RPC) interfaces in the kernel.
+It can also be used to reinitialize this information.
+If you do not specify any options,
+.PN nfsstat 
+displays the information as though all the options were
+specified, but
+.PN \-z .
+.PP
+The statistics are reinitialized to zero each time the system
+reboots.
+.SH Options
+.TP 10
+.B \-c
+Display the client information.
+The client side NFS and RPC information is displayed.
+You can combine this option with the
+.PN \-n
+and
+.PN \-r
+options to print client NFS or client RPC information only.
+.TP
+.B \-s
+Display the server information.
+The server side NFS and RPC information
+is displayed.
+.TP
+.B \-n
+Display the NFS information.
+The NFS information for both the client and server side is displayed.
+You can combine this option with the
+.PN \-c
+and
+.PN \-s
+options to print client or server NFS information only.
+.TP
+.B \-r
+Display the RPC information.
+The RPC information for both the client and server side is displayed.
+You can combine the
+.PN \-r
+option with the
+.PN \-c 
+and
+.PN \-s 
+options to print client or server RPC information only.
+.TP
+.B \-z
+Reinitialize the statistics to zero.
+You can combine this option with any of the above options to reset 
+particular sets of statistics to zero after printing them.
+You must have write permission on 
+.PN /dev/kmem
+to use this option.
+.TP
+\fBcore.\fIn\fR
+This is the core image,
+which is usually stored in the directory
+.PN /usr/adm/crash .
+If no
+.PN core
+is specified,
+the default is
+.PN /dev/mem .
+.TP
+\fBvmunix.\fIn\fR
+This is the kernel image,
+which is usually stored in the directory
+.PN /usr/adm/crash .
+If no
+.PN vmunix
+is specified,
+the default is
+.PN /vmunix .
+.PP
+Here is a sample of
+.PN nfsstat
+output with no options specified:
+.EX 0
+# \f(CBnfsstat\f(CW
+
+Server rpc:
+calls      badcalls   nullrecv   badlen     xdrcall
+1312142    0          0          0          0          
+
+Server nfs:
+calls      badcalls
+1312142    0          
+null       getattr    setattr    root       lookup     readlink   read       
+0  0%      319612 24% 1220  0%   0  0%      795544 60% 5857  0%   163962 12% 
+wrcache    write      create     remove     rename     link       symlink    
+0  0%      7294  0%   165  0%    239  0%    75  0%     74  0%     0  0%      
+mkdir      rmdir      readdir    fsstat     
+0  0%      0  0%      17612  1%  334  0%    
+
+
+Client rpc:
+calls      badcalls   retrans    badxid     timeout    wait       newcred
+30156      40         256        0          296        0          0          
+
+Client nfs:
+calls      badcalls   nclget     nclsleep
+30143      40         30156      0          
+null       getattr    setattr    root       lookup     readlink   read       
+0  0%      5833 19%   21  0%     0  0%      17630 58%  420  1%    3455 11%   
+wrcache    write      create     remove     rename     link       symlink    
+0  0%      475  1%    84  0%     10  0%     4  0%      0  0%      0  0%      
+mkdir      rmdir      readdir    fsstat     
+2  0%      0  0%      1423  4%   786  2%    
+.EE
+Of the client RPC statistics,
+each field is as follows:
+.IP calls 10
+The total number of client RPC calls successfully begun.
+.IP badcalls
+The total number of unsuccessful (badly formed) RPC calls.
+.IP retrans
+The number of times that RPC calls were transmitted.
+.IP badxid
+The number of times a reply transaction ID did not match the
+request transaction ID.
+.IP timeout
+The number of times a request was made but not answered.
+.IP wait
+The number of times the client system had to sleep because
+the client structure was busy.
+.IP newcred
+This field is never used, and is therefore always 0.
+.PP
+Of the client NFS statistics,
+each field is as follows:
+.IP calls 10
+The total number of client NFS calls successfully begun.
+.IP badcalls
+The total number of unsuccessful (badly formed) NFS calls.
+.IP nclget
+The number of times a client structure was successfully acquired.
+The client structure is where clients keep track of an outstanding RPC
+call.
+.IP nclsleep
+The number of times all client structures were busy.
+Since there are six client structures,
+.PN nclsleep
+is the number of times that there were six operations in
+progress when a seventh one arrived and had to wait
+until one of the client structures was freed.
+.PP
+Of the server RPC statistics,
+each field is as follows:
+.IP calls 10
+The total number of RPC calls received by NFS daemons.
+.IP badcalls
+The number of badly formed RPC calls.
+.IP nullrecv
+The number of empty RPC calls.
+.IP badlen
+The number  of RPC calls with too small of a body.
+.IP xdrcall
+The number of RPC calls that failed to decode in XDR.
+.PP
+Of the server NFS statistics,
+each field is as follows:
+.IP calls 10
+The total number of NFS calls dispatched by an NFS daemon.
+.IP badcalls
+The number of badly formed NFS requests.
+.PP
+The remaining fields provide counts of the completed NFS operations.
+Here are their descriptions:
+.IP null 11
+This is the number of null operations.
+If the software is working properly,
+this field should be zero.
+.IP getattr
+This is the number of file attributes that were retrieved.
+In the example above,
+there were 319,612, or 24% on the server.
+.IP setattr
+This is the number of file attributes that were stored.
+.IP root
+This field is not used and should always be zero.
+.IP lookup
+This is the number of times that a directory pathname was looked up.
+.IP readlink
+This is the number of times a symbolic link was read.
+.IP read
+This is the number of times data was read from a file.
+.IP wrcache
+This field is not used and should always be zero.
+.IP write
+This is the number of times data was written to a file.
+.IP create
+This is the number of times a new file was created.
+.IP remove
+This is the number of times a file was removed.
+.IP rename
+This is the number of times a file was renamed.
+.IP link
+This is the number of times a hard link was created.
+.IP symlink
+This is the number of times a symbolic link was created.
+.IP mkdir
+This is the number of times a directory was created.
+.IP rmdir
+This is the number of times a directory was removed.
+.IP readdir
+This is the number of times a directory was read.
+.IP fsstat
+This is the number of times that file system attributes and
+statistics were retrieved.
+.SH Files
+.TP 15
+.PN /vmunix 
+System namelist
+.TP
+.PN /dev/kmem
+kernel memory

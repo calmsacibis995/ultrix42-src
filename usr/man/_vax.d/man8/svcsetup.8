@@ -1,0 +1,104 @@
+.TH svcsetup 8
+.SH Name
+svcsetup \- set up the svc.conf file
+.SH Syntax
+.B /usr/etc/svcsetup [[\-d \fIdirectory\fP] \-o \fIname_service_order\fP]
+.SH Description
+The 
+.PN svcsetup 
+.NXR "svcsetup" "command"
+command allows you to print and modify the contents
+of the 
+.PN svc.conf 
+file on the current system.  This file must
+be modified when adding or removing a naming service, such as
+Yellow Pages or BIND/Hesiod. The security parameters also included
+in the 
+.PN svc.conf
+file can only be changed by 
+.PN secsetup . 
+Changes take effect immediately.  
+.PP
+Modifications to
+this file can also be made via an editor.
+.PP
+You can supply the name service ordering for all databases from the
+command line using the \f(CW\-o\fR option. The combination of the
+\f(CW\-o\fR and \f(CW\-d\fR options allows you 
+to set up a diskless client
+from the diskless server.
+.PP
+When you run 
+.PN svcsetup
+interactively, and choose 
+.PN modify
+from the configuration menu,
+you can choose to modify any number of the databases listed
+by entering each number separated by space at the prompt. When choosing
+a naming service order for a database, enter one number from the menu 
+choices shown which corresponds to the naming service order desired.
+.SH Options
+.NXR "svc.conf command" "options"
+.IP "\-d \fIdirectory\fR" 5
+These two arguments are required if you are setting up a diskless client
+from the diskless server. The \fIdirectory\fR is the full pathname of
+the root directory for your system (a diskless client) on the diskless
+server. The following is an example of a root directory for a diskless
+client named
+.PN orange:
+.EX 10
+/dlclient0/orange.root
+.EE
+.IP "\-o \fIname_service_order\fR"
+This is the name service order to be set for all database entries in 
+the 
+.PN svc.conf
+file. The name service order can be one of the following, which are the
+only valid strings for 
+.I name_service_order 
+argument:
+.IP \(bu 4 
+local
+.IP \(bu
+local,yp
+.IP \(bu
+local,bind
+.SH Restrictions
+The recommended configuration is that you have
+.PN local
+as the first entry for all databases.
+.PP
+You must have 
+.PN local 
+.NXR "svcsetup" "restrictions"
+as the first entry for the 
+.PN passwd
+and
+.PN hosts
+databases.
+.PP
+You must have 
+.PN yp
+as the entry for the
+.PN netgroup
+database.
+.PP
+You must have either 
+.PN local
+or 
+.PN bind
+as the entry for the
+.PN auth
+database.
+.PP
+You must be superuser to run 
+.PN svcsetup .
+.SH Files
+.TP 20
+.PN /etc/svc.conf 
+Services order configuration file
+.TP 22
+.PN /usr/sys/h/svcinfo.h
+System header file 
+.SH See Also
+svc.conf(5)

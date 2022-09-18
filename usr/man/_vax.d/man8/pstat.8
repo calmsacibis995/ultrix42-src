@@ -1,0 +1,517 @@
+.\" SCCSID: @(#)pstat.8	5.1	1/17/89
+.TH pstat 8
+.SH Name
+pstat \- print system facts
+.SH Syntax
+.B /etc/pstat
+.B \-aixvptufTk
+[
+.I system
+] [
+.I corefile
+]
+.SH Description
+.NXR "pstat command"
+.NXR "system" "printing statistics"
+The
+.PN pstat
+command
+interprets the contents of certain system tables. The contents of system
+tables can change while
+.PN pstat
+is running, so the information it gives is a snapshot taken at a given
+time.
+If you specify 
+.IR system ,
+.PN pstat
+gets the namelist from the named system's kernel. If you omit
+.IR system ,
+.PN pstat
+uses the namelist in 
+.PN /vmunix .
+If you specify 
+.IR corefile , 
+.PN pstat 
+uses the tables in the core file. Otherwise,
+.PN pstat
+uses the tables in 
+.PN /dev/kmem .
+Use the 
+.B \-k
+option when you specify the
+.I system
+or 
+.I corefile
+argument.  
+.SH Options
+.IP \fB-a\fR 5
+When used with the
+.B \-p 
+option, displays all process slots, rather than just active ones.
+.IP \fB-f\fR
+Displays the open file table with the following headings:
+.RS 8
+.IP LOC 10
+The core location of this table entry.
+.IP TYPE
+The type of object the file table entry points to.
+.IP FLG
+Miscellaneous state variables, encoded as follows:
+.RE
+.RS 20
+.IP R 4
+Open for reading
+.IP W
+Open for writing
+.IP A
+Open for appending
+.IP S
+Shared lock
+.IP X
+Exclusive use
+.IP I
+Asynchronous input and output notification
+.IP B
+Block-if-in-use flag is set (shared line semaphore)
+.RE
+.RS 8
+.IP CNT 10
+Number of processes that know this open file.
+.IP GNO
+The location of the gnode table entry for this file.
+.IP OFFS/SOCK
+The file offset 
+or the core address of the associated socket structure.
+(See 
+.MS lseek 2 
+for information on file offsets.)
+.RE
+.IP \fB-i\fR 
+Displays the gnode table with the following headings:
+.RS 8
+.IP LOC 10
+The core location of this table entry.
+.IP FLAGS
+Miscellaneous state variables, encoded as follows:
+.RE
+.RS 20
+.IP L 4
+Locked.
+.IP U
+Update time for the file system 
+must be corrected. See the 
+.MS fs 5 
+reference page for more information.
+.IP A
+Access time must be corrected.
+.IP M
+File system is mounted here.
+.IP W
+Wanted by another process (L flag is on).
+.IP T
+Contains a text file.
+.IP C
+Changed time must be corrected.
+.IP S
+Shared lock applied.
+.IP E
+Exclusive lock applied.
+.IP Z
+Someone waiting for an exclusive lock.
+.IP I
+In-use flag is set (shared line semaphore).
+.RE
+.RS 8
+.IP CNT 10
+Number of open file table entries for this gnode.
+.IP DEV
+Major and minor device number of the file system in which
+this gnode resides.
+.IP RDC
+Reference count of shared locks on the gnode.
+.IP WRC
+Reference count of exclusive locks on the gnode. (This count can
+be >1 if, for example, a file descriptor is inherited across a fork.)
+.IP GNO
+I-number within the device.
+.IP MODE
+Mode bits. (See 
+.MS chmod 2 
+for information about mode bits.)
+.IP NLK
+Number of links to this gnode.
+.IP UID
+User identification (ID) of owner.
+.IP SIZ/DEV
+Number of bytes in an ordinary file or
+major and minor device of a special file.
+.RE
+.IP \fB-k\fR 
+Prevents the process that is created from 
+becoming too large, which can cause performance problems.
+Use \fB-k\fR when you specify the
+.I system
+or
+.I corefile
+argument.
+.IP \fB-p\fR 5
+Displays the process table for active processes with these headings:
+.RE
+.RS 8
+.IP LOC 10
+The core location of this table entry.
+.IP S
+Run state, encoded as follows:
+.RE
+.RS 20
+.IP 0 4
+No process
+.IP 1
+Waiting for some event
+.IP 3
+Able to be run
+.IP 4
+Being created
+.IP 5
+Being terminated
+.IP 6
+Stopped under trace
+.RE
+.RS 8
+.IP F 10
+Miscellaneous state variables, combined with a Boolean OR operation 
+(hexadecimal):
+.RE
+.RS 20
+.IP 00000001 9
+Process is resident in memory.
+.IP 00000002
+System process:  swapper, pager, idle (RISC only), trusted path daemon.
+.IP 00000004
+Process is being swapped out.
+.IP 00000008
+Process requested swapout for page table growth.
+.IP 00000010
+Traced.
+.IP 00000020
+Used in tracing.
+.IP 00000040
+Locked in by a 
+.PN plock 
+call.
+.IP 00000080
+Waiting for page-in to complete.
+.IP 00000100
+Protected from swapout while transferring resources to another process.
+.IP 00000200
+Used by a
+.PN sigpause 
+call. 
+.IP 00000400
+Exiting.
+.IP 00000800
+Protected from swapout while doing physical input and output.
+.IP 00001000
+Process resulted from a
+.PN vfork 
+call, 
+which is not yet complete.
+.IP 00002000
+Parent has received resources returned by a child created with the
+.PN vfork 
+call.
+.IP 00004000
+Process has no virtual memory because it is a parent in the context of
+the
+.PN vfork 
+call.
+.IP 00008000
+Process is demand-paging data pages from its text gnode.
+.IP 00010000
+Process has advised of sequential memory access.
+.IP 00020000
+Process has advised of random memory access.
+.IP 00080000
+Process has indicated intent to execute data or stack (RISC only).
+.IP 00100000
+POSIX environment: no SIGCLD generated when children stop.
+.IP 00200000
+Process is owed a profiling tick.
+.IP 00400000
+Used by a 
+.PN select 
+call
+.IP 00800000
+A login process.
+.IP 04000000
+System V file lock applied.
+.IP 08000000
+Repair of unaligned accesses has been attempted (RISC only).
+.IP 10000000
+Process has called the
+.PN execve 
+system routine.
+.IP 20000000
+The idle process (RISC only).
+.RE
+.RS 8
+.IP POIP 10
+Number of pages currently being pushed out from this process.
+.IP PRI
+Scheduling priority. (See 
+.MS getpriority 2 
+for information on priorities.)
+.IP SIGNAL
+Signals received (signals 1-32 coded in bits 0-31).
+.IP UID
+Real user ID.
+.IP SLP
+Amount of time the process has been blocked.
+.IP TIM
+Time resident in seconds; values greater than 127 are coded as 127.
+.IP CPU
+Weighted integral of CPU time, for scheduler.
+.IP NI
+Nice level. (See 
+.MS getpriority 2 
+for information about nice levels.)
+.IP PGRP
+Process number of the root of the process group
+(the opener of the controlling terminal).
+.IP PID
+The process ID number.
+.IP PPID
+The process ID of the parent process.
+.IP ADDR
+If the process is in memory, identifies the user area page frame number of the page table entries.
+If the process is swapped out, identifies the position in the swap area
+measured in multiples of 512 bytes.
+.IP RSS
+Resident set size minus the number of physical page frames allocated
+to this process.
+.IP SRSS
+RSS at last swap (0 if never swapped).
+.IP SIZE
+Virtual size of process image (data plus stack) in multiples of 512 bytes.
+.IP WCHAN
+Wait channel number of a waiting process.
+.IP LINK
+Link pointer in list of processes that can be run.
+.IP TEXTP
+If text is pure, pointer to location of text table entry.
+.IP CLKT
+Countdown for real interval timer, 
+measured in clock ticks (10 milliseconds). See the
+.MS getitimer 2
+reference page for information about the real interval timer.)
+.IP TTYP
+Address of controlling the terminal.
+.IP DMAP
+Address of data segment dmap structure.
+.IP SMAP
+Address of stack segment dmap structure.
+.RE
+.IP \fB-s\fR 5
+Displays the following information about the pages used for swap space:
+.RS 8
+.IP \(bu 5
+The number of pages reserved, but not necessarily allocated, by the 
+system for currently
+executing processes.
+.IP \(bu 5
+The number of pages used (physically allocated), including the number
+used for text images. 
+.IP \(bu 5
+The number of pages free, wasted, or missing. Free pages are pages that
+have not been allocated. Missing pages are usually allocated to argdev.
+Wasted pages indicate the amount of space lost because the swap space is
+fragmented. 
+.IP \(bu 5
+The number of pages available, which indicates the amount of space available for
+swapping.
+.RE
+.IP \fB-t\fR 5
+Displays the table for terminals
+with the following headings:
+.RS 8
+.IP RAW 10
+Number of characters in the raw input queue.
+.IP CAN
+Number of characters in the canonic input queue.
+.IP OUT
+Number of characters in the output queue.
+.IP MODE
+Terminal mode, as described in 
+.MS tty 4
+.
+.IP ADDR
+Physical device address.
+.IP DEL
+Number of delimiters (newlines) in the canonic input queue.
+.IP COL
+Calculated column position of the terminal.
+.IP STATE
+Miscellaneous state variables, encoded as follows:
+.RE
+.RS 20
+.IP T 4
+Line is timed out.
+.IP W
+Waiting for open to complete.
+.IP O
+Open.
+.IP C
+Carrier is on.
+.IP B
+Busy doing output.
+.IP A
+Process is awaiting output.
+.IP X
+Open for exclusive use.
+.IP H
+Hangup on close.
+.IP S
+Output is stopped (ttstop).
+.IP I
+In-use flag is set (shared line semaphore).
+.IP D
+Open nodelay.
+.IP G
+Ignore carrier.
+.IP N
+Nonblocking input and output.
+.IP Z
+Asychronous input and output notification.
+.IP L
+Terminal line is in the process of closing.
+.IP Q
+Output suspended for flow control.
+.RE
+.RS 8
+.IP PGRP 10
+Process group for which this is the controlling terminal.
+.IP DISC
+Line discipline; blank is old tty OTTYDISC, ntty for NTTYDISC,
+or termio for TERMIODISC.  
+.RE
+.IP \fB-T\fR 5
+Displays the number of used and free slots in the system tables.
+This option is useful for determining how full the system tables have become 
+if the system is under a heavy load.
+.IP \fB-u\fIpid\fR 5
+Displays information about the specified user process. The \fIpid\fR
+argument is the process ID number as displayed by the
+.PN ps 
+command.
+The process must be in main memory, unless you specify the \fIcorefile\fR
+argument on the command line. If you specify a core file, \fIpid\fR
+must be 0.
+.IP \fB-v\fR 5
+Displays a listing of all vector processes on the system. This option is
+valid only for processors that have the VAX vector hardware. The
+following list describes the headings in the display:
+.RS 8
+.IP LOC 10
+The core location of this table entry
+.IP PPGRP
+The process number of the root of the process group
+(the opener of the controlling terminal)
+.IP PID
+The process ID number
+.IP PPID
+The process ID of the parent process
+.IP VSTAT
+One of the following vector process statuses:
+.RE
+.RS 20
+.IP WAIT
+New vector process, which is waiting for a vector processor to be
+allocated to it.
+.IP LOAD
+Process context is present in both vector and scalar processors.
+.IP SAVED
+Process vector context is saved in memory.
+.IP LIMBO
+A vector processor has been allocated to the process, but the vector
+context of the process has not yet been loaded.
+.RE
+.RS 8
+.IP VERRS
+Number of vector processor errors incurred by this process.
+.IP REFS
+Number of times this process was refused scheduling into a vector
+processor.
+.IP CHPCXT
+Number of times the scaler context has been saved and restored, while
+the vector context remains resident in the vector processor.
+.IP EPXCXT
+Number of times both the scalar and vector contexts have been saved and
+restored.
+.RE
+.IP \fB-x\fR 5
+Displays the text table with the following headings:
+.RS 8
+.IP LOC 10
+The core location of this table entry.
+.IP FLAGS
+Miscellaneous state variables encoded as follows:
+.RE
+.RS 20
+.IP T 4
+A process called the 
+.MS ptrace 2
+system call. 
+.IP W
+Text has not yet been written on the swap device.
+.IP L
+Loading is in progress.
+.IP K
+Locked.
+.IP w
+Wanted. (L flag is on.)
+.IP F
+Text structure is on the freelist.
+.IP P
+Resulted from demand-page-from-gnode execution format.  For further
+information, see 
+.MS execve 2 .
+.IP l
+Locked from being paged or swapped.  For further information, see
+.MS plock 2 .
+.IP B
+All attached processes are being killed due to server write of an 
+.PN a.out 
+file.
+.RE
+.RS 8
+.IP DADDR 10
+Address of the text dmap structure in core.
+.IP CADDR
+Head of a linked list of loaded processes using this text segment.
+.IP SIZE
+Size of the text segment, measured in multiples of 512 bytes.
+.IP IPTR
+Core location of the corresponding gnode.
+.IP CNT
+Number of processes using this text segment.
+.IP CCNT
+Number of processes in core using this text segment.
+.IP LCNT
+Number of process locking this text segment.
+.IP POIP
+Number of pages currently being pushed out in this text segment.
+.IP CMAP
+The address of the last CMAP entry freed.
+.RE
+.SH Files
+.TP 15
+.PN /dev/mem
+User process information
+.TP 15
+.PN /dev/kmem
+Kernel memory 
+.TP 15
+.PN /vmunix 
+System namelist
+.SH See Also
+ps(1), chmod(2), execve(2), getitimer(2), getpriority(2), lseek(2), plock(2), ptrace(2), stat(2), fs(5)

@@ -1,0 +1,117 @@
+.TH newinv 1
+.SH Name
+newinv \- update distribution kit master inventory
+.SH Syntax
+.B /usr/sys/dist/newinv 
+.I mi-file
+.I input-path
+.SH Description
+.NX R "setld" "newinv command"
+.NX R "newinv command"
+.NX R "kits" "updating master inventory"
+The
+.PN newinv
+command interactively maintains the master inventory
+files used for producing distributions in
+.PN setld
+format. The program updates the master
+inventory for a product when changes are made to the hierarchy of files
+which are to be packaged in the subsets which constitute the product.
+.PP
+The product hierarchy is scanned to produce a list
+of component path names relative to
+.I input-path.
+The list of path names is processed against the
+.I mi-file
+to produce a list of those files which have been removed from
+the product hierarchy and a list of those files which have been added.
+.PP
+The user is then given an opportunity to intervene and
+direct the inventory maintenance by editing these lists.
+The user is placed in the editor with each list available for editing.
+The editor used is the one specified by the
+.I EDITOR
+environment variable. If
+.I EDITOR
+is not set,
+.PN vi
+is used.
+When editing the list of files which have been removed from the
+product, the user is expected to verify that the removals
+were intentional, and confirm the intent by removing the associated
+record from the file. When editing the list of files which have
+been added to the product, the user is expected to provide
+flags and subset information for each new file, transforming the
+elements of the list into master inventory records.
+.PP
+Both of these lists are merged with the records for the files which
+have not been changed to produce
+a new copy of the master inventory file.
+.SS Arguments
+.TP 15
+.I mi-file
+The pathname of the master inventory file to be processed. If no
+master inventory file exists, you must create an empty one before using
+the
+.PN newinv
+command.
+.TP
+.I input-path
+The name of the product hierarchy to be scanned for files belonging
+in the inventory. All files and directories found below the
+.I input-path
+will be processed as belonging in the inventory.
+.SH Restrictions
+The default text editor if not specified in
+.I $EDITOR
+is 
+.PN /usr/ucb/vi .
+.PP
+Files in the product hierarchy cannot be excluded from the
+master inventory. Files can be blocked from being kitted in
+the final distribution kit by setting the subset field of
+the master inventory record to
+.I NOSHIP.
+.SH Examples
+To update the master inventory file 
+.I ULT400.mi
+from the hierarchy beginning at
+.I /var/kits/input,
+type:
+.EX
+    newinv ULT400.mi /var/kits/input
+.EE
+.SH Diagnostics
+.B newinv: where is
+.I mi-file?
+.br
+The
+.I mi-file
+specified on the command line cannot be found.
+.PP
+.I input-path:
+.B bad directory.
+.br
+The
+.I input-path
+directory specified on the command line does not exist.
+.SH Files
+.TP 15
+.PN mi-file.bkp
+Backup copy of master inventory
+.TP
+.PN mi-file.dead
+The list of files missing from the product.
+.TP
+.PN mi-file.extra
+The list of files new to the product.
+.TP
+.PN mi-file.join
+Intermediate join file.
+.TP
+.PN mi-file.tmp
+List of all files in the product.
+.SH See Also
+kits(1), vi(1), stl_mi(5), environ(7), setld(8)
+.br
+\fIGuide to Preparing Software for Distribution on ULTRIX Systems\fP

@@ -1,0 +1,98 @@
+.TH SCSI 4
+.SH Name
+SCSI \- Small Computer System Interconnect
+.SH Description
+The ULTRIX system interfaces to disk and tape devices through the
+Small Computer System Interconnect (SCSI).
+Initial ULTRIX 
+SCSI
+support is limited to the Digital-supplied mass storage devices.  The
+following devices are fully supported on the ULTRIX system:
+.NXR "SCSI device driver"
+.NXR "Small Computer System Interconnect"
+.NXR "device driver" "SCSI"
+.IP \(bu 5
+Winchester disks: RZ22, RZ23, RZ23L, RZ24, RZ55, RZ56, RZ57, RX23, RX26, RX33
+.IP \(bu 5
+Magnetic tapes: TZ30, TZK50, TLZ04, TSZ05, TKZ08, TZK10
+.IP \(bu 5
+Optical disks: RRD40, RRD42
+.PP
+Under the ULTRIX operating system, a 
+SCSI
+device is referred to by its logical name.  Logical names take
+the following form:
+.EX
+nn#
+.EE
+The
+.I nn
+argument is the two-character name; the number sign (#) represents
+the unit number.  The two character names for 
+SCSI
+devices are:
+.IP rz  4
+-  RZ22, RZ23, RZ23L, RZ24, RZ55, RZ56, RZ57, RX23, RX26, RX33, RRD40, RRD42 disks
+.IP tz  
+-  TZ30, TZK50, TLZ04, TSZ05, TKZ08, and TZK10 tapes
+.PP
+The unit number is a combination of the 
+SCSI
+bus number, either 0, 1, ... and the device's target ID number.
+The unit number is eight times the bus number plus the 
+target ID.  For example, an RZ23 disk at target ID 3 on bus
+0 would be referred to as rz3; a TZK50 tape at target ID 5 on the second
+SCSI bus would be referred to as 13.
+.PP
+The 
+SCSI
+bus has eight possible target device IDs.  By default, one is allocated
+to the system.  This allows for a maximum of seven target devices
+connected to a 
+SCSI
+bus.
+.SH Restrictions
+.PP
+The ULTRIX
+SCSI
+device driver does not operate with optical disks, other than the
+Digital-supplied devices.
+.PP
+The 
+SCSI
+driver attempts to support on a best effort basis, 
+non-Digital-supplied
+winchester disks and magnetic tapes.
+.PP
+The following notes apply to the driver's handling of 
+non-Digital-supplied disks:
+.RS 3
+.IP \(bu 4
+These disks are assigned a device type of RZxx, 
+instead of RZ22, RZ23, RZ23L,
+RZ55, RZ56, RZ57, RX23, RX26, or RX33.  
+The RZxx disks follow the same logical device naming
+scheme as the Digital-supplied disks.
+.IP \(bu 4
+During the autoconfigure phase of the system startup, 
+the driver prints
+the contents of the 
+SCSI
+vendor ID, product ID, and the revision level fields of the inquiry data
+return by the 
+SCSI
+device.
+.IP \(bu 4
+RZxx disks are assigned a default partition table. The
+default table can be modified by editing the sz_rzxx_sizes[8] entry in
+the file
+.PN /usr/sys/data/scsi_data.c .
+The
+.PN chpt
+utility can also be used to modify the partition table on a RZxx
+disk.
+.IP \(bu 4
+The only logical unit number (LUN) supported for each target ID is 0.
+.RE
+.SH See Also
+rz(4), tz(4), chpt(8)

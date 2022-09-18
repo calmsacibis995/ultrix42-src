@@ -1,0 +1,102 @@
+.\" SCCSID: @(#)perror.3f	8.1	9/11/90
+.TH perror 3f VAX "" Unsupported
+.SH Name
+perror, gerror, ierrno \- get system error messages
+.SH Syntax
+.B subroutine perror (string)
+.br
+.B character*(*) string
+.sp 1
+.B subroutine gerror (string)
+.br
+.B character*(*) string
+.sp 1
+.B character*(*) function gerror()
+.sp 1
+.B function ierrno()
+.SH Description
+.NXR "perror subroutine (FORTRAN)"
+.NXR "gerror subroutine (FORTRAN)"
+.NXR "ierrno subroutine (FORTRAN)"
+.NXR "error message (system)" "getting"
+The
+.PN perror
+subroutine
+will write a message to FORTRAN logical unit 0
+appropriate to the last detected system error.
+The
+.I string
+will be written preceding the standard error message.
+.PP
+The
+.PN gerror
+subroutine
+returns the system error message in character variable
+.I string.
+The
+.PN gerror
+subroutine
+may be called either as a subroutine or as a function.
+.PP
+The
+.PN ierrno
+subroutine
+will return the error number of the last detected system error.
+This number is updated only when an error actually occurs.
+Most routines and I/O statements that might generate such errors
+return an error code after the call.
+That value is a more reliable indicator
+of what caused the error condition.
+.SS Error Codes
+ULTRIX system error codes are described in
+.MS intro 2 .
+The f77 I/O error codes and their meanings are:
+.NXR "f77 compiler" "I/O error code list"
+.EX
+100	``error in format''
+101	``illegal unit number''
+102	``formatted io not allowed''
+103	``unformatted io not allowed''
+104	``direct io not allowed''
+105	``sequential io not allowed''
+106	``can't backspace file''
+107	``off beginning of record''
+108	``can't stat file''
+109	``no * after repeat count''
+110	``off end of record''
+111	``truncation failed''
+112	``incomprehensible list input''
+113	``out of free space''
+114	``unit not connected''
+115	``invalid data for integer format term''
+116	``invalid data for logical format term''
+117	``'new' file exists''
+118	``can't find 'old' file''
+119	``opening too many files or unknown system error''
+120	``requires seek ability''
+121	``illegal argument''
+122	``negative repeat count''
+123	``illegal operation for unit''
+124	``invalid data for d, e., f, or g format term''
+.EE
+.SH Restrictions
+.NXR "perror subroutine (FORTRAN)" "restrictions"
+The
+.I string
+in the call to
+.PN perror
+can be no longer than 127 characters.
+.PP
+The length of the string returned by
+.PN gerror
+is determined by the calling program.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+intro(2), perror(3)
+.br
+``Introduction to the f77 I/O Library,''
+.I ULTRIX Supplementary Documents,
+.br
+Vol. II: Programmer

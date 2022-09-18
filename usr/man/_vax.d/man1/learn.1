@@ -1,0 +1,103 @@
+.\" SCCSID: @(#)learn.1	8.1	9/11/90
+.TH learn 1 "" "" Unsupported
+.SH Name
+learn \- computer aided instruction about UNIX
+.SH Syntax
+.B learn
+[
+.BI \- directory
+]
+[ \fIsubject\fP [ \fIlesson\fP ] ]
+.SH Description
+The
+.PN learn
+command gives computer aided instruction courses and
+practice in the use of UNIX, the C Shell,
+and the Berkeley text editors.
+To get started simply type
+.BR learn .
+The program will ask questions to find out what
+you want to do.
+Some questions may be bypassed by naming a
+.IR subject ,
+and more yet by naming a
+.IR lesson .
+You may enter the
+.I lesson
+as a number that
+.PN learn
+gave you in a previous session.
+If you do not know the lesson number,
+you may enter the
+.I lesson
+as a word, and
+.PN learn
+will look for the first lesson containing it.
+If the
+.I lesson
+is `\fB\-\fP',
+.PN learn
+prompts for each lesson;
+this is useful for debugging.
+.PP
+The
+.IR subject s
+presently handled are
+.if n .sp 1v
+.if t .sp .5v
+.nf
+           files
+           editor
+           vi
+           morefiles
+           macros
+           eqn
+           C
+.fi
+.PP
+There are a few special commands.
+The command `bye' terminates a 
+.PN learn
+session and `where' tells you of your progress,
+with `where\0m' telling you more.
+The command `again' re-displays the text of the lesson
+and `again\0\fIlesson\fP' lets you review
+.IR lesson .
+.SH Options
+.TP 15
+.BI \- directory
+Allows one to exercise a script in
+a nonstandard place.
+.SH Restrictions
+The main strength of
+.PN learn,
+that it asks the student to use the real UNIX,
+also makes possible baffling mistakes.
+It is helpful, especially for nonprogrammers,
+to have a UNIX initiate near at hand during the first
+sessions.
+.PP
+Occasionally lessons are incorrect, sometimes because the local version
+of a command operates in a non-standard way.
+Such lessons may be skipped with the `skip' command,
+but it takes some sophistication to recognize
+the situation.
+.PP
+To find a
+.I lesson
+given as a word,
+.PN learn
+does a simple
+.MS fgrep 1 
+through the lessons.
+It is unclear whether this sort
+of subject indexing is better than none.
+.PP
+Spawning a new shell is required for each of many
+user and internal functions.
+.SH Files
+.nf
+/usr/lib/learn	subtree for all dependent directories and files
+/usr/tmp/pl\(**	playpen directories
+.SH See Also
+csh(1), ex(1)

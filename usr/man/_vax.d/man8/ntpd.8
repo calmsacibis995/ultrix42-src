@@ -1,0 +1,363 @@
+.\" SCCSID: @(#)nfsd.8nfs	5.2	4/5/89
+.TH ntpd 8
+.SH Name
+ntpd \- network time protocol (NTP) daemon
+.SH Syntax
+.B /usr/etc/ntpd
+[
+.B \-a
+.I threshold
+][
+.B \-c
+.I file
+][
+.B \-d
+][
+.B \-D \fIlevel\fP
+][
+.B \-l
+][
+.B \-n
+][
+.B \-s
+]
+.SH Description
+.NXR "ntpd daemon"
+The University of Maryland's
+.PN ntpd 
+daemon synchronizes the local clock with a set of distributed
+time servers.  The
+.PN ntpd
+daemon distributes accurate, reliable time from the best time source
+available at your site to hosts on wide area networks (WAN)
+and local area networks (LAN).  The three recommended time
+sources in decreasing order of accuracy are:  Internet NTP service,
+local radio clock, and wristwatch.  Note that the 
+.PN ntpd
+daemon does not require time servers to be on the same LAN as
+time clients, and does not create a heavy broadcast load on the
+network.
+.NT
+If the NTP servers are not on your Local Area Network (LAN),
+you must run the 
+.PN routed
+daemon before running the 
+.PN ntpd
+daemon.  To run 
+.PN routed ,
+remove the number signs (#) from in front of the following lines
+in your
+.PN /etc/rc.local 
+file:
+.EX
+#[ \-f /etc/routed ] && {
+#       /etc/routed & echo 'routed'             >/dev/console
+#}
+.EE
+The 
+.PN routed 
+daemon will be invoked when you reboot your system.  To start 
+.PN routed 
+without rebooting, type the following on the command line:
+.EX 
+\f(CB/etc/routed\f(CW
+.EE
+.NE
+For information on setting up the network time services, see
+the 
+.I Guide to System and Network Setup.
+.PP
+The
+.PN ntpd 
+daemon automatically splits the nodes running the
+.PN ntpd
+daemon into a dynamically reconfigurable
+hierarchy of nodes.  The nodes at the top level of the hierarchy 
+(low stratum numbers) are
+connected to the most accurate sources available.
+This information is transferred to the lower-level nodes
+(higher stratum numbers) which set their clocks based
+on the calculated offset from a remote server, and then
+distribute this time to lower levels of the hierarchy.  
+.PP
+The 
+.PN ntpd
+daemon provides a solution for distributing time to a large number of
+individual workstations.  It
+can also be used in conjunction with a master
+.PN timed 
+daemon to distribute NTP time to workstations running
+.PN timed .
+If 
+.PN timed
+is run with the 
+.PN \-E
+and 
+.PN \-M 
+options on at least one system that is also running
+.PN ntpd ,
+then all other systems on the network running
+.PN timed
+can receive time updates from a host
+running
+.PN ntpd .
+Although
+.PN timed
+is easier to set up on clients, NTP is recommended
+because it is more accurate and more secure.
+.PP
+Normally, the
+.PN ntpd 
+daemon is invoked at boot time from the
+.PN /etc/rc.local
+file.  When 
+.PN ntpd
+is started, it reads configuration information from 
+the 
+.PN /etc/ntp.conf
+file, unless you have specified another configuration file with the
+.PN \-c
+option.  The configuration file either specifies the list of NTP
+servers with which this host should synchronize, or identifies
+this host as a local reference clock.  See the
+.MS ntp.conf 5
+reference page for more information on the
+.PN /etc/ntp.conf
+configuration file.
+.PP
+The 
+.PN ntpd
+daemon uses the
+.MS adjtime 2
+system call to gradually adjust the local clock for
+small clock offsets (< 0.128 seconds).
+If the local clock
+lags the time on the server by more than 0.128 seconds, the
+.MS settimeofday 2
+system call is used to make a forward step adjustment of the local 
+clock.  Clocks are never stepped
+backwards; they are adjusted gradually, which 
+can take a very long time.  Therefore, 
+it is important to initialize the time using the
+.PN ntp
+command before running the
+.PN ntpd
+daemon. 
+.SH Options
+.IP "\-a \fIthreshold\fP" 5
+Sets the threshold (in seconds) which limits how
+far the
+.PN ntpd
+daemon can change the local clock.
+By default, the threshold is 1000 seconds.  This 
+is set to avoid propagating major mistakes throughout the
+network.  If you specify the string
+.PN any
+instead of a number, the
+.PN ntpd
+daemon can change the local clock by any amount.  
+.IP "\-c \fIfile\fP" 5
+Specifies a configuration file for the
+.PN ntpd
+daemon.  By default, the configuration file is
+.PN /etc/ntp.conf .
+.IP \-d
+Increments the debug level by one.  
+The
+.PN \-d
+option can be specified more than once.
+Higher debug levels provide more diagnostic information.
+.IP "\-D \fIlevel\fP"
+Sets the debug level to the specified value.
+.IP \-l
+Causes the 
+.PN ntpd
+daemon to log a message each time the local clock is adjusted.
+Specify this option only if you want to gather statistical
+information to analyze the local clock behavior.  If the
+.PN \-l
+option is set, a message may be logged every two minutes.
+Messages are logged to 
+.PN /usr/spool/mqueue/syslog .
+.IP \-n
+Inhibits the 
+.PN ntpd
+program from being swapped out of memory.  Using the
+.PN \-n
+option is recommended for both time servers and time clients.
+.IP \-s 5
+Prevents the
+.PN ntpd 
+daemon from altering the time on the local host.
+The 
+.PN ntpd
+daemon participates as an NTP server with the
+.PN \-s
+flag set, but it does not change the time of the local host.
+.SH Examples
+Before starting the 
+.PN ntpd
+daemon, either manually or from the
+.PN /etc/rc.local
+file, you must edit the 
+.PN /etc/ntp.conf
+file with the appropriate information.  If your system is a client
+you must specify the time servers for it to query.  If it is a
+time server, you must specify the time servers with which it
+peers.  See the
+.MS ntp.conf 5
+reference page for more information.
+.PP
+To start the 
+.PN ntpd
+daemon manually (on a time client), enter the following commands:
+.EX
+# \f(CB/etc/rdate \-s\fP
+# \f(CB/usr/etc/ntp \-s \-f \fIserver1\fP \fIserver2\fP \fIserver3\fP
+# \f(CB/usr/etc/ntpd \-n\fP
+.EE
+The 
+.PN /etc/rdate
+command initializes your time to the average network time.  The 
+.PN /usr/etc/ntp
+command further refines the initial time to the NTP time.
+The servers specified on the command line
+are the same as those specified in the
+.PN /etc/ntp.conf
+file.
+.PP
+To start the 
+.PN ntpd 
+daemon from the 
+.PN /etc/rc.local
+file (on a time client), place the following entries in the
+.PN /etc/rc.local
+file.  Multiple servers are included in case one of the servers crashes, or
+is brought down.  The servers specified in the
+.PN /etc/rc.local
+file are the same as those specified in the 
+.PN /etc/ntp.conf 
+file.  These entries
+should be placed after the
+.PN syslog
+entry:
+.EX
+
+[\-f /etc/syslog] && {
+     /etc/syslog   & echo \-n ' syslog'           >/dev/console
+}
+[\-f /etc/rdate] && {
+     /etc/rdate \-s   & echo \-n ' rdate'          >/dev/console
+}
+[\-f /usr/etc/ntp] && {
+     /usr/etc/ntp \-s \-f \fIserver1\fP \fIserver2\fP \fIserver3\fP \\
+                      & echo \-n ' ntp'           >/dev/console
+}
+[\-f /usr/etc/ntpd] && {
+     /usr/etc/ntpd \-n & echo \-n ' ntpd'          >/dev/console
+     
+}
+.EE
+.SH Diagnostics
+The 
+.PN ntpd 
+daemon logs errors, major state changes, and statistics
+reports using the 
+.PN syslog 
+daemon; the log entries appear in the file
+.PN /usr/spool/mqueue/syslog 
+with the word 
+.PN ntpd:
+on each	relevant line.  Normal log entries show when 
+.PN ntpd 
+gains or loses synchronization with a lower-stratum host.  Also,
+once an hour 
+.PN ntpd 
+issues a 
+.PN "ntpd: stats:" 
+entry that gives information about its state.
+.PP
+Once an hour, if 
+.PN ntpd 
+is synchronized, it updates the
+.PN /etc/ntp.drift 
+file.  This file shows the estimated
+clock drift for each of the past 5 hours, with the most recent
+hour listed first.  (The 6th number in this file is the
+number of hours 
+.PN ntpd 
+has been running).  To convert the
+drift values to parts per million (ppm), divide them
+by 4096 and multiply by 1000000.  For example, +0.0107001161
+means that 
+.PN ntpd 
+estimates that the clock is drifting
+by about 2.61 ppm, or is losing about 0.226 seconds per day.
+[(2.61/1000000) * 24 * 60 * 60 = 0.226].  Negative drift
+values mean that the clock is gaining time.  If 
+.PN ntpd
+is working, your computer's clock should be
+accurate to within a few seconds per day.
+.PP
+Another diagnostic tool is the 
+.PN ntpdc 
+command.  You can use this to look at any host running 
+.PN ntpd .
+The following command line returns the state of the remote host's 
+.PN ntpd 
+server:
+.EX 
+% \f(CB/usr/etc/ntpdc \fIhostname\fP
+.EE
+.PP
+The value that is returned for the 
+.PN offset 
+should contain values not greater than
+100 milliseconds.  See the 
+.MS ntpdc 8
+reference page for more information.
+.PP
+If the
+.PN ntpd
+daemon sets the time as frequently as every 10 minutes (indicated
+by messages in the
+.PN /usr/spool/mqueue/syslog
+file), then you should kill the
+.PN ntpd 
+daemon, remove the 
+.PN /etc/ntp.drift 
+file, run the
+.PN ntp
+command to initialize the time, and restart the 
+.PN ntpd
+daemon.
+.PP
+If your system clock is ahead of the server time by more than 1
+second, you should kill the
+.PN ntpd
+daemon, remove the
+.PN /etc/ntp.drift
+file, run the
+.PN ntp
+command to initialize the time, and restart the
+.PN ntpd
+daemon.
+.PP
+If your clock is more than 1000 seconds off from the server
+time, and you did not specify the 
+.PN "\-a any"
+option, 
+.PN ntpd
+will not change your system time.  Rather, 
+.PN ntpd
+will repeatedly log messages to the
+.PN /usr/spool/mqueue/syslog
+file, indicating that the time is too far off to reset.
+.SH See Also
+ntp(1), adjtime(2), settimeofday(2), ntp.conf(5), ntpdc(8), timed(8)
+.br
+\fIRFC 1129\(emInternet Time Synchronization:  the Network Time Protocol\fP
+.br
+.I "Guide to System and Network Setup"
+.br
+.I "Introduction to Networking and Distributed System Services"

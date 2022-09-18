@@ -1,0 +1,39 @@
+.\" SCCSID: @(#)assert.3	8.1	9/11/90
+.TH assert 3
+.SH Name
+assert \- program verification
+.SH Syntax
+.B #include <assert.h>
+.PP
+.B assert(\fIexpression\fP)
+.SH Description
+.NXR "assert macro"
+.NXR "program" "verifying"
+The
+.PN assert
+macro indicates
+.I expression
+is expected to be true at this point in the program.
+It causes an 
+.MS abort 3 
+with a diagnostic comment on the standard error when
+.I expression
+is false (0).
+Compiling with the 
+.MS cc 1
+option \-DNDEBUG effectively deletes
+.PN assert
+from the program.
+.SH Diagnostics
+`Assertion failed: a, file
+.I f
+.I n'.
+The
+.I a 
+is the assertion that failed; 
+.I f
+is the source file and
+.I n
+the source line number of the
+.PN assert
+statement.

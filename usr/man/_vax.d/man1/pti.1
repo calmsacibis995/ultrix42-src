@@ -1,0 +1,24 @@
+.\" SCCSID: @(#)pti.1	8.1	9/11/90
+.TH pti 1 "" "" Unsupported
+.SH Name
+pti \- phototypesetter interpreter
+.SH Syntax
+.B pti
+[ \fIfile\fP ... ]
+.SH Description
+The
+.PN pti
+command shows the commands in a stream from the standard output of
+.MS troff 1
+using
+.PN troff 's
+.B \-t
+option,
+interpreting them as they would act on the typesetter.
+Horizontal motions shows as counts in internal units and
+are marked with `<' and `>' indicating left and right motion.
+Vertical space is called
+lead
+and is also indicated.
+.SH See Also
+troff(1)

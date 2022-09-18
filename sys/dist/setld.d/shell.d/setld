@@ -1,0 +1,3362 @@
+#!/bin/sh5
+#	setld.sh
+#		manage software subset distributions
+#
+#	setld [-D path] -c subset message		(configure)
+#	setld [-D path] -d subset [subset...]		(delete)
+#	setld [-D path] -h				(help)
+#	setld [-D path] -i [subset...]			(inspect)
+#	setld [-D path] -l location			(load)
+#	setld [-D path] -v [subset...]			(validate)
+#	setld [-D path] -x location			(extract)
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)setld	4.9	(ULTRIX)	4/4/91"
+#
+#	000	ccb	12-mar-1987
+#		Digital Equipment Corporation
+#	Many thanks to robin, rnf, and afd
+#	new version for 2.2
+#
+#	001	ccb	02-mar-1988
+#		Set UMASK to 22 so that ris can read the images.
+#
+#	002	06-APR-1988	ccb
+#		Fix DEVICE parsing bug.
+#
+#	003	18-feb-1989	ccb
+#		Port to sh5
+#		add update (-u) support
+#
+#	004	07-mar-1989	ccb
+#		Add support for new style ris servers.
+#
+#	005	12-jun-1989	ccb
+#		Fix extraneous scp on failed subset problem,
+#		clean up entry to -l when subsets specified on command line,
+#		clean up exit returns, fix 'D is read-only' problem in trap
+#		for keyboard interrupts.
+#
+#	006	17-jul-1990	ccb
+#		Fix problem finding unique client names in risdb.
+#
+#	007	05-nov-1990	ech
+#		Fix path used by setld to exclude current directory,
+#		add subset description in the dependency-check error message,
+#		change format of messages givien when subset is loaded,
+#		change return value such that setld will exit if underlying
+#		scp preforms an exit 1.
+#	   
+#	008	16-nov-1990	ech
+#		Fix problem in setld -i when .ctrl is empty by resetting 
+#		all control variables in ReadCtrlFile(), also mark subset as 
+#		incomplete if .ctrl is incomplete.
+#		Fix leftover /hosts problem.
+#
+#	009	17-dec-1990	ech
+#		call fverify -yp in Verify(), fix path of .inv fed to tclear 
+#		in LoadFromMedia().
+#
+#	010	29-jan-1991	ech
+#		add current directory back to the end of setld PATH.
+#		restore /etc/hosts every time LoadFromInet is called.
+#
+#	011	19-feb-1991	ech
+#		clean up usage (no -a, -u, -v w/o specifying subsets).
+#		move "Deleting (subset)" to before C_DELETE is called.
+#		bug fix in RunScps (no C_INSTALL if POST_L fails).
+#
+#	012	12-mar-1991	ech
+#		add reg expr when 'egrep' ROOT in .image file in Extract().
+#		check if RIS server echoes 'hello' in InitDevice().
+#
+#	013	03-apr-1991	ech
+#		take out fverify -yp in Verify().
+
+ARGV=$*		# just in case
+
+#%	DECLARATIONS
+#%	SUBROUTINES
+#		all subroutines used in setld are defined in alphabetical
+#		order here.
+
+:	-Add
+#		add two numbers
+#
+#	given:	$1 - a number
+#		$2 - a number
+#	does:	echos the sum of the numbers
+#	return:	ignore
+
+Add()
+{ (	X=$1 Y=$2
+
+	OP=+	# operator
+	CSR=0	# sign change required
+
+	# expr does not recognize negative numbers. The following formulae
+	#  are used:
+	#
+	#   x +  y == x + y
+	#  -x +  y == -(x - y)
+	#   x + -y == x - y
+	#  -x + -y == -(x + y)
+
+	case "$X,$Y" in
+	-*,-*)	CSR=1
+		;;
+	-*,*)	CSR=1
+		OP=-
+		;;
+	*,-*)	OP=-
+	esac
+
+	# take absolute values
+	X=`Parse - $X`
+	Y=`Parse - $Y`
+
+	# apply operation
+	Z=`expr $X $OP $Y`
+
+	# adjust direction
+	case "$CSR,$Z" in
+	1,0)	;;	# zero, ignore $CSR
+	1,-*)	# change sign
+		Z=`Parse - $Z`
+		;;
+	1,*)	Z=-$Z
+	esac
+
+	# print
+	echo $Z
+) }
+
+
+:	-ArchiveChanges
+#		protect user customizations from the update.
+#
+#	given:	$1 - name of the subset for which to perform archiving
+#	does:	uses the restoration inventory ($_TDIR/$1.res) to drive
+#		the archiving of the files listed therein.
+#	return:	1 if perservation failed, 0 otherwise
+#	side:	operates in sub-context
+
+ArchiveChanges()
+{ (	SUB=$1		# subset to archive
+
+	mkdir var/adm/install/archive 2> /dev/null
+	awk '{print $10}' $_TDIR/$SUB.res > $TMP1
+	BigTar $TMP1 var/adm/install/archive
+) }
+
+
+:	-ArchiveReferenceCopies
+#		preserve newly installed copies of volitile product files
+#
+#	given:	a subset code
+#	does:	preserve reference copies of all newly installed files which
+#		were modified in the previous release
+#	return:	nothing
+
+ArchiveReferenceCopies()
+{	SUB=$1
+
+	mkdir var/adm/install/reference 2> /dev/null
+	awk '{print $10}' $_TDIR/$SUB.res > $TMP1
+	BigTar $TMP1 var/adm/install/reference
+}
+
+
+:	-AreInstalled
+#		subset installed status predicate
+#
+#	given:	$* - list of subsets
+#	does:	copies each subset code on the arglist representing a
+#		subset which is installed to stdout
+#	return:	nothing
+
+AreInstalled()
+{ (	ILIST=$*
+
+	for ISUB in $ILIST
+	{
+		[ -f $UAS/$ISUB.lk ] && echo $ISUB
+	}
+) }
+
+
+:	-Args
+#		break up the command args
+#
+#	given:	the command line
+#	does:	break the command line up
+#	return:	nothing
+#	effect:	$ACT - sets to act value
+#		$DEFPATH - set to 0 if root specified, else 1
+#		$DEVICE - set to device name for -alux
+#		$_R - set to / or new rootpath if specified
+#		$ARGV - set to remaining arguments
+
+Args()
+{
+	IGNORE=0	# ignore current option
+	OPT=		# current option value
+
+	# parsing the command line:
+	[ $# = 0 ] &&
+	{
+		# no arguments
+		Usage
+		return 1
+	}
+
+	case "$1" in
+	-*)	;;
+	*)	# assume old-style optional path prepend -D option switch
+		set -- -D $*
+	esac
+	set -- `getopt "a:cD:dhil:x:u:v" $*` ||
+	{
+		Usage
+		return 1
+	}
+
+	ACT=
+	_R=/
+	DEFPATH=1
+	for OPT in $*
+	{
+		[ "$IGNORE" = 1 ] &&
+		{
+			# skip already used option
+			IGNORE=0
+			continue
+		}
+		#! checks may be desired to guarantee that only one
+		#!  action option has been specified
+		case "$OPT" in
+		-[alux])
+			CMDSW=$OPT
+			DEVICE=$2
+			IGNORE=1	# ignore OPT value on next iteration
+			shift 2
+			;;
+
+		-[cdhiv])
+			CMDSW=$OPT
+			shift
+			;;
+
+		-D)	DEFPATH=0
+			_R=$2
+			IGNORE=1	# ignore OPT value on next iteration
+			shift 2
+
+			# verify that the target directory exists
+			[ -d $_R ] ||
+			{
+				Error "$_R: $ENOENT"
+				return 1
+			}
+			case "$_R" in
+			/*)	;;
+			*)	_R=`(cd $_R;Pwd)`
+			esac
+			;;
+
+		--)	# end of options
+			shift
+			break
+			;;
+		*)	# bad switches
+			Error "Unreached in Args()"
+			return 1
+		esac
+	}
+
+	CMDSW=`Parse - $CMDSW`
+	(Log "root=$_R -$CMDSW")	# subshell to protect command args
+
+	[ "$CMDSW" = "a" ] && CMDSW=l
+	ACT=`Ucase $CMDSW`
+	case "$WHOAMI,$CMDSW" in
+	*,)	# no action switch specified
+		Usage
+		return 1
+		;;
+	root,[cdluvx])
+		;;
+	*,[cdluvx])
+		Error "-$CMDSW can be used by super-user only."
+		return 1
+	esac
+
+
+	ARGV=$*
+	return 0
+}
+
+
+:	-BigTar
+#		move a potentially large number of files using tar
+#
+#	given:	$1 - the name of a file containing a list of files to be moved
+#		$2 - a root directory where the files are to be moved 
+#	does:	arranges for tar(1) to copy the files, splitting the list of
+#		things to be copied into smaller pieces if necessary.
+#	return:	!0 on failure
+
+BigTar()
+{	LIST=$1		# file name of list of files to copy
+	DEST=$2		# destination path
+
+	BTPATH=		# name of current file
+
+	[ -f "$LIST" ] ||
+	{
+		# List file does not exist
+		Error "cannot open $LIST ($ENOENT)"
+		return 1
+	}
+	[ -d "$DEST" ] ||
+	{
+		# no destination directory
+		Error "cannot copy to $DEST ($ENOENT)"
+		return 1
+	}
+
+	[ -s "$LIST" ] || return 0		# no files to move
+
+	# split the input file into as many 9 line files as needed
+	mkdir $_TDIR/split$$
+	split -9 $LIST $_TDIR/split$$/
+	for BTPATH in $_TDIR/split$$/*
+	{
+		tar cf - `cat $BTPATH` | (cd $DEST; tar xpf -)
+	}
+	rm -rf $_TDIR/split$$
+	return 0
+}
+
+
+:	-ChOp
+#		Change Operator
+#
+#	given:	$1 - {-,+}
+#	does:	effective "tr '+-' '-+'"
+#	return:	ignore
+
+ChOp()
+{
+	case "$1" in
+	+)	echo -
+		;;
+	-)	echo +
+	esac
+}
+
+
+:	-Cleanup
+#		cleanup before exiting
+#
+#	given:	uses global context
+#	does:	exit processing, called from Exit
+
+Cleanup()
+{
+	trap '' 0
+	cd $_R
+
+	case "$_MEDIA" in
+	tape)	echo "Rewinding Tape..."
+		TickWhile Wait MTPID
+		TickWhile mt -f $RAW rew
+		;;
+	inet)
+		# restore the hosts file in the event it was overwritten during
+		# the install of a previous subset
+		[ -f $HOSTS ] && mv $HOSTS etc/hosts
+		;;
+	esac
+
+	DATE=`date +19%y.%m.%d.%T`
+	Ticker off
+	wait
+	Log "SETLD $$ $DATE $_R -$CMDSW $STAT $EMESG"
+	rm -rf $TMPS
+}
+
+
+:	-Configure
+#		configure a subset
+#
+#	given:	$1 - the argument to be used in invoking the scp
+#		$2 - the name of the subset to configure
+#	does:	invoke the scp for the named subset with ACT=C and the
+#		specified argument on the command line
+#	return:	0 is successful, 1 on error
+
+Configure()
+{
+	[ $# != 2 ] &&
+	{
+		Usage -c
+		return 1
+	}
+	set `Ucase $*`	#! coerce subset name and option to upper case
+	LOC_S=$1	# subset name to configure
+	CONFARG=$2	# command arg for scp
+
+	#% Local Code
+	cd $_R
+	Log "$LOC_S ($CONFARG) \c"
+
+	# Make sure the subset is installed
+	[ -f $UAS/$LOC_S.lk ] ||
+	{
+		Error "$LOC_S $E_NOINST, cannot configure."
+		return 1
+	}
+
+	# verify that the scp exists
+	[ -f $UAS/$LOC_S.scp ] ||
+	{
+		Error "$LOC_S: missing control program, cannot configure."
+		return 1
+	}
+
+	# all clear
+	echo "Configuring $LOC_S"
+
+	if ACT=C $UAS/$LOC_S.scp $CONFARG; then
+	{
+		Log "SUCCEEDED"
+		return 0
+	}
+	else
+	{
+		Log "FAILED: scp status $?"
+		return 1
+	}; fi
+}
+
+
+:	-DbPurge
+#		Purge subsets database of all prior information about a
+#	subset.
+#
+#	given:	$1 - a subset name
+#	does:	removes all .ctrl .inv and .scp files belonging to
+#		prior versions of a subset
+#	return:	nil
+
+DbPurge()
+{ (
+	DBP_P= DBP_N= DBP_V=		# parse variables
+	RMLIST=				# list of files to be removed
+	TYPE=				# loop index
+
+	[ $# != 1 ] &&
+	{
+		Error "DbPurge($*): expected 1 arg, $# recieved"
+		return 1
+	}
+	NameParse DBP_ $1
+
+	cd $UAS
+
+	# how:
+	#  the previous elements are purged type-by-type. A list of existing
+	#  versions of a file is generated by forcing the shell to glob on
+	#  the version field of the subset name. This sorts in asc. order
+	#  by version number. All files except the last in this sorted order
+	#  are to be removed.
+
+	for TYPE in .ctrl .scp .inv .dw .lk
+	{
+		set -- `echo $DBP_P$DBP_N???$TYPE`
+		while [ $# -gt 1 ]
+		do
+			RMLIST="$RMLIST $1"
+			shift
+		done
+	}
+	rm -f $RMLIST
+) }
+
+
+:	-Delete
+#		Delete subsets
+#
+#	given:	$* - a list of subsets to delete
+#	does:	delete the subsets
+#	return:	0 on success
+#		1 on failure
+
+Delete()
+{ (
+	case "$#" in
+	0)	#! menuhook
+		Usage -d
+		Log "Delete(): argument error"
+		return 1
+	esac
+	set -- `Ucase $*`
+
+	CTX=		# context prefix
+	_S=		# current subset
+
+	cd $_R		# assure operation in user specified hierarchy
+
+	for _S in $*
+	{
+		CTX=$UAS/$_S
+		Log "$_S"
+
+		# is it installed? (correctly or damaged)
+		[ -f $CTX.lk -o -f $CTX.dw ] ||
+		{
+			Error "$_S: $E_NOINST, cannot delete"
+			continue
+		}
+
+		# read in the control file.
+		ReadCtrlFile $UAS $_S ||
+		{
+			Error "Error reading $_S control file, cannot delete."
+			continue
+		}
+
+		[ `FlagsAttrCheck SATTR_STICKY $FLAGS` = 1 ] &&
+		{
+			# sticky flag is set for this subset
+			Error "Sorry, You may not delete the $DESC ($_S) subset"
+			continue
+		}
+
+		[ -s $CTX.lk ] &&
+		{
+			# subset is installed and has a non-zero length lock
+			#  file. This means that there are subsets that depend
+			#  on the one that we are trying to remove. This
+			#  requires that we notify the user and verify that
+			#  the ramification of a request to delete are
+			#  understood
+
+			echo "
+The following subsets need the subset you are trying to delete
+to operate correctly:
+"
+
+			cat $CTX.lk | sed 's/^/	/'
+			while :
+			do
+				echo "
+Are you sure you wish to delete the $DESC ($_S) subset? (y/n): \c"
+				read X
+				case "$X" in
+				[Yy]*)	Log " WARNING: locked"
+					break
+					;;
+				[Nn]*)	Log " FAILED: locked"
+					continue 2
+				esac
+			done
+		}
+
+		[ -f $CTX.lk ] &&
+		{
+			# subset is actually installed, run the pre-delete
+			#  in the scp
+
+			ACT=PRE_D $CTX.scp ||
+			{
+				Error "$_S: deletion declined by subset control program"
+				continue
+			}
+			echo "
+Deleting $DESC ($_S)."
+
+
+			# run the configure delete
+			ACT=C $CTX.scp DELETE
+		}
+
+		# remove the subset.
+
+		# run the inventory into 'frm'
+		frm < $CTX.inv
+
+		[ -f $CTX.lk ] &&
+		{
+			# subset was installed, clean up
+
+			ACT=POST_D $CTX.scp
+
+			# clean out dependency info
+			[ "$DEPS" != . ] &&
+			{
+				# remove dependency lock file info
+				for K in $DEPS
+				{
+					[ -f $UAS/$K.lk ] &&
+					{
+						egrep -v $_S $UAS/$K.lk > $TMP1
+						mv $TMP1 $UAS/$K.lk
+					}
+				}
+			}
+		}
+		# mark subset as uninstalled
+		rm -f $CTX.lk $CTX.dw
+	}
+	return 0
+) }
+
+
+
+:	-DependencyOrder
+#		order a bucketload of subsets
+#
+#	given:	$* - a list of subsets
+#	does:	orders the subset in tape order, writing the ordered list
+#		to stdout. It is assumed that the control files for the
+#		subsets are in the current directory.
+#	return:	nothing
+
+DependencyOrder()
+{
+	case "$#" in
+	0)	Error "DependencyOrder(): no subsets specified"
+		return 1
+	esac
+	Bu_SUBS=$*
+
+	#% Local Variables
+	Bu_ORD=			# ordered subsets
+	Bu_LEFT= Bu_RIGHT=	# sort temp variables
+
+	#% Local Code
+	# get the PNV for the lead subset in the bucket
+	for Bu_SUB in $Bu_SUBS
+	{
+		NameParse Bu_ $Bu_SUB && break
+		Bu_SUBS=`(set $Bu_SUBS;shift;echo $*)`
+	}
+
+	for Bu_S in $Bu_SUBS
+	{
+		# get tape location
+		ReadCtrlFile $_TDIR $Bu_S || continue
+
+		set -- `Parse : $MTLOC`
+		Bu_VOL=$1
+		Bu_SORD=$2
+
+		echo "$Bu_VOL $Bu_SORD $Bu_S"
+	} | awk 'BEGIN {
+			vmax=0; vmin=0
+			lmax=0; lmin=0
+		}
+		{       order[$1","$2] = $3
+			inuse[$1","$2] = "y"
+			if( $1 > vmax )	vmax = $1
+			if( $2 > lmax )	lmax = $2
+			if( $1 < vmin ) vmin = $1
+			if( $2 < lmin ) lmin = $2
+		}
+		END {
+			for( j = vmin; j <= vmax; ++j )
+			{
+				for( i = lmin; i <= lmax; ++i )
+				{
+					if( inuse[j","i] == "y" )
+						print( order[j","i] )
+				}
+			}
+		}'
+}
+
+
+
+:	-DetectChanges
+#		generate a restoration inventory
+#
+#	given:	a subset name for which to generate an inventory
+#	does:	runs the synchronization inventory thru udetect
+#		to produce a restoration inventory _TDIR/$1.res
+#	return:	nothing
+#	effect:	leaves $1.res in _TDIR
+
+DetectChanges()
+{ (	
+	LOC_S=$1
+
+	cd $_R
+	udetect < $_TDIR/$LOC_S.syn > $_TDIR/$LOC_S.res
+) }
+
+
+:	-DetermineAvailable
+#		determine which subsets are installable in this environment
+#
+#	given:	global data only
+#		contents of $_TDIR
+#		$ADVFLAG - specifies installation type
+#	does:	uses the temp directory to derive a list of subsets which
+#		are available and installable to the system. Installable
+#		subsets are those which are not currently installed and
+#		are not masked by the subset mask
+#	return:	nothing
+#	effect:	sets $SBS
+#
+
+DetermineAvailable()
+{
+	MASK=".*"		# default, all subsets
+
+	# decode,
+	#  bits:
+	#	00 - basic base
+	#	01 - adv base
+	#	10 - basic ws
+	#	11 - adv ws
+
+	case "$ADVFLAG" in
+	[01])	MASK="$RISC_B|$VAX_B"
+		;;
+	[23])	MASK="$RISC_B|$RISC_WS|$VAX_B|$VAX_WS"
+		;;
+	esac
+
+
+	# get list of subsets from temp dir and filter thru the mask
+	SBS=`(cd $_TDIR; ls *.ctrl | sed 's/.ctrl//g' | egrep "$MASK")`
+	# verify that there were control files
+	[ "$SBS" = '*' ] &&
+		SBS=
+}
+
+
+:	-Dirs
+#		create all needed directories
+#
+#	given:	nothing
+#	does:	makes sure the directories needed to perform correctly
+#		are available
+#	return:	0
+
+Dirs()
+{
+	# check if setld is in use.
+	#! a better lock mechanism is needed here
+	#
+	case $CMDSW in
+	[alux])	[ -d $_TDIR ] &&
+		{
+			Error "Temp directory $_TDIR already in use"
+			return 1
+		}
+	esac
+
+	# make sure that all required directories exist.
+	#
+	(cd $_R
+		rm -rf $_TDIR
+		for X in $U $V $V/$A $V/$T $U/$E $UAS $_TDIR
+		{
+			[ -d $X ] || mkdir $X ||
+			{
+				Error "$E_MKDIR $X"
+				return 1
+			}
+		}
+	)
+	mknod $PIPE p
+	return 0
+}
+
+
+:	-Error
+#		Print an error message to stderr
+#
+#	given:	a message to print, $1 may be option '-n'
+#	does:	prints the message to stderr, if -n option is absent,
+#		also logs the message to the logfile
+#	return:	nothing
+
+Error()
+{
+	case "$1" in
+	-n)	shift
+		;;
+	*)	Log "$1"
+	esac
+	1>&2 echo "$PROG: $1"
+}
+
+
+:	-Exit
+#		Leave the program
+#
+#	given:	$1 - exit status
+#	does:	leave program performing any needed cleanup
+#	return:	no
+
+Exit()
+{
+	STAT=$1
+	Cleanup
+	exit $STAT
+}
+
+
+:	-Extract
+#		extract subsets from media
+#
+#	given:	$* - names of specific subsets to extract
+#	does:	Extract subsets from the media for use by
+#		remote installation service.
+#	return: 0 if all goes well
+#		1 if mandatory/ROOT extraction failure
+#		2 if optional extraction failure
+
+Extract()
+{
+	#% Binding
+	SBS=$*		# subsets to be installed
+
+	#% Local Variables
+	EISSUB=		# extraction element is a subset {0,1}
+	ELOC=		# Extraction element tape location (x:y)
+	ENAME=		# Extraction element name
+	EOPT=		# extraction element optionality value
+	EXTL=		# EXTraction List
+	MASK=		# egrep pattern for creating mandatory, all files.
+
+	#% Local Code
+	[ "$DEFPATH" = 0 ] && cd $_R
+
+	Wait MTPID ||
+	{
+		Error "Tape Positioning Error."
+		return 1
+	}
+
+	# make sure there is an instctrl directory
+	[ -d instctrl ] ||
+		mkdir instctrl
+
+	# get image and comp file
+	cp $_TDIR/*.image $_TDIR/*.comp instctrl 2> /dev/null
+	touch instctrl/*.image
+
+	# establish an extraction list. This lists each object to be
+	#  extracted, it's media location, whether it is optional, and
+	#  whether it is an actual subset or a proprietary tape file.
+	# at the same time, create an egrep mask to be used to generate
+	#  a checksum comparison file
+	MASK=
+	EXTL=
+	#! reference to image file
+	ENAME=`egrep '[	 ]ROOT[	 ]*$' instctrl/*.image` &&
+	{
+		set -- $ENAME
+		ENAME=$3
+		# dummy out an entry that looks like a subset would
+		EXTL="$ENAME:1:-1:0:0:$1"
+		MASK=ROOT
+	}
+	# build entries for the rest of the subsets
+	for ENAME in $SBS
+	{
+		ReadCtrlFile $_TDIR $ENAME
+		EOPT=`FlagsAttrCheck SATTR_OPTION $FLAGS`
+		SUM=`egrep $ENAME instctrl/*.image`
+		set -- $SUM
+		SUM=$1
+		EXTL="$EXTL $ENAME:$MTLOC:$EOPT:1:$SUM"
+	}
+	OPTERR=0
+	# create empty files
+	> checksums; > mandatory; > all
+	> $TMP1
+	for EXTENT in $EXTL
+	{
+		set -- `Parse : $EXTENT`
+		ENAME=$1 EVOL=$2 ELOC=$3 EOPT=$4 EISSUB=$5
+		Log "$ENAME \c"
+		echo "Extracting $ENAME..."
+
+		# read the media.....
+		case "$_MEDIA" in
+		tape)
+			PositionTape $EVOL $ELOC ||
+			{
+				Error "Error Extracting $ENAME"
+				rm -f checksums mandatory all
+				return 1
+			}
+			TickWhile "dd if=$RAW of=$ENAME bs=20b 2> /dev/null" ||
+			{
+				Error "Error Extracting $ENAME"
+				rm -f checksums mandatory all
+				return 1
+			}
+			_CPOS=`Add $_CPOS 1`
+			;;
+		disk)	TickWhile "cp $_SRC/$ENAME ." ||
+			{
+				Error "Error Extracting $ENAME"
+				rm -f checksums mandatory all
+				return 1
+			}
+		esac
+
+		[ $EISSUB = 1 ] &&
+		{
+			# subset specific operations:
+			#  copy .ctrl, .inv, .scp for this subset into instctrl
+			#  update mandatory, all
+			for X in inv scp ctrl
+			{
+				cp $_TDIR/$ENAME.$X instctrl ||
+				{
+					Error "Control Info Error on $ENAME"
+					rm -f all checksums mandatory
+					return 1
+				}
+			}
+			echo "$ENAME" >> all
+			[ $EOPT = 0 ] && echo "$ENAME" >> mandatory
+		}
+
+		# checksum the image
+		#  wait for previous checksum
+		Wait SUMPID
+		(
+			echo "$ENAME	\c" >> $TMP1
+			sum $ENAME >> $TMP1
+		) &
+		SUMPID=$!
+
+		Log "SUCCEEDED"
+	}
+	Wait SUMPID
+	SUMLIST="$SUMLIST $SUM"
+
+	
+	[ "$_MEDIA" = tape ] &&
+	{
+		mt -f $RAW rew &
+		MTPID=$!
+		_CPOS=-$T_0
+	}
+
+	for EXTENT in $EXTL
+	{
+		# get subset name
+		set -- `Parse : $EXTENT`
+		ENAME=$1
+		ESUM=$6
+		set -- `egrep $ENAME $TMP1`
+		SSUM=$2
+		shift
+		SUMLIST=$*
+		[ "$ESUM" = "$SSUM" ] ||
+			Error "$ENAME: extract checksum error"
+	}
+
+	# rm -f mandatory compare checksums csd all &
+
+	echo "Media extraction complete."
+	return 0
+}
+
+
+:	-Ferror
+#		Fatal Error
+#
+#	given:	$1 - Exit status
+#		$2 - Error Message
+#	does:	print error message and Exit with status
+
+Ferror()
+{
+	STAT=$1
+	Error "$2"
+	Exit $STAT
+}
+
+
+:	-FlagsAttrCheck
+#		check flags attribute
+#
+#	given:	$1 - flag attribute to check
+#		$2 - word to check in
+#	does:	check the value of the $1 flag in $2
+#	return:	0 if flag is clear, 1 if set
+#
+
+FlagsAttrCheck()
+{ (
+	ATTR=$1
+	FLAG=$2
+
+	case "$ATTR" in
+	SATTR_STICKY)
+		VAL=$FLAG
+		;;
+	SATTR_OPTION)
+		VAL=`expr $FLAG / 2`
+		;;
+	SATTR_UPDATE)
+		VAL=`expr $FLAG / 4`
+		;;
+	*)	Error "FlagsAttrCheck: $ATTR: unknown attribute type"
+		Exit 1
+	esac
+
+	expr $VAL % 2
+) }
+
+
+
+:	-GetCompAttr
+#		determine compression status of a subset
+#
+#	given:	a subset name
+#	does:	determines whether the subset is compressed
+#	return:	0 for a compressed subset
+#		1 for a non-compressed subset
+
+GetCompAttr()
+{ (	S=$1
+
+	cd $_TDIR
+	NameParse X_ $S
+	[ -f $X_P$X_V.comp ]
+) }
+
+
+:	-InitDevice
+#		Initialize the installation device
+#
+#	given:
+#	does:
+#	return:
+#
+
+InitDevice()
+{
+	_MEDIA=		# media type - tape, diskette, disk, inet
+	_SRC=		# unit - server name, /dev/xxx, install path
+	_LOC=		# location where the savesets are stored, can be
+			# path name, host name or tape 
+
+	[ -d $DEVICE ] &&
+	{
+		_MEDIA=disk
+		_SRC=$DEVICE
+		_LOC=$_SRC
+
+		# stabilize the pathname
+		case "$_SRC" in
+		/*)	;;
+		*)	_SRC=`(cd $_SRC;Pwd)`
+		esac
+
+		Log "Loading from $_LOC ($_MEDIA)"
+		return 0
+	}
+
+	# get the media type.
+	case "$DEVICE" in
+	*::)	#
+		Error "$DEVICE - DECnet installation not supported"
+		return 1
+		;;
+	*:)	# TCP inet installation
+		_MEDIA=inet
+		# the 'unit-number' is the server hostname
+		_SRC=`Parse : $DEVICE`
+		_LOC=$_SRC
+
+		#! error case should be handled with retries for goodies like
+		#!  no inet ports, login limit reached.
+		ERROR=`rsh $_SRC -l ris -n "echo hello" 2>&1` 
+		[ "$ERROR" = 'hello' ] ||
+		{
+			Error "Error contacting server $_SRC: $ERROR"
+			return 1
+		}
+		;;
+
+	*mt*[lmh])
+		# some sort of tape device, get unit number and verify
+		#  access to nrmt?h.
+		_MEDIA=tape
+		_SRC=`expr $DEVICE : '.*mt\([0-9][0-9]*\).*'`
+		_LOC="/dev/nrmt${_SRC}h"
+		;;
+		
+	*mt*)	# tape device naming obsolete - xlate to 2.0
+		_MEDIA=tape
+		_SRC=`expr $DEVICE : '.*mt\([0-9][0-9]*\).*'`
+		_SRC=`expr $_SRC % 4`	# this gets unit plug number.
+		;;
+
+	*ra*)	# ra, diskettes
+		# get unit number
+		_SRC=`expr $DEVICE : '.*ra\([0-9][0-9]*\).*'`
+
+		_MEDIA=diskette
+		_LOC=$_SRC
+		ALTOP=+
+		ALT=`expr $_SRC $ALTOP 1`
+		# validate the existence of device files for
+		# both the primary and alternate diskettes
+		[ -c $D/rra${_SRC}a -a -c $D/rra${ALT}a ] ||
+		{
+			Error "$E_NODEV: /dev/rra${U}a, /dev/rra${ALT}a"
+			return 1
+		}
+	esac
+
+	case "$_MEDIA" in
+	"")	# bogus device.
+		Error "Device $DEVICE $E_NOSUPP"
+		return 1
+		;;
+	tape)	# do code for old and new style tapes
+		RAW=$D/nrmt${_SRC}h
+		[ -c $RAW ] ||
+		{
+			Error "Cannot access $RAW"
+			MEDIA=
+			return 1
+		}
+		while :
+		do
+			echo "
+Please make sure your installation tape is mounted and on-line."
+
+			Ready
+			mt -f $RAW rew && break
+		done
+		_CPOS=-$T_0
+		;;
+	esac
+	Log "Loading from $_LOC ($_MEDIA)"
+}
+
+
+:	-InitializeConstants
+#		Initialize all constants to be used in setld
+#
+#	given:	arglist identical to invocation arglist
+#	does:	initialize the constants used thruough the program.
+#		all constants should be defined here.
+#	return:	nothing
+
+InitializeConstants()
+{
+	# Message Strings
+	E_FAIL="File copy to system disk failed."
+	E_MKDIR="Cannot create directory"
+	E_NODEV="Please be certain that device special file"
+	E_NOINST="not currently installed"
+	E_NORECOVER="Cannot recover"
+	E_NOSUPP="not supported for installations."
+	E_READ="Attempt to read from your distribution media failed."
+	E_STARS="*** Subset"
+	E_TPOS="Tape positioning error."
+	E_UNKNOWN="Unknown subset"
+	ENOENT="no such file or directory"
+	IC="Installation Control"
+
+	# the usage messages
+	CUSAGE="Send a configuration message to an installed subset:
+	setld [-D dir] -c subset message"
+	DUSAGE="Delete subset(s):
+	setld [-D dir] -d subset [subset ...]"
+
+	USAGE="
+Setld Usage Examples:
+
+$CUSAGE
+
+$DUSAGE
+
+List all subsets:
+	setld [-D dir] -i
+
+List contents of installed subset(s):
+	setld [-D dir] -i subset [subset ...]
+
+Display this message:
+	setld [-D dir] -h
+
+Load layered product from device:
+	setld [-D dir] -l device [subset...]
+
+Verify integrity of subset(s):
+	setld [-D dir] -v subset [subset ...]
+
+Extract media images from device for network distribution:
+	setld [-D dir] -x device [subset...]
+
+"
+
+	DATFMT="+19%y.%m.%d.%T"		# format specifier for date command
+	PROG=setld			# program name
+	T_0=3				# control file tape offset
+
+	# path name constants
+	#
+	A=adm
+	D=/dev
+	E=etc
+	T=tmp
+	U=usr
+	UAS=$U/$E/subsets	# location of the subsets database
+	V=usr/var
+
+	[ ! "$STL_SUBR_DEBUG" ] &&
+	{
+		# interactive debugging turned off, mark all constants
+		#  as read only - please insert here in the order in which
+		#  they are defined above
+
+		readonly E_NOSUPP E_READ E_STARS E_TPOS E_UNKNOWN ENOENT
+		readonly E_FAIL E_MKDIR E_NODEV E_NOINST E_NORECOVER
+		readonly IC CUSAGE DUSAGE USAGE
+		readonly PROG T_0 A D E T U UAS V
+	}
+}
+
+
+
+:	-InitializeGlobals
+#		Initialize default values for all global variables
+#
+#	given:	nothing
+#	does:	sets starting values for the global values used in
+#		setld. All global variables should be defined here.
+#	return:	nothing
+
+InitializeGlobals()
+{
+	_R=/				# default install root (_R for root)
+	_CVOL=1				# currently mounted tape volume
+	DATE=				# current date
+	DEBUG=0				# default debug flag
+	DECOMP=cat			# decompression program
+	DEFPATH=1			# flag - installing to default root
+	LOGFILE=/$E/setldlog		# default logfile
+	MTPID=				# mag tape async op pid
+	RISC_B="UDT"			# RISC base system product definition
+	RISC_WS="UDW"			# RISC UWS product definition
+	STAT=1				# default exit status
+	_TDIR=/$V/$T/stltmp$$		# default temporary directory
+	PIPE=$_TDIR/pipe		# proc sync pipe
+	HOSTS=$_TDIR/hosts		# save /etc/hosts when install from inet
+	TMP1=/$V/$T/tmp$$
+	TMPS="$_TDIR $TMP1"
+	VAX_B="ULT"			# VAX base system product definition
+	VAX_WS="UWS"			# VAX UWS product definition
+	VBSE=				# default tar verbose switch
+
+
+}
+
+
+:	-Install
+#		Install subsets
+#
+#	given:	$* - list of subsets to be installed
+#	does:	calls LoadFromMedia() and RunScps() to install the software
+#	return:	0 if all subsets install correctly
+#		1 (immediately) on LoadFromMedia mandatory subset failure
+#		2n for n optional failures
+#		
+
+Install()
+{
+	OPTERRS=0
+	SCPLIST=
+	for _S
+	{
+		LoadFromMedia $_S
+		case "$?" in
+		0)	SCPLIST="$SCPLIST $_S"	# all's OK
+			;;
+		1)	OPTERRS=1		# MAND (fatal)
+			break
+			;;
+		*)	OPTERRS=`expr $OPTERRS + 2`	# OPT (non-fatal)
+		esac
+	}
+	RunScps POST_L $SCPLIST
+	return $OPTERRS
+}
+
+
+:	-Inventory
+#		product inventory listings
+#
+#	given:	$* - which subsets to inventory, if empty will provide
+#		a list of all known subsets and subset status
+#	does:	see given
+#	return:	0
+
+Inventory()
+{ (
+	_S=	# current subset name
+	LIST=	# list of all known subsets
+
+	cd $_R/$UAS
+
+	[ "$*" ] &&
+	{
+		set `Ucase $*`
+		for _S
+		{
+			[ -f $_S.inv ] ||
+			{
+				Error "$_S: $E_UNKNOWN"
+				continue
+			}
+			awk '{print $10}' $_S.inv
+		}
+		return 0
+	}
+
+	# Generate report
+	echo "
+Subset		Status		Description
+======		======		==========="
+
+	LIST=`echo *.ctrl | sed 's/\.ctrl//g'`
+
+	[ "$LIST" = '*' ] && return 0
+
+	for _S in $LIST
+	{
+		STATUS=
+		[ -f $_S.lk ] && STATUS="installed"
+		[ -f $_S.dw ] && STATUS="corrupt" # ica-12459
+
+		ReadCtrlFile . $_S 2> /dev/null || 
+		{
+			# if .ctrl is incomplete, subset is incomplete 
+			STATUS="incomplete"
+		} 
+
+		echo "$_S'$STATUS'$DESC"
+
+	} | awk -F"'" '{ printf "%-16s%-16s%s\n", $1, $2, $3 }'
+	return 0
+) }
+
+
+:	-ListKnown
+#		Given a version free subset name, print a list of all other
+#		versions of that subset currently known to the system.
+#
+#	given:	a version free subset name ($P$N) parts only.
+#	does:	looks up version of $P$N know the the system
+#	return:	nothing
+#	sides:	none
+#	output:	a list of subset codes
+
+ListKnown()
+{ (	PN=$1
+
+	LIST=`(cd $UAS; echo $PN???.ctrl | sed 's/\.ctrl//g' )`
+
+	case "$LIST" in
+	*'*'*)	return		# No '*' match
+	esac
+	echo "$LIST"
+) }
+
+
+:	-LoadCtrlInfo
+#		read the installation control information from the media
+#	into $_TDIR
+#
+#	given:	global info
+#		$_MEDIA - media type to read
+#		$_SRC - unit to read from
+#		$_TDIR - target directory
+#	does:	read the control information required to perform the task
+#		defined in $CMDSW into $_TDIR
+#	return:	0 if everything goes well, 1 otherwise
+#	effect:	sets SBS to list subsets installable from the media
+#	note:	assumes that wd is the desired root
+
+LoadCtrlInfo()
+{
+	case "$_MEDIA" in
+	diskette)
+		[ "$CMDSW" = "x" ] &&
+		{
+			Error "diskette media unsupported for -x"
+			return 1
+		}
+
+		echo "
+Insert the $IC diskette for the software
+you wish to load on your system in $_MEDIA unit $_SRC.
+"
+
+		Ready
+
+		(cd $_TDIR;tar xpf $D/rra${_SRC}a) > $TMP1 ||
+		{
+			echo "
+Attempt to read from diskette drive $_SRC failed.
+
+Remove your diskette from $_MEDIA unit $_SRC."
+
+			# flip unit numbers
+			_SRC=`expr $_SRC $ALTOP 1`
+			ALTOP=`ChOp $ALTOP`
+
+			echo "
+Insert the $IC diskette for the software
+you wish to load in $_MEDIA unit $_SRC.
+NOTE: we are trying the SAME DISKETTE again but in $_MEDIA unit $_SRC.
+"
+
+			Ready
+
+			(cd $_TDIR;tar xpf $D/rra${_SRC}a) ||
+			{
+				Error "Cannot read control information"
+				return 1
+			}
+		}
+		;;
+	disk)	# mounted directory contains subsets
+		[ -d $_SRC/instctrl ] ||
+		{
+			Error "$_SRC/instctrl: $ENOENT"
+			return 1
+		}
+		# copy control info into $_TDIR.
+		(cd $_SRC/instctrl; tar cf - *)|(cd $_TDIR; tar xpf -)
+		;;
+	inet)	[ $CMDSW = x ] &&
+		{
+			Error "network media not supported for -x"
+			return 1
+		}
+
+		cd $_R
+		[ -f etc/hosts ] && cp etc/hosts $HOSTS 
+
+		IAM=`hostname`
+
+		# break off bind spec, first part only used in client
+		#  file naming
+		set -- `Parse . $IAM`
+		IAM=$1
+
+		ERROR=`rcp ris@$_SRC:clients/risdb $TMP1 2>&1` ||
+		{
+			Error "cannot access server database ($ERROR)"
+			return 1
+		}
+
+		# we have copied the server's ris database to $TMP1
+		#  this database has entries:
+		#  cliname:haddr:sys-type,prod,...,prod
+
+		# find the record for this client
+		RISRECORD=`egrep '^'$IAM: $TMP1` ||
+		{
+			Error "$IAM: not in server database"
+			return 1
+		}
+
+		# break out the fields, save the sys-type,prod,...,prod
+		#  section
+		set -- `Parse : $RISRECORD`
+		RISDATA=$3
+
+		# break the sys-type,prod,...,prod into parts
+		set -- `Parse , $RISDATA`
+		_SYSTEM=$1
+		shift
+		# Products
+		PRODUCTS=$*
+
+		# Read Control Files over one dir at a time, building rismap
+		#  from each directory as it comes
+		for DIR in $PRODUCTS
+		{
+			mkdir $_TDIR/$DIR
+			rsh $_SRC -l ris -n "cd $_SYSTEM/$DIR/instctrl;tar cf - *" |
+				(cd $_TDIR/$DIR;tar xpf -)
+			(	cd $_TDIR/$DIR
+				echo "$DIR \c" >> ../rismap
+				echo *.ctrl | sed 's/.ctrl//g' >> ../rismap
+				mv * ..
+			)
+			rm -rf $_TDIR/$DIR &
+		}
+		;;
+	tape)	echo "Positioning Tape"
+		PositionTape 1 0 ||
+		{
+			Error "Tape Positioning Error"
+			mt -f $RAW rew &
+			_CPOS=-$T_0
+			return 1
+		}
+
+		(cd $_TDIR;tar xpbf 20 $RAW && mt -f $RAW fsf) ||
+		{
+			Error "Error reading control information"
+			return 1
+		}
+		_CPOS=1
+		echo
+		;;
+	*)	Error "Internal error in LoadCtrlInfo()"
+		set | WriteLog
+		return 1
+	esac
+	
+	# set all modes and ownerships of incomming files
+	(cd $_TDIR
+		chown root *.inv *.scp *.ctrl
+		chgrp system *.inv *.scp *.ctrl
+		chmod 644 *.inv *.scp *.ctrl
+		chmod +x *.scp
+	)
+
+	# Determine which subsets are availble from the media
+	#  and are installable in the current context.
+	#
+	#! fix for setld -l loc subset [ subset... ]
+
+	# have DetermineAvailable set up $SBS
+	DetermineAvailable
+
+	# put SBS in correct order
+	case "$_MEDIA" in
+	tape)	SBS=`(cd $_TDIR; DependencyOrder $SBS)`
+		;;
+	*)	SBS=`(cd $_TDIR; depord $SBS)`
+	esac
+}
+
+
+:	-LoadFromDisk
+#		Load a subset from disk
+#
+#	given:	full GLOBAL context
+#	does:	load a subset from disk
+#	return:	1 on failure
+
+LoadFromDisk()
+{
+	TickWhile "$DECOMP < $_SRC/$S | tar xpf -"
+	return $?
+}
+
+
+:	-LoadFromDiskette
+#		Load a subset from a diskette
+#
+#	given:	full GLOBAL context
+#	does:	loads a subset from diskettes
+#	return:	ignore
+
+LoadFromDiskette()
+{
+	VOL=1
+	set xx `Parse : $NVOLS`
+
+	NVOLS=$2
+	VMAX=`expr $2 + 1`
+	while [ $VOL -le $NVOLS ]
+	do
+		echo "
+Insert diskette $NAME $VOL of $NVOLS in $_MEDIA unit $_SRC.
+"
+
+		Ready
+
+		# check volume number.
+		tar tf $D/rra${_SRC}a > $TMP1 ||
+		{
+			_SRC=`expr $_SRC $ALTOP 1`
+			ALTOP=`ChOp $ALTOP`
+
+			echo "
+$E_FAIL
+Remove diskette $NAME $VOL of $NVOLS.
+
+Insert diskette $NAME $VOL of $NVOLS in $_MEDIA unit $_SRC.
+NOTE: we are trying the SAME DISKETTE AGAIN but in $_MEDIA unit $_SRC.
+"
+
+			Ready
+
+			tar tf $D/rra${_SRC}a > $TMP1 ||
+			{
+				echo "
+Cannot read your diskette, we will continue with the next volume."
+				VOL=`expr $VOL + 1`
+				continue
+			}
+		}
+		ISVOL=`egrep "^Volume" $TMP1`
+		ISVOL=`expr "$ISVOL" : '.*ume\([0-9][0-9]*\)'`
+		case "$ISVOL" in
+		$VOL)
+			;;
+		*)
+			echo "
+You have mistakenly mounted volume $ISVOL.
+
+Please remove the diskette."
+			sleep 1
+			continue
+			;;
+		esac
+		tar xpf $D/rra${_SRC}a ||
+		{
+			_SRC=`expr $_SRC $ALTOP 1`
+			ALTOP=`ChOp $ALTOP`
+
+			echo "
+$E_FAIL
+Remove diskette $NAME $VOL of $NVOLS.
+
+Insert diskette $NAME $VOL of $NVOLS in $_MEDIA unit $_SRC.
+NOTE: we are trying the SAME DISKETTE AGAIN but in $_MEDIA unit $_SRC.
+"
+
+			Ready
+			tar xpf $D/rra${_SRC}a ||
+			{
+				Error "
+
+$E_FAIL
+Diskette $NAME: $VOL of $NVOLS may not have been installed
+properly on your system but the rest of the installation will continue."
+			}
+			ERR=1
+		}
+		echo "
+Remove diskette $NAME $VOL of $NVOLS."
+		VOL=`expr $VOL + 1`
+	done
+}
+
+
+:	-LoadFromInet
+#		read a subset from internet
+#
+#	given:	full GLOBAL context
+#	does:	read a subset from internet onto the system
+#	return:	non-zero on failure
+
+LoadFromInet()
+{ (
+	# read the rismap to determine which directory to search for this
+	#  subset
+	set -- `egrep $S $_TDIR/rismap` ||
+	{
+		Error "LoadFromInet($S): cannot open rismap"
+		set | WriteLog
+		return 1
+	}
+	DIR=$1
+
+        # restore the hosts file in the event it was overwritten during
+        #  the install of a previous subset
+        [ -f $HOSTS ] && cp $HOSTS etc/hosts
+  
+	# unpack the subset from the server onto the system
+	Ticker on
+	rsh $_SRC -l ris -n "dd if=$_SYSTEM/$DIR/$S bs=10k" 2> /dev/null |
+		$DECOMP | tar xpbf 20 -
+	RETVAL=$?
+	Ticker off
+	return $RETVAL
+) }
+
+
+:	-LoadFromMedia
+#		load a subset from the installation medium
+#
+#	given:	$1 - the name of the subset to install
+#		$DEVICE - device (location) name to use
+#		$_MEDIA - media type
+#		$_SRC - media handle to use (named unit, hostname, etc)
+#	does:	Load and verify the subset
+#	return:	nothing
+#	effect: may modify globals ALTOP, _CPOS, _CVOL
+
+LoadFromMedia()
+{	S=$1
+
+	ERR=0
+	CTX=$UAS/$S
+
+	cd $_R
+
+	Log "$S LOAD, \c"
+
+	ReadCtrlFile $_TDIR $S ||
+	{
+		Error "Error reading control file"
+		return 1
+	}
+	ISOPT=`FlagsAttrCheck SATTR_OPTION $FLAGS`
+
+	# check sizing
+	fitset $_R < $_TDIR/$S.inv 2> /dev/null ||
+	{
+		Error "
+There is not enough file system space for subset $S"
+		return `expr $ISOPT + 1`
+	}
+
+	# check dependency list
+	for DEP in $DEPS
+	{
+		[ "$DEP" = '.' ] && continue
+
+		[ -f $UAS/$DEP.lk ] ||
+		{
+			Error "
+Error installing $DESC ($S):
+Subset $S requires the existence of subset $DEP to operate
+correctly. Please install subset $DEP before trying to install 
+subset $S."
+			return `expr $ISOPT + 1`
+		}
+	}
+
+
+	ACT=PRE_$ACT $_TDIR/$S.scp ||
+	{
+		Log "DECLINED (scp)"
+		echo "
+Installation declined by subset control program.
+$DESC ($S) will not be loaded."
+
+		return `expr $ISOPT + 1`
+	}
+
+	# drop a .dw marker
+	> $CTX.dw
+
+	echo "
+$DESC ($S)"
+
+	echo "   Copying from $_LOC ($_MEDIA)"
+
+	# check if it's a compressed subset.
+	DECOMP=cat
+	NameParse LOC_ $S
+
+	[ -f $_TDIR/$LOC_P$LOC_V.comp ] && DECOMP="compress -d"
+
+	# run a sweep of the disk clearing away files which cannot
+	#  be tarred over.
+	tclear < $_TDIR/$S.inv ||
+	{
+	 	Error "System contains files which cannot be overwritten"
+	 	return `expr $ISOPT + 1`
+	}
+
+	case $_MEDIA in
+	disk)	LoadFromDisk ||
+		{	# utter failure
+			Error "
+$E_FAIL
+
+Subset $S may not have been installed properly on your system
+but the rest of the installation will continue."
+		}
+		;;
+
+	diskette)
+		LoadFromDiskette
+		;;
+
+	inet)	LoadFromInet ||
+		{
+			Error "Load from $_SRC failed, subset $S"
+		}
+
+		;;
+
+	tape)	LoadFromTape ||
+		{
+			Error "$E_FAIL
+
+$DESC ($S) may not have installed properly on your system (tar error)"
+		}
+	esac
+
+	sync
+
+	cp $_TDIR/$S.ctrl $UAS ||
+	{
+		Error "Cannot get control file for $S"
+		return `expr $ISOPT + 1`
+	}
+	cp $_TDIR/$S.inv $UAS ||
+	{
+		Error "Cannot get inventory file for $S"
+		return `expr $ISOPT + 1`
+	}
+	cp $_TDIR/$S.scp $UAS ||
+	{
+		Error "Cannot get control program for $S"
+		return `expr $ISOPT + 1`
+	}
+
+	# Verify the subset
+	Log "VERIFY, \c"
+	echo "   Verifying"
+	echo "
+SUBSET $S at $_R:" >> /$V/$A/fverifylog
+
+	TickWhile "fverify -y < $CTX.inv 2> /dev/null" &&
+	{
+		Log "SUCCEEDED"
+		# verify succeeded, move lock and queue SCP
+		mv $CTX.dw $CTX.lk
+		return 0
+	}
+	# Verify Failed
+
+	Error "
+There were verification errors for $DESC ($S)"
+
+	case "$ISOPT$CMDSW" in
+	0[al])	return 1
+		;;
+	*)	return 2
+	esac
+}
+
+
+
+:	-LoadFromTape
+#		Load a subset from tape to the system
+#
+#	given:	full GLOBAL context
+#	does:	read the subset from the tape to the system
+#	return:	non-zero on failure
+
+LoadFromTape()
+{
+	set -- `Parse : $MTLOC`
+	MTVOL=$1
+	MTLOC=$2
+
+	PositionTape $1 $2
+
+	TickWhile "dd if=$RAW bs=10k 2> /dev/null | $DECOMP | tar x${VBSE}pf -"
+
+	RET=$?
+	[ $RET = 0 ] && _CPOS=`Add $_CPOS 1`
+
+	return $RET
+}
+
+
+:	-Log
+#		write entry to log file
+#
+#	given:	an entry to write
+#	does:	writes entry to logfile named in global LOGFILE
+#	return:	nothing
+
+Log()
+{
+	echo "$1" >> $LOGFILE
+}
+
+
+:	-Main
+#		This is the main program
+#
+#	given:	$* from command line
+#	does:	parse arguments and all sorts of miscellany
+#	return:	does not return
+
+Main()
+{	ARGV=$*
+
+	trap '
+		for DIR in $TMPS	# save the temp directories
+		{
+			mv $DIR \#$DIR 2> /dev/null
+		}
+		trap "" 3
+		Log "Non-Standard Exit"
+		Ferror 1 "Exiting"
+	' 1 2 3 15
+
+	[ -t 1 ] && stty -tabs		# permit tabs use on output if isatty
+	DATE=`date $DATFMT`
+
+	# Set tar verbose switch if necessary
+	case "$-" in
+	*x*)	VBSE=v
+		DBG_FITSET=-d
+		DEBUG=1
+		Error "$PROG: debug: debug enabled"
+	esac
+
+	umask 22
+
+	OpenLog			# initialize logging
+	Args $ARGV || Ferror 2 "error in Args()"
+	(Dirs) || Ferror 2 "error in Dirs()"
+
+	case $CMDSW in
+	a)	Ferror 2 "Unreached in Main(), CMDSW=a"
+		;;
+
+	c)	Configure $*
+		Exit
+		;;
+
+	d)	Delete $*
+		Exit
+		;;
+
+	h)	Usage -h
+		Exit 0
+		;;
+
+	i)	Inventory $*
+		Exit
+		;;
+
+	l)	InitDevice || Ferror 2 "cannot initialize $DEVICE"
+
+		cd $_R
+		LoadCtrlInfo ||
+			Ferror 2 "cannot load control information"
+
+		set -- $ARGV
+		[ $# = 0 ] &&
+		{
+			SplitByType || Exit $?
+
+			# here we have determined which subsets are known
+			#  from this media. initailize the subsets database
+			#  with the control and inventory info for all of
+			#  these subsets
+
+			for _S in $MAND $OPT
+			{
+				cp $_TDIR/$_S.ctrl $_TDIR/$_S.inv $_TDIR/$_S.scp $UAS
+			}
+
+			TickWhile PreSize install $MAND ||
+			{
+				Error "
+There is not enough file system space to install the mandatory subsets"
+				Exit 1
+			}
+
+			case "$ADVFLAG" in
+			0|2)	# basic installation
+				SBS=$MAND
+				;;
+			*)	SelectSubsets || Exit $?
+			esac
+			set -- $SBS
+		}
+
+		Install $*
+		Exit $?
+		;;
+
+	u)	InitDevice || Ferror 2 "cannot initialize $DEVICE"
+		cd $_R
+		LoadCtrlInfo ||
+			Ferror 2 "cannot load control information"
+
+		Update
+		Exit $?
+		;;
+
+	v)	Verify $*
+		Exit
+		;;
+
+	x)	InitDevice || Ferror 2 "cannot initialize $DEVICE"
+
+		LoadCtrlInfo ||
+			Ferror 2 "cannot load control information"
+
+		set -- $ARGV
+		[ $# = 0 ] &&
+		{
+			SplitByType || Exit $?
+			TickWhile PreSize extract $MAND ||
+			{
+				Error "
+There is not enough file system space to extract the mandatory subsets"
+				Exit 1
+			}
+			SelectSubsets || Exit $?
+			set -- $SBS
+		}
+		Extract $*
+		Exit $?
+		;;
+	esac
+
+	STAT=$OPTERRS
+	EMESG=
+	Exit 0
+}
+
+
+
+:	-NameParse
+#		parse a subset name into components
+#
+#	given:	$1 - a variable name prefix to use
+#		$2 - a subset name to parse
+#	does:	parse the subset name in P (xxx), N (y*), & V (zzz) components
+#	return:	nothing
+#	effect:	assign the P component to ${1}P
+#		assign the N component to ${1}N
+#		assign the V component to ${1}V
+
+NameParse()
+{
+	[ $# -lt 2 ] &&
+	{
+		Error "NameParse(): too few arguments ($#)"
+		return 1
+	}
+	L_PREFIX=$1	# variable prefix to use
+	L_S=$2		# subset name to parse
+
+	#% Local Variables
+	L_N=		# temporary subset name
+	L_P=		# temporary product code
+	L_V=		# temporary version code
+	L_X=		# loop control
+
+	#% Local Code
+	# check to see if parse information has been cached
+	eval NPC=\$Np$L_S
+	[ "$NPC" ] &&
+	{
+		# assign cached values and return
+		eval `(
+			set $NPC
+			shift
+			echo "${L_PREFIX}P=$1 ${L_PREFIX}N=$2 ${L_PREFIX}V=$3"
+		)`
+		return 0
+	}
+
+	case "$L_S" in
+	.|..|...|....|.....|......)
+		Error "NameParse(): $L_S: subset names must be > 7 chars long"
+		return 1
+	esac
+	L_N=`expr $L_S : '^...\(.*\)...$'` ||	# name component
+	{
+		Error "NameParse($L_S): cannot parse subset name"
+		return 1
+	}
+	L_P=`expr $L_S : '^\(...\).*$'`	||	# product component
+	{
+		Error "NameParse($L_S): cannot parse product code"
+		return 1
+	}
+	L_V=`expr $L_S : '^.*\(...\)$'` ||	# version component
+	{
+		Error "NameParse($L_S): cannot parse version version"
+		return 1
+	}
+
+	# make the assignments
+	for L_X in N P V
+	{
+		eval $L_PREFIX$L_X=\$L_$L_X
+	}
+	# cache the resutls
+	NPC="$L_S $L_P $L_N $L_V"
+	eval Np$L_S='$NPC'
+	return 0
+}
+
+
+
+:	-OpenLog
+#		establish logfile
+#
+#	given:	$LOGFLILE - default logfile
+#		$WHOAMI - user name running this process
+#		$DATE - invocation time as formatted by $DATFMT
+#	does:	establishes a log file for the session and writes initial
+#		entry for this invocation
+#	return:	0
+#	effect:	$LOGFILE - may modify
+#		$WHOAMI - will set from output of whoami(1) if not set
+
+OpenLog()
+{
+	WHOAMI=${WHOAMI:=`whoami`}
+	[ "$WHOAMI" != root ] && LOGFILE=/dev/null
+
+	# create initial entry for this run
+	Log "SETLD $$ $WHOAMI $DATE \c" 
+	return 0
+}
+
+
+
+:	-Parse
+#		separate into words using separator
+#
+#	given:	$1 separator characters to use
+#		$2 - $n strings to separate
+#	does:	uses the separators to break the arglist into words
+#	return:	nothing
+
+Parse()
+{ (
+	IFS=$1
+	shift
+	echo $*
+) }
+
+
+
+:	-PositionTape
+#		position tape to a specified location
+#
+#	given:	$1 - volume number to position to
+#		$2 - setld readable file position on the tape to go to
+#		global $_CPOS - current tape position
+#	does:	position the tape to be able to read the specified volume
+#		and file
+#	return:	0 if all's well.
+#		1 on failure.
+#	effect:	global $_CVOL - may change to reflect new position
+#		global $_CPOS - may change to reflect new position
+
+PositionTape()
+{
+	NEWVOL=$1		# desired volume
+	NEWPOS=$2		# desired position
+
+	case "$NEWPOS" in
+	-[123])	;;
+	-*)	Ferror 1 "Unaccessible tape position $NEWPOS"
+	esac
+
+	# make sure the tape drive isn't being used...
+	Wait MTPID
+
+	#  1. get the correct volume mounted
+	[ "$NEWVOL" != "$_CVOL" ] &&
+	{
+		# volume change logic
+		echo "
+Volume change. Rewinding tape...\c"
+
+		TickWhile "mt -f $RAW rew && mt -f $RAW offl" ||
+		{
+			Error "
+I can't dismount your tape. You will have to take the
+tape drive off line manually."
+		}
+
+		echo "
+Please remove tape volume $_CVOL and replace it with volume $NEWVOL."
+
+		while :
+		do
+			Ready
+			mt -f $RAW rew && break
+		done
+		_CVOL=$NEWVOL
+		_CPOS=-$T_0
+	}
+
+	#  2. get the correct position in the volume
+	MOVE=`Subtract $_CPOS $NEWPOS`
+	_CPOS=$NEWPOS
+
+	case "$MOVE" in
+	0)	# we're at it.
+		;;
+	-*)	# forward X files.
+		MOVE=`Parse - $MOVE`
+		TickWhile "mt -f $RAW fsf $MOVE"
+		;;
+	*)	MOVE=`expr $MOVE + 1`
+		TickWhile "mt -f $RAW bsf $MOVE && mt -f $RAW fsf"
+		;;
+	esac
+	return $?	# returns value of last exec in case
+}
+
+
+
+:	-PreSize
+#		determine is space is available to -l/-x a subset to
+#	the system.
+#
+#	given:	$1 - operation description in {install,extract}
+#		$2... - names of objects to be operated upon
+#	does:	permit space to be measured before reading software
+#		onto the system
+#	return:	0 is operation can be performed in the available space,
+#		1 if not.
+#	effect:	none, closed context
+#
+
+PreSize()
+{ (
+	OPCODE=$1
+	shift
+	SUBSETS=$*
+
+	[ "$SUBSETS" ] || return 0	# no subsets.
+
+	case "$OPCODE" in
+	extract)
+		# use the image file information and sizes of .ctrl, .inv,
+		#  and .scp files to determine if subset
+		#  image will fit on the system
+
+		# for each subset being extracted, get its .image record.
+		#  place the image records in a temp file. At the same
+		#  time, gather size information about the ctrl, etc. files
+		> $TMP1
+		SIZES=0
+		for S in $SUBSETS
+		{
+			egrep $S $_TDIR/*.image >> $TMP1
+			SIZE=`ls -s $_TDIR/$S.* | awk '{print $1}'`
+			SIZES="$SIZES $SIZE"
+		}
+
+		# add up the sizes of all of the images
+		ISIZE=`awk '
+			BEGIN	{size=0}
+				{size += $2}
+			END	{print size}' < $TMP1`
+
+		# add up image size and all individual file sizes
+		SIZE=0
+		for X in $SIZES $ISIZE
+		{
+			SIZE=`expr $SIZE + $X`
+		}
+
+		# get freespace from system
+		FREESPACE=`df . | awk 'NR == 3 {print $4}'`
+
+		[ "$SIZE" -lt "$FREESPACE" ] && return 0
+		return 1
+		;;
+
+	install)
+		# cram all of the specified inventory files thru fitset
+		LIST=/dev/null
+		for S in $SUBSETS
+		{
+			LIST="$LIST $_TDIR/$S.inv"
+		}
+		cat $LIST | fitset $_R 2> /dev/null && return 0
+		return 1
+		;;
+	*)	Error "PreSize(): $OPCODE: unknown opcode"
+	esac
+) }
+
+
+
+:	-PrintTable
+#		Print a table of subset descriptions
+#
+#	given:	$1 - a character to place in column 2 of output table
+#		$2..$n - subset codes for descriptions to be displayed
+#		global $SP - space padding for fields
+#		global $FW - field width string for fields
+#	does:	look up the description for each subset listed on the command
+#		line, format the descriptions 2 per line.
+#	return:	ignored
+#	effect:	none - context is private
+
+PrintTable()
+{ (	
+	BULLET=$1	# col 2 character
+	shift
+	SUBSETS=$*
+
+	DESC=		# current subset description
+	N="\c"		# newline suppressor, alternates with ""
+	PSTR=		# formatted string to print
+	SUBSET=		# current subset
+
+	for SUBSET in $SUBSETS
+	{
+		eval DESC='$DESC'$SUBSET
+		PSTR=`expr " $BULLET $DESC$SP" : '\('$FW'\).*'`
+		echo "$PSTR  $N"
+		case "$N" in
+		"\c")	N=
+			;;
+		*)	N="\c"
+		esac
+	}
+	echo "$N"	# will terminate line if needed.
+) }
+
+
+
+:	-Pwd
+#		print working directory, BSD style
+#
+#	given:	nothing
+#	does:	print the working directory, using BSD symbolic link
+#		rules embodied in /bin/pwd
+#	return:	void
+
+Pwd()
+{
+	/bin/pwd
+}
+
+
+:	-ReadCtrlFile
+#		Initialize control file values
+#
+#	given:	$1 - pathname for directory to search for control file
+#		$2 - name of subset
+#	does:	read the file and verify it's contents
+#		saves the control attributes
+#	return:	1 on error
+#	effect:	sets DESC, NVOLS, MTLOC, DEPS, FLAGS
+#			sets \$DESC$2....
+#
+
+ReadCtrlFile()
+{
+	# initialize, clean up residual values
+	DESC=
+	NVOLS=
+	MTLOC=
+	DEPS=
+	FLAGS=
+
+	[ $# = 2 ] ||
+	{
+		Error "ReadCtrlFile($*): expected 2 args, recieved $#"
+		return 1
+	}
+	L_DIR=$1	# directory to search
+	L_SUB=$2	# subset name
+
+	# check to see if the information is already cached
+	eval SET=\$SET$L_SUB
+	[ "$SET" = 1 ] &&	# retrieve the info
+	{
+		eval DESC=\$DESC$L_SUB
+		eval NVOLS=\$NVOLS$L_SUB
+		eval MTLOC=\$MTLOC$L_SUB
+		eval DEPS=\$DEPS$L_SUB
+		eval FLAGS=\$FLAGS$L_SUB
+		return 0
+	}
+
+	# info not cached, read and cache
+	[ -f $L_DIR/$L_SUB.ctrl ] ||
+	{
+		Error "ReadCtrlFile(): cannot find $L_DIR/$L_SUB.ctrl"
+		return 1
+	}
+	. $L_DIR/$L_SUB.ctrl ||
+	{
+		Error "ReadCtrlFile(): error reading $L_DIR/$L_SUB.ctrl"
+		return 1
+	}
+
+	# did we get it all?
+	case "~$DESC~$NVOLS~$MTLOC~$DEPS~$FLAGS~" in
+	*~~*)	# Control File appears to be incomplete
+		Error "ReadCtrlFile(): $L_DIR/$L_SUB.ctrl is incomplete"
+		return 1
+	esac
+
+	# preserve the information
+	eval DESC$L_SUB='$DESC'
+	eval NVOLS$L_SUB='$NVOLS'
+	eval MTLOC$L_SUB='$MTLOC'
+	eval DEPS$L_SUB='$DEPS'
+	eval FLAGS$L_SUB='$FLAGS'
+
+	# mark the subset as 'set'
+	eval SET$L_SUB=1
+	eval DIR$L_SUB=$L_DIR
+	return 0
+}
+
+
+
+:	-Ready
+#		affirm user readiness
+#
+#	given:	nothing
+#	does:	wait for user to affirm readiness
+#	return:	VOID
+
+Ready()
+{ (
+	X=		# user input
+
+	while :
+	do
+		sleep 2
+		echo "Are you ready (y/n)? \c"
+		read X
+		[ "$X" = 'y' -o "$X" = 'Y' ] && return
+	done
+) }
+
+
+:	-RecoverChanges
+#		Perform post-update archiving activities
+#
+#	given:	$1 subset to restore
+#		inventory data in $_TDIR/$1.res
+#	does:	propogate precedent changes back to the system
+#	return:	nothing
+
+RecoverChanges()
+{ (	S=$1
+	cd var/adm/install/archive
+	iff -p < $_TDIR/$S.res | awk '{print $10}' > $TMP1
+	BigTar $TMP1 $_R
+) }
+
+
+:	-RemoveDebris
+#		remove leftovers from a previous release
+#
+#	given:	the name of a subset to clean up after
+#	does:	cleans up
+#	return:	nothing
+
+RemoveDebris()
+{ (	S=$1
+	frm < $_TDIR/$S.frm
+) }
+
+
+:	-Resident
+#		list installed copies of a subset.
+#
+#	given:	$1 - a subset code without a version specifier
+#	does:	lists codes of all versions of the subset which are installed
+#	return:	nothing
+
+Resident()
+{	L_PN=$1
+	L_OUT=		# output string
+
+	# search for control files of known versions.
+	#! expasion join - next expression has fixed version code length
+	L_OUT=`(cd $UAS; echo $L_PN???.lk | sed 's/\.lk//g' )`
+	case "$L_OUT" in
+	*'???')	return 1	# no match, no versions installed.
+	esac
+	echo "$L_OUT"
+	return 0
+}
+
+
+:	-RunScps
+#		run set of batched scps set up during LoadFromMedia
+#
+#	given:	$1 - the environment key to use
+#		$2... the names of the subsets
+#	does:	runs them with the appropriate settings
+#	return:	nothing
+
+RunScps()
+{	KEY=$1
+	shift
+	for S in $*
+	{
+		Log "$S SCP $KEY \c"
+		[ -f $UAS/$S.scp ] ||
+			continue
+
+		ACT=$KEY $UAS/$S.scp ||
+		{
+			Error "
+The subset control program for subset $S failed."
+			[ -s $UAS/$S.lk ] &&
+			{
+				echo "
+This failure may adversely affect the operation of the following subsets:
+"
+				sort $UAS/$S.lk|uniq
+			}
+			rm -f $UAS/$S.lk
+			case "$ISOPT$ACT" in
+			0[AL])	OPTERRS=1
+				;;
+			1)	OPTERRS=`expr $OPTERRS + 2`
+			esac
+		
+			continue
+		}
+		#! lock update operations do not belong here to be
+		#!  moved pending review of atomicity of operations
+		# update lock files
+		ReadCtrlFile $UAS $S
+		for K in $DEPS
+		{
+			[ "$K" = '.' ] && break
+			echo "$S" >> $UAS/$K.lk
+		}	
+		[ "$DEFPATH" = 1 ] &&
+			ACT=C $UAS/$S.scp INSTALL
+
+		Log "SUCCEEDED"
+	}
+}
+
+
+:	-SelectSubsets
+#		select which subsets are to be installed/extracted
+#
+#	given:	global $MAND - list of mandatory subsets to be listed before
+#			presenting selection menu
+#		global $OPT - list of optional subsets from which to select
+#	does:	display mandatory subsets. offer selection of optional subsets.
+#		recieve list of selected subsets. confirm selection
+#		of selected subsets. set global SBS to a concatenation
+#		of mandatory subsets and selected optional subsets
+#	return:	ignored
+#	effect: global $SBS - change to list mandatory subsets prepended to
+#		list of selected optional subsets
+
+SelectSubsets()
+{
+	OPERATION=install
+
+	# set OPERATION to extracted if doing setld -x
+	[ "$CMDSW" = x ] &&
+		OPERATION=extract
+
+	# a note on table field formatting used here:
+	#  the string to be printed in the table is padded to
+	#  be AT LEAST as wide as the desired field and piped to sed.
+	#  Sed chops off anything following the fortieth character.
+	FW="......................................"	# 38 of them.
+	SP="                                        "
+
+
+	case "$OPT" in
+	"")	echo "The following subsets will be ${OPERATION}ed:"
+		PrintTable "*" $MAND
+
+		while :
+		do
+			echo "Do you wish to continue? (y/n): \c"
+			read X
+			X=`echo $X`
+			case "$X" in
+			[yY]*)	break
+				;;
+			[Nn]*)	return 2
+			esac
+		done
+		SBS=$MAND
+		return 0
+	esac
+
+	echo "
+*** Enter Subset Selections ***"
+	# list out mandatory subsets if any.
+	while :
+	do
+		[ "$MAND" != "" ] &&
+		{
+			echo "
+The following subsets are mandatory and will be ${OPERATION}ed automatically:"
+			PrintTable "*" $MAND
+		}
+
+		# this builds the selection table.
+		echo "
+The subsets listed below are optional:"
+		N="\c"
+		X=1
+		for _S in $OPT
+		{
+			eval ORD$X=$_S
+			eval DESC='$DESC'$_S
+
+			case "$X" in
+			?)	X=" $X"
+			esac
+
+			PSTR=`expr "$X) $DESC$SP" : '\('$FW'\).*'`
+			echo "$PSTR  $N"
+			X=`expr $X + 1`
+			case "$N" in
+			"\c")	N=
+				;;
+			*)	N="\c"
+			esac
+		}
+		echo "$N"
+
+		ALL=$X
+		NONE=`expr $X + 1`
+		EXIT=`expr $X + 2`
+		case "$ALL" in
+		?)	PALL=" $ALL"
+			;;
+		*)	PALL="$ALL"
+		esac
+		case "$NONE" in
+		?)	PNONE=" $NONE"
+			;;
+		*)	PNONE="$NONE"
+		esac
+		case "$EXIT" in
+		?)	PEXIT=" $EXIT"
+			;;
+		*)	PEXIT=$EXIT
+		esac
+
+		echo "
+$PALL) All of the Above
+$PNONE) None of the Above
+$PEXIT) Exit without ${OPERATION}ing subsets
+
+Enter your choice(s): \c"
+
+		read X
+
+		# walk thru the input...
+		SORTED=
+		for I in $X
+		{
+			# is it a number?
+			J=`expr $I : '\([0-9][0-9]*\)'`
+			case $I in
+			$ALL|$NONE|$EXIT)
+				SORTED=$I
+				break
+				;;
+			$J)	;;
+			*)	echo "
+Invalid choice: $I (malformed number)"
+				continue
+			esac
+
+			# is it in range?
+			[ $I -gt $EXIT ] &&
+			{
+				echo "
+Invalid Choice: $I (out of range)"
+				continue
+			}
+			HI=$SORTED LO=
+			# insert # into sorted list...
+			for J in $SORTED
+			{
+				case "$I" in
+				$J)	I=
+					break
+					;;
+				esac
+				if [ $I -gt $J ]
+				then
+					LO="$LO $J"
+					set xx $HI
+					shift;shift
+					HI=$*
+				else
+					break
+				fi
+			}
+			SORTED="$LO $I $HI"
+		}
+		case $SORTED in
+		"")	continue
+			;;
+		$ALL)	SBS="$MAND $OPT"
+			;;
+		$NONE)	SBS="$MAND"
+			;;
+		$EXIT)	
+			while :		# do they really want to quit
+			do
+				echo "
+You have chosen to exit without ${OPERATION}ing subsets
+
+Is this correct (y/n) [y]: \c"
+				read X
+				case "$X" in
+				""|[yY]*)
+					[ "$MAND" ] && return 1
+					return 2
+					;;
+				[nN]*)	continue 2
+				esac
+			done
+			;;
+
+		*)	SBS="$MAND"
+			for X in $SORTED
+			{
+				eval _S='$ORD'$X
+				SBS="$SBS $_S"
+			}
+		esac
+		case "$SORTED" in
+		$ALL|*)
+			# if they have selected all or some, size them.
+			#  no sizing is required if none of the optionals
+			#  were selected becuase they were sized before
+			#  selection even began.
+
+			TickWhile PreSize $OPERATION $SBS ||
+			{
+				echo "
+There is not enough file system space to install all of the software
+subsets that you have selected. Make another selection"
+				continue
+			}
+			;;
+		esac
+
+		case "$SBS" in
+		"")	echo "
+You have chosen not to install any of the subsets offered.
+
+Is this correct? (y/n): \c"
+			read X
+			case "$X" in
+			[Yy]*)	return 2
+			esac
+			continue
+		esac
+		echo "
+You are ${OPERATION}ing the following subsets:"
+		PrintTable ' ' $SBS
+
+		echo "
+Is this correct? (y/n): \c"
+
+		read X
+		case "$X" in
+		[Yy]*)	break
+		esac
+	done
+	return 0
+}
+
+
+
+
+:	-SplitByType
+#		split subset list into optional and mandatory
+#
+#	given:
+#	does:
+#	return:
+
+SplitByType()
+{
+	MAND=""	# list of mandatory subsets
+	OPT=""	# list of optional subsets
+
+	# scan control files, differentiate OPT & MAND subsets
+	INSTALLED=		# smu-2290
+	for _S in $SBS
+	{
+		case "$CMDSW" in
+		l)
+			# make sure subset is not installed.
+			[ -f $UAS/$_S.lk ] && 
+			{
+				INSTALLED=1
+				continue
+			}
+			;;
+		x)	# Make sure subset is not already on server
+			[ -f $_S ] &&
+			{
+				INSTALLED=1
+				continue
+			}
+		esac
+
+		ReadCtrlFile $_TDIR $_S
+
+		# if STL_NOACTM is not set, run scp with M action.
+		#  Will fail if subset does not want to appear on the menu.
+
+		[ "$STL_NOACTM" ] ||
+		{
+			ACT=M $_TDIR/$_S.scp -$CMDSW || continue
+		}
+
+		# bit 2 on flags means subset is optional
+		case `FlagsAttrCheck SATTR_OPTION $FLAGS` in
+		1)	OPT="$OPT $_S"
+			;;
+		*)	MAND="$MAND $_S"
+		esac
+	}
+	case "$MAND$OPT$INSTALLED" in
+	"")	Error "No installable subsets on your kit"
+		return 1
+		;;
+	1)	Error "All subsets on the kit are already installed"
+		return 1
+	esac
+}
+
+
+
+:	-Subtract
+#		subract one integer value from another
+#
+#	given:	$1 - initial value
+#		$2 - subtrahend
+#	does:	echo value of $1 - $2 to stdout
+#	return:	ignore
+
+Subtract()
+{ (	X=$1	Y=$2
+
+	OP=-	# operation to perform
+	CSR=0	# change sign of result flag
+
+	#% Local Code
+	# now for some ugly arithmetic using expr
+	#  expr does not understand negative numbers.
+	#  to compensate, the following formulae are used:
+	#
+	#	x - y	=>	x - y
+	#	-x - y	=>	-( x + y )
+	#	x - -y	=>	x + y
+	#	-x - -y	=>	-( x - y )
+
+	# determine operators and signs of results, note that
+	#  *,* case is default defined above
+
+	case "$X,$Y" in
+	-*,-*)	CSR=1
+		;;
+	-*,*)	OP=+
+		CSR=1
+		;;
+	*,-*)	OP=+
+	esac	
+
+	# remove signs from both operands
+	X=`Parse - $X`
+	Y=`Parse - $Y`
+
+	# perform the operation
+	Z=`expr $X $OP $Y`
+
+	# check sign on result
+	case "$CSR,$Z" in
+	1,0)	;;	# prevent -0
+	1,-*)	Z=`Parse - $Z`
+		;;
+	1,*)	Z=-$Z
+	esac
+	echo $Z
+) }
+
+
+
+:	-Synch
+#		Synchronize back versions of a subset inventory, generate
+#	debris debris inventory.
+#
+#	given:	the name of the subset to synchronize
+#	does:	generate synchronization inventory: _TDIR/$1.syn
+#		generate debris inventory: _TDIR/$1.frm
+#	return:	nothing
+
+Synch()
+{
+	MS=$1		# store the subset name
+
+	#% Local Variables
+	#
+	MS_P=		# product field
+	MS_N=		# subset field
+	MS_V=		# version field
+	SYNCLIST=	# list of installed versions
+	X= Y=		# temporary variables
+
+	#% Local Code
+	#
+
+	# break out subset name fields
+	NameParse MS_ $MS
+
+	# determine which subsets are currently installed
+	SYNCLIST=`ListKnown $MS_P$MS_N`
+	SYNCLIST=`AreInstalled $SYNCLIST`
+
+	# set up list of subsets to be synchronized
+	set xx $SYNCLIST
+	shift
+
+	[ $# = 0 ] &&
+	{
+		# No subsets. Error
+		Error "
+$PROG: $MS: attempt to update non-resident subset"
+		return
+	}
+	(
+		cd $_TDIR
+
+		# sort the initial inventory ascending by pathname
+		sort -o $1.#syn -8 +9 $_R/$UAS/$1.inv
+
+		# Iteratively synchronize inventories 2 at a time.
+		#  the oldest two are synchronized into one which
+		#  is in turn used as the oldest in the next iteration
+		#
+
+		Y=$1	# set $Y to $1 in case it is the only subset
+			
+		while [ $# -gt 1 ]
+		do
+			# pop the first two from the list.
+			X=$1 Y=$2
+			shift 2
+
+			# rename output of last iteration
+			mv $X.#syn $X.syn 2> /dev/null
+
+			# get original copies the inventories
+			#  if we haven't already and sort them
+			[ -f $X.syn ] ||
+			{
+				sort -o $X.syn -8 +9 $_R/$UAS/$X.inv &
+				SORTPID=$!
+			}
+
+			[ -f $Y.syn ] ||
+				sort -o $Y.syn -8 +9 $_R/$UAS/$Y.inv
+
+			Wait SORTPID
+
+			# synchronize the inventory pair
+			usync $X.syn $Y.syn > $Y.#syn
+
+			# remove the left version
+			# rm -f $X.syn
+
+			# push the right version back into the list
+			set $Y $*
+		done
+
+		# sort the media inventory
+		sort -o $MS.inv -8 +9 $MS.inv
+		# propogate flags info into synchronized inventory
+		umerge $Y.#syn $MS.inv > $MS.syn ||
+		{
+			Error "Synch(): cannot merge inventories"
+			return 1
+		}
+
+		# generate debris inventory with final version
+		udelta $Y.#syn $MS.inv > $MS.frm ||
+		{
+			Error "Synch(): cannot generate frm datafile"
+			return 1
+		}
+		# remove tell-tale copy
+		rm $Y.#syn
+	)
+}
+
+
+:	-TickWhile
+#		Provide ticking while a named process is running
+#
+#	given:	$* a command line to run
+#	does:	establish a Ticker(), run the named process, turn the
+#		Ticker() off.
+#	return:	the exit status of the named process
+
+TickWhile()
+{	PROC=$*
+
+	Ticker on
+	eval $PROC
+	PROCRET=$?
+	Ticker off
+	return $PROCRET
+}
+
+
+:	-Ticker
+#		present time stamps on stdout
+#
+#	given:	$1 - "on" or "off"
+#	does:	turn output time stamping on or off
+#	return:	nothing
+#	effect:	$TICKPID updated
+
+Ticker()
+{
+	case "$1" in
+	on)	# make sure there isn't one already
+		[ "$TICKPID" ] && return
+		(	
+			# ticking is a background subshell that
+			#  traps on sighup
+			trap 'exit 0' 1
+			echo > $PIPE
+			sleep 15	# wait a bit before starting
+			while :
+			do
+				echo "	Working....`date`"
+				# ticker wakes up faster taking
+				#  short naps...
+				for X in 0 1 2 3 4 5 6 7 8 9
+				{
+					sleep 6
+					sleep 6
+				}
+			done
+		) &
+		TICKPID=$!
+		(read X) < $PIPE
+		;;
+
+	off)	# make sure there's one running
+		[ "$TICKPID" ] &&
+		{
+			# kill it
+			kill -1 $TICKPID
+			Wait TICKPID
+		}
+	esac
+}
+
+
+:	-Ucase
+#		echo arguments upcased
+#
+#	given:	$* - some text
+#	does:	upcases the text and writes it to stdout
+#	return:	ignore
+
+Ucase() {	echo $* | dd conv=ucase 2> /dev/null;	}
+
+
+:	-Update
+#		update installed subsets present on specified media
+#
+#	given:	global $SBS - list of subset available from media
+#	does:	determine which SBS subsets have versions currently
+#		installed. Update these subsets.
+#	return:	1 on failure, 0 otherwise.
+
+Update()
+{
+	UpdateSearch $SBS
+
+	# generate .syn, .res, and .frm inventories for all subsets
+	#  to be updated.
+	#  archive all changes before installing any software
+	for _S in $SBS
+	{
+		ReadCtrlFile $_TDIR $_S
+		echo "
+Preparing system to update $DESC ($_S)"
+
+		Ticker on
+		Synch $_S 		# synchronize inventory for this subset
+		DetectChanges $_S	# generate change information
+		ArchiveChanges $_S ||	# archive changes
+		{
+			Error "preserve: update failed."
+			return 1
+		}
+		Ticker off
+	}
+
+	OPTERRS=0
+	SCPLIST=
+	# load the software from the media.
+	for _S in $SBS
+	{
+		LoadFromMedia $_S
+		case "$?" in
+		0)	SCPLIST="SCPLIST $_S"
+			# Clear out previous entries for this subset from
+			#  the subsets database
+			DbPurge $_S
+			;;
+		1)	return 1
+			;;
+		*)	OPTERRS=`expr $OPTERRS + 2`
+			continue
+		esac
+
+		ArchiveReferenceCopies $_S
+		RecoverChanges $_S
+		RemoveDebris $_S
+	}
+	RunScps POST_U $USBS
+	return 0
+}
+
+
+:	-UpdateSearch
+#		Determine which subsets are to be applied as updates
+#
+#	given:	$* - a list of subsets known to be available from the
+#		distribution.
+#		uses data available in usr/etc/subsets and _TDIR.
+#	does:	copies those subset names in the arglist which match
+#		subsets currently installed on the system to stdout.
+#	return:	nothing useful
+#	effect:	sets $SBS to the names of the media subsets which have
+#		currently installed versions
+#
+
+UpdateSearch()
+{
+	MSS=$*		# list of subsets available on the media
+
+	MS=	# working subset name
+	MS_N=	# working name
+	MS_P=	# working product code
+	MS_V=	# working version code
+	RS=	# working _R_esident _S_ubset
+	RSS=	# list of resident subsets
+	
+	#% Local Code
+
+	SBS=
+	for MS in $MSS
+	{
+		# check to see if update flag is set
+		ReadCtrlFile $_TDIR $MS
+		[ `FlagsAttrCheck SATTR_UPDATE $FLAGS` = 1 ] || continue
+
+		# set MS_{P,N,V}
+		NameParse MS_ $MS
+
+		# Get a list of all other versions of the current subset
+		#  that are installed to the system.
+		RSS=`Resident $MS_P$MS_N` ||
+		{
+			# none resident
+			continue
+		}
+
+		# Make sure all of them are lower of equal versions
+		#
+		for RS in $RSS
+		{
+			NameParse RS_ $RS
+
+			[ $RS_V -gt $MS_V ] &&
+			{
+				Error "
+Cannot Update $MS_P$MS_N from version $RS_V to $MS_V"
+				continue 2
+			}
+		}
+		SBS="$SBS $MS"
+	}
+}
+
+
+:	-Usage
+#		print usage messages
+#
+#	given:	$1 - switch for which message to print
+#	does:	prints a particular usage message
+#	return:	nothing
+
+Usage()
+{
+	case "$1" in
+	"")	Error -n "$USAGE"
+		;;
+	-c)	Error -n "
+Usage:
+$CUSAGE"
+		;;
+	-d)	Error -n "
+Usage: $DUSAGE"
+		;;
+	-h)	echo "$USAGE"
+		;;
+	esac
+	return 0
+}
+
+
+:	-Verify
+#		verify the integrity of the installation subsystem
+#
+#	given:	$* - list of subsets to be verified 
+#	does:   For each subset specified:
+#		1) check if subset is installed.
+#		2) read control file to get subset description
+#		3) test ivp
+#	return: nothing
+
+Verify()
+{
+	cd $_R
+	for _S in $*
+	{
+		[ -f $UAS/$_S.lk ] ||
+		{
+			Error "$_S: $E_NOINST"
+			continue
+		}
+
+                # read .ctrl to get subset description ($DESC),
+                # ReadCtrlFile() will provide proper error msg when needed.
+                ReadCtrlFile $UAS $_S
+
+                Log "$_S, IVP \c"
+                echo "
+$DESC ($_S)"
+
+		ACT=V $UAS/$_S.scp ||
+		{
+			Error "ivp failed."
+			continue
+		}
+
+	  	Log " SUCCEEDED"
+	}
+	return 0
+}
+
+
+:	-Wait
+#		intelligent wait routine
+#
+#	given:	$1 - the name of the variable contianing the pid of the
+#			process to wait for (yes, this uses call-by-reference)
+#		[$2 - $n] - optional string to eval if wait fails
+#	does:	wait on the specified PID if contents of $1 is not null
+#		if wait returns !0 status, eval remainder of command line
+#		clear contents of variable specified in $1
+#	return:	exit status of the wait
+
+Wait()
+{
+	VAR=$1
+	shift
+
+	# was there a first arg?
+	[ ! "$VAR" ] && return 0
+
+	eval VAL=\$$VAR
+
+	# was the value of the named variable set?
+	[ ! "$VAL" ] && return 0
+
+	# clear the value from the named variable
+	eval $VAR=
+
+	wait $VAL ||
+	{
+		STAT=$?
+		eval $*
+		return $STAT
+	}
+}
+
+
+:	-WriteLog
+#		xfer stdin to logfile
+#
+#	given:	no args, reads stdin
+#	does:	xfer stdin to logfile $LOGFILE
+#	return:	ignore
+
+WriteLog()
+{ (
+	2>&1 cat > $LOGFILE
+) }
+
+
+#% CODE
+#	actual code bgins here. This is structured this way to
+#	enable interactive debugging of the independent subroutines
+#	by setting STL_SUBR_DEBUG to something and running '. setld'
+
+CDPATH= ;export CDPATH		# assure no surprises.
+
+InitializeConstants
+InitializeGlobals
+
+# run the main routine only if subr debug is disabled
+#
+[ -z "$STL_SUBR_DEBUG" ] && 
+{
+	PATH=/install.tmp:/etc/stl:/etc:/bin:/usr/bin:/usr/adm/bin:/usr/ucb:.
+	export PATH
+
+	Main $ARGV
+}
+
+echo "$PROG: syntax test passed"
+

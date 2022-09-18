@@ -1,0 +1,31 @@
+.TH dis 1 RISC
+.SH Name
+dis \- disassemble an object file
+.SH Syntax
+.nf
+.ft B
+dis [-h] [-S] [-p \fIprocedure\fR] [ \fIfile\fR ... ]
+.nf
+.ft B
+.SH Description
+The
+.B dis
+command disassembles object files into machine instructions.  Note that
+assembler code and machine code can differ depending on the
+machine type.  A
+.I file
+can be an object or an archive file.
+.SH Options
+.TP 5
+.B \-h
+Prints the general register names, rather than
+the software register names.
+.TP 5
+.B \-p
+Disassembles only the specified procedure from the object file.
+.TP 5
+.B \-S
+Lists the source listings.  Otherwise,
+only instructions are listed.
+.SH Restrictions
+You cannot disassemble an archive.

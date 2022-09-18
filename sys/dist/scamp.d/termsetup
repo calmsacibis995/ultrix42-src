@@ -1,0 +1,362 @@
+#!/bin/sh5
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)termsetup	4.2	(ULTRIX)	8/5/90"
+#
+#	000	Jonathan Wallace	1-Jun-1990
+#
+#
+#	001	James C. Overman	05-Aug-1990
+#	    Moved references to /tmp to /usr/tmp 
+#	    
+########################################################################
+#
+#
+#############################################
+# Set variables, constants, and environment #
+#############################################
+set -h
+trap 'Original_State_Routine; exit 1' 1 2 3 18
+LL="
+"
+SWITCH=$1
+TTY=$2
+TTD=`expr $TTY : '.*\([0-9]\)'`
+TTD=ttyd$TTD
+MVFLG=0
+ED_ERROR="
+Errors occured  while  attempting to edit the terminal initialization
+file /etc/ttys during this procedure.   A temporary error file called
+/usr/tmp/ed_errs is created to trap any errors that might occur while
+attempting  to  add  a  terminal  device using this procedure.  Check
+/usr/tmp/ed_errs to determine the nature of the error, and then check
+/etc/ttys  to see if a valid entry was made for tty00.  Refer to  the
+Guide to System Environment Setup  for  more  information  about  the
+terminal  initialization file /etc/ttys, it's format, and description
+of it's entries; or contact your system administrator."
+
+###################
+# SH5 Subroutines #
+###################
+#############################################################
+#
+: Error_Routine - error handler from tty_stat program
+#
+# Return Codes	Meaning
+#	0	Success
+#	1	Generic Failure 
+#	2	Undefined
+#	3	grep failed to find tty in /etc/ttys
+#	4	tty specified more than once in /etc/ttys
+#	5	specified tty is already turned on in /etc/ttys
+#
+#############################################################
+Error_Routine()
+{
+	case $1 in
+	3 )
+		clear
+		echo "
+$PROCEDURE_NAME
+
+Line $TTY does not exist in /etc/ttys file.  Check the file for
+corruption by refering to the Guide to System Environment Setup,
+Terminal Initialization File section.  
+
+Press <RETURN> to continue: \c"
+		read resp
+		return 1
+		;;
+	4 )
+		clear
+		echo "
+$PROCEDURE_NAME
+
+$TTY is defined more than once in the /etc/ttys file.
+_______________________________________________________________________________"
+		cat /usr/tmp/tty_lines
+		echo "_______________________________________________________________________________
+
+This causes unpredictable results and is unsupported by this
+procedure.  You may want to take corrective action by manually
+editing the Terminal Initialization File /etc/ttys refering to
+the Guide to System Environment Setup, Terminal Initialization
+File section, for information about it's format, and description
+of it's entries; or contact your system administrator.
+
+Press <RETURN> to continue: \c"
+		read resp
+		return 1
+		;;
+	5 )
+		TTY_ERROR=`cat /usr/tmp/tty_stat`
+		while :
+		do
+			clear
+			echo "
+$PROCEDURE_NAME
+
+Line $TTY has already been activated for the following use:
+
+	$TTY - $TTY_ERROR
+
+If you want to override the current $TTY entry in /etc/ttys
+and create a new terminal line on $TTY anyway, type 'y' to the
+confirmation request below. 
+
+Do you want to override the current $TTY entry? (y/n) [n]: \c"
+			read resp
+			case $resp in
+			[Nn]* | "" )
+				return 1
+				;;
+			[Yy]* )
+				return 0
+				;;
+			* )
+				;;
+			esac
+		done
+		;;
+	* )
+		clear
+		echo "
+$PROCEDURE_NAME
+
+Line $TTY is in an unknown state.  Check the entries of line $TTY
+in /etc/ttys by refering to the Guide to System Environment Setup,
+Terminal Initialization File section.
+
+Press <RETURN> to continue: \c"
+		read resp
+		return 1
+		;;
+	esac
+
+}
+
+
+###########################################################
+: Term_Type_Routine - User selects type of terminal to add
+###########################################################
+Term_Type_Routine()
+{
+	while :
+	do
+		clear
+		echo "
+$PROCEDURE_NAME
+
+Select one of the DIGITAL terminal types below:
+
+	1 - VT100 series
+	2 - VT200 series
+	3 - VT300 series
+
+	0 - None of the above
+
+Enter your choice [2]: \c"
+		read resp
+		case $resp in
+		0 )
+			exit 0
+			;;
+		1 )
+			VTTYPE=vt100
+			break
+			;;
+		"" | 2 )
+			VTTYPE=vt200
+			break
+			;;
+		3 )
+			VTTYPE=vt300
+			break
+			;;
+		* )
+			;;
+		esac
+	done
+}
+
+
+#################################################
+: Terminal_On_Routine - Turn on terminal in ttys
+#################################################
+Terminal_On_Routine()
+{
+	clear
+	echo "
+$PROCEDURE_NAME
+
+Creating terminal line on $TTY.....\c"
+
+	ed - /etc/ttys <<xxEOFxx >/usr/tmp/ed_errs
+	/^$TTY/d
+	i
+$TTY	"/etc/getty std.9600"	$VTTYPE	on nomodem secure	#direct connect tty
+.
+	w
+	q
+xxEOFxx
+
+	if [ -s /usr/tmp/ed_errs ]
+	then
+		echo "Error creating terminal line! $ED_ERROR"
+		Original_State_Routine
+	else
+		kill -1 1
+		echo "done."
+	fi
+
+	echo "${LL}Press <RETURN> to continue: \c"
+	read resp
+}
+
+
+###################################################
+: Terminal_Off_Routine - Turn off terminal in ttys
+###################################################
+Terminal_Off_Routine()
+{
+	clear
+	echo "
+$PROCEDURE_NAME
+
+Removing terminal line on $TTY.....\c"
+
+	ed - /etc/ttys <<xxEOFxx >/usr/tmp/ed_errs
+	/^$TTY/d
+	i
+$TTY	"/etc/getty std.9600"	vt100	off nomodem	#direct connect tty
+.
+	w
+	q
+xxEOFxx
+
+	if [ -s /usr/tmp/ed_errs ]
+	then
+		echo "Error removing terminal line! $ED_ERROR"
+	else
+		kill -1 1
+		echo "done."
+	fi
+
+	echo "${LL}Press <RETURN> to continue: \c"
+	read resp
+}
+
+
+##########################################################
+: File_Check_Routine - Make sure proper files are around.
+##########################################################
+File_Check_Routine()
+{
+	if [ ! -c /dev/$TTY ]
+	then
+		if [ ! -c /dev/$TTD ]
+		then
+			clear
+			echo "
+$PROCEDURE_NAME
+
+A file consistency check was unable to locate the file '/dev/$TTY'
+which is required in order to set up or use terminals on this machine.  
+
+Check the '/dev' directory to verify whether '/dev/$TTY' actually
+exists.  If it does not, refer to the MAKEDEV(8) manpage, or contact
+your system administrator.
+
+Press <RETURN> to continue: \c"
+			read resp
+			exit 1
+		else
+			MVFLG=1
+			mv /dev/$TTD /dev/$TTY
+			chmod 640 /dev/$TTY
+		fi
+	fi
+}
+
+
+###############################################################
+: Original_State_Routine - Return /dev files to previous state
+###############################################################
+Original_State_Routine()
+{
+	case $MVFLG in
+	1 )
+		mv /dev/$TTY /dev/$TTD 2>/dev/null
+		chmod 666 /dev/$TTD 2>/dev/null
+		MVFLG=0
+		;;
+	esac
+}
+
+
+###########################################################
+# MAIN PROGRAM PROCEDURE ROUTINE #
+##################################
+while :
+do
+	case $SWITCH in
+	-A )
+		PROCEDURE_NAME="*** Terminal Line Creation Procedure ***"
+		tty_scan $TTY
+		case $? in
+		0 )
+			;;
+		* )
+			Error_Routine $?
+			case $? in
+			1 )
+				exit 1
+				;;
+			esac
+			;;
+		esac
+		Term_Type_Routine
+		File_Check_Routine
+		Terminal_On_Routine
+		break
+		;;
+	-R )
+		PROCEDURE_NAME="*** Terminal Line Removal Procedure ***"
+		tty_scan $TTY
+		case $? in
+		0 | 5 )
+			;;
+		* )
+			Error_Routine $?
+			case $? in
+			1 )
+				exit 1
+				;;
+			esac
+			;;
+		esac
+		Terminal_Off_Routine
+		break
+		;;
+	esac
+done
+
+exit 0

@@ -1,0 +1,96 @@
+.TH rpc_register_object 3ncs
+.SH Name
+rpc_register_object \- register an object (server only)
+.SH Syntax
+#include <idl/c/rpc.h>
+
+void rpc_$register_object(\fIobject, type, status\fP)
+.nf
+uuid_$t *\fIobject\fP;
+uuid_$t *\fItype\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$register_object(\fR
+.\"	\fBin \fIobject\fB: uuid_$t;\fR
+.\"	\fBin \fItype\fB: uuid_$t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP
+\fIobject\fR
+The UUID of the object being registered.
+.TP 
+\fItype\fR
+The UUID of the type of the object.
+.TP
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$register_object
+routine declares that a server supports operations on a particular object
+and declares the type of that object.
+.NXR "Interface to the Remote Procedure Call" "rpc_register_object"
+.PP
+A server must register objects with 
+.PN rpc_$register_object
+only if it registers generic interfaces with 
+.PN rpc_$register_mgr .
+When a server receives a call,
+the RPC runtime library searches for
+the object identified in the call
+(that is the object that the client specified in the handle)
+among the objects registered by the server.
+If the object is found,
+the type of the object determines
+which of the manager EPVs should be used to operate on the object.
+.SH Diagnostics
+This section lists status codes for errors returned by this 
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$op_rng_error\fR
+The requested operation does not correspond to a valid operation 
+in the requested interface.
+.TP 20
+\fBrpc_$unk_if\fR
+The requested interface is not known.
+It is not registered in the server,
+the version number of the registered interface is
+different from the version number specified in the request,
+or the UUID in the request does not match the UUID of the registered interface.
+.TP 20
+\fBrpc_$too_many_ifs\fR
+The maximum number of interfaces is already registered with the RPC runtime library;
+the server must unregister some interface before it registers an additional interface.
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.TP 20
+\fBrpc_$illegal_register\fR
+You are trying to register an interface that is already registered 
+and you are using an EPV different from
+the one used when the interface was first registered.
+An interface can be multiply registered,
+but you must use the same EPV in each 
+.PN rpc_$register
+routine.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs), rpc_register(3ncs), rpc_register_mgr(3ncs), rpc_unregister(3ncs)

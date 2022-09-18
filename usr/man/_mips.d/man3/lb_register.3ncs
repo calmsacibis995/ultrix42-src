@@ -1,0 +1,145 @@
+.TH lb_register 3ncs
+.SH Name
+lb_register \- register an object and an interface with the Location Broker
+.SH Syntax
+#include <idl/c/lb.h>
+
+void lb_$register(\fIobject, obj_type, obj_interface, flags, annotation,
+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\fIlocation, location_length, entry, status\fP)
+.nf
+uuid_$t *\fIobject;\fR
+uuid_$t *\fIobj_type;\fR
+uuid_$t *\fIobj_interface;\fR
+lb_$server_flag_t \fIflags;\fR
+unsigned char \fIannotation[64];\fR
+socket_$addr_t *\fIlocation;\fR
+unsigned long \fIlocation_length;\fR
+lb_$entry_t *\fIentry;\fR
+status_$t *\fIstatus;\fR
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/lb.ins.pas'\fR
+.\"
+.\"\fBprocedure lb_$register(\fR
+.\"	\fBin \fIobject\fB: uuid_$t;\fR
+.\"	\fBin \fIobj_type\fB: uuid_$t;\fR
+.\"	\fBin \fIobj_interface\fB: uuid_$t;\fR
+.\"	\fBin \fIflags\fB: lb_$server_flag_t;\fR
+.\"	\fBin \fIannotation\fB: array [0..63] of char;\fR
+.\"	\fBin \fIlocation\fB: socket_$addr_t;\fR
+.\"	\fBin \fIlocation_length\fB: unsigned32;\fR
+.\"	\fBout \fIentry\fB: lb_$entry_t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIobject\fR
+The UUID of the object being registered.
+.TP 20
+\fIobj_type\fR
+The UUID of the type of the object being registered.
+.TP 20
+\fIobj_interface\fR
+The UUID of the interface being registered.
+.TP 20
+\fIflags\fR
+Must be either \fBlb_$server_flag_local\fR
+(specifying registration with only the LLB at the local host)
+or 0
+(specifying registration with both the LLB and the GLB).
+.TP 20
+\fIannotation\fR
+A character array used only for informational purposes.
+This field can contain a textual description of the object and the interface.
+For proper display by the 
+.PN lb_admin
+tool, the 
+.I annotation
+should be terminated by a null character.
+.TP 20
+\fIlocation\fR
+The socket address of the server that exports the interface to the object.
+.TP 20
+\fIlocation_length\fR
+The length, in bytes, of the socket address specified by the \fIlocation\fR field.
+.TP 20
+\fIentry\fR
+A copy of the entry that was entered in the Location Broker database.
+.TP 20
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN lb_$register
+routine registers with the Location Broker 
+an interface to an object and the location of a server that exports that interface.  This routine replaces any existing entry in the Location Broker
+database that matches 
+.I object, 
+.I obj_type, 
+.I obj_interface,
+and both the address family and host in 
+.I location; 
+if no such entry exists, the routine adds a new entry to the database.
+.PP
+If the 
+.I flags
+parameter is 
+.PN lb_$server_flag_local ,
+the entry is registered only in the LLB database at the host where the call is
+issued.
+Otherwise, the flag should be 0 to register with both the LLB and the GLB databases.
+.NXR "Interface to the Location Broker" "lb_register"
+.SH Examples
+The following statement registers the 
+.PN bank
+interface to the object identified by 
+.PN bank_id
+:
+.EX
+lb_$register (&bank_id, &bank_$uuid, &bank_$if_spec.id, 0,
+                   BankName, &saddr, slen, &entry, &status);
+.EE
+.SH Diagnostics 
+This section lists status codes for errors returned by this 
+.PN lb_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBlb_$database_invalid\fR
+The format of the Location Broker database is out of date.
+The database may have been created by an old version of the Location Broker; 
+in this case, delete the out-of-date database and reregister any entries
+that it contained.
+The LLB or GLB that was accessed may be running out-of-date software;
+in this case, update all Location Brokers to the current software version.
+.TP 20
+\fBlb_$database_busy\fR
+The Location Broker database is currently in use in an incompatible manner.
+.TP 20
+\fBlb_$update_failed\fR
+The Location Broker was unable to register the entry.
+.TP 20
+\fBlb_$cant_access\fR
+The Location Broker cannot access the database.
+Among the possible reasons:
+.IP
+1. The database does not exist, and the Location Broker cannot create it.
+.IP
+2. The database exists, but the Location Broker cannot access it.
+.IP
+3. The GLB entry table is full.
+.NE 5
+.TP 20
+\fBlb_$server_unavailable\fR
+The Location Broker Client Agent cannot reach the requested GLB or LLB.
+A communications failure occurred or the broker was not running.
+.SH Files
+.PN /usr/include/idl/c/glb.h
+.SH See Also
+intro(3ncs), lb_unregister(3ncs)

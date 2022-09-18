@@ -1,0 +1,80 @@
+.\" SCCSID: @(#)rmtab.5nfs	8.1	9/11/90
+.TH rmtab 5nfs
+.SH Name
+rmtab \- table of local file systems mounted by remote NFS clients
+.SH Description
+.NXR "rmtab file"
+.NXR "NFS protocols" "remote hosts and"
+.NXAM "showmount command" "rmtab file"
+.NXAM "mount command (NFS)" "rmtab file"
+The
+.PN rmtab
+file resides in the 
+.PN /etc
+directory and contains a list of all remote hosts that have mounted
+local file systems using the NFS protocols.
+Whenever a client performs a remote mount,
+the server machine's mount daemon
+makes an entry in the server machine's
+.PN rmtab
+file.
+The 
+.PN umount
+command instructs the server's mount daemon to remove the entry.
+The 
+.PN nfs_umount 
+.B \-b
+command broadcasts to all servers 
+and informs them that they should remove
+all entries from
+.PN rmtab
+created by the sender of the broadcast message.
+By placing a 
+.PN nfs_umount 
+.B \-b
+command in 
+.PN /etc/rc.local ,
+.PN rmtab
+tables on NFS servers can be purged of entries made by a crashed
+client, who, upon rebooting, did not remount the same file systems that
+it had before the system crashed.  The 
+.PN rmtab 
+file is a series of lines of the form:
+.EX
+hostname:directory
+.EE
+.PP
+Rather than rewrite the rmtab file on each
+.PN umount
+request, the mount daemon comments out unmounted entries by placing a
+number sign (#) in the first character position of the appropriate line.
+The mount daemon rewrites the entire file, without commented out 
+entries, no more frequently than every 30 minutes.  The frequency
+depends on the occurrence of
+.PN umount
+requests.
+.PP
+This table is used only to preserve information between crashes
+and is read only by
+.MS mountd 8nfs
+when it starts up.
+The 
+.PN mountd
+daemon keeps an in-core table,
+which it uses to handle requests from programs like
+.MS showmount 8nfs
+and
+.MS shutdown 8 .
+.SH Restrictions
+Although the
+.PN rmtab
+table is close to the truth,
+it may contain erroneous information if
+NFS client machines fail to execute
+.PN umount 
+.B \-a 
+when they reboot.
+.SH Files
+.PN /etc/rmtab
+.SH See Also
+mount(8nfs), umount(8nfs), mountd(8nfs), showmount(8nfs), shutdown(8)

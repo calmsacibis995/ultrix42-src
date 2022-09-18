@@ -1,0 +1,672 @@
+# @(#)kn02ba.db	4.4   (ULTRIX)   1/31/91
+
+sseg
+id CDS
+name MEM_KN02BA_CDS
+doc "3MIN memory registers"
+label "kn02ba Memory Registers"
+elements
+	kn02ba_mreg1 kn02ba_mreg2 PMAX_PADDR PMAX_EPC badva
+
+sseg
+id CDS
+name ESRKN02BA_CDS
+doc "3MIN interrupt registers"
+label "kn02ba Registers"
+elements
+      PMAX_CAUS PMAX_COPRO PMAX_EPC PMAX_STAT0 PMAX_STAT1 badva SP ssr sir sirm
+
+sitem 
+name kn02ba_mreg1
+type register 
+class composite 
+size 4 
+label "MEM REG" 
+display nil 
+doc nil 
+map 
+    field
+    class INTEGER
+    size 8
+    label "HARD CNT"
+    display DECIMAL
+    doc "HARD ERROR COUNT"
+    map NIL
+    field
+    class INTEGER
+    size 8
+    label "SOFT CNT"
+    display DECIMAL
+    doc "SOFT WRROR COUNT"
+    map NIL
+    field
+    class INTEGER
+    size 8
+    label "TRAN CNT"
+    display DECIMAL
+    doc "TRANCIENT ERROR COUNT"
+    map NIL
+    field
+    class CODED
+    size 1
+    label NIL
+    display NIL
+    doc NIL
+    map
+        0 "DATA BIT IN ERROR"
+        1 "PARITY BIT IN ERROR"
+    field
+    class CODED
+    size 1
+    label NIL
+    display NIL
+    doc NIL
+    map
+        0 "LOW BYTE IN ERROR"
+        1 "HIGH BYTE IN ERROR"
+    field
+    class CODED
+    size 2
+    label "MEMORY PARITY ERROR:"
+    display NIL
+    doc NIL
+    map
+        1 "TRANSIENT"
+        2 "SOFT"
+        3 "HARD"
+    field
+    class filler
+    size 1
+    doc "randy filler"
+    display nil
+    map nil
+    field
+    class integer
+    size 3 
+    doc "memory register bank number"
+    label "D0-15 ON BANK #"
+    display nil
+    map nil
+
+sitem 
+name kn02ba_mreg2
+type register 
+class composite 
+size 4 
+label "MEM REG" 
+display nil 
+doc  nil
+map 
+    field
+    class INTEGER
+    size 8
+    label "HARD CNT"
+    display DECIMAL
+    doc "HARD ERROR COUNT"
+    map NIL
+    field
+    class INTEGER
+    size 8
+    label "SOFT CNT"
+    display DECIMAL
+    doc "SOFT WRROR COUNT"
+    map NIL
+    field
+    class INTEGER
+    size 8
+    label "TRAN CNT"
+    display DECIMAL
+    doc "TRANCIENT ERROR COUNT"
+    map NIL
+    field
+    class CODED
+    size 1
+    label NIL
+    display NIL
+    doc NIL
+    map
+        0 "DATA BIT IN ERROR"
+        1 "PARITY BIT IN ERROR"
+    field
+    class CODED
+    size 1
+    label NIL
+    display NIL
+    doc NIL
+    map
+        0 "LOW BYTE IN ERROR"
+        1 "HIGH BYTE IN ERROR"
+    field
+    class CODED
+    size 2
+    label "MEMORY PARITY ERROR:"
+    display NIL
+    doc NIL
+    map
+        1 "TRANSIENT"
+        2 "SOFT"
+        3 "HARD"
+    field
+    class filler
+    size 1
+    doc "randy filler"
+    display nil
+    map nil
+    field
+    class integer
+    size 3 
+    doc "memory register bank number"
+    label "D16-31 ON BANK #"
+    display nil
+    map nil
+
+sitem 
+name ssr
+type register 
+class composite 
+size 4 
+label "ssr" 
+display nil 
+doc " system support register"
+map 
+    field
+    class filler
+    size 8
+    doc "leds field not translated"
+    label nil
+    map nil
+    field 
+    class coded
+    size 1
+    doc "lance reset - active low"
+    map
+	0 "LANCE RESET"
+    field 
+    class coded
+    size 1 
+    doc "53c94 reset low"
+    map
+	0 "53C94 RESET"
+    field
+    class coded
+    size 1
+    doc "rtc reset"
+    map
+	0 "RTC RESET"
+    field 
+    class coded
+    size 1
+    doc "scc reset low"
+    map
+	0 "SCC RESET"
+    field
+    class filler
+    size 1 
+    doc "reserved"
+    map nil
+    field
+    class coded
+    size 1
+    doc "txdis serial transmit disable"
+    map 
+	1 "TXDIS - SERIAL TRANSMIT DISABLED"
+    field
+    class coded
+    size 1
+    doc "diagdn - diag flag"
+    map 
+	1 "DIAGDN"
+    field
+    class coded
+    size 1
+    doc "lance dma "
+    map 
+	0 "LANCE DMA DISABLE"
+	1 "LANCE DMA ENABLE"
+    field
+    class coded
+    size 1
+    doc "scsi dma"
+    map 
+	0 "SCSI DMA DISABLE"
+	1 "SCSI DMA ENABLE"
+    field
+    class coded
+    size 1
+    doc "scsi dma direction"
+    map 
+	0 "SCSI DMA READ FROM MEMORY"
+	1 "SCSI DMA WRITE TO MEMORY"
+    field
+    class filler
+    size 9
+    doc "reserved"
+    map nil
+    field
+    class coded
+    size 1
+    doc "comm port 2 receive dma enable"
+    map 
+	0 "COMM PORT 2 RECEIVE DMA DISABLE"
+	1 "COMM PORT 2 RECEIVE DMA ENABLE"
+    field
+    class coded
+    size 1
+    doc "comm port 2 transmit dma enable"
+    map 
+	0 "COMM PORT 2 TRANSMIT DMA DISABLE"
+	1 "COMM PORT 2 TRANSMIT DMA ENABLE"
+    field
+    class coded
+    size 1
+    doc "comm port 1 receive dma enable"
+    map 
+	0 "COMM PORT 1 RECEIVE DMA DISABLE"
+	1 "COMM PORT 1 RECEIVE DMA ENABLE"
+    field
+    class coded
+    size 1
+    doc "comm port 1 transmit dma enable"
+    map 
+	0 "COMM PORT 1 TRANSMIT DMA DISABLE"
+	1 "COMM PORT 1 TRANSMIT DMA ENABLE"
+
+sitem 
+name sir
+type register 
+class composite 
+size 4 
+label "sir" 
+display nil 
+doc "system interrupt register"
+map  
+    field
+    class filler
+    size 2
+    doc "pbno and pbnc bits"
+    map nil
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc "scsi data ready"
+    map 
+	1 "SCSI DATA READY"
+    field
+    class filler
+    size 1
+    label nil
+    display nil
+    doc "reserved"
+    map nil
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc "pswarn"
+    map 
+	1 "PSWARN"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "toy interrupt"
+    map 
+	1 "toy interrupt pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "scc(0) serial interrupt"
+    map 
+	1 "scc(0) serial interrupt pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "scc(1) serial interrupt"
+    map 
+	1 "scc(1) serial interrupt pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "ethernet interrupt"
+    map 
+	1 "ethernet interrupt pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "scsi interrupt"
+    map 
+	1 "scsi interrupt from 53c94 pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "nrmod mfg mode jumper"
+    map 
+	1 "nrmod mfg mode jumper"
+    field 
+    class filler
+    size 1
+    display nil
+    doc "reserved"
+    map nil
+    field 
+    class coded
+    size 1
+    display nil
+    doc "cpu i/o write to"
+    map 
+	1 "cpu i/o - write timeout"
+    field 
+    class filler
+    size 1
+    display nil
+    doc "reserved"
+    map nil
+    field 
+    class coded
+    size 1
+    display nil
+    doc "nvr mode jumper"
+    map 
+	1 "nvr mode jumper"
+    field 
+    class filler
+    size 1
+    display nil
+    doc "reserved"
+    map nil
+    field 
+    class coded
+    size 1
+    display nil
+    doc "lance dma mem read err"
+    map 
+	1 "lance dma mem read err pending"	
+    field 
+    class coded
+    size 1
+    display nil
+    doc "scsi dma mem read err"
+    map 
+	1 "scsi dma mem read err pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "scsi dma overrun err"
+    map 
+	1 "scsi dma overrun error pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "scsi dma interrupt"
+    map 
+	1 "scsi dma interrupt pending"
+    field 
+    class filler
+    size 4
+    display nil
+    doc "reserved"
+    map nil
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 2 receive dma overrun"
+    map 
+	1 "comm port 2 receive dma overrun pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 2 receive half page interrupt"
+    map 
+	1 "comm port 2 rcv half page intr pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 2 transmit dma mem read error"
+    map 
+	1 "comm port 2 transmit dma mem rd err pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 2 transmit page end interrupt"
+    map 
+	1 "comm port 2 transmit pg end intr pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 1 receive dma overrun"
+    map 
+	1 "comm port 1 rcv dma overrun pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 1 receive half page interrupt"
+    map 
+	1 "comm port 1 rcv half pg intr pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 1 transmit dma mem read error"
+    map 
+	1 "comm port 1 transmit dma mem rd err pending"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 1 transmit page end interrupt"
+    map 
+	1 "comm port 1 transmit pg end intr pending"
+
+sitem 
+name sirm
+type register 
+class composite 
+size 4 
+label "sirm" 
+display nil 
+doc "3MIN system interrupt mask register"
+map 
+    field
+    class filler
+    size 2
+    doc "pbno and pbnc bits"
+    map nil
+    field
+    class filler
+    size 1
+    label nil
+    display nil
+    doc "scsi data ready"
+    map nil
+    field
+    class filler
+    size 1
+    label nil
+    display nil
+    doc "reserved"
+    map nil
+    field
+    class filler
+    size 1
+    label nil
+    display nil
+    doc "pswarn"
+    map nil
+    field 
+    class coded
+    size 1
+    display nil
+    doc "toy interrupt"
+    map 
+	1 "toy interrupt enabled"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "scc(0) serial interrupt enabled"
+    map 
+	1 "scc(0) serial interrupt enabled"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "scc(1) serial interrupt"
+    map 
+	1 "scc(1) serial interrupt enabled"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "ethernet interrupt"
+    map 
+	1 "ethernet interrupt enabled"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "scsi interrupt"
+    map 
+	1 "scsi interrupt from 53c94 enabled"
+    field 
+    class filler
+    size 1
+    display nil
+    doc "nrmod mfg mode jumper"
+    map nil
+    field 
+    class filler
+    size 1
+    display nil
+    doc "reserved"
+    map nil
+    field 
+    class filler
+    size 1
+    display nil
+    doc "cpu i/o write to"
+    map nil
+    field 
+    class filler
+    size 1
+    display nil
+    doc "reserved"
+    map nil
+    field 
+    class filler
+    size 1
+    display nil
+    doc "nvr mode jumper"
+    map nil 
+    field 
+    class filler
+    size 1
+    display nil
+    doc "reserved"
+    map nil
+    field 
+    class coded
+    size 1
+    display nil
+    doc "lance dma mem read err"
+    map 
+	1 "lance dma mem read err enabled"	
+    field 
+    class coded
+    size 1
+    display nil
+    doc "scsi dma mem read err"
+    map 
+	1 "scsi dma mem read err enabled"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "scsi dma overrun err"
+    map 
+	1 "scsi dma overrun error enabled"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "scsi dma interrupt"
+    map 
+	1 "scsi dma interrupt enabled"
+    field 
+    class filler
+    size 4
+    display nil
+    doc "reserved"
+    map nil
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 2 receive dma overrun enabled"
+    map 
+	1 "comm port 2 rcv dma overrun enabled"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 2 receive half page interrupt"
+    map 
+	1 "comm port 2 rcv half page intr enabled"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 2 transmit dma mem read error"
+    map 
+	1 "comm port 2 transmit dma mem read err enabled"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 2 transmit page end interrupt"
+    map 
+	1 "comm port 2 transmit page end intr enabled"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 1 receive dma overrun"
+    map 
+	1 "comm port 1 rcv dma overrun enabled"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 1 receive half page interrupt"
+    map 
+	1 "comm port 1 rcv half page intr enabled"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 1 transmit dma mem read error"
+    map 
+	1 "comm port 1 transmit dma mem read err enabled"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "comm port 1 transmit page end interrupt"
+    map 
+	1 "comm port 1 transmit page end intr enabled"
+

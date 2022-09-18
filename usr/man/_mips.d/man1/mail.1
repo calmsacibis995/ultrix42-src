@@ -1,0 +1,893 @@
+.TH mail 1
+.SH Name
+mail \- send or read mail
+.SH Syntax
+.B mail
+[\fB\-v\fR] [\fB\-i\fR] [\fB\-n\fR] [\fB\-e\fR] [\fB\-s\fI subject\fR\|] [\|\fIuser...\fR]
+.br
+.B mail
+[\fB\-v\fR] [\fB\-i\fR] [\fB\-n\fR] \fB\-f\fR [\|\fIname\fR\|]
+.br
+.B mail
+[\fB\-v\fR] [\fB\-i\fR] [\fB\-n\fR] \fB\-u\fI user\fR
+.br
+.B mail nodename::username (If DECnet is installed.)
+.SH Description 
+.NXR "mail program"
+.NXR "mail" "sending"
+.NXA "mail program" "write command"
+.NXA "mail program" "talk program"
+The
+.PN mail
+utility is an intelligent mail processing system 
+which has
+a command syntax similar to
+.PN ed .
+However, in 
+.PN mail
+lines are replaced by messages.
+.PP
+If DECnet is installed on your system, you can also send and receive
+mail from other DECnet users.  See 
+.MS mailaddr 7
+for information on DECnet addressing.
+.PP
+.I "Sending mail.\ "
+To send a message to one or more persons, 
+type
+.PN mail
+and the names of the people
+receiving your mail.  Press the RETURN
+key.  
+Note that if you use other arguments, the names of the recipients should
+always be the last element on the command line.
+For example,
+.EX
+mail \-v \-s "mail message" \fIusers\fP
+.EE
+If you do not specify a subject on the command line,
+you are prompted for a subject.
+After entering a subject, and pressing the 
+RETURN key, type your message.
+To send the message, type a period (\&.) or
+CTRL D
+at the beginning of a new line.
+.PP
+You can use tilde (\~) escape sequences to perform
+special functions when composing mail messages.  See
+the list of options for more on tilde escape sequences.
+.PP
+.I "Reading mail.\ "
+.NXR "mail" "reading"
+In normal usage
+.PN mail
+is given no arguments and checks your mail out of the
+mail directory. Then it
+prints out a one line header of each message there.
+The current message is initially the first message and is 
+numbered 1.  It
+can be displayed using the
+.PN print
+. (p)
+command.
+.PP
+The 
+.PN \-e
+option causes mail not to be printed.  Instead,
+an exit value
+is returned.  For the exit status, see RETURN VALUES.
+.NXR "mail" "printing"
+.NXR "print command (mail)"
+You can move among the messages by
+typing a plus sign (+) followed by a number to move forward
+that many messages, or a minus sign (\-) followed by a number to
+move backward that many messages.
+.PP
+.I "Disposing of mail.\ "
+.NXR "mail" "deleting"
+.NXR "mail" "undeleting"
+After reading a message you can
+delete (d)
+it or reply (r)
+to it.
+Deleted messages can be undeleted,
+however, in one of two ways:  you can use the undelete (u) command
+and the number
+of the message, or you can end the mail session with
+the exit (x) command.
+Note that if you end a session with the quit (q)
+command, you cannot retrieve 
+deleted messages.
+.PP
+.I "Specifying messages.\ "
+.NXR "mail" "specifying messages"
+Commands such as
+.PN print
+and
+.PN delete
+can be given a list of message numbers as arguments.
+Thus, the command
+.EX
+delete 1 2 
+.EE
+deletes messages 1 and 2, while 
+the command
+.EX
+delete 1\-5
+.EE
+deletes messages 1 through 5.
+The asterisk (*) addresses all messages, and the 
+dollar sign ($) addresses
+the last message.  For example, the
+.PN top
+command, which prints the first few lines of a
+message, can be used in the following manner
+to print the first few lines of all messages:
+.EX
+top *
+.EE
+.PP
+.I "Replying to or originating mail.\ "
+.NXR "mail" "replying to"
+Use the
+.PN reply
+command to
+respond to a message.
+.PP
+.I "Ending a mail processing session.\ "
+.NXR "mail" "ending a session"
+End a
+.PN mail
+session with the
+.PN quit
+(q) command.
+Unless they were deleted, messages that
+you have read go to your
+.I mbox
+file.
+Unread messages go back to the mail directory. 
+The \-f option causes
+.PN mail
+to read in the contents of your
+.I mbox
+(or the specified file)
+for processing.  When you
+.PN quit ,
+the mail utility
+writes undeleted messages back to this file.
+The \-u flag is a short way of specifying:
+.PN mail 
+.PN \-f
+.PN /usr/spool/mail/user .
+.PP
+.I "Personal and systemwide distribution lists.\ "
+.NXR "mail" "creating a distribution list"
+You can create a personal distribution list that
+directs mail to a group of people.
+Such lists can be defined by placing a line 
+similar to the following in the \&.mailrc file in 
+your home directory:
+.EX
+alias cohorts bill ozalp jkf mark kridle@ucbcory
+.EE
+.PP
+Cohorts is the name of the distribution list that
+consists of the following users:
+bill, ozalp, jkf, mark, and kridle@ucbcory.
+A list of current aliases can be displayed with the
+.PN alias
+.PN (a)
+command in
+.PN mail .
+.PP
+System wide distribution lists can be created by editing
+.PN /usr/lib/aliases .
+The syntax of system wide lists differs
+from that of personally defined aliases.
+.PP
+Personal aliases are expanded in mail you send.
+When a recipient on a personally
+defined mailing list uses the
+.PN reply
+.PN (r)
+option, the entire mailing list receives the response
+automatically.
+System wide \fIaliases\fR are not expanded when the mail is sent,
+but any reply returned to the machine will have the system-wide
+alias expanded as all mail goes through
+.PN sendmail .
+.PP
+Forwarding is also a form of aliasing.
+A 
+.PN \&.forward 
+file can be set up in a user's home directory.
+Mail for that user is then redirected to the list of addresses in
+the 
+.PN \&.forward 
+file.
+See
+.MS aliases 5
+and 
+.MS sendmail 8 
+for more information.
+.PP
+.I "Network mail (ARPA, UUCP, Berknet, DECnet)\ "
+See 
+.MS mailaddr 7
+for a description of network addresses.
+.SH Options
+.NXR "mail program" "flags"
+.TP
+\fB\-e\fR
+Causes
+.PN mail
+not to be printed.  Instead, an exit value
+is returned.  
+.TP
+\fB\-f\fR
+Causes 
+.PN mail
+to read in the contents of your
+.I mbox
+file (or another file you specify) for processing.
+.TP
+\fB\-i\fR
+Causes tty interrupt signals to be ignored. This is
+useful when using
+.PN mail
+on noisy phone lines.
+.TP
+\fB\-n\fR
+Inhibits the reading of /usr/lib/Mail.rc.
+.TP
+\fB\-s\fR
+Specifies a subject on the command line.
+Note that only the first argument after the
+\-s flag is used as a subject and that you must enclose subjects
+containing spaces in quotes.
+.TP
+\fB\-u\fR
+Specifies a short hand for expressing the following:
+.EX
+mail \-f /usr/spool/mail/user 
+.EE
+.TP
+\fB\-v\fR
+Prints the mail message.  The details of
+delivery are displayed on the user's terminal.
+.PP
+The
+following options can be set in the .mailrc
+file to alter the behavior of the
+.PN mail
+command.
+.NXR "mail program" "command list"
+.PP
+Each command is typed on a line by itself and may take arguments
+following the command word and the command abbreviation. 
+For commands that take message lists as arguments, if no message
+list is given, then the next message forward which satisfies the
+command's requirements is used.  If there are no messages forward of
+the current message, the search proceeds backwards.  If there are no
+good messages at all,
+.PN mail
+cancels the command,
+displaying the message: No applicable messages.
+.TP 12n
+.B \-
+Prints out the previous message. If given a numeric
+argument
+.IR n,
+prints
+.IR n \-th
+previous message. 
+.TP
+.B ?
+Prints a brief summary of commands.
+.TP
+.B !
+Executes the \s-2ULTRIX\s0 shell command which follows.
+.TP
+\fBalias\fR (\fBa\fR)
+.NXR "alias command (mail)"
+Prints out all currently-defined aliases, if given
+without arguments.  With one
+argument, prints out that alias.  With more than one argument, creates
+a new or changes an old alias.
+These aliases are in effect for the current mail session only.
+.TP
+\fBalternates\fR (\fBalt\fR)
+.NXR "alternates command (mail)"
+Informs
+.PN mail
+that you have several valid addresses.
+The
+.PN alternates
+command is useful if you have accounts on more than one machine.
+When you
+.PN reply
+to messages,
+.PN mail
+does not send a copy of the message to any of the addresses
+listed on the
+.I alternates
+list.  If the
+.PN alternates
+command is given with no argument, the current set of alternate
+names is displayed.
+.TP
+\fBchdir\fR (\fBch\fR)
+.NXR "chdir command (mail)"
+Changes the user's working directory to that specified.
+If no directory is given, then the
+.PN chdir
+command changes to the user's login directory.
+.TP
+\fBcopy\fR (\fBco\fR)
+.NXR "copy command (mail)"
+Takes a message list and file name and appends each message
+to the end of the file.  The
+.PN copy
+command functions in the same way as the
+.PN save 
+command, except that it does not mark the messages that you
+copy for deletion when you quit.
+.TP
+\fBdelete\fR (\fBd\fR)
+.NXR "delete command (mail)"
+Takes a list of messages as argument and marks them all as deleted.
+Deleted messages are not saved in
+.IR mbox ,
+nor are they available for most other commands.  
+.TP
+\fBdp\fR (or \fBdt\fR)
+.NXR "dp command (mail)"
+Deletes the current message and prints the next message.
+If there is no next message, 
+.PN mail
+returns a message:  at EOF.
+.TP
+\fBedit\fR (\fBe\fR)
+.NXR "edit command (mail)"
+Takes a list of messages and points the text editor at each one in
+turn.  On return from the editor, the message is read back in.
+.TP
+\fBexit\fR (\fBex\fR or \fBx\fR)
+.NXR "exit command (mail)"
+Returns to the Shell without
+modifying the user's system mailbox,
+.I mbox
+file, or edit file in
+.PN \-f .
+.TP
+\fBfile\fR (\fBfi\fR)
+.NXR "file command (mail)"
+Switches to a new mail file or folder.  If no
+arguments are given, it tells you which file you are currently reading.
+If you give it an argument, it writes out changes (such
+as deletions) you have made in the current file and reads in
+the new file. Some special conventions are recognized for
+the name. A pound sign (#) indicates the previous file, 
+a percent sign (%) indicates your systemb
+mailbox, %user indicates the user's system mailbox, an
+ampersand (&) indicates
+your \~/mbox file, and +folder indicates a file in your folder
+directory.
+.TP
+.B folders
+.NXR "folders command (mail)"
+List the names of the folders in your folder directory.
+.TP
+\fBfolder\fR (\fBfo\fR)
+.NXR "folder command (mail)"
+Switches to a new mail file or folder. The 
+.PN folder
+command functions in the same way as the 
+.PN file 
+command.
+.TP
+\fBfrom\fR (\fBf\fR)
+.NXR "from command (mail)"
+.NXA "type command (mail)" "print command (mail)"
+.NXA "copy command (mail)" "save command (mail)"
+.NXA "file command (mail)" "folder command (mail)"
+Takes a list of messages and prints their message headers
+in the order that they appear in the mail directory, not in the
+order given in the list.
+.TP
+\fBheaders\fR (\fBh\fR)
+.NXR "headers command (mail)"
+Lists the current range of headers, which is a 20 message group.  If
+a plus sign (+) is given as an argument, then the next
+message group is printed.  If
+a minus sign (\-) is given as an argument, the previous
+message group is printed.
+.TP
+.B help
+.NXR "help command (mail)"
+Prints a brief summary of commands.  Synonymous with ?.
+.TP
+\fBhold\fR (\fBho\fR, also \fBpreserve\fR)
+.NXR "hold command (mail)"
+Takes a message list and marks each
+message in it to be saved in the
+user's system mailbox instead of in
+.IR mbox.
+The 
+.PN hold
+command does not override the
+.B delete
+command.
+.TP
+.B ignore
+.NXR "ignore command (mail)"
+Adds the list of header fields named to the
+.IR "ignored list" .
+Header fields in the ignore list are not printed
+on your terminal when you print a message. This
+command is frequently used to suppress certain machine-generated
+header fields. The
+.PN type
+and
+.PN print
+commands are used to print a message in its entirety, including
+ignored fields. If
+.PN ignore
+is executed with no arguments, it lists the current set of
+ignored fields.
+.TP
+\fBmail\fR (\fBm\fR)
+.NXR "mail command (mail)"
+Takes login names and distribution group names
+as arguments and sends
+mail to those people.
+.TP
+\fBmbox\fR
+Indicates that a list of messages should be sent to 
+.I mbox
+in your home directory when you quit. This is the default
+action for messages if you did
+.I not
+set the
+.I hold
+option. 
+.TP
+\fBnext\fR (\fBn\fR, \fB+\fR or CR)
+.NXR "next command (mail)"
+ Goes to the next message in
+sequence and types it.
+With an argument list, it types the next matching message.
+.TP
+\fBpreserve\fR (\fBpre\fR)
+.NXR "preserve command (mail)"
+Takes a message list and marks each message in it to be
+saved in the user's system mailbox instead of in
+.I mbox .
+Synonymous with the
+.PN hold 
+command.
+.TP
+\fBprint\fR (\fBp\fR)
+.NXR "print command (mail)"
+Takes a message list and types out each message on the user's terminal,
+without printing any specified ignored fields.
+.TP
+\fBPrint\fR (\fBP\fR)
+.NXR "print command (mail)"
+.NXA "print command (mail)" "print command (mail)"
+.NXA "print command (mail)" "ignore command (mail)"
+Prints a message in its entirety, including specified ignored fields.
+.TP
+\fBquit\fR (\fBq\fR)
+.NXR "quit command (mail)"
+Terminates the session.  All undeleted, unsaved messages 
+are saved in the
+user's
+.I mbox
+file in his login directory; all messages marked with
+.PN hold
+or
+.PN preserve
+or that were never referenced are saved
+in his system mailbox; and all other messages are removed from his system
+mailbox.  If new mail arrives during the session, the user
+receives the message:
+You have new mail.  If given while editing a
+mailbox file with the
+.PN \-f
+flag, then the edit file is rewritten.  A return to the Shell is
+effected, unless the rewrite of the edit file fails, in which case the user
+can escape with the
+.PN exit
+command.
+.TP
+\fBreply\fR (\fBr\fR)
+.NXR "reply command (mail)"
+Takes a message list and sends mail to the sender and all
+recipients of the specified message.
+The default message must not be deleted.
+.TP
+\fBReply\fR (\fBR\fR)
+.NXR "reply command (mail)"
+Replies to originator of the message. Does not reply to other
+recipients of the original message.
+.TP
+.B respond
+.NXR "respond command (mail)"
+Takes a message list and sends mail to the sender and all
+recipients of the specified message.  Synonymous with
+.PN reply .
+.TP
+\fBsave\fR (\fBs\fR)
+.NXR "save command (mail)"
+.NXA "preserve command (mail)" "hold command (mail)"
+.NXA "respond command (mail)" "reply command (mail)"
+Takes a message list and a file name and appends each message 
+to the end of the file. 
+The messages are saved in the order in which they appear in the
+mail directory, not in the order given in the message list.
+The filename, which is enclosed in quotes, followed by the line
+count and character count, is displayed on the user's terminal.  
+.TP
+\fBset\fR (\fBse\fR)
+.NXR "set command (mail)"
+Prints all variable values when no arguments
+are given.  Otherwise, the
+.PN set 
+command sets the specified
+option.  Arguments either take the form
+.EX
+option=value
+.EE
+or
+.EX
+option
+.EE
+.TP
+\fBshell\fR (\fBsh\fR)
+.NXR "shell command (mail)"
+Invokes an interactive version of the shell.
+.TP
+.B size
+.NXR "size command (mail)"
+Takes a message list and prints out the size (in characters) of each
+message.
+The size of the messages are printed in the order that they
+appear in the mail directory, not in the order given in the list.
+.TP
+\fBsource\fR (\fBso\fR)
+.NXR "source command (mail)"
+Reads
+.PN mail
+commands from a file.
+.TP
+.B top
+.NXR "top command (mail)"
+Takes a message list and prints the top few lines of each.  The number of
+lines printed is controlled by the variable
+.PN toplines
+and defaults to five.
+.TP
+\fBtype\fR (\fBt\fR)
+.NXR "type command (mail)" 
+Takes a message list and types out each message on the
+user's terminal, without printing any specified ignored fields.
+Synonymous with
+.PN print .
+.TP
+\fBtype\fR (\fBT\fR)
+.NXR "type command (mail)"
+Prints a message in its entirety, including
+specified ignored fields.  Synonymous with
+.PN print .
+.TP
+.B unalias
+.NXR "unalias command (mail)"
+Takes a list of names defined by
+.PN alias
+commands and cancels the list of users.  The group names
+no longer have any significance.
+.TP
+\fBundelete\fR (\fBu\fR)
+.NXR "undelete command (mail)"
+Takes a message list and marks each one as
+.I not
+being deleted.
+.TP
+.B unset
+.NXR "unset command (mail)"
+Takes a list of option names and discards their remembered values;
+the inverse of
+.PN set .
+.TP
+\fBvisual\fR (\fBv\fR)
+.NXR "visual command (mail)"
+Takes a message list and invokes the display editor on each message.
+.TP
+\fBwrite\fR (\fBw\fR)
+.NXR "write command (mail)"
+Takes a message list and a file name and appends each
+message to the end of the file.  Synonymous with
+.PN save .
+.TP
+\fBxit\fR (\fBx\fR)
+.NXR "xit command (mail)"
+Returns to the Shell without modifying the user's
+system mailbox,
+.I mbox ,
+or edit file in 
+.PN \-f .
+Synonymous with
+.PN exit .
+.TP
+.B z
+.NXR "z command (mail)"
+Presents message headers in windowfulls as described under the
+.PN headers
+command.  You can move forward to the next window with the
+.B z
+command. Also, you can move to the previous window by using
+.BR z\- .
+.NXA "alias command (mail)" "unalias command (mail)"
+.NXA "delete command (mail)" "undelete command (mail)"
+.NXA "set command (mail)" "unset command (mail)"
+.NXA "write command (mail)" "save command (mail)"
+.NXA "xit command (mail)" "exit command (mail)"
+.PP
+The following is a summary of the tilde escape functions that
+you can use when composing mail messages.  Note that you can only
+invoke these
+functions from within the body of a mail message and that
+the sequences are only executed if they are placed at the
+beginning of lines.
+.NXR "mail program" "tilde escapes"
+.TP 12n
+.BR ~! command
+Executes the indicated shell command, then returns to the message.
+.TP
+\fB~?  		
+Prints a brief summary of tilde commands.
+.TP
+\fB~:
+Executes the mail commands. (For example, the command 
+.PN ~:10 
+prints out message number 10 while
+.PN ~:-
+prints out the previous message. 		
+.TP
+\fB~c\fR name ...
+Adds the given names to the list of carbon copy recipients.
+.TP
+.B ~d
+Reads the file named dead.letter from your home directory into the message.
+.TP
+.B ~e
+Invokes the text editor on the message you are typing.  After the
+editing session is finished, you may continue appending text to the
+message.
+.TP
+\fB~f\fR messages
+Reads the named messages into the message being sent.
+If no messages are specified, reads in the current message.
+.TP
+.B ~h
+Edits the message header fields by typing each one in turn and allowing
+the user to append text to the end or to modify the field by using the
+current terminal erase and kill characters.
+.TP
+\fB~m\fR messages
+Reads the named messages into the message being sent, shifted one tab 
+space to the right.  If no messages are specified, reads the current message.
+.TP
+.B ~p
+Prints the message on your terminal, prefaced by the message header
+fields.
+.TP
+.B ~q
+Aborts the message being sent, copying the message to
+dead.letter
+in your home directory if the
+.B save
+option is set.
+.TP
+\fB~r\fR filename
+Reads the named file into the message.
+.TP
+\fB~s\fR string
+Causes the named string to become the current subject field.
+.TP
+\fB~t\fR name ...
+Adds the given names to the direct recipient list.
+.TP
+.B ~v
+Invokes an alternate editor (defined by the VISUAL option) on the
+message.  Usually, the alternate editor is a
+screen editor.  After you quit the editor, you can resume appending
+text to the end of your message.
+.TP
+\fB~w\fR filename
+Writes the message onto the named file.
+.TP
+\fB~\||\|\fRcommand
+Pipes the message through the command as a filter.  If the command gives
+no output or terminates abnormally, retains the original text of the
+message.  The command
+fmt(1)
+is often used as
+.I command
+to rejustify the message.
+.TP
+.BR ~~ string
+Inserts the string of text in the message prefaced by a single 
+tilde (~).  If
+you have changed the escape character, then you should double
+that character in order to send it.
+.PP
+Options are controlled via the
+.PN set
+and
+.PN unset
+commands.  Options may be either binary or string.  If
+they are binary you should 
+see whether or not they are set; if they are string
+it is the actual value that is of interest.
+.PP
+The binary options include the following:
+.NXR "set command (mail)" "options"
+.TP 15n
+.B append
+Causes messages saved in
+.I mbox
+to be appended rather than prepended.
+(This is set in
+/usr/lib/Mail.rc
+on version 7 systems.)
+.TP
+.B ask
+Causes
+.I mail
+to prompt you for the subject of each message you send.  If
+you simply respond with a new line, no subject field is sent.
+.TP
+.B askcc
+Asks you at the end of each message whether you want to send a
+carbon copy of the
+message to additional recipients.  Responding with a new
+line indicates your
+satisfaction with the current list.
+.TP
+.B autoprint
+Causes the
+.PN delete
+command to behave like
+.PN dp
+\- thus, after deleting a message, the next one is typed
+automatically.
+.TP
+.B debug
+Causes
+.PN mail
+to output information useful for debugging
+.PN mail .
+Setting the binary option
+.I debug
+is the same as specifying
+.PN \-d
+on the command line.
+.TP
+.B dot
+Causes
+.PN mail
+to interpret a period alone on a line as the terminator
+of a message you are sending.
+.TP
+.B hold
+Holds messages in the system mailbox
+by default.
+.TP
+.B ignore
+Causes interrupt signals from your terminal to be ignored and echoed as
+at signs (@).
+.TP
+.B ignoreeof
+Causes
+.PN mail
+to refuse to accept a control-d as the end of a message.
+.TP
+.B msgprompt
+Prompts you for the message text and
+indicates how to terminate the message.
+.TP
+.B metoo
+Includes the sender in the distribution group receiving
+a mail message.
+.TP
+.B nosave
+Prevents 
+.PN mail
+from copying aborted messages into the dead.letter file
+in your home directory.
+.TP
+.B quiet
+Suppresses the printing of the version when first invoked.
+.TP
+.B verbose
+Displays the details of each message's delivery
+on the user's terminal.  Setting the
+.PN verbose
+option is the same as typing
+.B \-v
+on the command line.
+.PP
+The string options include the following:
+.TP 15n
+EDITOR
+Pathname of the text editor to use in the
+.PN edit
+command and ~e escape.  If not defined, then a default editor is used.
+.TP
+SHELL
+Pathname of the shell to use in the
+.B !
+command and the ~! escape.  A default shell is used if this option is
+not defined.
+.TP
+VISUAL
+Pathname of the text editor to use in the
+.PN visual
+command and ~v escape.
+.TP
+.B crt
+Threshold to determine how long a message must
+be before
+.PN more
+is used to read it.
+.TP
+.B escape
+The first character of this option gives the character to
+use in the place of tilde (~) to denote escapes, if defined.
+.TP
+.B folder
+Directory name to use for storing folders of
+messages. If this name begins with a backslash (/)
+.PN mail
+considers it an absolute pathname; otherwise, the
+folder directory is found relative to your home directory.
+.TP
+.B record
+Pathname of the file used to record all outgoing
+mail.  If it is not defined, then outgoing mail is not so saved.
+.TP
+.B toplines
+The number of lines of a message that is printed out
+with the
+.B top
+command; normally, the first five lines are printed.
+.SH Return Values
+If mail is invoked with the \fB\-e\fR option, the following exit values are
+returned: 
+.nf
+0	the user has mail
+1	the user has no mail
+.fi
+.SH Files
+.if n .ta 2.5i
+.if t .ta 1.8i
+/usr/spool/mail/* 	mail directory	
+.br
+~/mbox	your read mail
+.br
+~/.mailrc	file giving initial mail commands
+.br
+/tmp/R#	temporary for editor escape
+.br
+/usr/lib/Mail.help*	help files
+.br
+/usr/lib/Mail.rc	system initialization file
+.br
+Message*	temporary for editing messages
+.SH See Also
+binmail(1), fmt(1), newaliases(1), aliases(5),
+mailaddr(7), sendmail(8)
+.NXR "mail program"
+.NXR "mail" "sending"

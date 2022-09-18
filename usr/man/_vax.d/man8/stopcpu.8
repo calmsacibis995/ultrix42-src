@@ -1,0 +1,17 @@
+.TH stopcpu 8 
+.SH Name
+stopcpu \- stop one or all CPUs
+.SH Syntax
+.B /etc/stopcpu 
+[\fIcpunumber\fP]
+.SH Description
+The 
+.PN stopcpu
+program is used to stop the non-boot CPUs in a system.
+.NXR "SMP" "stopcpu"
+If no argument is used, 
+.PN stopcpu 
+will try to stop all the non-boot
+CPUs in the system. Otherwise, it stops the specified CPU.
+.SH See Also
+startcpu (2), stopcpu (2), startcpu (8) 

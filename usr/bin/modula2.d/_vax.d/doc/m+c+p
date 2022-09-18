@@ -1,0 +1,208 @@
+.\"#@(#)m+c+p	4.1	Ultrix	7/17/90
+.if n .ds lq ""
+.if n .ds rq ""
+.if t .ds lq ``
+.if t .ds rq ''
+.po 1i
+.nr PO 1i
+.DA "May 15, 1984"
+.TL
+Using Modula-2 with Unix C and Berkeley Pascal
+.AU
+Michael L. Powell
+
+\*(DY
+.NH 1
+MODULA-2 CALLING SEQUENCE
+.PP
+The Modula-2 calling sequence is
+.I compatible 
+with the Unix C and Berkeley Pascal (hereafter called Pascal) calling sequences.
+Although it is not
+.I identical
+to C and Pascal
+(in fact, C and Pascal are not the same!),
+it is possible to call procedures, pass parameters, and share variables.
+.PP
+The major difference between the calling sequences relates to the passing
+of multiword value parameters.
+Both Modula-2 and Pascal VAR parameters are passed by reference;
+since C doesn't have VAR parameters, the program must specify the address of
+the variable,
+which works out to be the same thing.
+All three languages pass single-word value parameters by pushing the values onto
+the stack.
+Double-precision floating point value parameters are passed by pushing
+two words onto the stack.
+(In Pascal, reals are double-precision; in C, both floats and doubles are
+passed as doubles;
+Modula-2 reals are not passed as double-precision automatically; therefore,
+for communication between Modula2 and Pascal or C, use longreals).
+.PP
+In Pascal, multiword value parameters (arrays, records, sets, etc.) are
+all pushed onto the stack.
+In C, although struct parameters are passed by pushing the value onto the stack,
+array parameters are passed by pushing the address onto the stack.
+In Modula-2, multiword parameters (except longreals) are passed by reference
+(the called routine makes a copy of the parameter if necessary).
+Pascal routines called by Modula-2 should thus declare multiword parameters
+to be VAR parameters.
+In the (unlikely) case that the Pascal routine wishes to change a multiword
+parameter that Modula-2 thinks is a value parameter,
+the Pascal routine must make a copy of the parameter in a local variable.
+C routines called by Modula-2 should always expect pointers, as they usually
+do anyhow.
+A Modula-2 routine called by Pascal should be declared in Pascal
+to accept VAR parameters for multiword values.
+.PP
+A Modula-2 open array parameter is passed as two parameters:
+a pointer to the start of the array followed by the number of elements in
+the array.
+Two special cases of interest are open arrays of byte and word.
+In these cases, the number of elements is the size of the variable,
+which may be of any type,
+in bytes and words (rounded up), respectively.
+For example,
+it would be possible to define the Unix read system call to have two parameters:
+the first, a file number, and the second, an open array of bytes for the buffer.
+.PP
+To access existing procedures that expect pointers to arrays but no counts,
+the @nocount attribute may be placed in the open array declaration.
+This causes the parameter to be just a pointer to the array. 
+E.g.,
+.DS
+    procedure open(name : array @nocount of char; mode : cardinal);
+.DE
+passes two parameters to the C open routine.
+.NH 1
+DATA REPRESENTATION
+.PP
+Rather than adopt the confusing and inconsistent allocation strategies
+used by C and Pascal,
+Modula-2 currently has a simple-minded way of allocating data.
+Storage is allocated in bytes (for characters and booleans) or
+32-bit words (for everything else).
+Scalars are aligned on a multiple of their size.
+Records and arrays are aligned according to the alignment requirements of
+their fields and elements.
+.PP
+The size of the storage that variables or fields of a particular data type 
+occupy may be specified by the @size attribute. E.g.,
+.DS
+type
+    Short = @size 16 integer;
+.DE
+defines a 16-bit integer type.
+The default alignment is the size rounded up to a power of two bits (but never
+more than a 32 bits).
+The alignment, too, may be overridden by specifying the @align attribute, e.g.,
+.DS
+type
+    RegNum = @align 1 @size 3 [0..7];
+.DE
+allows a RegNum to start on any bit boundary.
+.NH 1
+POINTERS
+.PP
+The Modula-2 runtime allocates storage from a heap using its own
+allocation and deallocation routines.
+Generally, these are different from (and much better than!) the Pascal
+new and dispose routines or the C malloc and free routines.
+However, it is possible to generate and use pointers that are compatible
+with other languages.
+.PP
+By default, storage allocated from the Modula-2 heap has a check word stored
+at the beginning.
+This makes the validity check for pointers stronger, since storage that has
+been freed will fail the test.
+Compiling a module without checking will prevent the word from being checked,
+but it will still be allocated and initialized,
+since other modules may still perform checking.
+This checking (and the extra word of storage) can be eliminated by declaring
+a pointer as follows:
+.DS
+UncheckedPtr = pointer @nocheck to Rec;
+.DE
+.LP
+Note that this form of declaration should be used for pointers generated by
+the adr function.
+.PP
+Pointers may be allocated and deallocated using the Pascal (NEW/DISPOSE)
+or C (malloc/mfree)
+storage allocation routines
+by declaring them as follows:
+.DS
+PascalPtr = pointer @pascal to Rec;
+CPtr = pointer @c to Rec;
+.DE
+.LP
+@pascal pointers have the Berkeley Pascal validity check applied to them;
+@c pointers are not checked.
+.NH 1
+NAMES
+.PP
+The external names of Modula-2 routines and statically allocated variables are
+generated by qualifying the local name with the names of the enclosing modules
+and procedures.
+A procedure called NextToken in a module parse will be called _parse_NextToken.
+The leading _ is appended to names by both the C and Pascal compilers,
+so C or Pascal would call this routine parse_NextToken.
+(The Berkeley Pascal compiler can easily be modified to accept _ in the middle
+of variable names by adding "|| c == '_'" to the identifier while loop in
+yylex.c.)
+.PP
+Each level of nesting inside a procedure or module adds qualifiers.
+E.g., the procedure SkipBlanks nested inside NextToken is called
+_parse_NextToken_SkipBlanks.
+However, because of differences in the displays, it is unlikely that you can
+successfully call nested procedures between languages.
+.PP
+Although this scheme works well for programs that use modules, current Pascal
+and C programs expect to have global, unqualified names.
+To make a procedure or variable have a global name (from the point of view
+of C or Pascal programs),
+add the @external attribute before the name in the procedure or variable
+declaration.
+E.g.,
+.DS
+var
+    @external errno : integer;
+procedure @external perror(msg : CString);
+.DE
+.PP
+It is possible to create modules with Modula-2 definitions
+that are implemented in some other language.
+The unix library module is an example.
+Notice that errno is specified @external, because its name is unqualified,
+whereas argc is not, since runtime.c refers to it as unix_argc.
+When the implementation of a module is in some other language, it is still
+a good idea to have a dummy implementation module for Modula-2.
+This provides an object module to contain the intermodule checking information
+from the definition file.
+.PP
+Each module must have an initialization routine.
+The initialization routine for module X is called X__init
+(X, two underscores, init), and has no parameters.
+These routines are called when the program starts up, and may be called more
+than once (if several modules refer the module).
+The Modula-2 compiler generates code for its initialization routines to execute
+the body only once, even though it is called more than once.
+If you implement an initialization routine in C or Pascal, you
+will need to do the same thing.
+.PP
+The initialization routine for a program module
+(one that is neither a definition module nor
+an implementation module)
+is the main program.
+It is always called main, no matter what the module is called,
+so Unix can execute it.
+.NH 1
+CAVEAT PROGRAMMER
+.PP
+Communicating between languages can be difficult.
+Although we have taken pains to try to make this implementation of Modula-2
+compatible with C and Pascal, no guarantees are expressed or implied.
+If you must combine software in different languages, do it as cleanly as
+possible and it will probably work.
+Problems in this area will not normally be considered bugs in the Modula-2
+compiler.

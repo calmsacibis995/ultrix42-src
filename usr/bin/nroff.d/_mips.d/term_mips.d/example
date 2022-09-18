@@ -1,0 +1,512 @@
+# Nroff terminal driver table example (tab300) with explanations
+# Copyright 1986, MIPS Computer Systems
+#
+# $Header: example.txt,v 1.1 86/06/09 14:51:25 dce Exp $
+# 
+# All lines beginning with '#' are comments, and are ignored. All other
+# lines have meaning, so do not put blank lines unless the field is to
+# be blank.
+#
+# First, there are the tty initialization numbers. The first number gives
+# the sgttyb structure sg_flags bits that are to be turned on. The second
+# number is those that are to be turned off. These numbers can be system
+# dependent, so read and understand the manual page for tty(4) before
+# setting them. 
+#
+# In this example, there are no bits to be set, and the bits to be turned
+# off are: 1111111100010000 (65296). This turns off raw mode and tty37
+# tab mode.
+0
+65296
+#
+# Next come the size parameters. These are based on INCH being 240 (240
+# pixels/inch):
+#
+#	Horizontal spacing (INCH/60)
+4
+#	Vertical spacing (INCH/48)
+5
+#	Newline size (INCH/6)
+40
+#	Height of character (INCH/10)
+24
+#	Em size (INCH/10)
+24
+#	Halfline size (INCH/12)
+20
+#	Resolution adjustment size (INCH/10)
+24
+#
+# Next, the control strings. A string may consist of characters, including
+# the following special sequences:
+#
+#	\n	Newline
+#	\r	Carriage return
+#	\t	Tab
+#	\f	Formfeed
+#	\b	Backspace
+#	\ddd	'ddd' is a 3-digit 0-padded octal number representing the
+#		ASCII value of the desired character
+#
+#	Initialization string
+\007
+#	Reset string
+\007
+#	String to put a newline
+\015\n
+#	Reverse half linefeed
+\006\013\013\013\013\006
+#	Half linefeed
+\006\012\012\012\012\006
+#	Reverse linefeed
+\013
+#	Bold mode on
+
+#	Bold mode off
+
+#	Plot mode on
+\006
+#	Plot mode off
+\033\006
+#	Move up one line
+\013
+#	Move down one line
+\n
+#	Move right one space
+\040
+#	Move left one space
+\b
+#
+# Finally, we have the code table. Each code table entry consists of a
+# control number and the characters to be printed. A control number is
+# an 8-bit number, the least significant of which give the width of the
+# printed character, and the most significant of which is set if the
+# character can be underlined. For example, \202 says that the character
+# is two spaces wide and is underlined, and \001 is for a one space wide
+# character that is not underlined.
+#
+# The strings in the code table may contain the same special sequences
+# as the control strings.
+#
+#	space
+\001\040
+#	!
+\001!
+#	"
+\001\"
+#	#
+\001#
+#	$
+\001$
+#	%
+\001%
+#	&
+\001&
+#	' close
+\001'
+#	(
+\001(
+#	)
+\001)
+#	*
+\001*
+#	+
+\001+
+#	,
+\001,
+#	- hyphen
+\001-
+#	.
+\001.
+#	/
+\001/
+#	0
+\2010
+#	1
+\2011
+#	2
+\2012
+#	3
+\2013
+#	4
+\2014
+#	5
+\2015
+#	6
+\2016
+#	7
+\2017
+#	8
+\2018
+#	9
+\2019
+#	:
+\001:
+#	;
+\001;
+#	<
+\001<
+#	=
+\001=
+#	>
+\001>
+#	?
+\001?
+#	@
+\001@
+#	A
+\201A
+#	B
+\201B
+#	C
+\201C
+#	D
+\201D
+#	E
+\201E
+#	F
+\201F
+#	G
+\201G
+#	H
+\201H
+#	I
+\201I
+#	J
+\201J
+#	K
+\201K
+#	L
+\201L
+#	M
+\201M
+#	N
+\201N
+#	O
+\201O
+#	P
+\201P
+#	Q
+\201Q
+#	R
+\201R
+#	S
+\201S
+#	T
+\201T
+#	U
+\201U
+#	V
+\201V
+#	W
+\201W
+#	X
+\201X
+#	Y
+\201Y
+#	Z
+\201Z
+#	[
+\001[
+#	\
+\001\\
+#	]
+\001]
+#	^
+\001^
+#	_ dash
+\001_
+#	` open
+\001`
+#	a
+\201a
+#	b
+\201b
+#	c
+\201c
+#	d
+\201d
+#	e
+\201e
+#	f
+\201f
+#	g
+\201g
+#	h
+\201h
+#	i
+\201i
+#	j
+\201j
+#	k
+\201k
+#	l
+\201l
+#	m
+\201m
+#	n
+\201n
+#	o
+\201o
+#	p
+\201p
+#	q
+\201q
+#	r
+\201r
+#	s
+\201s
+#	t
+\201t
+#	u
+\201u
+#	v
+\201v
+#	w
+\201w
+#	x
+\201x
+#	y
+\201y
+#	z
+\201z
+#	{
+\001{
+#	|
+\001|
+#	}
+\001}
+#	~
+\001~
+#	narrow sp
+\000\0
+#	hyphen
+\001-
+#	bullet
+\001o\b+
+#	square
+\002[]
+#	3/4 em
+\001-
+#	rule
+\001_
+#	1/4
+\0031/4
+#	1/2
+\0031/2
+#	3/4
+\0033/4
+#	minus
+\001-
+#	fi
+\202fi
+#	fl
+\202fl
+#	ff
+\202ff
+#	ffi
+\203ffi
+#	ffl
+\203ffl
+#	degree
+\001\344o\304
+#	dagger
+\001|\b-
+#	 section
+\001l\bo
+#	foot mark
+\001'
+#	acute accent
+\001'
+#	grave accent
+\001`
+#	underrule
+\001_
+#	slash (longer)
+\001/
+#	half narrow space
+\000\0
+#	unpaddable space
+\001 
+#	alpha
+\001\241c\202(\241
+#	beta
+\001\200B\242\302|\202\342
+#	gamma
+\001\200)\201/\241
+#	delta
+\001\200o\342<\302
+#	epsilon
+\001<\b-
+#	zeta
+\001\200c\201\301,\241\343<\302
+#	eta
+\001\200n\202\302|\242\342
+#	theta
+\001O\b-
+#	iota
+\001i
+#	kappa
+\001k
+#	lambda
+\001\200\\\304\241'\301\241'\345\202
+#	mu
+\001\200u\242,\202
+#	nu
+\001\241(\203/\242
+#	xi
+\001\200c\201\301,\241\343c\241\301`\201\301
+#	omicron
+\001o
+#	pi
+\001\341-\303\"\301\"\343
+#	rho
+\001\200o\242\302|\342\202
+#	sigma
+\001\200o\301\202~\341\242
+#	tau
+\001\200t\301\202~\243~\201\341
+#	upsilon
+\001v
+#	phi
+\001o\b/
+#	chi
+\001x
+#	psi
+\001\200/-\302\202'\244'\202\342
+#	omega
+\001\241u\203u\242
+#	Gamma
+\001\242|\202\343-\303\202`\242
+#	Delta
+\001\242/\303-\204-\343\\\242
+#	Theta
+\001O\b=
+#	Lambda
+\001\242/\204\\\242
+#	Xi
+\001\\b/
+#	Pi
+\001\242[]\204[]\242\343-\303
+#	Sigma
+\001\200>\302-\345-\303
+#	
+\000\0
+#	Upsilon
+\001Y
+#	Phi
+\001o\b[\b]
+#	Psi
+\001\200[]-\302\202'\244`\202\342
+#	Omega
+\001\200O\302\241-\202-\241\342
+#	square root
+\000\0
+#	terminal sigma
+\000\0
+#	root en
+\000\0
+#	>=
+\001>\b_
+#	<=
+\001<\b_
+#	identically equal
+\001=\b_
+#	equation minus
+\001-
+#	approx =
+\001=\b~
+#	approximates
+\000\0
+#	not equal
+\001=\b/
+#	right arrow
+\002->
+#	left arrow
+\002<-
+#	up arrow
+\001|\b^
+#	down arrow
+\000\0
+#	equation equal
+\001=
+#	multiply
+\001x
+#	divide
+\001/
+#	plus-minus
+\001+\b_
+#	cup (union)
+\001U
+#	cap (intersection)
+\000\0
+#	subset of
+\000\0
+#	superset of
+\000\0
+#	improper subset
+\000\0
+#	 improper superset
+\000\0
+#	infinity
+\002oo
+#	partial derivative
+\001\200o\201\301`\241\341`\241\341`\201\301
+#	gradient
+\001\242\\\343-\204-\303/\242
+#	not
+\001\200-\202\341,\301\242
+#	integral sign
+\001\200|'\202`\243\306'\241`\202\346
+#	proportional to
+\000\0
+#	empty set
+\000\0
+#	member of
+\000\0
+#	equation plus
+\001+
+#	registered
+\001r\bO
+#	copyright
+\001c\bO
+#	box rule 
+\001|
+#	cent sign
+\001c\b/
+#	dbl dagger
+\001|\b=
+#	right hand
+\002=>
+#	left hand
+\002<=
+#	math * 
+\001*
+#	bell system sign
+\000\0
+#	or (was star)
+\001|
+#	circle
+\001O
+#	left top (of big curly)
+\001|
+#	left bottom
+\001|
+#	right top
+\001|
+#	right bot
+\001|
+#	left center of big curly bracket
+\001|
+#	right center of big curly bracket
+\001|
+#	bold vertical
+\001|
+#	left floor (left bot of big sq bract)
+\001|
+#	right floor (rb of ")
+\001|
+#	left ceiling (lt of ")
+\001|
+#	right ceiling (rt of ")
+\001|

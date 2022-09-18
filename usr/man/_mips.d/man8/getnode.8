@@ -1,0 +1,64 @@
+.\" SCCSID: @(#)getnode.8	8.1	9/11/90
+.TH getnode 8 
+.SH Name
+getnode \- display one or more entries from the nodes database
+.SH Syntax
+.B /etc/getnode 
+[ 
+.I node... 
+]
+.SH Description
+.NXR "getnode command"
+.NXR "node" "displaying data base entry"
+For each given 
+.I node
+argument, 
+.PN getnode 
+displays the corresponding node entry (or entries)
+from the nodes database.
+The nodes database is the one used by DECnet.
+If you do not specify any 
+.I node 
+argument(s), all of the entries in the nodes database are displayed.
+.PP
+The
+.I node 
+is either the node address or 
+the node name for each node entry that you want to display.  
+(Note that you 
+can specify more than one 
+.I node 
+argument in a single command.)
+.PP
+A node address is a decimal integer in the range of 1 to 1023 for 
+single area networks, or has the format
+.I a.n 
+for multiarea networks, where 
+.I a
+is the network area number (a decimal integer in the range of 2 to 63) 
+and 
+.I n
+is the node number (a decimal integer in the range of 1 to 
+1023).  
+.PP
+A node name can be from 1 to 6 
+alphanumeric characters, including at least 1 alphabetic character.
+.SH Examples
+.NXR(e) "node" "displaying data base entry"
+.EX
+# /etc/getnode 44.70 mynode <RET>
+.EE
+This command displays the entries in the nodes database
+for nodes 44.70 and mynode.
+.EX
+# /etc/getnode <RET>
+.EE
+This command displays all of the entries in the nodes database. 
+.EX
+# /etc/getnode lttwi <RET>
+.EE
+This command displays the entry in the nodes database for node lttwi.
+.SH See Also
+addnode(8), ccr(8), load(8), mop_mom(8), remnode(8), trigger(8)
+.br
+.I "Guide to Ethernet Communication Servers"

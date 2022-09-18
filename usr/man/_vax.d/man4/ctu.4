@@ -1,0 +1,98 @@
+.\" SCCSID: @(#)ctu.4	8.1	9/11/90
+.\" SCCSID: @(#)ctu.4	8.1	9/11/90
+.TH ctu 4 VAX
+.SH Name
+ctu \- TU58 console interface
+.SH Syntax
+.B "options MRSP"
+(for VAX-11/750's with an MRSP prom)
+.SH Description
+.NXR "ctu keyword"
+.NXR "TU58 console interface"
+Prior to Version 2.0, this device was referenced using
+.PN tu(4) .
+.PP
+The
+.PN ctu
+interface provides access to the VAX-11/730 (11/725) 
+and VAX-11/750 TU58 console cassette drive.
+.PP
+The interface supports only block I/O to the TU58 cassettes.
+The devices are normally manipulated with the
+.MS arff 8v
+program, using the 
+.PN f 
+and 
+.PN m
+options.
+.PP
+The device driver is automatically included when a
+system is configured to run on a VAX-11/730 (11/725) or VAX-11/750.
+.PP
+The TU58 on a VAX-11/750 uses the Radial Serial Protocol (RSP)
+to communicate with the CPU over a serial line.  This
+protocol is inherently unreliable as it has no flow
+control measures built in.  
+.NXR "RSP" "VAX-11/750 and"
+.NXS "Radial Serial Protocol" "RSP"
+On a VAX-11/730 (11/725), the Modified
+Radial Serial Protocol is used.  This protocol incorporates
+flow control measures that ensure reliable data transfer
+between the CPU and the device.  Certain VAX-11/750s have
+been modified to use the MRSP prom used in the VAX-11/730 (11/725).
+To reliably use the console TU58 on an VAX-11/750 under ULTRIX,
+the MRSP prom is required.  For those VAX-11/750s without
+an MRSP prom, an unreliable but often
+usable interface has been developed.
+This interface uses an assembly language ``pseudo-dma'' routine
+to minimize the receiver interrupt service latency.
+To include this code in
+the system, the configuration must not specify the
+system will run on a VAX-11/730 (11/725) or use an MRSP prom.
+This unfortunately makes it impossible to configure a
+single system that will properly handle TU58s on both a VAX-11/750
+and an VAX-11/730 (11/725) (unless both machines have MRSP proms).
+.SH Restrictions
+Frequent data overruns can occur if the VAX-11/750 TU58 is used
+while in multiuser mode. The interface continues to function
+and errors are handled, but transfer times may be lengthened
+considerably.
+.SH Diagnostics
+.B "tu%d: no bp, active %d" 
+.br
+A transmission complete interrupt was received with no outstanding
+I/O request.  This indicates a hardware problem.
+.PP
+.B "tu%d protocol error, state=%s, op=%x, cnt=%d, block=%d"
+.br
+The driver entered an illegal state.  The information printed
+indicates the illegal state, operation currently being executed,
+the I/O count, and the block number on the cassette.
+.PP
+.B "tu%d receive state error, state=%s, byte=%x"
+.br
+The driver entered an illegal state in the receiver finite
+state machine.	The state is shown along with the control
+byte of the received packet.
+.PP
+.B "tu%d: read stalled"
+.br
+A timer watching the controller detected no interrupt for
+an extended period while an operation was outstanding.
+This usually indicates that one or more receiver interrupts
+were lost and the transfer is restarted (VAX-11/750 only).
+.PP
+.B "tu%d: hard error bn%d, pk_mod %o"
+.br
+The device returned a status code indicating a hard error. The
+actual error code is shown in octal. No retries are attempted
+by the driver.
+.SH Files
+.TP 15
+.PN /dev/tu0
+
+.TP
+.PN /dev/tu1
+(only on a VAX-11/730 (11/725))
+.SH See Also
+MAKEDEV(8)

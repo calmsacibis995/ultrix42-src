@@ -1,0 +1,71 @@
+.TH wnoutrefresh 3cur 
+.SH Name
+wnoutrefresh, doupdate \- do efficient refresh
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int wnoutrefresh(win)
+.br
+.B
+WINDOW \(**win;
+.PP
+.B
+int doupdate(\|)
+.SH Description
+.NXR "wnoutrefresh subroutine"
+.NXR "doupdate subroutine"
+.NXA "wrefresh subroutine" "wnoutrefresh subroutine"
+The
+.PN wnoutrefresh
+routine
+updates screens more efficiently than using the
+.PN wrefresh 
+routine by itself.
+The 
+.PN wnoutrefresh
+routine
+copies the named window to a data structure referred to as
+the virtual 
+screen (stdscr).
+The virtual screen contains what a program intends to display
+on the physical terminal screen.
+The routine
+.PN doupdate 
+compares the virtual screen to the physical screen and then does the actual update.
+These two routines allow multiple updates with more efficiency than 
+.PN wrefresh .
+.PP
+The routine 
+.PN wrefresh 
+works by calling 
+.PN wnoutrefresh ,
+and then calling 
+.PN doupdate .
+If a programmer wants to output several windows at once, 
+a series of calls to 
+.PN wrefresh 
+will result in alternating calls to 
+.PN wnoutrefresh
+and 
+.PN doupdate ,
+causing several bursts of output to the screen.
+If 
+.PN wnoutrefresh
+is called first for each window, 
+.PN doupdate 
+only needs to be called 
+once, resulting in only one burst of output.
+This usually results in fewer total
+characters being transmitted and less CPU time used.
+.SH Return Values
+The
+.PN doupdate
+and
+.PN wnoutrefresh
+functions return OK on success and ERR on error.
+.SH See Also
+wrefresh(3cur)

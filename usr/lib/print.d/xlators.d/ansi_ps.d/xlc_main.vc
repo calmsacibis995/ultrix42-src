@@ -1,0 +1,42 @@
+/* @(#)xlc_main.vc	4.1      ULTRIX 7/2/90 */
+
+/*  Version 2.00   4/ 3/89 13:58:00.0000  */
+/* makehf /vc /cv /setup=portab.h,capdl.def xlc_main.def xlc_main.vc  */
+
+/*
+ * Modifications:-	NOTE this file should be program generated!!
+ *
+ * 13 Nov 89	Adrian Thoms
+ *	Fixed size of version string, added terminating 0 byte
+ */
+
+
+
+
+NOSHARE PB resource_table_ptr;
+NOSHARE BYTE resource_table_entries;
+NOSHARE BYTE resource_type_length;
+NOSHARE UBYTE resource_type[32];
+NOSHARE BYTE resource_name_length;
+NOSHARE UBYTE resource_name[255];
+NOSHARE BYTE resource_vers_num_length;
+NOSHARE UBYTE resource_vers_num[32];
+CONST UBYTE ansi_resource_type[9] =  { 'p','r','o','l','o','g','u','e',0 } 
+;
+CONST UBYTE ansi_resource_name[18] =  { 'l','p','s','_','a','n','s','i','_','p','r','o','l','o','g','u','e',0 } 
+;
+CONST UBYTE ansi_resource_vers_num[8] =  { 'V','3','.','1','-','5','7',0 } 
+;
+
+/* ** WARNING at [}] File xlc_main.def Line 101
+ * Encountered } in type_decl
+ */
+
+/*  ** WARNING File xlc_main.def Line 101 -
+ *  Skipping to next semicolon
+ */
+
+
+/*  ** WARNING File xlc_main.def Line 108 -
+ *   -- Summary -- 1 WARNING messages generated
+ */

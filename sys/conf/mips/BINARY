@@ -1,0 +1,146 @@
+#
+# @(#)BINARY	4.10	(ULTRIX)	2/19/91
+# Ultrix-32 RISC Binary Build Template
+# This is a non-loadable template
+#
+machine		mips
+cpu		"DS3100"
+cpu		"DS5400"
+cpu		"DS5500"
+cpu		"DS5800"
+cpu		"DS5000"
+cpu		"DS5000_100"
+cpu		"DS5100"
+ident		"GENERIC"
+timezone	5 dst
+maxusers	8
+maxuprc		25
+physmem		8
+release		4.2
+version		0
+processors	1
+scs_sysid	1
+
+options		BINARY
+options		INET
+options		UFS
+options		QUOTA
+options		DLI
+options		LAT
+options		NFS
+options		RPC
+options		SYS_TRACE
+options		DECNET
+options		UWS
+options		SMP
+options		PACKETFILTER
+options		AUDIT
+options		SYS_TPATH
+options		CDFS
+
+makeoptions	CC="cc"
+makeoptions	LD="ld"
+makeoptions	SIZE="size"
+makeoptions	ENDIAN="-EL"
+
+config		vmunix	swap generic
+
+#all the adapters and adapter-like items
+adapter         ci0     at nexus?
+adapter         xmi0    at nexus?
+adapter         vaxbi0  at nexus?
+adapter         uba0    at nexus?
+adapter         ibus0   at nexus?
+adapter		ibus1	at nexus?
+adapter		ibus2	at nexus?
+adapter		ibus3	at nexus?
+adapter		ibus4	at nexus?
+adapter		ibus5	at nexus?
+adapter		ibus6	at nexus?
+adapter		ibus7	at nexus?
+
+adapter         msi0    at nexus?
+adapter		vba0	at nexus?
+
+#all the controllers and controller-like items
+controller      hsc0    at ci0          cinode 0
+controller      dssc0   at msi0         msinode 0
+controller      kdb0    at vaxbi?       node?
+controller	kdm0	at xmi?		node?
+controller      klesib0 at vaxbi?       node?
+controller      uda0    at uba?
+controller      klesiu0 at uba?
+controller	zs0	at uba?		csr 0172520 vector tsintr
+controller      aie0    at vaxbi?    	node?
+controller      bvpssp0 at aie0      	vector bvpsspintr
+controller      uq0     at uda0         csr 0172150 vector uqintr
+controller      uq1     at kdb0         vector uqintr
+controller      uq2     at klesiu0      csr 0174500 vector uqintr
+controller      uq3     at klesib0      vector uqintr
+controller	uq4	at kdm0		vector uqintr
+controller	kzq0	at uba0 	csr 0761300 vector kzq_intr
+controller	sii0	at ibus?	vector sii_intr
+controller	asc0	at ibus?	vector ascintr
+controller	asc1	at ibus?	vector ascintr
+controller	asc2	at ibus?	vector ascintr
+controller	asc3	at ibus?	vector ascintr
+
+#all the disks
+disk            ra0     at mscp         drive 0
+disk            ra1     at mscp         drive 1
+disk            ra2     at mscp         drive 2
+disk            ra4     at mscp         drive 4
+
+#all the tapes
+tape            tms0    at mscp         drive 0
+tape            tms1    at mscp         drive 1
+tape 		ts0	at zs0		drive 0
+
+#all the terminals and printers
+device		dmb0	at vaxbi?	node? flags 0xff vector dmbsint dmbaint dmblint
+device		dhu0	at uba?		csr 0160440 flags 0xff vector dhurint dhuxint
+device          lp0     at uba?         csr 0177514 vector lpintr
+device		dc0	at ibus?	vector dcintr
+device          scc0    at ibus?        vector sccintr
+device		mdc0	at ibus?	vector mdcintr
+
+#all the graphic devices
+device		gq0     at ibus?        vector gqintr
+device          ga0     at ibus?        vector gaintr
+device		fb0	at ibus?	vector fbint
+
+#all the networks
+device          ln0     at ibus?        vector lnintr
+device		ne0	at ibus?	vector neintr
+device          qe0     at uba?         csr 0174440 vector qeintr
+device		bvpni0	at aie0		vector bvpniintr
+device		xna0	at vaxbi?	node? vector xnaintr
+device		fza0	at ibus?	vector fzaintr
+
+#all the pseudo items
+pseudo-device	pty
+pseudo-device	inet
+pseudo-device	ether
+pseudo-device	fddi
+pseudo-device	loop
+pseudo-device	ufs
+pseudo-device	sys_trace
+pseudo-device	lat
+pseudo-device	lta
+pseudo-device	dli
+pseudo-device	decnet
+pseudo-device	scsnet
+pseudo-device	nfs
+pseudo-device	rpc
+pseudo-device	sl
+pseudo-device   packetfilter
+pseudo-device	audit
+pseudo-device	sys_tpath
+pseudo-device	xcons
+pseudo-device	ws
+pseudo-device	tb
+pseudo-device	pcm
+pseudo-device	presto
+pseudo-device	gwscreen
+pseudo-device	cdfs
+pseudo-device   msdup

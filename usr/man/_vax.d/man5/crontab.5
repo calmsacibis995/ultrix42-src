@@ -1,0 +1,95 @@
+.TH crontab 5
+.SH Name
+crontab \- clock daemon table file
+.SH Syntax
+.B /usr/lib/crontab
+.SH Description
+.NXR "crontab file"
+.NXR "crontab file" "format"
+.NXR "clock daemon" "crontab file"
+The
+.PN cron
+command executes at specified dates and times
+according to the instructions in the
+.PN /usr/lib/crontab
+file. The
+.PN crontab
+file consists of lines with six fields each.
+The format for a line is as follows: 
+.RS
+.PP
+.I minute hour day month weekday command
+.RE
+.PP
+The following list defines each field in the line:
+.IP "\fIminute\fP (0-59)" 15
+The exact minute that the command sequence executes.
+.IP "\fIhour\fP (0-23)"
+The hour of the day that the command sequence executes. 
+.IP "\fIday\fP (1-31)"
+The day of the month that the command sequence executes.
+.IP "\fImonth\fP (1-12)"
+The month of the year that the command sequence executes.
+.IP "\fIweekday\fP (1-7)"
+The day of the week that the command sequence executes. Monday =
+1, Tuesday = 2, and so forth.
+.IP "\fIcommand\fP"
+The complete command sequence variable that is to be executed.
+Note that the command string must conform to Bourne shell syntax.
+.PP The fields are separated by spaces or tabs.
+The first five integer fields may be specified as follows:
+.IP \(bu 4
+A single number in the specified range
+.IP \(bu 4
+Two numbers separated by a minus,
+meaning a range inclusive
+.IP \(bu 4
+A list of numbers separated by
+commas, meaning any of the numbers
+.IP \(bu 4
+An asterisk meaning all legal values
+.PP
+The sixth field is a string that is executed by the shell at the
+specified times.  A percent sign (%)
+in this field is translated to a new-line character.
+Only the first line of the command field, up to a percent sign (%)
+or end of line, is executed by the shell.
+The other lines are made available to the
+command as standard input.
+.SH Examples
+The following example is part of a 
+.PN crontab
+file:
+.EX
+.nf
+# periodic things
+0,15,30,45 * * * * (echo '^M' `date`; echo '') >/dev/console
+0,15,30,45 * * * * /usr/lib/atrun
+
+# daily stuff
+5 4 * * * sh /usr/adm/newsyslog
+15 4 * * * ( cd /usr/preserve; find . \-mtime +7 \-a \-exec rm \-f {} \\; )
+20 4 * * * find /usr/msgs \-mtime +21 \-a ! \-perm 444 \-a ! \-name bounds 
+     \-a \-exec rm \-f {} \\;
+
+# NOTE: The above line is wrapped.
+
+# local cleanups
+30 4 * * * find /usr/spool/mqueue \-type f \-mtime +5 \-name df\* \-exec rm {} \\;
+35 4 * * * find /usr/spool/mqueue \-type f \-mtime +5 \-name tf\* \-exec rm {} \\;
+40 4 * * * find /usr/spool/rwho \-type f \-mtime +21 \-exec rm {} \\;
+#
+
+# redirecting error output
+0 17 * * 1,3,5 /bin/tar \-cv /usr/sysads/smith > /dev/console 2>&1
+#
+.fi
+.EE
+.SH Files
+.PN /etc/cron
+.br
+.PN /usr/lib/crontab
+.SH See Also
+sh(1), cron(8)
+.br
+.I Guide to System Environment Setup

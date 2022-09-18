@@ -1,0 +1,102 @@
+.TH kvar 8 RISC
+.SH Name
+kvar \- modify RISC kernel variables in memory or on disk
+.SH Syntax
+.B /usr/etc/kvar -r(b|w|l) [\|\fIoptions\fP\|] vmunix
+.br
+.B /usr/etc/kvar -w(b|w|l) [\|\fIoptions\fP\|] vmunix
+.SH Description
+.NXR "kernel variables" "modifying"
+.NXR "kvar command"
+The 
+.PN kvar 
+command allows you to read or write RISC kernel variables, either 
+in the on-disk image of 
+.PN vmunix
+or the active in-memory image. 
+The \fB\-r\fP form of the command does variable reads; the \fB\-w\fP form 
+does variable writes. 
+The variable length qualifiers are: b (1 byte), w (word, or 2 bytes), 
+and l (longword, or 4 bytes).
+.PP
+Variable contents are displayed in hexadecimal format.
+.SH Options
+.TP 12
+\fB\-a\fI address\fR
+Specifies the \fIaddress\fP of the kernel variable. 
+Either the \fB\-a\fP 
+or \fB\-s\fP option must be specified.  
+The \fIaddress\fP is specified as either a positive decimal or 
+hexadecimal constant.
+.TP
+\fB\-k\fP
+Instructs 
+.PN kvar
+to use the in-memory image of 
+.PN vmunix 
+.Pn ( /dev/kmem ).
+The default is to use the on-disk copy.
+.TP
+\fB\-l\fR
+Searches for a local symbol. The default is a global symbol search.
+.TP
+\fB\-o\fI offset\fR
+Adds an \fIoffset\fP to the address (or address of the symbol name).
+The 
+.I offset 
+value is specified as either a positive decimal or hexadecimal constant.
+.TP
+\fB\-s\fI name\fR
+Specifies the \fIname\fP of the kernel variable.
+.TP
+\fB\-v\fI value\fR
+Specifies the new \fIvalue\fP to be assigned by the \fB\-w\fP form of 
+.PN kvar .
+The \fB\-v\fP option is ignored if the 
+\fB\-r\fP form of
+.PN kvar 
+is being used. 
+The \fIvalue\fP is specified as either a positive decimal or 
+hexadecimal constant.
+.SH Restrictions
+You must have appropriate file access permissions for 
+.PN /vmunix
+(and for
+.PN /dev/kmem 
+with the \fB\-k\fP option).
+.PP
+The 
+.PN kvar
+command is available only on RISC systems.
+For VAX systems, use 
+.MS adb 1 
+to modify kernel variables.
+.SH Examples
+This example reads the variable `udpcksum' from the running kernel image:
+.IP "" 5
+%
+.B kvar \-k \-rl \-s udpcksum /vmunix
+.PP
+This example sets the `xyz' variable to zero in the running kernel image:
+.IP
+%
+.B "kvar \-k \-wl \-s xyz \-v 0 /vmunix"
+.PP
+This example sets the variable `xyz' to -1 in the on-disk image of 
+.PN vmunix 
+making this value persistent across reboots:
+.IP
+%
+.B "kvar \-wl \-s xyz \-v 0xffffffff /vmunix"
+.PP
+This example sets to zero 1 byte at offset 2 from address 0x80161a98 in the 
+running kernel image:
+.IP
+%
+.B "kvar \-k \-wb \-o 2 \-a 0x80161a98 /vmunix"
+.SH Files
+.PN /dev/kmem
+.br
+.PN /vmunix
+.SH See Also
+adb(1), dbx(1)

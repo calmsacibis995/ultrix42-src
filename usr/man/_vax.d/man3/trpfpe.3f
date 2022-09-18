@@ -1,0 +1,65 @@
+.\" SCCSID: @(#)trpfpe.3f	8.1	9/11/90
+.\" michaud jan 9, l987; took range.3f out of see also
+.\" until a manpage is written for it.
+.TH trpfpe 3f VAX "" Unsupported
+.SH Name
+trpfpe, fpecnt \- trap and repair floating point faults
+.SH Syntax
+.B subroutine trpfpe (numesg, rtnval)
+.br
+.B double precision rtnval
+.sp 1
+.B integer function fpecnt ()
+.sp 1
+.B common /fpeflt/ fperr
+.br
+.B logical fperr
+.SH Description
+.NXR "trpfpe subroutine (FORTRAN)"
+.NXR "fpecnt subroutine (FORTRAN)"
+.NXR "floating point arithmetic" "trapping overflow"
+The
+.PN trpfpe
+routine sets up a signal handler to trap arithmetic exceptions.
+If the exception is due to a floating point arithmetic fault,
+the result of the operation is replaced with the
+.I rtnval
+specified.
+The
+.I rtnval
+must be a double precision value. For example, ``0d0'' or ``dflmax()''.
+.PP
+The first
+.I numesg
+occurrences of a floating point arithmetic error will cause a message
+to be written to the standard error file.
+Any exception that cannot be repaired will result in the default
+action, typically an abort with core image.
+.PP
+The
+.PN fpecnt
+routine
+returns the number of faults since the last call to
+.PN trpfpe .
+.PP
+The logical value in the common block labeled
+.I fpeflt
+will be set to .true.  each time a fault occurs.
+.SH Restrictions
+This routine works only for
+.IR faults ,
+not
+.IR traps .
+This is primarily due to the VAX architecture.
+.PP
+If the operation involves changing the stack pointer, it cannot be repaired.
+This seldom should be a problem with the f77 compiler, but such an operation
+might be produced by the optimizer.
+.PP
+The POLY and EMOD opcodes are not dealt with.
+.SH Files
+.ie \nM /usr/ucb/lib/libF77.a
+.el /usr/lib/libF77.a
+.SH See Also
+signal(3f) 
+.\" range(3f)

@@ -1,0 +1,65 @@
+.\" SCCSID: @(#)group.5	8.3	4/9/91
+.TH group 5 
+.SH Name
+group \- group file
+.SH Description
+.NXR "group file (general)"
+The
+.PN group
+file is an ASCII file that contains the following information
+for each group:
+.PP
+Group name
+.br
+Encrypted password
+.br
+Numerical group ID
+.br
+Comma-separated list of all users allowed in the group
+.PP
+Each group name is separated from the next by a new line.  
+The fields are separated
+by colons.
+If the password field is null, no password is demanded.
+.PP
+Because of the encrypted
+passwords, it can and does have general read
+permission and can be used, for example,
+to map numerical group IDs to names.
+.PP
+The 
+.PN group
+database can be distributed in a network by a naming service, 
+such as Yellow Pages or BIND/Hesiod.  See the
+\fIGuide to the Yellow Pages Service\fP
+or the
+\fIGuide to the BIND/Hesiod Service\fP
+for setup information.
+.SH Restrictions
+The 
+.MS passwd 1
+command will not change the passwords.
+.PP
+Increasing the number of groups that a user is in beyond 8 can affect
+services that use SUN RPC.  
+The version of SUN RPC shipped with ULTRX V4.2 supports up to 32 groups.
+Prior versions supported users being in up to 8 groups.  
+Users who increase the
+number of groups that they are a member of to more than 8 will not be
+able to NFS mount file systems from ULTRIX servers older than V4.2.  
+If
+root group membership is increased to more than 8 groups on a V4.2 system,
+the YP service may not work if that V4.2 system is in a mixed YP server
+environment where there are both V4.2 and previous releases of YP servers.  
+Again,
+this incompatibility can only occur if a user's or root's group membership
+is increased to more than 8 groups.
+.SH Files
+.PN /etc/group
+.SH See Also
+passwd(1), setgroups(2), crypt(3), getgrent(3), initgroups(3x), 
+passwd(5)
+.br
+\fIGuide to the BIND/Hesiod Service\fP
+.br
+\fIGuide to the Yellow Pages Service\fP

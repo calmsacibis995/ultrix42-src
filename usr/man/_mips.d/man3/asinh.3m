@@ -1,0 +1,42 @@
+.TH asinh 3m RISC
+.ds up \fIulp\fR
+.ds nn \fINaN\fR
+.SH Name
+asinh, acosh, atanh \- inverse hyperbolic functions
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double asinh(x)
+.B double x;
+.PP
+.B double acosh(x)
+.B double x;
+.PP
+.B double atanh(x)
+.B double x;
+.fi
+.SH Description
+The
+.PN asinh ,
+.PN acosh ,
+and
+.PN atanh
+functions compute the designated inverse hyperbolic functions for real
+arguments.
+.SS Errors Because of Roundoff, Etc.
+These functions inherit much of their error from 
+the 
+.MS log1p 3m
+function. 
+.SH Diagnostics
+The 
+.PN acosh 
+function returns the default quiet \*(nn if the argument is less than one.
+.PP
+The 
+.PN atanh 
+function returns the default quiet \*(nn if the argument has an absolute
+value greater than or equal to one.
+.SH See Also
+exp(3m), math(3m)

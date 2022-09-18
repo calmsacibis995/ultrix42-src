@@ -1,0 +1,75 @@
+.\" SCCSID: @(#)basename.1	8.2	12/5/90
+.TH basename 1
+.SH Name
+basename \- strip directory names from pathname
+.SH Syntax
+.B basename
+.I string
+[
+.I suffix
+]
+.SH Description
+.NX R "basename command"
+.NX R "file name" "stripping affixes"
+The
+.PN basename
+command
+deletes from 
+.I string
+any prefix up to and including the last slash
+.BR ( / )
+and the suffix (if specified), and prints the result on the standard
+output.  The
+.PN basename
+command handles limited regular expressions in the same manner as
+.MS ed 1 ;
+metacharacters must be escaped if they are intended to be interpreted
+literally.  For example:
+.EX
+% \f(CBbasename /vmunix .x\f(CW
+vmun
+% \f(CBbasename /vmunix '\e.x'\f(CW
+vmunix
+.EE
+In the first example,
+.PN basename
+returns
+.PN vmun
+because it interprets the
+.PN \&.x
+as a regular expression consisting of any character followed by the
+letter
+.PN x .
+In the second example, the dot is escaped; there is no match on a dot
+followed by
+.PN x ,
+and
+.PN basename
+returns
+.PN vmunix .
+.PP
+The
+.PN basename
+command is often used inside substitution marks
+.BR ( \`\ \` )
+within shell procedures.
+.SH Examples
+The following example shell script compiles the file
+.PN /usr/src/bin/cat.c
+and moves the output to
+.PN cat
+in the current directory:
+.EX
+cc /usr/src/bin/cat.c
+mv a.out \`basename $1 .c\`
+.EE
+The following example echoes only the base name of the file
+.PN /etc/syslog.conf
+by removing the prefix and any possible sequence of characters
+following the period in the file's name:
+.EX
+% \f(CBbasename /etc/syslog.conf '\e..*'\f(CW
+syslog
+.EE
+.SH See Also
+dirname(1), ex(1), sh(1)

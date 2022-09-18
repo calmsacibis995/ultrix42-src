@@ -1,0 +1,42 @@
+.\" SCCSID: @(#)getpid.2	2.2	4/10/87
+.TH getpid 2
+.SH Name
+getpid, getppid \- get process identification
+.SH Syntax
+.ft B
+.nf
+.B #include <sys/types.h>
+.B #include <unistd.h>
+.PP
+.B pid = getpid()
+.B pid_t pid;
+.sp
+.B ppid = getppid()
+.B pid_t ppid;
+.fi
+.SH Description
+.NXR "getpid system call"
+.NXR "getppid system call"
+.NXR "process ID" "getting"
+The
+.PN getpid
+system call returns the process ID of the current process.
+Most often it is used, with the host identifier 
+.PN gethostid , 
+to generate uniquely named temporary files.
+.SH Return Values
+The
+.PN getppid
+system call returns the process ID of the parent
+of the current process. 
+.SH Environment
+.SS POSIX
+When your program is compiled in POSIX mode,
+the
+.PN getpid
+and
+.PN getppid
+functions return a value of type 
+.I pid_t.
+.SH See Also
+gethostid(2)

@@ -1,0 +1,221 @@
+.TH prompter 1mh
+.SH Name
+prompter \- prompting editor front-end
+.SH Syntax
+.B prompter
+[
+.I options
+]
+.I file
+.\"
+.\"
+.\"
+.\"
+.SH Description
+The
+.PN prompter 
+editor is a rudimentary editor provided by 
+.PN comp , 
+.PN dist , 
+.PN forw , 
+and
+.PN repl .
+.NXR "prompter editor front-end"
+It is automatically called by the above
+commands; you do not need to specify it.  
+.PP
+The
+.PN prompter
+editor allows rapid composition of
+messages.
+It is particularly useful to network and low-speed
+(less than 2400 baud) users of MH.
+.PP
+The 
+.PN prompter
+editor is an MH program.  
+Although is not invoked directly,
+it can have its own profile entry with options; see 
+.MS mh_profile 5mh .
+The 
+.PN comp , 
+.PN dist , 
+.PN forw ,
+and 
+.PN repl
+commands invoke 
+.PN prompter
+in one of three ways:
+when invoked with the
+.B "\-editor prompter"
+option;
+by an entry in the 
+.PN \&.mh_profile
+file;
+or by a command at the \f(CWWhat now?\fR prompt.
+If you do not specify an editor in any of these ways, MH provides
+.PN prompter 
+as the default editor for all of these commands.
+.PP
+For information on how to use a different editor with MH commands,
+see the reference pages for the appropriate commands,
+and also
+.MS mh_profile 5mh .
+.\"
+.\"
+.SS Composing a Message with prompter
+When you create a message with an MH command,
+the mail system provides a message template 
+for you to fill in.
+This template consists of two parts:
+the message header, comprising a number of header fields;
+and the body of the message, which is the area
+where you type the text of your message.
+.PP
+The
+.PN prompter
+editor displays each header field,
+one at a time, for you to fill in.
+Fill in the component by typing the text that you want.
+Type <RETURN> to move onto the next component.
+Once you have moved on from a header field,
+you cannot edit what you have entered.
+.PP
+If you want to leave a header field empty,
+simply type <RETURN>.
+You can continue a header field over one line
+by typing a back-slash (\e) before the <RETURN>.
+Continuation lines must start with a blank 
+(a space or a tab).
+.PP
+The start of the message body is indicated 
+by a blank line or a line of dashes.
+If you are creating a new message, the cursor 
+is placed beneath this line to allow you to enter text.
+If there is already some body text in the message
+(for example, if you are using an existing draft,
+or if you are forwarding a message),
+you will receive a prompt:
+.EX
+    --------Enter additional text
+.EE
+or:
+.EX
+    --------Enter initial text
+.EE
+The cursor is placed under the prompt to allow you
+to enter text.
+.PP
+To finish the message, type <CTRL/D>.
+You will then receive a prompt asking \f(CWWhat now?\fR.
+See 
+.MS whatnow 1mh
+for more details of responses.
+.PP
+An interrupt, usually <CTRL/C>, during component typing will abort
+.PN prompter
+and the MH command that invoked it.
+An interrupt during message-body typing is equivalent to <CTRL/D>,
+for historical reasons.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-prepend" 10
+.PD 0
+.IP "\-noprepend" 10
+.PD
+Adds text to the beginning
+of the message body, so that the rest of the body follows.
+This is useful for the 
+.PN forw
+command.
+You can suppress this behavior by using the
+.B \-noprepend
+option.
+.\"
+.IP \-rapid 10
+.PD 0
+.IP \-norapid 10
+.PD
+Causes the text not to be displayed on your terminal
+if the draft already contains text in the message-body.
+This is useful for low-speed terminals.
+You can suppress this behavior by using the
+.B \-norapid
+option.
+.\"
+.IP "\-erase \fIchar\fP"
+Specifies the line-editing characters, where 
+.I char
+may be a character or
+\f(CW\ennn\fR,
+where
+\f(CWnnn\fR
+is the octal value for the character.
+.\"
+.IP "\-kill \fIchar\fP"
+Specifies the line-editing characters, where
+.I char
+may be a character or
+\f(CW\ennn\fR,
+where
+\f(CWnnn\fR
+is the octal value for the character.
+.\"
+.\"
+.PP
+The first argument to 
+.PN prompter
+which is not an option is taken as the name of the draft 
+.IR file , 
+and subsequent non-flag arguments are ignored.
+.PP
+The default settings for
+.PN prompter
+are:
+.IP
+.B \-prepend
+.br
+.B \-norapid
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+The 
+.PN prompter
+editor uses 
+.MS stdio 3s ,
+therefore do not edit files
+with nulls in them.
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+prompter-next:+To name the editor to be used on exit from prompter
+Msg-Protect:+To set protections when creating a new draft
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh\_profile
+The user profile.
+.TP 10
+.PN /tmp/prompter*
+Temporary copy of message.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+capsar(1), comp(1mh), dist(1mh), forw(1mh), repl(1mh), 
+whatnow(1mh), stdio(3s), mh_profile(5mh)

@@ -1,0 +1,40 @@
+.TH DTIF 5
+.SH Name
+DTIF \- Digital Table Interchange Format
+.SH Description
+.NXR "DTIF reference page"
+Digital Table Interchange Format (DTIF) is the standard format for the 
+storage and interchange of documents that contain data tables, 
+formulas, 
+and spreadsheets. You can use DTIF to store and retrieve database 
+information, interchange spreadsheets, and reference table data in
+compound documents.  
+.PP
+DTIF defines the logical structure and physical layout of a data table,
+the values within the table (absolute data and/or expressions), and
+presentation attributes (formatting) to be used when displaying or printing
+the table. DTIF works with Digital Document Interchange Format (DDIF) 
+so that you can store or reference DTIF tables in DDIF-encoded compound 
+documents.
+.PP
+A DTIF document can contain a sequence of one or more tables and is 
+uniquely identified by a product name, a version number, and other
+descriptive information such as the document's title and creation date.
+Each DTIF table is a 2-dimensional display of data values organized
+in columns and rows that has its own structure and table data stored in
+cells.
+.PP
+In DTIF documents, attributes specify the type and format of information
+pertaining to the data stored in a table. Column attributes describe 
+information for all the cells in a particular column, whereas generic 
+column attributes can be applied to any column in 
+any table that references 
+them. Format attributes define the printed 
+and displayed presentation of data 
+stored in the table.  
+Format attributes can also be redefined at the window, 
+column, or cell level.
+.SH See Also 
+CDA(5), DDIF(5), DTIF(5)
+.br
+.I Compound Document Architecture Manual

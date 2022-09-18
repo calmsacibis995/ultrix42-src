@@ -1,0 +1,39 @@
+.\" SCCSID: @(#)access.3f	8.1	9/11/90
+.TH access 3f VAX "" Unsupported
+.SH Name
+access \- determine accessibility of a file
+.SH Syntax
+.B integer function access (name, mode)
+.br
+.B character*(*) name, mode
+.SH Description
+.NXR "access subroutine (FORTRAN)"
+.NXR "file" "checking accessibility"
+The
+.PN access
+subroutine checks the given file,
+.I name,
+for accessibility with respect to the caller according to
+.I mode.
+The
+.I mode
+argument
+may include in any order and in any combination one or more of:
+.nf
+r	test for read permission
+w	test for write permission
+x	test for execute permission
+	(blank)	test for existence
+.fi
+.PP
+An error code is returned if either argument is illegal, or if the file
+can not be accessed in all of the specified modes.
+0 is returned if the specified access would be successful.
+.SH Restrictions
+Pathnames can be no longer than MAXPATHLEN as defined in
+<sys/param.h>.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+access(2), perror(3f)

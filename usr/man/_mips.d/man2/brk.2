@@ -1,0 +1,85 @@
+.TH brk 2 RISC
+.SH Name
+brk, sbrk \- change data segment space allocation
+.SH Syntax
+.B #include <sys/types.h>
+.PP
+.B char \(**brk(addr)
+.br
+.B char \(**addr;
+.PP
+.B  char \(**sbrk(incr)
+.br
+.B int incr;
+.SH Description
+The
+.PN brk
+system call
+sets the system's idea of the lowest data segment location not used
+by the program (called the break) to 
+.I addr
+(rounded up to the next multiple of the system's page size).  Locations
+greater than
+.I addr 
+and below the stack pointer are not in the address space and thus will
+cause a memory violation if accessed.
+.PP
+In the alternate function
+.PN sbrk ,
+.I incr
+more bytes are added to the program's data space and a pointer to the
+start of the new area is returned.
+.PP
+When a program begins execution by 
+.PN execve ,
+the break is set at the highest location defined by the program and
+data storage areas.  Ordinarily, therefore, only programs with 
+growing data areas need to use
+.PN brk .
+.PP
+The
+.MS getrlimit 2
+system call may be used to determine the maximum permissible size of
+the data segment; it will not be possible to set the break beyond
+the 
+.I rlim_max
+value returned from a call to
+.MS getrlimit 2 .
+For example:
+.EX
+0x10000000 + rlp -> rlim_max
+.EE
+.SH Return Values
+Upon successful completion, the
+.PN brk
+system call
+returns a value of 0 or \-1 if the program requests more memory than
+the system limit.  The
+.PN sbrk
+system call returns \-1 if the break could not be set.
+.SH Restrictions
+Setting the break may fail due to a temporary lack of swap space.  It is
+not possible to distinguish this from a failure caused by exceeding the
+maximum size of the data segment without consulting 
+.PN getrlimit .
+.SH Diagnostics
+The
+.PN sbrk
+system call fails and no additionally memory is allocated if one of 
+the following is true:
+.RS
+.TP 13
+.SM [ENOMEM]
+The limit, as set by
+.MS setrlimit 2
+was exceeded.
+.TP
+.SM [ENOMEM]
+The maximum possible size a data segment (compiled into the system)
+was exceeded.
+.TP
+.SM [ENOMEM]
+Insufficient space existed in the swap area to support the expansion.
+.RE
+.SH See Also
+execve(2), getrlimit(2), setrlimit(2), ulimit(2)

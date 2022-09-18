@@ -1,0 +1,75 @@
+
+%!PSAdobe-1.0        
+%%Title: LPS$$MESSAGEPAGE.PS
+% COPYRIGHT ) DEC 1986, 1987  ALL RIGHTS RESERVED
+%%Creation Date: 17-Jun-1986
+%%Bounding Box: 0 0 612 792
+save
+/logpagedict 75 dict def logpagedict begin
+/user_context exch def
+initgraphics erasepage  /#copies 1 def             
+% generally used defs
+/inch {72 mul} def /lmarg 0.75 inch def /rmarg 7.75 inch def 
+/tab1 1.30 inch def /bold /Helvetica-Bold findfont def 
+/plain /Helvetica findfont def /mono /Courier findfont def
+/itty 8 def /medium1 10 def /medium2 12 def /big1 18 def /bigger 26 def
+/bf12 bold medium2 scalefont  def  /bf18 bold big1 scalefont  def 
+/bf26 bold bigger scalefont  def  
+/cf8 mono  itty scalefont def   /cf10 mono  medium1 scalefont  def
+/center { dup stringwidth pop 2 div 4.25 inch exch sub ypos moveto } bind def 
+/nextline {/ypos ypos fonthgt 1.4 mul sub def } bind def
+/join2str {/str2 exch def /str1 exch def str1 length str2 length add string
+  /newstring exch def str1 newstring copy pop /index str1 length def
+  newstring index str2 putinterval newstring } def 
+/chop { /width_to_fit exch def /text exch def /print_proc exch def /index 0 def
+/stringlength text length def 
+/do_a_line { text prevchar index prevchar sub getinterval print_proc
+  /prevchar index def /accum 0 def } def
+/do_many_lines { /prevchar 0 def /accum 0 def 
+   { text index 1 getinterval stringwidth pop accum add /accum exch def    
+   accum width_to_fit gt {do_a_line} if /index index 1 add def index 
+   stringlength eq {exit} if } loop
+   text prevchar stringlength prevchar sub getinterval print_proc} def 
+   text stringwidth pop width_to_fit gt {do_many_lines} {text print_proc }
+   ifelse  } def 
+/get_marg { sfact mul sub } def                                            
+/sfonts {   /srnd { sfact mul round sfact div } def
+  /itty itty srnd def /medium1 medium1 srnd def /medium2 medium2 srnd
+  def /big1 big1 srnd def /bigger bigger srnd def } def 
+/difpage { clippath pathbbox /ury exch def /urx exch def /lly exch def 
+  /llx exch def urx llx sub 612 div  dup ury lly sub 792 div dup 3 1 roll ge 
+  { exch pop} {pop} ifelse   dup 1.0 dup 3 1 roll ge { exch pop } {pop} ifelse 
+  /sfact exch def   ury lly sub 792 get_marg /upy exch def urx llx sub 612 
+  get_marg 2 div /overx exch def overx upy translate sfact dup scale     
+  sfact 1.0 ne {sfonts} if } def % difpage
+% individual components of page
+/do_jobnumber { bf26 setfont /fonthgt 34 def 0.6 setgray nextline (JOB )
+ tjobnum join2str ( LOG) join2str center show 0 setgray nextline } def
+/do_jfname { bf26 setfont /fonthgt bigger def {xpos ypos moveto center show 
+  nextline} tjfname rmarg lmarg sub  chop } def 
+/do_the_msgs { /dotiny { cf8 setfont /fonthgt itty def /ypos 7.8 inch def } def
+  /use_normalprint { cf10 setfont /fonthgt medium1 def loop_number 20 lt 
+  {/ypos 7.4 inch def} { /ypos 7.8 inch def } ifelse } def
+  /do_one_msg {-1 roll /the_msg exch def {lmarg ypos moveto show nextline} 
+  the_msg  rmarg lmarg sub chop } def  tnumbermsgs cvi /loop_number exch def 
+  loop_number 30 gt {dotiny} {use_normalprint} ifelse 
+  loop_number -1 1 { do_one_msg} for nextline
+   (TOTAL NUMBER OF RECORDS IN JOB LOG IS ) tsumline_num join2str
+   lmarg ypos moveto show nextline  
+   } def
+/tclientuser exch def /tjobnum exch def /tjfname exch def /tvmsvers exch def
+/tnumbermsgs exch def /tsumline_num exch def 
+/do_joblogpage{ /ypos 10.8 inch def
+bf26 setfont /xpos lmarg def /fonthgt bigger def nextline tclientuser   
+ ( ) search { 3 1 roll pop pop} if   center show %
+ do_jobnumber do_jfname do_the_msgs 
+bf12 setfont lmarg 0.8 inch moveto 
+ (Digital Equipment Corporation) show nextline %
+bf18 setfont /fonthgt big1 def lmarg 0.5 inch moveto 
+ (VAX/VMS Version ) show tvmsvers show %
+(PrintServer40) dup rmarg exch stringwidth pop sub  0.5 inch moveto show %
+showpage } bind def            
+%End messagepage defs, start execution
+statusdict begin papersize end pop (lettertray) ne {difpage} if
+ do_joblogpage user_context end restore
+%%End of file LPS$$MESSAGEPAGE.PS                             

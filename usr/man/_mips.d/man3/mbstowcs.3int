@@ -1,0 +1,61 @@
+.TH mbstowcs 3int
+.SH Name
+mbstowcs \- converts a sequence of multibyte characters
+into a sequence of characters of type wchar_t. 
+.SH Syntax
+#include <stdlib.h>)
+.PP
+size_t mbstowcs \fI(pwcs, s, n)\fR
+.br
+wchar_t \fI*pwcs;\fR
+.br
+const char\fI *s;\fR
+.br
+size_t\fI n;\fR
+.SH Arguments
+.TP 8
+.I pwcs
+The 
+.I pwcs 
+argument is a pointer to the resulting wide character string.
+.PP
+.TP 8
+.I s
+The
+.I s
+argument is a pointer to the multibyte character sequence.
+.PP
+.TP 8
+.I n
+The
+.I n 
+argument is the maximum number of resulting wide characters stored in 
+.I pwcs.
+.SH Description
+.NXR "multibyte character to wide character conversion function"
+The 
+.PN mbstowcs() 
+function converts a sequence of multibyte characters
+from the array pointed to by \fIs\fR into a sequence of characters of
+type 
+wchar_t, 
+and stores not more than \fIn\fR 
+characters into the array pointed to by
+\fIpwcs\fR. No multibyte characters that follow a null character
+(which is converted into a code with value zero) are examined
+or converted. No more than \fIn\fR elements are modified
+in the array pointed to by \fIpwcs\fR.
+This function is affected by the LC_CTYPE category of the
+current locale.
+.SH Return Values
+If an invalid multibyte character is encountered, the
+.PN mbstowcs() 
+function returns (size_t) -1. 
+Otherwise, the 
+.PN mbstowcs() 
+function returns the number of array elements modified, not including
+a terminating null character, if any. The array will not be null-terminated 
+if the value returned is \fIn\fR.
+.SH See Also
+mblen(3int), mbtowc(3int), setlocale(3int), wctomb(3int),
+wcstombs(3int)

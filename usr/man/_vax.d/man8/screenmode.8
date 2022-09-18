@@ -1,0 +1,48 @@
+.TH screenmode 8
+.SH Name
+screenmode \- enable or disable gateway screening
+.SH Syntax
+.B /usr/etc/screenmode
+[
+.B on
+|
+.B off
+]
+.SH Description
+.NXR "screenmode command"
+.NXR "gateway screening"
+The
+.PN screenmode
+command enables or disables gateway screening 
+if the argument is
+.B on
+or
+.BR off ,
+respectively.  See the 
+.MS screen 2
+reference page for more information on gateway screening.
+.PP
+When no argument is supplied,
+.PN screenmode 
+indicates the state of gateway screening as on or off.
+.PP
+In order to avoid packets being forwarded before the 
+.PN screend 
+program has been started,
+.PN screenmode
+should be run before configuring any interfaces,
+other than the first interface on the system (which might be
+needed during the bootstrap sequence).
+.PP
+Only the superuser can change the state.
+.SH Restrictions
+If
+.PN screend 
+is running and then screening is disabled, the daemon might
+(but might not)
+exit.
+.SH Diagnostics
+If an unauthorized user tries to change the state, an error
+message is displayed.
+.SH See Also
+screen(2), screend(8), screenstat(8)

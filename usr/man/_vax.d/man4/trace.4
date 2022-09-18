@@ -1,0 +1,18 @@
+.\" SCCSID: @(#)trace.4	8.1	9/11/90
+.\" SCCSID: @(#)trace.4	8.1	9/11/90
+.TH trace 4
+.SH Name
+trace \- system call tracing interface
+.SH Syntax
+\fBoptions SYS_TRACE
+\fBpseudo-device sys_trace
+.SH Description
+.NXR "system call tracing interface"
+.NXS "trace command" "system call tracing interface"
+.NXS "trace keyword" "system call tracing interface"
+This is a special character device that provides an interface for the
+system call tracing facility.
+.SH Files
+.PN /dev/trace
+.SH See Also
+MAKEDEV(8)

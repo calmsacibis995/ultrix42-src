@@ -1,0 +1,172 @@
+.\" SCCSID: @(#)vgrind.1	8.1	9/11/90
+.TH vgrind 1 VAX "" Unsupported
+.SH Name
+vgrind \- grind nice listings of programs
+.SH Syntax
+.B vgrind
+[
+.B \-f
+] [
+.B \-
+] [
+.B \-t
+] [
+.B \-n
+] [
+.B \-x
+] [
+.B \-W
+] [
+.B \-sn
+] [
+.B \-h
+.I header
+] [
+.B \-d
+file
+] [
+.BI \-l language
+]
+.I name ...
+.SH Description
+The
+.PN vgrind
+command formats the program sources which are arguments 
+in a nice style using
+.MS troff 1 .
+Comments are placed in italics, keywords in bold face,
+and the name of the current function is listed down the margin of each
+page as it is encountered.
+.PP
+.PN vgrind 
+runs in two basic modes, filter mode or regular mode.  In filter mode 
+.PN vgrind
+acts as a filter in a manner similar to
+.PN tbl 1 .
+The standard input is passed directly to the standard output except
+for lines bracketed by the 
+.PN troff -like
+macros:
+.IP .vS
+- starts processing
+.IP .vE
+- ends processing
+.PP
+These lines are formatted as described above.  The output from this
+filter can be passed to 
+.PN troff 
+for output.  There need be no particular ordering with 
+.MS eqn 1
+or
+.MS tbl 1 .
+.PP
+In regular mode,
+.PN vgrind
+accepts input files, processes them, and passes them to 
+.MS troff 1
+for output.  
+.PP
+In both modes 
+.PN vgrind
+passes any lines beginning with a decimal point without conversion.
+.SH Options
+.IP \fB\-f\fP
+Forces filter mode
+.IP \fB\-\fP
+Forces input to be taken from standard input (default if
+.B \fB\-f\fP
+is specified )
+.IP \fB\-t\fP
+Similar to the same option in
+.PN troff
+causing formatted text to go to the standard output
+.IP \fB\-n\fP
+Forces no keyword bolding
+.IP \fB\-x\fP
+Outputs the index file in a ``pretty'' format. 
+The index file itself is produced whenever 
+.PN vgrind
+is run with a file called 
+.PN index
+in the current directory.
+The index of function
+definitions can then be run off by giving 
+.PN vgrind 
+the
+.B \-x
+option and the file
+.PN index
+as argument.
+.IP \fB\-W\fP
+Forces output to the (wide) Versatec printer rather than the (narrow)
+Varian
+.IP \fB\-s\fP
+Specifies a point size to use on output (exactly the same as the argument
+of a .ps)
+.IP "\fB\-h \fIheader\fP"
+Specifies a particular \fIheader\fP 
+to put on every output page (default is
+the file name)
+.IP \fB\-d\fP
+Specifies an alternate language definitions
+\fIfile\fP (default is /usr/lib/vgrindefs)
+.IP "\fB\-l\fI language\fP"
+Specifies the \fIlanguage\fP to use. Currently known are PASCAL
+.RB ( \-lp ),
+MODEL
+.RB ( \-lm ), C
+.RB ( \-lc
+or the default), CSH
+.RB ( \-lcsh ), 
+SHELL
+.RB ( \-lsh ),
+RATFOR
+.RB ( \-lr ),
+and ICON
+.RB ( \-lI ).
+.SH Restrictions
+Vfontedpr assumes that a certain programming style is followed:
+.RS
+.PP
+For 
+.B C
+\- function names can be preceded on a line only by spaces, tabs, or an
+asterisk.  The parenthesized arguments must also be on the same line.
+.PP
+For
+.B PASCAL
+\- function names need to appear on the same line as the keywords
+.I function
+or
+.I procedure.
+.PP
+For
+.B MODEL
+\- function names need to appear on the same line as the keywords
+.I is
+.I beginproc.
+.RE
+.PP
+If these conventions are not followed, the indexing and marginal function
+name comment mechanisms will fail.
+.PP
+More generally, arbitrary formatting styles for programs mostly look bad.
+The use of spaces to align source code fails miserably; if you plan to
+.PN vgrind
+your program you should use tabs.  This is somewhat inevitable since the
+font used by
+.PN vgrind
+is variable width.
+.SH Files
+.ta 2i
+index	file where source for index is created
+.br
+/usr/lib/tmac/tmac.vgrind	macro package
+.br
+/usr/lib/vfontedpr		preprocessor
+.br
+/usr/lib/vgrindefs		language descriptions
+.SH See Also
+vlp(1),
+vtroff(1),
+vgrindefs(5)

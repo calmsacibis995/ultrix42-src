@@ -1,0 +1,45 @@
+.\" SCCSID: @(#)implogd.8c	8.1	9/11/90
+.TH implogd 8c
+.SH Name
+implogd \- IMP logger process
+.SH Syntax
+.B /etc/implogd
+[
+.B \-d
+]
+.SH Description
+.NXR "implogd program"
+.NXR "implog file" "entry format"
+.NXA "implogd program" "implog program"
+The
+.PN implogd
+program logs messages from IMP, placing them in the file
+.PN /usr/adm/implog .
+.PP
+Entries in the file are variable length and each log
+entry has a fixed length header of the form:
+.EX
+struct sockstamp {
+	short	sin_family;
+	u_short	sin_port;
+	struct	in_addr sin_addr;
+	time_t	sin_time;
+	int	sin_len;
+};
+.EE
+.PP
+This is followed, possibly, by the message received from the IMP.  
+Each time the logging process is started up, it
+places a time stamp entry in the file (a header with the
+.PN sin_len
+field set to 0).
+.SH Restrictions
+The logging process will catch only those messages from
+the IMP 
+which are not processed by a protocol module.
+Thus the log should contain only
+status information such as ``IMP going down'' messages, ``host down''
+and other error messages,
+and, perhaps, stray NCP messages.
+.SH See Also
+imp(4p), implog(8c)

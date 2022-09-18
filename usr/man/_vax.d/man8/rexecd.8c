@@ -1,0 +1,120 @@
+.\" SCCSID: @(#)rexecd.8c	8.1	9/11/90
+.TH rexecd 8c
+.SH Name
+rexecd \- remote execution server
+.SH Syntax
+.B /etc/rexecd
+.SH Description
+.NXR "rexecd server"
+.NXAM "rexec subroutine" "rexecd server"
+.NXR "rexecd server" "protocol"
+The
+.PN rexecd
+command is the server for the 
+.MS rexec 3x
+routine.  The server provides remote execution facilities
+with authentication based on usernames and encrypted
+passwords.
+.PP
+The
+.PN rexecd
+command is invoked by 
+.MS inetd 8c
+when it receives a connection on the port indicated in
+the ``exec'' service specification.  For further information, see
+.MS services 5 .
+When a service request is received the following protocol
+is initiated:
+.IP 1) 3
+The server reads characters from the socket up
+to a null (`\e0') byte.  The resultant string is
+interpreted as an ASCII number, base 10.
+.IP 2)
+If the number received in step 1 is non-zero,
+it is interpreted as the port number of a secondary
+stream to be used for the 
+.BR stderr .
+A second connection is then created to the specified
+port on the client's machine.
+.IP 3)
+A null terminated username of at most 16 characters
+is retrieved on the initial socket.
+.IP 4)
+A null terminated password of at most
+16 characters is retrieved on the initial socket.  
+.IP 5)
+A null terminated command to be passed to a
+shell is retrieved on the initial socket.  The length of
+the command is limited by the upper bound on the size of
+the system's argument list.  
+.IP 6)
+The
+.PN rexecd
+command then validates the user as is done at login time
+and, if the authentication was successful, changes
+to the user's home directory, and establishes the user
+and group protections of the user.
+If any of these steps fail the connection is
+aborted with a diagnostic message returned.
+.IP 7)
+A null byte is returned on the connection associated
+with the
+.B stderr 
+and the command line is passed to the normal login
+shell of the user.  The
+shell inherits the network connections established
+by
+.PN rexecd .
+.SH Diagnostics
+All diagnostic messages are returned on the connection
+associated with the
+.BR stderr ,
+after which any network connections are closed.
+An error is indicated by a leading byte with a value of
+1 (0 is returned in step 7 above upon successful completion
+of all the steps prior to the command execution).
+.PP
+.B "username too long"
+.br
+The name is
+longer than 16 characters.
+.PP
+.B "password too long"
+.br
+The password is longer than 16 characters.
+.PP
+.B "command too long"
+.br
+The command line passed exceeds the size of the argument
+list (as configured into the system).
+.PP
+.B "Login incorrect"
+.br
+No password file entry for the username existed.
+.PP
+.B "Password incorrect"
+.br
+The wrong was password supplied.
+.PP
+.B "No remote directory"
+.br
+The 
+.PN chdir
+command to the home directory failed.
+.PP
+.B "Try again"
+.br
+A
+.I fork
+by the server failed.
+.PP
+.B "/bin/sh: ..."
+.br
+The user's login shell could not be started.
+.SH Restrictions
+.NXR "rexecd server" "restricted"
+Indicating ``Login incorrect'' as opposed to ``Password incorrect''
+is a security breach which allows people to probe a system for users
+with null passwords.
+.SH See Also
+inetd(8c)

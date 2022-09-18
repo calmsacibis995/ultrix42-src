@@ -1,0 +1,54 @@
+.TH dc 4 RISC
+.SH Name
+dc \- serial line/mouse/keyboard
+.SH Syntax
+.B "device	dc0	at ibus?	vector dcintr"
+.SH Description
+.NXR "serial line controller" "dc"
+.NXR "dc serial line controller" 
+The serial line controller provides four ports, with 
+modem control on two of the ports.  The DECstation 3100 and DECstation 2100
+only provide partial modem control.  The DECstation 5000 provides full
+modem control. The ports are used as follows:
+.sp
+.nf
+\fBPort\fR      \fBUsage\fR
+.br
+0         Graphics device keyboard at 4800 BPS
+1         Mouse or tablet at 4800 BPS
+2         Communications port 1 (w/modem control)/local terminal
+3         Communications port 2 (w/modem control)/local terminal
+.fi
+.PP
+Each communication port from the serial line controller
+behaves as described in
+.MS tty 4
+and can be set to run at any of 16 speeds. 
+For the encoding, see
+.MS tty 4 .
+.PP
+When a graphics device is not being used as the system console, communications
+port 2 becomes the system console.  In this configuration, the port can only
+be used at 9600 BPS and no modem control is supported.
+.PP
+The serial line driver operates in interrupt-per-character mode
+(all pending characters are flushed from the silo on each interrupt).
+.SH Restrictions
+Speed must be set to 9600 BPS on the console port and 4800 BPS on ports 
+used by graphics devices.  The serial line driver enforces this restriction; 
+that is, changing speeds with the 
+.PN stty 
+command may not always work on these 
+ports.
+.SH Files
+.TP 20
+.PN /dev/console
+console terminal
+.TP 
+.PN /dev/tty00
+local terminal
+.TP 
+.PN /dev/tty01
+local terminal
+.SH See Also
+console(4), devio(4), tty(4), ttys(5), MAKEDEV(8)

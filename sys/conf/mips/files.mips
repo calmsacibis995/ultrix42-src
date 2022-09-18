@@ -1,0 +1,222 @@
+sys/mips/sysmips.c		standard Binary
+machine/common/cpuconf.c	standard
+machine/common/cons_char.c      standard Binary
+machine/mips/autoconf.c		standard device-driver Binary
+machine/mips/cache.c		standard Binary
+machine/mips/check_dbg.c	standard device-driver Binary
+machine/common/conf.c		standard
+machine/common/pr.c             optional presto Binary
+machine/mips/cons_sw.c		standard Binary
+machine/mips/coproc_control.s	standard Binary
+machine/mips/debug.c		standard device-driver Binary
+machine/mips/emulate_instr.s	standard Binary
+machine/mips/errlog.c		optional cpu DS5800 Binary
+machine/mips/fp_intr.s		standard Binary
+machine/mips/hwconf.c		standard Binary
+machine/mips/interlock.c	optional cpu DS5800 or cpu DS5400 or cpu DS5500 Binary
+machine/mips/kn01.c		optional cpu DS3100 Binary
+machine/mips/kn02.c		optional cpu DS5000 Binary
+machine/mips/kn02ba.c		optional cpu DS5000_100 Binary
+machine/mips/kn230.c		optional cpu DS5100 Binary
+machine/mips/kn230_copy.s	optional scsi or sii device-driver Binary
+machine/mips/kn210.c		optional cpu DS5400 Binary
+machine/mips/kn220.c		optional cpu DS5500 Binary
+machine/mips/kn5800.c		optional cpu DS5800 Binary
+machine/mips/mc146818clock.c	optional cpu DS3100 or cpu DS5000 or cpu DS5000_100 or cpu DS5100 device-driver Binary
+machine/mips/clock.c		standard device-driver Binary
+machine/mips/mdc.c		optional mdc device-driver Binary
+machine/mips/in_cksum.c		optional inet Binary
+machine/mips/kopt.c		standard Binary
+machine/mips/locore.s		standard Notbinary
+machine/mips/machdep.c		standard config-dependent Binary
+machine/mips/mcount.s		optional profiling-routine Binary
+machine/mips/md.c		optional md device-driver 
+machine/mips/mem.c		standard Binary
+machine/mips/panic.c		standard Binary
+machine/mips/process.s		standard Binary
+machine/mips/sableclock.c	optional sableclock Binary
+machine/mips/sablecons.c	optional sablecons Binary
+machine/mips/softfp.s		standard Binary
+machine/mips/softfp_unusable.s	standard Binary
+machine/mips/ssc.c		optional cpu DS5800 or cpu DS5400 or cpu DS5500 Binary
+machine/mips/startup.c		standard config-dependent Binary
+machine/mips/swtch.c		standard Binary
+machine/mips/sys_machdep.c	standard Binary
+machine/mips/tlb.s		standard Binary
+machine/mips/trap.c		standard Binary
+machine/mips/ufs_machdep.c	standard Binary
+machine/mips/usercopy.s		standard Binary
+machine/mips/vec_intr.c		standard Notbinary
+machine/mips/vm_machdep.c	standard Binary
+vm/mips/sm_machdep.c		standard Binary
+vm/mips/pt_machdep.c		standard Binary
+io/bi/biinit.c			optional vaxbi  device-driver Binary
+io/bi/bimem.c			optional cpu VAX8200  device-driver Binary
+io/bi/bua.c			optional vaxbi device-driver Binary
+io/bi/bla.c			optional klesib device-driver Binary
+io/bi/bda.c			optional kdb device-driver Binary
+io/bi/dmb.c			optional dmb device-driver Binary
+io/bi/aie.c			optional aie device-driver Binary
+io/bi/bici.c            	optional vaxbi ci device-driver Binary
+io/bi/bvp_init.c        	optional bvpssp device-driver Binary
+io/bi/bvp_ssp.c         	optional bvpssp device-driver Binary
+io/bi/bvp_subr.c        	optional bvpssp device-driver Binary
+io/bi/bvp_serv.c        	optional bvpssp device-driver Binary
+io/bi/lx.c			optional lx device-driver Binary
+io/ci/ci_block.c        	optional ci device-driver Binary
+io/ci/ci_error.c        	optional ci device-driver Binary
+io/ci/ci_init.c         	optional ci device-driver Binary
+io/ci/ci_isr.c          	optional ci device-driver Binary
+io/ci/ci_lpmaint.c      	optional ci device-driver Binary
+io/ci/ci_subr.c         	optional ci device-driver Binary
+io/ci/civar.c           	optional ci device-driver Binary
+io/ci/cippd_error.c		optional ci or msi Binary
+io/ci/cippd_event.c     	optional ci or msi Binary
+io/ci/cippd_pmaint.c    	optional ci or msi Binary
+io/ci/cippd_protocol.c  	optional ci or msi Binary
+io/ci/cippdvar.c        	optional ci or msi Binary
+io/gvp/gvp_block.c		optional ci or bvpssp or msi Binary
+io/gvp/gvp_dg.c			optional ci or bvpssp or msi Binary
+io/gvp/gvp_msg.c		optional ci or bvpssp or msi Binary
+io/gvp/gvp_subr.c		optional ci or bvpssp or msi Binary
+io/gvp/gvpvar.c			optional ci or bvpssp or msi Binary
+io/msi/msi_dg.c 		optional msi Binary
+io/msi/msi_error.c 		optional msi Binary
+io/msi/msi_init.c     		optional msi device-driver Binary
+io/msi/msi_isr.c      		optional msi Binary
+io/msi/msi_lpmaint.c  		optional msi Binary
+io/msi/msi_msg.c 		optional msi Binary
+io/msi/msi_subr.c     		optional msi Binary
+io/msi/msivar.c         	optional msi Binary
+io/netif/if_ln.c		optional ln device-driver Binary 
+io/netif/if_ln_copy.s		optional ln Binary 
+io/netif/if_ne.c	        optional ne device-driver Binary
+io/netif/if_sl.c		optional sl device-driver Binary Unsupported
+io/netif/slcompress.c		optional sl device-driver Binary Unsupported
+io/netif/if_qe.c		optional qe device-driver Binary
+io/netif/if_uba.c		optional inet device-driver Binary
+io/netif/if_ni.c		optional bvpni device-driver Binary
+io/netif/if_xna.c		optional xna device-driver Binary
+io/netif/if_fza.c		optional fza device-driver Binary
+io/scs/scs_block.c		optional uq or bvpssp or ci or msi Binary
+io/scs/scs_configdb.c		optional uq or bvpssp or ci or msi Binary
+io/scs/scs_conn.c		optional uq or bvpssp or ci or msi Binary
+io/scs/scs_dg.c			optional uq or bvpssp or ci or msi Binary
+io/scs/scs_error.c		optional uq or bvpssp or ci or msi Binary
+io/scs/scs_event.c		optional uq or bvpssp or ci or msi Binary
+io/scs/scs_info.c		optional uq or bvpssp or ci or msi Binary
+io/scs/scs_maint.c		optional uq or bvpssp or ci or msi Binary
+io/scs/scs_msg.c		optional uq or bvpssp or ci or msi Binary
+io/scs/scs_protocol.c		optional uq or bvpssp or ci or msi Binary
+io/scs/scs_subr.c		optional uq or bvpssp or ci or msi Binary
+io/scs/scsvar.c			optional uq or bvpssp or ci or msi Binary
+io/scsi/mips/scsi.c		optional scsi or kzq or sii or asc device-driver Binary
+io/scsi/mips/scsi_disk.c        optional scsi or kzq or sii or asc device-driver Binary
+io/scsi/mips/scsi_tape.c        optional scsi or kzq or sii or asc device-driver Binary
+io/scsi/mips/scsi_sii.c         optional scsi or sii device-driver Binary
+io/scsi/mips/scsi_kzq.c         optional scsi or kzq device-driver Binary
+io/scsi/mips/scsi_asc.c		optional asc device-driver Binary
+io/scsi/mips/pdma_ds5000.c	optional asc device-driver Binary
+io/scsi/mips/pdma3min.c		optional asc device-driver Binary
+io/scsi/mips/pdma_entry.c	optional asc device-driver Binary
+io/scsi/mips/pdma_func.c	optional asc device-driver Binary
+io/sysap/scs_directory.c 	optional uq or bvpssp or ci or msi Binary
+io/sysap/mscp_tape.c		optional uq or bvpssp or ci or msi Binary
+io/sysap/mscp_disk.c		optional uq or bvpssp or ci or msi Binary
+io/sysap/mscp_bbr.c		optional uq or bvpssp or ci or msi Binary
+io/sysap/mscp_bbrstates.c 	optional uq or bvpssp or ci or msi Binary
+io/sysap/mscp_config.c		optional uq or bvpssp or ci or msi Binary
+io/sysap/mscp_conpol.c		optional uq or bvpssp or ci or msi Binary
+io/sysap/mscp_diskvar.c		optional uq or bvpssp or ci or msi Binary
+io/sysap/mscp_subr.c		optional uq or bvpssp or ci or msi Binary
+io/sysap/mscp_var.c		optional uq or bvpssp or ci or msi Binary
+io/sysap/sysap_start.c		optional uq or bvpssp or ci or msi Binary
+io/sysap/msdup.c		optional msdup uq or msdup bvpssp or msdup ci or msdup msi device-driver Binary
+io/sysap/if_scs.c       	optional ci inet scsnet Binary
+io/uba/uba.c			optional uba or kdb or klesib or kdm device-driver Binary
+io/uba/uqserv.c         	optional uq device-driver Binary
+io/uba/lp.c			optional lp device-driver Binary
+io/uba/dhu.c			optional dhu device-driver Binary
+io/uba/ts.c			optional ts or zs device-driver Binary
+io/vme/vba.c			optional vba device-driver Binary
+io/vme/vbainit.c		optional vba device-driver Binary
+io/vme/xviainit.c		optional vba device-driver Binary
+io/vme/xvmeinit.c		optional vba device-driver Binary
+io/vme/vbavar.c			optional vba device-driver Binary
+io/vme/vba_errors.c		optional vba device-driver Binary
+io/vme/vme_routines.s		optional vba device-driver Binary
+io/xmi/xma.c			optional cpu DS5800 device-driver Binary
+io/xmi/kdm.c      		optional kdm device-driver Binary
+io/xmi/xbi.c			optional xmi device-driver Binary
+io/xmi/xmiinit.c		optional xmi device-driver Binary
+io/xmi/xmici.c			optional xmi ci device-driver Binary
+data/autoconf_data.c		standard Notbinary
+data/af_data.c			standard Notbinary
+data/bi_data.c			optional vaxbi Notbinary
+data/bvp_data.c         	optional bvpssp device-driver Notbinary
+data/ci_data.c          	optional ci Notbinary
+data/cippd_data.c       	optional ci or msi Notbinary
+data/cons_sw_data.c		standard Notbinary
+data/gx_data.c			optional ga or gq device-driver Notbinary
+data/ga_data.c			optional ga device-driver Notbinary
+data/dc_data.c			optional dc device-driver Notbinary
+data/dhu_data.c			optional dhu  device-driver Notbinary
+data/ts_data.c			optional ts or zs device-driver Notbinary
+data/dmb_data.c			optional dmb  device-driver Notbinary
+data/gvp_data.c         	optional ci or bvpssp or msi Notbinary
+data/if_ln_data.c		optional ln Notbinary
+data/if_ne_data.c		optional ne Notbinary
+data/if_qe_data.c		optional qe Notbinary
+data/if_scs_data.c		optional ci inet scsnet Notbinary
+data/if_xna_data.c		optional xna device-driver Notbinary
+data/if_fza_data.c		optional fza device-driver Notbinary
+data/if_sl_data.c		optional sl device-driver Notbinary Unsupported
+data/if_to_proto_data.c 	standard Notbinary
+data/kn230_option_data.c        optional cpu DS5100 Notbinary
+data/lp_data.c			optional lp  device-driver Notbinary
+data/tc_option_data.c         	optional cpu DS5000 or cpu DS5000_100 Notbinary
+data/scsi_data.c		optional scsi or kzq or sii or asc Notbinary
+data/mdc_data.c			optional mdc Notbinary
+data/mscp_data.c        	optional uq or bvpssp or ci or msi or mscp device-driver Notbinary
+data/msi_data.c         	optional msi Notbinary
+data/presto_data.c		optional presto Notbinary
+data/msdup_data.c       	optional msdup uq or msdup bvpssp or msdup ci or msdup msi device-driver Notbinary
+data/scs_data.c         	optional uq or bvpssp or ci or msi or hsc or dssc Notbinary
+data/sysap_data.c       	optional uq or bvpssp or ci or msi Notbinary
+data/tty_conf_data.c		standard Notbinary
+data/tty_pty_data.c		optional pty Notbinary
+data/uipc_domain_data.c		standard Notbinary
+data/uq_data.c          	optional uq device-driver Notbinary
+data/vba_data.c          	optional vba device-driver Notbinary
+data/xmi_data.c          	optional xmi device-driver Notbinary
+io/tc/tc.c			optional cpu DS5000 or cpu DS5000_100 Binary
+io/tc/dc7085.c			optional dc device-driver Binary
+io/tc/scc.c			optional scc device-driver Binary
+io/tc/gx.c			optional gq or ga device-driver Binary
+io/tc/gq.c			optional gq device-driver Binary
+io/tc/ga.c			optional ga device-driver Binary
+io/tc/mmlp.c			optional mmlp device-driver Binary
+io/tc/qfont.c			standard device-driver Binary
+io/tc/xcons.c			optional xcons Binary
+io/ws/fb.c                    	optional fb device-driver Binary
+io/ws/bt459.c			optional fb cpu DS5000 or fb cpu DS5000_100 Binary
+io/ws/bt455.c			optional fb cpu DS5000 or fb cpu DS5000_100 Binary
+io/ws/bt431.c			optional fb cpu DS5000 or fb cpu DS5000_100 Binary
+io/ws/pmagaa.c			optional fb cpu DS5000 or fb cpu DS5000_100 Binary
+io/ws/bt459p.c			optional px cpu DS5000 or px cpu DS5000_100 Binary
+io/ws/pmvdac.c		      	optional fb cpu DS3100 Binary
+io/ws/lk201.c                 	optional fb or px Binary
+io/ws/vfb03.c			optional fb cpu DS5000 or fb cpu DS5000_100 Binary
+io/ws/px.c                    	optional px cpu DS5000 or px cpu DS5000_100 Binary
+io/ws/pmagbc.c                  optional px cpu DS5000 or px cpu DS5000_100 Binary
+data/px_data.c                  optional px cpu DS5000 or px cpu DS5000_100 Notbinary
+data/pmagbc_data.c           	optional px cpu DS5000 or px cpu DS5000_100 Notbinary
+data/fb_data.c             	optional fb Notbinary
+data/lk201_data.c		optional fb or px Notbinary
+data/mmap_data.c		standard Notbinary
+shad/shad_var.c         	optional shd Notbinary
+shad/shadow.c           	optional shd Notbinary
+shad/shad_common.c      	optional shd Notbinary
+shad/bc_var.c           	optional shd Notbinary
+shad/base.c             	optional shd Notbinary
+shad/bc_common.c        	optional shd Notbinary

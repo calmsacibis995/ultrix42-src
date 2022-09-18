@@ -1,0 +1,175 @@
+.\" SCCSID: @(#)ss.4	8.1	9/11/90
+.TH ss 4 VAX
+.SH Name
+ss \- Small VAX serial line interface
+.SH Syntax
+.B "device ss0 at uba0 csr 0x200a0000 flags 0x0f"
+.br
+.ti +0.5i
+.B "vector ssrint ssxint"
+.SH Description
+.NXS "ss interface" "Small VAX serial line interface"
+.NXR "Small VAX serial line interface"
+The Small VAX serial line controller is similar to
+the DZQ11 4-line communications multiplexer.
+An 
+.PN ss
+interface provides four communication ports with partial modem control
+on port 2, adequate for dialup use.
+Only port 2 supports modem control (dialup access).
+All other ports must be operated as local lines.
+Each line attached to the serial line controller
+behaves as described in
+.MS tty 4
+and may be set to run at any of 16 speeds. 
+For the encoding, see
+.MS tty 4 .
+However, configuration requirements dictate fixed speed
+operation of ports connected to the console terminal and
+graphics devices.
+.PP
+The Small VAX may be configured as a workstation or
+a multiuser timesharing system.
+For the workstation configuration,
+the 
+.PN ss 
+ports are used as follows:
+.sp
+.nf
+\fBPort\fR      \fBUsage\fR
+.br
+0         Graphics device keyboard at 4800 BPS
+1         Mouse or tablet at 4800 BPS
+2         Communications (with modem control)/local terminal
+3         Serial printer port
+.fi
+.sp
+For the multiuser configuration,
+the 
+.PN ss 
+port usage is:
+.sp
+.nf
+\fBPort\fR      \fBUsage\fR
+.br
+0         Console terminal at 9600 BPS
+1         Local terminal line
+2         Communications (with modem control)/local terminal
+3         Local terminal or serial printer 
+.fi
+.PP
+For either configuration, a diagnostic console terminal
+may be connected to port 3 using a BCC08 cable.
+For the multiuser configuration, while the diagnostic console
+is connected, no other terminal devices can be connected.
+When the diagnostic console is in use,
+the processor may be halted by pressing the BREAK key.
+.PP
+The selection of which port to use for the console
+is made during the processor's power-on sequence
+and cannot be changed after power on.
+If the diagnostic console is connected, it is used;
+otherwise, the device connected to port 0 is the console.
+.PP
+For the 
+.PN ss 
+device,
+the flags should always be specified as: flags 0x0f
+(all 4 lines hardwired).
+The state of port 2 can be established by specifying either
+modem or nomodem as part of the 
+.PN /etc/ttys 
+file entry for tty02;
+see
+.MS ttys 5 .
+The default state of port 2 can be controlled by
+flags bit 2.
+Set `flags 0x0f' for a hardwired line,
+`flags 0x0b' for dialup operation (wait for carrier).
+.PP
+The 
+.PN ss 
+driver operates in interrupt-per-character mode
+(all pending characters are flushed from the silo on each interrupt).
+Silo alarm mode is used by the DZQ11 driver at times of high input
+character traffic.  This mode is not used by the 
+.PN ss 
+driver,
+due to the need to track mouse or tablet position changes
+in real time.
+.SS "VAXstation 3100 Communications and Printer Ports"
+The VAXstation 3100 has two MMJ (Modified Modular Jack) connectors located
+at the rear of the system box. These MMJ connectors allow connection of 
+terminals, printers, and modems to the VAXstation 3100 system.
+.PP
+The ULTRIX logical names for these connectors are 
+.PN /dev/tty02 
+(the MMJ closest to the power connector) and 
+.PN /dev/tty03 
+(the MMJ next to the graphics connector).
+.PP
+Terminals and printers can be connected to either the 
+.PN /dev/tty02 
+or
+.PN /dev/tty03 
+MMJ.  Modems can be connected only to the 
+.PN /dev/tty02 
+MMJ.
+.PP
+The VAXstation 3100 hardware provides only limited modem control support.
+The DTR (Data Terminal Ready) and DSR (Data Set Ready) signals are the only
+modem control signals available at the 
+.PN /dev/tty02 
+MMJ.  The ULTRIX device driver for 
+.PN /dev/tty02 
+has been modified to allow modems to function
+with the limited modem control provided by the VAXstation 3100.  For the 
+modem to function properly, it must be configured to drop DSR when 
+the carrier drops; that is, the modem should not continuously assert DSR.
+
+.SH Restrictions
+The speed must be set to 9600 BPS on the console port and
+4800 BPS on ports used by graphics devices.
+The console device must be set for 8-bit character length with one stop bit 
+and no parity.
+The 
+.PN ss 
+driver enforces these restrictions; 
+that is, changing speeds with the 
+.PN stty 
+command may
+not always work on these ports.
+.SH Diagnostics
+.B "ss0: input silo overflow"
+.br
+The 64-character input silo overflowed
+before it could be serviced.  This can happen if a hard error occurs
+when the CPU is running with elevated priority, as the system 
+then prints a message on the console with interrupts disabled.
+.SH Files
+.TP 20
+.PN /dev/console
+console terminal or graphics device
+.TP
+.PN /dev/tty00
+not used
+.TP
+.PN /dev/tty01
+local terminal \- multiuser configuration only
+.TP
+.PN /dev/tty02
+dialup or local terminal
+.TP
+.PN /dev/tty03
+printer port or local terminal
+.TP
+.PN /dev/mouse
+mouse or tablet \- workstation configuration only
+.TP
+.PN /dev/smscreen
+console message window for monochrome workstations
+.TP
+.PN /dev/sgscreen
+console message window for color workstations
+.SH See Also
+console(4), devio(4), sm(4), tty(4), ttys(5), MAKEDEV(8)

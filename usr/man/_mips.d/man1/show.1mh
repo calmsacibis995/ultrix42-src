@@ -1,0 +1,307 @@
+.TH show 1mh
+.SH Name
+show \- show (list) messages
+.SH Syntax
+.B show
+[
+.I +folder
+] [
+.I msgs
+] [
+.B \-draft
+] [
+.B \-[no]header
+] [
+.B \-help
+] [
+.B \-showproc 
+.I program
+] [
+.B \-noshowproc
+] [
+.I "options to"
+.PN showproc
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "show command"
+Use 
+.PN show
+to display the contents of the current message.  
+You can specify alternative messages or folders by using the
+.I +folder
+or 
+.I msgs
+arguments.  
+.PP
+If a folder is given, it becomes the current folder.
+The last message shown becomes the current message.
+.PP
+You can specify a number of messages or a range of messages using the 
+.I msgs 
+argument. 
+If you specify more than one message, 
+.PN show
+prompts for a <RETURN> prior to listing each message.
+.PP
+Typically, the messages are listed exactly as they are, 
+with no reformatting.
+A program named by the \f(CWshowproc\fR component in the 
+.PN \&.mh_profile
+file is invoked to do the listing, 
+and any options not recognized by
+.PN show
+are passed along to that program.
+The default program is 
+.MS more 1 .  
+.PP
+By default, the
+.PN show
+command use the 
+.PN more
+program to list each message, a page at a time.
+When the end of the page is reached, 
+it waits for a <RETURN> or a space.
+If you press <RETURN>, 
+.PN show
+prints the next line.  
+If you press the space bar, 
+it prints the next screen of data.
+At the end of the message,
+.PN show
+automatically returns you to the system prompt.  
+Press \f(CBq\fR
+to quit before the end of the message.
+.PP
+If the profile entry \f(CWUnseen-Sequence:\fR
+is present and non-empty, then 
+.PN show
+will remove each of the messages shown 
+from the sequences named by the profile entry.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP \-draft 10
+Displays the draft message, or the current message in your
+.PN +drafts
+folder, if you have one set up.
+You cannot give a
+.I msgs
+argument when you use this option.
+.\"
+.\" ***This option commented out
+.ig
+.IP "\-form \fIformfile\fB" 10
+***ANY INFORMATION ON THIS???
+.br
+***IS IT -form OR -format???
+..
+.\" ***End of comments
+.\"
+.IP \-header 10
+.PD 0
+.IP \-noheader 10
+.PD
+Displays a one-line header before the message.
+The header consists of the name of the folder
+and the message number.
+This is the default behavior.
+It can be suppressed with the
+.B \-noheader
+option.
+.\"
+.IP \-help 10
+Prints a list of the valid options to this command.
+.\"
+.IP "\-showproc \fIprogram\fR [ \fIoptions\fR ]\fB" 10
+.PD 0
+.IP \-noshowproc 10
+.PD
+Specifies an alternative program to list messages.
+The default is to use the program defined by the
+\f(CWshowproc:\fR entry in the
+.PN \&.mh_profile
+file.
+You can give options to the
+.PN showproc
+program at the command line.
+These are passed directly to
+.PN showproc
+by
+.PN show .
+.IP
+If the 
+.B \-noshowproc
+option is specified,
+.PN /bin/cat
+is used instead of 
+.PN showproc .
+.IP
+The MH command 
+.PN mhl
+can be used as a 
+.PN showproc
+to show messages in a more uniform format.  
+See 
+.MS mhl 1mh
+for more details.
+.IP
+If you are going to use the same 
+.PN showproc 
+all the time, it is advisable to specify it in your 
+.PN \&.mh_profile 
+file.
+See 
+.MS mh_profile 5mh 
+for more details.
+.\"
+.PP
+The defaults for this command are as follows:
+.IP
+.I +folder
+defaults to the current folder
+.br
+.I msgs
+defaults to the current message
+.br
+.B \-header
+.\"
+.\" ***COMMENTED OUT
+.\" ***Noinformation on -form or -format option
+.\" .br
+.\" .B \-format
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+The 
+.B \-header
+option does not work when 
+.PN msgs
+expands to more than
+one message.
+If the 
+.PN showproc
+is 
+.PN mhl ,
+then this problem can be circumvented by referencing
+the \f(CWmessagename\fR field in the 
+.PN mhl
+format file.
+.PP
+The command
+.PN show
+updates your mail environment
+before showing the message.
+Hence 
+.PN show
+may mark messages as seen before you 
+actually see them.
+However, this is generally not a problem,
+unless you are using the \f(CWunseen\fR messages mechanism,
+and you interrupt
+.PN show
+while it is showing \f(CWunseen\fR messages.
+.PP
+If your
+.PN showproc
+is 
+.PN mhl ,
+then 
+.PN show
+uses a built-in 
+.PN mhl :
+it does not actually run the 
+.PN mhl
+program.
+Hence, if you define your own 
+.PN showproc ,
+do not call it 
+.PN mhl
+since 
+.PN show
+will not run it.
+.PP
+If 
+.MS more 1 
+is your 
+.PN showproc 
+(which is the default), then avoid running 
+.PN show
+in the background with only its standard output 
+piped to another process.  
+You should re-direct the diagnostic output of
+.PN show
+as well.
+.PP 
+For example, in the following incorrect example,
+.PN show
+will go into a 
+.PN tty
+input state:
+.EX
+% \f(CBshow | print &\f(CW
+.EE
+For users of 
+.PN csh ,
+the correct command is:
+.EX
+% \f(CBshow |& print &\f(CW
+.EE
+For users of 
+.PN sh ,
+the correct command is:
+.EX
+% \f(CBshow 2>&1 | print &\f(CW
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+In the first example,
+.PN show
+displays the contents of message 36 
+in the current folder:
+.EX
+% \f(CBshow 36\f(CW
+.EE
+.PP
+In the next example, the
+.MS pr 1  
+program is used to list the current message:
+.EX 
+% \f(CBshow \-showproc pr\f(CW
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine the user's Mail directory
+Unseen-Sequence:+To name sequences denoting unseen messages
+showproc:+Program to show messages
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+more(1), mhl(1mh), next(1mh), pick(1mh), prev(1mh), scan(1mh)

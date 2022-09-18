@@ -1,0 +1,62 @@
+.\" SCCSID: @(#)networks.5	8.1	9/11/90
+.TH networks 5 
+.SH Name
+networks \- network name file
+.SH Description
+.NXR "networks file" "format"
+.NXR "Internet" "specifying networks"
+The
+.PN networks
+file is an ASCII file that contains information regarding
+the known networks in the DARPA Internet.
+For each network, a single line
+should be present with the following information:
+.HP 10
+Official network name
+.br
+.ns
+.HP 10
+Network number
+.br
+.ns
+.HP 10
+Aliases
+.PP
+Each 
+.PN network 
+name is separated from the next by a newline.
+Items are separated by any number of blanks or tab characters or both.
+A number sign (#) indicates the beginning of a comment; characters up to the end of
+the line are not interpreted by routines that search the file.
+This file is normally created from the official network data base
+maintained at the Network Information Control Center (NIC), though local
+changes may be required to bring
+it up to date regarding unofficial aliases
+or unknown networks.
+.PP
+The network number may be specified in the conventional
+dot (.) notation using the 
+.PN inet_network 
+routine
+from the Internet address manipulation library, 
+.PN inet(3n) .
+Network names may contain any printable character other than a field
+delimiter, newline, or comment character.
+.PP
+The 
+.PN networks
+database may be distributed in a network by a naming service, 
+such as Yellow Pages or BIND/Hesiod.  See the
+.I Guide to the Yellow Pages Service
+or the 
+.I Guide to the BIND/Hesiod Service
+for setup information.
+.SH Files
+.PN /etc/networks
+.SH See Also
+getnetent(3n)
+.br
+.I Guide to the BIND/Hesiod Service
+.br
+.I Guide to the Yellow Pages Service
+                                        

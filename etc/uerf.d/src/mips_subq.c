@@ -1,0 +1,1 @@
+subq(){return(1);}

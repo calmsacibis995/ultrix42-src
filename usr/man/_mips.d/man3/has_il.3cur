@@ -1,0 +1,38 @@
+.TH has_il 3cur 
+.SH Name
+has_il \- determine whether insert/delete line is available
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B
+bool has_il(\|)
+.SH Description
+.NXR "has_il subroutine"
+.NXA "has_il subroutine" "deleteln subroutine"
+.NXA "has_il subroutine" "insertln macro"
+This function will return the value
+.PN TRUE
+if the terminal has insert- and delete-line capabilities, or 
+if it can
+simulate them using scrolling regions.
+This function
+might be used to check if it would be appropriate to turn on
+physical scrolling using 
+the
+.PN scrollok 
+routine.
+.PP
+The routines
+.PN insertln 
+and
+.PN deleteln 
+are always available in the
+.PN curses
+library if the terminal does not have the required facilities.
+.SH Return Values
+This function returns TRUE if the terminal has insert line and delete line
+capabilities, or can simulate them using scrolling regions, otherwise it
+returns FALSE.
+.SH See Also
+deleteln(3cur), insertln(3cur), scrollok(3cur)

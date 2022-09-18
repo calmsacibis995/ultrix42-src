@@ -1,0 +1,94 @@
+#!/bin/sh5
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)SSSIZ	4.1	(ULTRIX)	7/27/90"
+#
+#	000	Jonathan Wallace	1-Jun-1990
+#
+########################################################################
+#
+#
+trap 'Unticker; exit' 1 2 3 5 18
+set -h  # hash subr references
+LL="
+"
+
+########################################################################
+# Subroutines #
+###############
+
+: Ticker - Put time stamps on screen
+Ticker()
+{
+	(
+		while :
+		do
+			echo "    working ..... \c"
+			date
+			sleep 120
+		done
+	)&
+	TICKPID=$!
+}
+
+
+: Unticker - Stop time stamps to screen
+Unticker()
+{
+	[ -n "$TICKPID" ] &&
+	{
+		(
+		kill -15 $TICKPID
+		wait $TICKPID
+		TICKPID=
+		)&
+	}
+}
+
+
+
+########################################################################
+# Program Start #
+#################
+clear
+echo "
+*** Subset Size Listing ***
+
+It will take a few minutes to compile the Subset Sizes."
+
+Ticker
+cd /usr/etc/subsets
+$SCAMPDIR/ssizes 1>/dev/null
+Unticker
+while : true
+do
+	clear
+	more /usr/etc/subsets/SIZES
+	echo "
+Press <RETURN> to review Subset Sizes again, or enter '0'
+to return to the Software Management Menu: \c"
+	read resp
+	case $resp in
+	0 )
+		break
+		;;
+	esac
+done

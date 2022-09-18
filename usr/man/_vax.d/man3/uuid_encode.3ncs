@@ -1,0 +1,46 @@
+.TH uuid_encode 3ncs
+.SH Name
+uuid_encode \- convert a UUID into its character-string representation
+.SH Syntax
+#include <idl/c/uuid.h>
+
+void uuid_$encode(\fIuuid, s\fP)
+.nf
+uuid_$t *\fIuuid\fP;
+uuid_$string_t \fIs\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/uuid.ins.pas'\fR
+.\"
+.\"\fBprocedure uuid_$encode(\fR
+.\"	\fBin \fIuuid\fB: uuid_$t;\fR
+.\"	\fBout \fIs\fB: uuid_$string_t);\fR
+.\".DE
+.SH Arguments
+.TP 
+\fIuuid\fR
+A UUID.
+.TP 
+\fIs\fR
+The character-string representation of \fIuuid\fR.
+.SH Description
+The 
+.PN uuid_$encode
+routine returns the character-string representation 
+of a UUID.
+.NXR "Operations on Universal Unique Identifiers" "uid_encode"
+.SH Examples
+The following routine returns as 
+.B foo_uuid_rep
+the character-string representation for the UUID 
+.B foo_uuid:
+.EX
+uuid_$encode (&foo_uuid, foo_uuid_rep);
+.EE
+.SH Files
+.PN /usr/include/idl/uuid.idl
+.br
+.PN /usr/include/idl/c/uuid.h
+.SH See Also
+intro(3ncs), uuid_decode(3ncs)

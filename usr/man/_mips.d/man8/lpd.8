@@ -1,0 +1,560 @@
+.TH lpd 8
+.SH Name
+lpd \- line printer daemon
+.SH Syntax
+.B /usr/lib/lpd
+[
+.B \-l
+] [
+.B \-L
+.I logfile
+] [
+.I portnumber
+]
+.SH Description
+.NXR "lpd daemon"
+.NXAM "lpr command" "lpd daemon"
+.NXS "line printer daemon" "lpd daemon"
+.NXA "lpd daemon" "lpc program"
+.NXR "lpd daemon" "key characters"
+The
+.PN lpd
+line printer daemon uses the system calls
+.PN listen
+and
+.PN accept ,
+to receive requests to print files in the print queue,
+transfer files to the spooling area, display the queue, and remove jobs
+from the queue.
+.PP
+The line printer daemon is invoked by the
+.PN /etc/rc
+command file when the system goes multi-user (normally at system start
+up).
+The daemon looks at the
+.PN /etc/printcap
+file to find out about the capabilities of existing printers, and
+prints any files that were not printed when the system last stopped
+operating.
+.PP
+The Internet port number used to rendezvous with other processes is
+normally obtained with
+.PN getservbyname ,
+but can be changed by using the \fIportnumber\fR argument.
+.PP
+Access to the facilities provided by the
+.PN lpd
+daemon is controlled by only allowing requests from
+the machines listed in the
+.PN /etc/hosts.equiv
+or
+.PN /etc/hosts.lpd
+files.
+The
+.PN /etc/hosts.equiv
+file is described on the
+.PN hosts.equiv(5yp)
+reference page.
+The
+.PN /etc/hosts.lpd
+file is a list of names consisting of one host machine name per line.
+An * character at the start of any line in
+.PN /etc/hosts.lpd
+allows print requests from all systems.  The machine names listed in the 
+.PN /etc/hosts.equiv
+and
+.PN /etc/hosts.lpd
+files may optionally contain the local BIND domain name.  For
+more information on BIND, see the
+.I Guide to the BIND/Hesiod Service.
+.PP
+You can also control access to the
+.PN lpd
+daemon by specifying the \fBrs\fR capability for
+a particular printer in the
+.PN printcap
+file.
+This restricts the printer users to those with accounts on the
+machine which the printer is connected to.
+.PP
+The file
+.I lock
+in each spool directory is used to prevent multiple daemons from
+becoming active simultaneously, and to store information
+about the daemon process for
+.PN lpr ,
+.PN lpq ,
+and
+.PN lprm .
+.PP
+After the daemon has successfully set the lock, it scans the directory
+for command files with names beginning with 
+.I cf .
+These files specify names of files which are to be printed and
+parameters affecting how the files are printed.
+Each line in a command file begins with a key character
+to specify what to do with the remainder of the line.
+The key characters and their meanings are shown below.
+They are listed in the order that they would appear in a command file.
+.PP
+If a file is to be printed but can not be opened, 
+a message will be placed
+in the \fIlogfile\fR (by default, the system console).
+.PP
+The
+.PN lpd
+daemon uses 
+.PN flock
+to provide exclusive access to the \fIlock\fR file.
+The lock is automatically removed by the kernel when a
+.PN lpd
+process terminates for any reason.
+The lock file contains two lines.
+The first is the process id of the daemon and the second is the control
+file name of the current job being printed.
+The second line is updated for use by
+.PN lpq
+and
+.PN lprm .
+.PP
+The key characters in the command file and their meanings are as follows:
+.IP H\fIhost\fR 1i
+Host Name.
+Name of the machine where
+.PN lpr
+was invoked.
+.IP P\fIuser\fR 1i
+Person.
+Login name of the person who invoked
+.PN lpr .
+This is used to verify ownership by
+.PN lprm .
+.IP J\fIjob\fR 1i
+Job Name.
+String to be used for the job name on the banner page.
+.IP C\fIclass\fR 1i
+Classification.
+String to be used for the classification line on the banner page.
+.IP L\fIuser\fR 1i
+Literal.
+The line contains identification information from
+the password file and causes the banner page to be printed.
+.IP I\fInum\fR 1i
+Indent.
+The number of characters by which the output is indented (in ASCII).
+.IP M\fIuser\fR 1i
+Send mail to the specified user when the current print job completes.
+.IP 1\fIfont\fR 1i
+Troff Font R.
+Name of the font file to use instead of the default.
+.IP 2\fIfont\fR 1i
+Troff Font I.
+Name of the font file to use instead of the default.
+.IP 3\fIfont\fR 1i
+Troff Font B.
+Name of the font file to use instead of the default.
+.IP 4\fIfont\fR 1i
+Troff Font S.
+Name of the font file to use instead of the default.
+.IP W\fInum\fR 1i
+Width.
+Changes the page width (in characters) used by
+.PN pr
+and the text filters.
+.IP Z\fInum\fR 1i
+Length.
+Changes the page length (in lines) used by
+.PN pr
+and the text filters.
+.IP D\fIdata_type\fR 1i
+Data type of the job.
+.br
+(PostScript (TM) printers only.)
+.IP <\fIinput_tray\fR 1i
+Selects the input tray that supplies paper for the print job.
+.br
+(PostScript (TM) printers only.)
+.IP >\fIoutput_tray\fR 1i
+Selects the output tray where the printed paper is deposited.
+.br
+(PostScript (TM) printers only.)
+.IP O\fIorientation\fR 1i
+Specifies the orientation of the printed output on the page.
+.br
+(PostScript (TM) printers only.)
+.IP F\fIpage_size\fR 1i
+Specifies the size of the pages being printed.
+.br
+(PostScript (TM) printers only.)
+.IP S\fIsheet_size\fR 1i
+Specifies the physical size of the sheets being printed.
+.br
+(PostScript (TM) printers only.)
+.IP E\fImessage\fR 1i
+Specifies what happens to messages generated when processing the print job.
+.br
+(PostScript (TM) printers only.)
+.IP X\fInum\fR 1i
+Specifies the number of times each page is printed.
+.br
+(PostScript (TM) printers only.)
+.IP A\fInum\fR 1i
+Specifies the first page to be printed for the job.
+.br
+(PostScript (TM) printers only.)
+.IP B\fInum\fR 1i
+Specifies the last page to be printed for the job.
+.br
+(PostScript (TM) printers only.)
+.IP G\fInum\fR 1i
+Specifies the number of pages to be printed on a single physical sheet.
+.br
+(PostScript (TM) printers only.)
+.IP z\fIfilename\fR 1i
+Layup definition file which alters the appearance of pages (margins, borders,
+etc).
+.br
+(PostScript (TM) printers only.)
+.IP K\fIsides\fR 1i
+Specifies whether the job should be printed on both sides to the physical
+sheet, and whether the pages should be rotated by 180 degrees.
+.br
+(PostScript (TM) printers only.)
+.IP T\fItitle\fR
+Title.
+String to be used as the title for 
+.PN pr .
+.IP f\fIfilename\fR 1i
+Formatted File.
+Name of a file to print which is already formatted.
+.IP p\fIfilename\fR 1i
+Name of a file to print using 
+.PN pr
+as a filter.
+.IP l\fIfilename\fR 1i
+Like 
+.PN f 
+but passes control characters and does not make page breaks.
+.IP t\fIfilename\fR 1i
+Troff File.
+The file contains 
+.PN troff .
+.IP n\fIfilename\fR 1i
+Ditroff File.
+The file contains
+.PN ditroff
+output (device independent
+.PN troff ).
+.IP d\fIfilename\fR 1i
+DVI File.
+The file contains TeX output (DVI format from Stanford).
+.IP g\fIfilename\fR 1i
+Graph File.
+The file contains data produced by
+.PN plot .
+.IP v\fIfilename\fR 1i
+The file contains a raster image.
+.IP c\fIfilename\fR 1i
+Cifplot File.
+The file contains data produced by cifplot.
+.IP r\fIfilename\fR 1i
+The file contains text data with Fortran carriage control characters.
+.IP x\fIfilename\fR 1i
+Do not interpret any control characters in the file.
+.IP U\fIfilename\fR 1i
+Unlink.
+Name of file to remove upon completion of printing.
+.IP N\fIname\fR 1i
+File name.
+The name of the file which is being printed, or a blank
+for the standard input (when 
+.PN lpr
+is invoked in a pipeline).
+.SS PostScript (TM) Printers With Specialised Support
+To use the features of the PostScript (TM) printers for which specialised
+support is available, you must ensure that \fB:ps=LPS:\fR is
+set in the appropriate entry in the
+.PN /etc/printcap
+file.
+.PP
+For PostScript (TM) printers, the line printer daemon assembles the PostScript
+(TM)
+from the users data files and PostScript (TM) device control modules.
+The device control modules access device features and manipulate the
+appropriate printer parameters.
+Device control modules (the \fBDl\fR capability in
+.PN /etc/printcap ),
+are provided in an archive file, refer to
+.PN ar(5) .
+Device control modules access printer specific features of PostScript (TM)
+and are therefore device dependent.
+.PP
+The data type of the spooled files is given by the \fBDa\fR capability in
+the
+.PN printcap
+file.
+The data type can be overridden by the \fBD\fR key character in the command
+file.
+.PP
+The support for PostScript (TM) printers introduces a new method of
+specifying the type of the data to be printed using the \fB\-D\fR option of
+.PN lpr
+or the \fBDa\fR capability in
+.PN /etc/printcap .
+The mechanism for invoking these translators needs to interact with the
+existing mechanism for invoking filters for non-text files, so that the
+existing mechanism can be used if required.
+The mechanism has the following features:
+.IP
+The new translators are invoked via the shell program
+.PN xlator_call ,
+which is passed the data type as one of its parameters.
+.IP
+Any old style filter arguments (for example, \fB\-t\fR and \fB\-x\fR) take
+precedence over \fB\-D\fR (even though
+.PN lpr
+will accept the combination).
+This means that the \fBif\fR capability in
+.PN /etc/printcap
+must not be specified if data types are being used.
+.SS Filter Capabilities
+Two of the
+.PN printcap
+capabilities that affect the behaviour of
+.PN lpd
+require a more detailed explanation than that given on the
+.PN printcap(5)
+reference page.
+.IP ct .3i
+Connection type.
+This entry in the
+.PN printcap
+file determines the type of connection.
+The following table shows the valid choices for \fBct\fR, and the mandatory and
+optional entries to go with each choice.
+.sp 6p
+.TS 
+tab(@);
+lfHB lfHB lfHB
+lfR lfR lfR .
+_
+.sp 4p
+ct=@Mandatory Entries@Optional Entries
+.sp 6p
+_
+.sp 6p
+.R
+dev@lp@of
+lat@lp, ts, op, os@of
+remote@rp, rm@
+network@of@
+.sp 6p
+_
+.TE
+.IP \& .3i
+Remote means a printer that is connected to another system running a
+compatible printing daemon.
+Network means that the output filter does not use stdout (that is, no
+\fBlp\fR) and is restarted for each job.
+.IP uv .3i
+ULTRIX version.
+To enable the \fBct\fR capability to determine the type of connection,
+and to ensure % escapes are expanded in all filter command strings, you
+must have
+.EX
+:uv=psv1.0:
+.EE
+as part of the
+.PN printcap
+entry.
+.SS Using Filter Capabilities
+This section refers to the programs specified by
+the following filter capabilities in the
+.PN printcap
+file: 
+.PN cf , 
+.PN df , 
+.PN gf , 
+.PN if , 
+.PN nf , 
+.PN of , 
+.PN pp , 
+.PN tf , 
+.PN vf , 
+.PN xf , 
+.PN Lf , 
+and
+.PN Xf .
+.PP
+Filters may be specified as pipelines as well as simple commands.
+The syntax accepts tab or space as word separators, and | to
+set up a pipe connection.
+You can specify arguments to the filters.
+The individual commands may be specified as full path names or
+as simple program names, in which case the path searched is:
+.EX
+/usr/local/lib/lpdfilters:/usr/ucb:/bin:/usr/bin:
+                            /usr/lib:/usr/lib/lpdfilters
+.EE
+.SS Filter Argument Parameterisation
+The arguments to the filter program are normally supplied automatically
+by
+.PN lpd
+but you can assign your own arguments to filters.
+When arguments are supplied automatically, they are put after the arguments
+for the first command in a pipeline, or after the arguments of a simple
+command.
+.PP
+If you want to assign your own arguments to filters, you must ensure that
+\fB:uv=psv1.0:\fR is set in the appropriate entry in the
+.PN printcap
+file.
+.PP
+Arguments are supplied exactly as for previous
+.PN lpd
+releases
+unless a special character (%) is found anywhere in the command.
+If a % is found it tells
+.PN lpd
+that you have taken control
+of passing arguments to the filter.
+In this case, the default set of arguments
+are no longer appended to the argument list.
+The arguments supplied to the command are those specified in the command
+string, but with
+.PN lpd
+replacing %x pairs with parameter strings.
+.PP
+To allow the special character, %, to be passed,
+a pair of %%'s are replaced by a %.
+It is an error to specify an unknown %x pair.
+The %x pairs and the parameter strings that replace them are shown below.
+.sp 6p
+.TS
+tab(@);
+lw lw
+lw lw.
+.HB
+_
+.sp 6p
+%x Pairs@Parameter String
+.sp 6p
+_
+.sp 6p
+.R
+%%@%
+%0@T{
+null string (used to pass null argument or disable default arguments)
+T}
+%\&_@space (used to insert spaces in arguments)
+%A@accounting file
+%D@data type
+%F@pagesize
+%H@host where job was submitted
+%I@indent
+%j@job name
+%J@T{
+job id as shown by
+.PN lpq
+T}
+%L@length
+%O@orientation
+%P@printer name
+%T@title
+%U@user's login name
+%W@width
+%X@pixel width
+%Y@pixel length
+.sp 6p
+_
+.TE
+.PP
+All of the above %x pairs are available to all input filters.
+For a network printer (\fB:ct=network:\fR in the
+.PN /etc/printcap
+file) they are all available to the output filter \fBof\fR.
+For dev and lat printers the per-job parameters (%H, %U, %J and
+%j) are not available to the output filter.
+This is because the output filter
+is invoked per session so that per-job parameters are still unset.
+.SS Filter Arguments Supplied By lpd
+The arguments automatically assigned to each filter by
+.PN lpd
+are shown below.
+For clarity the parameters for each argument are 
+shown as the appropriate %x pair.
+.sp 6p
+.TS
+tab(@);
+lw lw
+lw lw.
+.HB
+_
+.sp 6p
+Filter@Parameterised Form of Default Arguments
+.sp 6p
+_
+.sp 6p
+.R
+cf@\-x%X \-y%Y \-n %U \-h %H %A
+df@\-x%X \-y%Y \-n %U \-h %H %A
+gf@\-x%X \-y%Y \-n %U \-h %H %A
+if@\-w%W \-l%L \-n %U \-h %H %A
+\&(when \c
+.PN lpr \0\c
+is invoked@
+without the \fB\-l\fR option)@
+if@\-c \-w%W \-l%L \-n %U \-h %H %A
+\&(when \c
+.PN lpr \0\c
+is invoked@
+with the \fB\-l\fR option)@
+nf@\-w%W \-l%L \-n %U \-h %H %A
+of@\-w%W \-l%L
+pp@\-w%W \-l%L \-h %T
+rf@\-w%W \-l%L \-n %U \-h %H %A
+tf@\-x%X \-y%Y \-n %U \-h %H %A
+vf@\-x%X \-y%Y \-n %U \-h %H %A
+xf@(no arguments)
+Lf@(no arguments)
+Xf@%D %O %F %W %L %I
+.sp 6p
+_
+.TE
+.PP
+The %A argument is only supplied if the \fBaf\fR capability
+is present.
+.SH Options
+.IP \fB\-l\fR .3i
+Log valid requests received from the network.
+This can be useful for debugging purposes.
+.IP \fB\-L\fIlogfile\fR .3i
+Write error conditions to the file specified by the argument
+\fIlogfile\fR.
+If this option is not used, error conditions are written to the system
+console.
+.SH Files
+.TP 25
+.PN /etc/printcap
+Printer description file
+.TP
+.PN /usr/spool/lpd
+Spool directories
+.TP
+.PN /dev/lp*
+Line printer devices
+.TP
+.PN /dev/printer
+Socket for local requests
+.TP
+.PN /etc/hosts.lpd
+Lists machine names allowed printer access
+.TP
+.PN /etc/hosts.equiv
+Lists machine names allowed printer access as trusted machines
+.SH See Also
+lpq(1), lpr(1), lprm(1), printcap(5), lpc(8), pac(8), xlator_call(8)
+.br
+.I Guide to the BIND/Hesiod Service
+.br
+.I Guide to System Environment Setup

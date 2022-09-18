@@ -1,0 +1,99 @@
+.\"	@(#)pfm_rls_cleanup.3ncs	8.1 of 9/11/90
+.TH pfm_rls_cleanup 3ncs
+.SH Name
+pfm_rls_cleanup \- release clean-up handlers
+.SH Syntax
+.nf
+#include <idl/c/base.h>
+#include <idl/c/pfm.h>
+
+void pfm_$rls_cleanup(\fIcleanup_record, status)\fP
+pfm_$cleanup_rec *\fIcleanup_record\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/sys/ins/base.ins.pas';\fR
+.\"\fB%include '/sys/ins/pfm.ins.pas';\fR
+.\"
+.\"\fBprocedure pfm_$rls_cleanup(\fR
+.\"	\fBin \fIcleanup_record\fB: pfm_$cleanup_rec;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.ig
+.SH Synopsis (fortran)
+.nf
+\fB%include '/sys/ins/base.ins.ftn'\fR
+\fB%include '/sys/ins/pfm.ins.ftn'\fR
+
+	 \fBinteger*4 \fIcleanup_record\fB(16), \fIstatus\fR
+
+	 \fBcall pfm_$rls_cleanup(\fIcleanup_record\fB, \fIstatus\fB)\fR
+.fi
+..
+.SH Arguments
+.TP 20
+\fIcleanup_record\fR
+The clean-up record for the first clean-up handler to release.
+.TP 20
+\fIstatus\fR
+The completion status.
+If \fIstatus\fR is \fBpfm_$bad_rls_order\fR,
+it means that the caller attempted to release a clean-up handler
+before releasing all handlers established after it.
+This status is only a warning;
+the intended clean-up handler is released, along with all clean-up handlers
+established after it.   
+If the completion status returned in
+.PN status\&.all
+is equal to \fBstatus_$ok\fR, then the routine that supplied it was successful.
+.RE
+.SH Description
+The 
+.PN pfm_$rls_cleanup
+routine releases the clean-up handler
+associated with 
+.I cleanup_record
+and all clean-up handlers established after it.
+.NXR "Fault Management" "pfm_rls_cleanup"
+.SH Diagnostics 
+This section lists the status codes for errors returned by this 
+.PN pfm_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBpfm_$bad_rls_order\fR
+Attempted to release a clean-up handler out of order.
+.TP 20
+\fBpfm_$cleanup_not_found\fR
+There is no pending clean-up handler.
+.TP 20
+\fBpfm_$cleanup_set\fR
+A clean-up handler was established successfully.
+.TP 20
+\fBpfm_$cleanup_set_signalled\fR
+Attempted to use \fBpfm_$cleanup_set\fR as a signal.
+.br
+.ne 3
+.TP 20
+\fBpfm_$invalid_cleanup_rec\fR
+Passed an invalid clean-up record to a routine.
+.\".DM "\
+.\"path syscalls/pfm/pfm_$rls_cleanup\
+.\"type reference\
+.\"book syscalls\
+.\"chapter pfm\
+.\"section pfm_$rls_cleanup\
+.\""
+.\".DD "\
+.\"releas(ed)(s)(ing) clean-up cleanup clean(ed)(s)(ing) up handler(s) fault(s) handle(ed)(s)(ing)\
+.\"pfm pfm_$\
+.\""
+.SH Files
+.PN /usr/include/idl/c/base.h
+.br
+.PN /usr/include/idl/base.idl
+.br
+.PN /usr/include/idl/c/pfm.h
+.SH See Also
+intro(3ncs)

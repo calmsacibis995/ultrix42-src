@@ -1,0 +1,461 @@
+/*static	char *sccsid = "@(#)manifest	4.1 (ULTRIX) 7/3/90"; */
+
+/************************************************************************
+ *									*
+ *			Copyright (c) 1984-1989 by			*
+ *		Digital Equipment Corporation, Maynard, MA		*
+ *			All rights reserved.				*
+ *									*
+ *   This software is furnished under a license and may be used and	*
+ *   copied  only  in accordance with the terms of such license and	*
+ *   with the  inclusion  of  the  above  copyright  notice.   This	*
+ *   software  or  any  other copies thereof may not be provided or	*
+ *   otherwise made available to any other person.  No title to and	*
+ *   ownership of the software is hereby transferred.			*
+ *									*
+ *   This software is  derived  from  software  received  from  the	*
+ *   University    of   California,   Berkeley,   and   from   Bell	*
+ *   Laboratories.  Use, duplication, or disclosure is  subject  to	*
+ *   restrictions  under  license  agreements  with  University  of	*
+ *   California and with AT&T.						*
+ *									*
+ *   The information in this software is subject to change  without	*
+ *   notice  and should not be construed as a commitment by Digital	*
+ *   Equipment Corporation.						*
+ *									*
+ *   Digital assumes no responsibility for the use  or  reliability	*
+ *   of its software on equipment which is not supplied by Digital.	*
+ *									*
+ ************************************************************************/
+/********************************************************************
+ *
+ *		Modification History
+ *
+ *	reeves, 03-May-89 for Sid Maxwell
+ * 010	Upped TREESZ to 4000.
+ *
+ *	reeves, 10-Mar-89
+ * 009	Changed TNULL from void * to "member of enum" * (should be
+ *	impossible value) to avoid clash between undefined and
+ *	void *.  TNULL is treated as an unitialized symbol table slot.
+ *	Change suggested by Donn Seeley's post-4.3 fix list.
+ *
+ *	Jon Reeves, 21-Apr-88
+ * 008	Increased TREESZ to 1000 in all cases.
+ *
+ *	David Metsky, 2-Jul-87
+ * 007	Changed the token numbers for const and volatile from 114 and
+ *	115 to 128 and 129 respectively.
+ *
+ *	Victoria Holt, 14-Apr-86
+ * 006	Added BCONST_PTR and BVOLATILE_PTR to fix bug with constant
+ *	pointers.
+ *
+ *	Lu Anne Van de Pas, 02-Mar-86
+ * 005  Added support for f floating constants (DCON and dpn in udu struct)
+ *
+ *	Victoria Holt, 26-Feb-86
+ * 004	Added support for const and volatile (new masks, bit fields,
+ *	and macros).
+ *
+ *	Rich Phillips, 13-Sept-84
+ * 003-	Back out of 001.
+ *
+ *	Rich Phillips, 16-Aug-84
+ * 002- Define ASM so scan can communicate with the parser. Also, define
+ * 	a pointer in the node to asm information for UNARY CALL nodes set
+ *	up for asm directives.
+ *
+ *	Rich Phillips, 20-July-84
+ * 001-	Define a flag word (nflags) in the node structures for the
+ *	flag NWASREG (see mfile1).
+ *
+ ********************************************************************/
+# include <stdio.h>
+/*	manifest constant file for the lex/yacc interface */
+
+# define ERROR 1
+# define NAME 2
+# define STRING 3
+# define ICON 4
+# define DCON 113
+# define FCON 5
+# define PLUS 6
+# define MINUS 8
+# define MUL 11
+# define AND 14
+# define OR 17
+# define ER 19
+# define QUEST 21
+# define COLON 22
+# define ANDAND 23
+# define OROR 24
+
+/* the defines for ASOP, RELOP, EQUOP, DIVOP,
+   SHIFTOP, ICOP, UNOP, and STROP have been
+   moved to mfile1				*/
+/*	reserved words, etc */
+# define TYPE 33
+# define CLASS 34
+# define STRUCT 35
+# define RETURN 36
+# define GOTO 37
+# define IF 38
+# define ELSE 39
+# define SWITCH 40
+# define BREAK 41
+# define CONTINUE 42
+# define WHILE 43
+# define DO 44
+# define FOR 45
+# define DEFAULT 46
+# define CASE 47
+# define SIZEOF 48
+# define ENUM 49
+
+/*	little symbols, etc. */
+/*	namely,
+
+	LP	(
+	RP	)
+
+	LC	{
+	RC	}
+
+	LB	[
+	RB	]
+
+	CM	,
+	SM	;
+
+	*/
+
+/*  These defines are being moved to mfile1
+    to alleviate preprocessor problems with
+    second pass files.  
+# define LP 50
+# define RP 51
+# define LC 52
+# define RC 53
+*/
+# define LB 54
+# define RB 55
+# define CM 56
+# define SM 57
+# define ASSIGN 58
+# define ASM 59
+
+/* Type attributes */
+/* 007 - dnm */
+# define CONST 128
+# define VOLATILE 129
+
+/*	END OF YACC */
+
+/*	left over tree building operators */
+# define COMOP 59
+# define DIV 60
+# define MOD 62
+# define LS 64
+# define RS 66
+# define DOT 68
+# define STREF 69
+# define CALL 70
+# define FORTCALL 73
+# define NOT 76
+# define COMPL 77
+# define INCR 78
+# define DECR 79
+# define EQ 80
+# define NE 81
+# define LE 82
+# define LT 83
+# define GE 84
+# define GT 85
+# define ULE 86
+# define ULT 87
+# define UGE 88
+# define UGT 89
+# define SETBIT 90
+# define TESTBIT 91
+# define RESETBIT 92
+# define ARS 93
+# define REG 94
+# define OREG 95
+# define CCODES 96
+# define FREE 97
+# define STASG 98
+# define STARG 99
+# define STCALL 100
+
+/*	some conversion operators */
+# define FLD 103
+# define SCONV 104
+# define PCONV 105
+# define PMCONV 106
+# define PVCONV 107
+
+/*	special node operators, used for special contexts */
+# define FORCE 108
+# define CBRANCH 109
+# define INIT 110
+# define CAST 111
+# define INITASSIGN 112
+
+/*	node types */
+# define LTYPE 02
+# define UTYPE 04
+# define BITYPE 010
+
+	/* DSIZE is the size of the dope array - vdp005
+	*/
+# define DSIZE VOLATILE+1
+
+/*	type names, used in symbol table building */
+# define TNULL (PTR+MOETY)    /* pointer to member of enum */
+# define TVOID FTN	/* function returning UNDEF (for void) */
+# define UNDEF 0
+# define FARG 1
+# define CHAR 2
+# define SHORT 3
+# define INT 4
+# define LONG 5
+# define FLOAT 6
+# define DOUBLE 7
+# define STRTY 8
+# define UNIONTY 9
+# define ENUMTY 10
+# define MOETY 11
+# define UCHAR 12
+# define USHORT 13
+# define UNSIGNED 14
+# define ULONG 15
+# define CONST_PTR 17
+# define VOLATILE_PTR 19
+
+# define ASG 1+
+# define UNARY 2+
+# define NOASG (-1)+
+# define NOUNARY (-2)+
+
+/*	various flags */
+# define NOLAB (-1)
+
+/* type modifiers */
+
+# define PTR  020
+# define FTN  040
+# define ARY  060
+
+/* bits for the typattr field in ndu.in */
+
+# define BCONST 01
+# define BCONST_PTR 04
+# define BVOLATILE 02
+# define BVOLATILE_PTR 010
+
+/* type packing constants */
+
+# define TMASK 060
+# define TMASK1 0300
+# define TMASK2  0360
+# define CVMASK 03
+# define BTMASK 017
+# define BTSHIFT 4
+# define TSHIFT 2
+
+/*	macros	*/
+
+# define MODTYPE(x,y) x = ( (x)&(~BTMASK))|(y)  /* set basic type of x to y */
+# define BTYPE(x)  ( (x)&BTMASK)   /* basic type of x */
+# define ISUNSIGNED(x) ((x)<=ULONG&&(x)>=UCHAR)
+# define UNSIGNABLE(x) ((x)<=LONG&&(x)>=CHAR)
+# define ENUNSIGN(x) ((x)+(UNSIGNED-INT))
+# define DEUNSIGN(x) ((x)+(INT-UNSIGNED))
+# define ISPTR(x) (( (x)&TMASK)==PTR)
+# define ISFTN(x)  (( (x)&TMASK)==FTN)  /* is x a function type */
+# define ISARY(x)   (( (x)&TMASK)==ARY)   /* is x an array type */
+# define ISCONST(x) ((x)&BCONST)
+# define ISCONST_PTR(x)  ((x)&BCONST_PTR)
+# define ISRODATA(typattr, typ) \
+    ((ISCONST_PTR(typattr) && ISPTR(typ)) || \
+    (ISCONST(typattr) && !ISPTR(typ)))
+# define INCTYPE(x,t) \
+    ((x) | ((t) << TSHIFT))
+# define INCREF(x) \
+    ((((x) & ~BTMASK) << TSHIFT) | PTR | ((x) & BTMASK))
+# define INCATTR(x) \
+    ((((x) & ~CVMASK) << TSHIFT) | ((x) & CVMASK))
+# define DECATTR(x) \
+    ((((x) >> TSHIFT) & ~CVMASK) | ((x) & CVMASK))
+# define DECREF(x) \
+	((((x) >> TSHIFT) & ~BTMASK) | ((x) & BTMASK))
+# define SETOFF(x,y)   if( (x)%(y) != 0 ) (x) = ( ((x)/(y) + 1) * (y))
+		/* advance x to a multiple of y */
+# define NOFIT(x,y,z)   ( ( (x)%(z) + (y) ) > (z) )
+		/* can y bits be added to x without overflowing z */
+	/* pack and unpack field descriptors (size and offset) */
+# define PKFIELD(s,o) (( (o)<<6)| (s) )
+# define UPKFSZ(v)  ( (v) &077)
+# define UPKFOFF(v) ( (v) >>6)
+
+/*	operator information */
+
+# define TYFLG 016
+# define ASGFLG 01
+# define LOGFLG 020
+
+# define SIMPFLG 040
+# define COMMFLG 0100
+# define DIVFLG 0200
+# define FLOFLG 0400
+# define LTYFLG 01000
+# define CALLFLG 02000
+# define MULFLG 04000
+# define SHFFLG 010000
+# define ASGOPFLG 020000
+
+# define SPFLG 040000
+
+#define optype(o) (dope[o]&TYFLG)
+#define asgop(o) (dope[o]&ASGFLG)
+#define logop(o) (dope[o]&LOGFLG)
+#define callop(o) (dope[o]&CALLFLG)
+
+/*	table sizes	*/
+
+# define TREESZ 4000 /* space for building parse tree */
+
+#ifndef FLEXNAMES
+# define NCHNAM 8  /* number of characters in a name */
+#else
+char *hash();
+char *savestr();
+char *tstr();
+extern char *asmptr;
+extern int tstrused;
+extern char *tstrbuf[], **curtstr;
+#define	freetstr()	curtstr = tstrbuf, tstrused = 0
+#endif
+
+/*	common defined variables */
+
+extern int nerrors;  /* number of errors seen so far */
+
+typedef union ndu NODE;
+typedef unsigned int TWORD;
+# define NIL (NODE *)0
+extern int dope[];  /* a vector containing operator information */
+extern char *opst[];  /* a vector containing names for ops */
+
+# ifdef ONEPASS
+	/* in one-pass operation, define the tree nodes */
+
+union ndu {
+
+	struct {
+		int op;
+		int rall;
+		TWORD type;
+		int su;
+#ifndef FLEXNAMES
+		char name[NCHNAM];
+#else
+		char *name;
+		int stalign;
+#endif
+		NODE *left;
+		NODE *right;
+		char *asminfo; /* RAP002 */
+		int typattr;   /* additional type attributes, eg. CONST */
+		}in; /* interior node */
+	
+	struct {
+		int op;
+		int rall;
+		TWORD type;
+		int su;
+#ifndef FLEXNAMES
+		char name[NCHNAM];
+#else
+		char *name;
+		int stalign;
+#endif
+		CONSZ lval;
+		int rval;
+		}tn; /* terminal node */
+	
+	struct {
+		int op;
+		int rall;
+		TWORD type;
+		int su;
+		int label;  /* for use with branching */
+		}bn; /* branch node */
+
+	struct {
+		int op;
+		int  rall;
+		TWORD type;
+		int su;
+		int stsize;  /* sizes of structure objects */
+		int stalign;  /* alignment of structure objects */
+		}stn; /* structure node */
+
+	struct {
+		int op;
+		int cdim;
+		TWORD type;
+		int csiz;
+		}fn; /* front node */
+	
+	struct {
+		/* this structure is used when a 
+		 * floating point constant is being computed
+		 * vdp005 - this is only used for single 
+		 * precision constants now 
+		 */
+		int op;
+		int cdim;
+		TWORD type;
+		int csiz;
+		float fval;
+		}fpn; 
+	struct {
+		/*vdp005 this structure is used when a double (d float)  
+		 * constant is being computed - DCON 
+		 */ 
+		int op;
+		int cdim;
+		TWORD type;
+		int csiz;
+		double dval;
+		}dpn; 
+
+	};
+# endif
+# ifdef BUG2
+# define BUG1
+# endif
+# ifdef BUG3
+# define BUG2
+# define BUG1
+# endif
+# ifdef BUG4
+# define BUG1
+# define BUG2
+# define BUG3
+# endif
+# ifndef ONEPASS
+
+# ifndef EXPR
+# define EXPR '.'
+# endif
+# ifndef BBEG
+# define BBEG '['
+# endif
+# ifndef BEND
+# define BEND ']'
+# endif
+
+# endif

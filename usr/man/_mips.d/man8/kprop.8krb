@@ -1,0 +1,139 @@
+.TH kprop 8krb
+.SH Name
+kprop \- Kerberos utility
+.SH Syntax
+.B /var/dss/kerberos/bin/kprop
+.I database
+.I slaves_file
+[
+.B \-force
+] [
+.B \-safe | clear ]
+.br
+.B [\-realm \fIrealm_name\fP]
+.SH Description
+.NXR "Kerberos routines" "kprop"
+The
+.PN kprop
+daemon
+runs on a Kerberos master and propagates the Kerberos database to the
+Kerberos slaves, where it is received by the waiting
+.PN kpropd
+daemon.
+.PP
+The first parameter, \fIdatabase\fP, is the name of the file
+out of which data is
+extracted.  This file is not the
+.PN ndbm \-formatted
+Kerberos database,
+.PN /var/dss/kerberos/dbase/principal .
+See the 
+.PN ndbm(3)
+reference page for more information.  The
+\fIdatabase\fP
+is a file created by the
+.PN "kdb_util slave_dump"
+command.
+It is an ASCII representation of the Kerberos database (see the reference page
+for
+.PN krb_dbase(5krb) . 
+.PP
+The second parameter that must be supplied is \fIslaves_file\fP,
+the name of the file on the Kerberos master that
+lists the Kerberos slaves
+to which
+.PN kprop
+propagates the Kerberos master database.  The
+.PN slaves_file
+is created in
+.PN krb_slaves(5krb)
+format.
+.PP
+The Kerberos utility
+first determines whether the ASCII Kerberos database, \fIdatabase\fP,
+was correctly dumped by 
+.PN kdb_util .
+It accomplishes this by determining if \fIdatabase\fP is older than the
+.PN database.dump_ok
+file created by
+.PN kdb_util
+during the
+.PN slave_dump
+operation.  If it is older, the dump did not succeed or is not yet finished.
+If the dump did not complete successfully or has not yet completed, the master
+database is not transferred to any Kerberos slave.  Otherwise,
+.PN kprop
+determines, for each slave server listed in the
+.PN slaves_file ,
+whether or not the database has changed since the last successful transfer to
+the slave.  It determines this for slave server
+.PN cactus
+by comparing the modification time of the
+.PN /etc/cactus-last-prop
+file with the modification time of \fIdatabase\fP. 
+If the
+.PN /etc/cactus-last-prop
+file is newer, then the database, \fIdatabase\fP, need not be transferred to 
+.PN cactus .
+Finally,
+.PN kprop
+propagates the database to those servers which need a new copy of the database
+and updates the modification time of the
+.PN /etc/server-last-prop
+file for these slave servers.
+.SH Options
+.TP 7
+.B \-safe
+Specifies that the data sent over the network is guaranteed to be
+authenticated at the destination and protected against modifications in
+transit.  That is, 
+.PN kprop
+and
+.PN kpropd ,
+which are Kerberos principals,
+become Kerberos-authenticated to each other and send messages formatted
+by
+.PN krb_mk_safe .
+For more information about
+.PN krb_mk_safe ,
+refer to the on-line reference page,
+.PN kerberos(3krb) .
+.TP
+.B \-clear
+Specifies that all data should be sent in cleartext (unencrypted).  This
+switch is
+useful
+when first setting up the Kerberos environment. 
+.TP
+.B \-realm
+Specifies the realm name that you are in.  If this option is not used,
+the \fIrealm_name\fP is given in the
+.PN /etc/krb.conf
+file.  (See the
+.PN krb.conf(5krb)
+reference page for more information.) 
+.TP
+.B \-force
+Forces the
+.PN kprop
+on the Kerberos master
+to propagate the Kerberos database to the Kerberos slaves, even if there 
+are no recent changes to the database.  Without the force flag,
+the Kerberos
+database is not propagated if the database file has not changed
+since the last successful transfer.
+.SH Restrictions
+The Kerberos utility
+does not support the transfer of encrypted data.
+.SH Files
+.TP
+.PN /usr/var/dss/kerberos/dbase/principal.dir
+.TP
+.PN /usr/var/dss/kerberos/dbase/principal.pag
+.TP
+.PN /usr/var/dss/kerberos/dbase/principal.ok
+.TP
+.PN /etc/krb.conf
+.SH See Also
+kpropd(8krb), krb.conf(5krb), kdb_util(8krb), krb_slaves(5krb),
+krb_dbase(8krb)

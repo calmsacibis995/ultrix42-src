@@ -1,0 +1,69 @@
+.TH icmp 4p
+.SH Name
+icmp \- Internet Control Message Protocol
+.SH Syntax
+.B #include <sys/socket.h>
+.br
+.B #include <netinet/in.h>
+.PP
+.B s = socket(AF_INET, SOCK_RAW, \fIproto\fP);
+.SH Description
+The ICMP is the error and control message protocol used
+.NXR "ICMP error and control message protocol"
+.NXS "network protocol" "ICMP error and control message protocol"
+.NXA "IP protocol family" ICMP error and Control message protocol"
+by
+the Internet Protocol (IP) transport layer
+and the Internet protocol family.  It can be accessed
+through a ``raw socket'' for network monitoring
+and diagnostic functions.
+The
+.I proto
+argument to the socket call to create an ICMP socket
+is obtained from the
+.MS getprotobyname 3n
+routine.
+ICMP sockets are connectionless,
+and are normally used with the
+.MS sendto 2
+and
+.MS recvfrom 2
+system calls.  The
+.MS connect 2
+call can also be used to fix the destination for future
+packets (in which case the 
+.MS read 2
+or
+.MS recv 2
+and 
+.MS write 2
+or
+.MS send 2
+system calls can then be used).
+.PP
+Outgoing packets automatically have an IP header prepended to
+them (based on the destination address).
+Incoming packets are received with the IP header and options intact.
+.SH Diagnostics
+On failure, a socket operation returns any of the following errors:
+.TP 15
+[EISCONN]
+Tried to establish a connection on a socket that
+already has one, or tried to send a datagram with the destination
+address specified and the socket was already connected.
+.TP 15
+[ENOTCONN]
+Tried to send a datagram, but
+no destination address was specified, and the socket has not
+connected.
+.TP 15
+[ENOBUFS]
+The system ran out of memory for
+an internal data structure.
+.TP 15
+[EADDRNOTAVAIL]
+An attempt was made to create a 
+socket with a network address for which no network interface
+exists.
+.SH See Also
+inet(4f), intro(4n), ip(4p)

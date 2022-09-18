@@ -1,0 +1,360 @@
+." SCCSID: @(#)printf.3s	2.4	8/12/87
+.\" Last modified by DAH on 11-Sept-88 1900.
+.\"
+.TH printf 3s
+.SH Name
+printf, fprintf, sprintf \- formatted output conversion
+.SH Syntax
+.B #include <stdio.h>
+.PP
+.B int printf(
+.I format
+[, 
+.I arg
+] ...
+.B )
+.br
+.B char 
+.IR *format ;
+.PP
+.B int fprintf(
+.IR stream , 
+.I format 
+[, 
+.I arg
+] ...
+.B)
+.br
+.B FILE 
+.IR *stream ;
+.br
+.B char 
+.IR *format ;
+.SS BSD Environment
+.B char *sprintf(
+.IR s , 
+.I format 
+[, 
+.I arg
+] ...
+.B )
+.br
+.B char 
+.IR *s ,
+.IR *format ;
+.SS System V and POSIX Environments
+.B int sprintf(
+.IR s , 
+.I format
+[,
+.I arg
+] ...
+.B )
+.br
+.B char 
+.IR *s ,
+.IR format ;
+.SH Description
+.NXR "printf function"
+.NXR "fprintf function"
+.NXR "sprintf function"
+.NXR "formatted output" "printing"
+The
+.PN printf
+function places output on the standard output stream,
+.PN stdout .
+The
+.PN fprintf
+subroutine places output on the named output
+.IR stream .
+The
+.PN sprintf
+subroutine places output in the string
+.IR s ,
+and appends the null terminator `\\0' to the end of the string.
+.PP
+The first argument controls how each of these functions converts,
+formats, and prints the other arguments. The first argument is a character string
+that contains two types of objects, characters and conversion specifications.  
+These functions copy characters that appear in the first argument to the
+output stream.  Conversion specifications cause these functions to
+convert the next successive argument and send the formatted argument to
+the output stream.
+.PP
+You introduce conversion specifications using the percent sign 
+.BR (%).
+Following the
+.BR %,
+you can include:
+.NXR "printf subroutine" "conversion specification list"
+.IP \(bu 5
+Zero or more flags, which modify the meaning of the conversion specification.  
+.IP \(bu 5
+An optional minus sign (\-), which specifies left adjustment of the 
+converted value in the indicated field.
+.IP \(bu 5
+An optional digit string that specifies a field width.
+If the converted value has fewer characters than the field width,
+.PN printf
+pads the value with blanks.  By default, 
+.PN printf
+pads the value on the left.  If the conversion string specifies the value
+is left-justified, 
+.PN printf
+pads the value on the right.
+If the field width begins with a zero,
+.PN printf
+pads the values with zeros, instead of blanks.
+.IP \(bu 5
+An optional period (.), which separates the field width from the next
+digit string.
+.IP \(bu 5
+An optional digit string specifying a precision. The precision
+controls the number of digits that appear after the radix character,
+exponential and floating-point conversions.  Precision also controls
+the maximum number of characters that are placed in the converted
+value for a string.
+.IP \(bu 5
+The character
+.B h
+or
+.B l
+specifying that a following
+.BR d ,
+.BR i ,
+.BR o ,
+.BR u ,
+.BR x ,
+or
+.BR X
+corresponds to an integer or longword integer argument.
+You can use an uppercase 
+.BR L
+or a lowercase
+.BR l.
+.IP \(bu 5
+A character that indicates the type of
+conversion to be applied.
+.PP
+A field width or precision can be an asterisk (*), instead of a digit
+string.
+If you use an asterisk, you can include an argument that supplies the
+field width or precision.
+.PP
+The flag characters and their meanings are as follows:
+.IP \fB\-\fP 5
+The result of the conversion is left-justified
+within the field.
+.IP \fB+\fP 5
+The result of a signed conversion always begins 
+with a sign (+ or \-).
+.IP \fBblank\fP 5
+If the first character of a signed conversion is not
+a sign, 
+.PN printf 
+pads the value on the left with a blank.  If the blank and plus sign
+(+) flags both appear, 
+.PN printf 
+ignores the blank flag.
+.IP \fB\#\fP 5
+The result has been converted to a different format.
+The value is to be converted to an alternative form.  
+.IP
+For
+.B c, d, s,
+and 
+.B u
+conversions, this flag has no effect.  
+.IP
+For 
+.B o
+ conversions, this flag increases the precision to force the first digit of the
+result to be a zero.  
+.IP
+For
+.B x
+or 
+.B X
+conversions, 
+.PN printf
+pads a non-zero result on the left with 
+.B 0x
+or 
+.BR 0X .
+.IP
+For 
+.B e, E, f, g,
+and
+.B G
+conversions, the result always contains a radix character,
+even if no digits follow that character.  (A radix character usually
+appears in the result of these conversions only if a digit 
+follows it.) 
+.IP
+For 
+.B g
+and 
+.B G
+conversions, 
+.PN printf
+does not remove trailing zeros from the result.
+.PP
+The conversion characters and their meanings are as follows:
+.IP \fBdox\fP 5
+Convert the integer argument
+to decimal, octal, or
+hexadecimal notation, respectively.
+.IP \fBf\fP 5
+Convert the floating point or double precision argument to decimal
+notation in the style
+.IR [ \-
+.IR ]ddd.ddd , 
+where the number of 
+.IR d s 
+following the radix character is equal to the precision for the argument.
+If the precision is missing, 
+.PN printf
+prints six digits. If the precision is explicitly zero, the function
+prints no digits and
+no radix characters.
+.IP \fBe\fP 5
+Convert the floating point or double precision argument in the style 
+.IR [ \-
+.IR ]d .
+.IR ddde\(+-dd , 
+where one digit appears before the radix character and the number of digits 
+that appear after the radix character is equal to the precision.
+When you omit the precision,
+.PN printf
+prints six digits.
+.IP \fBg\fP 5
+Convert the floating point or double precision argument to style
+.BR d ,
+style
+.BR f ,
+or style
+.BR e .
+The style
+.PN printf
+uses depends on the format of the converted value.  The function
+removes trailing zeros before evaluating the format of the converted
+value.
+.IP
+If a radix character appears in
+the converted value that is followed by a digit, 
+.PN printf 
+uses style 
+.BR d .
+If the converted value contains an exponent that is is less than \-4 or 
+greater than the precision, the function uses style \
+.BR e .
+Otherwise, the
+.PN printf
+function uses style 
+.BR f .
+.IP \fBc\fP 5
+Print the character argument.
+.IP \fBs\fP 5
+Print the character argument. The
+.PN printf
+function prints the argument until it encounters a null characters or
+has printed the number of characters specified by the precision.  If
+the precision is zero or has not been specified, 
+.PN printf
+prints the character argument until it encounters a null character.
+.IP \fBu\fP 5
+Convert the unsigned integer argument to a decimal value.  The result
+must be in the range of 0 through 4294967295, where the upper bound is
+defined by MAXUNIT.
+.IP \fBi\fP 5
+Convert the integer argument to decimal. (This conversion character is
+the same as \fBd\fP.)
+.IP \fBn\fP 5
+Store the number of characters formatted in the integer argument.
+.IP \fBp\fP 5
+Print the pointer to the argument. (This conversion character is the
+same as %08X).
+.IP \fB%\fP 5
+Print a percent sign ( % ). The function converts no argument.
+.PP
+A non-existent or small field width never
+causes truncation of a value.  Padding takes place only if the specified 
+field width exceeds the length of the value.  
+.PP
+In all cases, the radix character 
+.PN printf
+uses is defined by the last successful call to
+.PN setlocale
+category
+.PN LC_NUMERIC .
+If
+.PN setlocale
+category
+.PN LC_NUMERIC
+has not been called successfully or if the radix character is undefined,
+the radix character defaults to a period (.).
+.SS International Environment
+.IP LC_NUMERIC 15
+If this environment is set and valid, 
+.PN printf
+uses the international language database named in the definition to
+determine radix character rules.
+.IP LANG 15
+If this environment variable is set and valid 
+.PN printf
+uses the international language database named in the definition to
+determine collation and character classification rules.  If
+.PN LC_NUMERIC 
+is defined, its definition supercedes the definition of
+LANG.
+.SH Restrictions
+.NXR "printf subroutine" "restrictions"
+The
+.PN printf
+function cannot format values that exceed 128 characters.
+.SH Examples
+.NXR "printf subroutine" "printing date"
+To print a date and time in the form Sunday, July 3, 10:02,
+where
+.I weekday
+and
+.I month
+are pointers to null-terminated strings use the following function call:
+.EX
+printf("%s, %s %d, %02d:%02d",
+			weekday, month, day, hour, min);
+.EE
+To print
+.if n pi
+.if t \(*p
+to 5 decimal places use the following call:
+.EX
+printf("pi = %.5f", 4*atan(1.0));
+.EE
+.SH Return Values
+.NXR "printf subroutine" "System V and"
+In the BSD environment, 
+.PN printf 
+and 
+.PN fprintf 
+return zero for success and EOF for failure.  
+The
+.PN sprintf 
+subroutine returns its first 
+argument for success and EOF for failure.
+.PP
+In the System V and POSIX environments, 
+.PN printf ,
+.PN fprintf, 
+and
+.PN sprintf
+return the number of characters transmitted for success.  The
+.PN sprintf
+function ignores the null terminator (\\0) when calculating the number
+of characters transmitted.  If an output error occurs, these routines
+return a negative value.
+.SH See Also
+ecvt(3), nl_printf(3int), nl_scanf(3int), setlocale(3), putc(3s), 
+scanf(3s), environ(5int)
+.br 
+.I Guide to Developing International Software

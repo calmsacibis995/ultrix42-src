@@ -1,0 +1,138 @@
+#	@(#)Makefile.install	4.1	ULTRIX	7/17/90
+#
+#	Makefile	4.2	83/08/15
+#
+# Possible options:
+#	make		compile source for terminal tables below
+#	make <term>	compile table for a specific <term>
+#	make install	move tables to ${DEST}
+#   	make link_copies   make link_copies for ease of documentation
+#	make clean	remove tab*.o files lying around
+ALL=	37 lpr 300 300-12 302 302-12 382 382-12 450 450-12 833 833-12 \
+	itoh itoh12 nec nec12 nec-t qume qume12 xerox xerox12 \
+	x-ecs x-ecs12 ln01 ln03 lqp02 lqp02-12
+DESTROOT= 
+DEST=	${DESTROOT}/usr/src/usr.bin/nroff/term
+DESTI=	${DESTROOT}/usr/lib/term
+
+all:	${ALL}
+
+37:	tab37.o
+lpr:	tablpr.o
+300:	tab300.o code.300
+300-12:	tab300-12.o code.300
+302:	tab302.o code.300
+302-12:	tab302-12.o code.300
+382:	tab382.o code.300
+382-12: tab382-12.o code.300
+450:	tab450.o code.300
+450-12:	tab450-12.o code.300
+833:	tab833.o code.aj833
+833-12: tab833-12.o code.aj833
+itoh:	tabitoh.o code.itoh
+itoh12: tabitoh12.o code.itoh
+nec:	tabnec.o code.nec
+nec12:	tabnec12.o code.nec
+nec-t:	tabnec-t.o
+qume:	tabqume.o
+qume12:	tabqume12.o
+xerox:	tabxerox.o code.xerox
+xerox12:tabxerox12.o code.xerox
+x-ecs:	tabx-ecs.o code.x-ecs
+x-ecs12:tabx-ecs12.o code.x-ecs
+ln01: tabln01.o
+ln03: tabln03.o
+lqp02: tablqp02.o
+lqp02-12: tablqp02-12.o
+
+install: all
+	
+	-if [ ! -d ${DESTROOT}/usr/src ]; then\
+		mkdir ${DESTROOT}/usr/src; \
+		chmod 755 ${DESTROOT}/usr/src; \
+		/etc/chown root ${DESTROOT}/usr/src; \
+		chgrp system ${DESTROOT}/usr/src; \
+	else true; \
+	fi
+	-if [ ! -d ${DESTROOT}/usr/src/usr.bin ]; then\
+		mkdir ${DESTROOT}/usr/src/usr.bin; \
+		chmod 755 ${DESTROOT}/usr/src/usr.bin; \
+		/etc/chown root ${DESTROOT}/usr/src/usr.bin; \
+		chgrp system ${DESTROOT}/usr/src/usr.bin; \
+	else true; \
+	fi
+	-if [ ! -d ${DESTROOT}/usr/src/usr.bin/nroff ]; then\
+		mkdir ${DESTROOT}/usr/src/usr.bin/nroff; \
+		chmod 755 ${DESTROOT}/usr/src/usr.bin/nroff; \
+		/etc/chown root ${DESTROOT}/usr/src/usr.bin/nroff; \
+		chgrp system ${DESTROOT}/usr/src/usr.bin/nroff; \
+	else true; \
+	fi
+	-if [ ! -d ${DEST} ]; then\
+		mkdir ${DEST}; \
+		chmod 755 ${DEST}; \
+		/etc/chown root ${DEST}; \
+		chgrp system ${DEST}; \
+	else true; \
+	fi
+	for file in tab*.c; do \
+		install -c $$file ${DEST}/`basename $$file`;\
+	done
+	for file in code.*; do \
+		install -c $$file ${DEST}/`basename $$file`;\
+	done
+	install -c Makefile ${DEST}/Makefile
+	install -c chartst ${DEST}/chartst
+	-if [ ! -d ${DESTROOT}/usr/lib ]; then \
+		mkdir ${DESTROOT}/usr/lib; \
+		/etc/chown root ${DESTROOT}/usr/lib; \
+		chmod 755 ${DESTROOT}/usr/lib; \
+		chgrp system ${DESTROOT}/usr/lib; \
+	else true; \
+	fi
+	-if [ ! -d ${DESTI} ]; then \
+		mkdir ${DESTI}; \
+		/etc/chown root ${DESTI}; \
+		chmod 755 ${DESTI}; \
+		chgrp system ${DESTI}; \
+	else true; \
+	fi
+	rm -f ${DEST}/tabnec-t
+
+	-if test ! -f ${DEST}/tabtn300; \
+	then \
+		make link_copies; \
+	fi
+	make ${MFLAGS} link_copies DESTI=${DESTI}	
+	install -c -m 644 README ${DEST}/README
+	install -c -m 644 README ${DESTI}/README
+
+link_copies:
+	for file in tab*.o; do \
+		install -c -m 755 $$file ${DESTI}/`basename $$file .o`;\
+	done
+	@rm -f ${DESTI}/tabtn300; ln ${DESTI}/tablpr ${DESTI}/tabtn300
+	@rm -f ${DESTI}/tabcrt; ln ${DESTI}/tablpr ${DESTI}/tabcrt
+	@rm -f ${DESTI}/tabvt100; ln ${DESTI}/tablpr ${DESTI}/tabvt100
+	@rm -f ${DESTI}/tab300s; ln ${DESTI}/tab302 ${DESTI}/tab300s
+	@rm -f ${DESTI}/tab300s-12; ln ${DESTI}/tab302-12 ${DESTI}/tab300s-12
+	@rm -f ${DESTI}/tabdtc; ln ${DESTI}/tab302-12 ${DESTI}/tabdtc
+	@rm -f ${DESTI}/tabdtc12; ln ${DESTI}/tab302-12 ${DESTI}/tabdtc12
+	@rm -f ${DESTI}/tabipsi; ln ${DESTI}/tab302-12 ${DESTI}/tabipsi
+	@rm -f ${DESTI}/tabipsi12; ln ${DESTI}/tab302-12 ${DESTI}/tabipsi12
+#	@rm -f ${DESTI}/tab450-12-8; ln ${DESTI}/tab302-12 ${DESTI}/tab450-12-8
+
+clean:
+	rm -f tab*.o errs 
+
+clobber: clean
+	rm -f *.c README chartst code.* Makefile
+
+sccsinfo:
+	sccs info
+
+sccsget:
+	sccs get SCCS
+
+.DEFAULT:
+	sccs get $<

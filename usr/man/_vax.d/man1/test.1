@@ -1,0 +1,129 @@
+.\" SCCSID: @(#)test.1	8.1	9/11/90
+.TH test 1 
+.SH Name
+test \- test conditional expression
+.SH Syntax
+.B test
+.I expr
+.br
+[
+.I expr
+]
+.SH Description
+.NXR "test command"
+.NXA "test command" "find command"
+The
+.PN test
+command evaluates the expression
+.IR expr .
+If the value of
+.IR expr
+is true, the
+.PN test
+command returns a zero exit status; otherwise, it
+returns a nonzero exit status.  The
+.PN test
+command also returns a nonzero exit status if no arguments are specified.
+.SH Options
+The following primitives are used to construct
+.IR expr :
+.TP 20
+\fB\-\|r\fI file\fR
+Tests if the file exists and is readable.
+.TP 20
+\fB\-\|w\fI file\fR
+Tests if the file exists and is writable.
+.TP 20 
+\fB\-\|f\fI file\fR
+Tests if the file exists and is not a directory.
+.TP 20 
+\fB\-\|d\fI file\fR
+Tests if the file exists and is a directory.
+.TP 20 
+\fB\-\|s\fI file\fR
+Tests if the file exists and has a size greater than zero.
+.TP 20 
+\fB\-t\fR [\fI fildes\fR ]
+Tests if the open file, whose file descriptor number is 
+.I fildes 
+(1 by default), is associated with a terminal device.
+.TP 20 
+\fB\-\|z\fI s1\fR
+Tests if the length of string
+.I s1
+is zero.
+.TP 20 
+\fB\-\|n\fI s1\fR 
+Tests if the length of the string
+.I s1
+is nonzero.
+.TP 20 
+\fIs1 = s2\fR
+Tests
+if the strings
+.I s1
+and
+.I s2
+are equal.
+.TP 20
+\fIs1 != s2\fR
+Tests
+if the strings
+.I s1
+and
+.I s2
+are not equal.
+.TP
+\fIs1\fR
+Tests if
+.I s1
+is not the null string.
+.TP 20
+\fRn1 \fB\-eq\fR n2
+Tests if number1 equals number2.  
+.TP 20
+\fRn1 \fB\-ge\fR n2
+Tests if number1 is greater than or equal to number2.  
+.TP 20
+\fRn1 \fB\-gt\fR n2
+Tests if number1 is greater than number2.  
+.TP 20
+\fRn1 \fB\-le\fR n2
+Tests if number1 is less than or equal to number2.
+.TP 20
+\fRn1 \fB\-lt\fR n2
+Tests if number1 is less than number2. 
+.TP 20
+\fRn1 \fB\-ne\fR n2
+Tests if number1 is not equal to number2.   
+.PP
+These primitives can be combined with the
+following operators:
+.TP 20
+\fR!expr
+Negates evaluation of expression.  
+.TP 20
+\fRexpr \fB\-a\fR expr
+Tests logical
+.I and
+of two expressions.  
+.TP 20
+\fRexpr \fB\-o\fR expr
+Tests logical
+.I or
+of two expressions.  
+.TP 20 
+\fR( expr... )
+Groups expressions.  
+.PP
+The
+.B \-a
+operator takes precedence over the
+.B \-o
+operator.  Note that all the operators and flags are separate
+arguments to
+.PN test .
+Note also that parentheses are meaningful
+to the Shell and must be escaped.
+.SH See Also
+find(1), sh(1), test(1sh5)

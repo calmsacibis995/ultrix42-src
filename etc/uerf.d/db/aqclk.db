@@ -1,0 +1,453 @@
+# @(#)aqclk.db	4.1   (ULTRIX)   9/4/90
+
+sseg
+id cds
+name aqclk_cds
+label 'CLOCK (MCM)'
+elements
+	aqclk_ccr0 aqclk_freq aqclk_burst aqclk_interval
+	aqclk_ccr1 aqclk_position aqclk_divider
+
+sitem
+name aqclk_ccr0
+size 1
+class composite
+type register
+display nil
+label 'CCI CCR0'
+map
+	field
+size 1
+class integer
+display hex
+label 'CPU0_CLK_RUN_H ='
+	field
+size 1
+class integer
+display hex
+label 'CPU0_BURST_ENABLE_H ='
+	field
+size 1
+class integer
+display hex
+label 'CPU1_CLK_RUN_H ='
+	field
+size 1
+class integer
+display hex
+label 'CPU1_BURST_ENABLE_H ='
+	field
+size 1
+class integer
+display hex
+label 'CPU2_CLK_RUN_H ='
+	field
+size 1
+class integer
+display hex
+label 'CPU2_BURST_ENABLE_H ='
+	field
+size 1
+class integer
+display hex
+label 'CPU3_CLK_RUN_H ='
+	field
+size 1
+class integer
+display hex
+label 'CPU3_BURST_ENABLE_H ='
+	field
+size 1
+class integer
+display hex
+label 'SCU_CLK_RUN_H ='
+	field
+size 1
+class integer
+display hex
+label 'SCU_BURST_ENABLE_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_GO_H ='
+
+sitem
+name aqclk_freq
+size 1
+class composite
+type register
+display nil
+label 'CCI FREQUENCY'
+map
+	field
+size 1
+class integer
+display hex
+label 'RATE0_H ='
+	field
+size 1
+class integer
+display hex
+label 'RATE1_H ='
+	field
+size 1
+class integer
+display hex
+label 'RATE2_H ='
+	field
+size 1
+class integer
+display hex
+label 'RATE3_H ='
+	field
+size 1
+class integer
+display hex
+label 'RATE4_H ='
+	field
+size 1
+class integer
+display hex
+label 'RATE5_H ='
+	field
+size 1
+class integer
+display hex
+label 'RATE6_H ='
+	field
+size 1
+class integer
+display hex
+label 'RATE7_H ='
+
+sitem
+name aqclk_burst
+size 1
+class composite
+type register
+display nil
+label 'CCI BURST'
+map
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG0_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG1_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG2_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG3_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG4_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG5_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG6_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG7_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG8_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG9_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG10_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG11_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG12_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG13_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG14_H ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_REG15_H ='
+
+sitem
+name aqclk_interval
+size 1
+class composite
+type register
+display nil
+label 'CCI INTERVAL'
+map
+	field
+size 1
+class integer
+display hex
+label 'INT_REG0_H ='
+	field
+size 1
+class integer
+display hex
+label 'INT_REG1_H ='
+	field
+size 1
+class integer
+display hex
+label 'INT_REG2_H ='
+	field
+size 1
+class integer
+display hex
+label 'INT_REG3_H ='
+	field
+size 1
+class integer
+display hex
+label 'INT_REG4_H ='
+	field
+size 1
+class integer
+display hex
+label 'INT_REG5_H ='
+	field
+size 1
+class integer
+display hex
+label 'INT_REG6_H ='
+	field
+size 1
+class integer
+display hex
+label 'INT_REG7_H ='
+
+sitem
+name aqclk_ccr1
+size 1
+class composite
+type register
+display nil
+label 'CCI CCR1'
+map
+	field
+size 1
+class integer
+display hex
+label 'LOOP_UNLOCKED_INT_ENABLE ='
+	field
+size 1
+class integer
+display hex
+label 'LOOP_UNLOCKED_INT ='
+	field
+size 1
+class integer
+display hex
+label 'FAULT_INTERRUPT_ENABLE ='
+	field
+size 1
+class integer
+display hex
+label 'FAULT_INTERRUPT ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_HALT_INT_ENABLE ='
+	field
+size 1
+class integer
+display hex
+label 'BURST_HALT_INT ='
+	field
+size 1
+class integer
+display hex
+label 'REF_CLK_LEADS_L ='
+	field
+size 1
+class integer
+display hex
+label 'CCI_OWNS_BUS_L ='
+	field
+size 1
+class integer
+display hex
+label 'CDIVS0 ='
+	field
+size 1
+class integer
+display hex
+label 'CDIVS1 ='
+	field
+size 1
+class integer
+display hex
+label 'CCI_REV_BIT0 ='
+	field
+size 1
+class integer
+display hex
+label 'CCI_REV_BIT1 ='
+
+sitem
+name aqclk_position
+size 1
+class composite
+type register
+display nil
+label 'CCI POSITION'
+map
+	field
+size 1
+class integer
+display hex
+label 'DELAY0 ='
+	field
+size 1
+class integer
+display hex
+label 'DELAY1 ='
+	field
+size 1
+class integer
+display hex
+label 'DELAY2 ='
+	field
+size 1
+class integer
+display hex
+label 'DELAY3 ='
+	field
+size 1
+class integer
+display hex
+label 'DELAY4 ='
+	field
+size 1
+class integer
+display hex
+label 'DELAY5 ='
+	field
+size 1
+class integer
+display hex
+label 'DELAY6 ='
+	field
+size 1
+class integer
+display hex
+label 'DELAY7 ='
+	field
+size 1
+class integer
+display hex
+label 'DELAY8 ='
+	field
+size 1
+class integer
+display hex
+label 'DELAY9 ='
+
+sitem
+name aqclk_divider
+size 1
+class composite
+type register
+display nil
+label 'CCI DIVIDER'
+map
+	field
+size 1
+class integer
+display hex
+label 'EXTERNAL_POSITION_H<0> ='
+	field
+size 1
+class integer
+display hex
+label 'EXTERNAL_POSITION_H<1> ='
+	field
+size 1
+class integer
+display hex
+label 'EXTERNAL_POSITION_H<2> ='
+	field
+size 1
+class integer
+display hex
+label 'EXTERNAL_POSITION_H<3> ='
+	field
+size 1
+class integer
+display hex
+label 'EXTERNAL_POSITION_H<4> ='
+	field
+size 1
+class integer
+display hex
+label 'EXTERNAL_POSITION_H<5> ='
+	field
+size 1
+class integer
+display hex
+label 'EXTERNAL_POSITION_H<6> ='
+	field
+size 1
+class integer
+display hex
+label 'EXTERNAL_POSITION_H<7> ='
+	field
+size 1
+class integer
+display hex
+label 'EXTERNAL_POSITION_H<8> ='
+	field
+size 1
+class integer
+display hex
+label 'EXTERNAL_POSITION_H<9> ='
+	field
+size 1
+class integer
+display hex
+label 'EXTERNAL_POSITION_H<10> ='
+

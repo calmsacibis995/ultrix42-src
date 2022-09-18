@@ -1,0 +1,321 @@
+#!/bin/sh5
+#
+#	updmv.sh -
+#		move user customizations and data files to/from mass storage.
+#
+#			Copyright (c) 1990 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#     SCCSID = "@(#)updmv	4.4 (ULTRIX) 1/25/91"
+#
+#	Notes:
+#
+#	updmv(8) is part of the customer system upgrade toolkit. It
+#	is used by the customer to move customizations to and from the
+#	system. The are 2 commmand keys:
+#
+#	updmv -o <loc>		copy info out to <loc>
+#	updmv -i <loc>		copy info in from <loc>
+#
+#	The media which is produced contains 2 
+#
+#	002	24-jan-1990	ccb
+#		Fix mispelling of ROOT variable.
+#
+#	001	16-oct-1990	ccb
+#		bugfixes
+#
+#	000	15-aug-1990	ccb
+#		New.
+#
+
+# establish environment
+
+CDPATH=
+PATH=/install.tmp:/etc/stl:/etc:/bin:/usr/bin:/usr/adm/bin:/usr/ucb
+export CDPATH PATH
+
+ARGS=$*
+
+
+:	-Conflict
+#		Determine which files in an inventory list would
+#		cause a conflict
+#
+#	given:	$1 - inventory file to scan for conflicts
+#	does:	writes all inventory records for which a file exists
+
+Conflict()
+{ (
+	INV=$1
+
+	cd $_R
+	cat $INV |
+		while read REC
+		do
+			set -- $REC
+			shift
+			[ -b $9 -o -c $9 -o -d $9 -o -f $9 -o -p $9 ] &&
+				echo $9
+		done
+) }
+	
+
+
+Error()
+{
+	1>&2 echo $*
+}
+
+
+
+Exit()
+{
+	exit $1
+}
+
+
+Globals()
+{
+	_IAM=			# client hostname.
+	_ROOT=/			# root directory.
+	CTRLFILES="CFI MSI UFI"
+	TARP=/usr/tmp/updpipe
+	UES=usr/etc/subsets
+	UPDDEST=/var/adm/install/update
+}
+
+
+
+:	-Input
+#		load customizations from offline storage
+#
+#	given:	$1 - media type in {INET,DISK,TAPE}
+#		$2 - device specifier
+#
+#	does:	load customizations from MEDIA
+#	return:	0 is all is OK
+
+Input()
+{
+	MEDIA=$1
+	UNIT=$2
+
+	# get CFI and UFI from media
+	cd /usr/tmp
+	LoadID $MEDIA $UNIT
+	# Conflict UFI > UFI.!ok
+
+	# protect the original files which would be overwritten
+	#  by user files
+
+	# mkdir var/adm/install/original
+
+	# [ -s UFI.!ok ] && Tarchive UFI.!ok |
+	#	(cd var/adm/install/original; tar xpf -)
+
+	mkdir $UPDDEST 2> /dev/null
+	cd $UPDDEST
+	Retrieve $MEDIA $UNIT
+
+	# stash customer files causing conflict
+
+	# mkdir var/adm/install/conflict
+
+	# [ -s UFI.!ok ] && Tarchive UFI.!ok |
+	#	(cd var/adm/install/conflict; tar xpf -)
+
+	# recover originals
+	# [ -s UFI.!ok ] && (cd var/adm/install/conflict; tar cf - .) |
+	#	tar xpf -
+
+	echo "Files restored to $UPDDEST"
+}
+
+
+:	-LoadID
+#		Load Inventory Data from MEDIA
+#
+#	given:	$1 - media type
+#		$2 - media unit
+#	does:	load the CFI and UFI from the MEDIA
+#
+
+LoadID()
+{
+	MEDIA=$1
+	UNIT=$2
+
+	case "$MEDIA" in
+	INET)
+		rcp ris@$UNIT:clients/risdb .
+		RISDATA=`egrep '^'$IAM: risdb`
+		set -- $RISDATA
+		set -- $3
+		PROCDATA=$1
+		rsh -n $UNIT "dd if=clients/$IAM.upd/updctrl bs=10k" 2>/dev/null |
+			tar xpf -
+		;;
+	TAPE)	mt -f $UNIT rew
+		tar xpf $UNIT
+		mt -f $UNIT rew
+		;;
+	DISK)	tar xpf $UNIT/updctrl
+		;;
+	esac
+}
+
+
+Main()
+{
+	MEDIA=			# customization storage media
+	PROCEDURE=		# procedure name
+	UNIT=			# storage handle
+	
+	case `whoami` in
+	root)	;;
+	*)	Error "You must be super-user to use this procedure"
+		Exit
+	esac
+
+	# Parse the arguments
+
+	case "$1" in
+	-i)	PROCEDURE=Input
+		;;
+	-o)	PROCEDURE=Output
+		;;
+	*)	Usage
+		Exit 1
+		;;
+	esac
+
+	case "$2" in
+	*:)	MEDIA=INET
+		UNIT=`expr $2 : '\(.*\):'`
+		IAM=`hostname`
+		set -- `Parse . $IAM`
+		IAM=$1
+		case "$UNIT" in
+		"")	Error "cannot determine hostname"
+			Exit 1
+		esac
+		;;
+	/*)	if [ -d "$2" ]; then
+		{
+			MEDIA=DISK
+			UNIT=$2
+		}
+		elif [ -c "$2" ]; then
+		{
+			MEDIA=TAPE
+			UNIT=$2
+		}
+		else
+		{
+			Error "$2: unrecognized location code"
+			Exit 1
+		}; fi
+		;;
+	*)	Error "$2: Unrecognized location code"
+		;;
+	esac
+
+	# get the work done
+	cd $_ROOT	# 002
+
+	$PROCEDURE $MEDIA $UNIT
+	Exit $?
+}
+
+
+
+Output()
+{
+	MEDIA=$1
+	UNIT=$2
+
+	case "$MEDIA" in
+	DISK)	CTRLOUT="dd of=$UNIT/updctrl"
+		DATAOUT="dd of=$UNIT/upddata"
+		;;
+	INET)	RSHCMD="rsh $UNIT -l ris "
+		CTRLOUT="$RSHCMD dd of=clients/$IAM.upd/updctrl bs=4k"
+		DATAOUT="$RSHCMD dd of=clients/$IAM.upd/upddata bs=4k"
+		$RSHCMD mkdir clients/$IAM.upd
+		;;
+	TAPE)	CTRLOUT="dd of=$UNIT bs=10k"
+		DATAOUT=$CTRLOUT
+		mt -f $UNIT rew
+	esac
+
+	cd /usr/etc/subsets
+	tar cf - $CTRLFILES | $CTRLOUT
+	(cd /;Tarchive $UES/CFI $UES/UFI) | $DATAOUT
+	case "$MEDIA" in
+	TAPE)	mt -f $UNIT rew
+	esac
+}
+
+
+Parse()
+{ (
+	IFS=$1;shift
+	echo $*
+) }
+
+
+Retrieve()
+{
+	MEDIA=$1
+	UNIT=$2
+
+	case "$MEDIA" in
+	INET)
+		rsh $UNIT -l ris -n "dd if=clients/$IAM.upd/upddata bs=10k" |
+			tar xpf -
+		;;
+	TAPE)	mt -f $UNIT rew
+		mt -f $UNIT fsf
+		tar xpf $UNIT
+		mt -f $UNIT rew
+		;;
+	DISK)	tar xpf $UNIT/upddata
+		;;
+	esac
+}
+
+
+
+Tarchive()
+{
+	rm -rf $TARP
+	mknod $TARP p
+	for INV in $*
+	{
+		awk '{print $10}' $INV >> $TARP
+	} &
+	tar cRf - $TARP
+	rm -f $TARP
+}
+
+
+
+Globals
+
+[ "$UPDMV_DEBUG" ] || Main $ARGS

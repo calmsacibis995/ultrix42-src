@@ -1,0 +1,254 @@
+.TH msh 1mh
+.SH Name
+msh \- MH shell 
+.SH Syntax
+.B msh
+[
+.B \-help
+] 
+.\" ***These options commented out
+.ig
+[
+.B "\-[no]scan"
+] [
+.B "\-[no]topcur"
+] 
+..
+.\" ***End of comments
+[
+.B "\-prompt"
+.I string
+] [
+.I file
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "msh command"
+.PP
+The command
+.PN msh
+is an interactive program that
+implements a subset of the normal MH commands
+operating on a single file in 
+.PN packf
+format.  
+That is, 
+.PN msh
+is used to read a file that contains a number of messages, 
+as opposed to the standard MH style of reading a number of files,
+each file being a separate message in a folder.
+.PP
+The chief advantage of 
+.PN msh
+is that, unlike the normal MH style, 
+it allows a file to have more than one message in it.
+In addition, 
+.PN msh
+can be used on other files,
+such as message archives which have been packed using
+.PN packf .
+.PP
+When invoked, 
+.PN msh
+reads the named file, and enters a command loop.
+You can type most of the normal MH commands.
+The syntax and semantics of these commands typed to 
+.PN msh
+are identical to their MH counterparts.  
+In cases where the nature of 
+.PN msh
+would be inconsistent with the way MH works
+(for example, specifying a 
+.I +folder
+with some commands),
+.PN msh
+will duly inform you.
+The commands that 
+.PN msh
+currently supports are:
+.EX
+ali      burst    comp    dist     folder
+forw     inc      mark    mhmail   msgchk
+next     packf    pick    prev     refile
+repl     rmm      scan    send     show
+sortm    whatnow  whom
+.EE
+.PP
+In addition,
+.PN msh
+has a 
+.PN help
+command which gives a brief overview of all the
+.PN msh 
+options.  
+To terminate 
+.PN msh ,
+either type <CTRL/D>, or use the 
+.PN quit
+command.
+If the file is writable and has been modified,
+then using 
+.PN quit
+will ask you if the file should be updated.
+.PP
+A redirection facility is supported by
+.PN msh .
+Commands may be followed by one of the following
+standard ULTRIX symbols:
+.TP 10
+\f(CW|\fR
+Open an interprocess channel; connect output to another ULTRIX command.
+.TP 10
+\f(CW>\fR
+Write output to file.
+.TP 10
+\f(CW>>\fR
+Append output to file.
+.PP
+If 
+\fIfile\fR
+starts with a tilde (\f(CW~\fR),
+then a C-shell-like expansion takes place.  
+Note that commands are interpreted by 
+.MS sh 1 .
+.PP
+When parsing commands to the left of any redirection symbol,
+.PN msh
+will honor the backslash (\f(CW\e\fR)
+as the quote next-character symbol,
+and double quotes (")
+as quote-word delimiters.
+All other input tokens are separated by white space
+(spaces and tabs).
+.PP
+You may wish to use an alternative profile 
+for the commands that
+.PN msh
+executes;
+see 
+.MS mh_profile 5mh
+for details of the \f(CW$MH\fR
+environment variable.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP \-help 10
+Prints a list of the valid options for this command.
+.\"
+.\" ***These options commented out
+.ig
+.IP "\-scan" 10
+.PD 0
+.IP "\-noscan" 10
+.PD 
+***WHAT DOES THIS DO???***
+.\"
+.IP "\-topcur" 10
+.PD 0
+.IP "\-notopcur" 10
+.PD
+***WHAT DOES THIS DO???***
+..
+.\" ***End of comments
+.\"
+.IP "\-prompt \fIstring\fB" 10
+Sets the prompt for 
+.PN msh .
+If the string you specify includes white space,
+you must enclose it in double quotes (").
+If you do not specify this option,
+the default prompt is \f(CW(msh)\fR.
+.\"
+.\"
+.\"
+.\"
+.PP
+The following defaults are used by
+.PN msh:
+.IP
+.I file
+defaults to 
+.PN \&./msgbox
+.br
+.B "\-prompt (msh)"
+.\" ***Options commented out
+.ig
+.br
+.B \-noscan
+.br
+.B \-notopcur
+..
+.\" ***End of comments
+.\"
+.\"
+.SH Restrictions
+The
+.PN msh
+shell is not the C-shell,
+and a lot of the facilities provided by the latter are not
+present in the former.
+In particular, 
+.PN msh
+does not support back-quoting, history substitutions, 
+variable substitutions, or alias substitutions.
+.PP
+.PN msh
+does not understand back-quoting.
+The only effective way to use 
+.PN pick
+inside 
+.PN msh
+is to always use
+the 
+.B "\-seq select"
+option.
+If you add the following line to your
+.PN \&.mh_profile ,
+.PN pick
+will work equally well from both the shell and
+.PN msh :
+.EX
+pick:\0\-seq\0select\0\-list
+.EE
+.PP
+There is a strict limit of messages per file in 
+.PN packf
+format which
+.PN msh
+can handle.
+Usually, this limit is 1000 messages.
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine your Mail directory
+Msg-Protect:+To set protections when creating a new file
+fileproc:+Program to file messages
+showproc:+Program to show messages
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+The user profile.
+.TP 10
+.PN /usr/lib/mh/mtstailor
+The system customization file.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+csh(1), packf(1mh), sh(1), mh_profile(5mh)

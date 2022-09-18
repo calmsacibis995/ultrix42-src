@@ -1,0 +1,48 @@
+.\" SCCSID: @(#)comsat.8c	8.1	9/11/90
+.TH comsat 8c
+.SH Name
+comsat \- biff server
+.SH Syntax
+.B /etc/comsat
+.SH Description
+.NXR "comsat program"
+.NXAM "biff command" "comsat program"
+.NXAM "inetd server daemon" "comsat program"
+.NXR "mail" "reporting incoming"
+The
+.PN comsat
+command
+is the server process which receives reports of incoming mail
+and notifies users if they have requested this service.
+The
+.PN comsat
+command is invoked by 
+.MS inetd 8c ,
+when it detects an incoming packet on the datagram port associated
+with the ``biff'' service
+specification.  For further information, see 
+.MS services 5 .
+The
+.PN comsat
+command reads the packet, which is a one line message of the form:
+.PP
+.I user@mailbox-offset
+.PP
+If the
+.I user
+specified is logged in to the system and the associated terminal has
+the owner execute bit turned on (by a ``biff y''), the
+.I offset
+is used as a seek offset into the appropriate mailbox file and
+the first 7 lines or 560 characters of the message are printed
+on the user's terminal.  Lines which appear to be part of
+the message header other than the From:, To:, Date:,
+or Subject: lines are not included in the displayed message.
+.SH Restrictions
+The message header filtering is prone to error.
+.SH Files
+.TP 15
+.PN /etc/utmp
+Information about who is logged on to which terminals
+.SH See Also
+biff(1), inetd(8c)

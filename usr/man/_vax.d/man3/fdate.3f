@@ -1,0 +1,38 @@
+.\" SCCSID: @(#)fdate.3f	8.1	9/11/90
+.TH fdate 3f VAX "" Unsupported
+.SH Name
+fdate \- return date and time in an ASCII string
+.SH Syntax
+.B subroutine fdate (string)
+.br
+.B character*(*) string
+.sp 1
+.B character*(*) function fdate()
+.SH Description
+.NXR "fdate subroutine (FORTRAN)"
+.NXR "date" "returning in ASCII string"
+.NXR "time" "returning in ASCII string"
+The
+.PN fdate
+function returns the current date and 
+time as a 24-character string
+in the format described under
+.MS ctime 3 .
+Neither 'newline' nor NULL will be included.
+.PP
+The
+.PN fdate
+function can be called either as a function or as a subroutine.
+If called as a function, the calling routine must define
+its type and length. For example:
+.EX
+character*24   fdate
+external       fdate
+
+write(*,*) fdate()
+.EE
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+ctime(3), idate(3f), time(3f)

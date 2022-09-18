@@ -1,0 +1,112 @@
+.\" SCCSID: @(#)access.2	2.4	8/10/87
+.TH access 2
+.SH Name
+access \- determine the accessibility of file
+.SH Syntax
+.nf
+.B #include <unistd.h>
+.br
+.B accessible = access(\fIpath, mode\fP)
+.br
+.B int accessible;
+.br
+.B char *\fIpath\fP;
+.br
+.B int \fImode;\fP
+.fi
+.SH Description
+.NXR "access system call"
+.NXR "file" "checking accessibility"
+The system call,
+.PN access ,
+checks the given file
+.I path
+for accessibility according to
+.IR mode .
+The argument 
+.I mode
+is an inclusive OR of the bits R_OK, W_OK, and X_OK.
+Specifying the argument
+.I mode
+as F_OK
+tests whether the directories leading to the file can be
+searched and whether the file exists.
+.PP
+The real user ID and the group access list
+(including the real group ID) are used
+to verify permissions.  This call is useful to set-UID programs.
+.PP
+Note that only access bits are checked.
+The 
+.PN access 
+call may indicate that a directory is writeable, but an attempt to open
+the directory fails, although files are present in the directory.
+Additionally, a file may appear to be executable, but 
+.PN execve
+fails unless the file is in proper format.
+.PP
+If a
+.I path
+cannot be found, or if the desired access modes are
+not granted, a \-1 value is returned; otherwise,
+a 0 value is returned.
+.SH Diagnostics
+Access to the file is denied if any of the following is true:
+.TP 15
+[EACCES]
+Permission bits of the file mode do not permit the requested
+access or search permission is denied on a component of the
+path prefix.  The owner of a file has permission checked with
+respect to the owner's read, write, and execute mode bits.
+Members of the file's group, other than the owner, have permission
+checked with respect to the group's mode bits.  All others 
+have permissions checked with respect to the other
+mode bits.
+.TP 15
+[EFAULT]
+The
+.I path
+points outside the process's allocated address space.
+.TP 15
+[EIO]
+An I/O error occurred while reading from or writing to the
+file system.
+.TP 15
+[ELOOP]
+Too many symbolic links were encountered in translating the pathname.
+.TP
+[ENAMETOOLONG]
+A 
+.I path
+component length exceeds 255 characters or the length of \fIpath\fP exceeds
+1023 characters.
+.TP 15
+[ENOENT]
+The file referred to by
+.I path
+does not exist or the 
+.I path
+points to an empty string and the environment defined is POSIX or SYSTEM_FIVE.
+.TP 15
+[ENOTDIR]
+A component of the path prefix is not a directory.
+.TP 15
+[EROFS]
+Write access is requested for a file on a read-only file system.
+.TP 15
+[ESTALE]
+The file handle given in the argument was invalid.  The file
+referred to by that file handle no longer exists or has been 
+revoked.
+.TP 15
+[ETIMEDOUT]
+A connect request or remote file operation fails
+because the connected party
+did not respond after a period
+of time determined by the communications protocol.
+.TP 15
+[ETXTBSY]
+Write access is requested for a pure procedure (shared text)
+file that is being executed.
+.SH See Also
+chmod(2), stat(2)

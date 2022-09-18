@@ -1,0 +1,345 @@
+.\" SCCSID: @(#)open.2	2.1	3/10/87
+.TH open 2
+.SH Name
+open \- open for reading or writing 
+.SH Syntax
+#include <sys/types.h>
+.br
+#include <sys/stat.h>
+.br
+#include <fcntl.h>
+.br
+#include <limits.h>     /* definition of OPEN_MAX */
+.PP
+open(\fIpath, flags, mode\fP)
+.br
+char *\fIpath\fP;
+.br
+int \fIflags, mode\fP;
+.SH Description
+.NXA "open system call" "close system call"
+.NXR "open system call"
+.NXR "file" "opening"
+.NXR "file" "marking in use"
+The
+.PN open
+system call opens a specified file and returns a descriptor for that file.
+The file pointer used to mark the current position within
+the file is set to the beginning of the file.
+.PP
+The file descriptor remains open across 
+.PN execve 
+system calls. The 
+.PN close  
+system call closes the file descriptor.
+.PP
+A process cannot have more than OPEN_MAX 
+file descriptors
+open simultaneously.  
+.SH Arguments
+.IP \fIpath\fR 7
+is the address of a string of ASCII characters representing
+a path name, terminated by a null character.  The path name
+identifies the file to be opened.
+.IP \fImode\fR 
+is only used with the O_CREAT flag.  The file is created
+with the specified mode, as described in
+.MS chmod 2
+and modified by the process's umask value.
+For further information, see
+.MS umask 2 .
+.IP \fIflags\fR 
+defines how the file is to be opened.  This argument is formed by
+ORing
+the following values:
+.NXR "open system call" "flags"
+.RS
+.IP "O_RDONLY" 1.25i
+Open for reading only.
+.IP "O_WRONLY" 1.25i
+Open for writing only.
+.IP "O_RDWR" 1.25i
+Open for reading and writing.
+.IP "O_NDELAY" 1.25i
+Do not block on open
+when opening a port (named pipe) with O_RDONLY or O_WRONLY:
+.IP 
+If O_NDELAY is set, an 
+.PN open
+for read only returns without delay.  An
+.PN open
+for write only returns an error if no process currently has
+the file open for reading.
+.IP 
+If O_NDELAY is clear, an
+.PN open
+for read only blocks until a process opens the
+file for writing.  An
+.PN open
+for write only blocks until a process opens the
+file for reading.
+.IP "O_NONBLOCK" 1.25i
+POSIX definition of O_NDELAY.  See O_NDELAY for explanation of functionality.
+.IP "O_APPEND" 1.25i
+Append on each write.
+.IP "O_CREAT" 1.25i
+Create file if it does not exist.
+.IP "O_TRUNC" 1.25i
+Truncate size to 0.
+.IP "O_EXCL" 1.25i
+Error if create and file exists.
+.IP "O_BLKINUSE" 1.25i
+Block if file is in use.
+.IP "O_BLKANDSET" 1.25i
+Block if file is in use; then, set in use.
+.IP "O_FSYNC" 1.25i
+Do file writes synchronously.
+.IP "O_NOCTTY" 1.25i
+In the POSIX environment, if this flag is set and path
+identifies a terminal device, the
+.PN open()
+function will not cause the terminal device to become the controlling
+terminal for the process.
+.RE
+.IP "" .5i
+Opening a file with O_APPEND set causes each write on the file
+to be appended to the end.  
+.IP "" .5i
+If O_TRUNC is specified and the
+file exists, the file is truncated to zero length.
+.IP "" .5i
+If O_EXCL is set with O_CREAT and the file already
+exists, the 
+.PN open 
+returns an error.  This can be used to
+implement a simple exclusive access locking mechanism.
+.IP "" .5i
+If the O_NDELAY or O_NONBLOCK flag is specified and the open call would result
+in the process being blocked for some reason, the open returns
+immediately.
+For
+example, if the process were waiting for carrier on a dialup
+line, an open with the O_NDELAY or O_NONBLOCK flag would return immediately. 
+The first time the process attempts to perform I/O on the open
+file, it blocks. 
+.IP "" .5i
+If the O_FSYNC flag is specified, each subsequent write 
+(see
+.MS write 2 )
+for the file
+is synchronous, instead of the default asynchronous
+writes.   Use this flag to ensure that the write
+is complete when the system call returns.   With asynchronous
+writes, 
+the call returns when data is written to the buffer cache.
+There is no guarantee that the data was actually written out 
+to the device.  With synchronous writes, the call returns
+when the data is written from the buffer cache to the device.
+.IP "" .5i
+O_BLKINUSE and O_BLKANDSET provide a test and set
+operation similar to a semaphore.
+O_BLKINUSE causes the open to block if another process has
+marked the file as in use.  
+The 
+.PN open
+blocks in the system at a point where no references to
+the file are established.
+.IP "" .5i
+There are two ways to mark a file as in use:
+.RS
+.IP \(bu 5
+Use the 
+.PN ioctl (2) 
+system call with the 
+.I request
+argument set to FIOSINUSE or TIOCSINUSE.
+For further information, see
+.MS tty 4 .
+.IP \(bu 5
+Use the O_BLKANDSET flag to
+.PN open (2) .
+.RE
+.IP "" .5i
+O_BLKANDSET caused the  
+.PN open 
+to block if another process has
+marked the file in use.   When the 
+.PN open
+resumes, the file
+is marked in use by the current process. 
+.IP "" .5i
+If O_NDELAY is used with either O_BLKINUSE or 
+O_BLKANDSET, the 
+.PN open 
+failed if the file is in use.
+The external variable 
+.PN errno 
+is set to EWOULDBLOCK in this case.
+.NT
+The in use flag cannot
+be inherited by a child process, nor can it be replicated by the
+.PN dup 
+system call.
+.NE
+When the in use flag is cleared, all processes that are blocked
+for that reason resume.
+The 
+.PN open 
+continues to block 
+if another process marks the file as in use
+again.
+.PP 
+The in use flag can be cleared in three ways:  
+.IP \(bu 4
+When the file descriptor marked as in use is closed
+.IP \(bu
+When the process that set the in use flag exits
+.IP \(bu
+When an
+.PN ioctl 
+system call is issued and FIOCINUSE or TIOCCINUSE is specified in the
+.I request 
+argument.   
+.SH Environment
+.NXR "open system call" "System V and"
+.SS System Five
+When your program is compiled using the System V environment, and
+O_NDELAY is specified, subsequent reads and writes
+are also affected.
+.SH Return Values
+Upon successful completion, an integer value greater than
+-1 is returned.
+.SH Diagnostics
+.NXR "open system call" "diagnostics"
+The 
+.PN open
+call fails under the following conditions:
+.TP 15
+[EACCES]
+The required permissions for reading, writing, or both
+are denied for the named flag.
+.TP 15
+[EACCES]
+Search permission is denied for a component of the path prefix.
+.TP 15
+[EACCES]
+O_CREAT is specified, the file does not exist, and the
+directory in which it is to be created does not permit
+writing.
+.TP 15
+[EDQUOT]
+O_CREAT is specified, the file does not exist, and
+the directory in which the entry for the new file is
+being placed cannot be extended, because the user's
+quota of disk blocks on the file system containing
+the directory has been exhausted.
+.TP 15
+[EDQUOT]
+O_CREAT is specified, the file does not exist,
+and the user's quota of inodes on the file system on
+which the file is being created has been exhausted.
+.TP 15
+[EEXIST]
+O_CREAT and O_EXCL were specified and the file exists.
+.TP 15
+[EFAULT]
+The
+.I path
+points outside the process's allocated address space.
+.TP 15
+[ENFILE]
+The system file table is full.
+.TP 15
+[EINVAL]
+An attempt was made to open a file with the O_RDONLY and
+O_FSYNC flags set.  
+.TP 15
+[EIO]
+An I/O error occurred while making the directory entry or allocating
+the inode for O_CREAT.
+.TP 15
+[EISDIR]
+The named file is a directory, and the arguments specify
+it is to be opened for writing.
+.TP 15
+[ELOOP]
+Too many symbolic links were encountered in translating the pathname.
+.TP 15
+[EMFILE]
+{OPEN_MAX} file descriptors are currently open.
+.TP 15
+[ENAMETOOLONG]
+A component of a pathname exceeds 255 characters or an entire
+pathname exceeds 1023 characters.
+.TP 15
+[ENOENT]
+O_CREAT is not set and the named file does not exist.
+.TP 15
+[ENOENT]
+A necessary component of the path name does not exist.
+.TP
+[ENOENT]
+The \fIpath\fP argument points to an empty string and the process
+is running in the POSIX or SYSTEM_FIVE environment.
+.TP 15
+[ENOSPC]
+O_CREAT is specified, the file does not exist,
+and the directory in which the entry for the new file is being
+placed cannot be extended because there is no space left on the
+file system containing the directory.
+.TP 15
+[ENOSPC]
+O_CREAT is specified, the file does not exist, and there
+are no free inodes on the file system on which the
+file is being created.
+.TP 15
+[ENOTDIR]
+A component of the path prefix is not a directory.
+.TP 15
+[ENXIO]
+The named file is a character special or block
+special file, and the device associated with this special file
+does not exist.
+.TP 15
+[ENXIO]
+The O_NDELAY flag is given, and the file is a communications device
+on which there is no carrier present.
+.TP
+[ENXIO]
+O_NONBLOCK is set, the named file is a FIFO, O_WRONLY is
+set and no process has the file open for reading.
+.TP 15
+[EOPNOTSUPP]
+An attempt was made to open a socket that is not set active. 
+.TP 15
+[EROFS]
+The named file resides on a read-only file system,
+and the file is to be modified.
+.TP 15
+[ESTALE]
+The file handle given in the argument is invalid.  The 
+file referred to by that file handle no longer exists 
+or has been revoked.
+.TP
+[ETIMEDOUT]
+A connect request or remote file operation failed
+because the connected party did not respond after a period
+of time determined by the communications protocol.
+.TP 15
+[ETXTBSY]
+The file is a pure procedure (shared text) file that is being
+executed and the 
+.PN open
+call requests write access.
+.TP 15
+[EWOULDBLOCK]
+The open would have blocked if the O_NDELAY was not used. The probable 
+cause for the block is that the file was marked in use.
+.TP
+[EINTR]
+A signal was caught during the
+.PN open()
+function.
+.SH See Also
+chmod(2), close(2), dup(2), fcntl(2), lseek(2), read(2), write(2), 
+umask(2), tty(4)

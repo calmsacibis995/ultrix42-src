@@ -1,0 +1,258 @@
+.\" SCCSID: @(#)mount.2	2.1	3/10/87
+.TH mount 2
+.SH Name
+mount, umount \- mount or unmount a file system
+.SH Syntax
+#include <sys/types.h>
+.br
+#include <sys/fs_types.h>
+.PP
+mount(\fIspecial, name, rwflag, type, options\fP)
+.br
+char *\fIspecial\fP, *\fIname\fP;
+.br
+int \fIrwflag\fP, \fItype\fP;
+.br
+char *\fIoptions\fP;
+.PP
+umount(\fIdev\fP)
+.br
+dev_t \fIdev\fP;
+.SH Description
+.NXB "mount system call (general)"
+.NXB "file system" "mounting"
+.NXB "file system" "removing"
+.NXR "umount system call (general)"
+.NXAM "mount system call (general)" "mount command (general)"
+The
+.PN mount
+system call announces to the system that a file system has
+been mounted on
+special file,
+.I special.
+References to file
+.I name
+refer to
+the root file on the newly mounted file system.
+.PP
+The 
+.I special
+argument is a pointer to a null-terminated string
+containing the pathname of the file system being mounted.
+.PP
+The 
+.I name
+argument is a pointer to a null-terminated string containing the pathname
+of the root file on the newly mounted file system.  The
+.I name
+must already exist and must be a directory.
+Its old contents
+are inaccessible while the file system
+is mounted.
+.PP
+The
+.I rwflag
+argument is used to determine whether the file system can be written
+on; if it is 0, the file system is writable, if nonzero, the file
+system is write-protected.  Physically write-protected disks and
+magnetic tape file systems must be mounted read-only.
+The
+.PN mount 
+call also detects devices that are offline at
+mount time and returns the appropriate error.
+.PP
+The 
+.I type 
+argument identifies the file system type that is being mounted.
+The file system types are defined in the <fs_types.h> file.
+.PP
+The 
+.I options 
+argument specifies certain parameters that can be used to define how
+the file system is to be mounted.
+.PP
+The 
+.I dev
+argument to 
+.PN umount
+is the device id and
+identifies the device that contains the file system that is to
+be unmounted.
+.SH Environment
+.SS System V
+The \fItype\fR and the \fIoptions\fR arguments are not available 
+in the System V environment.
+.PP
+.NXR "mount system call (general)" "System V and"
+Programs compiled in the System V environment cause
+.PN mount 
+and
+.PN umount
+to set errno to
+ENOTDIR, instead of EPERM (illegal char in directory name) or EROFS (directory on
+read  only  filesystem). If the process is not the superuser, errno is
+set to EPERM, instead of ENODEV, and if the file does not exist, errno
+is set to ENOENT, instead of ENODEV.
+.PP
+Also in the System V environment, only the low-order bit of
+.I rwflag
+is checked to determine write permission.
+.PP
+In the System V environment the syntax for 
+.PN umount 
+is as follows:
+.RS 5
+umount(\fIname\fR)
+char *\fIname\fR;
+.RE
+.PP
+The argument to 
+.PN umount 
+specifies the file system to be unmounted.  
+In System V mode, the argument is the 
+.PN name 
+of the
+device that contains the file system that is to be unmounted; 
+in all other modes, it is the device id.
+.SH Return Values
+The
+.PN mount
+system call returns 0 upon successful completion of a mount operation;
+it returns \-1 if the mount operation fails.
+.PP
+The
+.PN umount
+system call
+announces to the system that the device
+.I dev
+no longer contains a file system.
+The associated directory reverts to its ordinary interpretation.
+.PP
+The
+.PN umount
+system call
+returns 0 if the dismount operation succeeds; \-1 if it fails.
+.SH Diagnostics
+.NXR "mount system call (general)" "diagnostics"
+The
+.PN mount
+call fails under the following conditions:
+.TP 15
+[EPERM]
+The caller is not the superuser.
+.TP 15
+[ENODEV]
+A component
+of
+.I special
+does not exist or the device is offline.
+.TP 15
+[ENOTBLK]
+The
+.I special
+is not a block device.
+.TP 15
+[ENXIO]
+The major device number of 
+.I special
+is out of range (indicating that no device driver exists
+for the associated hardware).
+.TP 15
+[EINVAL]
+The file system type is out of range.
+.TP 15
+[EINVAL]
+The super block for the file system had a bad magic number or an
+out-or-range block size.
+.TP 15
+[EINVAL]
+The file system has not been unmounted cleanly, and the force option 
+has not been set.
+.TP 15
+[ENOTDIR]
+A component of
+.I name
+is not a directory,
+or a path prefix of
+.I special
+is already mounted.
+.TP 15
+[EBUSY]
+Another process currently holds a reference to
+.IR name ,
+or
+.I special
+is already mounted.
+.TP 15
+[ENAMETOOLONG]
+A component of either pathname exceeded 255 characters,
+or the entire length of either pathname exceeded 1023
+characters.
+.TP 15
+[ELOOP]
+Too many symbolic links were encountered in translating
+either pathname.
+.TP 15
+[ENOENT]
+A component of
+.I name
+does not exist.
+.TP 15
+[EMFILE]
+No space remains in the mount table.
+.TP 15
+[ENOMEM]
+Not enough memory was available to read the cylinder
+group information for the file system.
+.TP 15
+[EIO]
+An I/O error occurred while reading the super block or
+cylinder group information.
+.TP 15
+[EFAULT]
+The
+.I special
+or
+.I name
+points outside the process's allocated address space space.
+.TP 15
+[EROFS]
+The
+.I special
+is a write-locked device and the user did not set the
+.I rwflag.
+.PP
+The
+.PN umount
+command fails under the following conditions:
+.TP 15
+[EPERM]
+The caller is not the superuser.
+.TP 15
+[EINVAL]
+The requested device is not in the mount table.
+.TP 15
+[EBUSY]
+A process is holding a reference to a file located
+on the file system.
+.TP 15
+[EIO]
+An I/O error occurred while writing the super block or other
+cached file system information.
+.TP 15
+[EREMOTE]
+An attempt has been made to mount an NFS remote file system that
+is not local to the specified server.  This cannot
+occur except in response to a failed 
+.MS mount 2 .
+.TP
+[ETIMEDOUT]
+A connect request or remote file operation failed
+because the connected party
+did not properly respond after a period
+of time that is dependent on the communications protocol.
+.SH See Also
+mount(2nfs), mount(8), umount(8)
+.NXE "mount system call (general)"
+.NXE "file system" "mounting"
+.NXE "file system" "removing"

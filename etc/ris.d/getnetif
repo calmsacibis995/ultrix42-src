@@ -1,0 +1,151 @@
+#!/bin/sh5
+# @(#)getnetif	4.3	(ULTRIX)	1/31/91
+#									
+# 			Copyright (c) 1989 by				
+# 		Digital Equipment Corporation, Maynard, MA		
+# 			All rights reserved.				
+# 									
+#    This software is furnished under a license and may be used and	
+#    copied  only  in accordance with the terms of such license and	
+#    with the  inclusion  of  the  above  copyright  notice.   This	
+#    software  or  any  other copies thereof may not be provided or	
+#    otherwise made available to any other person.  No title to and	
+#    ownership of the software is hereby transferred.			
+# 									
+#    The information in this software is subject to change  without	
+#    notice  and should not be construed as a commitment by Digital	
+#    Equipment Corporation.						
+# 									
+#    Digital assumes no responsibility for the use  or  reliability	
+#    of its software on equipment which is not supplied by Digital.	
+#
+# Abstract:
+# 	Name: getnetif client_name
+# 	Output:  Server_Name  Netmask_number  Broadcast_Number.
+#
+# Because a server may have more than one network interfaces,
+# each network interface will have its own server name, netmask number,
+# and bradcast number.
+#
+# The way to figure out is:
+# 1. Go through every network interface to get netmask number, broadcast number,
+#    and the server IP address, which connects with the network interface.
+# 2. Masking the client and the server IP address to see whether the result is
+#    the same.  If it is the same, then we find it
+#    Otherwise, check next network interface. 
+#
+# Modification History:
+# 000 - 3/28/89   Tungning Cherng Created
+# 001 - 1/2/89	  Tungning Cherng
+# 	DECnet and LAT may use the same network interface as tcp/ip.
+#	If the output of "netstat" has them, ignore them.
+#
+
+CLIENT=$1
+[ -z "$CLIENT" ] && { echo "Usage: $0 client_name"; exit 1; }
+
+hostaddr=`/etc/arp $CLIENT | awk '{print $2}' | sed 's/.*(\(.*\)).*/\1/'`
+case $hostaddr in 
+"") 	
+	echo "Can't find $CLIENT in hosts file." 1>&2
+	exit 1;
+esac
+
+/usr/ucb/netstat -n -i | egrep -v "^lo0|^Name|\*.*|DECnet|LAT|OSI|none" >/tmp/net$$
+for i in `cat /tmp/net$$ | awk '{print $1}'`
+do
+	device=$i
+	/etc/ifconfig $device >/dev/null 2>&1 || continue
+	#
+	#  Run ifconfig on this device and extract the netmask 
+	#	and broadcast numbers.
+	#
+	eval `
+	    /etc/ifconfig "$device" | tr ' ' '\012' | 
+	    awk '   BEGIN {
+			x[0]=0;x[1]=1;x[2]=2;x[3]=3;x[4]=4;x[5]=5
+			x[6]=6;x[7]=7;x[8]=8;x[9]=9;x["a"]=10;
+			x["b"]=11;x["c"]=12;x["d"]=13;x["e"]=14
+			x["f"]=15;
+		}
+		/netmask/ { 
+			getline(s)
+			# convert the hex mask to internet dot notation
+			netmask=""
+			first=1
+			for ( i=1; i<8; i += 2) {
+				byte = x[substr($1,i,1)] * 16;
+				byte += x[substr($1,i+1,1)];
+				if (first) {
+					netmask = byte 
+					first = 0
+				} else {
+					netmask = netmask "." byte
+				}
+			}
+			print "netmask=" netmask
+			continue
+		}
+		/broadcast/ {
+			getline(s)
+			print "broadcast=" $1
+		}
+		'
+	`
+
+	case `cat /tmp/net$$ | wc -l 2>/dev/null` in
+	1 )
+		break	;;
+	esac
+	#
+	# For each device, find out which one is right one by
+	# using the netmask to mask out the server and 
+	# client host number.
+	#
+	device=`cat /tmp/net$$ | grep $device |
+	awk '	$1 ~ /\*$/ { continue }
+		$1 ~ /Name/ { continue }
+		{
+			split($3, serarray, ".")
+			split("'$hostaddr'", cliarray, ".") 
+			split("'$netmask'", maskarray, ".")
+			found=1
+			for (i = 1; i < 4; i++) 
+			{
+			a = int(cliarray[i]/(256-maskarray[i]))
+			b = int(serarray[i]/(256-maskarray[i]))
+			if ( a - b >=1 || b - a >=1 ) 
+				{ found=0; break }
+			}
+		}
+		{ if (found==1) 
+			{print $1 ; exit 1}
+		}
+	'`
+	[ "$device" != "" ] && break
+done
+case $device in
+"" )	
+	echo "
+This server does not appear to be connected to the network
+which host '${CLIENT}' is on.  Please check that this machine
+is configured on all its networks and try again." 1>&2
+
+	exit 1
+	;;
+esac
+
+CLINETM=$netmask
+CLIBRDC=$broadcast
+#
+# Get the server's name from netstat in case 
+#  the client is on the another network.
+#
+SERVER=`/usr/ucb/netstat -i | grep $device | egrep -v "DECnet|af12|LAT|OSI|none" | 
+	awk '{print $4}' | sed -e 's/^\([^\.]*\)\..*/\1/'` 
+
+[ $SERVER ] || { echo "Can not get server name.\n"; exit 1; }
+[ $CLINETM ] || { echo "Does not get netmask number; exit 1; }
+[ $CLIBRDC ] || { echo "Does not get broadcast number; exit 1; }
+echo $SERVER $CLINETM $CLIBRDC 
+exit 0

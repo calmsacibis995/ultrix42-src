@@ -1,0 +1,49 @@
+
+(Copyright (c) 1986 Digital Equipment Corporation.  All rights reserved.)
+pop(Copyright (c) 1984, 1985, 1986 Adobe Systems Incorporated.)pop
+currentdict/lps$ehdict known not{systemdict/currentpacking
+known{currentpacking true setpacking true}{false}ifelse/lps$ehdict 24 dict
+def systemdict begin lps$ehdict begin/exdepth countexecstack 1 sub def/col
+1 def/CTM matrix def/pne false def/depth 0 def/nl{(\n)print flush/col 1
+def}bind readonly def/tprint{dup length col add 72 gt{nl}if dup length col
+add/col exch def print}bind readonly def/cvsprint{=string cvs
+tprint( )tprint}bind readonly def/unknowntype{exch pop(??)tprint
+cvsprint}bind readonly def/typeprint{dup type dup currentdict exch
+known{exec}{unknowntype}ifelse}bind readonly def/integertype{cvsprint}bind
+readonly def/realtype/integertype load def/booleantype/integertype load
+def/operatortype{(//)tprint cvsprint}bind readonly
+def/marktype{pop(-mark- )tprint}bind readonly
+def/dicttype{pop(-dictionary- )tprint}bind readonly
+def/nulltype{pop(-null- )tprint}bind readonly
+def/filetype{pop(-filestream- )tprint}bind readonly
+def/savetype{pop(-savelevel- )tprint}bind readonly
+def/fonttype{pop(-fontid- )tprint}bind readonly def/nametype{dup xcheck
+not{(/)tprint}if cvsprint}bind readonly def/stringtype{dup
+rcheck{(\()tprint tprint(\) )tprint}{pop(-string- )tprint}ifelse}bind
+readonly def/arraytype{dup rcheck depth 2 le and{/depth depth 1 add def dup
+xcheck{({ )tprint{typeprint}forall(} )tprint}{([ )tprint{typeprint}forall
+(] )tprint}ifelse/depth depth 1 sub
+def}{xcheck{(-proc- )tprint}{(-array- )tprint}ifelse}ifelse}bind readonly
+def/packedarraytype{dup rcheck depth 2 le and{/depth depth 1 add def dup
+xcheck{({ )tprint{typeprint}forall(} )tprint}{([ )tprint{typeprint}forall
+(] )tprint}ifelse/depth depth 1 sub
+def}{xcheck{(-packedproc- )tprint}{(-packedarray- )tprint}ifelse}ifelse}
+bind readonly def end errordict begin/handleerror{systemdict begin $error
+begin lps$ehdict begin newerror{clear/newerror false store
+nl(ERROR: )tprint errorname cvsprint nl(OFFENDING COMMAND: )tprint/command
+load typeprint nl $error/ostack known{nl(OPERAND STACK:)tprint nl nl
+$error/ostack get dup length 1 sub -1 0{1 index exch get typeprint nl}for
+pop}if $error/estack known{nl(EXECUTION STACK:)tprint nl nl $error/estack
+get dup length 1 sub -1 exdepth{1 index exch get typeprint nl}for pop}if
+nl(GRAPHICS STATE: )tprint nl(   Current Matrix: )tprint CTM currentmatrix
+arraytype nl(   Color: )tprint currentgray realtype
+nl(   Current position: )tprint/pne false def{/pne true
+def}{}{}{}pathforall pne{currentpoint exch(x = )tprint
+realtype(, y = )tprint realtype}{(NONE)tprint}ifelse
+nl(   Line width: )tprint currentlinewidth realtype nl(   Line cap: )tprint
+currentlinecap integertype nl(   Line join: )tprint currentlinejoin
+integertype nl(   Flatness: )tprint currentflat realtype
+nl(   Miter limit: )tprint currentmiterlimit realtype
+nl(   Dash pattern: )tprint currentdash exch arraytype( )tprint integertype
+nl flush showpage}{end end end}ifelse}bind readonly def end
+end{setpacking}if}if

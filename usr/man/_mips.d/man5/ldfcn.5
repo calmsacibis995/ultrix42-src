@@ -1,0 +1,284 @@
+.TH ldfcn 5 RISC
+.SH Name
+ldfcn \- common object file access routines
+.SH Syntax
+.nf
+.ft B
+.B #include <stdio.h>
+.B #include <filehdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h>
+.fi
+.ft R
+.SH Description
+The common object file access routines are a collection of functions 
+that read an object file that is in common object file form.
+The calling program must know the detailed structure of the
+parts of the object file that it processes,
+but the calling program does not have to know the overall structure
+of the object file as the routines handle this function.
+.PP
+The interface between the calling program and the object file access
+routines is based on
+the defined type
+.PN LDFILE
+(defined as
+.PN "struct ldfile" ),
+which is declared in the header file
+.PN <ldfcn.h>.
+Primarily, this structure provides uniform access to
+simple object files and object files that are members of an
+archive file.
+.PP
+The function
+.MS ldopen 3x
+allocates and initializes the
+.PN LDFILE
+structure, reads in the symbol table header, if present, and returns a pointer 
+to the structure
+to the calling program.
+The fields of the
+.PN LDFILE
+structure can be accessed individually through
+macros defined in
+.PN <ldfcn.h>.
+The fields contain the following information:
+.TP 15
+\s-1LDFILE\s+1	\(**ldptr;
+.TP 15
+\s-1TYPE\s+1(ldptr)
+The file magic number, used to distinguish between archive members and simple
+object files.
+.TP 15
+\s-1IOPTR\s+1(ldptr)
+The file pointer returned by 
+.MS fopen 3s 
+and used by the standard input/output functions.
+.TP 15
+\s-1OFFSET\s+1(ldptr)
+The file address of the beginning of the object file;
+if the object file is a member of an archive file, 
+the offset is nonzero.
+.TP 15
+\s-1HEADER\s+1(ldptr)
+The file header structure of the object file.
+.TP 15
+\s-1SYMHEADER\s+1(ldptr)
+The symbolic header structure for the symbol table associated with the object
+file.
+.TP 15
+\s-1PFD\s+1(ldptr)
+The file table associated with the symbol table.
+.TP 15
+\s-1SYMTAB\s+1(ldptr)
+A pointer to a copy of the symbol table in memory. It is accessed through the
+pCHDR structure (see 
+.PN cmplrs/stsupport.h ). 
+If no symbol 
+table is present, this field is NULL.  This macro causes the
+whole symbol table to be read.
+.TP 15
+\s-1LDSWAP\s+1(ldptr)
+If the header and symbol table structures are swapped within the object
+file and all access requires using 
+.PN libsex, 
+this field is set to true.  Note that if you use 
+.PN libmld
+routines, all structures, except the optional header and auxiliaries, 
+are swapped.
+.PP
+The object file access functions can be divided into four
+categories:
+.RS
+.PP
+(1)  Functions that open or close an object file
+.PP
+.RS
+.MS ldopen 3x
+and
+.PN ldaopen
+.RS
+open a common object file
+.RE
+.MS ldclose 3x
+and
+.PN ldaclose
+.RS
+close a common object file
+.RE
+.RE
+.PP
+(2)  Functions that return header or symbol table information
+.PP
+.RS
+.MS ldahread 3x
+.RS
+read the archive header of a member of an archive file
+.RE
+.MS ldfhread 3x
+.RS
+read the file header of a common object file
+.RE
+.MS ldshread 3x
+and
+.PN ldnshread
+.RS
+read a section header of a common object file
+.RE
+.MS ldtbread 3x
+.RS
+read a symbol table entry of a common object file
+.RE
+.MS ldgetname 3x
+.RS
+retrieve a symbol name from a symbol table entry or from the string table
+.RE
+.MS ldgetaux 3x
+.RS
+retrieve a pointer into the aux table for the specified ldptr
+.RE
+.MS ldgetsymstr 3x
+.RS
+create a type string (for example, C declarations) for the specified symbol
+.RE
+.MS ldgetpd 3x
+.RS
+retrieve a procedure descriptor
+.RE
+.MS ldgetrfd 3x
+.RS
+retrieve a relative file table entry
+.RE
+.RE
+.PP
+(3)  Functions that position (seek to) an object file at 
+the start of the section, relocation,
+or line number information for a particular section
+.PP
+.RS
+.MS ldohseek 3x
+.RS
+seek to the optional file header of a common object file
+.RE
+.MS ldsseek 3x
+and
+.PN ldnsseek
+.RS
+seek to a section of a common object file
+.RE
+.MS ldrseek 3x
+and
+.PN ldnrseek
+.RS
+seek to the relocation information for a section of a common
+object file
+.RE
+.MS ldlseek 3x
+and
+.PN ldnlseek
+.RS
+seek to the line number information for a section of a common object file
+.RE
+.MS ldtbseek 3x
+.RS
+seek to the symbol table of a common object file
+.RE
+.RE
+.PP
+(4) Miscellaneous functions
+.RS
+.MS ldtbindex 3x
+.RS
+return the 
+index of a particular common object 
+file symbol table entry
+.RE
+.MS ranhashinit 3x
+.RS
+initialize the tables and constants
+so that the archive hash and lookup routines can work
+.RE
+.MS ranhash 3x
+.RS
+give a string return the hash index for it
+.RE
+.MS ranlookup 3x
+.RS
+return an archive hash bucket that is empty or matches the string argument
+.RE
+.MS disassembler 3x
+.RS
+print MIPS assembly instructions
+.RE
+.MS ldreadst 3x
+.RS
+cause a section of the symbol table to be read
+.RE
+.RE
+.PP
+These functions are described in detail in the manual pages 
+identified for each function.
+.PP
+The
+.PN ldopen
+and 
+.PN ldaopen
+functions both return pointers to a
+.PN LDFILE
+structure.
+.SH Macros
+Additional access to an object file is provided through a set of macros
+defined in
+.PN <ldfcn.h>.
+These macros parallel the standard
+input\/output file reading and manipulating functions.  They
+translate a reference 
+of the
+.PN LDFILE
+structure into a reference to its file descriptor field.
+.PP
+.ne 4
+The following macros are provided:
+.PP
+.RS
+.nf
+GETC(ldptr)
+FGETC(ldptr)
+GETW(ldptr)
+UNGETC(c, ldptr)
+FGETS(s, n, ldptr)
+FREADM((char \(**) ptr, sizeof (\(**ptr), nitems, ldptr)
+FSEEK(ldptr, offset, ptrname)
+FTELL(ldptr)
+REWIND(ldptr)
+FEOF(ldptr)
+FERROR(ldptr)
+FILENO(ldptr)
+SETBUF(ldptr, buf)
+STROFFSET(ldptr)
+.RE
+.fi
+.PP
+The STROFFSET macro calculates the address of the local
+symbol's string table in an object file.
+See the manual entries for the corresponding standard input/output library
+functions for details on the use of these macros.  (The functions
+are identified as 3s in Section 3 of the reference pages.)
+.SH Restrictions
+The macro
+.PN FSEEK
+defined in the header file
+.PN <ldfcn.h>
+translates into a call to the 
+standard input/output function
+.MS fseek 3s .
+.PN FSEEK
+should not be used to seek from the end of an archive file since
+the end of an archive file cannot be the same as the end of one of
+its object file members.
+.SH See Also
+ar(1),
+fopen(3s), fseek(3s), ldahread(3x), ldclose(3x), ldfhread(3x),
+ldgetname(3x), ldlread(3x), ldlseek(3x),
+ldohseek(3x), ldopen(3x), ldrseek(3x), ldlseek(3x),
+ldshread(3x), ldtbindex(3x), ldtbread(3x), ldtbseek(3x)

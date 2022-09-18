@@ -1,0 +1,56 @@
+.\" SCCSID: @(#)listen.2	8.1	9/11/90
+.TH listen 2
+.SH Name
+listen \- listen for connections on a socket
+.SH Syntax
+.nf
+.ft B
+listen(s, backlog)
+int s, backlog;
+.fi
+.SH Description
+.NXR "listen system call"
+.NXR "listen system call" "accept system call"
+.NXR "socket" "queuing connections"
+To accept connections, a socket
+is first created with a
+.PN socket 
+call, a backlog for incoming connections is specified with 
+.PN listen , 
+and then the connections are accepted with the
+.PN accept 
+call.
+The
+.PN listen
+call is needed only for sockets of type
+SOCK_STREAM
+or
+SOCK_SEQPACKET.
+.PP
+The
+.I backlog
+parameter defines the maximum length the queue of
+pending connections may grow to.
+If a connection
+request arrives with the queue full, the client 
+receives an error with an indication of ECONNREFUSED.
+.SH Restrictions 
+The 
+.I backlog
+is currently limited to 8.
+.SH Return Values
+A 0 return value indicates success.  A \-1 indicates an error.
+.SH Diagnostics
+The call fails under the following conditions:
+.TP 15
+[EBADF]
+The argument \fIs\fP is not a valid descriptor.
+.TP 15
+[ENOTSOCK]
+The argument \fIs\fP is not a socket.
+.TP 15
+[EOPNOTSUPP]
+The socket is not of a type that supports the operation 
+.PN listen .
+.SH See Also
+accept(2), connect(2), socket(2)

@@ -1,0 +1,45 @@
+.\" SCCSID: @(#)lorder.1	8.1	9/11/90
+.TH lorder 1
+.SH Name
+lorder \- determine relation for an object library 
+.SH Syntax
+.B lorder
+\fIfile...\fR
+.SH Description
+.NXR "lorder command"
+.NXA "lorder command" "ranlib command"
+.NXR "object file" "ordering"
+.NXR "archive file" "ordering"
+The input
+is one or more object or library archive
+.I files.
+For further information, see 
+.MS ar 1 .
+The standard output
+is a list of pairs of object file names,
+meaning that the first file of the pair refers to
+external identifiers defined in the second.
+The output may be processed by
+.MS tsort 1
+to find an ordering of
+a library suitable for one-pass access by 
+.MS ld 1 .
+.PP
+This one-liner intends to build a new library
+from existing `.o' files.
+.IP
+ar cr library \`\|lorder *.o | tsort\`
+.PP
+The use of 
+.MS lorder 1
+is unnecessary when you use 
+.MS ranlib 1 ,
+which converts an ordered archive into a randomly
+accessed library.
+.SH Restrictions
+The names of object files, in and out of libraries, must end with `.o';
+nonsense results otherwise.
+.SH Files
+*symref, *symdef
+.SH See Also
+ar(1), join(1), ld(1), nm(1), ranlib(1), sed(1), sort(1), tsort(1)

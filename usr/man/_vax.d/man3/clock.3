@@ -1,0 +1,40 @@
+.\" SCCSID: @(#)clock.3	8.1	9/11/90
+.TH clock 3 
+.SH Name
+clock \- report CPU time used
+.SH Syntax
+.B #include <time.h>
+.PP
+.B clock_t clock ( )
+.PP
+.B CLOCKS_PER_SEC
+.SH Description
+.NXR "clock subroutine"
+.NXR "time" "reporting"
+The
+.PN clock
+routine returns the amount of CPU time 
+(in microseconds) used since the
+first call to
+.PN clock .
+The time reported is the sum of the user and system times of the
+calling process and its terminated child processes 
+for which it has executed 
+.MS wait 2
+or 
+.MS system 3 .
+To determine the time in seconds, the value returned by
+.PN clock
+should be divided by the value of the macro CLOCKS_PER_SEC.
+.PP
+The resolution of the clock is 16.667 milliseconds.
+.SH Restrictions
+The value returned by
+.PN clock
+is defined in microseconds for compatibility with systems that have
+CPU clocks with much higher resolution.
+Because of this, the value returned
+will wrap around after accumulating
+only 2147 seconds of CPU time (about 36 minutes).
+.SH See Also
+wait(2), times(3), system(3)

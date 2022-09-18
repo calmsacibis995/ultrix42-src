@@ -1,0 +1,54 @@
+.\"
+.TH prestoctl_svc 8 
+.SH Name
+prestoctl_svc \- Prestoserve control daemon
+.SH Syntax
+.B /usr/etc/prestoctl_svc
+[
+.B \-n
+]
+.SH Description
+.NXR "prestoctl_svc daemon"
+The
+.PN prestoctl_svc
+RPC-based daemon allows remote client systems to monitor and administer
+a Prestoserve cache and its driver.  The client system does not have to
+be running the Prestoserve software.  The daemon 
+can be started manually, or 
+it can be started each time you reboot by adding the command to the 
+.PN rc.local 
+file of the machine running the Prestoserve software.
+.PP
+You must run the 
+.PN prestoctl_svc
+daemon if you want remote client systems to be able to use the 
+.PN "presto -h"
+command to monitor and manage your system and if you want to use the 
+.PN dxpresto 
+command.  Refer to 
+.MS presto 8
+and to 
+.MS dxpresto 8X
+for more information.  
+.SH Options
+.IP \-n
+Allows remote client systems to manage a Prestoserve cache and its driver.
+The \fB\-n\fP option allows remote client systems 
+to change the size of a Prestoserve cache and to change 
+the state of a Prestoserve cache by using remote 
+procedure calls.  The \fB\-n\fP option is useful when evaluating or demonstrating 
+Prestoserve capabilities.  Because of security problems, it is
+recommended that the \fB\-n\fP option not be used on production machines.
+.SH Files
+.TP 18
+.PN /dev/pr0
+Generic Prestoserve control device.
+.TP 18
+.PN /etc/rc.local
+File where you add the 
+.PN "prestoctl_svc"
+command.
+.SH "See Also"
+presto(8), dxpresto(8X), presto(4)
+.br
+\fIGuide to Prestoserve\fP

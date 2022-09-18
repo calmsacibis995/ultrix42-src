@@ -1,0 +1,122 @@
+.\" @(#)select.2 1.37 90/02/01 SMI; from UCB 4.2
+.\" Copyright (c) 1983 Regents of the University of California.
+.\" All rights reserved.  The Berkeley software License Agreement
+.\" specifies the terms and conditions for redistribution.
+.\"
+.TH select 2
+.SH Name
+select \- synchronous I/O multiplexing
+.SH Syntax
+.nf
+#include <sys/types.h>
+#include <sys/time.h>
+
+int select (\fInfds\fP, \fIreadfds\fP, \fIwritefds\fP, \fIexceptfds\fP, \fItimeout\fP)
+int \fInfsd\fP;
+fd_set \fI*readfds\fP, \fI*writefds\fP, \fI*exceptfds\fP;
+struct timeval *\fItimeout\fP;
+
+FD_SET (\fIfd, fdset\fP)
+FD_CLR (\fIfd, fdset\fP)
+FD_ISSET (\fIfd, fdset\fP)
+FD_ZERO (\fIfdset\fP)
+int \fIfd\fP;
+fd_set \fI*fdset\fP;
+.fi
+.SH Description
+.NXR "select system call"
+.NXR "I/O multiplexing"
+The
+.PN select 
+system call examines the I/O descriptor sets whose addresses
+are passed in \fIreadfds\fP, \fIwritefds\fP, 
+and \fIexceptfds\fP to see if
+some of their descriptors are ready for reading, ready for
+writing, or have an exceptional condition pending. The \fInfds\fP
+parameter is
+the number of bits to be checked in each bit mask that
+represent a file descriptor; the descriptors from 0 through
+\fInfds\fP-1 in the descriptor sets are examined. Typically
+\fInfds\fP has the value returned by 
+.MS getdtablesize 2
+for the maximum
+number of file descriptors. On return, 
+.PN select
+replaces
+the given descriptor sets with subsets consisting of those
+descriptors that are ready for the requested operation. The
+total number of ready descriptors in all the sets is
+returned.
+.PP
+The descriptor sets are stored as bit fields in arrays of
+integers. The following macros are provided for manipulating such descriptor 
+sets: FD_ZERO(\fIfds\fP
+descriptor set \fIfdset\fP to the null set. FD_SET(\fIfd\fP, \fIfdset\fP)
+includes a particular descriptor \fIfd\fP in \fIfdset\fP. FD_CLR(\fIfd\fP,
+\fIfdset\fP) removes \fIfd\fP from \fIfdset\fP. FD_ISSET(\fIfd\fP, 
+\fIfdset\fP) is
+nonzero if \fIfd\fP is a member of \fIfdset\fP, zero otherwise. The
+behavior of these macros is undefined if a descriptor value
+is less than zero or greater than or equal to FD_SETSIZE,
+which is equal to the maximum number of
+descriptors that can be supported by the system.
+.PP
+If \fItimeout\fP is not a NULL pointer, it specifies a maximum
+interval to wait for the selection to complete. If \fItimeout\fP
+is a NULL pointer, the select blocks indefinitely. To
+effect a poll, the \fItimeout\fP argument should be a non-NULL
+pointer, pointing to a zero-valued timeval structure.
+.PP
+Any of \fIreadfds\fP, \fIwritefds\fP, and \fIexceptfds\fP may be given as NULL
+pointers if no descriptors are of interest.
+.PP
+Selecting true for reading on a socket descriptor upon which
+a 
+.PN listen 
+call has been performed indicates that a subsequent 
+.PN accept
+call on that descriptor will not block.
+.SH Restrictions
+The
+.PN select
+call may indicate that a
+descriptor is ready for writing when in fact an attempt to
+write would block. This can happen if system resources
+necessary for a write are exhausted or otherwise unavailable. 
+If an application deems it critical that writes to a
+file descriptor not block, it should set the descriptor for
+non-blocking I/O using the F_SETFL request to the
+.PN fcntl
+call.
+.SH Return Values
+The 
+.PN select
+call returns a non-negative value on success. 
+A positive value indicates the number of ready descriptors in the
+descriptor sets. A 0 indicates that the time limit referred
+to by \fItimeout\fP expired. 
+On failure, 
+.PN select
+returns -1,
+sets errno to indicate the error, and the descriptor sets
+are not changed.
+.SH Diagnostics
+.TP 12
+[EBADF]
+One of the descriptor sets specified an invalid descriptor.
+.TP
+[EFAULT]
+One of the pointers given in the call referred to a 
+non-existent portion of the process' address space.
+.TP
+[EINTR]
+A signal was delivered before any of the selected events occurred, 
+or before the time limit expired.
+.TP
+[EINVAL]
+A component of the pointed-to time limit is outside the acceptable range; 
+t_sec must be between 0 and 10^8, inclusive. t_usec must be greater than 
+or equal to 0, and less than 10^6.
+.SH See Also
+accept(2), connect(2), fcntl(2), gettimeofday(2), listen(2), 
+read(2), recv(2), send(2), write(2), getdtablesize(2)

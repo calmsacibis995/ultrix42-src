@@ -1,0 +1,66 @@
+.\" SCCSID: @(#)script.1	8.1	9/11/90
+.TH script 1
+.SH Name
+script \- generate script of your terminal session
+.SH Syntax
+.B script
+[\fB\-a\fR] [\|\fIfile\fR\|]
+.SH Description
+.NXR "script command"
+.NXR "typescript file" "creating"
+.NXR "terminal" "capturing session in a file"
+The
+.PN script
+command calls a forked shell and then makes a typescript 
+of everything printed on your terminal.
+The typescript is written to 
+.I file,
+or appended to
+.I file
+if the
+.B \-a
+option is given.
+If no file name is given, the typescript
+is saved in the file
+.I typescript .
+Later, it can be sent to the line printer with
+.PN lpr .
+.PP
+When 
+.PN script
+is run, it will execute your .cshrc file and will also put 
+you under control of a new pty. The 
+.PN script 
+program ends when the forked shell exits.
+.PP
+This program is useful when using a crt and you want a hard-copy
+record of the dialog. An example of how 
+.PN script
+can be used is a student handing
+in a program that was developed on a crt when hard-copy
+terminals are in short supply.
+.SH Options
+.IP \-a 5
+Appends output to the output 
+.I file.
+.SH Restrictions
+Because the 
+.PN script
+command uses a second pair of pseudo ttys, some commands 
+will fail when run under 
+.PN script. 
+For example, the 
+.PN whoami
+command may not always return a username. 
+.PP
+Also, the  
+.PN vi
+editor can be affected by
+.PN script .
+The 
+.PN vi
+commands j, k, h, and l that are used to move the cursor, do not 
+always function properly. If the screen becomes garbled when 
+using these commands, use <ctrl> L to refresh the screen.
+.SH See Also
+pty(4)

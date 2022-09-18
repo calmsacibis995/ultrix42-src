@@ -1,0 +1,13 @@
+#  %W%  ULTRIX  %G%
+#
+#	Only need this on the VAX
+#
+.c.o:
+	-@if [ ! -d profiled ] ; then \
+		mkdir profiled ; \
+	fi
+	$(CC) -p -DVAX ${CFLAGS} -c ../$*.c
+	-ld -X -r -o profiled/$*.o $*.o
+	$(CC) -DVAX ${CFLAGS} -c ../$*.c
+	-ld -x -r $*.o
+	mv a.out $*.o

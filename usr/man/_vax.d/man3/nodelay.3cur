@@ -1,0 +1,42 @@
+.TH nodelay 3cur 
+.SH Name
+nodelay \- disable block during read
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int nodelay(win, bf)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+bool bf;
+.SH Description
+.NXR "nodelay subroutine"
+.NXA "getch subroutine" "nodelay subroutine"
+This option causes 
+the 
+. PN getch 
+routine to be a non-blocking call.
+If no input is ready, 
+and 
+.PN nodelay
+is enabled,
+.PN getch 
+will return the integer
+.PN ERR .
+If 
+.PN nodelay 
+is disabled, 
+.PN getch 
+will wait until input is ready.
+.SH Return Values
+The 
+.PN nodelay
+function returns OK on success and ERR on error.
+.SH See Also
+getch(3cur)

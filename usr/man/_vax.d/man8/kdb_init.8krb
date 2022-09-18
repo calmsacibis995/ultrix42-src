@@ -1,0 +1,85 @@
+.TH kdb_init 8krb
+.SH Name
+kdb_init \- initialize the Kerberos master database
+.SH Syntax
+.B /var/dss/kerberos/bin/kdb_init
+[
+.I realm-name
+]
+[
+.I database-name
+]
+.SH Arguments
+.TP 13 
+.I realm-name
+The realm of the Kerberos database.
+.TP
+.I database-name
+A database specified so that 
+the current
+.PN /var/dss/kerberos/dbase/principal.pag ,
+.PN /var/dss/kerberos/dbase/principal.dir ,
+and
+.PN /var/dss/kerberos/dbase/principal.ok
+files are not overwritten.
+.SH Description
+.NXR "Kerberos routines" "kdb_init"
+The
+.PN kdb_init
+utility creates and initializes the Kerberos master database.
+The utility
+creates the database files:
+.PN /var/dss/kerberos/dbase/principal.dir ,
+.PN /var/dss/kerberos/dbase/principal.pag ,
+and
+.PN /var/dss/kerberos/dbase/principal.ok . 
+It also initializes the database by adding three database entries: the
+master database principal, a Kerberos default principal, the
+ticket-granting service principal (
+.PN krbtkt ),
+and the password changing principal,
+.PN changepw .
+.PP
+The master database principal is the entry to the database itself.
+You cannot use or modify the database without the master database password.
+The Kerberos default principal provides
+a template for service
+principals. 
+.PP
+The
+ticket-granting service,
+.PN krbtkt ,
+is used by Kerberos principals to
+obtain tickets to communicate with other Kerberos principals.
+The password-changing principal is not used.
+.PP
+If \fIrealm-name\fP is omitted when you enter the command,
+.PN kdb_init
+prompts for it. The program also prompts for the master database key.
+You cannot manipulate the database without this key.
+.PP
+By using \fIdatabase-name\fP, you can create another database to prevent
+the current
+.PN principal.dir ,
+.PN principal.pag ,
+and
+.PN principal.ok
+files from being overwritten.
+.PP
+After using
+.PN kdb_init
+to set up the master database, you may want to use the 
+.PN kstash(8krb)
+utility
+to hide the master database password on the database host machine. This
+enables Kerberos administration programs to access and manipulate
+the master database, without needing the password to be entered manually.
+.SH Files
+.TP
+.PN /var/dss/kerberos/dbase/principal.pag
+.TP 
+.PN /var/dss/kerberos/dbase/principal.dir
+.TP 
+.PN /var/dss/kerberos/dbase/principal.ok
+.SH See Also
+kdb_util(8krb), kstash(8krb), kdb_edit(8krb), kdb_destroy(8krb)

@@ -1,0 +1,106 @@
+.TH sliphosts 5 "" "" Unsupported
+.SH Name
+sliphosts \- information about Serial Line Internetcol Protocol hosts 
+.SH Syntax
+.B /etc/sliphosts 
+.SH Description
+.NXR "Serial Line Internet Protocol" "hosts"
+.NXR "hosts" "Serial Line Internet Protocol"  
+.NXR "sliphosts"
+.PP
+The 
+.PN /etc/sliphosts
+file contains information about Serial Line Internet Protocol hosts.  
+Hosts come in numerous types, but all are considered masters
+or slaves depending on what is present in this 
+.PN sliphosts
+file. Master systems initiate the connection as: 
+.PP
+.RS
+.PN /etc/slattach 
+.I host
+.RE
+.PP
+where
+.I host 
+is a destination address. The destination is eventually passed to an
+.PN /etc/ifconfig
+command. Slave systems use 
+.PN /etc/slattach
+as their login shell (shell field of
+.PN /etc/passwd)
+and the login name is matched against the destination field.
+The fields describing each connection are:
+.PP
+.RS 2
+.I destination gateway netmask speed 
+.I tty modemtype phonenum logininfo
+.RE
+.PP
+.I Destination
+is matched against the command line argument (master) or 
+against the login name (for a slave connection).
+.I Gateway
+is usually
+the hostname of the system although it may be changed for specific
+routing cases.
+.I Netmask
+depends on your network and is passed to
+.PN /etc/ifconfig .
+.I Speed
+is the speed at which the connection is to be
+run. The speed may be
+.B any
+for slaves and the speed of the line will
+not be modified. The
+.I tty
+is the line to use for this connection.
+For master systems this is the outgoing line to use and for slave systems 
+.PN /dev/tty
+is usually specified.
+.I Modemtype
+is specified as the type of modem
+to use (name must match an entry in 
+.PN /etc/acucap
+or
+.B hw
+for hardwired connections - master only).
+.I Phonenum
+is present 
+if modemtype is not
+.B hw 
+and is the phone number to use (master only).
+.I Logininfo
+is similar to 
+UUCP information 
+needed to negotiate the SLIP login at the remote host (master only).
+.SH Examples
+A sample master destination is as follows:
+.EX
+slvname mastname mask 19200 /dev/ttyd0 hayes-V 5-5555 ogin: 
+Stest ssword: guess 
+.EE
+A sample slave destination is as follows:
+.EX
+mastname slvname mask any /dev/tty
+.EE
+.NT
+slvname, mastname, and mask must be found in 
+.PN /etc/hosts
+or
+.PN /etc/networks
+as these are passed to
+.PN /etc/ifconfig .
+.NE
+.SH Files
+.PN /etc/sliphosts
+.br
+.PN /etc/ifconfig
+.br
+/et.PN c/acucap
+.br
+/etc/h.PN osts
+.br
+/usr/new/.PN slattach
+.SH See Also
+L.sys(5), slattach(8)

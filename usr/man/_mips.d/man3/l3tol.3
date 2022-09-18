@@ -1,0 +1,48 @@
+.\" SCCSID: @(#)l3tol.3	8.1	9/11/90
+.TH l3tol 3 
+.SH Name
+l3tol, ltol3 \- convert between 3-byte integers and long integers
+.SH Syntax
+.B void l3tol (lp, cp, n)
+.br
+.B long \(**lp;
+.br
+.B char \(**cp;
+.br
+.B int n;
+.PP
+.B void ltol3 (cp, lp, n)
+.br
+.B char \(**cp;
+.br
+.B long \(**lp;
+.br
+.B int n;
+.SH Description
+.NXR "l3tol subroutine"
+.NXR "ltol3 subroutine"
+.NXR "file system" "maintaining"
+The
+.PN l3tol
+subroutine converts a list of
+.I n\^
+three-byte integers packed into a character string
+pointed to by 
+.I cp\^
+into a list of long integers pointed to by
+.IR lp .
+.PP
+The
+.PN ltol3
+performs the reverse conversion from long integers
+.RI ( lp )
+to three-byte integers
+.RI ( cp ).
+.PP
+These functions are useful for file-system maintenance
+where the block numbers are three bytes long.
+.SH Restrictions
+Because of possible differences in byte ordering,
+the numerical values of the long integers are machine-dependent.
+.SH See Also
+fs(5)

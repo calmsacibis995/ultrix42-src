@@ -1,0 +1,53 @@
+.\" SCCSID: @(#)clri.8	8.1	9/11/90
+.TH clri 8 
+.SH Name
+clri \- clear inodes
+.SH Syntax
+.B /etc/clri
+.I filesystem i-number ...
+.SH Description
+.NXR "clri command"
+.NXA "clri command" "fsck command"
+.NXR "inode" "clearing"
+The
+.PN clri
+command has been superseded by 
+.MS fsck 8
+for normal file system repair work.
+.PP
+The
+.PN clri
+command writes zeros on the i-nodes with the decimal
+.I i-numbers
+on the
+.I filesystem.
+After
+.PN clri ,
+any blocks
+in the affected file
+will show up as `missing' in an
+.MS icheck 8
+of the
+.I filesystem.
+.PP
+Read and write permission is required on the specified
+file system device.
+The i-node becomes allocatable.
+.PP
+The primary purpose of this command is to remove a file which
+for some reason appears in no directory.
+.NXR "file" "removing directoryless"
+If it is used to zap an i-node
+which does appear in a directory, care should be taken to track down
+the entry and remove it.
+Otherwise, when the i-node is reallocated to some new file,
+the old entry will still point to that file.
+At that point removing the old entry will destroy the new file.
+The new entry will again point to an unallocated i-node,
+so the whole cycle is likely to be repeated again and again.
+.SH Restrictions
+If the file is open,
+.PN clri
+is likely to be ineffective.
+.SH See Also
+icheck(8)

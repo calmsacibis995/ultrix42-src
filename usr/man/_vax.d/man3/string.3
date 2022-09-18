@@ -1,0 +1,234 @@
+.\" SCCSID: @(#)string.3	8.3	3/5/91
+.TH string 3
+.SH Name
+strcasecmp, strncasecmp, strcat, strncat, strcmp, strncmp, 
+strcpy, strncpy, strlen, 
+strchr, strrchr, strpbrk, strspn, strcspn, strstr, strtok, index, 
+rindex \- string operations
+.SH Syntax
+.nf
+.B #include <strings.h>
+.RS
+.PP
+or
+.RE
+.PP
+.B #include <string.h>
+.PP
+.B strcasecmp(\fIs1, s2\fP)
+.B char *\fIs1, *s2\fP;
+.PP  
+.B strncasecmp(\fIs1, s2, n\fP)
+.B char *\fIs1, *s2\fP;
+.PP
+.B char *strcat(\fIs1, s2\fP)
+.B char *\fIs1, *s2\fP;
+.PP
+.B char *strncat(\fIs1, s2, n\fP)
+.B char *\fIs1, *s2\fP;
+.PP
+.B int strcmp(\fIs1, s2\fP)
+.B unsigned char *\fIs1, *s2\fP;
+.PP
+.B int strncmp(\fIs1, s2, n\fP)
+.B unsigned char *\fIs1, *s2\fP;
+.B int \fIn\fP
+.PP
+.B char *strcpy(\fIs1, s2\fP)
+.B char *\fIs1, *s2\fP;
+.PP
+.B char *strncpy(\fIs1, s2, n\fP)
+.B char *\fIs1, *s2\fP;
+.B int \fIn\fP
+.PP
+.B size_t strlen(\fIs\fP)
+.B char *\fIs\fP;
+.PP
+.B char *strchr(\fIs, c\fP)
+.B char *\fIs\fP;
+.B int \fIc\fP;
+.PP
+.B char *strrchr(\fIs, c\fP)
+.B char *\fIs\fP;
+.B int \fIc\fP;
+.PP
+.B char *strpbrk(\fIs1, s2\fP)
+.B char *\fIs1, *s2\fP;
+.PP
+.B size_t strspn(\fIs1, s2\fP)
+.B char *\fIs1, *s2\fP;
+.PP
+.B  size_t strcspn(\fIs1, s2\fP)
+.B char *\fIs1, *s2\fP;
+.PP
+.B char *strtok(\fIs1, s2\fP)
+.B char *\fIs1, *s2\fP;
+.PP
+.B char *index(\fIs, c\fP)
+.B char *\fIs, c\fP;
+.PP
+.B char *rindex(\fIs, c\fP)
+.B char *\fIs, c\fP;
+.PP
+.B char *strstr(\fIs1, s2\fP)
+.B char *\fIs1, *s2\fP;
+.fi
+.SH Description
+The arguments \fIs1\fR, \fIs2\fR, and \fIs\fR point to strings
+(arrays of characters terminated by a null character).  The
+functions 
+.PN strcat ,
+.PN strncat ,
+.PN strcpy ,
+and
+.PN strncpy
+subroutines
+all alter \fIs1\fR.  
+These functions do not check for overflow of the array
+pointed to by \fIs1\fR.
+.PP
+The
+.PN strcat
+subroutine appends a copy of string
+.I s2
+to the end of string
+.IR s1 .
+The
+.PN strncat
+subroutine copies at most
+.I n
+characters.  Both return a pointer to the null-terminated result.
+.PP
+The
+.PN strcmp
+subroutine compares its arguments and returns an integer
+greater than, equal to, or less than 0, according as
+.I s1
+is lexicographically greater than, equal to, or less than
+.IR s2 .
+The
+.PN strncmp
+subroutine makes the same comparison but looks at at most
+.I n
+characters. The
+.PN strcasecmp 
+and 
+.PN strncasecmp 
+subroutines are identical in
+function, but are case insensitive.  The returned 
+lexicographic difference reflects a conversion to lower-case.
+.PP
+The
+.PN strcpy
+subroutine copies string
+.I s2
+to
+.I s1,
+stopping after the null character has been copied.
+The
+.PN strncpy
+subroutine copies exactly
+.I n
+characters, truncating \fIs2\fR or adding null characters
+to \fIs1\fR if necessary.  The result will not be null-terminated
+if the length of \fIs2\fR is \fIn\fR or more.  Each function
+returns \fIs1\fR.
+.PP
+The
+.PN strlen
+subroutine
+returns the number of characters in
+.IR s ,
+not including the terminating null character.
+.PP
+The
+.PN strstr
+subroutine
+returns a pointer to the first occurrence of 
+.I s2 
+(excluding the terminating
+null character) in 
+.I s1, 
+or a NULL pointer if 
+.I s2 
+does not occur in 
+.I s1. 
+If the length of
+.I s2
+is zero,
+.PN strstr
+returns 
+.I s1.
+.PP
+The
+.PN strchr
+(
+.PN strrchr
+) function returns a pointer to the first (last) occurrence of character
+\fIc\fR in string \fIs\fR, or a NULL pointer is \fIc\fR does not
+occur in the string.  The null character terminating a string is
+considered to be part of the string.
+.PP
+.I
+The
+.PN strpbrk
+subroutine
+returns a pointer to the first occurrence in string \fIs1\fR
+of any character from string \fIs2\fR,
+or a NULL pointer if no character from
+\fIs2\fR exists in \fIs1\fR.
+.PP
+.I
+The
+.PN strspn
+(
+.PN strcspn
+)
+subroutine
+returns the length of the initial segment of string \fIs1\fR
+which consists entirely of characters from (not from) string
+\fIs2\fR.
+.PP
+The
+.PN strtok
+subroutine
+considers the string \fIs1\fR to consist of a sequence of zero
+or more text tokens separated by spans of one or more characters
+from the separator string \fIs2\fR.  The first call (with
+pointer \fIs1\fR specified) returns a pointer to the first character
+of the first token, and will have written a null character into
+\fIs1\fR immediately following the returned token.  The function
+keeps track of its position in the string between separate calls,
+so that subsequent calls (which must be made with the first argument a
+NULL pointer) will work
+through the string \fIs1\fR immediately following
+that token.  In this way, subsequent calls will work through the
+string \fIs1\fR until no tokens remain.  The separator string
+\fIs2\fR may be different from call to call.  When no token remains
+in \fIs1\fR, a NULL pointer is returned.
+.PP
+The
+.PN index
+( 
+.PN rindex
+)
+subroutine
+returns a pointer to the first (last) occurrence of character 
+.I c
+in string
+.I s,
+or zero if
+.I c
+does not occur in  the string.
+.NT
+The <string.h> header file is provided for compatibility
+with System V; both <string.h> and <strings.h> refer to
+the same file.
+.br
+The
+.PN strcmp
+and
+.PN strncmp
+subroutines
+do unsigned character comparisons.
+.NE

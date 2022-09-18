@@ -1,0 +1,133 @@
+.TH t_rcvudata 3xti
+.SH Name
+t_rcvudata \- receive a data unit
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_rcvudata(\fIfd, unitdata, flags\fB)
+.br
+.B int \fIfd\fR;
+.br
+.B struct t_unitdata \fI*unitdata\fB;
+.br
+.B int \fI*flags\fR:
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint through which data is received.
+.IP \fIunitdata\fR 10
+Holds information associated with the received data unit. The
+\fIunitdata\fR argument points to a \fBt_unitdata\fR structure
+containing the following members:
+.EX
+struct netbuf \fIaddr\fP;
+struct netbuf \fIopt\fP;
+struct netbuf \fIudata\fP
+.EE
+.IP
+On return from this call, the members have the following meanings:
+.RS 10
+.IP \fIaddr\fP 12
+Specifies the protocol address of the sending unit.
+.IP \fIopt\fP
+Identifies protocol-specific options that were associated with this data unit.
+.IP \fIudata\fP
+Specifies the user data that was received.
+.IP \fIflags\fR 
+Set on return to indicate that the complete data unit was not received.
+.RE
+.SH Description
+This function is used in connectionless mode to receive a data unit from
+another transport user.
+.NXR "t_rcvudata system call"
+.NXR "connectionless mode" "receiving data"
+.PP
+By default, 
+.PN t_rcvudata()
+operates in synchronous mode waits
+for a data unit to arrive if none is currently available. However, if
+O_NONBLOCK is set by means of 
+.PN t_open() 
+or
+.PN fcntl()\fR,\fR 
+\fIudata\fR executes in asynchronous mode and fails if no data units are available.
+.PP
+The \fImaxlen\fR field of \fIaddr\fR, \fIopt\fR, and \fIudata\fR must be
+set before issuing this function to indicate the maximum size of the
+buffer for each.
+.PP
+If the buffer defined in the \fIudata\fR field of \fIunitdata\fR is not
+large enough to hold the current data unit, the buffer fills
+and T_MORE sets in \fIflags\fR on return to indicate that
+another 
+.PN t_rcvudata() 
+should be issued to retrieve the rest of the
+data unit. Subsequent 
+.PN t_rcvudata() 
+calls return zero for the length of the address and options until the full data unit 
+has been received.
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+unitdata->addr.maxlen@x@/
+unitdata->addr.len@/@x
+unitdata->addr.buf@x@(x)
+unitdata->opt.maxlen@x@/
+unitdata->opt.len@/@x
+unitdata->opt.buf@x@(x)
+unitdata->udata.maxlen@x@/
+unitdata->udata.len@/@x
+unitdata->udata.buf@x@(x)
+flags@/@x
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, a value of 0 is returned. On failure,  a
+value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20 
+[TOUTSTATE]
+The function was issued in the wrong sequence on the transport endpoint
+referenced by \fIfd\fR.
+.TP 20
+[TNODATA]
+O_NONBLOCK was set, but no data units are currently available from
+the transport provider.
+.TP 20
+[TBUFOVFLW]
+The number of bytes allocated for the incoming protocol address or
+options is not sufficient to store the information. The unit data
+information to be returned in \fIunitdata\fR is discarded.
+.TP 20
+[TLOOK]
+An asynchronous event has occurred on the transport endpoint and requires 
+immediate attention.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the underlying transport provider. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+fcntl(2), 
+t_alloc(3xti), 
+t_open(3xti),
+t_rcvuderr(3xti), 
+t_sndudata(3xti)

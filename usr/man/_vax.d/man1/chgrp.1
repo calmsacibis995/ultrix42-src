@@ -1,0 +1,62 @@
+.\" SCCSID: @(#)chgrp.1	6.5	3/5/90
+.TH chgrp 1
+.SH Name
+chgrp \- change file group
+.SH Syntax
+.B chgrp
+[
+.B \-fR
+]
+.I group file...
+.SH Description
+.NX R "chgrp command"
+.NX A "chgrp command" "install command"
+.NX R "group ID" "changing"
+The
+.PN chgrp
+command changes the group ID of one or more files or directories.
+For
+.IR file ,
+you may specify either a full or partial path.
+For 
+.IR group ,
+you may specify either a decimal GID or a group name found in the group
+file.
+.PP
+The user entering the 
+.PN chgrp
+command must either be the superuser, or be the owner of the file and
+belong to the specified group.
+.SH Options
+.TP 5
+.B \-f
+Inhibits display of errors that are returned if
+.PN chgrp
+fails to change the group identifier of a file.
+.TP
+.B \-R
+Causes 
+.PN chgrp
+to recursively descend any directories subordinate to 
+.I file 
+and to set the specified  group for each file encountered.  When
+symbolic links are encountered, 
+.PN chgrp
+changes the group identifier of the link file but does not traverse the
+path associated with the link.
+.SH Examples
+Change group to admin for filea and fileb:
+.EX
+chgrp admin filea fileb
+.EE
+.SH Files
+.TP 15
+.PN /etc/group
+.TP 15
+.PN /etc/passwd
+.TP 15
+.PN /etc/yp/src/group
+.TP 15
+.PN /etc/yp/src/passwd
+.SH See Also
+chown(2), group(5), group(5yp), passwd(5), passwd(5yp)

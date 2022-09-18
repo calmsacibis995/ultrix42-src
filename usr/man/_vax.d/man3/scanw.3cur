@@ -1,0 +1,85 @@
+.TH scanw 3cur 
+.SH Name
+scanw, mvscanw, mvwscanw, wscanw \- formatted read from window
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int scanw(fmt [, arg] ...)
+.br
+.B
+char \(**fmt;
+.PP
+.B
+int wscanw(win, fmt [, arg] ...)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+char \(**fmt;
+.PP
+.B
+int mvscanw(y, x, fmt [, arg] ...)
+.br
+.B
+int y, x;
+.br
+.B
+char \(**fmt;
+.PP
+.B
+int mvwscanw(win, y, x, fmt [, arg] ...)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int y, x;
+.br
+.B
+char \(**fmt;
+.SH Description
+.NXR "scanw subroutine"
+.NXR "mvscanw subroutine"
+.NXR "mvwscanw subroutine"
+.NXR "wscanw subroutine"
+These routines correspond to 
+.PN scanf .
+The function 
+.PN scanw
+reads input from the default window.
+The function 
+.PN wscanw
+reads input from the specified window.
+The function
+.PN mvscanw
+moves the cursor to the specified position and then reads input
+from the default window.
+The function 
+.PN mvwscanw
+moves the cursor to the specified position and then reads input from the 
+specified window.
+.PP
+For all the functions,
+the routine 
+.PN wgetstr 
+is called to get a string from the window,
+and the resulting line is used as input for the scan.
+All character interpretation is carried out according to the 
+.PN scanf 
+function rules.
+.SH Return Values
+Upon successful completion, the
+.PN scanw ,
+.PN mvscanw ,
+.PN mvwscanw
+and
+.PN wscanw
+functions return the number of items successfully matched.  On end-of-file,
+they return EOF.  Otherwise they return ERR.
+.SH See Also
+wgetstr(3cur), scanf(3s)

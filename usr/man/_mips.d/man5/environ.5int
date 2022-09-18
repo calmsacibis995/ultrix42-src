@@ -1,0 +1,292 @@
+.TH environ 5int
+.SH Name 
+environ \- natural language support (NLS) environment variables 
+.SH Description 
+.NXR "environment" "variables"
+.NXR "NLS (natural language support) environment" "variables"
+The international environment variables are defined for the ULTRIX
+system and are additional to those described in 
+the ULTRIX reference pages, Sections 2 (system calls) and 3 (routines),
+and the 
+.MS environ 7 
+reference page.
+The international variables are made available to a process by
+.PN exec .
+.PP
+This reference page is divided into two sections.  The first section
+describes environment variables that can control the locale setting.  
+The
+second section describes the variables that control where the
+.PN catopen
+function searches for message catalogs and where the
+.PN setlocale
+function searches for language databases.
+.SS "Environment Variables That Control the Locale Setting"
+The LANG, LC_COLLATE, LC_TYPE, LC_NUMERIC, LC_TIME, and LC_MONETARY
+environment variables can control the locale setting.  You define
+these variables using the same format as the 
+.I locale
+argument to the
+.PN setlocale 
+function.  The following shows the format you use:
+.EX
+language[_territory[.codeset]][@modifier]
+.EE
+In 
+.IR language , 
+you specify the native language of the
+user.  You can optionally specify the user's dialect and codeset using
+.I _territory 
+and 
+.IR codeset .
+For example, the following definition of LANG specifies the French native 
+language, as spoken in
+France (as opposed to in Switzerland), and the Digital Multinational
+Character Set:
+.EX 0
+LANG = FRE_FR.MCS
+.EE
+In 
+.IR @modifier , 
+you specify a specific instance of localization data within a single category. 
+For example, using 
+.IR @modifier  , 
+you can specify telephone directory ordering of data, as opposed to dictionary 
+ordering of data.  You cannot use 
+.I @modifier
+to define the LANG variable.
+.PP
+The following list describes the environment variables that control
+the locale setting:
+.IP LANG 15
+Identifies the user's requirements for native language, local customs,
+and coded character set. At run time, you can bind the user's language 
+requirements, as specified by the setting of
+.PN LANG ,
+to the execution of a program by calling
+.PN setlocale ,
+as follows:
+.EX
+setlocale (LC_ALL, "");
+.EE
+.IP
+If 
+.PN LANG
+is not defined in the current environment, the locale defaults to the C locale. 
+For more information on the C locale, see the
+.I POSIX Conformance Document. 
+.IP
+System administrators can define 
+.PN LANG
+to provide a  default setting for the system as a whole, or user's can define
+.PN LANG
+individually using standard command interpreter facilities.  
+.IP LC_COLLATE
+Contains the user's requirements for language, territory, and codeset 
+for the character collation format.
+.PN LC_COLLATE
+affects the behavior of regular expressions and the string collation
+functions in
+.PN strcoll
+and
+.PN strxfrm .
+If 
+.PN LC_COLLATE
+is not defined in the current environment,
+.PN LANG
+provides the necessary default.
+.IP LC_CTYPE
+Contains the user's requirements for language, territory, and codeset for
+the character classification and conversion format.
+.PN LC_CTYPE
+affects the behavior of the character-handling functions in
+.PN conv
+and
+.PN ctype .
+If 
+.PN LC_CTYPE
+is not defined in the current environment,
+.PN LANG
+provides the necessary default.
+.IP LC_MONETARY
+Contains the user's requirements for language, territory, and codeset for
+the monetary format.
+.PN LC_MONETARY
+affects the currency string in 
+.PN nl_langinfo .
+If 
+.PN LC_MONETARY
+is not defined in the current environment,
+.PN LANG
+provides the necessary default.
+.IP LC_NUMERIC
+Contains the user's requirements for language, territory, and codeset for
+the numeric data presentation format.
+.PN LC_NUMERIC
+affects the radix and thousands separator character for the
+formatted I/O functions in
+.PN printf ,
+.PN scanf ,
+.PN nl_printf ,
+.PN nl_scanf ,
+and the string conversion functions in
+.PN ecvt
+and
+.PN atol .
+If 
+.PN LC_NUMERIC
+is not defined in the current environment,
+.PN LANG
+provides the necessary default.
+.IP LC_TIME
+Contains the user's requirements for language, territory, and codeset for
+the time format.
+.PN LC_TIME
+affects the behavior of the time functions in
+.PN strftime .
+If 
+.PN LC_TIME
+is not defined in the current environment,
+.PN LANG
+provides the necessary default.
+.SS Environment Variables That Specify Locations
+The NLSPATH and INTLINFO environment variables control where the
+.PN catopen
+and 
+.PN setlocale
+functions search for message catalogs and the language databases.
+You define these variables using a pathname or set of pathnames.  The
+pathnames can contain variable elements, called substitution fields,
+that allow your program or the setting of other environment variables to 
+affect the setting of NLSPATH and INTLINFO.  The following shows the format 
+you use to define these variables:
+.EX
+\fIvariable-name\fP="[:][/\fIdirectory\fP][/\fIsubstitution field\fP]
+           [/\fIfile-name\fP][:\fIalternate-pathname\fP][:..."
+.EE
+You specify either NLSPATH or INTLINFO in place of
+.IR variable-name .
+.PP
+A colon (:) that precedes other parts of any pathname in the definition
+specifies the current directory.
+.PP
+In 
+.IR directory , 
+you can specify a specific directory in which the
+function searches.  If you need the environment variable to be
+flexible, you can use a substitution field in place of or with
+directory names.  A substitution field consists of a percent sign (%),
+followed by a code letter.  
+The substitution fields you can use are as follows:
+.IP %N 5
+The value of the
+.I name
+argument you pass to
+.PN catopen 
+.IP %L
+The value of
+the LANG environment variable
+.IP %l
+The
+.I language
+element from LANG
+.IP %t
+The
+.I territory
+element from LANG
+.IP %c
+The
+.I codeset
+element from LANG
+.IP %%
+A literal percent sign
+.PP
+If a substitution field you specify is currently undefined, 
+.PN catopen
+or
+.PN setlocale
+substitutes a null string.  Neither function includes the underscore
+(_) or period (.) separator in 
+.PN %t 
+or 
+.PN %c
+substitutions.
+.PP
+You can specify more than one pathname when you define these
+environment variables.  You separate each pathname from the one that
+follows it using a colon (:).  If you need to specify the current
+directory in a pathname other than the first pathname in the list, use
+a double colon (::).  The functions interpret the first colon as a
+separator between pathnames and the second colon as specifying the
+current directory.
+.PP
+The following describes the ICONV, INTLINFO, and NLSPATH environment
+variables:
+.IP ICONV 10
+The ICONV environment variable stores the directory pathname for the conversion 
+codesets used by the 
+.PN iconv
+command. If this variable is undefined, 
+.PN iconv
+searches the 
+.PN /usr/lib/intln/conv
+directory.  
+.IP
+The following example shows how to define ICONV:
+.EX
+ICONV=/usr/lib/international/conversions
+.EE
+In this example, 
+.PN ICONV
+is defined as the directory pathname
+.PN /usr/users/international/conversions .
+.IP INTLINFO
+The INTLINFO environment variable stores the location of the language
+database. The
+.PN setlocale
+function reads INTLINFO when it searches for the database.  
+.IP
+The following example shows how to define INTLINFO:
+.EX
+INTLINFO = ":%L:/usr/lib/intln/%L:/usr/lib/intln/ENG_%t.%c"
+.EE
+In this example, the
+.PN setlocale
+function searches for the language database named in the LANG environment
+variable. The function searches for the variable in the current
+directory. If the database is not in the current directory, 
+.PN setlocale
+searches in the
+.PN /usr/lib/intln
+directory for that same database. Finally, if the database specified
+by LANG is unavailable, 
+.PN setlocale
+searches in
+.PN /usr/lib/intln
+for the English language database that matches the current territory
+and codeset.
+.IP NLSPATH
+The NLSPATH environment variable controls where the
+.PN catopen 
+function searches for a message catalog.
+.IP
+The following example shows defines NLSPATH:
+.EX
+NLSPATH=":%N.cat:/nlslib/%N.cat:nlslib/program.cat"
+.EE
+This definition causes
+.PN catopen
+to search in the current directory for the message catalog named in the 
+.I name
+argument you pass.  If the function cannot find the
+message catalog in the current directory, it searches in the
+.PN /nlslib
+directory.  If the catalog is not in that directory, 
+.PN catopen
+opens the 
+.PN /nlslib/program.cat
+message catalog.
+.SH See Also 
+exec(2), catopen(3int), intro(3int), setlocale(3), lang(5int)
+.br
+.I Guide to Developing International Software

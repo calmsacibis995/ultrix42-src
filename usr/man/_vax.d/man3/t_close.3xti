@@ -1,0 +1,68 @@
+.TH t_close 3xti
+.SH Name
+t_close \- close a transport endpoint 
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_close \fIfd\fB)
+.br
+.B int \fIfd\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint.
+.SH Description
+.NXR "t_close system call"
+.NXA "t_close system call" "t_open system call"
+The 
+.PN t_close() 
+function informs the transport provider that the user
+is finished with the transport endpoint specified by \fIfd\fR and frees
+any local library resources associated with the endpoint. In addition,
+.PN t_close()  
+closes the file associated with the transport endpoint.
+.NXR "transport endpoint" "closing"
+.PP
+The 
+.PN t_close() 
+function should be called from the T_UNBND state. However, this function does not check state
+information, so it can be called from any state to close a transport
+endpoint. If this occurs, the local library resources associated with
+the endpoint are freed automatically. In addition, 
+.PN close()
+is issued for that file descriptor; the 
+.PN t_close()
+abortives if there are no other descriptors in this or in another
+process that references the transport endpoint and 
+breaks the transport connection that may be associated with that
+endpoint.
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 4p
+Parameters@Before Call@After Call
+.sp 4p
+_
+.sp 6p
+fd@x@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+The 
+.PN t_close
+returns 0 on success and \-1 on failure, and
+\fBt_errno\fR is set to indicate the error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to the following:
+.TP 20
+The specified file descriptor does not refer to a transport endpoint.
+.SH See Also
+t_getstate(3xti), 
+t_open(3xti),
+t_unbind(3xti)  

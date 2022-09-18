@@ -1,0 +1,36 @@
+#! /bin/sh
+#
+# sccsid @(#)dobackup	4.1	(ULTRIX)	7/2/90
+#
+# Shell procedure to do actual dump
+# Called by backup shell procedure
+#
+exec < /dev/tty
+while true
+do
+	echo ""
+	echo -n "Mount $4 ($5) Level $3 tape for - "
+	date
+	echo ""
+	YN=n
+	while test $YN != y
+	do
+		echo -n "Ready < y or n > ? "
+		read YN
+		if test $YN
+		then	echo ""
+		else	YN=n
+			echo ""
+		fi
+	done
+	/etc/dump $3udf $2 /dev/$1 /dev/r$4
+	if test $? = 1
+	then	break
+	else	echo ""
+		echo -n "FATAL ERROR: try again < y or n > ? "
+		read YN
+		if test $YN != y
+		then	break
+		fi
+	fi
+done

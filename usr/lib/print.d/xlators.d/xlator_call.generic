@@ -1,0 +1,122 @@
+	# @(#)xlator_call.generic	4.2      ULTRIX 	10/16/90
+
+	#************************************************************************
+	#									*
+	#			Copyright (c) 1988 by				*
+	#		Digital Equipment Corporation, Maynard, MA		*
+	#			All rights reserved.				*
+	#									*
+	#   This software is furnished under a license and may be used and	*
+	#   copied  only  in accordance with the terms of such license and	*
+	#   with the  inclusion  of  the  above  copyright  notice.   This	*
+	#   software  or  any  other copies thereof may not be provided or	*
+	#   otherwise made available to any other person.  No title to and	*
+	#   ownership of the software is hereby transferred.			*
+	#									*
+	#   The information in this software is subject to change  without	*
+	#   notice  and should not be construed as a commitment by Digital	*
+	#   Equipment Corporation.						*
+	#									*
+	#   Digital assumes no responsibility for the use  or  reliability	*
+	#   of its software on equipment which is not supplied by Digital.	*
+	#									*
+	#************************************************************************
+
+
+	#
+	# xlator_call -- Bourne shell script to invoke translators
+	#
+	# USAGE:
+	#	xlator_call datatype pagesize orientation width length indent
+	#
+/*
+ * Description:
+ *	This file is preprocessed to generate vax/mips specific versions.
+ *
+ * Modification History:
+ *
+ * 21-Sep-90 - Adrian Thoms (thoms@wessex)
+ *	Added fastansi data type which disables transmission of ansi preamble
+ *	Look for new __mips predefined symbol for ANSI conformance
+ *
+ * 02-Oct-90 - Adrian Thoms (thoms@wessex)
+ *	Added new code to handle orientation for ascii data type
+ *	Report non-existent data type to hard copy.
+ */
+
+
+integer hflag=0		# if > 0: suppress ansi preamble
+integer wflag=0		# if > 0: width and length win over orientation
+
+case $1 in
+(-*)
+	/*
+	 * Need to move save to after preamble in ansi_ps:xlc_main.c
+	 *	if [[ ${1%%h*} != $1 ]] ; then
+	 *		(( hflag=1 ))
+	 *	fi
+	 */
+	if [[ ${1%%w*} != $1 ]] ; then
+		(( wflag=1 ))
+	fi
+	shift
+	;;
+(*)
+	;;
+esac
+
+datatype=$1
+pagesize=$2
+orientation=$3
+width=$4
+length=$5
+indent=$6
+
+shift 6
+
+	# Deal with flags
+
+if (( hflag > 0 )) ; then
+	# suppress the ansi_prologue
+	set - -R ANSI_PROLOGUE
+fi
+
+if (( wflag == 0 )); then
+	if [[ "$orientation" = "landscape" ]]; then
+		width=132
+	else
+		width=80
+	fi
+	length=66
+fi
+
+case $datatype in
+	ansi)
+		exec ansi_ps -F $pagesize -O $orientation -e "$@";;
+
+	fastansi)
+		exec ansi_ps -F $pagesize -O $orientation -e \
+		-R ANSI_PROLOGUE;;
+	ascii)
+		echo "(\004) cvn {} def"
+		exec ln03rof -w$width -l$length -i$indent;;
+	postscript)
+		exec cat;;
+#if !defined mips && !defined __mips
+	tek4014)
+		exec tek4014_ps -F $pagesize -O $orientation;;
+	regis)
+		exec regis_ps -F $pagesize -O $orientation;;
+#endif
+	*)
+		echo "(\004) cvn {} def"
+		ln03rof -w132 -l66 -i10 <<!
+	/* Note the skullduggery on next line to get regex thru */
+${0##//**/*/}:
+	Translator for data type $datatype not installed.
+	Refer to lpr(1) for details of -D option.
+!
+		exit 2
+		;;
+
+esac

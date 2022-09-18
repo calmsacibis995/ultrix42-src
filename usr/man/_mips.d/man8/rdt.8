@@ -1,0 +1,131 @@
+.\" SCCSID: @(#)rdt.8	8.1	9/11/90
+.TH rdt 8 "" "" Unsupported
+.SH Name
+rdt \-  read diagnostic tape
+.SH Syntax
+.B rdt 
+.I function-key
+[ \fB\-B\fIblksize\fR ] [ \fB\-D\fIdensity\fR ] [ \fIfilename\fR ... ]
+.SH Description
+The 
+.PN rdt
+command reads diagnostic programs to disk from 
+labeled tapes.  The files are placed in the current
+user's area.
+The reading is based upon the
+precepts set forth in the ANSI standard x3.27-1978.
+The tape is assumed to have been written
+by a VAX/VMS system. 
+.PP
+The
+.I filename
+arguments list the files to be read.
+As each file is read from the tape, a disk file of the
+same name is created in the user's area to contain 
+the diagnostic program.
+.SH Function Keys
+The function performed by the
+.PN rdt
+command is specified
+by one of the following characters:
+.TP 8 
+.B t
+The names of the specified files are listed.
+If no file argument is given, all the files on the tape are listed.
+.TP 8 
+.B v
+Normally,
+.PN rdt
+does its  work  with little terminal output.
+The 
+.B v 
+(for verbose)
+option causes
+.PN rdt
+to type the name of each file
+after processing it.
+With the \fBt\fR function, \fBv\fR gives more information
+about the tape entries than the name.
+.TP 8
+.B x
+The named files are extracted from the tape.
+If no 
+.I filename
+argument is given, the entire
+content of the tape is extracted.
+.SH Options
+.TP 8
+\fB\-B\fIblksize\fR
+The
+.I blksize
+parameter is the block size for tape records, in bytes.
+The default is 2048, the maximum is 20480.
+The block size may also be specified as multiples of 512 or 1024 by
+appending either the character b or k to 
+.IR blksize , 
+respectively.  For example, block sizes 4b and 2k 
+both equal 2048 bytes.  
+.TP 8 
+\fB\-D\fIdens
+The
+.I dens
+parameter is the density of the tape, in bits per inch.
+Possible values are 800 or 1600.
+The default is 1600 bits per inch.
+If 
+.I dens 
+is neither 800 nor 1600,
+the 
+.PN rdt
+command
+takes 
+.I dens 
+to be the name of the tape device. For example, 
+/dev/rmt0h.
+The device must be a raw, nonrewinding magnetic tape drive.
+.SH Examples
+This example shows how to load the file TEST1 from
+rmt0h.
+.EX
+rdt x TEST1
+.EE
+This example shows how to load the contents of a whole
+800 bpi tape on
+.PN /dev/nmt0l .
+.EX
+rdt \-D/dev/nmt0l
+.EE
+.SH Diagnostics
+Diagnostics from
+.PN rdt
+are written on the standard error file.
+There are two forms: warnings, which are not fatal,
+and errors, which are.
+The majority of diagnostics are intended to be self-explanatory.
+Some that might not be are:
+.PP
+\fBillegal label format (\fIhdr\fB)\fR.
+.br
+The header 
+.PN rdt
+is reading contains an incorrect label identifier
+or label number.
+The correct header label name is enclosed between parentheses.
+.PP
+\fBpwd failed!\fR
+.br
+Cannot execute 
+.PN /bin/pwd 
+or 
+.PN /usr/bin/pwd .
+.PP
+\fBcannot find mkdir!\fR
+.br
+Cannot execute 
+.PN /bin/mkdir 
+or 
+.PN /usr/bin/mkdir .
+.SH Files
+.TP 12
+.PN /dev/rmt0h	
+1600 bpi tape device (default)

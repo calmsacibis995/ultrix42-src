@@ -1,0 +1,12 @@
+
+% LPS$$SETSHEETCOUNT device control library module.
+% Version V1.0
+%
+% Copyright ) 1986 by DEC, Maynard, Mass.  All rights reserved.
+
+% Remember, you are still in lps$lpsdict.
+%
+% This module expects the sheet count to be on the stack.
+
+    cvi dup /lps$sheet-count exch def % Store number of copies.
+    /#copies exch store		% Use store to preserve context.

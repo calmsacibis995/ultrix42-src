@@ -1,0 +1,25 @@
+.\" SCCSID: @(#)tabs.1	8.1	9/11/90
+.TH tabs 1 
+.SH Name
+tabs \- set tabs
+.SH Syntax
+.B tabs
+[\fB\-n\fR] [\|\fIterminal\fR\|]
+.SH Description
+.NXR "tabs command"
+.NXA "tabs command" "term command"
+.NXR "terminal" "setting tabs"
+The
+.PN tabs
+command
+sets the tabs on a variety of terminals.
+Various terminal names given in 
+.MS term 7 
+are recognized;
+the default is, however, suitable for most 300
+baud terminals.
+.SH Options
+.IP \fB\-n\fR 0.3i
+Does not indent left margin.  Default is to indent.  
+.SH See Also
+stty(1), term(7)

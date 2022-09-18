@@ -1,0 +1,351 @@
+.\" SCCSID: @(#)cc.1	3.1	11/23/87
+.TH cc 1 VAX
+.SH Name
+cc \- C compiler
+.SH Syntax
+.B cc
+[\|\fIoptions\fR...\|] \fIfile\fR...
+.SH Description
+.NXS "C compiler" "cc compiler"
+.NXA "cc compiler" "xstr command"
+.NXA "cc compiler" "mkstr command"
+.NXR "cc compiler"
+The
+.PN cc
+command invokes
+the ULTRIX C compiler and 
+accepts the following types of arguments:
+.IP \(bu 5
+Arguments whose names end with .c 
+.IP \(bu 5
+Arguments whose names end with .s 
+.IP \(bu 5
+Other arguments that are interpreted as either loader
+option arguments or 
+.br
+C-compatible object programs
+.PP
+Arguments ending in .c are interpreted as
+C source programs. They are compiled, and
+each object program is left on a file
+whose name is the same as the source file except .o is
+substituted for .c.  If a single
+C program is compiled and loaded all at once, the .o
+file is deleted.
+.PP
+Arguments ending with .s are interpreted as
+assembly source programs.  They
+are assembled, producing an .o file.
+.PP
+Arguments other than those ending with .c or .s
+were produced by previous 
+.PN cc
+runs or by libraries of C-compatible routines.
+.PP
+The first argument passed to the
+.MS ld 1
+loader is always one of the three
+.PN crt0 
+files used for start up.  The compiler uses 
+.PN /lib/mcrt0.o
+when the \fB\-p\fR flag is given,
+.PN /usr/lib/gcrt0.o
+when the \fB\-pg\fR is given, and 
+.PN /lib/crt0.o 
+otherwise.  If loading executables by hand, you must include the
+appropriate file.  
+.SH Options
+.NXR "cc compiler" "options"
+These options are accepted by
+.PN cc .
+See 
+.MS ld 1
+for load-time options.
+.TP 15
+.B \-b
+Does not pass 
+.B \-lc
+to 
+.MS ld 1
+by default.
+.TP 
+.BI \-B string
+Finds substitute compiler passes in the files named
+.I string
+with the suffixes cpp, ccom, and c2.
+.TP
+.B \-bswitch
+Instructs the compiler to use discrete tests for switch case
+statements rather than casel instructions.
+.TP
+.B \-c
+Suppresses the loading phase of the compilation and forces
+an object file to be produced even if only one program is compiled.
+.TP
+.B \-C
+Stops the macro preprocessor from omitting comments.
+.TP
+.BI \-D name=def
+.br
+.ns
+.TP
+.BI \-D name
+Defines the \fIname\fR to the processor, as if by #define.
+If no definition is given, the name is defined as 1.
+.TP
+.B \-E
+Runs only the macro preprocessor on the named C programs and
+sends the result to the standard output.
+.TP
+.B \-Em
+Runs only the macro preprocessor on the named C programs and
+produces the makefile dependencies.
+.IP \fB\-f\fR 
+Specifies that computations involving only FFLOAT numbers be
+done in single precision and not promoted to double.  Procedure
+arguments are still promoted to double.  Programs with a
+large number of single-precision computations will run faster
+with this option; however, a slight loss in precision may
+result due to the saving of intermediate results in a
+single-precision representation.
+.IP \fB\-g\fR 
+Directs the compiler to produce additional symbol table information
+for 
+.MS dbx 1 .
+Also passes the
+.B \-lg
+flag to 
+.MS ld 1 .
+.TP
+.BI \-I dir
+Searches first in the directory of the \fIdir\fR argument for
+\fH#include\fR files whose names do not begin with a slash (/),
+then in directories named in \fB\-I\fR options,
+and, finally, in directories on a standard list.
+.TP
+.B \-J
+Uses long branches to resolve jumps when byte-displacement
+branches are insufficient.  This must be used when a
+compiler-generated assembly contains branches of more than
+32k bytes.
+.TP
+.BI \-l x
+Abbreviates the library name
+/lib/lib\fIx\fR.a, where \fIx\fR is a
+string.  If that library name does not exist,
+.B ld
+searches /usr/lib/lib\fIx\fR.a and then
+/usr/local/lib/lib\fIx\fR.a.  The placement of the 
+\fB\-l\fR library option is significant because a library
+is searched when its name is encountered.
+.TP
+.B \-M
+Specifies the floating point type to be used for double-precision
+floating point and is passed on to 
+.MS ld 1 
+as the map option.
+.TP
+.B \-Md
+Specifies the default DFLOAT and passes the \fB\-lc\fR flag
+to 
+.MS ld 1 .
+.TP
+.B \-Mg
+Specifies GFLOAT and passes the \fB\-lcg\fR flag to 
+.MS ld 1 ,
+causing the GFLOAT version of \fBlibc\fR to be used.  If the math
+library is used with code compiled with the \fB\-Mg\fR flag, it 
+is linked to the GFLOAT version by specifying \fB\-lmg\fR on
+the 
+.MS cc 1
+or
+.MS ld 1
+command.
+.TP
+.B "\-o \fIoutput\fR"
+Names the final output file \fIoutput\fR.  If this option is
+used, the file a.out
+is left alone.  If the named file has either .o or .a
+as a suffix, the following error message is displayed: \fB-o would
+overwrite\fR.
+.IP \fB\-O\fR 
+Uses the object code optimizer.  
+.TP
+.B \-p
+Arranges for the compiler to produce code
+which counts the number of times each routine is called.
+If loading takes place, the 
+\fB\-p\fR option replaces the standard startup
+routine with one that automatically calls 
+.MS monitor 3 
+and that arranges to write out a
+mon.out
+file at normal termination of execution of the object program.
+An execution profile can then be generated 
+using
+.MS prof 1 .
+.TP
+.B \-pg
+Causes the compiler to produce counting
+code as with
+.B \-p,
+but invokes a run-time recorder 
+that keeps more extensive statistics and produces a 
+.PN gmon.out 
+file.  
+Also, the \fB\-pg\fR option searches
+a profiling library in lieu of
+the standard C library.
+An execution profile can then be generated by using
+.MS gprof 1 .
+.TP
+.B \-R
+Passed on to
+.I as,
+which makes initialized variables shared and read-only.
+.TP
+.B \-S
+Compiles programs and writes output to .s files.  
+.TP
+.B "\-t [p02al]" 
+Finds the designated compiler passes in the
+files whose names are constructed by a
+.B \-B
+option.
+In the absence of a
+.B \-B 
+option, the
+.I string
+is taken to be /usr/c/.
+.TP
+.BI \-U name
+Removes any initial definition of \fIname\fR.
+.TP
+.B \-w
+Suppresses warning diagnostics.
+.TP
+.BI \-Y environment
+Compiles C programs for \fIenvironment\fP.  If \fIenvironment\fP is
+SYSTEM_FIVE or is omitted, it defines SYSTEM_FIVE for the preprocessor, 
+.PN cpp .
+If the loader is invoked, it
+specifies that the System V version of the C runtime library is
+used.  Also, if the math library is specified with the \fB\-lm\fR
+option, the System V version is used.  If \fIenvironment\fP is
+POSIX, it defines POSIX for the preprocessor.  If the environment 
+variable PROG_ENV has the value SYSTEM_FIVE or POSIX, the effect is the
+same as when specifying
+the corresponding \fB\-Y\fIenvironment\fR option to 
+.PN cc .
+The \fB-Y\fP option overrides the PROG_ENV variable; \fB-YBSD\fP can be
+used to override all special actions.
+.SS Default Symbols
+The ULTRIX C compiler provides the following default symbols
+for your use.  These symbols are useful in \fHifdef\fR
+statements to isolate code for one of the particular cases. 
+Thus, these symbols can be useful for ensuring portable code.
+.PP
+.RS
+.nf
+.ta 1.5i
+\f(CWunix\fR	Any UNIX system
+\f(CWbsd4_2\fR	Berkeley UNIX Version 4.2
+\f(CWultrix\fR	ULTRIX only
+\f(CWvax\fR	VAX only (as opposed to PDP-11)
+.fi
+.RE
+.SH Restrictions
+.NXR "cc compiler" "restricted"
+The compiler ignores advice to put 
+\fBchar\fR, \fBunsigned char\fR,
+\fBshort\fR or \fBunsigned short\fR variables in registers.
+.PP
+If the
+.B \-Mg
+flag is used to produce GFLOAT code,
+it must be used when compiling
+all the modules which are to be linked.
+Use the
+.B \-Mg
+flag if 
+you use the 
+.B cc
+command
+to invoke
+.MS ld 1
+indirectly to link the modules.  If
+.MS ld 1 
+is invoked directly, use the
+.B \-lcg
+flag rather than
+.B \-lc.
+If the math library is used, specify the
+.B \-lmg
+flag rather than the
+.B \-lm
+flag in order to use the GFLOAT version.	
+.PP 
+The compiler and the linker 
+.MS ld 1
+cannot detect the use of mixed double floating
+point types.  If you use them, your program's
+results may be erroneous. 
+.SH Diagnostics
+The diagnostics produced by C are intended to be
+self-explanatory.
+Occasional messages may be produced by the assembler
+or loader.
+.SH Files
+.PD 0
+.TP 20
+.PN file.c
+input file
+.TP
+.PN file.o
+object file
+.TP
+.PN a.out
+loaded output
+.TP
+.PN /tmp/ctm?
+temporary
+.TP
+.PN /lib/cpp
+preprocessor
+.TP
+.PN /lib/ccom
+compiler
+.TP
+.PN /lib/c2
+optional optimizer
+.TP
+.PN /lib/crt0.o
+runtime startoff
+.TP
+.PN /lib/mcrt0.o
+startoff for profiling
+.TP
+.PN /usr/lib/gcrt0.o
+startoff for gprof-profiling
+.TP
+.PN /lib/libc.a
+standard library, see intro(3)
+.TP
+.PN /usr/libcg.a
+GFLOAT version of the standard library, see intro(3)
+.TP
+.PN /usr/lib/libc_p.a
+profiling library, see intro(3)
+.TP
+.PN /usr/include
+standard directory for \fH#include\fR files
+.TP
+.PN mon.out
+file produced for analysis by prof(1)
+.TP
+.PN gmon.out
+file produced for analysis by gprof(1)
+.PD
+.SH See Also
+adb(1), as(1), cpp(1), dbx(1), error(1), gprof(1), ld(1), 
+prof(1), monitor(3)

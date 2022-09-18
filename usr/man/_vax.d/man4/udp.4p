@@ -1,0 +1,72 @@
+.\" SCCSID: @(#)udp.4p	8.1	9/11/90
+.TH udp 4p
+.SH Name
+udp \- Internet User Datagram Protocol
+.SH Syntax
+.B #include <sys/socket.h>
+.br
+.B #include <netinet/in.h>
+.PP
+.B s = socket(AF_INET, SOCK_DGRAM, 0);
+.SH Description
+.NXR "UDP"
+.NXS "User Datagram Protocol" "UDP"
+UDP is a simple, unreliable datagram protocol that is used
+to support the SOCK_DGRAM abstraction for the Internet
+protocol family.  UDP sockets are connectionless and are
+normally used with the
+.PN sendto 
+and
+.PN recvfrom 
+calls, though the
+.MS connect 2
+call can also be used to fix the destination for future
+packets (in which case the 
+.MS recv 2
+or
+.MS read 2
+and 
+.MS send 2
+or
+.MS write 2
+system calls may be used).
+.PP
+UDP address formats are identical to those used by
+TCP. 
+.NXR "UDP" "TCP and"
+In particular, UDP provides a port identifier in addition
+to the normal Internet address format.  Note that the UDP port
+space is separate from the TCP port space (for example,  a UDP port
+may not be ``connected'' to a TCP port).  In addition broadcast
+packets can be sent (assuming the underlying network supports
+this) by using a reserved ``broadcast address''; this address
+is network interface dependent.  The SO_BROADCAST option must be
+set on the socket for broadcasting to succeed.
+.SH Diagnostics
+A socket operation may fail with one of the following errors returned:
+.TP 15
+[EISCONN]
+Try to establish a connection on a socket which
+already has one, or when trying to send a datagram with the destination
+address specified and the socket already connected.
+.TP 15
+[ENOTCONN]
+Try to send a datagram, but
+no destination address is specified, and the socket has not been
+connected.
+.TP 15
+[ENOBUFS]
+The system runs out of memory for
+an internal data structure.
+.TP 15
+[EADDRINUSE]
+An attempt
+is made to create a socket with a port that has already been
+allocated.
+.TP 15
+[EADDRNOTAVAIL]
+An attempt is made to create a 
+socket with a network address for which no network interface
+exists.
+.SH See Also
+getsockopt(2), send(2), socket(2) recv(2), intro(4n), inet(4f)

@@ -1,0 +1,109 @@
+.TH kdb_util 8krb
+.SH Name
+kdb_util \- Kerberos database utility
+.SH Syntax
+.B /var/dss/kerberos/bin/kdb_util
+.I operation
+.I filename
+[
+.I database
+]
+.SH Arguments
+.TP 9
+.I operation 
+Function to perform on the database. The \fIoperation\fP argument must
+be one of the following values:
+.RS
+.IP load
+Converts the database in file \fIfilename\fP, to
+.PN ndbm
+format and overwrites the
+.PN ndbm \-formatted
+database specified.
+.IP dump
+Converts the 
+.PN ndbm \-formatted
+database into
+.PN krb_dbase(5krb)
+form, and writes the result to file, \fIfilename\fP.
+.IP "slave_dump"
+.br
+Performs the same function as \fBdump\fP, and creates the file
+.PN \fIfilename\fP.dump_ok
+\fRwhen finished.  The\fP
+.PN \fIfilename\fP.dump_ok
+\fRis used by\fP
+.PN kprop
+\fRto determine
+if a\fP \fBslave_dump\fP \fRis in progress, or if it did not 
+complete successfully.\fP
+.IP "new_master_key"
+.br
+Prompts you for the old key of the Kerberos database 
+as well as a new master key.  It converts the
+.PN ndbm \-formatted
+database into
+.PN krb_dbase(5krb)
+format and, at the same time, decrypts those sections of the database
+encrypted with the old master key and re-encrypts them with the new master
+key.  The result is written to 
+the file, \fIfilename\fP.
+.RE
+.TP
+.I filename
+The name of the source file for the \fBload\fP operation
+or the destination file for the operations: \fBdump\fP, \fBslave_dump\fP, 
+and \fBnew_master_key\fP.
+.TP
+.I database
+The name of the 
+.PN ndbm \-formatted
+database.
+If the argument is not
+included, the Kerberos database is stored in files
+.PN /var/dss/kerberos/dbase/principal.dir ,
+.PN /var/dss/kerberos/dbase/principal.pag ,
+and
+.PN /var/dss/kerberos/dbase/principal.ok
+by default.  
+.SH Description
+.NXR "Kerberos routines" "kdb_util"
+The 
+.PN kdb_util
+command allows the Kerberos administrator to perform several
+functions on the entire Kerberos database of a master or slave Kerberos
+server in one operation.  The database argument specifies the name
+of the 
+.PN ndbm \-formatted
+Kerberos database.
+The Kerberos database utility
+reads from and writes to the 
+.PN ndbm \-formatted
+Kerberos database and, in
+addition, it reads from and writes to a file in 
+.PN krb_dbase(5krb)
+format:	\fIfilename\fP.  A 
+.PN krb_dbase(5krb)
+file is an ASCII representation
+of a Kerberos database.  The functions that can be specified
+by the \fIoperation\fP argument are listed in the \fBArguments\fP section.
+.PP
+Whenever the 
+.PN ndbm
+Kerberos database is changed by
+.PN kdb_util ,
+the modification time of
+.PN /var/dss/kerberos/dbase/principal.ok
+is updated.  The
+.PN principal.ok
+file indicates the age of the database. 
+.SH Files
+.TP
+.PN /var/dss/kerberos/dbase/principal.pag
+.TP
+.PN /var/dss/kerberos/dbase/principal.dir
+.TP
+.PN /var/dss/kerberos/dbase/principal.ok
+.SH See Also
+krb_dbase(5krb), kdb_init(8krb), kdb_edit(8krb), kdb_destroy(8krb),
+kstash(8krb)

@@ -1,0 +1,13 @@
+(*#@(#)nocount.def	4.1	Ultrix	7/17/90 *)
+definition module nocount;
+
+procedure P(a : array @nocount of char);
+
+procedure Q(var a : array @nocount of char);
+
+type
+    UnixString = array of char;
+
+procedure R(x : UnixString);
+
+end nocount.

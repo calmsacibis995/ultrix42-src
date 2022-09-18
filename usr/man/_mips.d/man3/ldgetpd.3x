@@ -1,0 +1,53 @@
+.TH ldgetpd 3x RISC
+.SH Name
+ldgetpd \- retrieve procedure descriptor given a procedure descriptor index
+.SH Syntax
+.nf
+.B "#include <stdio.h>"
+.B "#include <filehdr.h>"
+.B "#include <sym.h>"
+.B "#include <ldfcn.h>"
+.fi
+.sp
+.nf
+.BR "long ldgetpd (" "ldptr, ipd, ppd" )
+.BR "LDFILE \**" ldptr ;
+.BR "long " ipd ;
+.BR "pPDR \**" ipd ;
+.fi
+.SH Description
+The
+.PN ldgetpd
+function returns success or failure depending on whether the procedure 
+descriptor with index
+.I ipd
+can be accessed.
+If it can be accessed, the structure pointed to by
+.I ppd
+is filled with the contents of the corresponding procedure descriptor.
+The 
+.I isym, iline,
+and
+.I iopt
+fields of the procedure descriptor are updated to be used in further
+LD routine calls. The
+.I adr
+field is updated from the symbol referenced by the
+.I isym field.
+.PP
+The PDR cannot be retrieved when the following occurs:
+.IP \(bu 5
+The procedure descriptor table cannot be found.
+.IP \(bu 5
+The ipd offset into the procedure descriptor table is beyond the
+end of the table.
+.IP \(bu 5
+The file descriptor that the ipd offset falls into cannot be found.
+.PP
+Typically, 
+.PN ldgetpd
+is called while traversing the table that runs from 0 to 
+SYMHEADER(ldptr).ipdMax \- 1.
+.SH See Also
+ldclose(3x), ldopen(3x), ldtbseek(3x), ldtbread(3x),
+ldfcn(5)

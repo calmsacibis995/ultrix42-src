@@ -1,0 +1,53 @@
+.\" SCCSID: @(#)flcopy.8v	8.2	11/9/90
+.TH flcopy 8v VAX
+.SH Name
+flcopy \- copier for floppy
+.SH Syntax
+.br
+.B /usr/etc/flcopy
+[
+.B \-h
+] [
+\fB\-t\fIn\fR
+]
+.SH Description
+.NXR "flcopy command"
+.NXR "console diskette" "copying"
+The
+.PN flcopy
+command copies the console floppy disk (opened as 
+.PN /dev/floppy )
+to a file created in the current directory, named 
+.PN floppy ,
+then prints the message
+.PN "Change Floppy, hit return when done" .
+Then
+.PN flcopy
+copies the local file back out to the floppy disk.
+.PP
+The
+.PN \-h
+option to 
+.PN flcopy
+causes it to
+open a file named 
+.PN floppy
+in the current directory
+and copy it to 
+.PN /dev/floppy .
+The
+.PN \-t
+option
+causes only the first
+.I n
+tracks to participate in a copy.
+.SH Files
+.TP 20
+.PN /dev/floppy
+.TP
+.PN /dev/rrx??
+.TP
+.PN floppy 
+In the current directory
+.SH See Also
+cfl(4), rx(4), rxformat(8v)

@@ -1,0 +1,50 @@
+.\" SCCSID: 9/11/90 div.3
+.TH div 3
+.SH Name
+div, ldiv \- integer division
+.SH Syntax
+.nf
+.B #include <stdlib.h>
+.PP
+.B div_t div(\fInumer, denom\fP)
+.B int \fInumer\fP;
+.B int \fIdenom\fP;
+.PP
+.B ldiv_t ldiv(\fInumer, denom\fP)
+.B long \fInumer\fP;
+.B long \fIdenom\fP;
+.fi
+.SH Description
+.NXR "div subroutine (ANSI C)"
+.NXR "ldiv subroutine (ANSI C)"
+The
+.PN div
+and
+.PN ldiv
+functions return the quotient and remainder of the division of the
+numerator
+.I numer
+by the denominator
+.I denom.
+.PP
+The return types div_t and ldiv_t are defined, in stdlib.h, as follows:
+.PP
+.EX 5
+typedef struct {
+		int	quot;	/* quotient */
+		int	rem;	/* remainder */
+	}	div_t;		/* result of div() */
+
+typedef struct {
+		long	quot;	/* quotient */
+		long	rem;	/* remainder */
+	}	ldiv_t;		/* result of ldiv() */
+.EE
+.SH Restrictions
+If division by zero is attempted, the behavior of 
+.PN div 
+and 
+.PN ldiv 
+is
+undefined.
+

@@ -1,0 +1,20 @@
+.\" SCCSID: @(#)getuid.3f	8.1	9/11/90
+.TH getuid 3f VAX "" Unsupported
+.SH Name
+getuid, getgid \- get user or group ID of the caller
+.SH Syntax
+.B integer function getuid()
+.sp 1
+.B integer function getgid()
+.SH Description
+.NXR "getuid subroutine (FORTRAN)"
+.NXR "getgid subroutine (FORTRAN)"
+.NXR "real user ID" "getting"
+.NXR "real group ID" "getting"
+These functions return the real user or group ID of the user
+of the process.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+getuid(2)

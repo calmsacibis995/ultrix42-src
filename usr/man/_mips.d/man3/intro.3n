@@ -1,0 +1,185 @@
+.\" SCCSID: @(#)intro.3n	8.1	9/11/90
+.TH intro 3n
+.SH Name
+intro \- introduction to network library functions
+.SH Description
+.NXR "intro(3n) keyword"
+.NXR "IPC" "library functions"
+.NXS "interprocess communication facility" "IPC"
+This section describes functions that are available 
+for interprocess communication (IPC).  IPC takes
+place using sockets.  The
+.MS socket 2
+system call creates a communications channel based
+on domain, type, and protocol. 
+.PP
+Sockets are created without names.  The
+.MS bind 2
+system call is used to connect a name to 
+a socket.
+.PP
+A connection with another process must be made
+before data can be transferred on a bound socket.  The
+.MS connect 2
+system call is used to rendezvous with another process.  This
+process must be listening on a bound socket using the
+.MS listen 2
+system call.  This listening process can accept
+a connection request using the
+.MS accept 2
+system call.
+.PP
+Once two processes have connected and accepted an IPC,
+data can be transferred with the following system calls:
+.MS read 2 ;
+.MS write 2 ;
+.MS send 2 ,
+and
+.MS recv 2 .
+.PP
+Connectionless sockets are also possible (a socket is
+bound and data can be transferred).  They use the
+following system calls to transfer data: 
+.PN sendto
+and
+.PN recvfrom .
+.PP
+IPC operates in three domains:
+.TP 17 
+UNIX\^
+Local node
+.TP
+INTERNET\^
+Local area network (LAN)
+.TP
+DECNET\^
+DECnet network
+.PP
+These types of sockets are available for IPC:
+.TP 17
+.I stream\^
+Sequenced, reliable, unduplicated data
+.br
+CONNECTED socket
+.br
+record boundaries not preserved
+.br
+all domains
+.TP
+.I datagram\^
+Not guaranteed to be sequenced, reliable, or
+.br
+unduplicated
+.br
+user protocol needed to give guarantees
+.br
+UNCONNECTED socket
+.br
+record boundaries preserved
+.br
+UNIX and INTERNET domains
+.TP
+.I sequenced packet\^
+Like stream socket, except record boundaries preserved
+.br
+DECNET domain only
+.TP
+.I raw\^
+Access to communications protocols
+.SH Internet Addresses Routines  
+The 
+.I inet
+routines manipulate Internet addresses.
+.SH Network Data Base File Routines
+Standard mapping routines are used to 
+retrieve entries in network data base files.  
+Several routines operating on each data base 
+file are identified by a group name:
+.TP 17
+.PN gethostent\^
+Retrieves entries from 
+.PN /etc/hosts
+.TP 
+.PN getnetent\^
+Retrieves entries from
+.PN /etc/networks
+.TP 
+.PN getprotoent\^
+Retrieves entries from
+.PN /etc/protocols
+.TP 
+.PN getservent\^
+Retrieves entries from
+.PN /etc/services
+.PP
+Specific routines perform particular operations
+on each data base file:
+.TP 17 
+.PN get...ent\^
+Reads the next line of the file; opens
+the file, if necessary.
+.TP
+.PN set...ent\^
+Opens and rewinds the file.
+.TP 
+.PN end...ent\^
+Closes the file.
+.TP 
+.PN get...byname\^
+Searches the file sequentially from the beginning
+until a matching 
+.I name
+is found, or EOF is
+encountered.
+.TP 
+.PN get...byaddr\^
+Searches the file sequentially from the beginning
+until a matching 
+.I address
+is found, or EOF is
+encountered.
+.TP 
+.PN get...byport\^
+Searches the file sequentially from the beginning
+until a matching 
+.I port number
+is found, or EOF is encountered.
+.TP 
+.PN get...bynumber\^
+Searches the file sequentially from the beginning
+until a matching 
+.I protocol number
+is found, or EOF is encountered.
+.PP
+Each network library routine returns a pointer
+to a structure reflecting individual fields of a
+line in one of the network data base files.  The
+structure for each data base file contains some of
+the fields in the following list, with the prefix
+\fIx\fR replaced by a different letter in each 
+file:
+.TP 17
+.PN x_addr\^
+pointer to a network address,
+returned in network-byte order
+.TP 
+.PN x_addrtype\^
+address family of the address being returned
+.TP 
+.PN x_aliases\^
+alternate names
+.TP 
+.PN x_length\^
+length of an address, in bytes
+.TP 
+.PN x_name\^
+official name
+.TP 
+.PN x_net\^
+network number, returned in machine-byte order
+.TP 
+.PN x_port\^
+resident port
+.TP 
+.PN x_proto\^
+protocol number

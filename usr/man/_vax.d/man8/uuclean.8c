@@ -1,0 +1,102 @@
+.\" SCCSID: @(#)uuclean.8c	8.1	9/11/90
+.TH uuclean 8c
+.SH Name
+uuclean \- uucp spool directory clean-up
+.SH Syntax
+\fBuuclean \-p[\fIpre\fR]\fR
+[ \fIoptions\fR ... ]
+.SH Description
+.NXR "uuclean program"
+.NXAM "uucp utility" "uuclean program"
+.NXR "uucp utility" "spool directories and"
+The
+.PN uuclean
+command scans the spool directory for files with the
+specified prefix and deletes all those which are
+older than the specified number of hours.
+.PP
+The
+\f(CW\-p\fIpre\fR
+argument causes the
+.PN uuclean
+command to scan for files with
+.I pre
+as the file prefix.
+You can specify up to 10
+.PN \-p
+arguments.
+A
+.PN \-p
+without any
+.I pre
+following causes all files older than the
+specified time to be deleted.
+You must specify at least one
+.PN \-p
+argument.
+.SH Options
+.TP 13
+\fB\-n\fItime\fP
+Delete all files whose age is more than 
+.IR time ,
+in hours,
+(default is 72 hours)
+and that have the specified
+.I pre 
+as their file prefix.	
+.TP 13
+.B \-m
+Send mail to the owner of the file
+when it is deleted.
+.TP
+\fB\-s\fIsystem\fP
+Delete files in all directories that are subdirectories
+of the per system spool directory that exists for  
+.I system.
+If ALL is specified, then all system directories are processed.
+ALL is the default.
+.TP
+\fB\-d\fIdirectory\fP
+Delete files that reside in the named 
+.I directory.
+The default directory is
+.PN /usr/spool/uucp .
+The 
+.PN \-s 
+option over rides the
+.PN \-d 
+option.
+.PP
+The
+.PN cron
+command typically starts the
+.PN uuclean
+program.
+In earlier versions, a deleted work file (C.file) would 
+result in mail to the owner of the work file, regardless of the 
+.PN \-m 
+option.
+Now, notification of deleted work files is sent to the user ID "uucp".
+If the 
+.PN \-m 
+option is used, mail is also sent to the owner.
+.SH Examples
+Here are some example
+.PN uuclean
+command lines:
+.EX
+# \f(CBuuclean \-pLTMP. \-pLOG. \-n4 \-d/usr/spool/uucp\f(CW
+# \f(CBuuclean \-d/usr/spool/uucp/.XQTDIR \-p \-n\f(CW
+# \f(CBuuclean \-smarkie \-p \-n84\f(CW
+.EE
+The third example deletes all
+.PN uucp
+files for the system
+.PN markie
+that are older than 84 hours.
+.SH Files
+.TP 22
+.PN /usr/lib/uucp
+Directory with commands used by uuclean internally
+.SH See Also
+uucp(1c), uux(1c), cron(8)

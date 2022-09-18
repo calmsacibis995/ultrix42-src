@@ -1,0 +1,2 @@
+include $(GMAKEVARS)
+include $(GMAKERULES)

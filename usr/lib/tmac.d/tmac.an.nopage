@@ -1,0 +1,728 @@
+.\"
+.\" @(#)tmac.an.nopage	4.4	(ULTRIX)	12/20/90
+.\"
+.\"------------------------------------------------------------------------
+.\"
+.\" tmac.an.nopage	- macros for viewing ULTRIX reference pages
+.\"			  without pagination
+.\"
+.\"------------------------------------------------------------------------
+.\"
+.\"**********************************************************************
+.\"*									*
+.\"*   Copyright (c) Digital Equipment Corporation, 1987, 1989, 1990	*
+.\"*									*
+.\"*   All Rights Reserved.  Unpublished rights  reserved  under  the	*
+.\"*   copyright laws of the United States.				*
+.\"*									*
+.\"*   The software contained on this media  is  proprietary  to  and	*
+.\"*   embodies  the  confidential  technology  of  Digital Equipment	*
+.\"*   Corporation.  Possession, use, duplication or dissemination of	*
+.\"*   the  software and media is authorized only pursuant to a valid	*
+.\"*   written license from Digital Equipment Corporation.		*
+.\"*									*
+.\"*   RESTRICTED RIGHTS LEGEND   Use, duplication, or disclosure  by	*
+.\"*   the U.S. Government is subject to restrictions as set forth in	*
+.\"*   Subparagraph (c)(1)(ii)  of  DFARS  252.227-7013,  or  in  FAR	*
+.\"*   52.227-19, as applicable.					*
+.\"*									*
+.\"*   This software is  derived  from  software  received  from  the	*
+.\"*   University    of   California,   Berkeley,   and   from   Bell	*
+.\"*   Laboratories.  Use, duplication, or disclosure is  subject  to	*
+.\"*   restrictions  under  license  agreements  with  University  of	*
+.\"*   California and with AT&T.					*
+.\"*									*
+.\"**********************************************************************
+.\"
+.\"------------------------------------------------------------------------
+.\"
+.\" Notes:
+.\"   1. -man.nopage is intended primarily for use in generating unpaginated
+.\"	 *nroff output.  If used with *troff, the output is paginated in a
+.\"	 format similar to -man.repro .
+.\"   2. Crop marks appear only in *troff output
+.\"   3. No crop marks for 8.5" x 11" pages
+.\"
+.\"------------------------------------------------------------------------
+.\"
+.\"                      Modification History
+.\"
+.\" 12/05/90
+.\"	Page Offset (PO) increased from .1i to .3i, and
+.\"	LL (overall test image width) for nroff decreased from 7.8i to 7.4i (74
+.\"	  characters) in order to permit nroff output to fit on European A4
+.\"       paper
+.\"	}H, }F internal macros:
+.\"	  use tilde (~) instead of default page number indicator (%) in titles
+.\"	    for headers/footers in order to permit use of percent (%) in
+.\"	    manpages names
+.\"
+.\" 11/09/90
+.\"	Reduced Page Offset (PO) for nroff from .5i to .1i, in order to
+.\"	Increase LL (overall test image width) for nroff from 7i to 7.8i (78
+.\"	  characters)
+.\"	Reduced basic text indent IN for nroff from .5i to .2i
+.\"	RS macro:
+.\"	  reduced secondary nroff incremental indent from .25i (rounded) to .2i
+.\"	  to make all RS secondary indents consistent.
+.\"
+.\" 09/07/90
+.\"	NT macro:
+.\"	  changed default header to "Note" instead of "NOTE" to be consistent
+.\"	  with ULTRIX Documentation Tools(tm) V1.0 -mu NT macro
+.\"
+.\" 01/17/90
+.\"     }S internal macro and all macros which call it:
+.\"	   restored " delmiters around passed parameters so that passed blanks
+.\"	      do not get stripped when the .}S internal macro is called.
+.\"
+.\" 11/02/89
+.\"	ULTRIX Documentation Tools(tm) V1.0 FT2 macros now bundled into ULTRIX
+.\"	   and made common on both VAX and RISC platforms, for ULTRIX V4.0
+.\"	Including from ULTRIX Documentation Tools(tm) V1.0 FT2 tmac.an.nopage:
+.\"	   registers }W, }L, PO, ]C, ]T: defined to specify basic page
+.\"	      dimensions
+.\"	   page offsets and lengths set based on page and crop mark specs.
+.\"	   all basic dimensions and styles commands conditionalized for
+.\"	      nroff and troff
+.\"	   for *troff processors:
+.\"	      page headers now appear on every page of multiple-page reference
+.\"		pages, instead of not at all!
+.\"	   headers and footers adjusted for crop marks
+.\"	   crop marks (when enabled) are 4-corner style, using +'s, instead of
+.\"	      "|-- .... --|"
+.\"	   delimiters @, " and ' replaced by ^G's or "'s, else removed, in
+.\"	      many macros in order to allow @, \&", and ' in section/
+.\"	      subsections/ notes headers, and in manpage headers/footers
+.\"	   headers/footers wobblings corrected by removal of parenthesis around
+.\"	      expressions controlling vertical/horizontal movements
+.\"	   setup of headers/ footers/ crop marks traps adjusted so headers/
+.\"	      footers of previous nor following pages trashed by "current"
+.\"	      page, and to prevent late footers, text too close to footers,
+.\"	      blank and excess pages
+.\"	   sections/subsections/notes require at least 4 lines on a page (done
+.\"	      with  .ne 4.1 )
+.\"	   NT macro "needs" requirement changed from 4 to 4.1.
+.\"	   Ds macro: calls font R before exiting
+.\"	   reformatting of some if/ie/ei code blocks
+.\"	   deletion of some obsolete code and comments
+.\"	with additional differences from ULTRIX Documentation Tools(tm) V1.0:
+.\"	   basic page dimensions are 8.5x11 for *troff; 75wide for *nroff
+.\"	      with 5-column indent for *nroff (nroff net line length of 70)
+.\"	   no crop marks for 8.5x11 pages
+.\"	   basic inter-paragragh/ section header/ subheader/ notes spacing
+.\"	      is .5v, instead of .4v
+.\"	   Examples, by default, are not indented relative to body text
+.\"	   Subsection headers have 1 trailing blank line when formatted by
+.\"	      *nroff.
+.\"	-man.nopage-style footers restored (replaced -man.repro-style footers)
+.\"	all comments depersonalized
+.\"
+.\" 08/16/89
+.\"	restored 4.2BSD-based 4th and 5th fields to TH macro, and
+.\"	  revised headers and footers accordingly
+.\"		- fields 3 - 5 have NO defaults
+.\"		- field 4 is page footer inside [left if odd; right if even]
+.\"		- field 5 is under the page header name(Ssubsection)
+.\"	EX macro:
+.\"	  optional parameter is now labeled as "n" units when saved in
+.\"	  EX register; previously it was ignored.
+.\"	NT macro:
+.\"	  .ne 7 reduced to .ne 4 so 2-line notes will fit on a page.
+.\"
+.\" 07/10/89
+.\"	zero-width space inserted in front of CW font calls to suppress
+.\"	  extra-wide spaces when font changes occur
+.\"	EX macro:
+.\"	  default point size based on current point size.
+.\"	  default line lead size based on current line lead size.
+.\"
+.\" 06/08/89
+.\"	ULTRIX-32 (RISC) V3.1 macros now made common on both RISC and VAX
+.\"	  platforms for ULTRIX V4.0, with the following additional bug fixes
+.\"	  and modifications made:
+.\"	TH macro: fix of RISC-only bug
+.\"       fixed "if-else overflow" bug; changed .ie => .if
+.\"	changed basic page layout to 8.5x11 for *troff processors, from
+.\"	  7x9 format, and eliminated crop marks
+.\"	changed basic page layout for nroff to 7 inches wide, instead of
+.\"	  default 6.5, with .5 inches left margin
+.\"	replaced all references to font numbers with names
+.\"	replaced all references to Triumvirate fonts with Helvetica fonts
+.\"	  for PostScript (tm - Adobe) compatibility
+.\"	changes made to point sizes, line spacings, and other stylistic changes
+.\"	  made in order to improve appearance when formating for PostScript
+.\"	  printers and *troff processors
+.\"	output 3rd field of .TH on outside edges of pages if using *troff
+.\"	EX macro:
+.\"	  no longer requires any minimum no. of lines to fit on a page
+.\"	execute Header macro at top of each new manpage, if processing multiple
+.\"	  manpages
+.\"	changed all comments from '<tab>#<text> format to
+.\"	  .<tab>\"<text> format which is the more conventional notation
+.\"	deleted redundant and obsolete coding
+.\"
+.\" 03/04/89
+.\"	Pn macro (Path name with 3 arguments)
+.\"	   - similar to .PN macro
+.\"	Ds macro ("display without keeps") added
+.\"	De macro ("end display, without end keep") added
+.\"	   - companion to .Ds macro
+.\"	NT macro:
+.\"	   fixed compare of no. of arguments with 1 instead of with 1st arg.
+.\"
+.\" 11/18/88
+.\"	added 3rd field to .TH macro, so RISC-only, VAX-only, and other
+.\"	  machine-specific reference pages can be identified.  If nothing
+.\"	  is specified for the 3rd field, it is ignored.  Nothing in the
+.\"	  field means this is a machine-independent reference page
+.\"	modified .}H macro to put 3rd field passed to .TH into header title
+.\"	disabled the string ]D
+.\"
+.\" --------------------------- Ancient History ----------------------
+.\"
+.\" Last revised on 11-Jun-86  2137
+.\"  Removed lowercase translation, now that source files have lowercase
+.\"     arguments for TH macro (11-Jun-86)
+.\"   Eliminated page breaks if nroff, to make on-screen display prettier
+.\"	(8-Dec-85 2222 PST)
+.\"   
+.\" Welcome to   tmac.an.nopage
+.\"   nroff/ditroff macros used to print ULTRIX-32/32m manpages
+.\"    descended from the original Bell man macros, with fertilization
+.\"    by the ULTRIX-32 Version 1.0 crew, along with a few thistles taken
+.\"    from the doc. group's mu macros.
+.\"
+.\"   USE COMMENTS for additions and changes to preserve the sanity
+.\"    of those who follow you!
+.\"
+.\" -----------------------------------------------------------------
+.\"
+.\" Set Basic Page Dimensions:
+.\"
+.\"	Set *troff output for ULTRIX 8.5x11 format.
+.\"
+.\"	Overall Page Dimensions:	8.5i x 11i	( }W x }L )
+.\"	Page Offset:			7.5P		( PO )
+.\"	  - Left indent from left edge of overall text image area
+.\"	  - all text is indented by this amount from the left edge of the image
+.\"	    area
+.\"	  - Left and Right margins are the same so text is centered
+.\"	Crop Mark Offset:		0P		( ]C )
+.\"	  - left page offset from physical edge of paper
+.\"	  - Left crop marks actually print on outside edge of this position
+.\"	  - [No crop marks for 8.5x11 format]
+.\"
+.if t .nr }W 8.5i		\" Overall page width
+.if t .nr }L 11i		\" Overall page length
+.if n .nr PO .3i		\" page offset for Nroff ULTRIX 8.5x11 format
+.				\"   (set 3 characters in so body text
+.				\"   (length set in .TH macro == 74 characters)
+.				\"   appears centered on 80-column display)
+.if t .nr PO 7.5P		\" page offset for Troff ULTRIX 8.5x11 format
+.				\"   (also left & right margin widths)
+.				\" [No crop marks for 8.5x11 format]
+.if n .nr ]C 0P			\" crop mark offset from Left Margin
+.if t .nr ]C 0P
+.if n .nr ]T 0i			\" crop mark drop from Top margin
+.if t .nr ]T 0i
+.\"
+.\" Set Page Offset
+.\"	In "Old" Troff, the default page offset is 26/27 inch.  This may not
+.\"	be the same for other versions of Troff (ex. newer versions may
+.\"	default to 1 inch (27/27 inch)).  Therefore, lets make sure its
+.\"	explicitly set.  All indents set relative to this.
+.\"
+.po \n(]Cu+\n(POu		\" set page offset
+.\"
+.if \nl .ls 2			\" if -rl1 then double-space lines
+.\"
+.ie n \{\
+.	ds lq \&"\"
+.	ds rq \&"\"
+.\}
+.el \{\
+.	ds rq ''
+.	ds lq ``
+.\}
+.	\" reset the basic page layout
+.de }E
+.}f
+.in \\n()Ru+\\n(INu
+.ll \\n(LLu
+.if n .pl \\n(PLu
+.if t .pl \\n(PLu+\\n(]Tu+0p	\" page length + crop mark drop
+..
+.	\" default tabs
+.de DT
+'ta .5i 1i 1.5i 2i 2.5i 3i 3.5i 4i 4.5i 5i 5.5i 6i 6.5i
+..
+.	\" set basic (default) type font and size
+.	\" For readability with PostScript fonts, use 11 on 12
+.de }f
+.if n .ps 11
+.if t .ps 11
+.if n .vs 12
+.if t .vs 12
+.ft R
+..
+.	\" handle the head of the page
+.de }H
+.nr p# +1
+.ev 1
+.pc ~				\" use ~ for page nums in titles instead of %
+.				\"  to allow manpages names containing `%'
+.\".if t 'sp |\\n(]Tu		\" top crop mark drop
+.\".}C
+.if n 'sp |.5i
+.if t 'sp |4P+\\n(]Tu		\" header drop + top crop mark drop
+.ps 13
+.		\" Even and odd page headers
+.if t 'sp 4p			\" extra header drop
+.ie \\*(]L \{\
+.	lt \\n(LLu
+.	if e .tl \f(HB\\*(]H\fP
+.	if o .tl \f(HB\\*(]H\fP
+.\}
+.el \{\
+.	ie n \{\
+.		lt \\n(LLu
+.		if e .tl \f(HB\\*(]H\fP\fH\\*(]L\fP
+.		if o .tl \fH\\*(]L\fP\f(HB\\*(]H\fP
+.	\}
+.	el \{\
+.		lt \\n(LLu+\w\fH\0\0\0\0\\*(]Lu
+.		if e \{\
+.			po \\n(.ou-\w\fH\0\0\0\0\\*(]Lu
+.			tl \fH\\*(]L\0\0\0\0\fP\f(HB\\*(]H\fP
+.			po
+.		\}
+.		if o .tl \f(HB\\*(]H\fP\fH\0\0\0\0\\*(]L\fP
+.	\}
+.\}
+.if !\\*(]D \{\
+.	lt \\n(LLu
+.	if t .vs 14
+.	if e .tl \f(HB\\*(]D\fP
+.	if o .tl \f(HB\\*(]D\fP
+.	if t .vs
+.\}
+.ps
+.if n 'sp .5i-1v
+.if t 'sp 15p
+.pc %				\" restore % for page numbers in titles
+.ev
+..
+.	\" handle the foot of the page
+.	\" footers turned off for better, unpaginated, on-line display
+.if n .ig
+.de }F
+.ev 1
+.pc ~				\" use ~ for page nums in titles instead of %
+.				\"  to allow manpages names containing `%'
+.ps 9
+.if n 'sp |\\n(.pu-.5i-1v
+.if t 'sp |\\n(.pu-4P-1v-0p	\" text margin - 1 line - Bottom crop mark drop
+.lt \\n(LLu
+.if e .tl \f(HB\\*(]S\^\-\^~\fP\fH\\*(]W\fP
+.if o .tl \fH\\*(]W\fP\f(HB\\*(]S\^\-\^~\fP
+.ps
+.pc %				\" restore % for page numbers in titles
+'bp
+.ev
+..
+.\"
+.\" The Cut Mark Macros
+.\"
+.	\" the cut mark
+.	\" disabled for 8.5x11 pages
+.ig
+.\".if n .ig
+.de }C
+.vs 4
+.ft R
+.po \\n(]Cu-(\w'\fR\s10+\fP'u/2u)u
+.lt \\n(}Wu+\w'\fR\s10+\fP'u+(\w'\fR\s10+\fP'u/5u)u
+.tl '\fR\s10+''+\s0\fP'
+.lt
+.vs
+.ft
+.po \\n(]Cu+\\n(POu
+..
+.	\" the final cut mark
+.de }M
+.}N
+.wh -5p }C
+.ll \\n(LLu
+..
+.\"
+.	\" no runout unless there was a .TH
+.de }K
+.}N
+.pl 1
+.ll \\n(LLu
+..
+.em }K
+.	\" set title and heading
+.de TH
+.na
+.PD
+.DT
+.if n .nr IN .2i
+.if t .nr IN 4P
+.if n .nr LL 7.4i
+.if t .nr LL 36P
+.if n .nr PL \\n(.p
+.if t .nr PL \\n(}L
+.\"
+.	\" comment out next line to remove chapter-oriented page numbers
+.ds ]S \\np
+.\"
+.ds ]H \\$1\|(\^\\$2\^)
+.ie \\$3 .ds ]L
+.el .ds ]L \\$3
+.ie \\$5 .ds ]D
+.el .ds ]D \\$5
+.wh 0 }H
+.if t .wh -4P-32p-0p-1v }F	\" text margin -32 pts -crop mark -1v
+.if n .wh -.5i-2v-1v }F
+.if t .wh -5p }C		\" bottom page crop mark
+.em }M
+.if \\n(nl \{\
+.	bp
+.	nr p# 1
+.\}
+.}E
+.if n .nr )I .5i
+.if t .nr )I 4P
+.nr )R 0
+.ie \\$4 .ds ]W
+.el .ds ]W \\$4
+.if n .wh 0
+..
+.	\" section heading
+.de SH
+.}X 0
+.nr )E 2
+.ne 4.1
+.ps 13
+\&\\$1 \|\\$2 \|\\$3 \|\\$4 \|\\$5 \|\\$6
+.if t .sp .5v
+..
+.	\" sub section heading
+.de SS
+.}X \\n()Ru+\\n(INu
+.nr )E 2
+.ne 4.1
+.ps 12
+\&\\$1 \|\\$2 \|\\$3 \|\\$4 \|\\$5 \|\\$6
+.br
+.if n .sp 1v
+.if t .sp .5v
+..
+.	\" subroutine for section heading
+.de }X
+.}E
+.ti \\$1
+.if n .sp 1v		\" chg'd for V4.0-- used to use interparagraph space )P
+.if t .sp 1v
+.ne 2
+.nr )R 0
+.fi
+.it 1 }N
+.ft HB
+..
+.	\" end of SH (cf }X above and }N below)
+.de }2
+.nr )E 0
+.}E
+.if n .nr )I .5i
+.if t .nr )I 4P
+..
+.	\" italic
+.de I
+.ft I
+.it 1 }N
+.if !\\$1 \&\\$1 \\$2 \\$3 \\$4 \\$5 \\$6
+..
+.	\" bold
+.de B
+.ft B
+.it 1 }N
+.if !\\$1 \&\\$1 \\$2 \\$3 \\$4 \\$5 \\$6
+..
+.	\" Geneva Light (changed to Helvetica Italic for PostScript)
+.de GL
+.ft HI
+.it 1 }N
+.if !\\$1 \&\\$1 \\$2 \\$3 \\$4 \\$5 \\$6
+..
+.	\" Geneva Regular (changed to Helvetica for PostScript)
+.de G
+.ft H
+.it 1 }N
+.if !\\$1 \&\\$1 \\$2 \\$3 \\$4 \\$5 \\$6
+..
+.	\" small
+.de SM
+.ps -2			\" 2 points smaller than current size
+.it 1 }N
+.if !\\$1 \&\\$1 \\$2 \\$3 \\$4 \\$5 \\$6
+..
+.	\" combinations of Roman, italic, bold
+.de RI
+.}S 1 2 \& "\\$1" "\\$2" "\\$3" "\\$4" "\\$5" "\\$6"
+..
+.de VS
+'if '\\$1'4' .mc \s12\(br\s0
+..
+.de VE
+'mc
+..
+.de RB
+.}S 1 3 \& "\\$1" "\\$2" "\\$3" "\\$4" "\\$5" "\\$6"
+..
+.de IR
+.}S 2 1 \& "\\$1" "\\$2" "\\$3" "\\$4" "\\$5" "\\$6"
+..
+.de IB
+.}S 2 3 \& "\\$1" "\\$2" "\\$3" "\\$4" "\\$5" "\\$6"
+..
+.de BR
+.}S 3 1 \& "\\$1" "\\$2" "\\$3" "\\$4" "\\$5" "\\$6"
+..
+.de BI
+.}S 3 2 \& "\\$1" "\\$2" "\\$3" "\\$4" "\\$5" "\\$6"
+..
+.	\" make special case of shift out of italic
+.de }S
+.ds ]F
+.if \\$12 .if !\\$5 .ds ]F\^
+.ie !\\$4 .}S \\$2 \\$1 "\\$3\f\\$1\\$4\\*(]F" "\\$5" "\\$6" "\\$7" "\\$8" "\\$9"
+.el \\$3
+.}f
+..
+.	\" paragraph
+.de LP
+.PP
+..
+.de PP
+.sp \\n()Pu
+.ne 2
+.}E
+.if n .nr )I .5i
+.if t .nr )I 4P
+.ns
+..
+.	\" paragraph distance
+.de PD
+.if t .nr )P .5v
+.if n .nr )P 1v
+.if !"\\$1"" .nr )P \\$1v
+..
+.	\" hanging indent
+.de HP
+.sp \\n()Pu
+.ne 2
+.if !"\\$1"" .nr )I \\$1n
+.ll \\n(LLu
+.in \\n()Ru+\\n(INu+\\n()Iu
+.ti \\n()Ru+\\n(INu
+.}f
+..
+.	\" indented paragraph
+.de IP
+.TP \\$2
+\&\fB\\$1\fR
+..
+.	\" hanging label
+.de TP
+.if !"\\$1"" .nr )I \\$1n
+.sp \\n()Pu
+.in \\n()Ru
+.nr )E 1
+.ns
+.it 1 }N
+.di ]B
+..
+.	\" end of TP (cf }N below)
+.de }1
+.ds ]X \&\\*(]B\\
+.nr )E 0
+.if !"\\$1"" .nr )I \\$1n
+.}f
+.ll \\n(LLu
+.in \\n()Ru+\\n(INu+\\n()Iu
+.ti \\n(INu
+.ie !\\n()Iu+\\n()Ru-\w\\*(]Xu-3p \{\
+\\*(]X
+.	br
+.\}
+.el \\*(]X\h|\\n()Iu+\\n()Ru\c
+.}f
+..
+.	\" handle end of 1-line features
+.de }N
+.if \\n()E .br
+.di
+.if "\\n()E"0" .}f
+.if "\\n()E"1" .}1
+.if "\\n()E"2" .}2
+.nr )E 0
+..
+.	\" increase relative indent
+.de RS
+.nr ]\\n+()p \\n()I
+.nr )\\n()p \\n()R
+.ie !"\\$1"" .nr )R +\\$1n
+.el .nr )R +\\n()I
+.if n .nr )I .2i
+.if t .nr )I 2P
+.}E
+..
+.	\" decrease relative indent
+.de RE
+.if !"\\$1"" \{\
+.	ie "\\$1"0" .nr )p 1 1
+.	el .nr )p \\$1 1
+.\}
+.ds ]i \\*(]I\\n()p
+.ds ]r \\*(]R\\n()p
+.nr )I \\*(]i
+.nr )R \\*(]r
+.if \\n()p .nr )p -1
+.}E
+..
+.de I1
+.ti +\w\\$1u
+..
+.de I2
+.sp -1
+.ti +\w\\$1u
+..
+.de RN		\" Return character
+\s-2<\|RETURN\|>\s+2
+..
+.de CT		\" Control character
+\s-2<\|CTRL\|/\|\\$1\|>\s+2
+..
+.\"
+.	\" TB - Triumvirate bold font
+.	\"	Helvetica Bold instead of Triumvirate for V4.0
+.de TB
+.nr PF \\n(.f
+.ie n .ul 999 
+.el .ft HB
+.if \\n(.$ \{\
+\\$1 \\$2 \\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.\}
+..
+.	\" HB - Helvetica Bold font		for V4.0
+.	\"	same as TB macro to provide compatibility
+.de HB
+.nr PF \\n(.f
+.ie n .ul 999
+.el .ft HB
+.if \\n(.$ \{\
+\\$1 \\$2 \\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.\}
+..
+.     	\" CW - Constant width font
+.de CW
+.ft CW
+..
+.	\" R - Roman font
+.de R
+.if n .ul 0
+.ft R
+..
+.de EX		\" Begin Example
+.ie \\n(.$ .nr EX \\$1n
+.el \{\
+.	ie n .nr EX 0n
+.	el .nr EX 0n
+.\}
+.in +\\n(EXu
+.if n .sp 1
+.if t .sp .5v
+.nf
+.CW
+.ps -2			\" 2 points smaller than current point size
+.vs -2			\" 2 points smaller than current line lead size
+..
+.de EE		\" End example
+.in -\\n(EXu
+.fi
+.}f             \" restore basic text attributes
+.if n .sp 1
+.if t .sp .5v
+..
+.de NT
+.LP
+.ne 4.1
+.ds NO Note
+.if \\n(.$>1 .if !\\$2C .ds NO \\$2
+.if \\n(.$ .if !\\$1C .ds NO \\$1
+.if n .sp
+.if t .sp .5v
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if \\$1C .ce 99
+.if \\$2C .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp .5v
+..
+.\"
+.nr )p 0 1
+.ds ]I \\\\n(]
+.ds ]R \\\\n()
+.bd S 3 3
+.ds S \s10
+.hy 14
+.		\" Manual section reference
+.		\"	uses Courier fonts for V4.0
+.de MS
+.ie t \&\f(CW\\$1\fP\fR(\\$2)\fP\\$3
+.el \fI\\$1\fP(\\$2)\\$3
+..
+.		\" Path Name
+.		\"	uses Courier fonts for V4.0
+.de PN
+.ie t \&\f(CW\\$1\fP\\$2
+.el \fI\\$1\fP\\$2
+..
+.		\" Path name
+.		\"   Pn is similar to PN, except it takes three arguments
+.		\"   instead of two.  It keeps the established font coding for
+.		\"   the first argument, changes the font to CW for the second,
+.		\"   and reverts back to previous font for the third.
+.de Pn
+.ie t \\$1\&\f(CW\\$2\fP\\$3
+.el \\$1\fI\\$2\fP\\$3
+..
+.	\" Ds - display without keeps
+.	\"   Ds can be used in normal text to display information that can be
+.	\"   better set up by tab stops than with tbl.
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft R
+..
+.       \" De - end display (without end keep)
+.       \"   De is the companion to Ds. It does not include an end keep.
+.de De
+.ce 0
+.fi
+..

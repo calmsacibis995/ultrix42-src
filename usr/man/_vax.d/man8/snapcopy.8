@@ -1,0 +1,78 @@
+.\" SCCSID: @(#)snapcopy.8	8.1	9/11/90
+.TH snapcopy 8 VAX
+.SH Name
+snapcopy \- copy VAX 8600/8650 snapshot files
+.SH Syntax
+.B /etc/snapcopy 
+[\fB\-d\fR]
+.I directory
+.SH Description
+.NXR "snapcopy command"
+.NXR "snapshot file"
+When the system crashes on a VAX 8600 or VAX 8650 system,
+the console subsystem creates snapshot files containing
+binary information regarding the state of the hardware
+at the time of the crash.  Snapshot files are typically used
+by hardware maintenance personnel to analyze and repair the
+cause of the system crash.
+.PP
+The
+.PN snapcopy 
+command copies
+any valid snapshot files (called
+.PN snap1.dat 
+and
+.PN snap2.dat) 
+from the console 
+RL02 disk into the directory specified.
+The files are renamed to show the time of the copy:
+.RS
+.PP
+.I hr:min:sec-\f(CWsnap1.dat\fP
+.br
+.I hr:min:sec-\f(CWsnap2.dat\fP
+.RE
+.PP
+You should delete the comment character for the
+.PN snapcopy
+command in the
+.PN /etc/rc.local
+file only for VAX 8600 and VAX 8650 systems.
+.PP
+The
+.I directory
+is the name of the directory to which the snapshot files
+are to be copied.
+.SH Options
+.IP \-d 5
+Invalidates the files on the console RL02 disk, 
+meaning that they can be rewritten by the console subsystem 
+in the event of another system crash.
+.SH Diagnostics
+.B
+snapcopy:  not a directory
+.br
+.B
+snapcopy:  no write permission for directory
+.br
+.B
+snapcopy:  could not chdir to directory
+.br
+The
+.I directory
+must exist and be writable.
+.SH Files
+.TP 17
+.PN /dev/ttyc3
+Special file by which 
+.PN snapcopy
+communicates with the system console terminal
+.TP 
+.PN /dev/crl
+Special file by which 
+.PN snapcopy
+communicates with the console RL02 disk
+.TP 
+.PN /etc/rc.local
+File that contains site-specific commands to be executed when
+the ULTRIX system is brought to multi-user mode

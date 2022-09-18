@@ -1,0 +1,89 @@
+.\" SCCSID: @(#)chown.8	8.2	3/14/91
+.TH chown 8
+.SH Name
+chown \- change owner and, optionally, group
+.SH Syntax
+.B /etc/chown
+[
+.B \-fR
+]
+.IR owner [. group ] 
+.IR file ...
+.SH Description
+.NX R "chown command"
+.NX R "file" "changing owner"
+The
+.PN chown
+command changes the owner and, optionally, group for one or more files
+and directories.  The value for
+.I file
+can be a full or partial path.  The value for 
+.I owner 
+can be either a decimal UID or a login name found in the password file.
+The value for 
+.I group 
+can be either a decimal GID or a group name found in the group file.  
+.PP
+Only the superuser can change the ownership of a file.  The superuser
+can also change the group of a file.  The owner of a file can only
+change the 
+.I group, 
+but the owner must be a member of any group specified.
+.SH Options
+.IP \-f 5
+Inhibits display of errors that are returned when 
+.PN chown
+cannot change the owner or group of the specified files.
+.IP \-R
+Causes 
+.PN chown
+to recursively descend any directories subordinate to
+.I file
+and to set the owner, group, or both for each file encountered.  When
+symbolic links are encountered, 
+.PN chown
+changes the owner and group for the link file itself but does not
+traverse the path associated with the link.  The 
+.PN \-R
+option is useful only when
+.I file
+is a directory that is not empty.
+.SH Examples
+Change the owner of 
+.PN myfile 
+to ecbell:
+.EX
+/etc/chown ecbell myfile
+.EE
+.PP
+Change the owner of 
+.PN myfile 
+to craig and group of 
+.PN myfile 
+to admin:
+.EX
+/etc/chown craig.admin myfile
+.EE
+.PP
+Change the owner to richart and group to eng for the directories
+.PN projecta 
+and 
+.PN projectb 
+and for all files and directories on any levels subordinate to 
+.PN projecta
+and 
+.PN projectb :
+.EX
+/etc/chown \-R richart.eng projecta projectb
+.EE
+.SH Files
+.TP 15
+.PN /etc/passwd
+.TP 15
+.PN /etc/group
+.TP 15
+.PN /etc/yp/src/passwd
+.TP 15
+.PN /etc/yp/src/group
+.SH See Also
+chgrp(1), chown(2), group(5), group(5yp), passwd(5), passwd(5yp)

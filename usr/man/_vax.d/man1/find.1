@@ -1,0 +1,204 @@
+.\" SCCSID: @(#)find.1	2.3	6/8/87
+.TH find 1 
+.SH Name
+find \- find files
+.SH Syntax
+.B find
+\fIpathname-list  expression\fR
+.SH Description
+.NXR "find command"
+.NXR "file" "finding"
+.NXA "find command" "test command"
+The
+.PN find
+command recursively descends
+the directory hierarchy for
+each pathname in the
+.I pathname-list
+(that is, one or more pathnames)
+seeking files that match a boolean
+.I expression
+written in the primaries given below.
+In the descriptions, the argument
+.I n
+is used as a decimal integer
+where
+.I +n
+means more than
+.I n,
+.I \-n
+means less than
+.I n ,
+and
+.I n
+means exactly
+.IR n .
+.SH Options
+.IP "\fB\-atime\fI n\fR" 15
+Tests true if the file has been accessed in
+.I n
+days.
+.IP "\fB\-cpio\fR \fIoutput\fR" 15
+Writes current file on
+.I output
+in the format (5120-byte records) specified in the
+.MS cpio 5
+reference page.  The
+.I output 
+can be either a file or tape device.  If 
+.I output 
+is a tape device the 
+.PN cpio
+B key must be used to read data from the tape.
+.IP "\fB\-ctime\fI n\fR" 15
+Tests true if the file has been changed in
+.I n
+days.
+.IP "\fB\-depth\fR" 15
+Always true;
+causes descent of the directory hierarchy to be done
+so that all entries in a directory are acted on 
+before the directory itself (that is, postorder instead of preorder).
+This can be useful when
+.PN find
+is used with
+.PN cpio
+to transfer files
+that are contained in directories without
+write permission.
+.IP "\fB\-exec\fR command" 15
+Tests true if specified command returns a 0 on exit.  
+The end of the command must be punctuated by an escaped
+semicolon.
+A command argument `{}' is replaced by the
+current pathname.
+.IP "\fB\-group\fR gname" 15
+Tests true if group ID matches specified group name.  
+.IP "\fB\-inum\fI n\fR" 15
+Tests true if the file has inode number
+.I n.
+.IP "\fB\-links\fI n\fR" 15
+Tests true if the file has
+.I n
+links.
+.IP \fB\-mount\fR 15
+Tests true if
+the current file is on the same file system as the current starting pathname.
+.IP "\fB\-mtime\fI n\fR" 15
+Tests true if the file has been modified in
+.I n
+days.
+.IP "\fB\-name\fR filename" 15
+Tests true if the
+.I filename
+argument matches the current file name.
+Normal
+Shell
+argument syntax may be used if escaped (watch out for
+`[', `?' and `*').
+.IP "\fB\-newer\fR file" 15
+Tests true if
+the current file has been modified more recently than the argument \fIfile\fR.
+.IP "\fB\-ok\fR command" 15
+Executes specified command on
+standard output, then standard input
+is read and command executed only
+upon response 
+.B y.  
+.IP "\fB\-perm\fR onum" 15
+Tests true if file has specified octal number.  
+For further information, see 
+.MS chmod 1 .
+If
+.I onum
+is prefixed by a minus sign,
+more flag bits (017777)
+become significant and
+the flags are compared:
+.IR (flags&onum)==onum .
+For further information, see 
+.MS stat 2 .
+.IP \fB\-print\fR 15
+Prints current pathname. 
+.IP "\fB\-size\fI n\fR" 15
+Tests true if the file is
+.I n
+blocks long (512 bytes per block).
+.IP "\fB\-type\fI c\fR" 15
+Tests true if file
+is
+.I c
+type (
+.I c
+=
+.B b,
+block special file:
+.B c,
+character special file:
+.B d,
+directory:
+.B f,
+plain file:
+.B l,
+symbolic link:
+.B p,
+type port:
+.B s,
+type socket). 
+.IP "\fB\-user\fR uname" 15
+Tests true if file owner is login name or numeric user ID.  
+.PP
+The primaries may be combined using the following operators
+(in order of decreasing precedence):
+.TP 4
+1)
+A parenthesized group of primaries and operators
+(parentheses are special to the Shell and must be escaped).
+.TP 4
+2)
+The negation of a primary
+(`!' is the unary
+.I not
+operator).
+.TP 4
+3)
+Concatenation of primaries
+(the
+.I and
+operation
+is implied by the juxtaposition of two primaries).
+.TP 4
+4)
+Alternation of primaries
+.RB "(`" \-o "' is the"
+.I or
+operator).
+.SH Examples
+To remove all files named
+`a.out' or `*.o' that have not been accessed for a week:
+.EX
+find / \\( \-name a.out \-o \-name '*.o' \\) \\
+\-atime +7 \-exec rm {} \\;
+.EE
+.PP
+To find all files on the root file system type:
+.EX
+find / \-mount \-print
+.EE
+.PP
+To write all the files on the root file system to tape:
+.EX
+find / \-mount \-print \-cpio /dev/rmt?h
+cpio \-iBvt < /dev/rmt?h
+.EE
+.PP
+To find all the mount points on the root file system type:
+.EX
+find / ! \-mount \-print
+.EE
+.SH Files
+.PN /etc/passwd
+.br
+.PN /etc/group
+.SH See Also
+cpio(1), sh(1), test(1), cpio(5), fs(5)

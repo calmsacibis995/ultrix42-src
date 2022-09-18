@@ -1,0 +1,282 @@
+.TH me 7
+.SH Name
+me \- macros for formatting papers
+.SH Syntax
+.B "nroff \-me"
+[ 
+.I options 
+]
+.I file ... 
+.br
+.B "*roff \-me"
+[ 
+.I options 
+]
+.I file ... 
+.SH Description
+.NXAM "*roff text processor" "me macro package"
+.NXAM "nroff text processor" "me macro package"
+.NXR "me macro package"
+.NXR "technical paper" "formatting"
+This package of 
+.PN nroff
+and
+.PN *roff
+macro definitions provides a formatting facility for technical 
+papers in various formats.
+When producing 2-column output on a terminal, filter
+the output through 
+.MS col 1 .
+.PP
+Many
+.PN nroff
+and
+.PN *roff
+requests are unsafe in conjunction with
+this package; however, these requests can be used with
+impunity after the first .pp:
+.nf
+.IP
+.ta \w'.sz +n  'u
+\&.bp	Begin new page
+\&.br	Break output line here
+\&.sp n	Insert n spacing lines
+\&.ls n	Line spacing: n=1 single, n=2 double space
+\&.na	No alignment of right margin
+\&.ce n	Center next n lines
+\&.ul n	Underline next n lines
+\&.sz +n	Add n to point size
+.fi
+.PP
+Output of the
+.PN eqn ,
+.PN neqn ,
+.PN refer ,
+and
+.PN tbl
+preprocessors
+for equations and tables is acceptable as input.
+.SH Requests 
+.NXR(t) "me macro package" "requests"
+In the following list,
+\*(lqinitialization\*(rq
+refers to the first .pp, .lp, .ip, .np, .sh, or .uh macro.
+This list is incomplete;
+see the
+"\-me Reference Manual", 
+\fISupplementary Documents, Volume 1: General User\fP,
+for further details.
+.PP
+.ta \w'.eh \'x\'y\'z\'  'u +\w'Initial 'u +\w'Cause 'u
+.br
+.di x
+			\ka
+.br
+.di
+.in \nau
+.ti0
+\fBRequest	Initial	Cause	Explanation
+.ti0
+	Value	Break\fR
+.br
+.in \nau
+.ti0
+\&.(b	-	yes	Begin block.
+.ti0
+\&.(c	-	yes	Begin centered block.
+.ti0
+\&.(d	-	no	Begin delayed text.
+.ti0
+\&.(f	-	no	Begin footnote.
+.ti0
+\&.(l	-	yes	Begin list.
+.ti0
+\&.(q	-	yes	Begin major quote.
+.ti0
+\&.(x \fIx\fR	-	no	Begin indexed item in index.
+.I x
+.ti0
+\&.(z	-	no	Begin floating keep.
+.ti0
+\&.)b	-	yes	End block.
+.ti0
+\&.)c	-	yes	End centered block.
+.ti0
+\&.)d	-	yes	End delayed text.
+.ti0
+\&.)f	-	yes	End footnote.
+.ti0
+\&.)l	-	yes	End list.
+.ti0
+\&.)q	-	yes	End major quote.
+.ti0
+\&.)x	-	yes	End index item.
+.ti0
+\&.)z	-	yes	End floating keep.
+.ti 0
+\&.++ \fIm H\fR	-	no	Define paper section.
+.I m
+defines the part of the paper, and can be
+.PN C
+(chapter),
+.PN A
+(appendix),
+.PN P
+(preliminary; for example, an abstract, table of contents, and so on),
+.PN B
+(bibliography),
+.PN RC
+(chapters renumbered from page one each chapter),
+or
+.PN RA
+(appendix renumbered from page one).
+.ti 0
+\&.+c \fIT\fR	-	yes	Begin chapter (or appendix, etc., as
+set by .++).
+.I T
+is the chapter title.
+.ti0
+\&.1c	1	yes	One-column format on a new page.
+.ti0
+\&.2c	1	yes	Two-column format.
+.ti0
+\&.EN	-	yes	Space after equation
+produced by
+.I eqn
+or
+.IR neqn .
+.ti0
+\&.EQ \fIx y\fR	-	yes	Precede equation; break out and
+add space.
+Equation number is
+.IR y .
+The optional argument \fIx\fR
+may be
+.I I
+to indent equation (default),
+.I L
+to left-adjust the equation, or
+.I C
+to center the equation.
+.ti0
+\&.TE	-	yes	End table.
+.ti0
+\&.TH	-	yes	End heading section of table.
+.ti0
+\&.TS \fIx\fR	-	yes	Begin table; if \fIx\fR is
+.PN H ,
+table has repeated heading.
+.ti 0
+\&.ac \fIA N\fR	-	no	Set up for ACM style output.
+.I A
+is the Author's name(s),
+.I N
+is the total number of pages.
+Must be given before the first initialization.
+.ti0
+\&.b \fIx\fR	no	no	Print
+.I x
+in boldface; if there is no argument, switch to boldface.
+.ti 0
+\&.ba \fI+n\fR	0	yes	Augments the base indent by
+.I n.
+This indent is used to set the indent on regular text
+(like paragraphs).
+.ti0
+\&.bc	no	yes	Begin new column.
+.ti0
+\&.bi \fIx\fR	no	no	Print
+.I x
+in bold italics (nofill only).
+.ti0
+\&.bx \fIx\fR	no	no	Print \fIx\fR in a box (nofill only).
+.ti 0
+\&.ef \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set even footer to x  y  z.
+.ti 0
+\&.eh \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set even header to x  y  z.
+.ti 0
+\&.fo \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set footer to x  y  z.
+.ti 0
+\&.hx	-	no	Suppress headers and footers on next page.
+.ti0
+\&.he \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set header to x  y  z.
+.ti0
+\&.hl	-	yes	Draw a horizontal line.
+.ti0
+\&.i \fIx\fR	no	no	Italicize
+.I x;
+if
+.I x
+missing, italic text follows.
+.ti0
+\&.ip \fIx y\fR	no	yes	Start indented paragraph,
+with hanging tag
+.IR x .
+Indentation is
+.I y
+ens (default 5).
+.ti0
+\&.lp	yes	yes	Start left-blocked paragraph.
+.ti 0
+\&.lo	-	no	Read in a file of local macros of the
+form
+.BI \&.* x.
+Must be given before initialization.
+.ti0
+\&.np	1	yes	Start numbered paragraph.
+.ti 0
+\&.of \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set odd footer to x  y  z.
+.ti 0
+\&.oh \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set odd header to x  y  z.
+.ti 0
+\&.pd	-	yes	Print delayed text.
+.ti0
+\&.pp	no	yes	Begin paragraph.
+First line indented.
+.ti0
+\&.r	yes	no	Roman text follows.
+.ti 0
+\&.re	-	no	Reset tabs to default values.
+.ti 0
+\&.sc	no	no	Read in a file of special characters
+and diacritical marks.
+Must be given before initialization.
+.ti0
+\&.sh \fIn x\fR	-	yes	Section head follows,
+font automatically bold.
+.I n
+is level of section,
+.I x
+is title of section.
+.ti 0
+\&.sk	no	no	Leave the next page blank.
+Only one page is remembered ahead.
+.ti 0
+\&.sz \fI+n\fR	10p	no	Augment the point size by
+.I n
+points.
+.ti 0
+\&.th	no	no	Produce the paper in thesis format.
+Must be given before initialization.
+.ti 0
+\&.tp	no	yes	Begin title page.
+.ti0
+\&.u \fIx\fR	-	no	Underline argument (even in \fI*roff\fR).
+(Nofill only).
+.ti0
+\&.uh	-	yes	Like .sh, but unnumbered.
+.ti0
+\&.xp \fIx\fR	-	no	Print index
+.I x.
+.SH Files
+.PN /usr/lib/tmac/tmac.e
+.br
+.PN /usr/lib/me/*
+.SH See Also
+refer(1), tbl(1), nroff(1) 
+.br
+"\-me Reference Manual", 
+\fISupplementary Documents, Volume 1: General User\fP
+.br
+"Writing Papers with Nroff Using \-me",
+\fISupplementary Documents, Volume 1: General User\fP

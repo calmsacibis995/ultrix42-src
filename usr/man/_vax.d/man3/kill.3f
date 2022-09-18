@@ -1,0 +1,25 @@
+.\" SCCSID: @(#)kill.3f	8.1	9/11/90
+.TH kill 3f VAX "" Unsupported
+.SH Name
+kill \- send a signal to a process
+.SH Syntax
+.B function kill (pid, signum)
+.br
+.B integer pid, signum
+.SH Description
+.NXR "kill subroutine (FORTRAN)"
+.NXR "process" "sending a signal to"
+The
+.I pid
+argument must be the process id of one of the user processes.
+The
+.I signum
+argument must be a valid signal number.  For further information, see 
+.MS sigvec 2 .
+.SH Return Values
+The returned value will be 0 if successful and an error code otherwise.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+kill(2), sigvec(2), signal(3f), fork(3f), perror(3f)

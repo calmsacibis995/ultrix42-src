@@ -1,0 +1,105 @@
+.TH getauthuid 3x 
+.SH Name
+getauthuid, getauthent, 
+storeauthent, setauthent, setauthfile, endauthent \- get/set auth entry
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.B #include <auth.h>
+.PP
+.B AUTHORIZATION *getauthuid(\fIuid\fP)
+.B uid_t \fIuid\fP;
+.PP
+.B AUTHORIZATION *getauthent()
+.PP
+.B int storeauthent(\fIauth\fP)
+.B AUTHORIZATION *\fIauth\fP;
+.PP
+.B void setauthent()
+.PP
+.B void setauthfile(\fIpathname\fP)
+.B char *\fIpathname\fP;
+.PP
+.B int endauthent()
+.fi
+.SH Description
+.NXR "getauthuid routine"
+.NXR "getauthent routine"
+.NXR "storeauthent routine"
+.NXR "setauthent routine"
+.NXR "setauthfile routine"
+.NXR "endauthent routine"
+.NXR "auth database (general)" "getting/setting entry"
+.PP
+The
+.PN getauthuid
+function 
+looks up the auth entry for the specified user ID
+and returns a pointer to a static area containing it.
+.PP
+The 
+.PN getauthent
+function 
+retrieves the next sequential entry from the auth database and
+returns a pointer to a static area containing it.
+.PP
+The
+.PN storeauthent
+function stores the specified auth entry into the
+local auth database, overwriting any existing entry with the
+same \fIa_uid\fP field.
+.PP
+The 
+.PN setauthent
+function sets a pointer to the beginning of the auth database.
+This function is used with
+.PN getauthent
+to make multiple passes through the auth database.
+.PP
+The
+.PN setauthfile
+function sets the pathname of the file to be used for the
+local auth database in all subsequent operations.
+.PP
+The
+.PN endauthent
+function closes the auth database.  Subsequent calls to
+getauthuid, getauthent, or storeauthent reopen it.
+.PP
+The auth database can be distributed via the BIND/Hesiod
+naming service.
+.SH Restrictions
+Only the superuser and members of the group
+.I authread
+may read information from the auth database.
+.PP
+Only the superuser may modify the auth database.
+.PP
+The auth database cannot be distributed via the Yellow Pages service.
+.PP
+When the auth database is served by BIND/Hesiod, a program must perform
+its own Kerberos
+initialization prior to using any of these
+functions.
+.PP
+The values returned by 
+.PN getauthent
+and 
+.PN getauthuid
+point to a static area which is overwritten when subsequent calls are made.
+.SH Return Values
+Functions which return a pointer value return the
+null pointer
+(0) on EOF or error.
+Other functions return zero (0) on success and a negative value
+on failure.
+.SH Files
+.PN /etc/auth.[pag,dir]
+.SH See Also
+getpwent(3), auth(5), edauth(8)
+.br
+\fISecurity Guide for Users\fP
+.br
+\fISecurity Guide for Administrators\fP
+.br
+\fIGuide to the BIND/Hesiod Service\fP

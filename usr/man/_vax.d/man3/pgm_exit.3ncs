@@ -1,0 +1,65 @@
+.\"	@(#)pgm_exit.3ncs	8.1 of 9/11/90
+.TH pgm_exit 3ncs
+.SH Name
+pgm_exit \- exit a program
+.SH Syntax
+.nf
+#include <idl/c/base.h>
+#include <idl/c/pfm.h>
+
+void pgm_$exit()
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/sys/ins/base.ins.pas';\fR
+.\"\fB%include '/sys/ins/pgm.ins.pas';\fR [?]
+.\"
+.\"\fBprocedure pgm_$exit;\fR
+.\".DE
+.ig
+.SH Synopsis (fortran)
+.nf
+\fB%include '/sys/ins/base.ins.ftn'\fR
+\fB%include '/sys/ins/pgm.ins.ftn'\fR
+
+	 \fBcall pgm_$exit\fR
+.fi
+..
+.SH Description
+The 
+.PN pgm_$exit
+routine exits from the calling program
+and returns control to the process that invoked it.
+When 
+.PN pgm_$exit
+is called
+any files left open by the program are closed,
+any storage acquired is released,
+and asynchronous faults are reenabled
+if they were inhibited by the calling program.
+.NXR "Program Management" "pgm_exit"
+.PP
+The
+.PN pgm_$exit
+routine always calls 
+.PN pfm_$signal ()
+with a status of 
+.B status_$ok.
+.SH Files
+.PN /usr/include/idl/c/base.h
+.br
+.PN /usr/include/idl/base.idl
+.br
+.PN /usr/include/idl/c/pfm.h
+.SH See Also
+intro(3ncs)
+.\".DM "\
+.\"path syscalls/pgm/pgm_$exit\
+.\"type reference\
+.\"book syscalls\
+.\"chapter pgm\
+.\"section pgm_$exit\
+.\""
+.\".DD "\
+.\"exit(ed)(s)(ing) quit(ed)(s)(ing) from program(s) pgm  pgm_$\
+.\""

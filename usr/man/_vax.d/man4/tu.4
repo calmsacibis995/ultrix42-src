@@ -1,0 +1,65 @@
+.\" SCCSID: @(#)tu.4	8.1	9/11/90
+.TH tu 4 VAX
+.SH Name
+tu \- TM03/TE16/TU45/TU77 magnetic tape interface
+.SH Syntax
+.B "master ht0 at mba? drive ?"
+.br
+.B "tape tu0 at ht0 slave 0"
+.SH Description
+.NXS "ht keyword" "TM03 magnetic tape interface"
+.NXA "TM03 magnetic tape interface" "TU58 console cassette interface"
+.NXS "tu interface" "TM03 magnetic tape interface"
+.NXR "tu interface" "TE16 magnetic tape interface"
+.NXR "tu interface" "TU45 magnetic tape interface"
+.NXR "tu interface" "TU77 magnetic tape interface"
+.NXR "TM03 magnetic tape interface"
+.NXR "TE16 magnetic tape interface"
+.NXR "TU45 magnetic tape interface"
+.NXR "TU77 magnetic tape interface"
+Prior to Version 2.0, this device was referenced by
+.MS ht 4 .
+.PP
+The TM03/transport combination provides a standard tape drive
+interface, as described in
+.MS mtio 4 .
+All drives provide both 800 and 1600 bpi.
+The TE16 runs at 45 ips,
+the TU45 at 75 ips, and the TU77 runs at 125 ips and autoloads tapes.
+.SH Diagnostics
+.B "tu%d: no write ring"
+.br
+An attempt was made to write on the tape drive
+when no write ring was present.
+This message is written on the terminal of
+the user who tried to access the tape.
+.PP
+.B "tu%d: not on line"
+.br
+An attempt was made to access the tape while it
+was off line.
+This message is written on the terminal of the user
+who tried to access the tape.
+.PP
+.B "tu%d: can't switch density in mid-tape"
+.br
+An attempt was made to write on a tape at a different density
+than is already recorded on the tape.
+This message is written on the terminal of the user who tried to switch
+the density.
+.PP
+.B "tu%d: hard error bn%d"
+.br
+A tape error occurred at block \fIbn\fR.
+Any error is fatal on nonraw tape.
+When possible, the driver will have retried
+the operation and failed several times before reporting the error.
+Additional register information can be gathered from the
+system error log file,
+\f(CW/usr/adm/syserr/syserr.\fI<hostname>\fR.
+.SH Files
+.PN /dev/rmt???
+.br
+.PN /dev/nrmt???
+.SH See Also
+mtio(4), nbuf(4), MAKEDEV(8), uerf(8)

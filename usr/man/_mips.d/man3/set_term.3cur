@@ -1,0 +1,29 @@
+.TH set_term 3cur 
+.SH Name
+set_term \- switch between terminals
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+SCREEN \(**set_term(new)
+.br
+.B
+SCREEN \(**new;
+.SH Description
+.NXR "set_term subroutine"
+This routine is used to switch between different terminals.
+The screen reference 
+.PN new
+becomes the new current terminal.
+The previous terminal screen reference is returned by the routine.
+.PP
+This is the only routine which manipulates SCREEN
+pointers; all the others change the current terminal only.
+.SH Return Values
+The
+.PN set_term
+function returns a pointer to the previous SCREEN structure on success and
+a null pointer on error.

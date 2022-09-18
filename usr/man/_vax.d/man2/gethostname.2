@@ -1,0 +1,71 @@
+.\" SCCSID: @(#)gethostname.2	8.1	9/11/90
+.TH gethostname 2
+.SH Name
+gethostname, sethostname \- get or set the name of the current host
+.SH Syntax
+.br
+.B gethostname(\fIname, namelen\fP)
+.br
+.B char *\fIname\fP;
+.br
+.B int \fInamelen\fP;
+.sp
+.br
+.B sethostname(\fIname, namelen\fP)
+.br
+.B char *\fIname\fP;
+.br
+.B int \fInamelen\fP;
+.SH Description
+.NXR "gethostname system call"
+.NXR "sethostname system call"
+.NXR "host name" "getting"
+.NXR "host name" "setting"
+The
+.PN gethostname
+system call
+returns the standard host name for the current processor, as
+previously set by
+.PN sethostname. 
+The 
+.I namelen
+parameter specifies the size of the 
+.I name
+array.  The returned name is null-terminated unless insufficient
+space is provided.
+.PP
+The
+.PN sethostname
+system call
+sets the name of the host machine to be
+.IR name ,
+which has length
+.IR namelen .
+This call is restricted to the superuser and
+is normally used only when the system is bootstrapped.
+.SH Return Values
+.IP " 0" 5
+If the call succeeds, it returns a value of zero.
+.IP \-1
+If the call fails, a value of \-1 is returned and an error code is
+placed in the global location, \fIerrno\fP.
+.SH Restrictions
+Host names are limited to 31 characters and may contain only lower 
+case ASCII characters a to z, numbers 0 to 9, dashes (\-), 
+underscores (_), and periods (.).
+.SH Diagnostics
+The
+.PN gethostname
+system call fails under the following condition:
+.IP [EFAULT] 15
+The \fIname\fP parameter points outside the process's allocated address space. 
+.PP
+The 
+.PN sethostname 
+system call fails under the following conditions:
+.IP [EPERM] 15
+The caller is not the superuser.
+.IP [EINVAL]
+The \fIname\fR or \fInamelen\fR parameter is an invalid address.
+.SH See Also
+hostname(1), gethostid(2)

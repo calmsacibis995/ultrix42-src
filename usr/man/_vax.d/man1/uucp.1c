@@ -1,0 +1,138 @@
+.\" SCCSID: @(#)uucp.1c	8.1	9/11/90
+.TH uucp 1c
+.SH Name
+uucp, uulog, uuname \- unix to unix copy
+.SH Syntax
+.B uucp
+[\|\fIoption...\fR\|] \fIsource-file...  destination-file\fR
+.PP
+.B uulog
+[\|\fIoption...\fR\|]
+.PP
+.B uuname
+[\|\fIoption...\fR\|]
+.SH Description
+.NXA "uucp utility" "uustat program"
+.NXR "uucp utility" 
+The
+.PN uucp
+command copies files named by the source-file arguments
+to the destination-file argument.
+A file name either may be a path name on your machine or 
+may have the form
+.IP
+system-name!pathname
+.PP
+where `system-name' is taken from a list of system names
+which
+.PN uucp
+knows about.
+Shell metacharacters ?*[] appearing in the pathname part
+will be expanded on the appropriate system.
+.PP
+Pathnames may be
+a full pathname,
+a pathname preceded by
+.IR ~user,
+where
+.I user
+is a userid on the specified system
+and is replaced by that user's login directory, or
+anything else prefixed by the current directory.
+.PP
+If the result is an erroneous pathname for the remote system,
+the copy will fail.
+If the destination-file is a directory, the last part of the
+source-file name is used.
+If a simple
+.I ~user
+destination is inaccessible to 
+.PN uucp ,
+data is copied to a spool directory and the user
+is notified by 
+.MS mail 1 .
+.PP
+The
+.PN uucp
+command preserves execute permissions across the transmission
+and gives 0666 read and write permissions.  For further information,
+see 
+.MS chmod 2 .
+.SH Options
+.NXR "uucp utility" "options"
+The following options are interpreted by
+.PN uucp .
+.IP \fB\-d\fR 0.3i
+Creates all necessary directories for the file copy.
+.IP \fB\-c\fR 0.3i
+Uses the source file when copying out rather than
+copying the file to the spool directory.
+.IP \fB\-m\fR 0.3i
+Sends you mail when the copy is complete.
+.IP "\fB\-n\fIrec\fR" 0.3i
+Sends mail to the recipient.
+.IP \fB\-W\fR 0.3i 
+Expands only local files.  
+Normally files names are prepended with the current working directory
+if a full path is not specified.  The \fI\-W\fP tells 
+.PN uucp
+to expand local files only.
+.PP
+The
+.PN uulog
+command prints a summary 
+of 
+.PN uucp
+and
+.PN uux
+transactions that were recorded in the file
+.PN /usr/spool/uucp/LOGFILE .
+.PP
+The options cause 
+.PN uulog 
+to print logging information:
+.IP \fB\-s\fIsys\fP 0.3i
+Displays information about work involving specified system.  
+.IP \fB\-u\fIuser\fP 0.3i
+Displays information about work involving specified
+.I user.
+.PP
+The
+.PN uuname
+command lists the uucp names of known systems.
+.IP \fB\-l\fR 0.3i
+Lists local system name.  
+.SH Warnings
+.NXR(w) "uucp utility" "remote system pathnames and"
+The domain of remotely accessible files can
+(and for obvious security reasons, usually should)
+be severely restricted.
+You will very likely not be able to fetch files
+by pathname.
+Ask a responsible person on the remote system to
+send them to you.
+For the same reasons, you will probably not be able
+to send files to arbitrary pathnames.
+.SH Restrictions
+.NXR "uucp utility" "restricted"
+All files received by
+.PN uucp
+will be owned by uucp.
+.br
+The \-m option will only work sending files or receiving
+a single file.
+(Receiving multiple files specified by special shell
+characters ?*[] will not activate
+the \-m option.)
+.SH Files
+/usr/spool/uucp - spool directory
+.br
+/usr/lib/uucp/* - other data and program files
+.br
+/etc/acucap - shared autodial modem database
+.SH See Also
+mail(1), uux(1c), acucap(5)
+.br
+"Uucp Implementation Description,"
+.I ULTRIX Supplementary Documentation, 
+Vol. III:System Manager

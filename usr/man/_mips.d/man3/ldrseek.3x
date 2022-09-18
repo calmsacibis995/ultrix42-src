@@ -1,0 +1,58 @@
+.TH ldrseek 3x RISC
+.SH Name
+ldrseek, ldnrseek \- seek to relocation entries of a section of a common object file
+.SH Syntax
+.nf
+.ta \w'unsigned\ 'u +\w'short\ \ 'u
+.B #include <stdio.h>
+.B #include <filehdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h> 
+.ft R
+.PP
+.BR "int ldrseek (" "ldptr, sectindx" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR "unsigned short" " sectindx" ;
+.PP
+.BR "int ldnrseek (" "ldptr, sectname" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR "char \(**" sectname ;
+.DT
+.fi
+.SH Description
+The 
+.PN ldrseek
+function seeks to the relocation entries of the section specified by
+.I sectindx
+of the common object file
+currently associated with
+.IR ldptr .
+.PP
+The 
+.PN ldnrseek
+function seeks to the relocation entries of the section specified by
+.IR sectname .
+.PP
+The functions 
+.PN ldrseek
+and
+.PN ldnrseek
+returns success or failure.
+If 
+.I sectindx
+is greater than the number of sections in the object file,
+.PN ldrseek 
+fails;
+if there is no section name corresponding with
+.IR sectname,
+.PN ldnrseek
+fails.
+If the specified section does not have relocation entries or
+if it cannot seek to the specified relocation entries,
+either function fails. 
+.NT
+The first section has an index of
+.IR one .
+.NE
+.SH See Also
+ldclose(3x), ldopen(3x), ldshread(3x), ldfcn(5)

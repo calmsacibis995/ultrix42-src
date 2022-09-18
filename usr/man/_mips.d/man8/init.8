@@ -1,0 +1,247 @@
+.\" SCCSID: @(#)init.8	3.3	8/22/88
+.TH init 8 RISC
+.SH Name
+init \- process control initialization
+.SH Syntax
+.B /bin/init
+[ \fIoptions\fP ]
+.SH Description
+.NXR "init program"
+.NXR "process" "initializing control"
+.NXA "init program" "reboot command"
+The ULTRIX system invokes the
+.PN init
+command as the last step in the boot procedure.
+The system 
+normally then runs the automatic reboot sequence, as described in
+.MS reboot 8 .
+If 
+.PN reboot 
+succeeds, 
+the 
+.PN init
+command
+begins multiuser operation.
+If 
+.PN reboot 
+fails, 
+.PN init
+begins single-user operation by giving
+the superuser a shell on the console.  
+.PP
+You can use the 
+.PN boot 
+command so that parameters are passed
+from the boot program to
+.PN init
+so that multiuser operation begins immediately. 
+When the superuser terminates the single-user
+shell (by pressing CTRL/D),
+.PN init
+runs the
+.PN /etc/rc 
+command file
+without the reboot parameter.
+This command file
+performs housekeeping operations
+such as removing temporary files,
+mounting file systems, and starting
+daemons.
+For further information, see 
+.MS reboot 8 .
+.PP
+In multiuser operation, 
+.PN init
+creates a process for each
+terminal port where a user may log in.
+To begin such operations, it reads the file 
+.PN /etc/ttys .
+For further information, see 
+.MS ttys 5 .
+For each terminal that is marked ``on'' in the 
+.PN ttys
+file, 
+.PN init
+forks and invokes the command specified for the current line. 
+The command is passed the name of the terminal as the
+last argument. 
+The other arguments (if any) are specified after the command
+in the 
+.PN ttys
+file.
+Usually, the command is 
+.MS getty 8 , 
+but it may be any command.
+.PP
+The 
+.PN getty
+command reads the user's name and invokes
+.PN login
+to log in the user and execute the shell.
+.PP
+Ultimately, the shell terminates
+because of an end-of-file.  The end-of-file may be 
+typed explicitly or generated as a result of 
+hanging up on a terminal line.
+The main path of
+.PN init ,
+which has been waiting
+for such an event,
+wakes up and removes the appropriate entry from the
+file
+.PN utmp ,
+which records current users.  The
+.PN init 
+command then makes an entry in 
+.PN /usr/adm/wtmp ,
+which maintains a history
+of logins and logouts.
+The
+.PN wtmp
+entry is made only if a user logged in successfully on the line.
+Then the appropriate terminal is reopened and
+.PN getty
+is
+reinvoked.
+.PP
+The
+.PN init
+command
+catches the
+.PN hangup
+signal (signal SIGHUP) and interprets it to mean that
+the file 
+.PN /etc/ttys 
+should be read again.
+The shell process on each line which used to be active
+in
+.PN ttys
+but is no longer there is terminated;
+a new process is created for each added line;
+lines unchanged in the file are undisturbed.
+Thus it is possible to drop or add phone lines without
+rebooting the system by changing the
+.PN ttys
+file and sending a
+.PN hangup
+signal to the
+.PN init
+process, using 
+.BR "kill \-HUP 1" .
+.PP
+The
+.PN init
+command
+terminates multiuser operations and resumes single-user mode
+if it receives a terminate (TERM) signal.  That is, the
+superuser types 
+.BR "kill \-TERM 1" .
+If there are processes outstanding which are deadlocked (due to
+hardware or software failure),
+.PN init
+does not wait for them all to die, but
+times out after 30 seconds and prints a warning message.
+.PP
+If 
+.PN init
+receives a terminal stop signal (the superuser types
+.BR "kill \-TSTP 1" ),
+.PN init
+stops creating new processes
+and lets the system slowly die away. 
+A later hangup will resume full
+multiuser operations, or a terminate will initiate a single user shell.
+This feature is used by 
+.MS reboot 8 
+and 
+.MS halt 8 .
+.PP
+If
+.PN init
+dies, the system will reboot itself
+automatically.
+If, at bootstrap time, the
+.PN init
+process cannot be located, the system will loop in user mode at location
+0x13.
+.SH Options
+.TP 5
+\fB\-a\fP
+Specifies that the system should autoreboot to multiuser mode.
+This option is similar to specifying
+.PN auto
+to the console prompt or specifying either
+.PN shutdown
+with the \fB\-r\fP option or
+.PN reboot
+from the command line.
+.TP 5
+\fB\-s\fP
+Specifies that the system should boot to single-user mode.
+.SH Diagnostics
+.NXR "init program" "diagnostics"
+.B "WARNING: Something is hung (wont die); ps axl advised"
+.br
+The system is shutting down and
+.PN init
+cannot kill a certain process. 
+This usually occurs when a process
+cannot exit a device driver
+due to a persistent device error condition.
+.PP
+.B "init: \fI`command  tty'\fB failing, sleeping."
+.br
+The
+.PN init
+command
+tried to spawn a new process 
+(use the 
+.MS execve 2 
+system call)
+for the \fIcommand\fR five times.  Each time, the \fIcommand\fR 
+failed.  This may indicate that the \fIcommand\fR was invoked with
+invalid arguments.  Check the 
+.PN /etc/ttys 
+file for errors.
+This error message is printed at 
+.MS syslog 3 
+level LOG_ERR.
+.PP
+.B "init: exec failed: cmd=\fI  command reason"
+.br
+The
+.PN init
+command
+tried to spawn a new process
+using the 
+.MS execve 2 
+system call for the \fIcommand\fR.  The 
+.PN execve 
+failed.  The
+\fIreason\fR is the explanation produced by the 
+.MS perror 3  
+routine for why the 
+.PN execve
+failed.
+This error message is printed at 
+.MS syslog 3 
+level LOG_ERR.
+.SH Files
+.TP 17
+.PN /etc/utmp 
+Lists current system users
+.TP 
+.PN /usr/adm/wtmp 
+History of logins and logouts
+.TP 
+.PN /etc/ttys 
+The
+.PN init
+command reads this file for a command to execute for
+the terminal line
+.TP 
+.PN /etc/rc 
+Command file executed by
+.PN init
+.SH See Also
+ttys(5), getty(8), rc(8), reboot(8)

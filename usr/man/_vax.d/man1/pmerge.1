@@ -1,0 +1,35 @@
+.\" SCCSID: @(#)pmerge.1	8.1	9/11/90
+.TH pmerge 1 VAX
+.SH Name
+pmerge \- pascal file merger
+.SH Syntax
+.B pmerge
+\fIname.p...\fR
+.SH Description
+.NXR "pmerge command"
+.NXA "pc compiler" "pmerge command"
+.NXA "pi code translator" "pmerge command"
+.NXR "Pascal program" "merging compiled modules"
+The
+.PN pmerge
+command
+assembles the named Pascal files into a single standard Pascal program.
+The resulting program is listed on the standard output.
+It is intended to be used to merge a collection of separately compiled
+modules so that they can be run through 
+.PN pi ,
+or exported to other sites.
+.SH Restrictions
+Very minimal error checking is done,
+so incorrect programs will produce unpredictable results.
+Block comments should be placed after the keyword to which they refer
+or they are likely to end up in bizarre places.
+.SH Files
+.ta 1.5i
+/usr/tmp/MG\(**	default temporary files
+.br
+.SH See Also
+pc(1), pi(1),
+.br
+"Berkeley Pascal User's Manual,"
+\fISupplementary Documents, Volume 2: Programmer\fP

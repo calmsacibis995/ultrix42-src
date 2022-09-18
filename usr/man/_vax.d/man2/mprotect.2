@@ -1,0 +1,124 @@
+.\" SCCSID: @(#)mprotect.2	8.1	9/11/90
+.TH mprotect 2
+.\" Created by depp -- 14 Mar 86
+.\"
+.SH Name
+mprotect \- memory protection control
+.SH Syntax
+.nf
+.ft B
+#include <sys/mman.h>
+#include <sys/types.h>
+.PP
+.ft B
+int mprotect (addr, len, prot)
+caddr_t addr;
+int len, prot;
+.fi
+.SH Description
+.NXR "mprotect system call"
+.NXR "data memory" "changing protection"
+The
+.PN mprotect
+system call
+changes the protection of portions of
+an application program's data memory.
+Protection is performed on page cluster boundaries.
+The default protection for data memory on process invocation is user
+READ/WRITE.
+The
+.I addr
+argument is the beginning address
+of the data block and must fall on a page cluster
+boundary.
+.PP
+The 
+.I len
+argument is the length of the data block, in bytes.
+The length of the block is rounded up to a cluster boundary, and the 
+size of the block to be protected is returned.
+.PP
+The
+.I prot
+argument is the requested protection for the block of memory.
+Protection values affect only the user process.
+Protection values are defined in <mman.h> as:
+.EX 0
+/* protections are chosen from these bits, ORed together */
+#define PROT_READ       0x1     /* pages can be read */
+#define PROT_WRITE      0x2     /* pages can be written */
+#define PROT_EXEC       0x4     /* pages can be executed */
+.EE
+Setting the
+.I prot
+argument to zero (0)
+indicates that the process cannot reference the memory
+block, without causing a fault.
+.PP
+A protected page faults if the protection is violated, and a SIGBUS
+signal is issued.
+If the process has a handler defined for the SIGBUS signal, the 
+.I code
+parameter, described in 
+.MS sigvec 2
+and
+.MS signal 3 ,
+is used to pass in the virtual address that faulted.
+.SH Restrictions
+The page cluster size may change in future versions of ULTRIX. 
+As a result, 
+.PN getpagesize 
+should be used to determine the correct
+.I len
+argument, and 
+.PN sbrk 
+or
+.PN malloc 
+should be used to determine the correct
+.I addr
+argument.
+.PP
+If the user handles a SIGBUS signal, the signal handler must either
+abort the process or correct the condition that caused the protection 
+fault (SIGBUS).
+If some corrective action is not taken, an infinite loop results
+because the faulting instruction is restarted.
+If the user permits the default SIGBUS handler to be used, the process
+aborts if a referenced page causes a fault.
+.PP
+The VAX architecture makes the following implications;
+PROT_WRITE implies
+(PROT_WRITE | PROT_READ | PROT_EXEC), and PROT_READ implies
+(PROT_READ | PROT_EXEC).
+.PP
+Only the application can change the 
+.PN mprotect
+call's 
+private data space.  This means that attempts to change text, shared 
+memory, or stack space causes a EACCES failure.
+.SH Return Values
+Upon successful completion,
+the size of the protected memory block, in bytes,
+is returned.
+Otherwise, a value of \-1 is returned and 
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+The
+.PN mprotect
+call fails under the following conditions:
+.TP 15
+[EALIGN]
+The
+.I addr
+argument is not on a cluster boundary.
+.TP 15
+[EINVAL]
+The
+.I prot
+argument is not a valid protection mask.
+.TP 15
+[EACCES]
+The memory block is not fully contained within private data space.
+.SH See Also
+getpagesize(2), sbrk(2), sigvec(2), malloc(3), signal(3)

@@ -1,0 +1,191 @@
+.\" SCCSID: @(#)fopen.3s	8.1	9/11/90
+.TH fopen 3s 
+.SH Name
+fopen, freopen, fdopen \- open a stream
+.SH Syntax
+.B #include <stdio.h>
+.PP
+.B FILE
+.B \(**\fIfopen (filename, type\fP)
+.br
+.B char \(**\fIfilename, \(**type\fP;
+.PP
+.B FILE
+.B \(**\fIfreopen (filename, type, stream\fP)
+.br
+.B char \(**\fIfilename, \(**type\fP;
+.br
+.B FILE
+.B \(**\fIstream\fP;
+.PP
+.B FILE
+.B \(**\fIfdopen (fildes, type\fP)
+.br
+.B int \fIfildes\fP;
+.br
+.B char \(**\fItype\fP;
+.SH Description
+.NXR "fopen subroutine"
+.NXR "freopen subroutine"
+.NXR "fdopen subroutine" 
+.NXR "stream" "opening"
+The
+.PN fopen
+routine opens the file named by
+.I filename\^
+and associates a
+.I stream\^
+with it.
+The
+.PN fopen
+routine 
+returns a pointer to the FILE structure associated with
+the
+.IR stream .
+.PP
+The
+.I filename\^
+points to a character string that contains
+the name of the file to be opened.
+.PP
+The
+.I type\^
+is a character string having one of the following values:
+.RS 3
+.TP 10
+"r"
+Open for reading
+.ns
+.TP 10
+"w"
+Truncate or create for writing
+.ns
+.TP 10
+"a"
+Append; open for writing at end
+of file, or create for writing
+.ns
+.TP 10
+"A"
+Append with no overwrite; open for writing
+at end-of-file, or create for writing
+.ns
+.TP 10
+"r+"
+Open for reading and writing
+.ns
+.TP 10
+"w+"
+Truncate or create for reading and writing
+.ns
+.TP 10
+"a+"
+Append; open or create for reading and writing at end-of-file
+.ns
+.TP 10
+"A+"
+Append with no overwrite, open or create for 
+update at end-of-file
+.RE
+.PP
+The letter "b" can also follow r, w, or a. In some C implementations, 
+the "b" is needed to indicate a binary file, however, 
+it is not needed in ULTRIX.  If "+" is used, the "b" may occur 
+on either side, as in "rb+" or "w+b".
+.PP
+The
+.PN freopen
+routine substitutes the named file in place
+of the open
+.IR stream .
+The original
+.I stream\^
+is closed,
+regardless of whether the open
+ultimately succeeds.
+The
+.PN freopen
+routine returns a pointer to the FILE
+structure associated with
+.IR stream .
+.PP
+The
+.PN freopen
+routine is typically used to attach the preopened
+.I streams\^
+associated with
+.BR stdin ,
+.B stdout
+and
+.BR stderr
+to other files.
+.PP
+The
+.PN fdopen
+routine associates a
+.I stream\^
+with a file descriptor.
+File descriptors are obtained from
+.PN open ,
+.PN dup ,
+.PN creat ,
+or
+.MS pipe 2 ,
+which open files but do not return pointers to a FILE 
+structure 
+.I stream\^.
+Streams are necessary input for many of the Section 3s library routines.
+The
+.I type\^
+of
+.I stream\^
+must agree with the mode of the open file.
+.PP
+When a file is opened for update, both input and output may be
+done on the resulting
+.IR stream .
+However, output may not be directly followed by input without an
+intervening
+.PN fseek
+or
+.PN rewind ,
+and input may not be directly followed by output without an
+intervening
+.PN fseek ,
+.PN rewind ,
+or an input operation which encounters end-of-file.
+.PP
+When a file is opened for append with no overwrite (that is when type is "A" or
+"A+"), it is impossible to overwrite information
+already in the file.
+The
+.PN fseek
+routine
+may be used to reposition the file pointer to any position
+in the file, but when output is written
+to the file, the current file pointer is disregarded.
+All output is written at the end of the file and causes the file
+pointer to be repositioned at the end of the output.  If two separate
+processes open the same file for append, each process may write freely
+to the file without fear of destroying output being written by the
+other.  The output from the two processes will be intermixed in the
+file in the order in which it is written.
+.SH Return Values
+The
+.PN fopen
+and 
+.PN freopen
+routines return a NULL
+pointer on failure.
+.SH Environment
+.NXR "fopen subroutine" "System V and"
+.SS SYSTEM_V
+When your program is compiled using the System V environment,
+append with no overwrite
+is specified by using the "a" or "a+" type string, and the
+"A" and "A+" type strings are not allowed.
+.SS POSIX
+In the POSIX environment, the "a" and "a+" strings, and the
+"A" and "A+" strings specify append with no overwrite.
+.SH See Also
+creat(2), dup(2), open(2), pipe(2), fclose(3s), fseek(3s).

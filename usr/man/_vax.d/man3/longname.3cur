@@ -1,0 +1,35 @@
+.TH longname 3cur 
+.SH Name
+longname \- return full terminal type name
+.SH Syntax
+.br
+.B
+char \(**longname(\|)
+.SH Description
+.NXR "longname subroutine"
+This routine returns a pointer to a static area containing
+a verbose description of the current terminal.
+The maximum length of a verbose description is 128 characters.
+It is defined only after the call to 
+the
+.PN initscr 
+routine or the
+.PN newterm
+routine.
+.PP
+The static area is overwritten by each call to 
+.PN newterm 
+and is not restored by 
+.PN set_term .
+The value should be saved between calls to 
+.PN newterm 
+if 
+.PN longname
+is going to be used with multiple terminals.
+.SH Return Values
+The
+.PN longname 
+function returns a pointer to a verbose description of the current terminal
+on success and the null pointer on error.
+.SH See Also
+initscr(3cur), newterm(3cur), set_term(3cur)

@@ -1,0 +1,162 @@
+.TH scanf 3int
+.SH Name 
+scanf, fscanf, sscanf \- convert formatted input
+.SH Syntax 
+.B #include <stdio.h>
+.PP
+.B int scanf(
+.I format
+[,
+.I pointer
+] ...
+.B )
+.br
+.B char 
+.IR *format ;
+.PP
+.B int fscanf(
+.IR stream ,
+.I format
+[,
+.I pointer
+] ...
+.B )
+.br
+.B FILE 
+.IR *stream ;
+.br
+.B char
+.IR *format ;
+.PP
+.B int sscanf(
+.IR s ,
+.I format
+[, 
+.I pointer
+] ...
+.B )
+.br
+.B char
+.IR *s , 
+.IR *format ;
+.SH Description 
+.NXR "scanf subroutine"
+.NXR "fscanf subroutine"
+.NXR "sscanf subroutine"
+.NXR "scanf subroutine" "conversion specification list"
+The international functions
+.PN scanf ,
+.PN fscanf ,
+and
+.PN sscanf 
+are similar to the
+.PN scanf
+standard I/O functions. The difference is that the international
+functions allow you to use the 
+.I %digit$
+conversion character in place of the 
+.I I%
+character you use in the standard I/O functions. The 
+.I digit
+is a decimal digit
+.I n 
+from 1 to 9.  The international functions apply conversions to the 
+.I n
+th argument in the argument list, rather than to the next unused
+argument.
+.PP
+You can use 
+.I %
+conversion character in the international functions.  However, you cannot
+mix the 
+.I %
+conversion character with the
+.I %digit$
+conversion character in a single call.
+.PP
+In all cases,
+.PN scanf
+uses the radix character and collating sequence that is defined by the
+last successful call to
+.PN setlocale
+category
+.PN LC_NUMERIC 
+or 
+.PN LC_COLLATE .
+If the radix or collating sequence
+is undefined, the
+.PN scanf
+function uses the C locale definitions.
+.SS International Environment
+.IP LC_COLLATE 15
+Contains the user requirements for language, territory, and codeset for
+the character collation format. 
+.PN LC_COLLATE
+affects the behavior of regular expressions and the string collation functions
+in 
+.PN scanf .
+If 
+.PN LC_COLLATE
+is not defined in the current environment,
+.PN LANG
+provides the necessary default.
+.IP LC_NUMERIC 15
+If this environment is set and valid, 
+.PN scanf
+uses the international language database named in the definition to
+determine radix character rules.
+.IP LANG 15
+If this environment variable is set and valid 
+.PN scanf
+uses the international language database named in the definition to
+determine collation and character classification rules.  If
+.PN LC_NUMERIC
+or
+.PN LC_COLLATE 
+is defined,  their definitions supersede the definition of
+LANG.
+.SH Examples 
+The following shows an example of using the
+.PN scanf
+function:
+.EX
+scanf("%2$s %1$d", integer, string)
+.EE
+If the input is `` january 9 '', the
+.PN scanf
+function assigns 9 to 
+.PN integer 
+and ``january'' to 
+.PN string .
+.SH Return Values 
+The
+.PN scanf
+function returns the number of successfully matched
+and assigned input fields.  This number can be zero if the 
+.PN scanf
+function encounters invalid input characters, as specified by the
+conversion specification, before it can assign input characters.
+.PP
+If the input ends before the first conflict or conversion,
+.PN scanf
+returns EOF.
+These functions return EOF on end of input and a short count for missing or 
+invalid data items.
+.SH Environment
+In POSIX mode, the
+.BR E ,
+.BR F ,
+and
+.B X
+formats are treated the same as the
+.BR e ,
+.BR f ,
+and
+.B x
+formats, respectively; otherwise, the upper-case formats expect double, 
+double, and long arguments, respectively.
+.SH See Also 
+intro(3int), setlocale(3), strtod(3), strtol(3), printf(3int), getc(3s), 
+printf(3s), scanf(3s) 
+.br
+.I Guide to Developing International Software

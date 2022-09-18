@@ -1,0 +1,306 @@
+.\" SCCSID: @(#)semop.2	8.1	9/11/90
+.TH semop 2
+.SH Name
+semop \- semaphore operations
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.B #include <sys/ipc.h>
+.B #include <sys/sem.h>
+.PP
+.B int semop (\fIsemid, sops, nsops\fP)
+.B int \fIsemid\fP;
+.B struct sembuf *\fIsops[]\fP;
+.B int \fInsops\fP;
+.fi
+.SH Description
+.NXB "semop system call"
+.NXB "semaphore" "operations"
+.NXA "semop system call" "semctl system call"
+.NXA "semop system call" "semget system call"
+The
+.PN semop
+system call
+is used to atomically perform an
+array of semaphore operations on the set of
+semaphores associated with the semaphore identifier specified by 
+.PN semid .
+The
+.I sops
+is a pointer to the array of semaphore-operation structures.
+The
+.I nsops
+is the number of such structures in the array.
+The contents of each structure
+includes the following members:
+.EX
+short	sem_num;	/* semaphore number */
+short	sem_op;	/* semaphore operation */
+short	sem_flg;	/* operation flags */
+.EE
+.PP
+Each semaphore operation specified by
+.I sem_op
+is performed on the corresponding semaphore specified by
+.PN semid
+and
+.IR sem_num .
+.PP
+The
+.I sem_op
+specifies one of three semaphore operations as follows:
+.PP
+.B 1.
+If
+.I sem_op
+is a negative integer, one of the following occurs: 
+.IP \(bu 4
+If 
+.I semval
+is greater than or equal to the absolute value of
+.I sem_op,
+the absolute value of
+.I sem_op
+is subtracted from 
+.I semval.  
+For further information, see 
+.MS intro 2 .
+Also, if 
+.RI ( sem_flg
+& SEM_UNDO)
+is true, the absolute value of
+.I sem_op
+is added to the calling process's 
+.I semadj 
+value for the specified semaphore.
+For further information, see 
+.MS exit 2 .
+.IP \(bu
+If 
+.I semval
+is less than the absolute value of
+.I sem_op
+and 
+.RI ( sem_flg
+& IPC_NOWAIT)
+is true, 
+.PN semop
+returns immediately.
+.IP \(bu
+If 
+.I semval
+is less than the absolute value of
+.I sem_op
+and 
+.IR ( sem_flg
+& IPC_NOWAIT )
+is false, 
+.PN semop
+increments the 
+.I semncnt 
+associated with the specified semaphore and
+suspend execution of the calling
+process until one of the following occurs:
+.IP \(bu
+If the
+.I semval
+becomes greater than
+or equal to the absolute value of 
+.I sem_op.
+When this occurs, the value of
+semncnt associated with the specified
+semaphore is decremented, the absolute value of 
+.I sem_op
+is subtracted from 
+.I semval,
+and if 
+.RI ( sem_flg
+& SEM_UNDO)
+is true, the absolute value of
+.I sem_op
+is added to the calling process's
+.I semadj 
+value for the specified semaphore.
+.IP
+The 
+.PN semid
+for which the calling
+process is awaiting action is removed
+from the system.  For further information, see
+.MS semctl 2 .
+When this occurs, 
+.I errno
+is set equal to EIDRM, and a value of \-1 is returned.
+.PP
+The calling process receives a signal
+that is to be caught.  When this occurs,
+the value of 
+.I semncnt 
+associated with the specified semaphore is decremented,
+and the calling process resumes execution
+in the manner prescribed in 
+.MS signal 3 .
+.PP
+.B 2.
+If
+.I sem_op
+is a positive integer, the value of 
+.I sem_op
+is added to 
+.I semval
+and, if 
+.RI ( sem_flg
+& SEM_UNDO)
+is true, the value of 
+.I sem_op
+is subtracted from the calling process's 
+.I semadj 
+value for the specified semaphore. 
+.PP
+.B 3.
+If
+.I sem_op 
+is zero, one of the following occurs:
+.IP \(bu 4
+If 
+.I semval
+is zero,
+.PN semop
+returns immediately.
+.IP \(bu
+If 
+.I semval
+is not equal to zero and 
+.RI ( sem_flg
+& IPC_NOWAIT)
+is true,
+.PN semop
+returns immediately.
+.IP \(bu
+If 
+.I semval
+is not equal to zero and 
+.RI ( sem_flg
+& IPC_NOWAIT)
+is false, 
+.PN semop
+increments the 
+.I semzcnt 
+associated with the specified semaphore and suspend
+execution of the calling process, until
+one of the following occurs:
+.IP
+The
+.I semval
+became zero, at which time
+the value of 
+.I semzcnt 
+associated with the specified semaphore is decremented.
+.IP
+The 
+.PN semid
+for which the calling process
+is awaiting action is removed from the
+system.  When this occurs,
+.I errno
+is set equal to EIDRM, and a value of \-1 is returned.
+.PP
+The calling process receives a signal
+that is to be caught.  When this occurs,
+the value of 
+.I semzcnt
+associated with
+the specified semaphore is decremented,
+and the calling process resumes execution
+in the manner prescribed in 
+.MS signal 3 .
+.RE
+.PP
+Upon successful completion, the value of 
+.I sempid 
+for each semaphore
+specified in the array pointed to by
+.I sops
+is set equal to the process ID of the calling process.
+.SH Return Values
+Upon successful completion, a value of 0 is returned.
+Otherwise, a value of \-1 is returned, and 
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+.NXR "semop system call" "diagnostics"
+The
+.PN semop
+fails if any of the following is true for any of the
+semaphore operations specified by 
+.IR sops:
+.TP 15
+[EINVAL]
+The
+.I sempid
+is not a valid semaphore identifier. 
+.TP 15
+[EFBIG]
+The
+.I sem_num
+is less than zero or greater than or
+equal to the number of semaphores
+in the set associated with
+.PN semid .
+.TP 15
+[E2BIG]
+The
+.I nsops
+is greater than the system-imposed maximum. 
+.TP 15
+[EACCESS]
+Operation permission is denied to the calling process.
+For further information, see 
+.MS errno 2 . 
+.TP 15
+[EAGAIN]
+The operation would result in suspension of the calling process, but 
+.RI ( sem_flg
+&
+IPC_NOWAIT)
+is true. 
+.TP 15
+[ENOSPC]
+The limit on the number of individual processes requesting an 
+SEM_UNDO
+would be exceeded. 
+.TP 15
+[EINVAL]
+The number of individual semaphores
+for which the calling process request a
+SEM_UNDO
+would exceed the limit. 
+.TP 15
+[ERANGE]
+An operation would cause a 
+.I semval
+to overflow the system-imposed limit.
+.TP 15
+[ERANGE]
+An operation would cause a 
+.I semadj 
+value to overflow the system-imposed limit. 
+.TP 15
+[EFAULT]
+The
+.I sops
+points to an illegal address. 
+.TP 15
+[EINTR]
+The
+.PN semop
+returns due to the receipt of a signal.
+.TP
+[EIDRM]
+The
+.PN semid
+has been removed from the system.
+.SH See Also
+execve(2), exit(2), fork(2), semctl(2), semget(2), signal(3)
+.NXE "semop system call"
+.NXE "semaphore" "operations"

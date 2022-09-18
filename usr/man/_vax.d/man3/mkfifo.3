@@ -1,0 +1,106 @@
+.\" SCCSID: @(#)mkfifo.3	3.1	11/23/87
+.TH mkfifo 3
+.SH Name
+mkfifo \- make a FIFO special file 
+.SH Syntax
+.nf
+.ft B
+#include <sys/types.h>
+#include <sys/stat.h>
+int mkfifo(path, mode)
+char *path;
+mode_t mode;
+.fi
+.ft R
+.SH Description
+.NXR "mkfifo function"
+.NXR "special file" "creating"
+The 
+.PN mkfifo
+function  creates a new FIFO special file
+whose name is
+.I path.
+The file permission bits of the new FIFO 
+are initialized from
+.IR mode, 
+where the value of 
+.I mode,
+is one (or more) of the file permission bits defined in <sys/stat.h>.
+The 
+.IR mode
+argument is modified by the process's file creation mask (see 
+.MS umask 1 ).
+.PP
+The FIFO's owner ID is set to the process's effective
+user ID.  The FIFO's group ID is set to the 
+process's effective group ID.
+.SH Return Values
+Upon successful completion, a value of 0 is returned.  
+Otherwise, a value of \-1 is returned and \fIerrno\fP
+is set to indicate the error.
+.SH Diagnostics
+The
+.PN mkfifo
+function will fail and the FIFO will not be created if:
+.TP 15
+[EACCES]
+A component of the path prefix denies search permission.
+.TP 15
+[EEXIST]
+The named file exists.
+.TP 15
+[ENAMETOOLONG]
+A component of a pathname exceeded 255 characters, or an entire
+pathname exceeded 1023 characters.
+.TP 15
+[ENOTDIR]
+A component of the path prefix is not a directory.
+.TP 15
+[ENOENT]
+A component of the path prefix does not exist or the \fIpath\fP
+argument points to an empty string.
+.TP 15
+[EROFS]
+The named file resides on a read-only file system.
+.TP 15
+[EFAULT]
+.I Path
+points outside the process's allocated address space.
+.TP 15
+[ELOOP]
+Too many symbolic links were encountered in translating the pathname.
+.TP 15
+[EIO]
+An I/O error occurred while making the directory entry.
+.TP 15
+[ENOSPC]
+The directory in which the entry for the new FIFO is being placed
+cannot be extended because there is no space left on the
+file system.
+.TP 15
+[ENOSPC]
+There are no free inodes on the file system on which
+the node is being created.
+.TP 15
+[EDQUOT]
+The directory in which the entry for the new FIFO is being
+placed cannot be extended because the user's quota of disk
+blocks on the file system containing the directory has been
+exhausted.
+.TP 15
+[EDQUOT]
+The user's quota of inodes on the file system on which the
+FIFO is being created has been exhausted.
+.TP 15
+[ESTALE]
+The file handle given in the argument is invalid.  The
+file referred to by that file handle no longer exists
+or has been revoked.
+.TP
+[ETIMEDOUT]
+A connect request or remote file operation failed
+because the connected party
+did not properly respond after a period
+of time which is dependent on the communications protocol.
+.SH See Also
+mknod(1), umask(1)

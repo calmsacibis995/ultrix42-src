@@ -1,0 +1,104 @@
+%!PSAdobe-1.0 
+%%Title: LPS$$TRAILPAGE.PS
+% COPYRIGHT (c) DEC 1986, 1987, 1988  ALL RIGHTS RESERVED
+%%Creation Date: 16-Jun-1986
+%%Bounding Box: 0 0 612 792
+/lps$enter-standard-state where
+{ pop lps$enter-standard-state }
+{ save /PageSave exch def }
+ifelse
+statusdict begin newsheet end
+/traildict 120 dict def traildict begin  
+% generally used defs
+/inch {72 mul} def /lmarg 0.75 inch def /rmarg 7.75 inch def /tab1 2.0 inch def
+/windent rmarg tab1 sub def /bold /Helvetica-Bold findfont def
+/medium1 10 def /medium2 12 def /big1 18 def /bigger 26 def
+/huge 34 def /border 5 def
+/bold /Helvetica-Bold findfont def  /plain /Helvetica findfont def
+/pf10 plain medium1 scalefont  def
+/bf12 bold medium2 scalefont  def  /bf18 bold big1 scalefont  def 
+/bf26 bold bigger scalefont  def  /bf34 bold huge scalefont  def
+/center { dup stringwidth pop 2 div 4.25 inch exch sub ypos moveto} bind def  
+/nextline { /ypos ypos fontheight 1.3 mul sub def } bind  def
+/downalittle {/ypos ypos 0.3 inch sub def} def
+/join2str {/str2 exch def /str1 exch def str1 length str2 length add string 
+  /newstring exch def str1 newstring copy pop /index str1 length def
+  newstring index str2 putinterval newstring } def 
+/chop { /width_to_fit exch def /text exch def /print_proc exch def
+  /index 0 def /stringlength text length def /do_a_line { text prevchar 
+index prevchar sub getinterval print_proc /prevchar index def /accum 0 def } def
+  /do_many_lines {/prevchar 0 def /accum 0 def {text index 1 getinterval 
+   stringwidth pop accum add /accum exch def accum width_to_fit gt {do_a_line}
+   if /index index 1 add def  index stringlength eq {exit} if } loop
+   text prevchar stringlength prevchar sub getinterval print_proc } def 
+  text stringwidth pop width_to_fit gt {do_many_lines} {text print_proc} ifelse
+ } def 
+/get_marg { sfact mul sub } def                                            
+/sfonts {   /srnd { sfact mul round sfact div } def
+  /medium1 medium1 srnd def /medium2 medium2 srnd
+  def /big1 big1 srnd def /bigger bigger srnd def /huge huge srnd def } def 
+/difpage { clippath pathbbox /ury exch def /urx exch def /lly exch def 
+  /llx exch def urx llx sub 612 div  dup ury lly sub 792 div dup 3 1 roll ge 
+  { exch pop} {pop} ifelse   dup 1.0 dup 3 1 roll ge { exch pop } {pop} ifelse 
+  /sfact exch def   ury lly sub 792 get_marg /upy exch def urx llx sub 612 
+  get_marg 2 div /overx exch def overx upy translate sfact dup scale     
+  sfact 1.0 ne {sfonts} if } def % difpage
+% individual components of page
+/do_jobnumber { /bigjob {bf34 setfont /fontheight huge def 0.6 setgray jobstr
+  nextline center show 0 setgray downalittle } def
+   /smalljob {bf26 setfont /fontheight bigger def jobstr nextline center show 
+   nextline} def  (JOB ) the_jobnumber join2str /jobstr exch def
+   jfswitch   (JOB) eq {bigjob} {smalljob} ifelse } def
+/do_jfname { jfswitch (FILE) eq {0.6 setgray} if bf26 setfont /fontheight bigger def
+   {xpos ypos moveto center show nextline} the_jfname rmarg lmarg  sub chop
+   0 currentgray ne {0 setgray} if } def
+/do_value { { tab1 ypos moveto show nextline} value windent chop } def
+/do_item { value () ne { lmarg ypos moveto label show do_value} if } def 
+/do_sectionb { bf12 setfont  /fontheight medium2 def
+  /resety { the_filespec stringwidth pop  windent  div ceiling
+   4 lt {/ypos 5.4 inch def} {/ypos 5.9 inch def} ifelse } def 
+the_filespec () eq {/ypos 4.9 inch def} {resety} ifelse the_account (Account:) 
+the_uic (Owner UIC:) tmodified (Last modified:) the_filespec  (File:) 
+1 1 4 {pop  /label exch def /value exch def do_item } for downalittle } def 
+/do_sectionc {pf10 setfont /fontheight medium1 def 
+jfswitch (FILE) eq { /tdatestart () def /tdatedone () def } if 
+tdatedone (Finished:) tdatestart (Started:) tprintnode (Printer node:) 
+the_printq (Printer queue:) tdatesubmit (Submitted:) the_submitq 
+(Submit queue:) the_priority (Priority:) tlongrec () eq 
+{/recstring tlongrec def} {/recstring tlongrec (1) eq {tlongrec ( byte)} 
+   {tlongrec ( bytes)} ifelse 
+ join2str def} ifelse t_filelen () eq {/filelen_str t_filelen def}
+ {/filelen_str  t_filelen (1) eq {t_filelen ( block)} {t_filelen ( blocks)} 
+    ifelse join2str def} ifelse
+ recstring   (Longest record:)  filelen_str    (Length:) 
+ 1 1 9 { pop /label exch def /value exch def do_item} for nextline } def 
+/do_sectiond { t_accntng (Sheets printed:) tparams (Parameters:) tquals  
+(Qualifiers:) 1 1 3 {pop  /label exch def /value exch def  do_item } for } def
+/do_trailerpage { /ypos 10.0 inch def %
+0.6 setgray bf26 setfont /fontheight bigger def lmarg ypos moveto
+   (END OF ) jfswitch join2str center show nextline 0 setgray %
+bf26 setfont /xpos lmarg def /fontheight bigger def the_clientuser 
+( ) search { 3 1 roll pop pop} if  center  show %
+downalittle do_jobnumber  downalittle  do_jfname 
+do_sectionb do_sectionc do_sectiond
+bf12 setfont lmarg 1.0 inch moveto (Digital Equipment Corporation) show nextline
+bf18 setfont lmarg 0.7 inch moveto (VAX/VMS Version ) show  tvmsvers show %
+statusdict begin product end dup rmarg exch stringwidth pop sub  0.7 inch 
+  moveto show %
+showpage
+} def %do_trail
+%%End trailpage defs, start execution
+/jfswitch exch def /the_clientuser exch def /the_jobnumber exch def
+/the_jfname exch def /the_filespec exch def /tmodified exch def 
+/the_uic exch def /the_account exch def /t_filelen exch def /tlongrec exch def
+/the_priority exch def /the_submitq exch def /tdatesubmit exch def 
+/the_printq exch def /tprintnode exch def /tdatestart exch def 
+/tdatedone exch def /tquals exch def /tparams exch def /t_accntng exch def
+/tvmsvers exch def %end pops 
+statusdict begin papersize end pop (lettertray) ne {difpage} if
+do_trailerpage end 
+statusdict begin newsheet end
+/lps$exit-standard-state where
+{ pop lps$exit-standard-state }
+{ PageSave restore } ifelse
+%%End of file lps$$trailpage             

@@ -1,0 +1,89 @@
+.TH rmm 1mh
+.SH Name
+rmm \- remove messages
+.SH Syntax
+.B rmm
+[
+.I +folder
+] [
+.I msgs
+] [
+.B \-help
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "rmm command"
+The 
+.PN rmm
+command deletes the current message from the current folder.  
+.PP
+You can specify messages and folders other than the current ones by using the 
+.I +folder
+and
+.I msgs
+arguments.
+.PP
+The current message is not changed by 
+.PN rmm ,
+so a 
+.PN next
+will advance to the next message in the folder as expected.
+.PP
+If you have defined a component \f(CWrmmproc:\fR in your
+.PN \&.mh_profile
+file, then instead of simply renaming the message file,
+.PN rmm
+will call the named program to delete the file.
+.PP
+The
+.PN rmm 
+command removes messages by renaming the message files 
+with a preceding comma.  
+Many sites consider files that start with a 
+comma to be a temporary backup, and arrange for 
+.MS cron 8 
+to remove such files once a day.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP \-help 10
+Prints a list of the valid options to this command.
+.\"
+.PP
+The default settings for this command are:
+.IP
+.I +folder
+defaults to the current folder
+.br
+.I msgs
+defaults to the current message
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS 
+tab(+);
+lw(1.5i) l.
+Path:+To determine your Mail directory
+rmmproc:+Program to delete the message
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile	
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+rmf(1mh)

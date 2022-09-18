@@ -1,0 +1,120 @@
+.TH monitor 3 RISC
+.SH Name
+monitor, monstartup, moncontrol \- prepare execution profile
+.SH Synopsis
+.nf
+.B monitor(lowpc, highpc, buffer, bufsize, nfunc)
+.B int (*lowpc)(), (*highpc)();
+.B short buffer[];
+.sp
+.B monstartup(lowpc, highpc)
+.B int (*lowpc)(), (*highpc)();
+.sp
+.B moncontrol(mode)
+.fi
+.SH Description
+These functions use the system call
+.MS profil 2
+to control program-counter sampling.  Using the option
+.B \-p
+when compiling or linking a program
+automatically generates calls to these functions.  You do need not to call 
+these functions explicitly unless you want more control.
+.PP
+Typically, you would call either
+.PN monitor
+or
+.PN monstartup
+to initialize pc-sampling and enable it; call
+.PN moncontrol
+to disable or reenable it; and call
+.PN monitor
+at the end of execution to disable sampling and record the samples in
+a file.
+.PP
+Your initial call to
+.PN monitor
+enables pc-sampling.
+The parameters
+.I lowpc
+and
+.I highpc
+specify the range of addresses to be sampled.  The lowest address is that of
+.I lowpc
+and the highest is just below
+.IR highpc .
+The 
+.I buffer
+parameter
+is the address of a (user allocated) array of
+.I bufsize
+short integers, which holds a record of the samples; for best results,
+the buffer should not be less than a few times smaller than the range
+of addresses sampled.
+The
+.I nfunc
+parameter
+is ignored.
+.PP
+The environment variable PROFDIR determines the name of the output file
+and whether pc-sampling takes place: if it is not set, the file is named
+mon.out; if set to the empty string, no pc-sampling occurs; if set to a
+non-empty string, the file is named string/pid.progname, where pid
+is the process id of the executing program and progname is the program's
+name as it appears in argv[0]. The subdirectory string must already
+exist.
+.PP
+To profile the entire program, use the following:
+.PP
+.nf
+	\f(CWextern eprol(), etext();
+	. . .
+	monitor(eprol, etext, buf, bufsize, 0);\fR
+.fi
+.PP
+The routine 
+.PN eprol
+lies just below the user program text, and
+.PN etext
+lies just above it, as described in
+.MS end 3 .
+(Because the user program does not necessarily start at a low memory address,
+using a small number in place of 
+.PN eprol
+is dangerous).
+.PP
+The 
+.PN monstartup
+routine
+is an alternate form of
+.PN monitor
+that calls
+.PN sbrk 
+(see 
+.MS brk 2 )
+for you to allocate the buffer.
+.PP
+The function
+.PN moncontrol
+selectively disables and re-enables pc-sampling within a program, allowing
+you to measure the cost of particular operations.
+The function
+.PN moncontrol(0)
+disables pc-sampling, and
+.PN moncontrol(1)
+reenables it.
+.PP
+To stop execution monitoring and write the results in the output file, use
+the following:
+.PP
+	\f(CWmonitor(0);\fR
+.PP
+
+.SH Files
+.ta \w'libprof1.a    'u
+\fImon.out\fR	default name for output file
+.br
+\fIlibprof1.a\fR	routines for pc-sampling
+.br
+.SH See Also
+cc(1), ld(1), profil(2), brk(2) 

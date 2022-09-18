@@ -1,0 +1,44 @@
+.\" SCCSID: @(#)wait.1	8.1	9/11/90
+.TH wait 1 
+.SH Name
+wait \- wait for process completion
+.SH Syntax
+.B wait
+[\fIpid\fR]
+.SH Description
+.NXR "wait command (general)"
+.NXA "sh command interpreter" "wait command (general)"
+.NXR "diagnostics" "handling"
+The
+.PN wait
+command
+waits until all processes started with an ampersand
+(\fB&\fR)
+have completed
+and reports on abnormal terminations.
+.PP
+If a numeric \fIpid\fR is given and is the process ID of a background
+process, then
+.PN wait
+waits
+until that process is completed.  
+If \fIpid\fR
+is not a background process, 
+.PN wait
+waits until all background processes have completed.
+.PP
+Because the
+.MS wait 2
+system call must be executed in the parent process,
+the Shell itself executes
+.PN wait
+without creating a new process.
+.SH Restrictions
+Because not all the processes of a 3- or more-stage
+pipeline are children of the Shell, the
+.PN wait 
+command does not work on them.
+.PP
+The [\fIpid\fR] is available only with sh5.
+.SH See Also
+sh(1), sh5(1), wait(2)

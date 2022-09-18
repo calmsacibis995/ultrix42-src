@@ -1,0 +1,124 @@
+# @(#)rc	4.5	(ULTRIX)	10/15/90
+
+HOME=/;
+PATH=/bin:/usr/ucb:/usr/bin
+export HOME PATH
+
+[ -r /etc/netblk.o ] && {
+	DISKLESS=1
+	export DISKLESS
+}
+
+/etc/startcpu 	>/dev/console
+
+date >/dev/console
+if [ $1x = autobootx ]
+then
+	echo Automatic reboot in progress... >/dev/console
+	/etc/fsck -p >/dev/console
+	case $? in
+	0)
+	 	;;
+	4)
+		/etc/reboot -n
+		;;
+	8)
+                echo "Automatic reboot failed.  Unable to insure" > /dev/console
+                echo "file system integrity.  Run the fsck" > /dev/console
+                echo "command manually." > /dev/console
+		exit 1
+		;;
+	12)
+		echo "Reboot interrupted" >/dev/console
+		exit 1
+		;;
+	*)
+		echo "Unknown error in reboot" > /dev/console
+		exit 1
+		;;
+	esac
+fi
+
+rm -f /etc/nologin
+
+# attempt to rationally recover the passwd file if needed
+if [ -s /etc/ptmp ]
+then
+	if [ -s /etc/passwd ]
+	then
+		ls -l /etc/passwd /etc/ptmp >/dev/console
+		rm -f /etc/ptmp		# should really remove the shorter
+	else
+		echo 'passwd file recovered from ptmp' >/dev/console
+		mv /etc/ptmp /etc/passwd
+	fi
+else
+	[ -r /etc/ptmp ] && {
+		echo 'removing passwd lock file' >/dev/console
+		rm -f /etc/ptmp
+	}
+fi
+
+if [ "$DISKLESS" ]
+then 
+	/etc/nfs_umount -b	>/dev/null 2>&1
+	/etc/mount -a -t nfs 	>/dev/console
+	/usr/etc/rdate -s 	>/dev/console
+fi
+/etc/mount -a -t ufs		>/dev/console
+/etc/swapon -a			>/dev/console
+if [ -f /etc/dmsinit ]
+then
+	2>&1 /etc/dmsinit </dev/console >/dev/console || exit 1 
+fi
+
+# Rebuild the passwd data base.
+if [ -s /etc/passwd ]
+    then
+	if [ -f /usr/etc/mkpasswd -a -f /etc/passwd.pag ]
+	    then
+		echo 'Rebuilding the passwd data base...' >/dev/console
+		( cd /etc ; /usr/etc/mkpasswd -u passwd >/dev/console  2>&1 )
+	fi
+else
+	echo 'The password file is empty' > /dev/console
+fi
+
+/usr/etc/lmf reset					>/dev/console 2>&1
+
+sh /etc/rc.local 
+				echo 'preserving editor files' 	>/dev/console
+(cd /tmp; /usr/lib/ex3.7preserve -a)
+				echo clearing /tmp		>/dev/console
+(cd /tmp; rm -f *; chmod 1777 /tmp)
+				echo -n 'standard daemons:'	>/dev/console
+/etc/update;			echo -n ' update'		>/dev/console
+/etc/cron;			echo -n ' cron'			>/dev/console
+/etc/accton /usr/adm/acct;	echo -n ' accounting'		>/dev/console
+[ -f /etc/inetd ] && {
+	/etc/inetd;		echo -n ' network'		>/dev/console
+}
+#[ -f /etc/rwhod ] && {
+#	if [ "$DISKLESS" ]
+#	then
+#		/etc/rwhod -b
+#	else
+#		/etc/rwhod
+#	fi
+#	echo -n ' rwhod'		>/dev/console
+#}
+[ -f /etc/snmpd ] && {
+	/etc/snmpd;		echo -n ' snmpd'		>/dev/console
+}
+cd /usr/spool
+rm -f uucp/LCK.*
+[ -f /usr/lib/lpd ] && {
+	rm -f /dev/printer
+	/usr/lib/lpd &		echo -n ' printer'		>/dev/console
+}
+				echo '.'			>/dev/console
+[ -f /etc/elcsd ] && {
+	/etc/elcsd &	echo 'start errlog daemon - elcsd'	>/dev/console
+}
+date								>/dev/console
+exit 0

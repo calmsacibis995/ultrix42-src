@@ -1,0 +1,42 @@
+.TH tputs 3cur 
+.SH Name
+tputs \- pad and output string
+.SH Syntax
+.B
+tputs(str, count, putc)
+.br
+.B
+register char *str;
+.br
+.B
+int count;
+.br
+.B
+int (*putc)();
+.SH Description
+.NXR "tputs subroutine"
+This function 
+adds padding to the string
+.PN str
+and outputs it.  
+The string must be either a 
+.PN terminfo  
+string variable or the return value from
+.PN tparm, 
+.PN tgetstr 
+or 
+.PN tgoto .
+The variable 
+.PN count 
+is the number of lines affected; this is set to
+1 if not applicable.
+The function
+.PN putc 
+is a 
+.PN putchar 
+style routine.
+The characters are passed to 
+.PN putc
+one at a time.
+.SH See Also
+putchar(3s), terminfo(5), tparm(3cur) 

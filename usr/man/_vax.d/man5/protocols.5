@@ -1,0 +1,52 @@
+.\" SCCSID: @(#)protocols.5	8.1	9/11/90
+.TH protocols 5 
+.SH Name
+protocols \- protocol name file
+.SH Description
+.NXR "protocols file" "format"
+.NXR "Internet" "specifying protocols"
+.NXR "Internet File Transfer Protocol"
+.NXA "protocols file" "remote file"
+.NXAM "getprotoent subroutine" "protocols file"
+The
+.PN protocols
+file is an ASCII file that contains information regarding the known
+protocols used in the DARPA 
+Internet.  For each protocol, a single line should be present
+with the following information:
+.PP
+Official protocol name
+.br
+Protocol number
+.br
+Aliases
+.PP
+Each 
+.PN protocol
+name is separated from the next by a new line.
+Items are separated by any number of blanks or
+tab characters or both.  A number sign (#) indicates the beginning of
+a comment; characters up to the end of the line are
+not interpreted by routines that search the file.
+.PP
+Protocol names can contain any printable
+character other than a field delimiter, newline,
+or comment character.
+.PP
+The 
+.PN protocols
+database may be distributed in a network by a naming service, 
+such as Yellow Pages or BIND/Hesiod.  See the
+.I Guide to the Yellow Pages Services
+or the chapter on Hesiod in the
+.I Guide to the BIND/Hesiod Service
+for setup information.
+.SH Files
+.PN /etc/protocols
+.SH See Also
+getprotoent(3n)
+.br
+.I Guide to the BIND/Hesiod Service
+.br
+.I Guide to the Yellow Pages Service
+   

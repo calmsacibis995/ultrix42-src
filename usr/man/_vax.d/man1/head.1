@@ -1,0 +1,20 @@
+.\" SCCSID: @(#)head.1	8.1	9/11/90
+.\" SCCSID: @(#)head.1	8.1	9/11/90
+.TH head 1
+.SH Name
+head \- give first few lines
+.SH Syntax
+.B head
+[\-\fIcount\fR\|] [\|\fIfile...\fR\|]
+.SH Description
+.NXR "head command"
+.NXR "file" "displaying first lines"
+.NXA "head command" "tail command"
+This filter gives the first
+.I count
+lines of each of the specified files, or of the standard input.
+The default number of lines displayed is 10, if 
+.I count
+is omitted.
+.SH See\ Also
+tail(1)

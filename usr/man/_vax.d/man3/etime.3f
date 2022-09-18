@@ -1,0 +1,33 @@
+.\" SCCSID: @(#)etime.3f	8.1	9/11/90
+.TH etime 3f VAX "" Unsupported
+.SH Name
+etime, dtime \- return elapsed execution time
+.SH Syntax
+.B function etime (tarray)
+.br
+.B real tarray(2)
+.sp 1
+.B function dtime (tarray)
+.br
+.B real tarray(2)
+.SH Description
+.NXR "etime subroutine (FORTRAN)"
+.NXR "dtime subroutine (FORTRAN)"
+.NXR "process" "returning elapsed runtime"
+These two routines return elapsed runtime in seconds for the calling process.
+The
+.PN dtime
+routine returns the elapsed time since the last call to
+.PN dtime ,
+or the start of execution on the first call.
+.PP
+The argument array returns user time in the first element and system time
+in the second element.
+The function value is the sum of user and system time.
+.PP
+The resolution of all timing is 1/HZ sec. where HZ is currently 60.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+time(3f)

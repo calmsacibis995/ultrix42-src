@@ -1,0 +1,107 @@
+.\" SCCSID: @(#)flock.2	8.1	9/11/90
+.TH flock 2
+.SH Name
+flock \- apply or remove an advisory lock on an open file
+.SH Syntax
+.nf
+.ft B
+#include <sys/file.h>
+.PP
+.ft B
+.DT
+#define	LOCK_SH	1	/* shared lock */
+#define	LOCK_EX	2	/* exclusive lock */
+#define	LOCK_NB	4	/* don't block when locking */
+#define	LOCK_UN	8	/* unlock */
+.PP
+.ft B
+flock(fd, operation)
+int fd, operation;
+.fi
+.SH Description
+.NXR "flock system call"
+.NXR "file" "applying advisory lock"
+The
+.PN flock
+system call applies or removes an
+.I advisory
+lock on the file associated with the file descriptor,
+.IR fd .
+A lock is applied by specifying an
+.I operation
+parameter that is the inclusive OR of
+LOCK_SH or LOCK_EX and, possibly, LOCK_NB.  To unlock
+an existing lock,
+.I operation
+should be LOCK_UN.
+.PP
+Advisory locks allow cooperating processes to perform
+consistent operations on files, but do not guarantee
+consistency; that is, processes might still access files
+without using advisory locks, possibly resulting in
+inconsistencies.
+.NXR "advisory lock" "defined"
+.PP
+The locking mechanism allows two types of locks:
+.I shared
+locks and
+.I exclusive
+locks.
+At any time, multiple shared locks can be applied to a file.
+However, multiple exclusive locks, or shared and exclusive
+locks cannot be applied simultaneously on a file.  
+.PP
+A shared lock can be
+upgraded to be 
+an exclusive lock, and an exclusive lock can become shared, simply by specifying
+the appropriate lock type. This change results in the previous
+lock being released and the new lock applied. When upgrading,
+do not include LOCK_NB in
+.IR operation,
+because there is a possibility that other processes have
+requests for locks, or have gained or released a lock.
+.PP
+Requesting a lock on an object that is already locked
+normally causes the caller to blocked until the lock can be
+acquired.  If LOCK_NB is included in
+.IR operation ,
+the call is not blocked; instead, the call fails and
+the error EWOULDBLOCK is returned.
+.PP
+Locks are on files, not file descriptors.  That is, file descriptors
+duplicated through 
+.PN dup 
+or
+.PN fork 
+call 
+do not result in multiple instances of a lock, but rather multiple
+references to a single lock.  If a process holding a lock on a file
+forks and the child explicitly unlocks the file, the parent 
+loses its lock.
+.PP
+Processes blocked awaiting a lock may be awakened by signals.
+.SH Return Values
+Zero is returned if the operation was successful;
+on an error, a \-1 is returned and an error code is stored in
+the global variable, \fIerrno\fP.
+.SH Diagnostics
+The 
+.PN flock
+call fails under the following conditions: 
+.TP 15
+[EWOULDBLOCK]
+The file is locked and the LOCK_NB option was specified.
+.TP 15
+[EBADF]
+The argument \fIfd\fP is an invalid descriptor.
+.TP 15
+[EINVAL]
+The argument \fIfd\fP refers to an object other than a file.
+.TP 15
+[EOPNOTSUPP]
+Invalid operation is requested.  The argument \fIfd\fR
+refers to a socket.
+.SH Restrictions
+File region locking is not supported over NFS.
+.SH See Also
+close(2), dup(2), execve(2), fork(2), open(2)

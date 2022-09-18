@@ -1,0 +1,44 @@
+.TH unctrl 3cur 
+.SH Name
+unctrl \- convert character to printable form
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP  
+.br
+.B
+char \(**unctrl(c)
+.br
+.B
+chtype c;
+.SH Description
+.NXR "unctrl macro"
+The
+.PN unctrl
+routine 
+expands the character 
+.PN c
+into a character string which is a printable
+representation of 
+the character.
+.PP
+Control characters are displayed in the ^X notation.
+Printing characters are displayed normally.
+The
+.PN unctrl
+routine
+is a macro, defined in the 
+.PN unctrl.h
+header file.
+This header file is included by the 
+.PN cursesX.h
+header file described in 
+.MS intro 3cur ,
+so you do not have to include it again.
+.SH Return Values
+The
+.PN unctrl
+macro returns a string.
+.SH See Also
+intro(3cur)

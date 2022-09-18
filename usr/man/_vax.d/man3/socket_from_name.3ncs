@@ -1,0 +1,102 @@
+.TH socket_from_name 3ncs
+.SH Name
+socket_from_name \- convert a name and port number to a socket address
+.SH Syntax
+#include <idl/c/socket.h>
+
+void socket_$from_name(\fIfamily, name, nlength, port, sockaddr, slength,\fP
+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\fIstatus\fP)
+.nf
+unsigned long \fIfamily\fP;
+socket_$string_t \fIname\fP;
+unsigned long \fInlength\fP;
+unsigned long \fIport\fP;
+socket_$addr_t *\fIsockaddr\fP;
+unsigned long *\fIslength\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/socket.ins.pas'\fR
+.\"
+.\"\fBprocedure socket_$from_name(\fR
+.\"	\fBin \fIfamily\fB: unsigned32;\fR
+.\"	\fBin \fIname\fB: socket_$string_t;\fR
+.\"	\fBin \fInlength\fB: unsigned32;\fR
+.\"	\fBin \fIport\fB: unsigned32;\fR
+.\"	\fBout \fIsockaddr\fB: socket_$addr_t;\fR
+.\"	\fBin out \fIslength\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP
+\fIfamily\fR
+The integer representation of an address family.  Value can be
+.B socket_$internet 
+or
+.B socket_$unspec
+If the \fIfamily\fR parameter is \fBsocket_$unspec\fR,
+then the \fIname\fR parameter is scanned for a prefix of \fIfamily\fB:\fR
+(for example, \fBip:\fR).
+.TP
+\fIname\fR
+A string in the format \fIfamily\fB:\fIhost\fB\|[\|\fIport\fB\|]\|\fR,
+where \fIfamily\fB:\fR, \fIhost\fR, and \fB\|[\|\fIport\fB\|]\|\fR are all optional.
+.if t .sp .5
+The \fIfamily\fR is an address family.
+The only valid
+.I family
+is \fBip\fR.
+If you specify a \fIfamily\fR as part of the \fIname\fR parameter,
+you must specify \fBsocket_$unspec\fR in the \fIfamily\fR parameter.
+.if t .sp .5
+The \fIhost\fR is a host name.
+A leading number sign \fB(#)\fR can be used to indicate that
+the host name is in the standard numeric form
+(for example, #192.9.8.7).
+If \fIhost\fR is omitted, the local host name is used.
+.if t .sp .5
+The \fIport\fR is a port number.
+If you specify a \fIport\fR as part of the \fIname\fR parameter,
+the \fIport\fR parameter is ignored.
+.TP
+\fInlength\fR
+The length, in bytes, of \fIname\fR.
+.TP
+\fIport\fR
+A port number.
+If you specify a port number in the \fIname\fR parameter,
+this parameter is ignored.
+.TP
+\fIsockaddr\fR
+A socket address.
+.TP
+\fIslength\fR
+The length, in bytes, of \fIsockaddr\fR.
+.TP
+\fIstatus\fR
+The completion status. If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN socket_$from_name
+routine converts a textual address family, host name, and port number 
+to a socket address.
+.NXR "Operations on Socket Addresses" "socket_from_name"
+The address family and the port number can be
+either specified as separate parameters or
+included in the \fIname\fR parameter.
+.ig
+.SH External Variables
+This section describes external variables used in \fBsocket_$\fR routines.
+.TP 20
+..
+.SH Files
+.PN /usr/include/idl/socket.idl
+.br
+.PN /usr/include/idl/c/socket.h
+.SH See Also
+intro(3ncs), socket_family_from_name(3ncs), socket_to_name(3ncs)

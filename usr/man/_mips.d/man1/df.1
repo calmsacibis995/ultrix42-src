@@ -1,0 +1,88 @@
+.\" SCCSID: @(#)df.1	8.2	2/18/91
+.TH df 1
+.SH Name
+df \- display free and used disk space
+.SH Syntax
+.B df
+[\fB\-i\fR] [\fB\-l\fR] [\fB\-n\fR] [\|\fIfilesystem\fR...\|] [\|\fIfile\fR...\|]
+.SH Description
+.NXA "df command" "dumpfs command"
+.NXR "disk" "displaying free space"
+.NXR "disk" "displaying used space"
+The
+.PN df
+command displays the amount of disk space
+available on the specified
+.I file system,
+for example,
+.PN /dev/ra0a .
+It also displays the amount of available disk space
+on the file system in which the specified
+.I file
+is contained,
+for example,
+.PN $HOME .
+If a device is given that has no file systems
+mounted on it,
+.PN df
+displays the information for the root file system.
+Without any arguments or options,
+.PN df
+displays
+shows all mounted filesystems, including those manually
+mounted without use of the 
+.PN /etc/fstab 
+file.
+The numbers are reported in kilobytes. 
+.PP
+Unless the
+\fB\-n\fR
+option is specified,
+.PN df
+updates the statistics stored in memory for the file system
+specified,
+before it returns the information.
+.SH Options
+.IP \fB\-i\fR 5
+Also report the number of used and free inodes.
+.IP \fB\-l\fR
+Reports on locally mounted disks only.
+.IP \fB\-n\fR
+Do not update the file system statistics stored in memory.
+Instead,
+return whatever statistics are stored in memory.
+This prevents
+.PN df
+from hanging in the event that a server containing the specified file system
+is down.
+.SH Restrictions
+You cannot use the 
+.PN df
+command to find free space on an unmounted file system using the
+block or character special device name.
+Instead,
+use the
+.PN dumpfs
+command.
+.SH Examples
+.EX 0
+% df
+Filesystem     Total    kbytes  kbytes   %
+node           kbytes   used    free     used    Mounted on
+/dev/ra1a       7429    2085    4602     31%    /tmp
+/dev/ra0e      30519   14817   12651     54%    /usr/spool
+/dev/ra0h     313233  122858  159052     44%    /usr/staff1
+.EE
+.PP
+The total disk space is the total space that was created
+during the making of the file system.
+The addition of the used space,
+the free space and a percentage of reserved space
+is the total space.
+The default value for the reserved space is 10%.
+.SH Files
+.TP 12
+.PN /etc/fstab
+List of mounted file systems
+.SH See Also
+getmnt(2), fstab(5), dumpfs(8), icheck(8), mkfs(8), newfs(8), quot(8)

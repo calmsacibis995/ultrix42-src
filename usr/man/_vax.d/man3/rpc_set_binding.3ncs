@@ -1,0 +1,84 @@
+.TH rpc_set_binding 3ncs
+.SH Name
+rpc_set_binding \- bind an RPC handle to a server (client only)
+.SH Syntax
+#include <idl/c/rpc.h>
+
+void rpc_$set_binding(\fIhandle, sockaddr, slength, status\fP)
+.nf
+handle_t \fIhandle\fP;
+socket_$addr_t *\fIsockaddr\fP;
+unsigned long \fIslength\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$set_binding(\fR
+.\"	\fBin \fIhandle\fB: handle_t;\fR
+.\"	\fBin \fIsockaddr\fB: socket_$addr_t;\fR
+.\"	\fBin \fIslength\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIhandle\fR
+An RPC handle.
+.TP 20
+\fIsockaddr\fR
+The socket address of the server with which the handle is being associated.
+.TP 20
+\fIslength\fR
+The length, in bytes, of \fIsockaddr\fR.
+.TP 20
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$set_binding
+routine sets the binding of an RPC handle to the specified server.
+The handle then identifies a specific object at a specific server.
+Any subsequent remote procedure calls that a client makes using the handle
+are sent to this destination.
+.NXR "Interface to the Remote Procedure Call" "rpc_set_binding"
+.PP
+You can use this routine
+either to set the binding in an unbound handle
+or to replace the existing binding in a fully bound or bound-to-host handle.
+.SH Examples
+The following statement sets the binding on the handle 
+.PN h
+to the first server in the 
+.PN lbresults
+array, which was returned by a previous Location Broker lookup routine,
+.PN lb_lookup_interface :
+.EX
+rpc_$set_binding (h, &lbresults[0].saddr, lbresults[0].saddr_len,
+                       &status);
+.EE
+.SH Diagnostics
+This section lists status codes for errors returned by this 
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$cant_bind_sock\fR
+The RPC runtime library created a socket but was unable to bind it to a socket address.
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs), rpc_alloc_handle(3ncs), rpc_clear_binding(3ncs), rpc_clear_server_binding(3ncs)

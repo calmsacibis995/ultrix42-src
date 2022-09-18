@@ -1,0 +1,25 @@
+.\" SCCSID: @(#)pwd.1	8.1	9/11/90
+.TH pwd 1 
+.SH Name
+pwd \- print working directory 
+.SH Syntax
+.B pwd
+.SH Description
+.NXR "pwd command (general)"
+.NXA "pwd command (general)" "dirs command (csh)"
+.NXR "working directory" "printing pathname"
+The
+.PN pwd
+command
+prints the pathname of the working (current) directory.
+.SH Restrictions
+In 
+.MS csh 1 
+the command
+.I dirs
+is always faster
+(although it can give a different answer in the rare case
+that the current directory or a containing directory was moved after
+the shell descended into it).
+.SH See Also
+cd(1), csh(1), getwd(3)

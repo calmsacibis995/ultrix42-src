@@ -1,0 +1,61 @@
+ @(#)iplps_errors	4.2      ULTRIX 	10/16/90
+
+File:		iplps_errors
+Author:		Adrian Thoms (from information supplied by PrintServer group)
+Description:
+	This file lists error numbers returned by TCP/IP PrintServer
+	Supporting host software subsequent to errors detected while
+	processing a job.
+
+	The errors are listed in categories, according to the PostScript
+	processing state which detects the error.
+
+______________________________________________________________________________
+Message Number       Explanation
+______________________________________________________________________________
+Layup
+
+%X00000000           The current path may have been lost.
+%X00000008           `copypage' is not supported by multi-page layup.
+%X00000012           Layup definition margins result in no usable sheet area.
+%X0000001A           Layup definition margins overlap one another.
+%X00000020           Pages per sheet are greater than number up.  Pages per
+                     sheet set to number up.
+%X00000028           First page is greater than pages per sheet.  First page set
+                     to 1.
+%X00000030           Tray selection is not supported by multi-page layup.
+
+LPS$$SetContext
+
+%X0000003A           No media-size medium is loaded in printer-name.
+%X00000042           Media-size medium is not supported by printer-name.
+%X0000004A           Media-size medium is not in  the  input-tray-name  tray  in
+                     printer_name.
+%X00000054           Fatal  device  control  library  problem.   Config   error:
+                     configuration-error on printer-name.
+%X0000005B           The upper page limit has been reached.  Remaining
+                     pages will be flushed.
+
+LPS$$SetOutputTray
+
+%X00000063           Output  will  be  delivered  to  output-tray-name  tray  on
+                     printer_name.
+%X0000006A           Tray-name tray on printer-name is tray-name.
+
+LPS$$SetSides
+
+%X00000072           Printer-name does not support duplex printing.
+%X0000007A           Printer-name  does not support tumble printing.
+%X00000082           Input tray selection not supported for printer-name.
+%X0000008A           Output tray, output-tray-name, not supported on
+                     printer-name.
+%X00000090           Condition on line line-number in layup definition.
+
+Prologue loader
+
+%X0000009B           Prologue prologue-name, version version-number.
+%X000000A3           Bad password
+%X000000AA           Duplex to `face_up' output tray is not supported on
+                     printer-name.
+%X000000B2           One_sided_duplex is not supported on printer-name.
+______________________________________________________________________________

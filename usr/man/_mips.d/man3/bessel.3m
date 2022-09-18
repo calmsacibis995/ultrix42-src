@@ -1,0 +1,88 @@
+.\" SCCSID: @(#)bessel.3m	6.2	8/30/89
+.TH bessel 3m RISC
+.ds nn \fINaN\fR
+.SH Name
+j0, j1, jn, y0, y1, yn \- bessel functions
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double j0(\fIx\fP)
+.B double \fIx;\fP
+.PP
+.B double j1(\fIx\fP)
+.B double \fIx;\fP
+.PP
+.B double jn(\fIn,x\fP)
+.B double \fIx;\fP
+.PP
+.B double y0(\fIx\fP)
+.B double \fIx;\fP
+.PP
+.B double y1(\fIx\fP)
+.B double \fIx;\fP
+.PP
+.B double yn(\fIn,x\fP)
+.B double \fIx;\fP
+.fi
+.SH Description
+.NXR "bessel keyword (math)"
+.NXR "j0 subroutine"
+.NXR "j1 subroutine"
+.NXR "jn subroutine"
+.NXR "y0 subroutine"
+.NXR "y1 subroutine"
+.NXR "yn subroutine"
+These functions calculate bessel functions of the first
+and second kinds for real arguments and integer orders.
+.SH Return Values
+Negative arguments cause
+.PN y0 ,
+.PN y1 ,
+and
+.PN yn
+to return \*(nn.  Arguments too large in magnitude cause
+.PN y0,
+.PN y1,
+and
+.PN yn
+to return \*(nn.
+.PP
+Arguments too large in magnitude cause
+.PN j0,
+.PN j1,
+and
+.PN jn
+to return zero.
+.SH Environment
+When your program is compiled using the System V environment,
+nonpositive arguments cause 
+.PN y0 ,
+.PN y1
+and
+.PN yn
+to return the value
+HUGE
+and to set 
+.I errno
+to EDOM.
+In addition, a message indicating DOMAIN error
+is printed on the standard error output.
+.PP
+Arguments too large in magnitude cause
+.PN j0,
+.PN j1,
+.PN y0,
+and
+.PN y1
+to return zero and to set
+.I errno
+to ERANGE.
+In addition, a message indicating TLOSS 
+error is printed on the standard error output.
+.PP
+These error-handling procedures may be changed with the 
+.MS matherr 3m
+function.
+.SH See Also
+math(3m)

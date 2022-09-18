@@ -1,0 +1,90 @@
+.TH munmap 2
+.SH Name
+munmap \- unmaps memory of a character device
+.SH Syntax
+#include <sys/types.h>
+.br
+#include <sys/mman.h>
+.nf
+
+caddr_t munmap(\fIaddr\fP, \fIlen\fP)
+caddr_t \fIaddr\fP;
+size_t \fIlen\fP;
+.fi
+.SH Arguments
+.TP 10
+\fIaddr\fP
+Specifies the address space of the calling process at which the unmapping
+begins.
+.TP 10
+\fIlen\fP
+Specifies the number of bytes to unmap.
+.SH Description
+.NXR "munmap call"
+.NXR "memory unmapping" "munmap call"
+The
+.PN munmap
+system call unmaps a specified number of bytes 
+(\fIlen\fP)
+starting at a specified address
+(\fIaddr\fP)
+from the address space of the calling process.
+You mapped this device in a previous call to
+.PN mmap .
+Subsequent access to the unmapped region results in a 
+.PN SIGSEGV
+signal.
+You cannot unmap
+data, stack, and text segments using
+.PN munmap .
+.PP
+The
+.PN munmap
+system call
+rounds
+\fIlen\fP
+to the nearest multiple of page size as returned by
+.PN getpagesize .
+.PP
+The range [\fIaddr\fP, \fIaddr\fP + \fIlen\fP] may contain more than one
+mapped region created by
+.PN mmap .
+In this case,
+.PN munmap
+unmaps all of the mapped regions.
+.SH Restrictions
+All of the mapped regions must be wholly contained in the range
+[\fIaddr\fP, \fIaddr\fP + \fIlen\fP].
+That is,
+\fIaddr\fP
+must be the beginning of some mapped region and
+\fIaddr\fP + \fIlen\fP
+must be the end of some (possibly different) mapped region.
+.SH Return Value
+If successful,
+.PN munmap
+returns 0.
+Otherwise, it returns \-1
+and sets the
+\fIerrno\fP
+argument to one of the errors listed in the Diagnostics section.
+.SH Diagnostics
+The call to
+.PN munmap 
+fails if one or more of the following is true:
+.TP 10
+[EINVAL]
+The address you specified in
+\fIaddr\fP
+is not a multiple of the page size as returned by
+.PN getsysinfo .
+.TP 10
+[EINVAL]
+The addresses in the range [\fIaddr\fP, \fIaddr\fP + \fIlen\fP] are not
+valid in the process address space.
+.TP 10
+[EINVAL]
+All of the segments being unmapped are not entirely contained in the
+range [\fIaddr\fP, \fIaddr\fP + \fIlen\fP]. 
+.SH See Also
+getpagesize(2), getsysinfo(2), mmap(2)

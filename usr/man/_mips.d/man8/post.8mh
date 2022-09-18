@@ -1,0 +1,301 @@
+.TH post 8mh
+.SH Name
+post \- deliver a message
+.SH Syntax
+.B /usr/lib/mh/post 
+[
+.I options
+]
+.I file
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.\" .SH Arguments
+.\" .TP 10
+.\" .I file
+.\" The file which 
+.\" .PN post 
+.\" delivers.
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "post program"
+The program
+.PN post
+is called by 
+.MS send 1mh 
+to deliver the message in the named file
+to local and remote users.
+In fact, all of the functions attributed to 
+.PN send
+on its reference page are performed by 
+.PN post ,
+with 
+.PN send
+acting as a relatively simple pre-processor.
+Thus, it is 
+.PN post
+which parses the various header fields,
+appends \f(CWFrom:\fR and \f(CWDate:\fR lines,
+and interacts with the transport system.
+.PP
+Normally,
+.PN post
+would not be called directly by the user.
+.PP
+It
+searches the \f(CWTo:\fR, \f(CWcc:\fR, \f(CWBcc:\fR,
+and \f(CWResent\-xxx:\fR
+header lines of the specified message for destination addresses, 
+checks these addresses for validity, and formats them 
+so as to conform to ARPAnet Internet Message Format protocol
+(unless the 
+.B \-noformat
+flag is set).
+This will normally cause \f(CW@local\-site\fR
+to be appended to each local destination address, as well
+as any local return addresses.  
+.\"
+.\" ***COMMENTED OUT
+.ig
+.PP
+The
+\f(CWX-mts:\fP 
+field of the message is used by 
+.PN post
+to determine which transport system the message
+is sent over.
+There are two valid entries:
+\f(CWx400\fR will send the message over the X.400 transport system;
+\f(CWsmtp\fR will send it over non-X.400 transport.
+Entries are case-insensitive.
+If there is no entry in the \f(CWX-mts:\fR field, the 
+.B \-mts 
+.I mtsname
+option can be used to specify the transport system.
+The arguments are the same:
+.B x400
+for messages sent over X.400 transport;
+.B smtp
+for messages sent over non-X.400 transport.
+The arguments are case-insensitive.
+An entry in the \f(CWX-mts:\fR
+field of the message overrides any 
+.B \-mts
+option specified at the command line.
+If there is no entry in the \f(CWX-mts:\fR
+field, and no 
+.B \-mts
+option, the default is to assume non-X.400 transport.
+See
+.MS comp 1mh
+for more information.
+..
+.\" ***END OF COMMENTS
+.\"
+.PP
+If a \f(CWBcc:\fR field is encountered,
+the mail system will use its addresses for delivery.
+The
+\f(CWBcc:\fR
+is
+removed from the message sent to original recipients.
+The copied recipients will receive an entirely new message 
+with a minimal set of headers.
+The mail system includes a copy of the message 
+sent to the original recipients
+in the body of the message.
+.PP
+This command
+consults the environment variable \f(CW$SIGNATURE\fR to
+determine the sender's personal name in constructing the \f(CWFrom:\fR
+line of the message.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-alias \fIaliasfile\fR" 10
+Specifies a file that 
+.PN post 
+should take aliases from.  
+More than one file can be specified, each being preceded with the
+.B \-alias
+option.
+.PN post 
+automatically consults the system alias file, 
+.PN /usr/lib/mh/MailAliases .
+If there is an \f(CWAliasfile\fR entry in your 
+.PN \&.mh_profile ,
+.PN post 
+also consults the file named in that entry.
+.\"
+.\"
+.IP "\-filter \fIfilterfile\fR" 
+.PD 0
+.IP \-nofilter
+.PD
+Filters (re-formats) messages sent to blind copy recipients.
+Recipients named in the \f(CWBcc:\fR
+field normally receive a new message which includes a copy 
+of the message sent to the other recipients.
+If this option is specified, this copy of the message is 
+filtered according to the instructions in the named file.
+The default is \fB\-nofilter\fR.
+.\"
+.\"
+.IP "\-format"
+.PD 0
+.IP \-noformat
+.PD
+Formats messages so as to conform to ARPAnet Internet Message Format 
+protocol.
+This is the default behavior.
+You can stop 
+.PN post 
+from formatting messages in this way by using the 
+.B \-noformat
+option.
+.\"
+.\"
+.IP "\-help"
+Prints a list of the valid options to this command.
+.\"
+.\"
+.IP "\-msgid"
+.PD 0
+.IP \-nomsgid
+.PD
+Adds a 
+\f(CWMessage-ID:\fR
+or 
+\f(CWResent-Message-ID:\fR
+field to the header.
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.ig
+.IP "\-mts \fImtsname\fR"
+Specifies the transport system by which the message should be sent.
+There are two valid values:
+\f(CWx400\fR indicates that the message is to be sent over X.400 
+transport; and
+\f(CWsmtp\fR indicates that the message is to be sent by non-X.400,
+standard ULTRIX mail.
+If there is an entry in the \f(CWX-mts:\fR
+field of the message, this option overrides the
+.B \-mts 
+option.
+If there is no valid entry in the \f(CWX-mts:\fR
+field and no valid
+.B \-mts
+option, the message is sent over non-X.400 transport.
+..
+.\" ***END OF COMMENTS
+.\"
+.IP "\-mts smtp"
+Specifies the mail system over which mail is sent.
+The only value allowed is \fBsmtp\fR,
+which is the standard ULTRIX mail system.
+Additional values are supported only for use with other
+mail systems.
+.\"
+.\"
+.\"
+.IP "\-verbose"
+.PD 0
+.IP \-noverbose
+.PD
+Informs the user of each step of the posting/filing process.
+.\"
+.\"
+.IP "\-watch"
+.PD 0
+.IP \-nowatch
+.PD
+Allows the user to watch the transport system's handling of the message 
+(for example, local and fast delivery).
+.\"
+.\"
+.IP "\-width \fIcolumns\fR"
+Specifies the preferred length of the header components 
+that contain addresses.
+.PP
+The default settings for
+.PN post 
+are:
+.br
+.B "\-alias /usr/lib/mh/MailAliases"
+.br
+.B \-format
+.br
+.B \-nomsgid
+.br
+.B "\-mts smtp"
+.br
+.B \-noverbose
+.br
+.B \-nowatch
+.br
+.B "\-width 72"
+.br
+.B \-nofilter
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+For this version, the
+.B \-mts
+option only supports the value \fBsmtp\fR.
+Additional values are supported for use only with
+other mail systems.
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+The
+.PN post
+command does 
+not
+consult the user's 
+.PN \&.mh_profile .
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN /usr/lib/mh/mtstailor
+The system customization file.
+.TP
+.PN /usr/bin/mh/refile
+The program to process \f(CWFcc:\fRs.
+.TP
+.PN /usr/lib/mh/mhl
+The program to process \f(CWBcc:\fRs.
+.TP
+.PN /usr/lib/mh/MailAliases
+The system alias file.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+comp(1mh),
+mhmail(1mh), 
+send(1mh), 
+mh-alias(5mh),
+mh-mail(5mh),
+mtstailor(5mh)
+.br
+\fIStandard for the Format of ARPA Internet Text Messages\fR (RFC 822)

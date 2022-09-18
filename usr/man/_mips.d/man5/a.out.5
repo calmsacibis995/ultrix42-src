@@ -1,0 +1,106 @@
+.TH a.out 5 RISC
+.SH Name
+a.out \- assembler and link editor output
+.SH Syntax
+.B #include <a.out.h>
+.SH Description
+The 
+.PN a.out
+.NXR "assembler and link editor"
+.NXR "assembler"
+.NXR "link editor"
+file contains the output from the assembler,
+.PN as ,
+and the link editor,
+.PN ld .
+If errors and unresolved references do not exist, both programs make
+.PN a.out
+executable.  When submitted to the debugger, the
+.PN a.out
+file provides symbolic information.
+.PP
+The RISC compilers and ULTRIX compilers
+use a file format that is similar to
+standard AT&T System V COFF (common object file format).  
+.PP
+The RISC File Header definition is based on the AT&T System V header file
+.I filehdr.h
+with the following changes (also see
+.MS filehdr 5 ):
+.IP \(bu 5
+The symbol table file pointer,
+.I f_symptr,
+and the number of symbol table entries,
+.I f_nsyms,
+specify the file pointer and the size of the
+Symbolic Header, respectively.
+.IP \(bu 5
+All tables that specify symbolic information have their file
+pointers and number of entries in the Symbolic Header.  
+.PP
+The Optional Header definition uses the same format 
+as the System V header file,
+.I aouthdr.h,
+(the standard (pre-COFF) UNIX system a.out header) except
+the following fields have been added:
+.I  "bss_start, gprmask, cprmask,"
+and
+.I gp_value.
+.PP
+The Section Header definition has the same format as the System V header
+file,
+.I scnhdr.h,
+except the line number fields
+.RI ( s_lnnoptr
+and
+.IR s_nlnno )
+are used for gp tables (see
+.MS scnhdr 5 ).
+.PP
+The RISC relocation information definition is similar to that in
+Berkeley 4.3 UNIX, which has local relocation types (see
+.MS reloc 5 ).
+.PP
+The RISC file format is as follows:
+.IP \(bu 5
+File Header
+.IP \(bu 5
+Optional Header
+.IP \(bu 5
+Section Headers
+.IP \(bu 5
+Section Data \(em Includes text, read-only data, large data, 8- and 4-byte
+literal pools, small data, small bss (0 size), and large bss (0 size).
+.IP \(bu 5
+Section Relocation Information \(em Includes information for text, 
+read-only data, large data, 8- and 4-byte literal pools, and small data.
+.IP \(bu 5
+Gp Tables \(em Missing if relocation information is not saved.
+.IP \(bu 5
+Symbolic Header \(em Missing if fully stripped.
+.IP \(bu 5
+Line Numbers \(em Created only if debugging is on and missing if stripped of
+nonglobals or fully stripped.
+.IP \(bu 5
+Procedure Descriptor Table \(em Missing if fully stripped.
+.IP \(bu 5
+Local Symbols \(em Missing if stripped of nonglobals or if fully stripped.
+.IP \(bu 5
+Optimization Symbols \(em Created only if debugging is on and missing if
+stripped of nonglobals or fully stripped.
+.IP \(bu 5
+Auxiliary Symbols \(em Created only if debugging is on and missing if
+stripped of nonglobals or fully stripped.
+.IP \(bu 5
+Local Strings \(em Missing if stripped of nonglobals or if fully stripped.
+.IP \(bu 5
+External Strings \(em Missing if fully stripped.
+.IP \(bu 5
+Relative File Descriptors \(em Missing if stripped of nonglobals or if fully stripped.
+.IP \(bu 5
+File Descriptors \(em Missing if stripped of nonglobals or if fully stripped.
+.IP \(bu 5
+External Symbols \(em Missing if fully stripped.
+.SH See Also
+as(1), ld(1), nm(1), dbx(1), strip(1), filehdr(5), scnhdr(5), reloc(5), 
+syms(5), linenum(5).

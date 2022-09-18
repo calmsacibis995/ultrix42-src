@@ -1,0 +1,29 @@
+.TH touchwin 3cur 
+.SH Name
+touchwin \- touch window
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int touchwin(win)
+.br
+.B
+WINDOW \(**win;
+.SH Description
+.NXR "touchwin subroutine"
+This routine discards all optimization information
+for the specified window and assumes
+that the entire window has been drawn on.
+.PP
+This is sometimes necessary when using overlapping windows,
+as a change to one window will affect the other window.
+The records of which lines have
+been changed may not be correct for the window which has
+not been changed directly.
+.SH Return Values
+The
+.PN touchwin
+function returns OK on success and ERR on error.

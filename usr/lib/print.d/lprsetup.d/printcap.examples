@@ -1,0 +1,195 @@
+###
+# @(#)printcap.examples	4.1      ULTRIX 	7/2/90
+#
+# /etc/printcap templates.
+#
+# This file contains examples of line printer definitions
+# you can use to tailor the printcap entries you need.
+#
+# The entries are now comments.  Copy this file to /etc/printcap.tmp.
+# Tailor the entries you can use, and delete the entries you do not need.  
+# When you are done, copy this file to /etc/printcap or append this file
+# to /etc/printcap.  
+#
+###
+
+###
+# lp0 | a local LP25 printer on an LP11 parallel interface:\
+#	:du#1:\
+# 	:dn=/usr/lib/lpd:\
+#	:lp=/dev/lp:\
+#	:mx#5000:\
+#	:mc#3:\
+#	:sd=/usr/spool/lpd0:
+###
+
+###
+# lqp02 | a local LQP02 printer on DZ11 serial interface:\
+#	:br#1200:\
+#	:dn=/usr/lib/lpd:\
+#	:lp=/dev/tty00:\
+#	:du#1:\
+#	:mc#10:\
+#	:mx#600:\
+#	:of=/usr/lib/lpf:\
+#	:sd=/usr/spool/lpq02:\
+#	:sh:
+###
+
+###
+# ln | a local LN01 printer on a DMF32 parallel interface:\
+#	:dn=/usr/lib/lpd:\
+#	:if=/usr/lib/lpdfilters/ln01of:\
+#	:lf=/usr/adm/lnd-errs:\
+#	:lp=/dev/lp:\
+#	:mc#20:\
+#	:mx#2000:\
+#	:of=/usr/lib/lpdfilters/ln01of:\
+#	:pl#60:\
+#	:pw#80:\
+#	:sd=/usr/spool/ln:
+###
+
+###
+# ln03 | a remote LN03 printer:\ 
+#	:br#1200:\
+#	:lp=:\
+#	:rm=remvax:\
+#	:rp=ln03:\
+#	:sd=/usr/spool/remvaxlqp:
+###
+
+###
+#lj250| a local LJ250 DEColorwriter Companion Color printer:\
+#	:lp=/dev/tty01:\
+#	:br#9600:\
+#	:fc#0177777:\
+#	:fs#03:\
+#	:xc#0177777:\
+#	:xs#040040:\
+#	:if=/usr/lib/lpdfilters/lj250of:\
+#	:dn=/usr/lib/lpd:\
+#	:rw:\
+#	:sh:\
+#	:sd=/usr/spool/lj250:\
+#	:pw#80:\
+#	:pl#66:\
+#	:mc#20:\
+#	:lf=/usr/adm/lpd-errs:
+###
+
+###
+#lcg01| a local LCG01 Color Printing System Printer:\
+#	:lp=/dev/tty02:\
+#	:br#9600:\
+#	:fc#0177777:\
+#	:fs#03:\
+#	:xc#0177777:\
+#	:xs#040040:\
+#	:if=/usr/lib/lpdfilters/lcg01of:\
+#	:dn=/usr/lib/lpd:\
+#	:rw:\
+#	:sh:\
+#	:sd=/usr/spool/lcg01:\
+#	:pw#80:\
+#	:pl#66:\
+#	:mc#20:\
+#	:lf=/usr/adm/lpd-errs:
+###
+
+###
+#ln03s| a local LN03S Laser Printer:\
+#	:lp=/dev/tty03:\
+#	:sd=/usr/spool/ln03s:\
+#	:dn=/usr/lib/lpd:\
+#	:rw:\
+#	:br#19200:\
+#	:fc#0177777:\
+#	:fs#03:\
+#	:xc#0177777:\
+#	:xs#040040:\
+#	:if=/usr/lib/lpdfilters/ln03of:\
+#	:of=/usr/lib/lpdfilters/ln03of:\
+#	:pw#80:\
+#	:pl#66:\
+#	:mc#20:\
+#	:lf=/usr/adm/lpd-errs:
+###
+
+###
+#lps20na| an LPS20 print server with letter (8.5in x 11in) paper:\
+#       :ct=network:\
+#       :lf=/usr/adm/lpd-errs:\
+#       :of=/usr/lib/lpdfilters/lpscomm NODE  %U %H %J:\
+#       :ps=LPS:\
+#       :sd=/usr/spool/lps20na:\
+#       :uv=4.0:\
+#       :Da=ascii:\
+#       :Dl=/usr/lib/lpdfilters/lps_v3.a:\
+#       :Sd=a:
+###
+
+###
+#lps20e| an LPS20 print server with a4 paper:\
+#       :ct=network:\
+#       :lf=/usr/adm/lpd-errs:\
+#       :of=/usr/lib/lpdfilters/lpscomm NODE  %U %H %J:\
+#       :ps=LPS:\
+#       :sd=/usr/spool/lps20e:\
+#       :uv=4.0:\
+#       :Da=ascii:\
+#       :Dl=/usr/lib/lpdfilters/lps_v3.a:\
+#       :Sd=a4:
+###
+
+###
+#lps40| an LPS40 with lps40.a device control module library file:\
+#       :ct=network:\
+#       :lf=/usr/adm/lpd-errs:\
+#       :of=/usr/lib/lpdfilters/lpscomm NODE  %U %H %J:\
+#       :ps=LPS:\
+#       :sd=/usr/spool/lps40:\
+#       :uv=4.0:\
+#       :Da=ascii:\
+#       :Dl=/usr/lib/lpdfilters/lps40.a:\
+#       :Sd=a:
+###
+
+###
+#ln03l| LN03 printer on LAT:\
+#	:lp=/dev/tty04:\
+#	:sd=/usr/spool/ln03l:\
+#	:ts=TS11:\
+#	:op=LNL_PRT:\
+#	:br#9600:\
+#	:fc#0177777:fs#023:\
+#	:xc#0177777:xs#040:\
+#	:pl#66:\
+#	:pw#80:\
+#	:of=ln03of:\
+#	:if=ln03of:\
+#	:lf=/usr/adm/lpd-errs:
+###
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

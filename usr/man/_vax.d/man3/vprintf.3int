@@ -1,0 +1,142 @@
+.TH vprintf 3int
+.SH Name
+vprintf, vfprintf, vsprintf \- print formatted output of a varargs argument list
+.SH Syntax
+.B #include <stdio.h>
+.br
+.B #include <varargs.h>
+.PP
+.B int vprintf (
+.IR format , 
+.I ap
+.B )
+.br
+.B char 
+.IR *format ;
+.br
+.B va list 
+.IR ap ;
+.PP
+.B int vfprintf (
+.IR stream , 
+.IR format , 
+.I ap
+.B )
+.br
+.B FILE
+.IR *stream ;
+.br
+.B char 
+.IR *format ;
+.br
+.B va list 
+.IR ap ;
+.PP
+.B int vsprintf (
+.IR s , 
+.IR format , 
+.I ap
+.B )
+.br
+.B char 
+.IR *s , 
+.IR *format ;
+.br
+.B va list 
+.IR ap ;
+.SH Description
+.NXR "vprintf subroutine"
+.NXR "vfprintf subroutine"
+.NXR "vsprintf subroutine"
+The international functions 
+.PN vprintf , 
+.PN vfprintf , 
+and 
+.PN vsprintf 
+are similar to the 
+.PN vprintf
+standard I/O functions. 
+.PP
+Likewise, the vprintf functions are similar to the printf functions 
+except they are called with an argument list as defined by 
+.PN varargs
+instead of with a variable number of arguments.
+.PP
+The international functions allow you to use the 
+.I %digit$ 
+conversion character in place of the 
+.I % 
+character  you use in the standard I/O functions.  The digit is a
+decimal digit 
+.I n 
+from 1 to 9.  The international functions apply conversions to the 
+.I nth 
+argument in the argument list, rather than to the next unused argument.
+.PP 
+You can use the 
+.I %
+conversion character in the international functions.  However, you cannot mix 
+the 
+.I %
+conversion character with the 
+.I %digit$ 
+conversion character in a single call.
+.PP
+You can indicate a field width or precision by an asterisk
+(*) instead of a digit string in format strings containing
+the 
+.I % 
+conversion character. If you use an asterisk, you can
+supply an integer 
+.I arg
+that specifies the field width or precision.  In format strings containing the 
+.I %digit$
+conversion character, you can indicate field width or precision by the
+sequence \fI*digit$\fP.
+You use a decimal digit from 1 to 9 to indicate which argument contains an 
+integer that specifies the field width or precision.
+.PP
+The conversion characters and their meanings are identical to 
+.PN printf .
+.PP
+You must use each digit argument at least once.
+.SH Examples
+.EX
+#include <stdio.h>
+#include <varargs.h>
+
+main()
+{
+char *function_name = "vpr";
+char *arg1 = "hello world";
+int arg2 = 2;
+char *arg3 = "study";
+
+char *i18nfmt = "%1$s %3$d\\n";
+
+test(function_name, i18nfmt, arg1, arg2, arg3);
+}
+
+test(va_alist)
+va_dcl
+{
+va_list args;
+char *fmt;
+char string[1024];
+
+va_start(args);
+
+(void)printf("function %s: ", va_arg(args, char *));
+
+fmt = va_arg(args, char *);
+
+(void)vprintf(fmt, args);
+
+va_end(args);
+}
+.EE
+.SH See Also 
+setlocale(3), scanf(3int), printf(3s), printf(3int), vprintf(3s), 
+putc(3s), scanf(3s), stdio(3s), varargs(3) 
+.br
+.I Guide to Developing International Software

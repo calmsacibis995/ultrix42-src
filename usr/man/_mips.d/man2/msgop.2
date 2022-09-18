@@ -1,0 +1,346 @@
+.\" SCCSID: @(#)msgop.2	2.5	8/24/87
+.TH msgop 2
+.SH Name
+msgsnd, msgrcv \- message operations
+.SH Syntax
+#include <sys/types.h>
+.br
+#include <sys/ipc.h>
+.br
+#include <sys/msg.h>
+.PP
+.nf
+int msgsnd (\fImsqid, msgp, msgsz, msgflg\fP)
+int \fImsqid\fP;
+void *\fImsgp\fP;
+size_t \fImsgsz\fP;
+int \fImsgflg\fP;
+.PP
+int msgrcv (\fImsqid, msgp, msgsz, msgtyp, msgflg\fP)
+int \fImsqid\fP;
+void *\fImsgp\fP;
+size_t \fImsgsz\fP;
+long \fImsgtyp\fP;
+int \fImsgflg\fP;
+.fi
+.SH Description
+.NXB "msgop keyword"
+.NXB "msgsnd system call"
+.NXB "message" "operations"
+.NXA "msgrcv system call" "msgctl system call"
+.NXA "msgrcv system call" "msgget system call"
+There are two message operations system calls,
+.PN msgsnd
+and
+.PN msgrcv .
+.SS msgsnd
+The
+.PN msgsnd
+system call
+is used to send a message to the queue associated with the message
+queue identifier specified by
+.IR msqid .
+The
+.I msgp
+parameter points to a structure containing the message.
+This structure is composed of the following members:
+.EX
+long	mtype;	/\(** message type \(**/
+char	mtext[];	/\(** message text \(**/
+.EE
+The
+.I mtype
+parameter is a positive integer that can be used 
+by the receiving process for
+message selection.  For more information, see the
+.PN msgrcv
+section of this reference page.
+The
+.I mtext
+parameter is any text of length
+.I msgsz
+bytes.
+The
+.I msgsz
+parameter can range from 0 to a system-imposed maximum.
+.PP
+The
+.I msgflg
+parameter specifies the action to be taken
+if the number of bytes already on the queue is equal to
+msg_qbytes.
+(For further information, see 
+.MS intro 2 .
+) The parameter also specifies what happens when 
+the total number of messages on all queues system-wide is equal to the
+system-imposed limit.
+.PP
+If either of these conditions is true, and if  
+(\fImsgflg\fR & IPC_NOWAIT)
+is true, the message is not sent and the calling process 
+returns immediately.
+However, if either of the conditions is true and 
+(\fImsgflg\fR & IPC_NOWAIT)
+is false,
+the calling process suspends execution until
+one of the following occurs:
+.IP \(bu 5
+The condition responsible for the suspension no longer
+exists, in which case the message is sent.
+.IP \(bu 5
+The
+.I msqid
+parameter is removed from the system.
+For further information, see 
+.MS msgctl 2 .
+When this occurs,
+.I errno
+is set equal to
+EIDRM,
+and a value of \-1 is returned.
+.IP \(bu 5
+The calling process receives a signal that is to be caught.
+In this case, the message is not sent and the calling process resumes
+execution in the manner prescribed in
+.MS signal 3 .
+.PP
+The
+.PN msgsnd
+system call fails and no message is sent under the following conditions:
+.TP 15
+[EINVAL]
+The
+.I msqid
+parameter is not a valid message queue identifier.
+.TP 15
+[EACCES]
+Operation permission is denied to the calling process.  For more
+information, see 
+.MS errno 2 .
+.TP 15
+[EINVAL]
+The
+.I mtype
+parameter is less than 1.
+.TP 15
+[EAGAIN]
+The message cannot be sent for one of the reasons cited above and
+(\fImsgflg\fP & IPC_NOWAIT)
+is true.
+.TP 15
+[EINVAL]
+The
+.I msgsz
+parameter is less than zero or greater than the system-imposed limit.
+.TP 15
+[EFAULT]
+The
+.I msgp
+parameter points to an illegal address.
+.PP
+Upon successful completion, the following actions are taken
+with respect to the data structure associated with
+.IR msqid 
+(for more information, see 
+.MS errno 2 
+):
+.IP \(bu 5
+The
+.I msg_qnum
+is incremented by 1.
+.IP \(bu 5
+The
+.I msg_lspid
+is set equal to the process ID
+of the calling process.
+.IP \(bu 5
+The
+.I msg_stime
+is set equal to the current time.
+.SS msgrcv
+The
+.PN msgrcv
+system call reads a message from the 
+queue associated with the message queue
+identifier specified by
+.I msqid 
+and places it in the structure pointed to by
+.IR msgp .
+This structure is composed of the following members:
+.PP
+.EX
+long    mtype;      /\(** message type \(**/
+char    mtext[];    /\(** message text \(**/
+.EE
+The
+.I mtype
+parameter is the received message's type, 
+as specified by the sending process.
+The
+.I mtext
+parameter is the text of the message.  The
+.I msgsz
+parameter specifies the size, in bytes, of
+.IR mtext .
+The received message is truncated to
+.IR msgsz " bytes"
+if it is larger than
+.I msgsz
+and
+(\fImsgflg\fP & MSG_NOERROR)
+is true.
+The truncated part of the message is lost and no indication of
+the truncation is given to the calling process.
+.PP
+The
+.I msgtyp
+parameter specifies the type of message requested, as follows:
+.IP \(bu 5
+If
+.I msgtyp
+is equal to 0, the first message on the queue is received.
+.IP \(bu 5
+If
+.I msgtyp
+is greater than 0, the first message of type
+.I msgtyp
+is received.
+.IP \(bu 5
+If
+.I msgtyp
+is less than 0,
+the first message of the lowest type that is less than or equal
+to the absolute value of
+.I msgtyp
+is received.
+.PP
+The
+.I msgflg
+parameter specifies the action to be taken if a 
+message of the desired type is not on the queue.
+These specified actions are as follows:
+.IP \(bu 5
+If
+(\fImsgflg\fP & IPC_NOWAIT)
+is true, the calling process returns immediately with a value
+of \-1 and
+.I errno
+set to
+ENOMSG.
+.IP \(bu 5
+If 
+(\fImsgflg\fP & IPC_NOWAIT)
+is false, the calling process suspends execution until
+one of the following occurs:
+.RS
+.IP - 5
+A message of the desired type is placed on the queue.
+.IP - 5
+The
+.I msqid
+parameter is removed from the system.
+When this occurs,
+.I errno
+is set equal to
+EIDRM,
+and a value of \-1 is returned.
+.IP - 5
+The calling process receives a signal that is to be caught.
+In this case, a message is not received and the calling process resumes
+execution in the manner prescribed in
+.MS signal 3 .
+.RE
+.PP
+The
+.PN msgrcv
+system call fails and no message is received under the following
+conditions:
+.TP 15
+[EINVAL]
+The
+.I msqid
+parameter is not a valid message queue identifier.
+.TP
+[EACCES]
+Operation permission is denied to the calling process.
+.TP
+[EINVAL]
+The
+.I msgsz
+parameter is less than 0.
+.TP
+[E2BIG]
+The
+.I mtext 
+parameter is greater than
+.I msgsz
+and
+(\fImsgflg\fP & MSG_NOERROR)
+is false.
+.TP
+[ENOMSG]
+The queue does not contain a message of the desired type and
+(\fImsgtyp\fP & IPC_NOWAIT)
+is true.
+.TP
+[EFAULT]
+The
+.I msgp
+parameter points to an illegal address.
+.PP
+Upon successful completion,
+the following actions are taken with respect to
+the data structure associated with
+.I msqid:  
+.IP \(bu 5
+The
+.I msg_qnum
+is decremented by 1.
+.IP \(bu 5
+The
+.I msg_lrpid
+is set equal to the process
+ID
+of the calling process.
+.IP \(bu 5
+The
+.I msg_rtime
+is set equal to the current time.
+.SH Return Values
+If the
+.PN msgsnd
+or
+.PN msgrcv
+system calls
+return due to the receipt of a signal, a value of \-1 is
+returned to the calling process, and
+errno
+is set to
+EINTR.
+If they return due to removal of
+.I msqid
+from the system, a value of \-1 is returned, and
+errno
+is set to
+EIDRM.
+.PP
+Upon successful completion, the return value is as follows:
+.IP \(bu 5
+The
+.PN msgsnd
+system call returns a value of 0.
+.IP \(bu 5
+The
+.PN msgrcv
+system call
+returns a value equal to the number of bytes actually placed into
+.IR mtext .
+.PP
+Otherwise, a value of \-1 is returned, and
+errno
+is set to indicate the error.
+.SH See Also
+errno(2), intro(2), msgctl(2), msgget(2), signal(3)
+.NXE "msgop keyword"
+.NXE "msgsnd system call"
+.NXE "message" "operations"

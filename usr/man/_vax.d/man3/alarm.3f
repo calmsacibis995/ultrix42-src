@@ -1,0 +1,44 @@
+.\" SCCSID: @(#)alarm.3f	8.1	9/11/90
+.TH alarm 3f VAX "" Unsupported
+.SH Name
+alarm \- execute a subroutine after a specified time
+.SH Syntax
+.B integer function alarm (time, proc)
+.br
+.B integer time
+.br
+.B external proc
+.SH Description
+.NXR "alarm subroutine (FORTRAN)"
+.NXR "subroutine" "executing at specified time"
+.NXA "alarm subroutine (FORTRAN)" "sleep subroutine (FORTRAN)"
+This routine arranges for subroutine
+.I proc
+to be called after
+.I time
+seconds. If
+.I time
+is ``0'', the alarm is turned off and no routine will be called.
+The returned value will be the time remaining on the last alarm.
+.SH Restrictions
+Both
+.PN alarm
+and
+.PN sleep
+interact. If
+.PN sleep
+is called after
+.PN alarm ,
+the
+.PN alarm
+process will never be called. SIGALRM will occur at the lesser of the
+remaining
+.PN alarm
+time or the
+.PN sleep
+time.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+alarm(3), sleep(3f), signal(3f)

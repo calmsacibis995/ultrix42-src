@@ -1,0 +1,72 @@
+.\" SCCSID: @(#)lex.1	8.2	9/27/90
+.TH lex 1
+.SH Name
+lex \- generate lexical analyzer
+.SH Syntax
+.B lex
+[\fB\-tvfn\fR] \fIfile...\fR 
+.SH Description
+.NXR "lex program generator"
+.NXR "lexical analysis program" "generating"
+.NXA "yacc compiler" "lex program generator"
+The 
+.PN lex
+command
+generates programs to be used in simple lexical analysis of text.
+The input
+.I files
+(standard input default) contain regular expressions
+to be searched for, and actions written in C to be executed when
+expressions are found.
+.PP
+A C source program, 'lex.yy.c', is generated.  It is compiled 
+using the following command line:
+.EX
+cc lex.yy.c \-ll
+.EE
+This program copies unrecognized portions of
+the input to the output, and executes the associated
+C action for each regular expression that is recognized.
+.SH Options
+.NXR "lex program generator" "options"
+.IP \fB\-f\fR 5
+Runs a faster compilation (does not pack resulting tables).
+This is limited to small programs.
+.IP \fB\-n\fR 
+Prints no summary information (default option).
+.IP \fB\-t\fR 
+Writes to standard output instead of to file 
+.PN lex.yy.c .
+.IP \fB\-v\fR 
+Prints one-line summary of generated statistics.
+.SH Examples
+.NXR "lexical analysis program" "example"
+In the following example, the command
+.EX
+lex lexcommands
+.EE
+draws
+.PN lex
+instructions from the file
+.IR lexcommands ,
+and places the output in lex.yy.c.
+The command
+.EX
+%%
+[A\-Z]	putchar(yytext[0]+\'a\'\-\'A\');
+[ ]+$
+[ ]+	putchar(\' \');
+.EE
+.PP
+is an example of a
+.PN lex
+program that would be put into a
+.PN lex
+command file.  This program converts upper case to lower,
+removes blanks at the end of lines,
+and replaces multiple blanks by single blanks.
+.SH See Also
+sed(1), yacc(1)
+.br
+"LEX \- Lexical Analyzer Generator",
+\fISupplementary Documents, Volume 2: Programmer\fP

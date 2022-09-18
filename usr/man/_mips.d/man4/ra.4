@@ -1,0 +1,461 @@
+.\" SCCSID: @(#)ra.4	2.1	3/10/87
+.TH ra 4
+.SH Name
+ra \- MSCP disk interface
+.SH Syntax
+.B For UNIBUS, Q-bus:
+.RS 3
+.br
+.B "controller uda0 at uba?"
+.br
+.B "controller uq0 at uda0 csr 0172150 vector uqintr"
+.br
+.B "disk ra0 at uq0 drive 0"
+.RE
+.PP
+.B For VAX BI:
+.RS 3
+.br
+.B "controller kdb0 at vaxbi0 node 4"
+.br
+.B "controller uq0 at kdb0 vector uqintr"
+.br
+.B "disk ra0 at uq0 drive 0"
+.br
+.B "controller bvpssp0 at aio1 vector bvpsspintr"
+.br
+.B "disk ra0 at bvpssp0 drive 0"
+.RE
+.PP
+.B For MSI Bus:
+.br
+.RS 3
+.B "adapter msi0 at nexus?"
+.br
+.B "controller dssc0 at msi0 msinode 0"
+.br
+.B "disk ra0 at dssc0 drive 3"
+.RE
+.PP
+.B For VAX CI/HSC:
+.br
+.RS 3
+.B "adapter ci0 at nexus?"
+.br
+.B "adapter ci0 at vaxbi? node?"
+.br
+.B "controller hsc0 at ci0 cinode 6"
+.br
+.B "disk ra0 at hsc0 drive 3"
+.RE
+.SH Description
+.NXS "ra interface" "MSCP disk interface"
+.NXB "MSCP disk interface"
+.NXS "uda interface" "MSCP disk interface"
+Prior to Version 2.0, this device was referenced by 
+.MS uda 4 .
+.PP
+This is a driver for all DIGITAL MSCP disk controllers.
+All controllers communicate with the host through a packet-oriented 
+protocol termed the Mass Storage Control Protocol (MSCP).
+.PP
+The following rules are used to determine the major and minor numbers that
+are associated with an 
+.PN ra
+type disk.  There is a range of major numbers used to represent  
+.PN ra 
+disks.  Each major number represents 32 disks.  For this reason, the first
+major number associated with 
+.PN ra
+disks represents logical unit number 0 through logical unit number 31.
+Similarly the second major number represents logical unit number 32 through
+logical unit number 63. 
+The minor number is used to represent both the logical unit
+number and partition.  A disk partition refers to a designated portion
+of the physical disk.
+To accomplish this, the 8-bit minor number is broken up
+into two parts.  The low three bits of the minor number specify a disk
+partition.  These three bits allow for the naming of eight partitions.  The
+partitions are named a,b,c,d,e,f,g and h.  The upper five bits of the minor
+number specify the logical unit number within a group of 32 disks.
+.PP
+The device special file names associated with 
+.PN ra 
+disks are based on 
+the following conventions, which are closely associated with
+the minor number assigned to the disk. 
+The standard device names begin with
+.PN ra 
+for the block special file and
+.PN rra 
+for the raw (character) special file.
+Following the
+.PN ra
+is the logical unit number and then a letter, a through h, to represent
+the partition.  Throughout this reference page,
+the question mark (?) character represents
+the logical unit number in the name of the device special file.  For example
+ra?b could represent ra0b, ra1b, and so on.
+.PP
+The following examples illustrate how the logical unit number is
+calculated given the major and minor number of an 
+.PN ra
+disk.  For the device special file rra6a, the major number is 60 and the
+minor number is 48.  The partition is represented by the low 3 bits of the 
+number 48.  The low 3 bits  will be 0 which specifies the ``a''
+partition.  The upper 5 bits of 48 specifies the number 6.  
+The major number is 60.  Because 60 is the base major number, it 
+represents the first group of 32 disks.  For this
+reason, there is no need to adjust the unit number for a high order grouping.
+Putting all these pieces together reveals that the major/minor pair 60/48
+refers to the ``a'' partition of logical unit 6.  As another example, 
+the following computation determines
+the logical unit number corresponding to the major/minor
+pair 62,49.  The low 3 bits of the minor number gives the number 1, which
+is the ``b'' partition.  
+The upper 5 bits of the minor number gives the number 6.
+The major number is 62.  Subtracting 62 from the base major number of 60 gives
+a value of 2.  This means that 2 groups of 32 disks preceed the unit in
+question.  For this reason, the logical unit number is as follows:
+(2 * 32) + 6 = 70.  The figure 6 is from the minor number. 
+Therefore, the major/minor pair 62,49 refers to the ``b''
+partition of logical unit number 70, or rra70b.
+.PP
+The disk can be accessed through either the block special file or the 
+character special file.  The block special file accesses the disk using
+the file system's normal buffering mechanism.  Reads and writes to the block
+special file can specify any size.  This avoids the need to limit data 
+transfers to the size of physical disk records and to calculate offsets
+within disk records.
+The file system may break up large read and write requests into smaller 
+fixed size transfers to the disk.
+.PP
+The character special file provides a raw interface which allows for
+direct transmission between the disk and the user's read or write buffer.
+In contrast to the block special file, reads and writes to the raw interface
+must be done on full sectors only.  
+For this reason,
+in raw I/O, counts should be multiples of 512 bytes (a disk sector).
+In the same way,
+.PN seek
+calls should specify a multiple of 512 bytes.
+A single read or write to the raw interface results in 
+exactly one I/O operation,
+consequently raw I/O may be considerably more efficient for large transfers.
+Multiply buffered I/O operations are
+possible to any raw MSCP device. (See 
+.MS nbuf 4
+for more information.)
+.SH Disk Support
+.NXR "MSCP disk interface" "disk support"
+This driver handles all disk drives that may be connected to an MSCP-based
+controller.  Consult the 
+.I "ULTRIX Software Product Description" 
+to determine which controllers
+are supported for which CPU types and hardware configurations.
+.PP
+The starting location and length (in 512-byte sectors) 
+of the disk partitions of each
+drive are shown in the following table.
+Partition sizes can be changed
+by 
+.MS chpt 8 .
+For further information, see 
+.MS dkio 4 .
+.PP
+.NXB "MSCP disk interface" "partition tables"
+.nf
+.ta .5i +\w'000000    'u +\w'000000    'u +\w'000000	'u +\w'000000	 'u
+.PP
+.B "RA60 partitions"
+	disk	start	length
+.sp
+	ra?a	0	32768
+	ra?b	32768	50160
+	ra?c	0	400176
+	ra?d	24298	52416
+	ra?e	295344	52416
+	ra?f	347760	52415
+	ra?g	82928	160000
+	ra?h	24928	157247
+	ra?h	281805	265236
+.PP
+.B "RA70 partitions"
+	disk	start	length
+.sp
+	ra?a	0	32768
+	ra?b	32768	66690
+	ra?c	0	547042
+	ra?d	0	99458	
+	ra?e	0	281805
+	ra?f	99458	447583
+	ra?g	99458	182347
+.PP
+.B "RA71 partitions"
+	disk	start	length
+.sp
+	ra?a	0	32768
+	ra?b	32768	131072
+	ra?c	0	1367310
+	ra?d	778240	204800
+	ra?e	983040	204800
+	ra?f	1187840	179470
+	ra?g	163840	614400
+	ra?h	778240	589070
+.PP
+.B "RA72 partitions"
+	disk	start	length
+.sp
+	ra?a	0	32768
+	ra?b	32768	190464
+	ra?c	0	1953300
+	ra?d	1144832	299008
+	ra?e	1443840	299008
+	ra?f	1742848	210452
+	ra?g	223232	921600
+	ra?h	1144832	808468
+.PP
+.B "RA80 partitions"
+	disk	start	length
+.sp
+	ra?a	0	32768
+	ra?b	32768	50160
+	ra?c	0	237212
+	ra?d	82928	51428
+	ra?e	134356	51428
+	ra?f	185784	51428
+	ra?g	82928	154284
+	ra?h	0	0
+.PP
+.B "RA81 partitions"
+	disk	start	length
+.sp
+	ra?a	0	32768
+	ra?b	32768	66690
+	ra?c	0	891072
+	ra?d	323840	210538
+	ra?e	46996	210538
+	ra?f	680534	210538
+	ra?g	99458	160000
+	ra?h	259458	631614
+.PP
+.B "RA82 partitions"
+	disk	start	length
+.sp
+	ra?a	0	32768
+	ra?b	32768	66690
+	ra?c	0	1216665
+	ra?d	99458	220096
+	ra?e	319554	219735
+	ra?f	539289	437760
+	ra?g	99458	877591
+	ra?h	977049	239616
+.PP
+.B "RA90 partitions"
+	disk	start	length
+.sp
+	ra?a	0	32768	
+	ra?b	32768	127072	
+	ra?c	0	2409680
+	ra?d	159840	420197	
+	ra?e	580037	420197
+	ra?f	1000234	840393
+	ra?g	159840	1680787
+	ra?h	1840627	535526
+.PP
+.B "RA92 partitions"
+	disk    start   length
+	ra?a    0       32768
+	ra?b    32768   127072
+	ra?c    0       2940951
+	ra?d    159840  420197
+	ra?e    580037  420197
+	ra?f    1000234 840393
+	ra?g    159840  1680787
+	ra?h    1840627 1100324
+.PP
+.B "RD31 partitions"
+	disk	start	length
+.sp
+	ra?a	0	15884
+	ra?b	15884	10024
+	ra?c	0	41560
+	ra?d	0	0
+	ra?e	0	0
+	ra?f	0	0
+	ra?g	25908	15652
+	ra?h	0	0
+.PP
+.B "RD32 partitions"
+	disk	start	length
+.sp
+	ra?a	0	15884
+	ra?b	15884	15625
+	ra?c	0	83236
+	ra?d	31509	25863
+	ra?e	57372	25864
+	ra?f	0	0
+	ra?g	31509	51727
+	ra?h	0	0
+.PP
+.B "RD51 partitions"
+	disk	start	length
+.sp
+	ra?a	0	15884
+	ra?b	15884	5716
+	ra?c	0	21600
+	ra?d	0	0
+	ra?e	0	0
+	ra?f	0	0
+	ra?g	0	0
+	ra?h	0	0
+.PP
+.B "RD52 partitions"
+	disk	start	length
+.sp
+	ra?a	0	15884
+	ra?b	15884	9766
+	ra?c	0	60480
+	ra?d	0	0
+	ra?e	0	50714
+	ra?f	50714	9766  
+	ra?g	25650	34830
+	ra?h	15884	44596
+.PP
+.B "RD53 partitions"
+	disk	start	length
+.sp
+	ra?a	0	32768
+	ra?b	32768	50160
+	ra?c	0	138672
+	ra?d	0	0
+	ra?e	0	0
+	ra?f	0	0
+	ra?g	82928	55744
+	ra?h	32768	105904
+.PP
+.B "RD54 partitions"
+	disk	start	length
+.sp
+	ra?a	0	32768
+	ra?b	32768	50160
+	ra?c	0	311200
+	ra?d	82928	130938
+	ra?e	213866	97334
+	ra?f	0	0
+	ra?g	82928	228272
+	ra?h	0	0
+.PP
+.B "RF30 partitions"
+	disk	start	length
+.sp
+	ra?a	0	32768
+	ra?b	32768	50160
+	ra?c	0	293040
+	ra?d	82928	130938
+	ra?e	213866	79173
+	ra?f	0	0
+	ra?g	82928	210111
+	ra?h	0	0
+.PP
+.B "RF31 partitions"
+	disk	start	length
+.sp
+	ra?a	0	32768
+	ra?b	32768	66690
+	ra?c	0	744400
+	ra?d	0	99458
+	ra?e	0	281805
+	ra?f	99458	644942
+	ra?g	99458	182347
+	ra?h	281805	462595
+.PP
+.B "RF71 partitions"
+	disk	start	length
+.sp
+	ra?a	0	32768
+	ra?b	32768	66690
+	ra?c	0	781440
+	ra?d	0	99458
+	ra?e	0	281805
+	ra?f	99458	681982
+	ra?g	99458	182347
+	ra?h	281805	499635
+.PP
+.B "RRD40 (read only) partitions"
+	disk	start	length
+.sp
+	ra?a	0	0
+	ra?b	0	0
+	ra?c	0	1171875
+	ra?d	0	0
+	ra?e	0	0
+	ra?f	0	0
+	ra?g	0	0
+	ra?h	0	0
+.PP
+.B "RRD50 (read only) partitions"
+	disk	start	length
+.sp
+	ra?a	0	15884
+	ra?b	15884	33440
+	ra?c	0	1171875
+	ra?d	131404	122993  
+	ra?e	254397	122993
+	ra?f	377390	794485
+	ra?g	49324	82080
+	ra?h	131404	1040471
+.PP
+.B "RX33 partitions"
+	disk	start	length
+.sp
+	ra?a	0	2400
+	ra?b	0	0
+	ra?c	0	2400
+	ra?d	0	0
+	ra?e	0	0
+	ra?f	0	0
+	ra?g	0	0
+	ra?h	0	0
+.PP
+.B "RX50 partitions"
+	disk	start	length
+.sp
+	ra?a	0	800
+	ra?b	0	0
+	ra?c	0	800
+	ra?d	0	0
+	ra?e	0	0
+	ra?f	0	0
+	ra?g	0	0
+	ra?h	0	0
+.PP
+.B "ESE20 partitions"
+	disk	start	length
+.sp
+	ra?a	0	15884
+	ra?b	15884	33440
+	ra?c	0	245757
+	ra?d	49324	130938
+	ra?e	180262	65495
+	ra?f	0	0
+	ra?g	49324	196433
+	ra?h	0	0
+
+.DT
+.fi
+.PP
+Usually the ra?a partition is used for the root file system,
+the ra?b partition as a paging area.
+The ra?c partition for pack to pack copying because 
+it maps the entire disk.
+.NXE "MSCP disk interface" "partition tables"
+.SH Files
+.PN /dev/ra???
+.br
+.PN /dev/rra???
+.SH See Also
+nbuf(4), dkio(4), chpt(8), MAKEDEV(8), uerf(8)
+.NXE "MSCP disk interface"
+
+

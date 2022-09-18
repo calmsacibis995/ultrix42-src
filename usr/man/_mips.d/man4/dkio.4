@@ -1,0 +1,127 @@
+.\" SCCSID: @(#)dkio.4	2.1	3/10/87
+.TH dkio 4 RISC
+.SH Name
+dkio \- disk interface
+.SH Syntax
+\fB#include <sys/fs.h>\fR
+.br
+\fB#include <sys/ioctl.h>\fR
+.SH Description
+.NXS "disk interface" "dkio file"
+.NXR "dkio file" "ioctl codes"
+This section describes the ioctl (input/output controller) codes for all
+disk drivers.
+.NXR "disk interface" "ioctl codes"
+The basic ioctl (input/output controller) format is:
+.sp
+.br
+\fB#include <sys/fs.h>\fR
+.br
+\fB#include <sys/ioctl.h>\fR
+.br
+\fBioctl\fR(\fIfildes, code, arg)\fR
+.br
+\fBstruct pt\fR *\fR\fIarg\fR;
+.sp 
+The applicable \fIcodes\fR are:
+.IP DIOCGETPT 16
+Indicates to the driver to store
+the information in the current partition table in
+the address pointed to by \fIarg\fR.
+The file descriptor must be opened on the raw
+partitions, \fIa\fR or \fIc\fR.
+.IP
+DIOCGETPT does not change the partition table,
+but it does provide access to the partition table information.
+.IP DIOCSETPT
+Indicates to the driver to modify
+the current partition table with the information
+pointed to by \fIarg\fR.
+.IP
+The file descriptor must be opened on the raw
+partitions, \fIa\fR or \fIc\fR.
+.IP
+If the \fIa\fR or \fIc\fR partition is not mounted,
+only the partition table in the driver is modified.
+This temporarily modifies the partition table of the disk.
+The modifications are overwritten with the default table
+when the disk is turned off and on.
+.IP
+If the \fIa\fR or \fIc\fR partition is mounted,
+both the partition table in the driver and the partition table in
+the primary superblock are modified.
+This permanently modifies the partition table of the disk.
+This is not recommended.
+To change a partition table permanently,
+use the 
+.MS chpt 8
+command.
+.IP DIOCDGTPT
+Indicates to the driver to store
+the \fIdefault\fR information of the current partition table in
+the address pointed to by \fIarg\fR.
+The file descriptor must be opened on the raw
+partitions \fIa\fR or \fIc\fR.
+.IP
+DIOCGETPT does not change the partition table,
+but it does provide access to the partition table information.
+.IP DKIOCGET
+Allows the user to receive generic disk information as defined in
+.PN <sys/devio.h> 
+.IR struct devget .
+.IP DKIOCACC
+This code is defined in 
+.PN <sys/bbr.h>.
+It is currently unused.
+.RE
+.SH Restrictions
+.NXR "disk interface" "restricted"
+These restrictions apply when using the DIOCSETPT ioctl code:
+.IP \(bu 4
+You must have superuser privileges.
+.IP \(bu
+You cannot shrink or change the offset of a partition
+with a file system mounted on it
+or with an open file descriptor on the entire partition.
+.IP \(bu
+You cannot change the offset of the \fIa\fR partition.
+.SH Examples
+This example shows how to use the DIOGETPT ioctl code to
+print the length and offset of the \fIa\fR partition of an RZ23 disk:
+.NXR(e) "disk interface" "DIOGETPT and"
+.EX 0
+#include <sys/types.h>
+#include <sys/param.h>
+#include <sys/fs.h>
+#include <sys/ioctl.h>
+ 
+main()
+{
+	struct pt arg;
+	int fd, i;
+ 
+	/* Open the "a" partition of the disk you want to see */
+ 
+	if ( (fd = open("/dev/rz0a",0)) < 0 ) {
+		printf("Unable to open device\\n");
+		exit(2);
+	}
+ 
+	/* Get the partition information */
+ 
+	if ( ioctl(fd,DIOCGETPT,&arg) < 0 )
+		printf("Error in ioctl\\n");
+ 
+	printf("Length\\t\\tOffset\\n");
+ 
+ 
+	for ( i = 0; i <= 7; i++ ) {
+		printf("%d\\t\\t%d\\n",arg.pt_part[i].pi_nblocks,
+				  arg.pt_part[i].pi_blkoff );
+	}
+}
+.SH Files
+.PN /dev/{r}rz???
+.SH See Also
+rz(4), disktab(5), fstab(5), chpt(8), 
+diskpart(8), fsck(8), MAKEDEV(8), mkfs(8), tunefs(8)

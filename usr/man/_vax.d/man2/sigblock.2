@@ -1,0 +1,32 @@
+.\" SCCSID: @(#)sigblock.2	8.1	9/11/90
+.TH sigblock 2
+.SH Name
+sigblock \- block signals
+.SH Syntax
+.nf
+.B sigblock(\fImask\fP)
+.B int \fImask\fP;
+.SH Description
+.NXR "sigblock system call"
+.NXR "signal" "blocking"
+The
+.PN sigblock
+system call
+causes the signals specified in
+.I mask
+to be added to the set of signals currently
+being blocked from delivery.  Signal
+.I i
+is blocked if the
+.IR i th
+bit in 
+.I mask
+is a 1.
+.PP
+It is not possible to block SIGKILL or SIGSTOP.
+This restriction is silently
+imposed by the system.
+.PP
+The previous set of masked signals is returned.
+.SH See Also
+kill(2), sigsetmask(2), sigvec(2)

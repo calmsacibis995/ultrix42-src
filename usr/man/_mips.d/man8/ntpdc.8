@@ -1,0 +1,287 @@
+.TH ntpdc 8
+.SH Name
+ntpdc \- monitor operation of the NTP daemon, ntpd
+.SH Syntax
+.B /usr/etc/ntpdc 
+[
+.B \-n
+][
+.B \-v
+]
+\fIhost1 \fR|\fP IPaddress1 ... \fP
+.SH Description
+The
+.PN ntpdc
+.NXR "ntpdc command" 
+command sends a query to the
+.PN ntpd
+daemon running on each of the hosts listed on the command line.
+The 
+.PN ntpd
+daemon on each responding host sends information about the
+current calculated offset between its time and the time of each of
+its NTP servers or peers.  The
+.PN ntpdc
+command formats the information on the standard output.
+.PP
+.NT
+You can specify hosts by either host name or Internet
+address.  The hosts that you specify must either exist
+in the
+.PN /etc/hosts
+file, or in the master
+.PN hosts
+database, if the database is being served to your
+system by BIND/Hesiod or Yellow Pages.
+.NE
+The 
+.PN ntpdc
+command by default generates a terse, table-style report.
+If you 
+specify the 
+.PN \-v
+option, the 
+.PN ntpdc
+command generates a verbose report.
+.SH Options
+.IP \-n
+Prints Internet addresses, instead of host names, of the
+servers or peers.
+By default, the Internet addresses of the responding hosts and the
+names of their servers or peers are
+printed.  
+.IP \-v
+Prints a verbose report for each of the servers or peers
+of the responding host.
+.SH Examples
+.SS
+Terse Report:
+.PP
+The following is a typical terse report generated in response to the
+command:
+.EX
+% \f(CB/usr/etc/ntpdc 555.5.55.55
+.EE
+The host 555.5.55.55 is an NTP client, with the servers
+.PN server1 ,
+.PN server2 ,
+and
+.PN server3
+specified in its
+.PN /etc/ntp.conf
+file.  The information returned is about 
+.PN server1 ,
+.PN server2 ,
+and
+.PN server3 .
+.if t .ig
+.ta .5i 1i 2.3i 3.0i 3.5i 4.1i 4.8i 5.6i
+	\fBAddress	Strat	Poll	Reach	Delay	Offset	Disp\fP
+.br
+(rem)	(lcl)
+.br
+\&.\fIserver1\fP	555.5.55.55	1	64	377	53.0	-65.0	5.0
+.br
+*\fIserver2\fP	555.5.55.55	1	256	377	155.0	-4.0	16.0
+.br
++\fIserver3\fP	555.5.55.55	2	64	377	16.0	-61.0	3.0
+..
+.if n .ig
+.ta .3i .7i 1.7i 2.2i 2.7i 3.2i 3.9i 4.6i
+	\fBAddress	Strat	Poll	Reach	Delay	Offset	Disp\fP
+.br
+\fB(rem)	(lcl)\fP
+.br
+\&.\fIserver1\fP	555.5.55.55	1	64	377	53.0	-65.0	5.0
+.br
+*\fIserver2\fP	555.5.55.55	1	256	377	155.0	-4.0	16.0
+.br
++\fIserver3\fP	555.5.55.55	2	64	377	16.0	-61.0	3.0
+..
+.PP
+The fields are interpreted as follows:
+.IP "\- , + , . \fRor\fP *"
+A minus sign (\-), plus sign (+), or dot (.) indicates a 
+pre-configured peer (see the
+.MS ntp.conf 5
+reference page).  The asterisk (*) indicates which pre-configured peer (if
+any) is currently being used for synchronization.
+.IP (rem)
+The remote host name or Internet address of a peer or server of the 
+responding host.
+.IP (lcl)
+The Internet address of the responding host that was specified on the 
+.PN ntpdc 
+command line.
+.IP Strat
+The current operating stratum level of the peer 
+or server.  Since the NTP hierarchy can change dynamically the stratum
+levels may change.  Lower stratum levels correspond to higher accuracy.
+.IP Poll
+Current polling interval in seconds for this peer or server.
+Polling intervals change dynamically.
+.IP Reach
+Reachability in response to the last 8 polls (value of
+8-bit shift register with bits entering from the end furthest to the right).
+.IP Delay
+The estimated round-trip delay in milliseconds for 
+NTP message exchanges between the responding host and this peer
+or server.  Delay is calculated from the previous 8 polls.
+.IP Offset
+The estimated offset between the peer or server's time and the responding
+host's time in milliseconds.  This value is calculated from the
+previous 8 polls.
+.IP Disp
+The current estimated value of dispersion in milliseconds for this peer's
+offset/delay pair.
+.IP
+Dispersion is used by the
+.PN ntpd
+daemon in the clock selection algorithm.  Increasing values of dispersion are
+associated with decreasing quality of the estimate.
+.SS
+Verbose Report:
+.PP
+When the 
+.PN \-v 
+option is given, a verbose report for each of the servers or peers
+of each of the hosts
+specified on the command line is generated.
+.PP
+The following is a typical verbose report generated in response to the
+following command line:
+.EX
+% \f(CB/usr/etc/ntpdc \-v 111.11.111.11\fP
+
+Neighbor address 555.55.5.55 port:123  local address 111.11.1.11
+Reach: 0377 stratum: 2, precision: \-7
+dispersion: 2.000000, flags: 1301, leap: 0
+Reference clock ID: [22.22.2.22] timestamp: 7e5aa1a9.2add5d0b
+hpoll: 10, ppoll: 10, timer: 1024, sent: 85 received: 90
+Delay(ms)   20.00  20.00  28.00  29.00  20.00  39.00  29.00  28.00
+Offset(ms)   5.00   6.00   5.00  \-1.00  \-2.00   0.00   3.00   5.00
+
+        delay: 20.000000 offset: 5.000000 dsp 2.000000
+--------------------------------------------------------------------
+.EE
+.PP
+The fields are interpreted as follows:
+.IP "Neighbor address"
+The address and port number of one NTP server, followed by
+the Internet address of the responding host (\f(CWlocal address\fP).
+.IP Reach: 
+Reachability in response to the last 8 polls (value of
+8-bit shift register with bits entering from the end furthest to the right).
+.IP stratum: \fIn\fP
+The current operating stratum level of the peer 
+or server.  Since the NTP hierarchy can change dynamically the stratum
+levels may change.  Lower stratum levels correspond to higher accuracy.
+.IP precision: \fInn\fP
+The precision of this clock, given in seconds as a power of
+2.  If precision is equal to
+\-7, that means that the precision is 2**\-7, or 1/128 seconds.
+The
+.PN ntpd
+daemon automatically determines the precision of each clock based on the
+kernel variable 
+.PN HZ .
+.IP disp: \fInn\fP
+The current estimated value of dispersion in milliseconds for this peer's
+offset/delay pair.
+Dispersion is used by the
+.PN ntpd
+daemon in the clock selection algorithm.  Increasing values of dispersion are
+associated with decreasing quality of the estimate.
+.IP "flags: \fInn\fP"
+The 
+.PN flags
+parameter is used by the
+.PN ntpd
+daemon clock selection process.
+.IP "leap: \fIflag\fP"
+The leap second indicator.  Non-zero if there is to be a
+leap second inserted in the NTP timescale.  The bits are
+set before 23:59 on the day of insertion and reset after
+00:00 on the following day.
+.IP "Reference clock ID: \fIaddress\fP"
+If the NTP server is synchronized by a radio/satellite
+timecode receiver, this field is
+.PN WWV ,
+.PN WWVB ,
+or 
+.PN GOES .
+If the NTP server is the local reference clock, this field is
+.PN LOCL .
+Finally, this field can be the
+.PN [internet_address]
+of the most accurate NTP server currently serving the responding
+host.
+.IP "timestamp: \fInn\fP"
+The local time, in hex-timestamp format, when the local clock
+of the server was last updated.
+.IP "hpoll: \fIn\fP"
+The host poll interval which is the maximum interval between messages
+transmitted to the server, in seconds as a power of 2.  For
+example, a value of 6 indicates an interval of 64 seconds.
+.IP "ppoll: \fIn\fP"
+The peer poll interval which is the maximum interval between messages
+sent by the server, in seconds as a power of 2.  For
+example, a value of 6 indicates an interval of 64 seconds.
+.IP "timer: \fInn\fP"
+The current poll rate in seconds.
+.IP "sent: \fInn\fP"
+The number of NTP packets sent to this server by the responding host.
+.IP "received: \fInn\fP"
+The number of NTP packets received from this server by the responding
+host.
+.IP "Delay and Offset"
+The round-trip delay and estimated clock offset for the last eight NTP
+packet exchanges.  If there are fewer than eight valid samples,
+the delay field will be zero.
+.IP "delay: \fIest-delay\fP offset: \fIest-offset\fP dsp: \fIn\fP"
+Estimated delay, offset, and dispersion calculated from the
+above 8 samples.  See RFC 1129 for how to calculate the 
+estimated delay, offset, and dispersion.
+.SH Diagnostics
+.B "host1: connection refused"
+.br
+Check whether the 
+.PN ntpd
+daemon is running on 
+.PN host1 .
+.PP
+.B "host2: unknown"
+.br
+The 
+.PN ntpdc
+command cannot resolve the host name
+.PN host2 .
+Check that 
+.PN host2 
+exists in the 
+.PN /etc/hosts 
+file, or that it exists in the master
+.PN hosts
+database, if the database is being served by BIND/Hesiod or Yellow Pages.
+.PP
+If a server is listed in the host's
+.PN /etc/ntp.conf
+file, but does not appear in the 
+.PN ntpdc
+report, it is possible that the 
+.PN ntpd
+daemon on the responding host can not resolve the server
+names in the
+.PN /etc/ntp.conf
+file.  Check that the server exists in the responding host's
+.PN /etc/hosts
+file or in the master
+.PN hosts
+database, if the database is being served 
+to the responding host by BIND/Hesiod or Yellow Pages.
+.SH See Also
+ntp.conf(5), ntp(8), ntpd(8)
+.br
+\fIRFC 1129\(emInternet Time Synchronization:  the Network Time Protocol\fP
+.br
+.I "Introduction to Networking and Distributed System Services"

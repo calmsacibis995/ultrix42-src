@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+# @(#)UDWX11020.scp	1.1   (ULTRIX)        6/6/89
+#
+#   This software is furnished under a license and may be used and
+#   copied  only  in accordance with the terms of such license and
+#   with the  inclusion  of  the  above  copyright  notice.   This
+#   software  or  any  other copies thereof may not be provided or
+#   otherwise made available to any other person.  No title to and
+#   ownership of the software is hereby transferred.
+#
+#   The information in this software is subject to change  without
+#   notice  and should not be construed as a commitment by Digital
+#   Equipment Corporation.
+#
+#   Digital assumes no responsibility for the use  or  reliability
+#   of its software on equipment which is not supplied by Digital.
+#
+
+MONOTTY=":0 \"/usr/bin/login -P /usr/bin/Xprompter -C /usr/bin/dxsession\" none on secure window=\"/usr/bin/Xmfb\""
+COLORTTY=":0 \"/usr/bin/login -P /usr/bin/Xprompter -C /usr/bin/dxsession\" none on secure window=\"/usr/bin/Xcfb\""
+
+umask 022
+case $ACT in
+POST_[AL])
+	;;
+C)
+	# configure.
+	case "$1" in
+	INSTALL)
+		/usr/bin/file /dev/console > /tmp/cons$$
+		grep -s COLOR /tmp/cons$$ && 
+		{
+		grep -s "^$COLORTTY" /etc/ttys || echo "$COLORTTY" >> /etc/ttys 
+		}
+		grep -s MONO /tmp/cons$$ && 
+		{
+		grep -s "^$MONOTTY" /etc/ttys || echo "$MONOTTY" >> /etc/ttys
+		}
+		egrep -s "COLOR|MONO" /tmp/cons$$ &&
+		{
+			sed -e 's/^console/#console/' /etc/ttys > /tmp/ttys
+			mv /tmp/ttys /etc/ttys
+		}
+		;;
+	esac
+	;;
+POST_D)	
+	;;
+esac
+wait
+exit 0
+

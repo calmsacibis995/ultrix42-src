@@ -1,0 +1,74 @@
+.\" SCCSID: @(#)audgen.2        x.x     10/10/88
+.TH audgen 2
+.SH Name
+audgen \- generate an audit record
+.SH Syntax
+.ft B
+.nf
+audgen(event, tokenp, argv)
+.br
+.B int event;
+.B char *tokenp, *argv[];
+.fi
+.SH Description
+.NXR "audgen system call"
+The
+.PN audgen
+system call generates an audit record, which gets placed in the auditlog.
+.PP
+The argument \fIevent\fP is an integer indicating the event type of the 
+operation being audited (see 
+.PN audit.h
+).  The value of \fIevent\fP must be
+between MIN_TRUSTED_EVENT and MIN_TRUSTED_EVENT+N_TRUSTED_EVENTS.
+.PP
+The argument \fItokenp\fP is a null-terminated array of token types (see
+.PN audit.h
+), each of which represents the type of argument referenced by the
+corresponding
+\fI*argv\fP argument.
+.PP
+The argument \fIargv\fP is a pointer to an array containing the actual
+arguments or pointers to those arguments that are to be recorded in the
+audit record.  A pointer to the actual argument is placed in that array
+when the argument is a string, array, or other variable length structure. 
+Arguments represented as int's or short's are placed directly in that
+array.  Each member of the array must be word-aligned.
+You cannot change the
+values for the audit_id, uid, ruid, pid, ppid, device, IP address, or
+hostid (secondary tokens for these values are available). 
+.SH Return Values
+Upon successful completion, 
+.PN audgen
+returns a value of 0.  
+Otherwise, it returns a value of \-1 and sets the global integer variable
+.I errno
+to indicate the error.  
+.SH Restrictions
+.NXR "audgen system call" "restricted"
+The 
+.PN audgen
+call is a privileged system call.
+No record is generated if the specified \fIevent\fP is not being audited
+for the current process.
+The maximum number of arguments referenced by 
+.I argv
+is AUD_NPARAM (8).
+.SH Diagnostics
+.NXR "audgen system call" "diagnostics"
+The
+.PN audgen
+system call fails under the following
+conditions:
+.TP 15
+[EACCES]
+The user is not privileged for this operation.
+.TP 15
+[EINVAL]
+The value supplied for the
+.I event,
+.I tokenp,
+or
+.I argv
+argument is invalid. 
+

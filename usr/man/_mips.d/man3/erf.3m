@@ -1,0 +1,49 @@
+.TH erf 3m RISC
+.ds nn \fINaN\fR
+.SH Name
+erf, erfc \- error functions
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double erf(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double erfc(\fIx\fP)
+.B double \fIx\fP;
+.fi
+.SH Description
+.NXR "erf function"
+.NXR "erfc function"
+The 
+.PN erf 
+function returns the error function of
+.I x
+defined as follows:
+.EX
+erf(x) = 2/sqrt(pi)\(**\|integral from 0 to x of exp(\-t\(**t) dt. \}
+.EE
+.PP
+The 
+.PN erfc
+function returns 1.0\-erf\|(\fIx\fP).
+.PP
+The entry for the
+.PN erfc 
+function is provided because of the extreme loss
+of relative accuracy if erf\|(\fIx\fP) is called for large
+.I x
+and the result subtracted from 1.
+For example if
+.I x
+= 10, 12 places are lost.
+.SH Return Values
+The
+.PN erf
+and
+.PN erfc
+functions return \*(nn when
+.I x
+is \*(nn.
+.SH See Also
+math(3m)

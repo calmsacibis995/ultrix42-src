@@ -1,0 +1,49 @@
+.\" SCCSID: @(#)dgate.1c	8.2	12/3/90
+.TH dgate 1c "" "" Unsupported
+.SH Name
+dgate \- log in to a DECnet remote system through an intermediate ULTRIX DECnet host (gateway system)
+.SH Syntax
+.B dgate
+.I host
+.SH Description
+.NXR "dgate command"
+.NXR "dgate command" "dgated daemon"
+.NXR "remote system" "logging in"
+.NXR "login command (general)" "dgate command"
+The
+.PN dgate
+command
+lets you log in from an ULTRIX system without DECnet
+to a remote system on
+DECnet (specified by the \fIhost\fR argument)
+through an intermediate host, or gateway system: an ULTRIX system 
+attached to DECnet.
+.PP
+The login is accomplished through an intermediate host, 
+or gateway system, to which your system is connected 
+through a local area (TCP/IP) network.
+The gateway system is specified at the local system
+in the file 
+.PN /etc/dgateway .
+The gateway system must be connected through DECnet
+to the ultimate host
+system that you specify in the 
+.PN dgate 
+command.
+.PP
+The 
+.PN dgate 
+program scans input for lines beginning with a tilde character (~). 
+A tilde-period line disconnects you from your current
+.PN dgate 
+session. A tilde-CTRL/Z line suspends 
+.PN dgate 
+and returns you to the parent process.
+A tilde-tilde line passes
+the tilde character on to the remote login session.
+.SH Files
+.PN /etc/dgateway
+.br
+.PN \~/\.dgateway
+.SH See Also
+dgateway(5)

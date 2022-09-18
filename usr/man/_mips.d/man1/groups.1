@@ -1,0 +1,41 @@
+.\" SCCSID: @(#)groups.1	8.1	9/11/90
+.TH groups 1
+.SH Name
+groups \- show group memberships
+.SH Syntax
+\fBgroups [\|\fIuser\fR\|]
+.SH Description
+.NXR "groups command"
+.NXR "group" "displaying memberships"
+.NXAM "setgroups system call" "groups command"
+The
+.PN groups
+command shows the groups to which the specified
+\fIuser\fP belongs determined by reading 
+.PN /etc/group .
+These are the groups that will be in effect the next time the
+\fIusr\fP logs in.
+If the
+.PN groups
+command is used without the \fIusr\fP argument, it will report
+the groups currently in effect using the 
+.MS getgroups 2
+system call. If the 
+.PN /etc/group 
+file was changed after the login, this may not be the same.
+.PP
+Each user belongs to a group specified in the password file 
+.PN /etc/passwd
+and possibly to other groups as specified in the file 
+.PN /etc/group .
+If you do not own a file but you do belong to the group by 
+which it is owned, you are granted group access to the file.
+.PP
+When a new file is created it is given
+the group specifications of the directory in which it resides.
+.SH Files
+.PN /etc/passwd
+.br
+.PN /etc/group
+.SH See Also
+setgroups(2)

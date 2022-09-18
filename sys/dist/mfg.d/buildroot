@@ -1,0 +1,393 @@
+#!/bin/sh
+#
+#  @(#)buildroot	4.3 (ULTRIX)	3/13/91
+#
+#  Usage example: sh buildroot -local ra3g /pulib/mips/Ultrix
+#  or: sh buildroot -remote server ra3g server_mnt local_mnt /pulib/mips/Ultrix
+#
+#  Description: build the Generic ROOT file system in a dumpimage
+#------------------------------------------------------------------
+#
+#	008	900615	ccb	Add drum and mem to /dev
+#	007	900607	ccb	Remove *case* around MAKEDEV so that both
+#				VAX and RISC systems have the same dev files
+#				in ROOT. (pool=MM)
+#
+#	006	900309	ccb	Add bin/date to INSTALL_FILES. Stops race
+#				condition causing ETXBUSY installing date
+#
+#	005	891219	jon	Add chgrp and group to install.tmp for
+#				setld purposes.
+#
+#	004	890530	ccb	Add kill(1) to install.tmp, move where we
+#				go to find fitset & fverify, clobber reference
+#				to setld.new
+#
+#  003 - May, 1989 - Jon Wallace
+#	Added zic(8) and zoneinfo information for 'date' call
+#	during installation.
+#
+#  002 - Nov, 1987 - Tom Tresvik.  
+#	Change the interface so that it can be called by the build 
+#	script 'buildultrix'.  The ROOT image is produced on the 
+#	output pack in .../usr/sys/dist/kitimages/ROOT
+#
+#  001 - June, 1986 - Lea Fottfredsen & Tung-Ning Cherng
+#	   Added in the network remote support.
+#
+#  000 - March, 31, 1986 - Tung-Ning Cherng
+#	   Revised for V2.0.
+#
+#   	Based on V1.2 'buildroot' - by Greg Tarsa and Bob Fontaine 
+#
+PATH=.:/etc:/bin:/usr/bin:/usr/ucb
+export PATH
+umask 022
+
+# We must have 3 or 6 command line args
+
+USAGE_ERR=0
+case $# in
+3)	REMOTE=0
+	OPTION=$1
+	GENROOT=$2			# for example, ra3b
+	MASTERROOT=$3			# for example, /pulib/mips/Ultrix
+	if [ ${OPTION} != -l -a ${OPTION} != -local ] ; then
+		USAGE_ERR=1 ;
+	fi
+	;;
+6)	REMOTE=1
+	OPTION=$1
+	REMOTE_SERVER=$2		# for example, wisper
+	REMOTE_DEV=$3			# for example, ra3b
+	REMOTE_MNT=$4			# for example, /pulib/mips/ROOT_mnt
+	LOCAL_MNT=$5			# for example, /pulib/mips/ROOT_mnt
+	MASTERROOT=$6			# for example, /pulib/mips/Ultrix
+	if [ ${OPTION} != -r -a ${OPTION} != -remote ] ; then
+		USAGE_ERR=1 ;
+	fi
+	;;
+*)	USAGE_ERR=1
+	;;
+esac
+if [ ${USAGE_ERR} = 1 ] ; then
+   echo "Usage example: sh buildroot -local ra3g /pulib/mips/Ultrix"
+   echo " or: sh buildroot -remote server ra3g server_mnt local_mnt /pulib/mips/Ultrix"
+   exit 1
+fi
+
+	
+DEST=${MASTERROOT}/usr/sys/dist/kitimages
+UPGRADE=upgrade2
+#UPGRADE=upgrade64
+
+#
+# Define the lists of files to be installed in the ROOT image.
+#
+ROOT_FILES="
+	vmunix
+	ultrixboot
+"
+VAX_ROOT_FILES="
+	vmb.exe
+	pcs750.bin
+"
+ZONEINFO_FILES="
+	etc/zoneinfo/GMT
+	etc/zoneinfo/GMT-0
+        etc/zoneinfo/GMT-1
+        etc/zoneinfo/GMT-2
+        etc/zoneinfo/GMT-3
+        etc/zoneinfo/GMT-4
+        etc/zoneinfo/GMT-5
+        etc/zoneinfo/GMT-6
+        etc/zoneinfo/GMT-7
+        etc/zoneinfo/GMT-8
+        etc/zoneinfo/GMT-9
+        etc/zoneinfo/GMT-10
+        etc/zoneinfo/GMT-11
+        etc/zoneinfo/GMT-12
+        etc/zoneinfo/GMT13
+        etc/zoneinfo/GMT12
+        etc/zoneinfo/GMT11
+        etc/zoneinfo/GMT10
+        etc/zoneinfo/GMT9
+        etc/zoneinfo/GMT8
+        etc/zoneinfo/GMT7
+        etc/zoneinfo/GMT6
+        etc/zoneinfo/GMT5
+        etc/zoneinfo/GMT4
+        etc/zoneinfo/GMT3
+        etc/zoneinfo/GMT2
+        etc/zoneinfo/GMT1
+        etc/zoneinfo/GMT0
+"
+ZONEINFO_US_FILES="
+	etc/zoneinfo/US/Eastern
+        etc/zoneinfo/US/Central
+        etc/zoneinfo/US/Mountain
+        etc/zoneinfo/US/Pacific
+"
+ETC_FILES="
+	etc/newfs
+	etc/mkfs
+	etc/halt
+	etc/mount
+	etc/mknod
+	etc/fsck
+	etc/umount
+	etc/ufs_mount
+	etc/chpt
+	etc/radisk
+	etc/passwd
+	etc/mkpasswd
+	etc/chown
+	etc/group
+	etc/disktab
+	etc/ifconfig
+	etc/protocols
+	etc/rshd
+	etc/services
+	etc/zic
+	etc/svc.conf
+"
+BIN_FILES="
+	bin/sh
+	bin/sh5
+	bin/ls
+	bin/mv
+	bin/sync
+	bin/cat
+	bin/chgrp
+	bin/mkdir
+	bin/stty
+	bin/echo
+	bin/rm
+	bin/cp
+	bin/expr
+	bin/awk
+	bin/make
+	bin/test
+	bin/ed
+	bin/true
+	bin/false
+	bin/ln
+	bin/tee
+	bin/date
+	bin/chmod
+	bin/sed
+	bin/pwd
+	bin/passwd
+	bin/mt
+	bin/hostname
+	bin/machine
+	bin/ps
+	bin/df
+	bin/init
+	bin/restore
+	bin/dump
+	bin/kill
+"
+INSTALL_FILES="
+	usr/sys/dist/install.2
+	usr/sys/dist/install.3
+	usr/sys/dist/install.mup
+	usr/sys/dist/ask_filesys
+	usr/sys/dist/ask_part
+	usr/sys/dist/delet_part
+	usr/sys/dist/size_part
+	usr/sys/dist/finder
+	usr/ucb/compress
+	usr/ucb/rsh
+	usr/ucb/rcp
+	usr/ucb/grep
+	usr/ucb/whoami
+	usr/bin/egrep
+	usr/bin/getopt
+	usr/bin/sleep
+	etc/eli
+	etc/sizer
+	etc/setld
+	etc/doconfig
+	etc/ready
+	etc/chown
+	bin/date
+	bin/chgrp
+	etc/group
+	bin/tar
+	bin/dd
+	etc/stl/depord
+	etc/stl/usync
+	etc/stl/fverify
+	etc/stl/fitset
+	etc/stl/umerge
+	etc/stl/udelta
+	etc/stl/frm
+	etc/stl/iff
+	etc/stl/udetect
+	etc/stl/tclear
+"
+#
+# test the environment, can we access the device and write to the
+# destination directory
+#
+
+if [ ${REMOTE} = 0 ] ; then
+	[ -f /dev/${GENROOT} ] ||
+	{
+		echo "/dev/${GENROOT} does not exist"
+		exit 1
+	}
+fi
+
+[ -d $DEST ] || mkdir $DEST
+( > ${DEST}/foo ) ||
+{
+	echo "Cannot write ${MASTERROOT}/usr/sys/dist/kitimages"
+	exit 1
+}
+rm -f ${DEST}/foo
+
+#
+# The environment looks ok so let's proceed
+#
+
+#echo -n "ARE YOU SURE YOU WANT TO DESTROY /dev/${GENROOT}? y/n"
+#read xx
+#case $xx in
+#y|Y)
+#	;;
+#*)
+#	exit 1
+#	;;
+#esac
+	
+if [ ${REMOTE} = 0 ] ; then
+	umount /dev/${GENROOT} > /dev/null 2>&1
+
+	echo "Making and checking the Generic ROOT filesystem on ${GENROOT}" 
+	mkfs /dev/r${GENROOT} 16384 16384 1 8192 1024 ||
+	{ 
+		echo "Cannot make the Generic ROOT file system" 
+		exit 1 
+	}
+
+	[ -d /ROOT_mnt ] || mkdir /ROOT_mnt
+	echo "Mounting "${GENROOT}" on /ROOT_mnt."
+	mount /dev/${GENROOT} /ROOT_mnt ||
+	{ 
+		echo "Cannot mount the Generic ROOT file system" 
+		rmdir /ROOT_mnt
+		exit 1 
+	}
+	cd /ROOT_mnt
+else
+	cd ${LOCAL_MNT}
+fi
+rm -rf lost+found
+
+#
+# Install files to the Generic ROOT file system
+#
+
+echo "Starting the build of the Generic ROOT."
+
+# make top level directories
+
+for K in bin etc tmp usr dev install.tmp mnt 
+{
+	mkdir $K
+}
+chmod 1777 tmp
+
+# make zic(8) timezone information directories
+
+for K in etc/zoneinfo etc/zoneinfo/US
+do
+	mkdir $K
+done
+
+for prog in $ROOT_FILES
+do
+	cp ${MASTERROOT}/$prog  .
+done
+
+cp ${MASTERROOT}/usr/mdec/netload netload
+case `${MASTERROOT}/bin/machine` in
+vax )
+	cp ${MASTERROOT}/sys/VAX/SAS.net/vmunix vmunix.sas
+	for prog in $VAX_ROOT_FILES
+	do
+		cp ${MASTERROOT}/$prog  .
+	done
+	;;
+mips )
+	cp ${MASTERROOT}/sys/MIPS/SAS/vmunix vmunix.sas
+	;;
+esac
+
+# Special files
+
+cp ${MASTERROOT}/usr/sys/dist/.rootprofile .profile
+cp ${MASTERROOT}/usr/sys/dist/.updprofile .updprofile
+cp ${MASTERROOT}/usr/sys/dist/sysupd sysupd
+cp ${MASTERROOT}/.profile real.profile
+cp ${MASTERROOT}/usr/sys/dist/log tmp
+#cp ${MASTERROOT}/usr/sys/dist/${UPGRADE} upgrade
+
+for prog in $INSTALL_FILES
+do
+	cp ${MASTERROOT}/$prog install.tmp
+done
+
+for prog in $ETC_FILES
+do
+	cp ${MASTERROOT}/$prog etc
+done
+
+for prog in $BIN_FILES
+do
+	cp ${MASTERROOT}/$prog bin
+done
+
+for prog in $ZONEINFO_FILES
+do
+	cp ${MASTERROOT}/$prog etc/zoneinfo
+done
+
+for prog in $ZONEINFO_US_FILES
+do
+	cp ${MASTERROOT}/$prog etc/zoneinfo/US
+done
+
+ln bin/test bin/[	# put the square bracket into the directory
+ln bin/stty bin/STTY
+(cd etc; ln ../bin/init init)
+
+# build necessary special files
+
+cp ${MASTERROOT}/dev/MAKEDEV dev	
+(cd dev; ./MAKEDEV console drum errlog kUmem kmem mem null pty0 pty1 tty)
+
+
+echo "Root build is complete."
+
+cd ${DEST}
+if [ ${REMOTE} = 0 ] ; then
+	echo "Unmounting and checking ${GENROOT}."
+	umount /dev/${GENROOT}
+	rmdir /ROOT_mnt
+	fsck /dev/r${GENROOT}
+	rm -f ROOT
+	echo "Dumping /dev/r${GENROOT} to ROOT."
+	dump 0f ROOT /dev/r${GENROOT}
+else
+	echo "Unmounting and checking ${REMOTE_SERVER}:/dev/${REMOTE_DEV}."
+	rsh ${REMOTE_SERVER} umount /dev/${REMOTE_DEV}
+	rsh ${REMOTE_SERVER} fsck /dev/r${REMOTE_DEV}
+	rm -f ROOT
+	echo "Dumping ${REMOTE_SERVER}:/dev/r${REMOTE_DEV} to ROOT."
+	rsh ${REMOTE_SERVER} dump 0f - /dev/r${REMOTE_DEV} > ROOT
+fi
+chmod 644 ROOT
+echo "Buildroot done."

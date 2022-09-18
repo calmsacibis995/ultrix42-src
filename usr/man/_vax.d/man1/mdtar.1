@@ -1,0 +1,233 @@
+.\" SCCSID: @(#)mdtar.1	2.6	7/17/87
+.TH mdtar 1
+.SH Name
+mdtar \- multivolume archiver
+.SH Syntax
+.B mdtar
+[\|\fIkey\fR\|] [\|\fIname...\fR\|]
+.SH Description
+.NXR "mdtar command"
+.NXR "file" "backing up multiple"
+.NXA "mdtar command" "tar command"
+The
+.PN mdtar 
+command saves multiple files on  multiple archives (usually an  RX50
+diskette, but any file/device may be specified).  
+.PN mdtar 
+actions are controlled by the
+.B key
+argument.  The
+.B key
+is a string of characters containing one function letter and 
+one or more function modifiers.  Other arguments to 
+.PN mdtar
+are file or directory names specifying which files to dump or restore.
+In all cases, appearance of a directory name refers to
+the files and, recursively, subdirectories of that directory. 
+.PN mdtar
+also saves special files.
+.SH Options
+.IP \fB\-C\fR 10
+Changes directory to specified
+.IR name .  
+This allows multiple directories not
+related by a close common parent, to be archived using short
+relative path names.  For example, to archive files from 
+.PN /usr/include
+and from 
+.PN /etc ,
+one might use
+.EX
+mdtar c \-C /usr include . \-C /etc .
+.EE
+.PP
+The function portion of the key is specified by a letter.
+.NXR "mdtar command" "key list"
+.IP \fBc\fR 10
+Creates a new archive.  Writing begins at 
+the beginning of the archive
+instead of after the last file.  
+.IP \fBr\fR 
+Writes the named files to the end of the archive.
+.IP \fBt\fR 
+Generates archive table of contents.  If no argument is given, all  
+of the names on the archive
+are listed.
+.IP \fBu\fR 
+Updates the current archive.  Adds the named files to the archive, if 
+they are not there already or if they have been modified 
+since last put on the archive.
+.IP \fBx\fR 
+Extracts each specified file from the archive.  If the named file
+matches a directory whose contents had
+been written onto the archive, this
+directory is recursively extracted.
+The owner, modification time, and mode
+are restored if you are the superuser and if you have
+also specified the 
+.B p
+switch.  If no file argument is given, the entire content
+of the archive is extracted.  
+If multiple entries specifying the same
+file are on the archive, the last one overwrites previous versions. 
+.PP
+.sp
+The following characters may be
+used to qualify the function desired
+in addition to one or more of the above letters.
+.NXR "mdtar command" "function modifiers"
+.IP \fB0...9\fR 10
+Selects unit number of the drive as an alternate disk drive. 
+The default disk drive is the device named 
+.PN /dev/rra1a .
+.IP \fBA\fR 
+Uses the specified number (next argument) as archive with which to begin
+the output.  
+This switch
+is intended for error recovery. 
+.PN mdtar 
+outputs files in terms of Archives.
+Each Archive contains a number of files. If 
+.PN mdtar 
+has been requested to dump
+a path (set of files)
+that consist of (for example) 10 archives and there is
+an error writing the nth Archive,
+then the A modifier may be used to restart
+.PN mdtar
+at the nth Archive. 
+.NT CAUTION
+You must issue the same
+path (set of files) as in the first command. This will guarantee that 
+.PN mdtar
+will begin at the correct file on Archive n. 
+.NE
+If the v mode is specified, 
+.PN mdtar 
+outputs informational
+messages to inform the 
+user of progress.
+For example, the following command will dump 
+the entire directory structure:
+.EX
+mdtar cv \*   
+.EE
+If an error occurs on Archive 7, 
+to restart at the 7th Archive, without having to
+re-dump the first 6 Archives, issue the following command:
+.EX
+mdtar cvA 7 \*
+.EE
+.PN mdtar 
+will tell you it is skipping the first 6 Archives and will resume
+output with the data that begins Archive 7.
+.IP \fBb\fR 10
+Uses the specified number (next argument) as the blocking factor.  
+The default is 20 (the maximum is 20).
+.IP \fBB\fR 
+Forces output blocking to 20 blocks per record. 
+.IP \fBf\fR 
+Uses the specified file (next argument) as the name of the archive.  
+If the name of the file is \-, 
+.PN mdtar
+writes to
+standard output (piping).
+.IP \fBF\fR[\fB\F\fR] 
+Operates in fast mode.
+When
+.B F
+is specified,
+.PN mdtar
+skips all SCCS directories, core files, and errs files.
+When
+.B FF
+is specified,
+.PN mdtar
+also skips all a.out and *.o files.
+.IP \fBh\fR 
+Saves a copy of the file (excludes symbolic links).  
+The default action of 
+.PN mdtar
+is to place symbolic link
+information on the output device. A copy of the file IS NOT
+saved on the output device. 
+.IP \fBi\fR 
+Ignores checksum errors found in the archive.
+.IP \fBl\fR 
+Displays an error message if all links to the
+files dumped cannot be resolved. If \-l is not specified, no error
+messages are printed.
+.IP \fBm\fR 
+Does not restore file modification times.  The modification time
+is the time of extraction.  Normally, 
+.PN mdtar
+restores modification times of regular and special files.
+.IP \fBo\fR 
+Suppresses the normal directory information.  On output,
+.PN mdtar
+normally places information specifying owner and modes of directories
+in the archive.  Former versions of
+.PN mdtar ,
+when encountering this information will give the error message
+.EX
+<name>/: cannot create.
+.EE
+.IP \fBp
+Restores the named files to their original modes,
+ignoring the present
+.MS umask 2 .
+Setuid and sticky information
+will also be restored to the super-user.
+You must be Superuser to perform this option.
+For further information, see 
+.MS stat 2 ,
+S_ISVTX.
+.IP \fBs\fR 
+Uses specified number (next argument) as size of media in 512-byte 
+blocks.  This enables 
+.PN mdtar 
+to be used with devices of different physical media
+sizes. The default is 800 blocks (assumption is an RX50 output Archive).
+.IP \fBv\fR 
+Displays detailed (verbose) information as it archives files.  
+Normally
+.PN mdtar 
+does its work silently.
+With the
+.B t
+function, the verbose option
+gives more information about the archive entries than just their names.
+.EX 
+#cd
+#mdtar cvf mdtar-out vmunix
+.EE
+Produces the output ``a vmunix 1490 blocks''
+where 1490 is the number of 512 byte blocks in the file ``vmunix''.
+.EX 
+#mdtar xvf mdtar-out
+.EE
+Produces the output ``x vmunix, 762880 bytes, 1490 blocks'' where 762880 is the
+number of bytes and 1490 is the number of 512 byte
+blocks in the file ``vmunix'' which was extracted.
+.IP \fBw\fR 
+Displays action to be taken for each file and prompts for confirmation.  
+If a word beginning with `y'
+is given, the action is done. Any other input means do not do it.
+.SH Restrictions
+.NXR "mdtar command" "restricted"
+The 
+.B u
+option can be slow.
+.PP
+The current limit on file name length is 100 characters.
+.PP
+There is no way to follow symbolic links selectively.
+.SH Diagnostics
+.NXR "mdtar command" "diagnostics"
+Indicates bad key characters and archive read/write errors.
+.PP
+Indicates if enough memory is not available to hold the link tables.
+.SH Files
+.PN /tmp/tar*
+.SH See Also
+stat(2), tar(1)

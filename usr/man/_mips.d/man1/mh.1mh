@@ -1,0 +1,293 @@
+.TH mh 1mh
+.SH Name
+mh \- introduction to MH
+.SH Description
+.NXR "mh summary"
+.NXR "MH overview"
+MH is the name of a powerful message handling system.
+Rather than being a single comprehensive program,
+MH consists of a collection of fairly simple 
+single-purpose programs to send, receive, save, 
+and retrieve messages.  
+Refer to the individual MH reference pages for 
+descriptions of the programs that make up MH.
+.PP
+Unlike 
+.PN mail ,
+MH is not a closed system which must be explicitly run,
+and then exited when you wish to return to the shell.
+Instead, you may freely intersperse 
+MH commands with other shell commands.
+This allows you to read and answer your mail 
+while you have (for example) a compilation running,
+or are searching for a file or running programs 
+to find an answer to someone's question before replying to them.
+.PP
+To get started using MH,
+add the directory
+.PN /usr/bin/mh
+to your \f(CW$PATH\fR.
+This is best done in one of the files
+.PN \&.profile , 
+.PN \&.login ,
+or 
+.PN \&.cshrc
+in your home directory.
+Check the manual entry for the shell you use
+if you do not know how to do this.
+Run the 
+.PN inc
+command.
+If you
+have never used MH before,
+it creates the necessary default files and directories 
+after asking you if you wish it to do so.
+The 
+.PN inc
+command moves mail from your system maildrop into your MH
+.PN +inbox
+folder.  
+Each message is converted to MH format,
+and stored as separate files in your
+.PN +inbox 
+folder until you have read it.  
+When you have read a message, 
+you can refile it in another folder that you have created.
+.PP
+Folders are directories in which messages are stored: 
+the folders themselves are stored in your Mail directory.  
+See
+.MS refile 1mh
+and 
+.MS folder 1mh
+for more details.
+.PP
+For each message it processes,
+.PN inc
+prints a one-line display.
+The one-line display
+contains the \f(CWFrom:\fR field, the \f(CWSubject:\fR field,
+and as much of the first line of the message as it can accommodate.
+The first message that 
+.PN inc 
+processes becomes your current message.  
+All MH commands operate on the current message
+unless you have specified the
+.I msg
+argument.
+.PP
+You
+need to run 
+.PN inc
+each time you wish to incorporate new mail
+into your 
+.PN +inbox
+folder.
+.PP
+The 
+.PN scan
+command prints a list of the messages in your current folder.
+.PP
+The commands
+.PN show , 
+.PN next ,
+and 
+.PN prev
+are used to read specific messages from the current folder.
+Of these,
+.PN show
+displays the current message.  
+You can also display a specific message by specifying its number.
+In the following example, the mail system displays
+the contents of message number 10 in the current folder:
+.EX
+% \f(CBshow 10
+.EE
+.PP
+The commands
+.PN next
+and 
+.PN prev
+display the message numerically following 
+and numerically preceding the current message, respectively.
+In all cases, the message displayed becomes the current message.
+If there is no current message,
+.PN show
+may be called with an argument, or 
+.PN next
+may be used to advance to the first message.
+The command
+.PN rmm
+(remove message) deletes the current message.
+.PP
+You can delete messages other than the current message by specifying the
+message number or numbers.  
+When you specify more than one message,
+you separate each message number by a space. 
+In the following example, messages 2, 4 and 6 
+in the current folder are deleted:
+.EX
+% \f(CBrmm 2 4 6
+.EE
+.PP
+The command
+.PN repl
+is used to reply to a message.
+It places you in the editor with a prototype response form.
+While you are in the editor,
+you may view the item you are responding to by reading the file 
+.PN @ .
+.PP
+The 
+.PN comp
+command allows you to compose a 
+message by putting you in the editor on
+a blank message header form,
+and then lets you send it.
+.PP
+All the MH commands may be run with the single argument
+.BR \-help ,
+which causes them to print a list of the arguments 
+with which they may be invoked.
+.PP
+Commands which take a message number as an argument
+(\c
+.PN scan , 
+.PN show , 
+.PN repl ,
+for example)
+also take one of the following keywords:
+.\"
+.TP 10
+\f(CWfirst\fR
+The first message in the current folder.
+.\"
+.TP 
+\f(CWlast\fR
+The last message in the current folder.
+.\"
+.TP
+\f(CWcur\fR
+The current message in the current folder.
+.\"
+.TP 
+\f(CWprev\fR
+The previous message in the current folder.
+.\"
+.TP
+\f(CWnext\fR
+The next message in the current folder.
+.\"
+.PP
+Commands 
+which take a range of message numbers, such as 
+.PN rmm , 
+.PN scan , 
+or 
+.PN show ,
+also take any of the following abbreviations:
+.\"
+.TP 10
+\fInum1\f(CW-\fInum2\fR
+Indicates all messages in the range \fInum1\fR to \fInum2\fR, inclusive. 
+The specified range must contain at least one message.
+.\"
+.IP \fInum\f(CW:+\fIn\fR
+.PD 0
+.IP \fInum\f(CW:-\fIn\fR
+.PD
+Up to \fIn\fR messages beginning with (or ending with) message \fInum\fR.
+The value of \fInum\fR may be any of the MH message keywords:
+.PN first , 
+.PN prev , 
+.PN cur , 
+.PN next
+or
+.PN last .
+.\"
+.IP \f(CWfirst:\fIn\fR
+.PD 0
+.IP \f(CWprev:\fIn\fR
+.PD 0
+.IP \f(CWnext:\fIn\fR
+.PD 0
+.IP \f(CWlast:\fIn\fR
+.PD
+The first, previous, next or last \fIn\fR messages, if they exist.
+.\"
+.PP
+There are many other possibilities, 
+such as creating multiple folders for different topics, 
+and automatically refiling messages according to subject,
+source, destination, or content.  
+See the individual reference pages for more details 
+of the rest of the MH commands.
+.PP
+Following is a list of all the MH commands:
+.PP
+.TS
+tab(+);
+l l.
+alex(1mh)+extract addresses from message headers
+ali(1mh)+list mail aliases
+anno(1mh)+annotate messages
+burst(1mh)+explode digests into messages
+comp(1mh)+compose a message 
+dist(1mh)+redistribute a message to additional addresses
+folder(1mh)+set/list current folder/message
+folders(1mh)+list all folders
+forw(1mh)+forward messages
+inc(1mh)+incorporate new mail
+mark(1mh)+mark messages
+mhl(1mh)+produce formatted listings of MH messages
+mhmail(1mh)+send or read mail
+mhpath(1mh)+print full pathnames of MH messages and folders
+msgchk(1mh)+check for messages
+msh(1mh)+MH shell 
+next(1mh)+show the next message
+packf(1mh)+compress a folder into a single file
+pick(1mh)+select messages by content
+prev(1mh)+show the previous message
+prompter(1mh)+prompting editor front end
+rcvstore(1mh)+incorporate new mail asynchronously
+refile(1mh)+file messages in other folders
+repl(1mh)+reply to a message
+rmf(1mh)+remove folder
+rmm(1mh)+remove messages
+scan(1mh)+produce a one line per message scan listing
+send(1mh)+send a message
+slocal(1mh)+receive mail hooks
+show(1mh)+show (list) messages
+sortm(1mh)+sort messages
+whatnow(1mh)+prompting front-end for send
+whom(1mh)+report who will receive a message when it is sent
+.sp
+mh-alias(5mh)+alias file for MH message system
+mh-format(5mh)+format file for MH message system
+mh-mail(5mh)+message format for MH message system
+mh_profile(5mh)+user customization for MH message system
+mtstailor(5mh)+system customization for MH
+.sp
+ap(8mh)+parse addresses RFC 822-style
+conflict(8mh)+search for alias/password conflicts
+dp(8mh)+parse dates RFC 822-style
+install-mh(8mh)+initialize the MH environment
+post(8mh)+deliver a message
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN /usr/bin/mh
+Directory containing commands
+.TP 10
+.PN /usr/lib/mh
+MH library
+.\"
+.\"
+.\"
+.\"
+.\" .SH See Also
+.\" .I MH User's Guide

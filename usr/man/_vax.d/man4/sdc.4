@@ -1,0 +1,210 @@
+.\" SCCSID: @(#)sdc.4	8.1	9/11/90
+.TH sdc 4 VAX
+.SH Name
+sdc \- RD31, RD32, RD53, RD54, RX33, RX23 Small VAX disk interface
+.SH Syntax
+.B "controller sdc0 at uba0 csr 0x200c0000 vector sdintr "
+.br 
+.B "disk rd0 at sdc0 drive 0"
+.br
+.B "disk rd1 at sdc0 drive 1"
+.br
+.B "disk rx2 at sdc0 drive 2"
+.SH Description				
+.NXR "RD31 disk interface"
+.NXR "RD32 disk interface"
+.NXR "RD53 disk interface"
+.NXR "RD54 disk interface"
+.NXR "RX33 disk interface"
+.NXS "sdc interface" "RD31 disk interface"
+.NXS "sdc interface" "RD32 disk interface"
+.NXS "sdc interface" "RD53 disk interface"
+.NXS "sdc interface" "RD54 disk interface"
+.NXS "sdc interface" "RX33 disk interface"
+This is a driver for the Digital  Small VAX disk controller.
+This disk controller is used by both the workstation and
+multiuser configurations of the busless Small VAX processor.
+This controller also supports the RX23 floppy disk drive in the
+VAXstation 3100 model 30 processor.
+.PP
+The SDC driver uses the same disk format as the RQDX3 controller.
+Winchester disks formatted by the small VAX controller are
+compatible with RQDX3 formatted disks, but
+not with RQDX1 and RQDX2 formatted disks.
+The SDC driver implements dynamic bad block replacement
+in the same manner as the RQDX3 controller.
+.PP
+Files with minor device numbers 0 through 7 refer to various portions
+of drive 0; minor devices 8 through 15 refer to drive 1, and so
+forth.  The standard device names begin with 
+rd,
+for Winchester disk drives 0 and 1 and
+rx,
+for the diskette drive 2
+followed by the drive number and then a letter, a through h,
+for partitions 0 through 7.
+.PP
+The block files access the disk by the system's normal
+buffering mechanism and can be read and written, without regard to
+physical disk records.  There is also a raw interface
+that provides for direct transmission between the disk
+and the user's read or write buffer.
+One read or write call results in one I/O operation,
+so raw I/O is considerably more efficient when
+many words are transmitted.  
+The names of the raw files conventionally begin with an additional letter
+r, for example,
+.PN rrx@a .
+.PP
+In raw I/O, counts should be a multiple of 512 bytes (a disk sector).
+In the same way,
+.PN seek 
+calls should specify a multiple of 512 bytes.
+.SH Disk Support
+The SDC driver handles RD31, RD32, RD53, and RD54 Winchester disk drives
+on drives 0 and 1 and the RX33/RX23 floppy disk drive on drive 2.
+The RX33 drive reads and writes both single-density
+(400 Kbytes) RX50 floppy
+diskettes and double-density double-sided (1200 Kbytes) RX33 diskettes.
+The RX23 drive reads and writes high density (18 sectors per track) RX23
+floppy diskettes and reads double density (9 sectors per track) RX23
+floppy diskettes.
+Drive types are recognized in the autoconfiguration process.
+For constructing file systems, the partition sizes 
+are required.  Partition sizes are the same as those supported by
+the MSCP driver,
+.MS ra 4 .
+Partition sizes can be queried or changed by 
+.MS chpt 8 .
+.PP
+The rd?a partition is usually used for the root file system,
+the rd?b partition as a paging area,
+and the rd?g partition for the usr file system.
+.SH Diagnostics
+.NXR "RD32 disk interface" "diagnostics"
+The following messages are printed at the console
+and written to the system
+error log file,
+\f(CW/usr/adm/syserr/syserr.\fI<hostname>\fR.
+.PP
+.B "sd%d:HARD_ERR: cannot read XBN"
+.br
+The driver cannot read the format information
+from the disk during autoconfiguration.
+The disk may not be formatted properly.
+.PP
+.B "sd%d:HARD_ERR: CANNOT RECOVER FROM PREVIOUS BBR"
+.br
+Bad block replacement was interrupted 
+in the middle when the system was last 
+halted.
+The driver cannot successfully complete the bad block replacement.
+Try to recover all the data from the disk and reformat it.
+Refer to the 
+.I Guide to System Configuration File Maintenance
+for additional information.
+.PP
+.B "sd%d:HARD_ERR: Drive select failed"
+.br
+The driver cannot select the specified
+drive for doing I/O. Make sure the drive
+is on line.
+.PP
+.B "sd%d:HARD_ERR: Invalid cylinder: %d"
+.br
+The driver tries I/O on a cylinder
+outside the valid range for the type of disk
+on the drive. 
+This is a fatal error caused by the driver and should not happen.
+.PP
+.B "sd%d:HARD_ERR: Invalid head:%d"
+.br
+The driver tries I/O on
+a head outside the valid range for the type of disk on
+the drive.
+This is a fatal error caused by the driver and should not happen.
+.PP
+.B "sd%d:HARD_ERR: Forced Error Modifier set LBN %d"
+.br
+The forced error bit is set on the specified block.
+The block was found to be
+bad and has been replaced with a good block,
+but the data in the block is bad.
+Writing new data into this block will clear the forced error bit.
+Refer to the 
+.I Guide to System Configuration File Maintenance
+for additional information.
+.PP
+.B "sd%d:HARD_ERR: compare error"
+.br
+The driver received a compare error for the drive from the controller. 
+This should be seen only for the floppy drive.
+For hard disks, the bad block will 
+get replaced.
+.PP
+.B "sd%d:HARD_ERR: eccerror"
+.br
+The driver received an ECC error for the drive from the controller.
+.PP
+.B "sd%d:HARD_ERR: syncerr"
+.br
+The driver received a sync error for the drive from the controller. 
+If it is the
+floppy drive, reinsert the floppy and repeat the command.
+.PP
+.B "sd%d:HARD_ERR: bad sector"
+.br
+The controller detected the sector to be bad from the sector's ID field.
+This message should appear only for the floppy drive.
+For hard disks, the bad block will get replaced.
+.PP
+.B "sd%d:HARD_ERR: WRITE FAULT"
+.br
+This is due to an internal error in the drive,
+such as an improper supply voltage.
+This message should appear only for hard disk drives.
+.PP
+The following messages are written to the system error file,
+\f(CW/usr/adm/syserr/syserr.\fI<hostname>\fR,
+but not printed at the console..
+.PP
+.B "sd:SOFT_ERR: stray interrupt"
+.br
+An unexpected interrupt was received 
+(for example, when no I/O was pending). 
+The interrupt is ignored.
+.PP
+.B "sd:SOFT_ERR: No valid buffer"
+.br
+An interrupt was received when the driver was not ready to receive one. 
+The interrupt is ignored. This should rarely happen.
+.PP
+.B "sd%d:SOFT_ERR: Command not yet
+implemented thru interrupt, command = %c"
+.br
+An interrupt was received for the command.  This should not happen.
+The interrupt is ignored.
+.PP
+.B "sd%d:SOFT_ERR: Unknown error type,
+UDC_CSTAT = %o, UDC_DSTAT = %o, DKC_STAT = %o"
+.br
+The error type indicated by the controller
+for the last I/O is not any of the
+common ones. An I/O error is generated.
+.SH Files
+.PN /dev/rd[0-1][a-f]
+.br
+.PN /dev/rrd[0-1][a-f]"
+.sp
+.br
+.PN /dev/rx2a"
+.br
+.PN /dev/rx2c"
+.sp
+.br
+.PN /dev/rrx2a"
+.br
+.PN /dev/rrx2c"
+
+.SH See Also
+dkio(4), nbuf(4), ra(4), rd(4), rx(4), chpt(8), uerf(8)

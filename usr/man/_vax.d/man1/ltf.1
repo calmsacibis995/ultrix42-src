@@ -1,0 +1,337 @@
+.\" SCCSID: @(#)ltf.1	2.3	7/29/87
+.TH ltf 1 
+.SH Name
+ltf \- labeled tape facility
+.SH Syntax
+.B ltf
+\fIoption\fR\|[\|\fIkeys\fR\|] \fIfile\fR...
+.SH Description
+.NXR "ltf command"
+.NXR "magnetic tape" "labeling"
+.NXAM "ltf command" "ltf file"
+The
+.PN ltf
+command reads and writes single-volume Versions 3 and 4 ANSI-compatible
+tape volumes.
+For a description of the label conventions, see 
+.MS ltf 5 .
+The
+.I file
+argument specifies each file or directory name that is to
+be processed.  If a directory name is specified, the complete
+directory tree is processed.
+.SH Options
+.NXR "ltf command" "options"
+The actions of 
+.PN ltf
+are controlled by one of the following option characters
+that must appear as the first command-line 
+argument:
+.B \-c, \-H, \-t,
+and
+.B \-x.  
+.IP \fB\-c\fR 0.3i
+.R
+Creates a new volume assigning an interchange file name to the files on the
+volume.  That is,
+.PN ltf
+initializes the volume and writes each named file onto the output file.
+Then
+.PN ltf
+assigns an \*(lqinterchange\*(rq file name to the files being
+created on the volume.  This \*(lqinterchange\*(rq file name is 
+a name that can be recognized by a non-ULTRIX system. 
+(Permissible ULTRIX file names are not allowed in all forms of ANSI 
+volumes).  This file name is 17 characters in length and includes only 
+capital letters and the \*(lqa\*(rq characters, see 
+.MS ltf 5 .  
+It is formed by converting all lower case letters to upper case, 
+converting non-\*(lqa\*(rq characters
+to upper case Z, and truncating the 
+resultant string to 17 characters.  
+If ANSI Version 4 volumes are being used, 
+the original ULTRIX file name is preserved in HDR3 through HDR9 and
+EOF3 through EOF9.  For further information, see 
+.MS ltf 5 .
+.IP \fB\-H\fR 0.3i
+Displays help messages for all options and keys.
+.IP \fB\-t\fR 0.3i
+Lists each named file on the specified volume.
+If no file argument is given, information about all files on the volume
+is provided.  If 
+.B \-t
+is used without v or V (verbose keys), the
+interchange file names are also included in the list.
+.IP \fB\-x\fR 0.3i
+Extracts each named file from the volume to the user's current directory.
+If no file argument is given, the 
+entire content of the volume is extracted.
+If the \fBp\fP key is not specified when extracting files from a
+volume written by an ULTRIX system, the files are restored to the 
+current user and group IDs and to the mode set by the 
+.MS umask 2 
+system call.  
+.SH Keys
+The following optional
+.I keys
+can be specified to enable or disable
+.PN ltf
+actions as specified:
+.NXR "ltf command" "keys"
+.IP \fBa\fR 0.3i
+Outputs an ANSI-compatible Version 3 format volume.  This key can be
+used with the
+.B \-c
+option only.  The default version is 4.  For further information,
+see 
+.MS ltf 5 .
+.IP \fBh\fR 0.3i
+Write to a tape volume the file that a symbolic link points to instead 
+of creating the symbolic link on a volume.  The file written to the tape
+now has the same name as the symbolic link.  This key can be used with 
+the 
+.B \-c
+option only.  When extracting,
+if a symbolic link exists in the current directory that has
+the same name as a file on the tape volume, the link is followed and 
+the file that the symbolic link currently points to is overwritten with
+the extracted file.  To avoid overwriting files, use the \fBw\fP key.
+.IP \fBo\fR 0.3i
+Omits directory blocks from the output volume.  When creating a volume, 
+the directory files are omitted, and when listing or extracting, the V 
+key is disabled.
+.IP \fBO\fR 0.3i
+Omits usage of optional headers HDR3 through HDR9 and EOF3 through EOF9.  
+For further information, see 
+.MS ltf 5 .  
+If a file is created 
+on an ULTRIX system without the use of the O key, these file headers 
+contain the complete ULTRIX disk
+file name.  Some non-ULTRIX systems are not able to process volumes 
+containing these header labels.
+Thus, it is helpful to use this qualifier to avoid unnecessary error
+messages when planning to use non-ULTRIX systems. 
+.IP \fBp\fR 0.3i
+Restores files to original mode, user ID and group ID that is written on the tape
+volume.  This key can be used with the 
+.B \-x 
+option on ULTRIX files and by the superuser only.
+.IP \fBv\fR 0.3i
+Displays long form information about volume and files.
+Normally, 
+.PN ltf
+operates with little terminal output.
+.sp
+When used in conjunction with the 
+.B \-t
+option, 
+.B v
+gives more
+information about the volume entries than when used in conjunction
+with the
+.B \-c 
+and
+.B \-x
+options. The following line is typical output from 
+.B \-tv 
+functions.
+.EX 0
+ltf:  Volume ID is:  ULTRIX   Volume is:  ANSI Version #4
+ltf:  Owner  ID is:  OwnerID
+ltf:  Implementation ID is:   SystemID
+ltf:  Volume  created   on:   System               
+
+t(1,1) rw-r--r-- 103/3 owner Feb 2 12:34 2530 bytes <cc >D file1
+t(2,1) rw-r--r-- 103/3 owner Jun 29 09:34 999 bytes <com>D file2
+t(3,1) rwxrwxrwx 293/10 name Jan 24 10:20 1234 bytes <bin>F name
+t(4,1) --xrwx--- 199/04 theowner Jan 24 10:21 12345 bytes <asc>D 
+                long file name
+.EE
+The first field contains the file sequence number and the file
+section number of the file.  If an ULTRIX system created the
+labeled volume, the second and third fields contain the mode,
+and owner/group 
+ID of the file.  Otherwise, these two fields are filled with dashes.
+The fourth field contains the file owner name.  
+The fifth field contains latest modification time.  The year
+is included if the modification time is older than Jan 1 of
+the current year.  The sixth field contains the number 
+of bytes used on the volume for the file.
+If the volume is non-ULTRIX, this field contains the number of blocks
+with the block size in parenthesis.
+The seventh field contains the ANSI file type (angle brackets)
+and the file record format (one character suffix).
+The file record formats are: F (fixed length), D (variable length),
+or S (spanned/segmented records).
+The eighth (last) field contains the name of the file.  If the 
+file name does not fit within the 12 spaces left in the line, the name 
+appears on the next line preceded by a carriage return.  
+A long file name will be continued over one or more lines thus it is 
+recommended to keep auto wrap on in the terminal setup.  
+Also if a file
+on a volume is either a symbolic or hard link, information about 
+the linked file is displayed on the next line, preceded by a carriage 
+return.
+.IP \fBV\fR 0.3i
+Displays verbose information about directories.
+.IP \fBw\fR 0.3i
+Warns the user 
+if file name is in danger of being truncated when using 
+.B \-c 
+or if it could be overwritten using 
+.B \-x.
+Normally, 
+.PN ltf
+operates silently and does not let the user know what is happening.
+When 
+.B \-cw
+is specified, 
+.PN ltf 
+displays two warning messages if the interchange name and the ULTRIX 
+file name are not the same.
+When 
+.B \-xw 
+is specified,
+.PN ltf
+displays a warning message if a file is about to be 
+overwritten.  Another message is displayed asking for approval to 
+overwrite the file.  If the user types no or presses return, then the 
+option exists to type in a new file name or press return to quit.  If a
+new file name is typed, this name is also checked.
+Thus,
+.PN ltf
+does not
+continue until a unique file name is typed.
+When
+.B \-x
+is specified,
+.PN ltf
+does not warn the user
+if a directory name already exists.
+.IP \fB0..31\fR 0.3i
+Selects a unit number for a named tape device.  These unit numbers can
+be entered when using the default tape name, /dev/rmt0h. 
+.PP
+The following optional keys require an additional
+argument to be specified on the command line.  If two or more
+of these keys are used, their respective arguments
+are to appear in the exact order that the keys are specified.
+.IP "\fBB\fI size\fR" 0.3i
+Set the blocking factor to 
+.I size.
+This specifies the maximum number of bytes that can be 
+written in a block on a volume.
+If no value is specified, 
+.I size 
+defaults to 2048 bytes.
+The maximum size is 20480 bytes and the minimum size is 18 bytes.
+The
+.B B
+key need only be specified with 
+.B \-c.
+.sp
+The
+.I size
+may be specified 
+as n bytes, (where n is assumed to be decimal) or
+as nb, (a multiple of 512 bytes using n followed 
+by 'b', where 'b' signifies the multiple of 512) or
+as nk, (a multiple of 1024 bytes using n followed 
+by 'k', where 'k' signifies the multiple of 1024).
+.IP "\fBf\fI device\fR" 0.3i
+Sets the device file name to
+.I device.
+The default is /dev/rmt0h.
+The use of the
+.B f 
+key overrides the  
+.B 0..31
+keys.
+.IP "\fBI\fI file\fR" 0.3i
+Allows file name to be supplied either interactively or from a specified file.  
+Normally, 
+.PN ltf
+expects the argument file names to be part of the command line.
+The 
+.B I
+key allows the user to 
+enter argument file names either interactively or from a specified file.
+If 
+.I file
+is a dash (\-), 
+.PN ltf
+reads standard input and prompts for all required information.
+All of the file names are requested first, followed by a single return
+before the arguments are processed.
+If 
+.I file
+is a valid file name, 
+.I file
+is opened and read to obtain argument file names. 
+.IP "\fBL\fI label\fR" 0.3i
+Specifies a six-character volume identifier
+.I label.
+The default
+.I label
+for ULTRIX systems is 'ULTRIX'.
+.IP "\fBP\fI position\fR" 0.3i
+Specifies file sequence and section number at which volume will be positioned,
+using #,#.  
+The first #, represents the file
+sequence number, while second #, the file section number.
+The file sequence number begins at 1 and is incremented for each file in
+the current file set.  Since this implementation of 
+.PN ltf
+only produces
+one file set, the file sequence number for volumes written with this
+implementation is the number of the file as it
+is written on the volume.  The file section number begins at 1 and is
+incremented for each file section on any one volume.  This number is 
+necessary when files are written in multi-volume format where the need
+may exist
+to split a file across volumes; however since this implementation of 
+.PN ltf
+writes only single volumes, the file section number is always 1 for 
+volumes written with this implementation.
+If no file arguments
+are specified, all files from the position number to the end of the 
+tape are listed or extracted.  Otherwise, particular files that exist
+between the position number and the end of the tape can be listed or
+extracted.  A warning message appears if a file is requested that exists
+before the position number specified.
+The
+.B P
+key cannot be used with the
+.B \-c
+option.
+.SH Examples
+.NXR "ltf command"
+.EX
+ltf \-cfB /dev/rmt0h 100 file1 file2 file3
+.EE
+This example creates a new volume for file1, file2, and file3
+using device /dev/rmt0h (\fBf\fP key) and a
+blocking factor of 100 (\fBB\fP key).
+.SH Restrictions
+The
+.PN ltf
+command does not support floppy diskettes or multi-volume tapes.
+.SH Diagnostics
+.NXR "ltf command" "diagnostics"
+Diagnostics are written to the standard error file.
+They come in four forms: fatal errors, warnings, information, and 
+prompts.  The 
+.PN ltf
+command terminates when it detects that a fatal
+error has occurred.
+.PP
+The diagnostics are intended to be self-explanatory.
+Their general format is:
+.EX
+ltf: FATAL > a fatal error message 
+ltf: Warning > a warning or advisory message
+ltf: Info > an information message
+ltf: a prompt asking for input
+.EE
+.SH See Also
+ltf(5)

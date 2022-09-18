@@ -1,0 +1,87 @@
+.\" SCCSID: @(#)ni.4	8.2	3/28/91
+.TH ni 4 VAX
+.SH Name
+ni \- BVP DEBNT/NI interface
+.SH Syntax
+.nf
+.B "controller  aie? 	at vaxbi? node?"
+.B "device      bvpni0 	at aie? vector bvpniintr"
+.fi
+.SH Description
+.NXS "ni interface" "BVP DEBNT/NI interface"
+.NXR "BVP DEBNT/NI interface"
+.NXR "Ethernet address" "mapping to Internet address"
+.NXR "Internet address" "mapping to Ethernet address"
+The
+.PN ni
+driver provides access to a 10 Mb/s Ethernet network through
+the NI port of the DEBNT controller. The DEBNT also has a tape
+port that shares the controller structure with the NI port.
+.PP
+The host's Internet address is specified at boot time with an 
+SIOCSIFADDR ioctl.  The
+.PN ni
+driver employs the Address Resolution Protocol described in
+.MS arp 4p
+to dynamically map addresses on the local network
+between Internet and Ethernet.
+.PP
+The driver normally tries to use a ``trailer'' encapsulation
+to minimize copying data on input and output.  This can be
+disabled for an interface by setting the IFF_NOTRAILERS
+flag with an SIOCSIFFLAGS ioctl.
+Trailers are only used for packets destined for Internet hosts.
+.PP
+The SIOCSPHYSADDR ioctl can be used to change and SIOCRPHYSADDR can
+be used to read the physical address of the NI.  SIOCADDMULTI 
+and SIOCDELMULTI can be used to add or delete multicast addresses.  
+The NI supports a maximum of 32 multicast addresses. The argument 
+to the latter ioctls is a pointer to an ifreq structure found in 
+<net/if.h>.
+.PP
+SIOCRDCTRS and SIOCRDZCTRS ioctls can be used to ``read'' or 
+``read and clear'' network counters. The argument to the latter 
+two ioctls is a pointer to a counter structure ``ctrreq\*n found 
+in <net/if.h>.
+.PP
+The ioctls SIOCENABLBACK and SIOCDISABLBACK can be used to enable
+and disable the interface loopback mode respectively.
+.SH Restrictions
+The PUP protocol family is not supported. 
+.SH Diagnostics
+.B "ni%d in wrong state"
+.br
+DEBNT is unable to be attached during
+autoconfiguration time, because it is not in the undefined state.
+.PP
+.B "ni%d cannot initialize"
+.br
+DEBNT failed to become initialized after
+a request to become initialized.
+.PP
+.B "nid%d cannot enable"
+.br
+DEBNT failed to become enabled after a 
+request to become enabled.
+.PP
+.B "reset ni%d %x %x %x %x"
+.br
+DEBNT has requested a software reset.
+Values of port control, port status, port error, and port data
+are given to help identify what caused the reset request.
+.PP
+.B "ni%d SUME error detected %x %x %x %x"
+.br
+Some error has been detected.
+Values of port error, port data, port status, and port control are
+given to help identify the cause of the error.
+.PP
+.B "ni%d cant handle af%d"
+.br
+A packet with an undefined protocol type has been sent to DEBNT.
+.PP
+.B "ni%d multi failed, multicast list full"
+.br
+Too many multicast requests have been made.
+.SH See Also
+arp(4p), inet(4f), intro(4n)

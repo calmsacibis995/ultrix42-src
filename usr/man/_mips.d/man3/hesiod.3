@@ -1,0 +1,115 @@
+./" new manpage created for FT2 of V4.0       20 dec, 1989  (JM)
+.TH hesiod 3
+.SH Name
+hes_init, hes_to_bind, hes_error, hes_resolve - routines for using
+Hesiod 
+.SH Syntax
+.nf
+.B #include <hesiod.h>
+.PP   
+.B hes_init()
+.PP
+.B char *hes_to_bind(\fIHesiodName\fP, \fIHesiodNameType\fP)
+.br
+.B char *\fIHesiodName\fP, *\fIHesiodNameType\fP;
+.PP
+.B hes_error()
+.PP
+.B har **hes_resolve(\fIHesiodName\fP, \fIHesiodNameType\fP)
+.br
+.B char *\fIHesiodName\fP, *\fIHesiodNameType\fP;
+.fi
+.SH Description
+.NXR "hesiod"
+.NXR "hes_init routine"
+.NXR "hes_to_bind routine"
+.NXR "hes_error routine"
+.NXR "hes_resolve routine"
+The 
+.PN "hes_init()"
+routine opens and reads the Hesiod
+configuration file, 
+.PN "/etc/hesiod.conf" 
+to extract the left
+hand side and right hand side of the Hesiod name.
+.PP
+The 
+.PN "hes_to_bind()" 
+routine takes as arguments a 
+.PN HesiodName 
+and
+.PN HesiodNameType 
+and returns a fully qualified name to be 
+handed to BIND.
+.PP
+The two most useful routines to the applications programmer are
+.PN "hes_error()" 
+and 
+.PN "hes_resolve()."  
+The 
+.PN "hes_error()" 
+routine has no
+arguments and returns an integer which corresponds to a set of errors
+which can be found in 
+.PN "hesiod.h" 
+file.
+.EX 0
+#define HES_ER_UNINIT           \-1
+.sp 
+#define HES_ER_OK                0
+.sp
+#define HES_ER_NOTFOUND          1
+.sp
+#define HES_ER_CONFIG            2
+.sp
+#define HES_ER_NET               3
+.EE
+.PP
+The 
+.PN "hes_resolve()" 
+routine resolves given names via the Hesiod name
+server.  It takes as arguments a name to be resolved, the 
+.PN HesiodName ,
+and a type corresponding to the name, the 
+.PN HesiodNameType ,
+and returns
+a pointer to an array of strings which contains all data that matched
+the query, one match per array slot.  The array is null terminated.
+.PP
+If applications require the data to be maintained throughout multiple
+calls to 
+.PN "hes_resolve()," 
+the data should be copied since another call
+to 
+.PN "hes_resolve()" 
+will overwrite any previously-returned data.  A null
+is returned if the data cannot be found.
+.SH Examples
+The following example shows the use of the Hesiod 
+routines to obtain a Hesiod name from a Hesiod database:
+.EX
+#include <hesiod.h>
+.sp
+char *HesiodName, *HesiodNameType;
+char **hp;
+.sp
+hp = hes_resolve(HesiodName, HesiodNameType);
+if (hp == NULL) {
+	error = hes_error();
+	switch(error) {
+			.
+			.
+			.
+		}
+	}
+	else 
+		process(hp);
+.EE
+.SH Files
+.PN /etc/hesiod.conf
+.br 
+.PN /usr/include/hesiod.h
+.SH See Also
+hesiod.conf(5), bindsetup(8)
+.br
+.I Guide to the BIND/Hesiod Service

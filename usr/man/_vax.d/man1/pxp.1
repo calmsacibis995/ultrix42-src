@@ -1,0 +1,149 @@
+.\" SCCSID: @(#)pxp.1	8.1	9/11/90
+.TH pxp 1 VAX
+.SH Name
+pxp \- Pascal execution profiler
+.SH Syntax
+.B pxp
+[\fB\-acdefjnstuw_\fR\|] [\fB\-23456789\fR\|] [\fB\-z\fR[\fIname...\fR\|]\|] 
+\fIname.p\fR
+.SH Description
+.NXR "Pascal program" "profiling"
+.NXR "pxp command"
+.NXS "Pascal execution profiler" "pxp command"
+The
+.PN pxp
+command
+can be used to obtain execution profiles of Pascal programs or
+as a pretty-printer.
+To produce an execution profile all that is necessary is to translate
+the program specifying the
+.B z
+option to
+.PN pi
+or
+.PN pix ,
+to execute the program,
+and to then issue the command
+.EX
+pxp \-z name.p
+.EE
+A reformatted listing is output if none of the
+.BR c ,
+.BR t ,
+or
+.B z
+options are specified;
+thus
+.EX
+pxp old.p > new.p
+.EE
+places a pretty-printed version of the program
+in old.p in the file new.p.
+.SH Options
+.NXR "pxp command" "options"
+The use of the following options of
+.PN pxp
+is discussed in sections 2.6, 5.4, 5.5 and 5.10 of the
+"Berkeley Pascal User's Manual" in the
+\fISupplementary Documents, Volume 2: Programmer\fP.
+.IP \fB\-\_\fR 5
+Underscores all keywords.  
+.IP \fB\-\fId\fR 
+Uses the specified number (\fB\-\fId\fR) as the indentation unit.   
+The default is 4.
+.IP \fB\-a\fR 
+Displays all procedures (even those not executed).  
+.IP \fB\-c\fR 
+Uses the
+.PN core
+file in generating the profiling data.  
+.IP \fB\-d\fR 
+Displays all declaration parts.  
+.IP \fB\-e\fR 
+Eliminates
+.PN include
+directives when reformatting a file.  
+The
+.PN include
+is replaced by the reformatted contents of the specified
+file.
+.IP \fB\-f\fR 
+Displays all parenthesized expression.  
+.IP \fB\-j\fR 
+Left justifies all procedures and functions.
+.IP \fB\-n\fR 
+Begins a new page for each included file.  
+In profiles, print a blank line at the top of the page.
+.IP \fB\-s\fR 
+Strips comments from the input text.
+.IP \fB\-t\fR 
+Prints a table summarizing
+.PN  procedure
+and
+.PN  function
+call counts.
+.IP \fB\-u\fR 
+Generates the output in card image format, using only the first 72 characters of
+input lines.  
+.IP \fB\-w\fR 
+Suppresses all warning diagnostics.
+.IP \fB\-z\fR 
+Generate an execution profile for the specified modules (next arguments).
+If no
+.IR name \|s,
+are given the profile is of the entire program.
+If a list of names is given, then only any specified
+.BR procedure s
+or
+.BR function s
+and the contents of any specified
+.B include
+files appear in the profile.
+.SH Restrictions
+.NXR "pxp command" "restricted"
+Does not place multiple statements per line.
+.SH Diagnostics
+For a basic explanation of the
+.PN pxp
+command, type:
+.EX
+pxp
+.EE
+Error diagnostics include
+`No profile data in file'
+with the
+.B c
+option if the
+.B z
+option was not enabled to
+.PN pi;
+`Not a Pascal system core file'
+if the core is not from a
+.PN px
+execution;
+`Program and count data do not correspond'
+if the program was changed after compilation, before profiling;
+or if the wrong program is specified.
+.SH Files
+.TP 20
+name.p		
+input file
+.TP
+name.i		
+include file(s)
+.TP
+pmon.out		
+profile data
+.TP
+core			
+profile data source with
+.B  \-c
+.TP
+/usr/lib/how_pxp	
+information on basic usage
+.ne 8
+.SH See Also
+pi(1), px(1)
+.br
+"Berkeley Pascal User's Manual,"
+\fISupplementary Documents, Volume 2: Programmer\fP

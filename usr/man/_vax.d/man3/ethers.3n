@@ -1,0 +1,105 @@
+.TH ethers 3n
+.SH Name
+ethers, ether_ntoa, ether_aton, ether_ntohost, ether_hostton, ether_line \- Ethernet address mapping operations
+.SH Syntax
+.nf
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <net/if.h>
+#include <netinet/in.h>
+#include <netinet/if_ether.h>
+.sp
+char *
+ether_ntoa(e)
+	struct ether_addr *e;
+.sp
+struct ether_addr *
+ether_aton(s)
+	char *s;
+.sp
+ether_ntohost(hostname, e)
+	char *hostname;
+	struct ether_addr *e;
+.sp
+ether_hostton(hostname, e)
+	char *hostname;
+	struct ether_addr *e;
+.sp
+ether_line(l, e, hostname)
+	char *l;
+	struct ether_addr *e;
+	char *hostname;
+.fi
+.SH Arguments
+The 
+.PN ether_addr
+structure is defined as:
+.EX
+\f(CWstruct ether_addr {
+        u_char  ether_addr_octet[6];
+};
+.EE
+.SH Description
+These routines are useful for mapping 48 bit Ethernet numbers to their
+ASCII
+representations or their corresponding host names, and vice versa.
+.NXR "Ethernet address mapping operations"
+The mapping is obtained from the
+.PN /etc/ethers
+database; see
+.MS ethers 5 .
+.PP
+The function
+.PN ether_ntoa(\|)
+converts a 48 bit Ethernet number pointed to by
+.I e
+to its standard ACSII
+representation; it returns a pointer to the ASCII
+string.  The representation is of the form:
+.IR x : x : x :\c
+.IR x : x : x
+where
+.I x
+is a hexadecimal number between 0 and ff.
+The function
+.PN ether_aton(\|)
+converts an ASCII
+string in the standard representation back
+to a 48 bit Ethernet number;  the function returns NULL
+if the string
+cannot be scanned successfully.
+.PP
+The function
+.PN ether_ntohost(\|)
+maps an Ethernet number (pointed to by
+.IR e )
+to its associated hostname.  The string pointed to by
+.PN hostname
+must be long enough to hold the hostname and a NULL
+character.  The function returns zero
+upon success and non-zero upon failure.
+Inversely, the function
+.PN ether_hostton(\|)
+maps a hostname string to its corresponding Ethernet number;
+the function modifies the Ethernet number pointed to by
+.IR e .
+The function also returns zero upon success and non-zero upon failure.
+.PP
+The function
+.PN ether_line(\|)
+scans a line (pointed to by
+.IR l )
+and sets the hostname and the Ethernet number (pointed to by
+.IR e ).
+The string pointed to by
+.PN hostname
+must be long enough to hold the hostname and a NULL
+character.
+The function returns zero upon success and non-zero upon failure.
+The format of the scanned line is described by
+.MS ethers 5 .
+.SH Files
+.TP 20
+.PN /etc/ethers
+.SH See Also
+packetfilter(4), ethers(5), rarpd(8c)

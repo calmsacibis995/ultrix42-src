@@ -1,0 +1,54 @@
+.TH xsend 1
+.SH Name
+xsend, xget, enroll \- secret mail (available only if the Encryption layered product is installed)
+.SH Syntax
+.B xsend
+.I person
+.br
+.B xget
+.br
+.B enroll
+.SH Description
+.NXR "xsend command" "secret mail"
+.NXR "encryption" "secret mail"
+This reference page describes software that is available only 
+if the Encryption layered product is installed.
+.PP
+These commands implement a secure communication channel 
+on a local machine.
+Mail sent using 
+.PN xsend
+is the same as 
+.PN mail
+but no one can read the message except the intended recipient.
+.PP
+To receive messages use, 
+.PN enroll .
+The 
+.PN enroll
+command
+asks for a password that you must enter 
+to receive secret mail.
+.PP
+To receive secret mail use,
+.PN xget .
+The
+.PN xget
+command asks for your password, then gives you the messages.
+.PP
+To send secret mail, use
+.PN xsend
+in the same manner as the ordinary mail command; however, 
+.PN xsend
+will accept only one target.
+A message announcing the receipt of secret mail is sent
+by ordinary mail.
+.SH Files
+.TP 25
+.PN /usr/spool/secretmail/*.key:
+keys
+.TP
+.PN /usr/spool/secretmail/*.[0-9]: 
+messages
+.SH See Also
+binmail(1), mail(1), crypt(1)

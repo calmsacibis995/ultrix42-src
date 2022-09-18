@@ -1,0 +1,70 @@
+.TH ldshread 3x RISC
+.SH Name
+ldshread, ldnshread \- read an indexed or named section header of a common object file
+.SH Syntax
+.ta \w'unsigned\ 'u +\w'short\ \ 'u
+.nf
+.B #include <stdio.h>
+.ie '\*p'' \{\
+.B #include <filehdr.h>
+.B #include <scnhdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h> \}
+.el \{\
+.B #include "\s-1INCDIR\s+1\/filehdr.h"
+.B #include "\s-1INCDIR\s+1\/scnhdr.h"
+.B #include "\s-1INCDIR\s+1\/syms.h"
+.B #include "\s-1INCDIR\s+1\/ldfcn.h" \}
+.PP
+.BR "int ldshread (" "ldptr, sectindx, secthead" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR "unsigned short" " sectindx" ;
+.BR "\s-1SCNHDR\s+1 \(**" secthead ;
+.PP
+.BR "int ldnshread (" "ldptr, sectname, secthead" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR char " \(**sectname" ;
+.BR "\s-1SCNHDR\s+1 \(**" secthead ;
+.fi
+.DT
+.SH Description
+The 
+.PN ldshread\^
+function reads the section header specified by
+.I sectindx\^
+of the common object file
+currently associated with
+.I ldptr\^
+into the area of memory beginning at
+.IR secthead .
+.PP
+The
+.PN ldnshread\^
+functions reads the section header specified by
+.I sectname\^
+into the area of memory beginning at
+.IR secthead .
+.PP
+The 
+.PN ldshread\^
+and
+.PN ldnshread\^
+functions return success or failure.
+If 
+.I sectindx\^
+is greater than the number of sections in the object file,
+.I ldshread \^
+fails.
+If there is no section name corresponding with
+.IR sectname,
+.PN ldnshread\^
+fails.
+If it cannot read the specified section header, either function fails.
+.NT
+The first section header has an index of
+.IR one .
+.NE
+The program must be loaded with the object file access routine library
+.BR libmld.a .
+.SH See Also
+ldclose(3x), ldopen(3x), ldfcn(5).

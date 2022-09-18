@@ -1,0 +1,106 @@
+.\"
+.TH intro 3xti
+.SH Name
+intro \- introduction to the X/Open Transport Interface (XTI)
+.SH Description
+.NXR "X/Open Transport Interface" "introduction"
+The X/Open Transport Interface defines a transport service 
+interface that is independent of any specific transport provider. 
+The interface is
+provided by way of a set of library functions for the C programming 
+language.
+.SH Transport Providers
+The transport layer can comprise one or more 
+transport providers at the same time. The
+transport provider identifier parameter passed to the 
+.PN t_open()
+function determines the required transport provider.
+.SH Transport Endpoints
+A transport endpoint specifies a communication path between 
+a transport user and a
+specific transport provider, which is identified by a local 
+file descriptor \fI(fd)\fR. 
+When a user opens a transport provider identifier, a 
+local file descriptor
+\fIfd\fR is returned that identifies the transport endpoint. 
+.SH Synchronizing Endpoints 
+One process can simultaneously open several \fIfd\fRs. In 
+synchronous mode, however
+the process must manage the different actions of the associated 
+transport connections
+sequentially. Conversely, several processes can share 
+the same \fIfd\fR (by
+.PN fork() 
+or 
+.PN dup() 
+operations) but they have to synchronize themselves so as
+not to issue a function that is unsuitable to the current state 
+of the transport endpoint.
+.SH Modes Of Service
+The transport service interface supports two modes of service: 
+connection mode and connectionless mode. A single 
+transport endpoint cannot support both modes of service simultaneously.
+.PP
+The connection-mode transport service is circuit-oriented 
+and enables data to be
+transferred over an established connection in a reliable, 
+sequential manner. In
+contrast, the connectionless-mode transport service is 
+message-oriented and supports
+data transfer in self-contained units with no logical 
+relationship required among multiple units.
+.SH Error Handling
+Two levels of error are defined for the transport interface. 
+The first is the library
+error level. Each library function has one or more error returns. 
+A return of \-1 indicates 
+a failure. An external integer, \fBt_errno\fR, which is defined in
+the header file \fB<xti.h>\fR, holds the specific error number 
+when such a failure
+occurs. This value is set when errors occur but is not cleared on successful library
+calls, so it should be tested only after an error has been indicated. If implemented,
+a diagnostic function, 
+\fBt_error\fR, prints out information on the current
+transport error. The state of the transport provider may change if a transport error
+occurs.
+.PP
+The second level of error is the operating system service routine level. A special
+library level error number has been defined called [TSYSERR], which is generated
+by each library function when the operating system service routine fails or some general
+error occurs. When a function sets \fBt_errno\fR
+to [TSYSERR], the specific
+system error can be accessed through the external variable \fBerrno\fR.
+.SH Key For Parameter Arrays
+Each XTI function description, includes an array that summarizes the content of
+the input and output parameter. The key is as follows:
+.PP
+.TS
+tab(@);
+lfHB lfHB
+l l .
+_
+.sp 6p
+Key@Description
+.sp 6p
+_
+.sp 6p
+x@T{
+The parameter value is meaningful (input parameter must be set before the call and output parameter must be read after the call).
+T}
+(x)@T{
+The content of the object pointed by the x pointer is meaningful.
+T}
+?@T{
+The parameter value is meaningful, but the parameter is optional.
+T}
+(?)@T{
+The content of the object pointed by the ? pointer is optional.
+T}
+/@The parameter value is meaningless.  \  \  \  \  \  \  \  \   
+\= @T{
+After the call, the parameter keeps the same value as before the call.
+T}
+.sp 6p
+_
+.TE
+.\"

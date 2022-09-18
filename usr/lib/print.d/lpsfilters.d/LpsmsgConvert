@@ -1,0 +1,87 @@
+#! /bin/sh
+#
+# Shell script to convert VMS message definition file into a simple Unix
+# format.
+#
+# Usage:
+#	LpsmsgConvert < (VMSfile)lpsmsg.msg  > messages.txt
+#	LpsmsgString  < messages.txt > lpsmsg_string.h
+#
+# Ajay Kachrani - June 21, 1988 - Updated from IP server to be used by
+#                                 DECnet/Ultrix lpscomm filter
+#
+echo | awk '{N=66682889;
+	    M=N+1; 
+	    if (M == N) print "Wrong version"
+}' > /tmp/awktest.$$
+if [ -s /tmp/awktest.$$ ]
+then cat << XXXXXX 1>&2
+`which awk` is the wrong version of awk for $0.  It 
+uses single precision. $0 requires a double-precision version of awk.
+If worst comes to worst, you can get a double-precision version of awk by
+going to the awk sources and changing AWKFLOAT from "float" to "double"
+in the file awk.def, then recompiling all of awk.
+XXXXXX
+#    rm /tmp/awktest.$$
+    exit 1
+fi
+rm /tmp/awktest.$$
+ 
+expand | awk '
+BEGIN {
+	Symbols["WARN"]    = 0;
+	Symbols["SUCCESS"] = 1;
+	Symbols["ERROR"]   = 2;
+	Symbols["INFO"]    = 3;
+	Symbols["INFORMATIONAL"]    = 3;
+	Symbols["FATAL"]   = 4;
+        SeverityStr[0] = "WARN";
+        SeverityStr[1] = "SUCCESS";
+        SeverityStr[2] = "ERROR";
+        SeverityStr[3] = "INFO";
+        SeverityStr[4] = "FATAL";
+      }
+/^ *!/ {next}
+/^ *$/ {next}
+/^ *\.TITLE/	{next}
+/^ *\.IDENT/	{next}
+/^ *\.END/	{next}
+/^ *\.FACILITY/	{Comma=index($2,",");
+		 Slash=index($2,"/");
+		 if (Slash == 0) Slash = strlen($2);
+		 FacilityName=substr($2,0,Comma-1);
+		 FacilityNumber=substr($2,Comma+1,Slash-Comma-1);
+		 control = 0;
+		 next
+		}
+/^ *\.LITERAL/	{Symbols[$2] = $4; next}
+/^ *\.SEVERITY/	{Severity = Symbols[$2]; next}
+/^ *\.BASE/	{if (Symbols[$2] != "")
+		      Base=Symbols[$2];
+	         else Base=$2; 
+		 MessageNumber = Base; next}
+/^ *\./		{print "Unrecognized directive ",$0; next}
+
+# Not a pseudo-op. Define a message.
+	{Name=$1;
+	 Left=index($0,"<");
+	 Right=index($0,">");
+	 Text=substr($0,Left+1,Right-Left-1);
+	 Equals=index($0,"/FAO_COUNT=");
+	 if (Equals > 0) {
+	     FAOcount=substr($0,Equals+11);
+	 } else {
+	     FAOcount=0
+	 }
+	 ErrorName=FacilityName "$_" Name;
+	 ErrorNumber = ((((control)*4096 + FacilityNumber)*8192 + (MessageNumber+4096))*8) + (Severity);
+         if (SeverityStr[Severity] == "")
+                 Severity = 0;
+	 printf "%s	%s	%d	%d	%s\n",SeverityStr[Severity], ErrorName,ErrorNumber,FAOcount,Text;
+	 MessageNumber += 1
+	}
+' > /tmp/$0.$$
+	wc -lc /tmp/$0.$$ |\
+	 awk '{printf "lines %d chars %d\n",$1,$2}'
+	cat /tmp/$0.$$
+	rm /tmp/$0.$$

@@ -1,0 +1,50 @@
+.TH keypad 3cur 
+.SH Name
+keypad \- enable keypad
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.B
+int keypad(win, bf)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+bool bf;
+.SH Description
+.NXR "keypad subroutine"
+This option enables the keypad of the user's terminal.
+If the keypad is enabled, 
+pressing a function key 
+(such as an arrow key)
+will return a single value representing the function key.
+For example, pressing the left arrow key results in the
+value 
+KEY_LEFT being returned..
+For more information see the
+.I
+Guide to X/Open Curses Screen-Handling.
+.R
+.PP
+The routine 
+.PN getch 
+is used to return the character.
+If 
+the keypad
+is disabled,
+.PN curses
+does not treat function keys as special keys and the program
+interprets the escape sequences itself.
+Keypad layout is terminal dependent;
+some terminals do not even have a keypad.
+.SH Return Values
+The
+.PN keypad
+function returns OK on success and ERR on error.
+.SH See Also
+getch(3cur)
+.br
+.I Guide to X/Open Curses Screen-Handling

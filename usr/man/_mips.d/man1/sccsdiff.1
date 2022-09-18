@@ -1,0 +1,53 @@
+.\" SCCSID: @(#)sccsdiff.1	8.1	9/11/90
+.TH sccsdiff 1
+.SH Name
+sccsdiff \- compare and display SCCS delta differences
+.SH Syntax
+.B sccsdiff
+\fB\-r\fISID1 \fB\-r\fISID2\fR [\fB\-p\fR] [\fB-s\fIn\fR\|] \fIfiles\fR
+.SH Description
+.NXR "sccsdiff command"
+.NXAM "file" "sccsfile" "sccsdiff command"
+.NXR "SCCS file" "comparing"
+The
+.PN sccsdiff
+command 
+compares two versions of an
+SCCS
+file and generates the differences between the
+two versions.
+You can specify any number of
+SCCS
+files, but arguments apply to all files.
+.SH Options
+.IP \fB\-p\fR  10
+Displays output using
+.MS pr 1 
+command.
+.IP \fB\-r\fISID?\fR
+Indicates deltas to be prepared.  
+Versions are passed to
+.MS bdiff 1
+in the order given.
+.IP \fB\-s\fIn\fR
+Sets number of lines each segment is to contain.  
+This is useful when
+.PN diff
+fails due to a high system load.
+.SH Diagnostics
+.BI `` file ": No differences''"
+.br
+If the two versions are the same.
+Use
+.MS sccshelp 1
+for explanations.
+.PD
+.SH Files
+.TP "\w'/tmp/get?????\ \ \ 'u"
+.PN /tmp/get?????
+temporary files
+.SH See Also
+bdiff(1), cmp(1), comm(1), diff(1), diff3(1), 
+diffmk(1), get(1), prs(1), sccs(1), sccshelp(1)
+.br
+\fIGuide to the Source Code Control System\fP

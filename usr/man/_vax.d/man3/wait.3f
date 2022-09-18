@@ -1,0 +1,32 @@
+.\" SCCSID: @(#)wait.3f	8.1	9/11/90
+.TH wait 3f VAX "" Unsupported
+.SH Name
+wait \- wait for a process to terminate
+.SH Syntax
+.B integer function wait (status)
+.br
+.B integer status
+.SH Description
+.NXR "wait subroutine (FORTRAN)"
+.NXR "process" "suspending"
+The
+.PN wait
+routine causes its caller to be suspended 
+until a signal is received or one of
+its child processes terminates.
+If any child has terminated since the last
+.PN wait ,
+return is immediate; if there are no children, return is immediate
+with an error code.
+.PP
+If the returned value is positive, it is the process ID of the child and
+.I status
+is its termination status.  For further information, see
+.MS wait 2 .
+If the returned value is negative,
+it is the negation of a system error code.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+wait(2), kill(3f), perror(3f), signal(3f)

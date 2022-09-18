@@ -1,0 +1,171 @@
+.TH sin 3m RISC
+.de Pi		\" PI stuff sign
+.if n \\
+\\$2pi\\$1
+.if t \\
+\\$2\\(*p\\$1
+..
+.ds up \fIulp\fR
+.ds nn \fINaN\fR
+.SH Name
+sin, cos, tan, asin, acos, atan, atan2 \- trigonometric functions
+and their inverses
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double sin(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float fsin(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double cos(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float fcos(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double tan(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float ftan(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double asin(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float fasin(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double acos(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float facos(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double atan(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float fatan(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double atan2(\fIy,x\fP)
+.B double \fIy,x\fP;
+.PP
+.B float fatan2(\fIy,x\fP)
+.B float \fIy,x\fP;
+.fi
+.SH Description
+.NXR "sin subroutine"
+.NXR "cos subroutine"
+.NXR "tan subroutine"
+.NXR "asin subroutine"
+The
+.PN sin , 
+.PN cos ,
+and 
+.PN tan
+functions return trigonometric functions of radian arguments
+.I x
+for double data types. 
+.PP
+The
+.PN fsin ,
+.PN fcos ,
+and
+.PN ftan
+functions return trigonometric functions for float data types.
+.PP
+The
+.PN asin
+and
+.PN fasin
+functions return the arc sine in the range 
+.Pi /2 \-
+to
+.Pi /2
+for double and float data types, respectively.
+.PP
+.NXR "acos subroutine"
+.NXR "atan subroutine"
+.NXR "atan2 subroutine"
+The 
+.PN acos
+and
+.PN facos
+functions return the arc cosine in the range 0 to
+.Pi
+for double and float data types, respectively.
+.PP
+The 
+.PN atan 
+and
+.PN fatan
+functions return the arc tangent in the range
+.Pi /2 \-
+to
+.Pi /2
+for double and float data types, respectively.
+.PP
+The 
+.PN atan2
+and
+.PN fatan2
+functions return the arc tangent of
+.I y/x
+in the range
+.Pi \| \-
+to
+.Pi,
+using the signs of both arguments to determine the quadrant of the return value
+for double and float data types, respectively.
+.SS Error (due to roundoff)
+When
+.I P
+stands for the number stored in the computer in place of
+.Pi " = 3.14159 26535 89793 23846 26433 ... ."
+and "trig" stands for one of "sin", "cos" or "tan", then
+the expression "trig(\fIx\fP)" in a program actually produces an approximation to
+.Pi /P), trig(\fIx\fP\(**
+and "atrig(\fIx\fP)" approximates
+.Pi )\(**atrig(\fIx\fP). (P/
+The approximations are close.
+.PP 
+P differs from
+.Pi
+by a fraction of an \*(up; the difference is apparent only if the argument
+.I x
+is huge, and even then the difference is likely to be swamped by
+the uncertainty in
+.I x.
+Every trigonometric identity that does not involve
+.Pi
+explicitly is satisfied equally well regardless of whether
+.Pi . "P = "
+For example,
+.if n \
+sin(\fIx\fP)**2+cos(\fIx\fP)**2\0=\01
+.if t \
+sin\u\s62\s10\d(\fIx\fP)+cos\u\s62\s10\d(\fIx\fP)\0=\01
+and sin(2\fIx\fP)\0=\02\|sin(\fIx\fP)cos(\fIx\fP) to within a few \*(ups regardless of how big
+.I x
+is.  Therefore, the difference between P and
+.Pi
+is unlikely to effect scientific and engineering computations.
+.SH Return Values
+All the double functions return \*(nn if \*(nn is passed in.
+.PP
+If |\|x| > 1 then
+.PN asin
+(\fIx\fP) and
+.PN acos
+(\fIx\fP) will return the default quiet \*(nn.
+.PP
+The
+.PN atan2
+function defines
+.PN atan2
+(0,0) = \*(nn.
+.SH See Also
+hypot(3m), math(3m), sqrt(3m)

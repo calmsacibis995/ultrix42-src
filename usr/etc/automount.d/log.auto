@@ -1,0 +1,27 @@
+(cd _mips.b; s5make -b DESTROOT=/sources/Ultrix.mips  GMAKEVARS=/sources/genmake.d/Makevars_mips.mk MAKERULE=clean  -f ../Makelocal.mk clean)
+	(cd ../_mips.b; rm -f *; true)
+(cd _mips.b; s5make -b DESTROOT=/sources/Ultrix.mips  GMAKEVARS=/sources/genmake.d/Makevars_mips.mk MAKERULE=all  -f ../Makelocal.mk all)
+	cc -c  -O  -I. -I.. -I/sources/usr/include ../nfs_prot.c
+	cc -c  -O  -I. -I.. -I/sources/usr/include ../nfs_server.c
+	cc -c  -O  -I. -I.. -I/sources/usr/include ../nfs_trace.c
+	cc -c  -O  -I. -I.. -I/sources/usr/include ../many_cast.c
+	cc -c  -O  -I. -I.. -I/sources/usr/include ../auto_main.c
+	cc -c  -O  -I. -I.. -I/sources/usr/include ../auto_look.c
+	cc -c  -O  -I. -I.. -I/sources/usr/include ../auto_proc.c
+	cc -c  -O  -I. -I.. -I/sources/usr/include ../auto_node.c
+	cc -c  -O  -I. -I.. -I/sources/usr/include ../auto_mount.c
+	cc -c  -O  -I. -I.. -I/sources/usr/include ../auto_all.c
+	cc -c  -O  -I. -I.. -I/sources/usr/include ../auto_site.c
+	cc -c  -O  -I. -I.. -I/sources/usr/include ../strdup.c
+	cc -c  -O  -I. -I.. -I/sources/usr/include ../auto_subr.c
+cpp: warning ../auto_subr.c:79: SIXTYFOUR redefined
+cc -o automount nfs_prot.o nfs_server.o nfs_trace.o many_cast.o auto_main.o auto_look.o auto_proc.o auto_node.o auto_mount.o auto_all.o auto_site.o strdup.o auto_subr.o -lc
+ld:
+Undefined:
+svc_fds
+*** Error code 1
+
+Stop.
+*** Error code 1
+
+Stop.

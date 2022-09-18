@@ -1,0 +1,748 @@
+#!/bin/sh5
+#
+#     fisld         ULTRIX/FIS Software Installation Loader Script
+#
+#               Copyright (c) 1989, 1990 by
+#          Digital Equipment Corporation, Maynard, MA
+#               All rights reserved.
+#
+#     This software is furnished under a license and may be used and
+#     copied  only  in accordance with the terms of such license and
+#     with the  inclusion  of  the  above  copyright  notice.   This
+#     software  or  any  other copies thereof may not be provided or
+#     otherwise made available to any other person.  No title to and
+#     ownership of the software is hereby transferred.          
+#
+#     The information in this software is subject to change  without
+#     notice  and should not be construed as a commitment by Digital
+#     Equipment Corporation.                         
+#
+#     Digital assumes no responsibility for the use  or  reliability
+#     of its software on equipment which is not supplied by Digital.
+#
+#     @(#)fisld	4.1	(ULTRIX)	2/28/91
+#
+#     Modification History:
+#     ~~~~~~~~~~~~~~~~~~~~
+#
+#     V1.0 Jon Wallace                      28-Jun-1990
+#
+#          Created.
+#
+#     V1.1 George A. Withers, Jr.           19-Oct-1990
+#
+#          Modified for the ULTRIX/FIS V2 release.  This included
+#          forcing read of new disk to be used from output of
+#          fisconfig.
+#
+#     Code Description:
+#     ~~~~~~~~~~~~~~~~
+#
+#          This shell script is part of the overall ULTRIX/FIS.  It is
+#          called from fisprep during the process.  This script performs
+#          the actual jb of moving the data from the compress-dump on
+#          the server to the designated disk on the client.
+#
+#     Inputs:
+#     ~~~~~~
+#
+#          This file takes the input from the previous scripts run,
+#          namely fisconfig.  It also recieves various exported variables
+#          set by fisprep.
+#
+#     Outputs:
+#     ~~~~~~~
+#
+#          The outcome of the fisld code is the installation of software
+#          onto the client disk.  In addition to this, a logfile is kept of
+#          any errors which is analyzed by fisprep.
+#
+#     Usage:
+#     ~~~~~
+#
+#          fisld [-d] [-q] [-x] [-test]
+#
+#          Manual execution of fisld is performed by simply running
+#          the script from the Superuser account.  No parameters are
+#          required by an optional (-d) debug switch is provided for
+#          ease of use.
+#
+#          To otherwise execute the script in debug, from /bin/csh type:
+#
+#               csh> setenv DEBUG TRUE
+#
+#          To disable debug, simply set the above DEBUG variable to
+#          FALSE.  To run with no debug, utilize the -q (quiet) switch.
+#          To engage set -x functionality, use the -x switch.  The -test
+#          switch will disable the actual restore command for testing of
+#          the flow of the fisld code.
+#
+##############################################################################
+
+##############################################################################
+#     --     Assign various values and get some information
+##############################################################################
+
+REVINFO='Version 1.1'
+HOME=/usr/users/fis
+USER=`/usr/ucb/whoami`
+MACHINE=`/bin/machine`
+HOST=`/bin/hostname`
+CWD=`/bin/pwd`
+DFS="$IFS"                     
+INVOKE_FLAG=""
+MINIMUM_RUN=""
+PROG="$0"
+TICKPID=""
+set -h                                  # sh5 function hashing
+RCMD="rsh $SERVER -l fis -n"            # remote sh system call
+
+##############################################################################
+#     --     Trap user interrupts during processing
+##############################################################################
+
+trap '
+if [ "$TICKPID" != "" ]
+then
+     Unticker
+fi
+echo "$PROG: Operation aborted."
+if [ "$DEBUG" = "TRUE" ]
+then
+     echo "$PROG: Stopped: `date` ($REVINFO)"
+fi
+cd $CWD
+echo "1" >/tmp/$HOST.fiserror
+exit 1' 1 2 3 18
+
+# Parse thru command line arguments.  They are minimal.  Only a -d will do
+# and that will enable debug messages.
+
+while [ "$#" -gt 0 ]
+do
+     case $1
+     in
+          -d )   
+               DEBUG=TRUE
+               INVOKE_FLAG="-d"
+               shift;;
+          -q )   
+               DEBUG=FALSE
+               INVOKE_FLAG="-q"
+               shift;;
+          -x )   
+               set -x
+               shift;;
+          -test )
+               MINIMUM_RUN="TRUE"
+               if [ "$IMAGEPATH" = "" ]
+               then
+                    IMAGEPATH="$HOME/IMAGES/UWS041"
+                    if [ "$DEBUG" = "TRUE" ]
+                    then
+                         echo "$PROG: Defaulting IMAGEPATH to $IMAGEPATH"
+                    fi
+               fi
+               shift;;
+          * )    
+               echo "Usage: fisld [-d] [-q] [-x]"
+               echo "  -d  enable debug trace messages"
+               echo "  -q  disable debug trace messages"
+               echo "  -x  enable \"set -x\" functionality"
+               cd $CWD
+               echo "1" >/tmp/$HOST.fiserror
+               exit 1;;
+     esac               
+done
+
+# If DEBUG start message saying we've begun.
+
+if [ "$DEBUG" = "TRUE" ]
+then
+     echo "$PROG: Started: `date` ($REVINFO)"
+fi
+
+# Ensure that the required symbols are defined.
+
+if [ "$IMAGEPATH" = "" ]
+then
+     echo "$PROG: Image Path not found."
+     echo "$PROG: Operation aborted."
+     if [ "$DEBUG" = "TRUE" ]
+     then
+          echo "$PROG: Stopped: `date` ($REVINFO)"
+     fi
+     cd $CWD
+     echo "1" >/tmp/$HOST.fiserror
+     exit 1
+fi
+
+# Set up the machine type from the fissizer output
+
+FISSIZER=`cat /tmp/$HOST.fisconfig`
+set $FISSIZER
+MACHTYPE=$2
+
+
+
+##############################################################################
+#     --     Place timestamps on the screen
+##############################################################################
+
+# Put up a datetime stamp every two minutes to assure the user that we are
+# still at work.
+
+Ticker()
+{
+
+     if [ "$DEBUG" = "TRUE" ]
+     then
+          echo "$PROG: Executing the Ticker() Function"
+     fi
+
+# Start timestamps as a background process
+
+     (
+          while :
+          do
+               echo "    working ..... \c"
+               date
+               sleep 120
+          done
+     )&
+
+# Store the PID of the Ticker() so we can kill it later.
+
+     TICKPID=$!
+}
+
+
+
+##############################################################################
+#     --     Disable the Ticker() process
+##############################################################################
+
+# Disable the Ticker() process thereby ending the timestamps to the
+# console.
+
+Unticker()
+{
+
+     if [ "$DEBUG" = "TRUE" ]
+     then
+          echo "$PROG: Executing the Unticker() Function"
+     fi
+
+# Kill the Ticker() process by sending signal 15 [SIGTERM, Software
+# Termination Signal].
+
+     [ -n "$TICKPID" ] &&
+     {
+          (
+          kill -15 $TICKPID
+          wait $TICKPID
+          TICKPID=
+          )
+     }
+}
+
+
+
+##############################################################################
+#     --     Get and initialize all disks
+##############################################################################
+
+# Cycle through all disks in the DISKINFO file and intialize them by placing
+# a call to the newfs c partition.  For this call we use the default pt tbl
+# by not specifying it.  Later we will CHPT c to be the desired size.
+
+Get_Disk_Routine()
+{(
+
+     if [ "$DEBUG" = "TRUE" ]
+     then
+          echo "$PROG: Executing the Get_Disk_Routine() Function"
+     fi
+
+     echo "\n*** ULTRIX/FIS FACTORY INITIALIZATION OF SYSTEM DISK(S) ***\n"
+
+# Read DISKINFO file and init all disks listed.  Check # f disks, if it
+# is 0 then we have had an error during fisconfig.
+
+     DISKINFO=`cat /tmp/$HOST.diskinfo`
+     set $DISKINFO
+     NUM_DISKS=$1
+     shift 1
+     if [ "$DEBUG" = "TRUE" ]
+     then
+          echo "$PROG: $HOST is a $NUM_DISKS disk(s) configuration"
+     fi
+     if [ "$NUM_DISKS" -le 0 ]
+     then
+          echo "$PROG: Error during fisconfig, no disk(s) specified."
+          echo "$PROG: Operation Aborted."
+          if [ "$DEBUG" = "TRUE" ]
+          then
+               echo "$PROG: Stopped: `date` ($REVINFO)"
+          fi
+          echo "1" >/tmp/$HOST.fiserror
+          exit 1
+     fi
+
+# For each disk listed nt the initialization and call Newfs_Routine.
+
+     while [ $# -gt 0 ]
+     do
+          echo "Initializing $2 /dev/r${1}c..."
+          (Newfs_Routine $1 $2 c)
+          shift 8
+     done
+)}
+
+
+
+##############################################################################
+#     --     function description
+##############################################################################
+
+# Reading the PARTINFO file generated for the configuration by fisconfig,
+# this routine will call CHPT fr each line in the file, changing the pt tbl
+# to the one created in fisconfig.  A warning!  This pt tbl is not perfect
+# no code was added to ensure that the clusters break evenly with no wasted
+# space.  This is a future enhancement to fisconfig that is desireable.
+
+CHPT_Routine()
+{
+
+     if [ "$DEBUG" = "TRUE" ]
+     then
+          echo "$PROG: Executing the CHPT_Routine() Function"
+     fi
+
+     echo "\n*** ULTRIX/FIS FACTORY PARTITIONING OF SYSTEM DISK(S) ***\n"
+
+# Identify task to be performed to technician and read in the PARTINFO
+# file.
+
+     echo "Setting disk partitions from defaults to\c"
+     echo " ULTRIX/FIS tailored settings..."
+     PARTINFO=`cat /tmp/$HOST.partinfo`
+     set $PARTINFO
+
+# Loop through all selections and make calls to CHPT to set the pt tbls
+# up on the disk.
+
+     while [ $# -gt 0 ]
+     do
+          DEV=$1
+          TYPE=$2
+          PART=$3
+          OFFSET=$4
+          SIZE=$5 
+
+# Insert blank line between only parts of different disks.
+
+          case $PRE_DEV in
+          $DEV )
+               ;;
+          * )
+               echo
+               ;;
+          esac
+
+# Atcually change partition using chpt.  If command fails, abort
+# with an error or else shift to the next partition.
+
+          echo "$TYPE /dev/r$DEV$PART $OFFSET $SIZE ... \c"
+          if [ "$MINIMUM_RUN" != "TRUE" ]
+          then
+               chpt -p$PART $OFFSET $SIZE /dev/r${DEV}c
+          fi
+          case $? 
+          in
+               0 )
+                    shift 5
+                    PRE_DEV=$DEV
+                    echo done
+                    ;;
+               * )
+                    echo "
+$PROG: Error changing disk partition '$PART' on $DEV."
+                    echo "$PROG: Operation Aborted."
+                    if [ "$DEBUG" = "TRUE" ]
+                    then
+                         echo "$PROG: Stopped: `date` ($REVINFO)"
+                    fi
+                    echo "1" >/tmp/$HOST.fiserror
+                    exit 1
+                    ;;
+          esac
+     done
+}
+
+
+
+##############################################################################
+#     --     Create new file systems for client
+##############################################################################
+
+# Reading the fisconfig FSINFO file, we issue a call to make all file systems
+# for the client system wityh newfs.
+
+FS_Routine()
+{(
+
+     if [ "$DEBUG" = "TRUE" ]
+     then
+          echo "$PROG: Executing the FS_Routine() Function"
+     fi
+
+     echo "\n*** ULTRIX/FIS FACTORY CREATION OF FILE SYSTEMS ***\n"
+
+# Read the FSINFO file and loop thrugh all file systems listsed.
+
+     FS_INFO=`cat /tmp/$HOST.fsinfo`
+     set $FS_INFO
+     while [ $# -gt 0 ]
+     do
+
+# Allow the "swap" file system to be listed for completeness but make sure
+# we don't try to actually create a "swap" filesystem.
+
+          case $5 
+          in
+               swap )
+                    shift 5
+                    continue
+                    ;;
+          esac
+
+# Place call to Newfs_Routine to do the work.
+
+          echo "Creating '$5' file system on $2 /dev/r${1}${3}..."
+          (Newfs_Routine $1 $2 $3 -s $4)
+          shift 5
+     done
+)}
+
+
+
+##############################################################################
+#     --     Check new file systems for client
+##############################################################################
+
+# Reading the fisconfig FSINFO file, we issue a call to check all file systems
+# for the client system with fsck.
+
+Fsck_Routine()
+{
+
+     if [ "$DEBUG" = "TRUE" ]
+     then
+          echo "$PROG: Executing the Fsck_Routine() Function"
+     fi
+
+     echo "\n*** ULTRIX/FIS FACTORY CHECKOUT OF FILE SYSTEMS ***\n"
+
+# Read the FSINFO file and loop thrugh all file systems listsed.
+
+     FS_INFO=`cat /tmp/$HOST.fsinfo`
+     set $FS_INFO
+     while [ $# -gt 0 ]
+     do
+
+# Allow the "swap" file system to be listed for completeness but make sure
+# we don't try to actually check a "swap" filesystem.
+
+          case $5 
+          in
+               swap )
+                    shift 5
+                    continue
+                    ;;
+          esac
+
+# Determine the filesystem we are dealing with and issue the fsck command.
+
+          DEV=$1
+          TYPE=$2
+          PART=$3
+          echo "Checking '$5' file system on $TYPE /dev/r$DEV$PART..."
+          if [ "$MINIMUM_RUN" != "TRUE" ]
+          then
+               fsck /dev/r$DEV$PART
+          fi
+
+# On a failure, abort the process.
+
+          case $? 
+          in
+               0 )
+                    shift 5
+                    ;;
+               * )
+                    echo "
+$PROG: File system check error on $TYPE ${DEV}, partition '${PART}'."
+                    echo "$PROG: Operation Aborted."
+                    if [ "$DEBUG" = "TRUE" ]
+                    then
+                         echo "$PROG: Stopped: `date` ($REVINFO)"
+                    fi
+                    echo "1" >/tmp/$HOST.fiserror
+                    exit 1
+                    ;;
+          esac
+     done
+}
+
+
+
+##############################################################################
+#     --     Generic newfs routine
+##############################################################################
+
+# This is a generic routine to call newfs with varius parameters.  It is
+# used by bth the FS_Routine and the Get_Disk_Routine.
+
+Newfs_Routine()
+{
+
+     if [ "$DEBUG" = "TRUE" ]
+     then
+          echo "$PROG: Executing the Newfs_Routine() Function"
+     fi
+
+# Define paramters and ntify debug f call.
+
+     DEV=$1
+     TYPE=$2
+     PART=$3
+     if [ "$DEBUG" = "TRUE" ]
+     then
+          echo "$PROG: Newfs for $DEV ($TYPE), Partition $3\c"
+          if [ "$4" = "-s" ]
+          then
+               echo ", Size $5"
+          else
+               echo " "
+          fi
+     fi
+
+# Case fr either the -s size or straight call to newfs.
+
+     case $4 
+     in
+          -s )
+               SIZE=$5
+               if [ "$MINIMUM_RUN" != "TRUE" ]
+               then
+                    newfs -s $SIZE /dev/r$DEV$PART $TYPE
+               fi
+               ;;
+          * )
+               if [ "$MINIMUM_RUN" != "TRUE" ]
+               then
+                    newfs /dev/r$DEV$PART $TYPE
+               fi
+               ;;
+     esac
+
+# Case on the return value and abort if there was an error.
+
+     case $? 
+     in
+          0 )
+               ;;
+          * )
+               echo "
+$PROG: Error performing newfs on $TYPE /dev/r$DEV$PART."
+               echo "$PROG: Operation Aborted."
+               if [ "$DEBUG" = "TRUE" ]
+               then
+                    echo "$PROG: Stopped: `date` ($REVINFO)"
+               fi
+               echo "1" >/tmp/$HOST.fiserror
+               exit 1
+               ;;
+     esac
+}
+
+
+
+##############################################################################
+#     --     Get image information
+##############################################################################
+
+# Cycle thru the images file and call image ccpy routine for each image listed
+# in said file.
+
+Get_Image_Routine()
+{
+
+     if [ "$DEBUG" = "TRUE" ]
+     then
+          echo "$PROG: Executing the function() Function"
+     fi
+
+     echo "\n*** ULTRIX/FIS FACTORY IMAGE RESTORATION ***\n"
+
+# Read the IMGINFO file.
+
+     IMAGES=`cat /tmp/$HOST.imginfo`
+     set $IMAGES
+     while [ $# -gt 0 ]
+     do
+          (Image_Copy_Routine $1 $2 $3 $4 $5)
+          shift 5
+     done
+}
+
+
+
+##############################################################################
+#     --     Copy images from server to client
+##############################################################################
+
+# Cpoy the actual image to the client from the server.  This is performed
+# by a restoration of a compressed dump file.
+
+Image_Copy_Routine()
+{
+
+     if [ "$DEBUG" = "TRUE" ]
+     then
+          echo "$PROG: Executing the Image_Copy_Routine() Function"
+     fi
+
+# Get info from cmd line and put in variables.
+
+     DEV=$1
+     TYPE=$2
+     PART=$3
+     DUMP=$4
+     MNTPNT=$5
+
+# Mount the target disk onto a mount point given.
+
+     echo "Mounting /dev/$DEV$PART on $MNTPNT ... \c"
+     if [ "$MINIMUM_RUN" != "TRUE" ]
+     then
+          mount /dev/$DEV$PART $MNTPNT
+     fi
+     case $? 
+     in
+          0 )
+               echo done
+               ;;
+          * )
+               echo "\n$PROG: Error mounting $DEV, Partition $PART"
+               echo "$PROG: Operation Aborted."
+               if [ "$DEBUG" = "TRUE" ]
+               then
+                    echo "$PROG: Stopped: `date` ($REVINFO)"
+               fi
+               echo "1" >/tmp/$HOST.fiserror
+               exit 1
+               ;;
+     esac
+     [ -s $IMAGEPATH/$MACHTYPE/$DUMP ] ||
+     {
+          echo "$PROG: $IMAGEPATH/$MACHTYPE/$DUMP Not Found"
+          echo "$PROG: Operation Aborted."
+          if [ "$DEBUG" = "TRUE" ]
+          then
+               echo "$PROG: Stopped: `date` ($REVINFO)"
+          fi
+          echo "1" >/tmp/$HOST.fiserror
+          exit 1
+     }
+     echo "\nCopying $IMAGEPATH/$MACHTYPE/$DUMP from $SERVER..."
+     Ticker
+     if [ "$MINIMUM_RUN" != "TRUE" ]
+     then
+          cd $MNTPNT
+          rsh $SERVER -l fis -n "dd if=$IMAGEPATH/$MACHTYPE/$DUMP bs=24k" | compress -d | restore rf -  2>>$LOGPATH/$ERRFILE
+     fi
+     case $? 
+     in
+          0 )
+               Unticker
+               echo "\nImage $IMAGEPATH/$MACHTYPE/$DUMP copied successfully!"
+               echo "Unmounting /dev/$DEV$PART ... \c"
+               cd /
+               if [ "$MINIMUM_RUN" != "TRUE" ]
+               then
+                    umount $MNTPNT
+               fi
+               case $? 
+               in
+                    0 )
+                         echo done
+                         ;;
+                    * )
+                         echo "\n$PROG: Error unmounting $DEV, Partition $PART"
+                         echo "$PROG: Operation Aborted."
+                         if [ "$DEBUG" = "TRUE" ]
+                         then
+                              echo "$PROG: Stopped: `date` ($REVINFO)"
+                         fi
+                         echo "1" >/tmp/$HOST.fiserror
+                         exit 1
+                         ;;
+               esac
+               echo "\nChecking /dev/r$DEV$PART ... "
+               if [ "$MINIMUM_RUN" != "TRUE" ]
+               then
+                    fsck /dev/r$DEV$PART
+               fi
+               case $? 
+               in
+                    0 )
+                         ;;
+                    * )
+                         echo "$PROG: Error discovered during fsck of $DEV, Partition $PART"
+                         echo "$PROG: Operation Aborted."
+                         if [ "$DEBUG" = "TRUE" ]
+                         then
+                              echo "$PROG: Stopped: `date` ($REVINFO)"
+                         fi
+                         echo "1" >/tmp/$HOST.fiserror
+                         exit 1
+                         ;;
+               esac
+               ;;
+          * )
+               Unticker
+               echo "\n$PROG: Error copying FIS software from $SERVER to $CLIENT."
+               echo "$PROG: Software was $IMAGEPATH/$MACHTYPE/$DUMP to $DEV, Partition $PART"
+               echo "$PROG: Operation Aborted."
+               if [ "$DEBUG" = "TRUE" ]
+               then
+                    echo "$PROG: Stopped: `date` ($REVINFO)"
+               fi
+               echo "1" >/tmp/$HOST.fiserror
+               exit 1
+               ;;
+     esac
+}
+
+
+
+##############################################################################
+#     --     Main Program Execution Starts Here
+##############################################################################
+
+Get_Disk_Routine
+CHPT_Routine
+FS_Routine
+Fsck_Routine
+Get_Image_Routine
+
+if [ "$DEBUG" = "TRUE" ]
+then
+     echo "$PROG: Stopped: `date` ($REVINFO)"
+fi
+
+cd $CWD
+echo "0" >/tmp/$HOST.fiserror
+exit 0

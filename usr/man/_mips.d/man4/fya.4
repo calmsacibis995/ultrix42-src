@@ -1,0 +1,38 @@
+.\" to produce output: 
+.\" ditroff -Tln01 -t -man filename | lpr -n -Pln &
+.TH fya 4
+.SH Name
+fya \- DUP pseudo-device special files
+.SH Syntax
+.B pseudo-device msdup
+.SH Description
+.NXR "dupterm pseudo-device"
+.NXR "DUP class driver"
+.NXR "DSA disk" "DSA tape" "managing"
+.NXS "Digital Storage Architecture" "DSA disk" "DSA tape"
+The 
+.PN fya
+pseudo-device is used by Digital to provide support for the DUP protocol. 
+DUP allows execution of various utilities and diagnostics on a number
+of Digital disk and tape controllers. 
+Users of DUP access the 
+.PN fya 
+pseudo-devices through the application 
+.PN dupterm .
+These pseudo-devices should be created using the command 
+.br
+.br
+#
+.PN /dev/MAKEDEV
+.PN fya
+.br
+.br
+This will create a set of 16 such devices.
+Note that only 16 
+.PN fya
+devices are supported.
+.SH Files
+.PN /dev/fya<n>	
+Device special files to connect to the driver.
+.SH See Also
+dupterm(8), MAKEDEV(8)

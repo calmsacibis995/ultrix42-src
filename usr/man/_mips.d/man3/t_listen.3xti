@@ -1,0 +1,135 @@
+.TH t_listen 3xti
+.SH Name
+t_listen \- listen for a connect request 
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_listen(\fIfd, call\fB)
+.br
+.B int \fIfd\fB;
+.br
+.B struct t_call \fI*call\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint where the connect indication
+arrived.  
+.IP \fIcall\fR 10
+Contains information describing the connect indication. The \fIcall\fR
+points to a \fBt_call\fR structure which contains the following members:
+.EX
+struct netbuf \fIaddr\fP;
+struct netbuf \fIopt\fP;
+struct netbuf \fIudata\fP;
+int \fIsequence\fR;
+.EE
+.IP
+The members of the \fBt_call\fR structure have the following meanings:
+.RS 10
+.IP \fIaddr\fP 12
+Returns the protocol address of the calling transport user.
+.IP \fIudata\fP 12
+Returns any user data sent by the caller on the connect request.
+.IP \fIsequence\fP 12
+Identifies the returned connect indication with a  unique number. The value of \fIsequence\fR 
+enables the user to listen for multiple connect indications before responding to any of them.
+.RE
+.IP
+Because this function returns values for the \fIaddr\fR, \fIopt\fR, and
+\fIudata\fR fields of \fIcall\fR, the \fImaxlen\fR field of each must be
+set before issuing the 
+.PN t_listen() 
+to indicate the maximum size of the buffer for each.
+.SH Description
+This function listens for a connect request from a calling transport
+user. The \fIfd\fR identifies the local transport endpoint where connect
+indications arrive. On return, \fIcall\fR contains information
+describing the connect indication.
+.NXR "t_listen system call"
+.NXR "connect request" "listening for"
+.PP
+By default, 
+.PN t_listen 
+executes in synchronous mode and waits for a
+connect indiction to arrive before returning to the user. However, if
+O_NONBLOCK is set by means of 
+.PN t_open()
+or
+.PN fcntl()\fR,\fR 
+.PN t_listen() 
+executes asynchronously, reducing to a poll for existing connect indications. If none are 
+available, it returns \-1 and sets 
+.PN t_errno()
+to [TNODATA].
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 4p
+Parameters@Before Call@After Call
+.sp 4p
+_
+.sp 6p
+fd@x@/
+call->addr.maxlen@x@/
+call->addr.len@/@x
+call->addr.buf@x@(x)
+call->opt.maxlen@x@/
+call->opt.len@/@x
+call->opt.buf@x@(x)
+call->udata.maxlen@x@/
+call->udata.len@/@x
+call->udata.buf@x@(?)
+call->sequence@/@x
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, a value of 0 is returned. On failure, a
+value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20 
+[TOUTSTATE]
+The function was issued in the wrong sequence on the transport endpoint
+referenced by \fIfd\fR.
+.TP 20
+[TBADQLEN]
+The \fIqlen\fR of the endpoint referenced by \fIfd\fR is zero.
+.TP 20
+[TBUFOVFLW]
+The number of bytes allocated for an incoming argument is not sufficient
+to store the value of that argument. The provider's state, as seen by
+the user, changes to T_INCON, and the connect indication
+information to be returned in \fIcall\fR is discarded. The value of
+\fIsequence\fR returned can be used to do a 
+.PN t_snddis()\fR.\fR
+.TP 20
+[TNODATA]
+O_NONBLOCK was set, but no connect indications had been queued.
+.TP 20
+[TLOOK]
+An asynchronous event has occurred on the transport endpoint and requires immediate attention.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the underlying transport provider. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+fcntl(2),
+t_accept(3xti),
+t_alloc(3xti),
+t_bind(3xti), 
+t_connect(3xti),
+t_open(3xti),
+t_optmgmt(3xti), 
+t_rcvconnect(3xti)

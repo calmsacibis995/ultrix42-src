@@ -1,0 +1,117 @@
+.\" SCCSID: @(#)tz.4	3.1	11/24/87
+.TH tz 4
+.SH Name
+tz \- SCSI magnetic tape interface
+.SH Syntax
+.ta .2i 1.5i 2.3i 3.4i
+VAX NCR 5380:
+.br
+	\fBadapter	uba0	at nexus?    
+.br
+	controller	scsi0	at uba0		csr 0x200c0080  vector szintr 
+.br
+	tape	tz0	at scsi0	drive 0\fP
+.PP     
+VAX DEC SII:
+.br
+	\fBadapter	ibus0	at nexus?
+.br
+	controller	sii0	at ibus?	vector sii_intr 
+.br
+	tape	tz0	at sii0		drive 0\fP
+.PP     
+RISC DEC SII:
+.br
+	\fBadapter	ibus0	at nexus?    
+.br
+	controller	sii0	at ibus?	vector sii_intr 
+.br
+	tape	tz0	at sii0	drive 0\fP
+.PP
+RISC DEC KZQ:
+.br
+	\fBadapter	uba0	at nexus?    
+.br
+	controller	kzq0	at ibus? csr 0761300	vector sii_intr 
+.br
+	tape	tz0	at kzq0	drive 0\fP
+.PP
+RISC NCR ASC:
+.br
+	\fBadapter	ibus0	at nexus?    
+.br
+	controller	asc0	at ibus?	vector ascintr 
+.br
+	tape	tz0	at asc0	drive 0\fP
+.SH Description
+The SCSI
+tape driver provides a standard tape drive interface
+as described in
+.MS mtio 4 .
+.NXR "tz interface" "SCSI magnetic tape interface"
+.NXR "SCSI magnetic tape interface" "nbuf keyword"
+.NXR "TZ30 magnetical tape interface"
+.NXR "TK50 magnetic tape interface"
+.NXR "TLZ04 magnetic tape interface"
+.NXR "TSZ05 magnetic tape interface"
+.NXR "TKZ08 magnetic tape interface"
+.NXR "TZK10 magnetic tape interface"
+.NXR "scsi keyword" "tz interface"
+This is a driver for any Digital SCSI tape device.
+.PP
+For the TZK10 QIC format tape drive, the densities supported are QIC-24
+(read only) block size of 512 byte blocks, QIC-120, and QIC-150 read/write
+block size of 512 byte blocks, and QIC-320 read/write block size of 1024 byte
+blocks.  With QIC format style tapes all reads and writes must be
+in multiple of the block size.  This is a requirement of fixed block
+tape drives because record boundaries are not preserved.  The QIC densities
+are selected using the following special device names:
+.PP
+.PN rmt?a
+	QIC-24 Fixed block size.
+.br
+.PN rmt?l
+	QIC-120 Fixed block size.
+.br
+.PN rmt?m
+	QIC-150 Fixed block size.
+.br
+.PN rmt?h
+	QIC-320 Fixed block size.
+.PP
+With all fixed block tape devices a
+.PN dd
+of a file to the tape must
+be padded out.  An example of this is a
+.PN dd
+of
+.PN /etc/gettytab
+which
+has a size of approximately 3800 bytes.
+.EX
+dd if=/etc/gettytab of=/dev/rmt0h bs=10k conv=sync
+	or 
+.br
+dd if=/etc/gettytab of=/dev/rmt0l bs=512 conv=sync
+.EE
+The option of
+.PN conv=sync
+pads the output to block size.
+.PP
+This driver also supports n-buffered reads and writes to
+the raw tape interface (used with streaming tape drives).
+See
+.MS nbuf 4
+for further details.
+.SH Tape Support
+TZ30, TZK50, TLZ04, TSZ05, TKZ08, TZK10
+.SH Diagnostics
+All diagnostic messages are sent to the error logger subsystem.
+.SH Files
+.PN /dev/rmt???
+.br
+.PN /dev/nrmt???
+.SH See Also
+mtio(4), nbuf(4), SCSI(4), MAKEDEV(8), uerf(8), tapex(8)
+.br
+\fIGuide to the Error Logger\fP

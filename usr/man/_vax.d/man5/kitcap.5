@@ -1,0 +1,296 @@
+.TH kitcap 5
+.SH Name
+kitcap \- kit descriptor database for gentape and genra utilities.
+.SH Description
+The 
+.PN kitcap
+file is a database for kit descriptors containing
+product codes, directories, files, and subsets that make up
+a product description to be used by 
+.PN gentapes 
+or 
+.PN genra 
+to create distribution media.  All fields are separated by 
+colons (:) with a backslash (\\) at the end of a line indicating continuation.
+Lines starting with a number sign (#) are considered comments
+and are ignored.  Comment fields with a kitcode description
+are delimited by an opening number sign (#) and a closing colon (:).
+.PP
+The following
+.PN kitcap
+entry examples are for TK50 and MT9 media types:
+.EX
+Product-codeTK | Product Description:directory1:directory2:directory3:\\
+	SPACE:SPACE:SPACE:INSTCTRL:subset1:subset2:subset3:subset4:subset5
+
+Product-codeMT | Product Description:directory1:directory2:directory3:\\
+	SPACE:SPACE:SPACE:INSTCTRL:subset1:subset2:subset3:subset4:subset5:\\
+	%%2:\\
+	subset6:subset7:subset8:subset9:subset10
+.EE
+.PP
+The following parts make up the 
+.PN kitcap 
+descriptor for magnetic tape media:
+.TP
+Product-code 
+.br
+This is an arbitrary name made up of letters and/or
+numbers unique to the product that it describes.
+Typical codes include a product identifier and a 
+version identifier, as indicated in the previous examples.
+.TP
+Media-code (TK or MT)
+.br
+The media-code is a 2 letter reference that describes
+the type of media the files will be written to.  The
+media code must be either TK for TK50 or
+MT for 9-track magnetic tape devices.  During run
+time, the 
+.PN gentapes 
+utility probes the device to be
+written to and determines if it is a TK50- or MT9-type
+device.  It then appends either TK or MT to the kitcode
+given on the command line and searches for the kitcode
+(product-code/media-code) in the kitcap file.
+.TP
+Product Description
+.br
+This field is a description of the software product
+that is being created by the 
+.PN gentapes 
+utility and replaces the NAME field in the 
+.PN .ctrl 
+file of all the
+subsets that make up a product.  This is an optional
+field for magnetic tape media.
+.TP
+Directories
+.br
+The magnetic tape media production utility has the 
+ability of producing multi-product tapes.  That is,
+it can take subsets from different products that are
+based in different directories and merge them together
+to form a third product, which is a combination of
+the original products.  Directory entries provide the full
+path locations of where the subsets that are to be put
+on media will be  stored.  There must be at least one directory
+entry for each kitcap descriptor.
+.TP
+SPACE
+.br
+The SPACE file is a place holder for tape records composed of 1k of
+NULL characters. Three SPACE files are used as dummy files to ensure
+compatibility with ULTRIX operating system kits.
+.TP
+INSTCTRL
+.br
+The INSTCTRL image contains \f(CWsetld\fR control information.
+.TP
+Subsets
+.br
+This field provides a list of subsets or files that are to be either
+written to the magnetic tape media or verified from the
+magnetic tape media.  Each subset listed must be stored
+in one of the directories listed in that particular kitcap
+descriptor.  If a file or subset is stored in a subdirectory
+of one of the directories listed in the kitcap
+descriptor, it is possible to include that sub-path with
+the subset/filename entry instead of listing the entire
+path/subpath as another directory listing.  For example,
+a directory listed in the kitcap descriptor under
+the rules given in the Directories section is listed as:
+.EX
+/KITS/MYPRODUCT/001
+.EE
+A particular subset or file that a user would
+like to include on the media is stored in:
+.EX
+/KITS/MYPRODUCT/001/subdirectory/subset
+.EE
+Since the subdirectory/subset specification is part of the 
+.PN /KITS/MYPRODUCT/001 
+directory tree, it is not necessary to include the full path 
+.PN /KITS/MYPRODUCT/001/
+subdirectory in the directory listing.  
+An alternative is to include the subdirectory path with the subset 
+name in the subset list.
+For example:
+.EX
+MY-PROD-001 | This is a good product:\\
+	/KITS/MYPRODUCT/001:SPACE:SPACE:SPACE:\\
+	INSTCTRL:subset1:subset2:subdirectory/subset3:subset4
+.EE
+.TP
+Volume identifier (MT9 media only)
+.br
+The volume identifier is optional.
+Multi-tape support is available for products that have
+subsets or files that take up more room than is available
+by a single 9-track magnetic tape.  If the subset list
+results in an end-of-tape condition, the subset list can
+be split into any number of multi-volume sets by placing
+.PN %%n 
+(where n is the volume number of the next tape)
+anywhere appropriate in the subset list.
+The subsets listed between the volume identifiers must 
+fit on a single piece of media.
+By default, the subset list located directly
+after the directory list is always considered the first volume.
+Therefore, a volume identifier for the first volume in
+a multi-volume kit descriptor is not necessary.
+.PP
+The following example shows a
+.PN kitcap
+entry for disks:
+.EX
+Product-codeRA:partition:\\
+	dd=/:Product_Description:\\
+	directory1:directory2:directory3:\\
+	instctrl:subset1:subset2:subset3:subset4:subset5:\\
+	dd=SUB/DIR:Product_Description:\\
+	instctrl:directory1:directory2:directory3:\\
+	subset1:subset2:subset3:subset4:subset5
+.EE
+.PP
+The following parts make up the kitcap descriptor for disk
+media:
+.TP
+Product-code
+.br
+Same as for magnetic tape.
+.TP
+Media-code
+.br
+The media code for disks is RA and is appended to the
+product-code provided by the user at run time, by the
+.PN genra 
+utility.
+.TP
+Disk Partition 
+.br
+This field is the partition where you want the software
+written to on the disk.  
+.TP
+dd=
+.br
+This field tells the 
+.PN genra 
+utility what directory you
+want the subsets written to on the disk media that is
+being created.  The contraction 
+.PN dd
+can be thought of as the ``destination directory'' for the subsets.  
+This field is required and allows a hierarchial structure 
+for those who want to put multiple products on the same
+disk, or want to separate parts of one product 
+into different areas on the disk.  
+.PP
+Typically, a disk is mounted by the
+.PN genra 
+utility onto a temporary mount point under
+.PN /usr/tmp
+This location becomes the disks root directory.  
+If a user wants to have only one directory for an
+entire product, a valid entry would be dd=/. 
+This entry tells the 
+.PN genra 
+utility to write all the following subsets under the mount point.  
+.PP
+In the disk kitcap descriptor example given previously, 
+the first five subsets are
+being written to the mount point, or root directory, for
+the disk media being made.  Then a new directory on the
+disk media is made, 
+.PN /mnt_point/SUB/DIR ,
+and the next five subsets are written into that directory on the disk
+media. 
+.PP
+It is important to note that the top-level directory of the 
+media disk is always considered the mount
+point used by the 
+.PN genra 
+script and is referenced by dd=/.
+Any subdirectories listed as destination directories 
+are created starting from the mount point and
+must be referenced in full.  For instance, in the previous example,
+if the user wanted to put some other
+subsets in a subdirectory of DIR, the entry would 
+be dd=SUB/DIR/SUBSUBDIR.  Note that each new
+destination directory requires a product description.
+.TP
+Product Description
+.br
+This field is similar to the one defined under the magnetic tape description. 
+However, in the case of disk
+media there are 2 important differences.  The product description
+is a required field, and all words in
+the description must be connected with underscores (_).
+The 
+.PN genra 
+script removes the underscores at run time.
+For example, suppose the desired description was as follows:
+.EX
+This is a good product
+.EE
+The Product Description entry when making disk media
+would become:
+.EX
+This_is_a_good_product
+.EE
+.TP
+Directories
+.br
+Same as for magnetic tape.
+.TP
+instctrl
+.br
+A directory containing the same information as INSTCTRL for magnetic tape.
+.TP
+Subsets
+.br
+Same as for magnetic tape.
+.SH Examples
+TK50 and MT9 (single-volume tape)kitcap description 
+.EX
+MYPRODUCT400 | MYPRODUCT software version 4:\\
+	:# directory listing :\\
+	/directory1:/directory2:/directory3:\\
+	SPACE:SPACE:SPACE:INSTCTRL:\\
+	:# subset listing :\\
+	subset1:subset2:subset3:subset4:subset5
+.EE
+.PP
+MT9 kitcap description (multi-volume tape)
+.EX
+MYPRODUCT400 | MYPRODUCT software version 4:\\
+	/directory1:/directory2:/directory3:\\
+	SPACE:SPACE:SPACE:INSTCTRL:\\
+	subset1:subset2:subset3:subset4:subset5:\\
+	:# Volume 2 :\\
+	%%2:\\
+	subset6:subset7:subset8:subset9:subset10
+.EE
+.PP
+RA60 kitcap description (single product)
+.EX
+MYPRODUCT400:c:\\
+	dd=/:MYPRODUCT_software_version_4:\\
+	/directory1:/directory2:/directory3:\\
+	instctrl:subset1:subset2:subset3:subset4:subset5
+.EE
+.PP
+RA60 kitcap description (multiple product)
+.EX
+MYPRODUCT400:c:\\
+	dd=MYPRODUCT/BASE:\\
+	MYPRODUCT_software_version_4_base_subsets:\\
+	/directory1:/directory2:/directory3:\\
+	instctrl:subset1:subset2:subset3:subset4:subset5:\\
+	dd=MYPRODUCT/NONBASE:\\
+	MYPRODUCT_software_version_4_nonbase_subsets:\\
+	/directory1:/directory2:/directory3:\\
+	instctrl:subset1:subset2:subset3:subset4:subset5
+.EE
+.SH See Also
+genra(8), gentapes(8)

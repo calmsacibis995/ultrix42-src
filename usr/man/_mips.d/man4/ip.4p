@@ -1,0 +1,63 @@
+.\" SCCSID: @(#)ip.4p	8.1	9/11/90
+.TH ip 4p
+.SH Name
+ip \- Internet Protocol
+.SH Syntax
+.B #include <sys/socket.h>
+.br
+.B #include <netinet/in.h>
+.PP
+.B s = socket(AF_INET, SOCK_RAW, 0);
+.SH Description
+.NXR "IP transport protocol"
+.NXS "network protocol" "IP transport protocol"
+The IP is the transport layer protocol used
+by the Internet protocol family.  It can be accessed
+through a ``raw socket'' when developing new protocols or
+special purpose applications.  IP sockets are connectionless
+and are normally used with the
+.PN sendto 
+and
+.PN recvfrom 
+calls.  
+The 
+.MS connect 2
+call, however, can also be used to fix the destination for future
+packets, in which case the 
+.MS read 2
+or
+.MS recv 2
+and
+.MS write 2
+or
+.MS send 2
+system calls can be used.
+.PP
+Outgoing packets automatically have an IP header prepended to
+them, based on the destination address and the protocol
+number the socket is created with.
+Incoming packets are received with their IP headers and
+options intact.
+.SH Diagnostics
+On failure, a socket operation returns any of the following errors:
+.TP 15
+[EISCONN]
+Tried to establish a connection on a socket that
+already had one, or tried to send a datagram with the destination
+address specified when the socket was already connected.
+.TP 15
+[ENOTCONN]
+Tried to send a datagram, but
+no destination address was specified and the socket was not
+connected.
+.TP 15
+[ENOBUFS]
+The system ran out of memory for
+an internal data structure.
+.TP 15
+[EADDRNOTAVAIL]
+Made an attempt to create a 
+socket with a network address for which no network interface
+existed.
+.SH See Also
+send(2), recv(2), inet(4f), intro(4n), packetfilter(4)

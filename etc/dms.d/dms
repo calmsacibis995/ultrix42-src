@@ -1,0 +1,257 @@
+#!/bin/sh5
+# %W	(ULTRIX) 7/2/90
+#									
+# 			Copyright (c) 1989 by				
+# 		Digital Equipment Corporation, Maynard, MA		
+# 			All rights reserved.				
+# 									
+#    This software is furnished under a license and may be used and	
+#    copied  only  in accordance with the terms of such license and	
+#    with the  inclusion  of  the  above  copyright  notice.   This	
+#    software  or  any  other copies thereof may not be provided or	
+#    otherwise made available to any other person.  No title to and	
+#    ownership of the software is hereby transferred.			
+# 									
+#    The information in this software is subject to change  without	
+#    notice  and should not be construed as a commitment by Digital	
+#    Equipment Corporation.						
+# 									
+#    Digital assumes no responsibility for the use  or  reliability	
+#    of its software on equipment which is not supplied by Digital.	
+#
+#
+#    DMS - DISKLESS MANAGEMENT SERVICES		     
+# 	Multi-architecture DMS supports RISC and VAX.
+#
+PATH=/bin:/usr/bin:/usr/ucb:/usr/etc:/etc
+export PATH 
+
+umask 022
+
+: getenvir
+
+getenvir()
+{
+	echo "
+Select the diskless environment:
+"
+	DIRS=`ls -d /dlenv*/root*`
+	case $DIRS in
+	"" )	
+		echo "There are no diskless areas installed."
+		exit 1	;;
+	esac
+	while :
+	do
+		INDEX=0
+		for i in $DIRS
+		do
+			INDEX=`expr $INDEX + 1`
+			echo "	$INDEX  $i"
+		done
+		echo "\nEnter your choice : \c"
+		read CHOICE
+		case $CHOICE in
+		"")	continue ;;
+		* )
+			if test $CHOICE -ge 1 -a $CHOICE -le $INDEX
+			then
+				set $DIRS
+				eval CLIROOT=$"$CHOICE"
+				[ -d $CLIROOT ] && break
+			fi
+		esac
+	done
+	export CLIROOT
+}
+
+: Cklock_dms
+Cklock_dms()
+{
+	[ -p /tmp/dmslock ] && { 
+		[ -f /tmp/dms.tty.lock ] || { rm -f /tmp/dmslock; return 0; }
+		TTY=`sed -e "s/\/dev\///" /tmp/dms.tty.lock`
+		[ "$TTY" ] || {
+			rm -f /tmp/dmslock /tmp/dms.tty.lock
+			return 0
+		}
+		set -- `who | grep $TTY`
+		Person=$1; Tty=$2
+		[ "$Person" -a "$Tty" ] || {
+			rm -f /tmp/dmslock /tmp/dms.tty.lock
+			return 0
+		}
+		echo "
+The dms utility is currently locked.  Try again later.
+$Person on /dev/$Tty is installing software. "
+		return 1 
+	}
+	return 0
+}
+
+: Lock_dms
+Lock_dms()
+{
+	Cklock_dms || exit 1
+	mknod /tmp/dmslock p
+	echo `/usr/bin/tty` > /tmp/dms.tty.lock
+	(
+		exec < /tmp/dmslock
+		read X
+		rm -f /tmp/dmslock /tmp/dms.tty.lock
+	) &
+}
+
+
+: Unlock
+Unlock()
+{
+	[ -p /tmp/dmslock ] && echo > /tmp/dmslock
+	trap 1 2 3 
+}
+
+: Emsg
+
+Emsg()
+{
+	echo "
+Usage:	$CMD
+	$CMD -a clientname1 clientname2 ... 
+	$CMD -r clientname1 clientname2 ... 
+	$CMD -k clientname1 clientname2 ... 
+	$CMD -l clientname1 clientname2 ... 
+	$CMD -s
+"
+	exit 1
+}
+
+: Parse
+Parse()
+{(
+	IFS="$1"
+	shift
+	echo $*
+)}
+
+#
+# Main program start here
+#
+
+SERDMS=/usr/diskless
+DLDMS=usr/diskless
+case $# in 
+0 )
+	while : true
+	do
+		echo "
+
+DISKLESS MANAGEMENT SERVICES (DMS) UTILITY MENU
+
+	a -  Add Client Processor     
+	m -  Modify Client Parameters 		
+        r -  Remove Client Processor  		
+	l -  List Registered Clients
+	s -  Show Products in Diskless Environments
+	i -  Install Software 
+	c -  Create Diskless Area on Disk 	
+	k -  Kernel Rebuild or Copy 
+	e -  Exit			 		
+
+Enter your choice: \c"
+		read ANS
+		case $ANS in
+		[MIACKmiack] )
+			Cklock_dms || continue
+		esac 
+		case $ANS in
+		A|a)
+			getenvir
+			$CLIROOT/$DLDMS/dms.a -a
+			;;
+		M|m)	
+			getenvir
+			$CLIROOT/$DLDMS/dms.a -m
+			;;
+		K|k)
+			getenvir
+			$CLIROOT/$DLDMS/dms.a -k
+		 	;;
+		R|r)	
+			getenvir
+			$CLIROOT/$DLDMS/dms.a -r 
+			;;
+		L|l)	
+			getenvir
+			$CLIROOT/$DLDMS/dms.a -l 
+			;;
+		I|i)	 
+			trap 'Unlock' 1 2 3 
+			Lock_dms 
+			$SERDMS/dms.i 
+			Unlock
+			;;
+		S|s)
+			$SERDMS/dms.i -s  
+			;;
+		C|c)	
+			$SERDMS/fscarv || echo "fscarv failed" ;;
+		E|e)	
+			exit 0 ;;
+		* )
+			continue
+		esac
+	done
+	;;
+* )
+	ARGFLG=1
+	export ARGFLG
+	CMD=$0
+	ARG=$*
+	Cklock_dms || exit 1 
+	set -- $ARG
+	DMSFG=$1
+	case $DMSFG in
+	-a | -r | -k | -l )
+		[ -s $SERDMS/dmsdb ] || {
+			echo "There is no dms database in $SERDMS/dmsdb file."
+			exit 1
+		}
+	     	case $DMSFG in
+	     	-l )
+			[ -z "$2" ] && {
+				echo "The following clients are available:"
+			cut -d: -f1 $SERDMS/dmsdb | sort | fmt 
+			exit 0
+			}
+		esac
+		[ -z "$2" ] && Emsg
+		shift
+		for CLIENT in $*
+		do
+			ENT=`grep -w "^$CLIENT" $SERDMS/dmsdb`
+			case $ENT in
+			"" )	
+				echo "Cannot find $CLIENT entry in $SERDMS/dmsdb."
+				exit 1	;;
+			* )
+				set -- `Parse : $ENT`
+				CLIROOT=$3
+				;;
+			esac
+			[ -x $CLIROOT/$DLDMS/dms.a ] || {
+			echo "Cannot find $CLIROOT/$DLDMS/dms.a."
+			exit 1
+			}
+			export CLIROOT
+			$CLIROOT/$DLDMS/dms.a $DMSFG $CLIENT
+		done
+	    	;;
+	-s )
+		$SERDMS/dms.i -s
+		exit 0
+		;;
+	* )
+		Emsg
+	esac
+esac	
+

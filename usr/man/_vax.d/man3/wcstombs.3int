@@ -1,0 +1,67 @@
+.TH wcstombs 3int
+.SH Name
+wcstombs \- converts a string of type wchar_t into a multibyte character string
+.SH Syntax
+#include <stdlib.h>
+.PP
+int wcstombs \fI(s, pwcs, n)\fR
+.br
+char \fI*s;\fR
+.br
+const wchar_t\fI *pwcs;\fR
+.br
+size_t\fI n;\fR
+.SH Arguments
+.TP 8
+.I s
+The 
+.I s
+argument is a pointer to the resulting multibyte character string.
+.PP
+.TP 8
+.I pwcs
+The
+.I pwcs
+argument is a pointer to the source array of wide characters.
+.PP
+.TP 8
+.I n
+The
+.I n 
+argument is the maximum number of resulting bytes in the array pointed to by 
+.I s.
+.SH Description
+.NXR "wide character string to multibyte character string conversion function"
+The 
+.PN wcstombs
+function converts a sequence of character codes of type 
+.PN wchar_t
+from the array pointed to by \fIpwcs\fR
+into a sequence of multibyte characters. The
+.PN wcstombs
+function stores the multibyte
+characters in the array pointed to by \fIs\fR, stopping if
+a multibyte
+character would exceed the limit of \fIn\fR total bytes or if 
+a null character is stored. Each character is converted as if by a call to the 
+.PN wctomb
+function. No more than \fIn\fR
+bytes are modified in the array pointed
+to by \fIs\fR.
+This function is affected by the LC_CTYPE category of the
+current locale.
+.SH Return Values
+If a character is encountered that does not correspond to a valid multi-byte 
+character, the 
+.PN wcstombs 
+function returns 
+.PN (size_t) -1.
+Otherwise,
+the 
+.PN wcstombs
+function returns the number of bytes modified, not
+including a terminating null character, if any. The array will
+not be null-terminated if the value returned is \fIn\fR.
+.SH See Also
+mblen(3int), mbtowc(3int), mbstowcs(3int), setlocale(3int),
+wctomb(3int)

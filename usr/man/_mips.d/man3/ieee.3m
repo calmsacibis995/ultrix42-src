@@ -1,0 +1,104 @@
+.TH ieee 3m RISC
+.ds nn \fINaN\fR
+.SH Name
+copysign, drem, finite, logb, scalb \- copysign, remainder,
+exponent manipulations
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double copysign(x,y)
+.B double x,y;
+.PP
+.B double drem(x,y)
+.B double x,y;
+.PP
+.B int finite(x)
+.B double x;
+.PP
+.B double logb(x)
+.B double x;
+.PP
+.B double scalb(x,n)
+.B double x;
+.B int n;
+.fi
+.SH Description
+These functions are required, or recommended by the IEEE standard
+754 for floating\-point arithmetic.
+.PP
+The 
+.PN copysign
+function 
+returns x with its sign changed to y's.
+.PP
+The 
+.PN drem(x,y)
+function returns the remainder r := x \- n\(**y
+where n is the integer nearest the exact value of x/y.  Additionally
+if |\|n\|\-\|x/y|\|=\|1/2, then n is even.  Consequently
+the remainder is computed exactly and |\|r| \(<= |\|y|/2.  Note
+that 
+.PN drem(x,0) 
+is the exception (see Diagnostics).
+.PP
+.nf
+.ta \w'Finite(x)'u+1n +\w'= 0 otherwise'u+1n
+.if n \
+Finite(x)	= 1 just when \-infinity < x < +infinity,
+.if t \
+Finite(x)	= 1 just when \-\(if < x < +\(if,
+.if n \
+	= 0 otherwise	(when |\|x| = infinity or x is \*(nn)
+.if t \
+	= 0 otherwise	(when |\|x| = \(if or x is \*(nn)
+.ta
+.fi
+.PP
+The 
+.PN logb(x) returns x's exponent n ,
+a signed integer converted to double\-precision floating\-point and so
+chosen that 1\0\(<=\0|\|x|/2**n\0<\02 unless x = 0 or
+.if n \
+|\|x| = infinity
+.if t \
+|\|x| = \(if
+or x lies between 0 and the Underflow Threshold.
+.PP
+Scalb(x,n) = x\(**(2**n) computed, for integer n, without first computing
+2**N.
+.SH Diagnostics
+IEEE 754 defines drem(x,0) and
+.if n \
+drem(infinity,y)
+.if t \
+drem(\(if,y)
+to be invalid operations that produce a \*(nn.
+.PP
+IEEE 754 defines
+.if n \
+logb(\(+-infinity) = +infinity and logb(0) = \-infinity,
+.if t \
+logb(\(+-\(if) = +\(if and logb(0) = \-\(if, and
+requires the latter to signal Division\-by\-Zero.
+.SH Restrictions
+IEEE 754 currently specifies that
+logb(denormalized no.) = logb(tiniest normalized no. > 0)
+but the consensus has changed to the specification in the new 
+proposed IEEE standard p854, namely that logb(x) satisfy 
+.RS
+1 \(<= scalb(|\|x|,\-logb(x)) < Radix\0\0\0... = 2 for IEEE 754
+.RE
+for every x except 0, 
+.if n \
+infinity
+.if t \
+\(if
+and \*(nn.
+Almost every program that assumes 754's specification will work
+correctly if logb follows 854's specification instead.
+.PP
+IEEE 754 requires copysign(x,\*(nn) = \(+-x  but says nothing
+else about the sign of a \*(nn.
+.SH See Also
+floor(3M), fp_class(3), math(3M)

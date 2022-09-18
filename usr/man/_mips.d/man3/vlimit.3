@@ -1,0 +1,81 @@
+.\" SCCSID: @(#)vlimit.3	8.1	9/11/90
+.TH vlimit 3
+.SH Name
+vlimit \- control maximum system resource consumption
+.SH Syntax
+.B "#include <sys/vlimit.h>"
+.PP
+.B vlimit(\fIresource, value\fP)
+.SH Description
+.NXR "vlimit subroutine"
+.NXA "vlimit subroutine" "getrlimit system call"
+.NXR "process" "limiting resource consumption"
+This facility has been superseded by 
+.MS getrlimit 2 .
+.PP
+Limits the consumption by the current process and each process
+it creates to not individually exceed 
+.I value
+on the specified
+.I resource.
+If
+.I value
+is specified as \-1, then the current limit is returned and the
+limit is unchanged.
+The resources which are currently controllable are:
+.TP 15
+LIM_NORAISE
+Pseudo-limit; if set nonzero then the limits may not be raised.
+Only the super-user may remove the \fInoraise\fR restriction.
+.TP 15
+LIM_CPU
+The maximum
+number of cpu-seconds to be used by each process.
+.TP 15
+LIM_FSIZE
+The largest single file which can be created.
+.TP 15
+LIM_DATA
+The maximum growth of the data+stack region via
+.MS sbrk 2
+beyond the end of the program text.
+.TP 15
+LIM_STACK
+The maximum
+size of the automatically-extended stack region.
+.TP 15
+LIM_CORE
+the size of the largest core dump that will be created.
+.TP 15
+LIM_MAXRSS
+a soft limit for the amount of physical memory (in bytes) to be given
+to the program.
+If memory is tight, the system will prefer to take memory
+from processes which are exceeding their declared LIM_MAXRSS.
+.PP
+Because this information is stored in the per-process information
+this system call must be executed directly by the shell if it
+is to affect all future processes created by the shell;
+.I limit
+is thus a built-in command to 
+.MS csh 1 .
+.PP
+The system refuses to extend the data or stack space when the limits
+would be exceeded in the normal way.  A
+.I break
+call fails if the data space limit is reached, or the process is
+killed when the stack limit is reached.  Since the stack cannot be
+extended, there is no way to send a signal.
+.PP
+A file I/O operation which would create a file which is too large
+will cause a signal SIGXFSZ to be generated, this normally terminates
+the process, but may be caught.
+When the cpu time limit is exceeded, a signal SIGXCPU is sent to the
+offending process; to allow it time to process the signal it is
+given 5 seconds grace by raising the cpu time limit.
+.SH Restrictions
+.NXR "vlimit subroutine" "restrictions"
+If LIM_NORAISE is set, then no grace should be given when the CPU
+time limit is exceeded.
+.SH See Also
+csh(1)

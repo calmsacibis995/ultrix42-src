@@ -1,0 +1,62 @@
+.\" SCCSID: @(#)fsplit.1	8.1	9/11/90
+.TH fsplit 1 VAX "" Unsupported
+.SH Name
+fsplit \- split a multi-routine Fortran file into individual files
+.SH Syntax
+.B fsplit
+[\fB\-e\fI efile...\fR\|] [\|\fIfile\fR\|]
+.SH Description
+.NXR "fsplit program"
+.NXR "Fortran program" "breaking into separate files"
+The
+.PN fsplit
+command takes as input either a file or
+standard input containing Fortran source code.
+It attempts to split the input into separate routine files of the
+form
+.I name.f,
+where
+.I name
+is the name of the program unit
+(for example, function, subroutine, block data or
+program).  The name for unnamed block data subprograms has the form
+.I blkdtaNNN.f
+where NNN is three digits and a file of this name does not
+already exist.
+For unnamed main programs the name has the form
+.I mainNNN.f.
+If there is an error in classifying a program unit, or if
+.I name.f
+already exists,
+the program unit is put in a file of the form 
+.I zzzNNN.f
+where 
+.I zzzNNN.f 
+does not already exist.
+.PP
+Normally each subprogram unit is split into a separate file.  
+.SH Options
+.IP "\fB\-\|e\fI efile\fR" 12
+Splits only specified subprogram units into separate files.
+.SH Examples
+The following example splits readit and doit into separate files:
+.EX
+fsplit \-e readit \-e doit prog.f
+.EE
+.SH Restrictions
+The
+.PN fsplit
+command assumes the subprogram name is on the
+first noncomment line of the subprogram
+unit.  Nonstandard source formats may confuse 
+.PN fsplit .
+.PP
+It is hard to use 
+\fB\-e\fR
+for unnamed main programs and block data subprograms since you must 
+predict the created file name.
+.SH Diagnostics
+If names specified using the 
+.B \-e
+option are not found, a diagnostic is written to 
+.I standard error.

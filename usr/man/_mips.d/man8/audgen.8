@@ -1,0 +1,26 @@
+.\" SCCSID: @(#)audgen.8	x.x	11/21/87
+.TH audgen 8
+.SH Name
+audgen \- generate an audit record
+.SH Syntax
+.B audgen
+.I audit_record_parameter_list
+.SH Description
+.NXR "audgen command"
+The
+.PN audgen
+utility generates an audit record, which gets placed in the auditlog.
+Standard audit event information, such as identification 
+information and timestamp, are automatically inserted.
+The \fIaudit_record_parameter_list\fP consists of 1 to 8 strings,
+each of which gets inserted into the audit record.
+The event type is set to AUDGEN8.
+.SH Restrictions
+This utility makes use of the 
+.MS audgen 2 
+system call, which requires privilege.
+No record will be generated if the event AUDGEN8 is not being audited
+for the current process.
+The maximum number of arguments referenced by argv is AUD_NPARAM (8).
+.SH See Also
+audgen(2)

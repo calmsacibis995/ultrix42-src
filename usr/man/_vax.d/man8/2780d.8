@@ -1,0 +1,101 @@
+.\" SCCSID: @(#)2780d.8	8.1	9/11/90
+.TH 2780d 8 VAX
+.SH Name
+2780d \- IBM 2780/3780 RJE emulator daemon
+.SH Syntax
+.B 2780d
+.SH Description
+.NXR "2780d daemon"
+.NXAM "2780e emulator spooler" "2780d daemon"
+.NXAM "3780e emulator spooler" "2780d daemon"
+The
+.PN 2780d
+program
+is automatically executed when a user runs
+.MS 2780e 1 
+or 
+.MS 3780e 1 .
+Once executed, 
+.PN 2780d 
+transmits
+all data files (df*) in 
+.PN /usr/spool/rje
+which have associated control files (cf*),
+to the IBM system.
+.PP
+Two users executing
+.PN 2780e(3780e)
+do not cause two daemons to run.
+The first one executed handles both
+transmissions.
+The daemon's process id is kept in 
+.PN /usr/spool/rje/.rjed .
+Each time a daemon is run, it checks that file to see if an active
+daemon is running and exits if one is.
+.PP
+If
+.PN 2780d
+has trouble accessing files, the system manager
+should clean up the spool directory by removing any 
+outdated received files or data files which are not
+associated with a corresponding
+control file.
+.PP
+The 
+.PN "2780d"
+program may become disabled when:
+the call to the IBM system has not been completed within one minute,
+the IBM system has gone down during transmission,
+the 
+.PN /usr/spool/rje/.rjed 
+file can not be read,
+there has been an error in sending or receiving.
+.PP
+To re-establish the connection to the IBM system,
+restart the daemon by typing
+.PN "2780d"
+on the command line.
+.PP
+When files are received from the IBM system, 
+.PN 2780d
+places them in 
+.PN /usr/spool/rje/rjetemp.out .
+If your username is included in the job control statements, 
+the files are given
+a file name with the form
+.I "rjedaytime"
+and placed in your home directory.
+If your username is not included, the
+files are placed
+in 
+.PN /usr/spool/rje .
+If there are problems in renaming the files, they remain in
+.PN /usr/spool/rje/rjetemp.out .
+.PP
+To obtain a log of all files that are sent and received the
+system manager must create
+.PN /usr/spool/rje/acctlog .
+Once created, this file will list each file transmission.
+Errors are logged in 
+.PN /usr/adm/rjelog .
+.SH Files
+.TP 20
+.PN /usr/spool/rje/.rjed
+Process identification file
+.TP
+.PN /usr/spool/rje/cf* 
+Control file
+.TP
+.PN /usr/spool/rje/df* 
+Data file
+.TP
+.PN /usr/spool/rje/zf* 
+Renamed control file
+.TP
+.PN /usr/spool/rje/acctlog 
+File transmission log file
+.TP
+.PN /usr/adm/rjelog 
+Error log file
+.SH See Also
+2780e(1), 3780e(1)

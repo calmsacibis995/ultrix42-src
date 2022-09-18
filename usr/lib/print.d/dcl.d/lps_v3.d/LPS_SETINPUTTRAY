@@ -1,0 +1,5 @@
+% Copyright (c) 1986, 1987, 1988, 1989 by Digital, Maynard, Mass.  All rights reserved.
+% V2.1-1
+/lps$input-tray exch def mark/top{1 setpapertray}/middle{2
+setpapertray}/bottom{3 setpapertray}counttomark 2 idiv dup dict
+begin{def}repeat lps$input-tray load exec end cleartomark

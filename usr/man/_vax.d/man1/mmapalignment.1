@@ -1,0 +1,19 @@
+.TH mmapalignment 1
+.SH Name
+mmapalignment \- returns minimum address alignment
+.SH Syntax
+\fBmmapalignment\fP
+.SH Description
+.NXR "address alignment"
+.NXR "memory mapping" "address alignment"
+The
+.PN mmapalignment
+command
+returns the minimum address alignment for an address
+specified with the mapping flag bit
+.PN MAP_FIXED .
+You previously specified this bit in a call to the
+.PN mmap
+system call.
+.SH See Also
+getpagesize(2), getsysinfo(2), mmap(2)

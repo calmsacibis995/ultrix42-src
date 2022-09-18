@@ -1,0 +1,57 @@
+.TH strcoll 3
+.SH Name
+strcoll \- string collation comparison
+.SH Syntax
+.B int strcoll (\fIs1\fP, \fIs2\fP)
+.br
+.B char \fI*s1\fP, \fI*s2\fP;
+.SH Description
+.NXR "strcoll subroutine"
+The 
+.PN strcoll
+function returns an integer less than, equal to, or greater than zero depending 
+on whether the string pointed to by 
+.I s1
+is lexicographically less than, 
+equal to, or greater than the string pointed to by 
+.I s2.
+.PP
+The 
+.PN strcoll 
+function performs the comparison by using the collating information defined 
+in the program's locale, category
+.PN LC_COLLATE .
+.PP
+In the C locale, characters collate as if they are unsigned.
+In all cases
+.PN strcoll
+works as if
+.PN strxfrm
+were called on 
+.I s1
+and \fIs2\fP, and
+.PN strcmp
+was called on the resulting strings.
+.SS International Environment
+.IP LC_COLLATE 15
+Contains the user requirements for language, territory, and codeset for
+the character collation format. 
+.PN LC_COLLATE
+affects the behavior of regular expressions and the string collation functions
+in 
+.PN strcoll .
+If 
+.PN LC_COLLATE
+is not defined in the current environment,
+.PN LANG
+provides the necessary default.
+.IP LANG 15
+If this environment is set and valid, 
+.PN strcoll
+uses the international language database named in the definition to determine 
+the character collation formatting rules. If 
+.PN LC_COLLATE 
+is defined, its definition supercedes the definition of 
+.PN LANG .
+.SH See Also
+string(3), setlocale(3), strxfrm(3), environ(5int) 

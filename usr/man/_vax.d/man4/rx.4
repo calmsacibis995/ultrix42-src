@@ -1,0 +1,70 @@
+.\" SCCSID: @(#)rx.4	8.1	9/11/90
+.\" SCCSID: @(#)rx.4	8.1	9/11/90
+.TH rx 4 VAX
+.SH Name
+rx \- RX33/RX23 Small VAX floppy disk drive
+.SH Description
+.\"This page exists only to reference sdc.4
+.NXS "rx keyword" "RX33 disk interface"
+The RX33 floppy disk drive, when used by either the workstation
+or multiuser configurations of the busless Small VAX processor,
+is supported by the SDC disk driver.  The SDC disk driver also supports
+the RX23 floppy disk drive in VAXstation 3100 Model 30 systems.
+The SDC driver handles the RX33/RX23 disk on drive 2.
+.PP
+The RX33 floppy disk drive reads and writes both RX33 and RX50
+floppy diskettes.  The RX23 floppy disk drive reads and writes high
+density (18 sectors per track) RX23 floppy diskettes and reads
+double density (9 sectors per track) RX23 floppy diskettes.
+.SS "Formatting RX23 Floppy Diskettes (VAXstation 3100 Model 30 Only)"
+The floppy diskettes used with the RX23 floppy disk drive are not always
+preformatted.  Although the ULTRIX system does not currently include
+support for online formatting of diskettes, the VAXstation 3100
+diagnostic \f(CWt 70\fP
+command allows you to format diskettes.
+.PP
+Use the following steps to format diskettes:
+.IP 1. 5
+Shut down the ULTRIX Worksystem Software, and halt the processor.
+.EX
+# /etc/shutdown \-h +5
+.EE
+.IP 2. 5
+Insert the diskette into the RX23 drive.
+.IP 3. 5
+Enter the following at the prompt:
+.EX
+>>> t 70
+
+.EE
+The \f(CWt 70\fP
+command begins to prompt you for information. Answer each query as in the
+following example. Press the RETURN key after each response:
+.EX
+     KA42 RDRXfmt
+
+VSfmt_QUE_unitno (0-3) ? 2
+
+VSfmt_QUE_RXmedtyp
+
+( 1=RX33 ),( 2=RX23 ) ? 2
+
+VSfmt_QUE_RUsure (DUA2 1/0)  ? 1
+
+VSfmt_STS_FMTing ..... OK
+
+VSfmt_STS_CKRXfmt .....OK
+
+VSfmt_RES_Succ
+>>>
+.EE
+.SH Files
+.PN /dev/rx2a
+.br
+.PN /dev/rx2c
+.br
+.PN /dev/rrx2a
+.br
+.PN /dev/rrx2c
+.SH See Also
+sdc(4)

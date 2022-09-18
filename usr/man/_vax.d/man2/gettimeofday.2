@@ -1,0 +1,76 @@
+.\" SCCSID: @(#)gettimeofday.2	8.1	9/11/90
+.TH gettimeofday 2
+.SH Name
+gettimeofday, settimeofday \- get or set date and time
+.SH Syntax
+.nf
+.ft B
+#include <sys/time.h>
+.PP
+.ft B
+gettimeofday(tp, tzp)
+struct timeval *tp;
+struct timezone *tzp;
+.PP
+.ft B
+settimeofday(tp, tzp)
+struct timeval *tp;
+struct timezone *tzp;
+.fi
+.SH Description
+.NXR "gettimeofday system call"
+.NXR "settimeofday system call"
+.NXA "gettimeofday system call" "stime system call"
+.NXR "time" "getting"
+.NXR "time" "setting"
+The
+.PN gettimeofday
+system call
+returns the system's notion of the current Greenwich time and
+the current time zone.  Time returned is expressed relative
+in seconds and microseconds since midnight January 1, 1970.
+.PP
+The structures pointed to by
+.I tp
+and
+.I tzp
+are defined in <sys/time.h>
+as:
+.PP
+.EX
+struct timeval {
+	long	tv_sec;		/* seconds since Jan. 1, 1970 */
+	long	tv_usec;	/* and microseconds */
+};
+.sp 1
+struct timezone {
+	int	tz_minuteswest;	/* of Greenwich */
+	int	tz_dsttime;	/* type of dst correction to apply */
+};
+.EE
+.PP
+The 
+.I timezone
+structure indicates the local time zone
+(measured in minutes of time westward from Greenwich),
+and a flag that, if nonzero, indicates that
+Daylight Saving time applies locally during
+the appropriate part of the year.
+.PP
+Only the superuser can set the time of day.
+.SH Return Values
+A 0 return value indicates that the call succeeded.
+A \-1 return value indicates an error occurred, and in this
+case an error code is stored into the global variable \fIerrno\fP.
+.SH Diagnostics
+The 
+.PN gettimeofday
+call fails under the following conditions:
+.TP 15
+[EFAULT]
+An argument address referenced invalid memory.
+.TP 15
+[EPERM]
+A user other than the superuser attempted to set the time.
+.SH See Also
+date(1), stime(2), ctime(3)

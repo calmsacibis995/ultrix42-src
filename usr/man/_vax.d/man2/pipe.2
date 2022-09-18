@@ -1,0 +1,99 @@
+.\" SCCSID: @(#)pipe.2	8.1	9/11/90
+.TH pipe 2
+.SH Name
+pipe \- create an interprocess channel
+.SH Syntax
+include <limits.h> /*Definition of PIPE_MAX*/
+.nf
+pipe(\fIfildes\fP)
+int \fIfildes[2]\fP;
+.fi
+.SH Arguments
+.TP 10
+.I fildes
+Passing an address as an array of two integers into the
+.PN pipe
+system call.
+.SH Description
+.NXR "pipe system call"
+.NXR "pipe" "creating"
+The
+.PN pipe
+system call
+creates an I/O mechanism called a pipe.
+The file descriptors returned can
+be used in
+.PN read
+and
+.PN write
+operations.  Their integer values will be the two lowest available at the time
+of the
+.PN pipe
+function call.  The O_NONBLOCK and FD_CLOEXEC flags
+will be clear on both file descriptors.
+.PP
+When the pipe is written using the descriptor
+.IR fildes [1],
+up to PIPE_MAX bytes of data are buffered
+before the writing process is suspended.
+A read using the descriptor
+.IR fildes [0]
+picks up the data.
+.PP
+It is assumed that after the pipe has been set up, two (or more)
+cooperating processes (created by subsequent
+.PN fork
+calls) pass data through the pipe with
+.PN read
+and
+.PN write
+calls.
+.PP
+The shell has a syntax to set up a linear array of processes
+connected by pipes.
+.PP
+For further information on how 
+.PN read
+and
+.PN write
+calls behave with pipes, see the
+.MS read 2
+and
+.MS write 2
+reference pages.
+.PP
+A signal is generated
+if a write on a pipe with only one end is attempted.
+.SH Restrictions
+Should more than 4096 bytes be necessary in any
+pipe among a loop of processes, deadlock may occur.
+.PP
+The underlying implementation of pipes is no longer
+socket based, but rather implemented through the
+file system.  Any application that needs socket
+functionality from pipes should use the 
+.PN socketpair 
+system call.
+.SH Return Values
+The function value zero is returned if the
+pipe was created; \-1 if an error occurred.
+.SH Diagnostics
+The 
+.PN pipe
+call fails if:
+.TP 15
+[EMFILE]
+Too many descriptors are active.
+.TP 15
+[ENFILE]
+The system file table is full.
+.TP 15
+[EFAULT]
+The
+.I fildes
+buffer is in an invalid area of the process's address space.
+.SH Environment
+Differs from the System V definition in that ENFILE
+is not a possible error condition.
+.SH See Also
+sh(1), fork(2), read(2), socketpair(2), write(2)

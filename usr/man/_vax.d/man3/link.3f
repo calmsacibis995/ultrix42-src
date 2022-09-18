@@ -1,0 +1,42 @@
+.\" SCCSID: @(#)link.3f	8.1	9/11/90
+.TH link 3f VAX "" Unsupported
+.SH Name
+link, symlink \- make a link to an existing file
+.SH Syntax
+.B function link (name1, name2)
+.br
+.B character*(*) name1, name2
+.sp 1
+.B integer function symlnk (name1, name2)
+.br
+.B character*(*) name1, name2
+.SH Description
+.NXR "link subroutine (FORTRAN)"
+.NXA "link subroutine (FORTRAN)" "unlink subroutine (FORTRAN)"
+.NXR "file" "linking"
+The
+.I name1
+must be the pathname of an existing file.
+The
+.I name2
+is a pathname to be linked to file
+.IR name1 .
+The
+.I name2
+must not already exist.
+.PP
+The
+.PN symlnk
+subroutine creates a symbolic link to
+.IR name1 .
+.SH Restrictions
+Pathnames can be no longer than MAXPATHLEN as defined in
+<sys/param.h>.
+.SH Return Values
+The returned value will be 0 if successful and 
+a system error code otherwise.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+link(2), symlink(2), perror(3f), unlink(3f)

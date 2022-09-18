@@ -1,0 +1,52 @@
+.TH whois 1 "" "" Unsupported
+.SH Name
+whois \- DARPA Internet user name directory service
+.SH Syntax
+.B whois [ \-h \fIservername\fP ] \fIname\fP
+.SH Description
+.NXR "whois command"
+The
+.PN whois
+command allows you to look up people, hosts, and organizations in 
+the database
+kept by the Network Information Center (NIC) at SRI International.
+The
+.I name
+can be the last name of a registered user, or the name of a registered
+Internet host, or other things recognized by the whois server. Not 
+all users, and only a few Internet hosts, are registered with the
+NIC.  If the 
+.I name
+argument contains white space or other special characters, you must
+surround it with double quote (") marks to 
+prevent its interpretation by the shell.
+.PP
+.PP
+The WHOIS server at the NIC will provide more information on doing
+complex searches if you do
+.EX 5
+whois "?"
+.EE
+(note the quotes around the question mark), or even more information
+if you do
+.EX 5
+whois help
+.EE
+.SH Options
+.IP "\-h \fIservername\fP" 15
+Specifies the whois server on a host other than the default 
+(NIC.DDN.MIL).
+.SH Examples
+.EX 5
+whois cerf
+whois dec.com
+whois -h ns.nic.ddn.mil knuth
+whois smith
+.EE
+Note that the last example, at least, will match many records
+(and may take fairly long to complete).  The whois server at 
+the NIC will
+automatically provide information on how to single out one record.
+Remember to put quotes around strings that contain `!' characters.
+.SH See Also
+RFC 812:  Nicname/Whois

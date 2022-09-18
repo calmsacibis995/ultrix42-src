@@ -1,0 +1,42 @@
+#
+# @(#)PMAX1	4.1	ULTRIX 7/2/90
+#
+machine		mips
+cpu		"R2000a"
+ident		"PMAX"
+timezone	8 dst
+maxusers	32
+maxuprc		50
+physmem		8
+processors	1
+
+options		QUOTA
+options		INET
+options		NFS
+options		UFS
+options		RPC
+options		SYS_TRACE
+options		KMEMSTATS
+options		ultrix
+options		XPRBUG
+options		ASSERTIONS
+options		DECNET
+options		LAT
+options		DLI
+
+makeoptions	ENDIAN="-EL"
+
+config		vmunix	root on se0
+
+pseudo-device	pty	64
+pseudo-device	inet
+pseudo-device	ether
+pseudo-device	loop
+pseudo-device	nfs
+pseudo-device	ufs
+pseudo-device	rpc
+pseudo-device	sys_trace
+pseudo-device	lat	32
+pseudo-device	lta	32
+pseudo-device	dli
+pseudo-device   decnet

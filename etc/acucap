@@ -1,0 +1,265 @@
+#
+#	@(#)acucap	4.1	(ULTRIX)	7/2/90
+#
+# This file contains descriptions of different types of modems.
+# These decriptions are used by tip(1c) & uucp(1c) if each is
+# compiled to include the generic dialer modem support. See
+# acucap(5) for additional information. To get a match the name
+# field must match the correct field in /etc/remote (`at' field for
+# tip) or in /usr/lib/uucp/L-devices (`Brand name' or `5th field' for uucp).
+# If no match is found the `old' method of dialing will be used.
+#
+#
+#  Use the 'si' boolean if using a DMF32 type interface (an interface
+#      which does not return any characters until carrier is detected).
+#      Use of this flag means to blindly dial the modem and wait for
+#      carrier, without looking for any return codes or strings from the
+#      modem.
+#
+#  Info for writing new entries is at the end of this file.
+#
+# Dec df02 
+# (switches factory)
+df02|DF02|DEC df02:\
+	:cr:hu:re:di=^B:dd#1:os=A:ds=^A:fd#50:
+# Dec df03 
+# (switches factory)
+df03|DF03|DEC df03:\
+	:cr:hu:re:di=^B:dd#1:os=A:ds=^A:fd#50:
+#
+# Dec df112 modem. 40 second maximum for carrier detect.
+#
+#  ('ls' true because df112 doesn't need a full sec between characters)
+#
+#  (switches factory)
+df112|DF112|DEC df112:\
+	:cr:hu:re:ls:ss=^B:sr=Ready\r\n:sd#250000:di=T:fd#50:\
+	:dt=#:dd#50000:os=\r\nAttached\r\n:rs==:
+#  (Pulse dialing) df112 (switches factory)
+df112-p|DF112-P|DEC df112 with pulse dialing:\
+	:cr:hu:re:ls:ss=^B:sr=Ready\r\n:sd#250000:di=P:fd#50:\
+	:dt=#:dd#50000:os=\r\nAttached\r\n:rs==:
+#
+#
+# Dec df124 modem. 40 second maximum for carrier detect.
+#  (df124 acts just like a df112 except baud rate is 2400)
+#
+#  ('ls' true because df124 doesn't need a full sec between characters)
+#
+#  (switches factory)
+df124|DF124|DEC df124:\
+	:cr:hu:re:ls:ss=^B:sr=Ready\r\n:sd#250000:di=T:fd#50:\
+	:dt=#:dd#50000:os=\r\nAttached\r\n:rs==:
+#  (Pulse dialing) df124 (switches factory)
+df124-p|DF124-P|DEC df124 with pulse dialing:\
+	:cr:hu:re:ls:ss=^B:sr=Ready\r\n:sd#250000:di=P:fd#50:\
+	:dt=#:dd#50000:os=\r\nAttached\r\n:rs==:
+#
+# Dec df224 modem. 30 second maximum for carrier detect.
+#
+#  (switches set to factory (hard and soft except for parity))
+#  (touch tone - parity soft switch may be incorrect (default=none?))
+#		 (should be even)
+df224|DF224|DEC df224:\
+	:cr:hu:re:ls:ss=^B:sr=Ready\r\n:sd#500000:di=T:fd#50:\
+	:dt=!:rs==:dd#50000:os=\r\nAttached\r\n:
+#   (Pulse dialing) df224
+df224-p|DF224-p|DEC df224 with pulse dialing:\
+	:cr:hu:re:ls:ss=^B:sr=Ready\r\n:sd#500000:di=P:fd#50:\
+	:dt=!:rs==:dd#50000:os=\r\nAttached\r\n:
+#
+# DEC df242 and df212 modems.  Also known as "Scholar Plus".
+# This modem will not work with the standard schollar df224 entry (above).
+# Note the addition of the new :rd: flag which is used to specify a one
+# second delay after toggling DTR with the :re: flag.  I guess this modem
+# takes a second to get its act together after being reset.
+#
+# 2400 Baud
+#
+df242|DF242|DEC df242:\
+	:cr:hu:re:rd:ls:ss=^B:sr=Ready\r\n:sd#500000:di=Dial T:fd#50:\
+	:dt=\r:rs==:dd#50000:os=\r\nAttached\::
+#
+df242-p:DF242-p|DEC df242 with pulse dialing:\
+	:cr:hu:re:rd:ls:ss=^B:sr=Ready\r\n:sd#500000:di=Dial P:fd#50:\
+	:dt=\r:rs==:dd#50000:os=\r\nAttached\::
+#
+# 1200 Baud
+#
+df212|DF212|DEC df212:\
+	:cr:hu:re:rd:ls:ss=^B:sr=Ready\r\n:sd#500000:di=Dial T:fd#50:\
+	:dt=\r:rs==:dd#50000:os=\r\nAttached\::
+#
+df212-p:DF212-p|DEC df212 with pulse dialing:\
+	:cr:hu:re:rd:ls:ss=^B:sr=Ready\r\n:sd#500000:di=Dial P:fd#50:\
+	:dt=\r:rs==:dd#50000:os=\r\nAttached\::
+#
+# Dec dfa01 integral modem.  Coupled with a DZQ interface.
+#	The start string of ^B puts the
+#	modem into the more verbose user mode as opposed to the (perhaps
+#	more appropriate) computer mode.
+#	The os should be \r\nAttached\: 2400\r\n, but I didn't include the
+#	speed part because the modem operates a 3 different speeds.
+#	1200 baud dial outs will initialize the line first at 2400 baud
+#	before switching to 1200 baud for the conversation. (Note the new
+#	string "co" as well as "is" and "xs".  The dfa01 must be dialed
+#	no parity requiring :pa=none: in /etc/remote.
+#
+dfa01|DFA01|DEC dfa01 2400 baud:\
+	:cr:hu:re:ls:ss=^B:sr=Ready\r\n:sd#500000:di=DIAL T:fd#50:\
+	:dt=\r\n:rs==:dd#10000:os=\r\nAttached :
+#   (Pulse dialing) dfa01 at 2400 baud
+dfa01-p|DFA01-p|DEC dfa01 with pulse dialing at 2400 baud:\
+	:cr:hu:re:ls:ss=^B:sr=Ready\r\n:sd#500000:di=DIAL P:fd#50:\
+	:dt=\r\n:rs==:dd#10000:os=\r\nAttached :
+#
+dfa01-1200|DEC dfa01 1200 baud:\
+	:cr:hu:re:ls:ss=^B:xs#1200:is#2400:co=SET P1\r\n0\r\n^B:sr=Ready:\
+	:sd#500000:di=DIAL T:fd#50:\
+	:dt=\r\n:rs==:dd#10000:os=\r\nAttached :
+#   (Pulse dialing) dfa01 at 1200 baud
+dfa01-1200p|DEC dfa01 1200 baud pulse dialing:\
+	:cr:hu:re:ls:ss=^B:xs#1200:is#2400:co=SET P1\r\n0\r\n^B:sr=Ready:\
+	:sd#500000:di=DIAL P:fd#50:\
+	:dt=\r\n:rs==:dd#10000:os=\r\nAttached :
+#
+dfa01-300p|DEC dfa01 300 baud pulse dialing:\
+	:cr:hu:re:ls:ss=^B:xs#300:is#2400:co=SET P1\r\n1\r\n^B:sr=Ready:\
+	:sd#500000:di=DIAL P:fd#50:\
+	:dt=\r\n:rs==:dd#10000:os=\r\nAttached :
+#   (Pulse dialing) dfa01 at 300 baud
+dfa01-300|DEC dfa01 300 baud pulse dialing:\
+	:cr:hu:re:ls:ss=^B:xs#300:is#2400:co=SET P1\r\n1\r\n^B:sr=Ready:\
+	:sd#500000:di=DIAL T:fd#50:\
+	:dt=\r\n:rs==:dd#10000:os=\r\nAttached :
+#
+# Hayes V-series modem. Soft switches set to factory +
+#	ATseq where seq is:
+#  	&K3 (RTS/CTS)
+#	S0=1 (auto answer after 1)
+#	&C1 (Track carrier)
+#	&D3 (Automatic DTR transitioning)
+#	&S1 (Follow dsr)
+#	M0 (No speaker)
+#	Q2 (stop status when answering)
+#	then (&W0 and &Y0 and &W0 to save in profile 0).
+#
+#	Note that line speed should work at 19200. Also
+#	&K5 might be used for applications like tip/uucp (if
+#	other side is set the same way). SLIP need no
+#	"transparent" flow control because its NOT "transparent".
+#
+#	Also NOTE that if a dhu (or equivalent) is used the variable
+#	"dhudsr" should be set to 0 in the kernel.
+#
+hayes-V|h9600|HAYES smartmodem 9600:\
+	:cr:hu:ls:re:ss=\rAT\r\d:sr=OK:sd#250000:di=ATDT:dt=\r:\
+	:dd#50000:fd#50:rs=,:os=CONNECT:
+#
+#Hayes 1200 smart modem. Switches set to 'English' mode.
+# (touch tone dialing)
+#
+# switches = uudduuud (u=up, d=down)
+hayes|h1200|smartmodem|HAYES smartmodem 1200 Touch tone (UNSUPPORTED):\
+	:cr:hu:ls:re:ss=\d+++\dATH\rATZ\r\d:sr=OK:sd#250000:di=ATDT:dt=\r:\
+	:dd#50000:fd#50:rs=,:os=CONNECT:ds=\d+++\dATZ\r:ab=\d+++\dATZ:
+#
+#Hayes 1200 smart modem hooked to a pulse only phone. 
+# See switch setting above.
+#
+# switches (see above)
+hayes-p|h1200-p|smartmodem-p|HAYES smartmodem 1200 with pulse dialing (UNSUPPORTED):\
+	:cr:hu:ls:re:ss=\d+++\dATH\rATZ\r\d:sr=OK:sd#250000:di=ATDP:dt=\r:\
+	:dd#50000:fd#50:rs=,:os=CONNECT:ds=\d+++\dATZ\r:ab=\d+++\dATZ:
+#
+# Telebit Trailblazer Plus  (upto 19200)
+# registers set: S51=254, S52=2, S53=3, S54=4, S58=2
+# Also NOTE that if a dhu (or equivalent) is used the variable
+# "dhudsr" should be set to 0 in the kernel.
+#
+telebit|tbauto|trailblazer-auto|Telebit Trailblazer in auto mode S50=0:\
+	:cr:hu:ls:re:ss=AAATZ\r\d:sr=OK:sd#250000:di=A\dA\dATS50=0DT:dt=\r:\
+	:dd#50000:fd#50:rs=,:os=CONNECT:ds=\d+++\dATZ\r:ab=\d+++\dATZ\r:
+#
+#Ven-tel md212-3e modem.
+#
+# (switches factory ?)
+ventel|VENTEL md212-3e (Burst-Mode) (UNSUPPORTED):\
+        :hu:ss=\r\r:sr=VEN-TEL:sd#1:di=K:dt=\r:\
+        :dr=DIAL:fd#50:dd#1:da#5:
+#
+#
+# untested vadic 3451
+# 
+#v3451|Vadic 3451|Racal-Vadic 3451 autodialer:\
+#	:cr:hu:re:si=I\r^E\r:sr=READY:sd#1:di=D\r:dt=\r\r\r:\
+#	:dd#1:fd#50:rs=k:os=ON LINE:
+#
+# ****   User contributed entries   ****
+#
+# U.S. Robotics - submitted by ucbvax!serge 7/7/86
+robot|robotics|rob1200|U.S. ROBOTICS (UNSUPPORTED):\
+        :cr:hu:re:ss=ATZ\r:sr=OK:sd#1:di=ATTX1S7=20D:dd#1:dt=\r:\
+        :os=CONNECT 1200:ab=+++:ds=+++:fd=#50:
+#
+# Rixon 212A by Ken Lester (submitted by ektools!jim (7/10/86))
+rixon|rix1200|dumbrixon|RIXON 1200 touch tone (UNSUPPORTED):\
+	:cr:hu:re:dd#1:di=K:os=ON-LINE:dt=\r:fd#50:rs=%:sd#1:sr=$:ss=\r\r:
+#
+#  NOTE: If you edit this file to add additional entries, notice that
+#	the continuation lines are indented in addition to the previous
+#	line ending with "\".  This convention must be obeyed for the
+#	entry to work.  Also, be aware that if you specify 'ls' to get
+#	a faster sleep routine (1/1000000's of a second) for the delays,
+#	the "fd" (or full delay for carrier) is STILL specified in
+#	seconds. The fast sleep routine is only used for the "sd", "dd",
+#	"da", and "cd" delays.
+#	In addition, you may now imbed one second delays directly in
+#	the strings with "\d".  See the hayes entries for an example.
+#
+#
+#
+# Options used in this capabilities file are:
+#
+#      Strings which can be written to a modem:
+#
+# ss = Synchronization string. Initially output to modem to 'see' if its awake.
+# sr = What modem should say to ss having been sent.
+# di = Dial initialization string (ie start a dialing sequence).
+# dt = How to finish a dial sequence (needed since some modems need
+#      to put the number to be dialed between some string).
+# dr = What modem should say if the dial went off correctly.
+# cs = Completion string which is a catchall for sync/dial strings
+#      (Sent out last but probably not used by many modems).
+# ab = An abort string to be send to modem if we abort tip.
+# ds = A sequence used when modem is disconnected.
+# os = A string which says a remote system came online (after 
+#      carrier is detected).
+# rs = A single character replacement string for the default delay
+#      character of '=' OR '-' (which is default for DEC equipment). This
+#      conversion only takes place within the phone number string
+#      passed in.
+#
+#      Logical flags:
+#
+# cr = Wait for carrier to be sensed.
+# hu = hangup if line goes away.
+# re = Reset dtr (turn it off then on) before dialing begins.
+# rd = delay 1 second after toggling dtr. Only used if re flag is set.
+# ls = use local sleep routine (rather than sleep) & thus all delays
+#      must be given in microseconds (1000000 apx eq 1 second).
+# si = ignore all response strings as this modem is attached to 
+#	an interface which gives no characters back until carrier
+#	is up (eg a dmf32).
+#
+#      Delays:
+#
+# sd = Synchronization delay (time between sync characters).
+# dd = Dial delay (time between dial chars).
+# da = Dial acknowledge delay (time to wait before looking for dial response)
+# cd = Completion delay (time between completion chars).
+# fd = Full delay (total time we wait for carrier detect).
+#
+#	Debug:
+#
+# db = Print info useful for debugging new entries.

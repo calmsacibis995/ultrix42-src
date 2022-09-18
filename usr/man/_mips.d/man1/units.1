@@ -1,0 +1,83 @@
+.\" SCCSID: @(#)units.1	8.1	9/11/90
+.if n .ds / /
+.if t .ds / \z/\h'\w'*'u'
+.TH units 1 "" "" Unsupported
+.SH Name
+units \- conversion program
+.SH Syntax
+.B units
+.SH Description
+The
+.PN units
+command
+converts quantities expressed
+in various standard scales to
+their equivalents in other scales.
+It works interactively in this fashion:
+.PP
+.I "	You have:"
+inch
+.br
+.I "	You want:"
+cm
+.br
+.I "		* 2.54000e+00
+.br
+.I "		\*/ 3.93701e\-01
+.PP
+A quantity is specified as a multiplicative combination of
+units optionally preceded by a numeric multiplier.
+Powers are indicated by suffixed positive integers,
+division by the usual sign:
+.PP
+.I "	You have:"
+15 pounds force/in2
+.br
+.I "	You want:"
+atm
+.br
+.I "		* 1.02069e+00"
+.br
+.I "		\*/ 9.79730e\-01"
+.PP
+The
+.PN units 
+command only does multiplicative scale changes.
+Thus it can convert Kelvin to Rankine, but not Centigrade to
+Fahrenheit.
+Most familiar units,
+abbreviations, and metric prefixes are recognized,
+together with a generous leavening of exotica
+and a few constants of nature including:
+.PP
+.nf
+	pi	ratio of circumference to diameter
+	c	speed of light
+	e	charge on an electron
+	g	acceleration of gravity 
+	force	same as g
+	mole	Avogadro's number
+	water	pressure head per unit height of water
+	au	astronomical unit
+.PP
+.fi
+`Pound' is a unit of
+mass.
+Compound names are run together, for example, `lightyear'.
+British units that differ from their US counterparts
+are prefixed thus: `brgallon'.
+Currency is denoted `belgiumfranc', `britainpound', ...
+.PP
+If 
+.PN units
+is used with no arguments, it will use 
+.PN /usr/lib/units
+to define the units and the conversions that it knows about.
+When
+.I file
+is supplied, it will be used to define the units and conversions 
+that 
+.PN units
+will recognize.
+.SH Files
+.PN /usr/lib/units

@@ -1,0 +1,31 @@
+.\" SCCSID: @(#)stime.3	8.1	9/11/90
+.TH stime 3 
+.SH Name
+stime \- set time
+.SH Syntax
+.B int stime (tp)
+.br
+.B long *tp;
+.SH Description
+.NXR "stime system call"
+.NXA "stime system call" "gettimeofday system call"
+.NXR "time" "setting"
+The 
+.PN stime
+system call sets the system's time and date.
+The
+.I tp
+argument points to the value of time as
+measured in seconds from 00:00:00 GMT January 1, 1970.
+.SH Return Values
+Upon successful completion, a value of zero (0) is returned.
+Otherwise, a value of \-1 is returned and
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+.TP 15
+[EPERM]
+The effective user ID
+of the calling process is not the superuser.
+.SH See Also
+gettimeofday(2), time(3)

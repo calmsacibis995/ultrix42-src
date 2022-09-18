@@ -1,0 +1,76 @@
+.\" SCCSID: @(#)uuencode.1c	8.1	9/11/90
+.TH uuencode 1c
+.SH Name
+uuencode, uudecode \- encode/decode a binary file for transmission via mail
+.SH Syntax
+.B uuencode
+[\|\fIfile\|\fR] \fIremotedest\fR \fB|\fR \fBmail\fR \fIsys1\fR!\fIsys2\fR!..!\fIdecode\fR
+.br
+.B uudecode
+[\|\fIfile\fR\|]
+.SH Description
+.NXAM "sendmail daemon" "uuencode command"
+.NXA "mail program" "uuencode command"
+.NXR "mail" "sending binary file"
+.NXR "binary file" "sending in mail"
+.NXR "uuencode command"
+.NXR "uudecode command"
+The
+.PN uuencode
+and
+.PN uudecode
+commands are used to send a binary file by uucp (or other) mail.
+This combination can be used over indirect mail links
+even when 
+.MS uusend 1c
+is not available.
+.PP
+The
+.PN uuencode
+command
+takes the named source file (default standard input) and
+produces an encoded version on the standard output.
+The encoding uses only printing ASCII characters,
+and includes the mode of the file and the
+.I remotedest
+for recreation on the remote system.
+.PP
+The
+.PN uudecode
+command reads an encoded file,
+strips off any leading and trailing lines added by mailers,
+and recreates the original file with the specified mode and name.
+.PP
+The intent is that all mail to the user ``decode'' should be filtered
+through the 
+.PN uudecode
+program.  This way the file is created automatically
+without human intervention.
+This is possible on the uucp network by either using
+.PN sendmail
+or by making
+.PN rmail
+be a link to
+.PN Mail
+instead of
+.PN mail .
+In each case, an alias must be created in a master file to get
+the automatic invocation of 
+.PN uudecode .
+.PP
+If these facilities are not available, the file can be sent to a
+user on the remote machine who can uudecode it manually.
+.PP
+The encode file has an ordinary text form and can be edited
+by any text editor to change the mode or remote name.
+.SH Restrictions
+The file is expanded by 35% (3 bytes become 4 plus control information)
+causing it to take longer to transmit.
+.PP
+The user on the remote system who is invoking
+.PN uudecode
+(often
+.PN uucp)
+must have write permission on the specified file.
+.SH See Also
+mail(1), uucp(1c), uusend(1c), uux(1c), uuencode(5)

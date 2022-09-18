@@ -1,0 +1,166 @@
+.\" SCCSID: @(#)binmail.1	8.1	9/11/90
+.\" SCCSID: @(#)binmail.1	8.1	9/11/90
+.TH binmail 1
+.SH Name
+binmail \- send or receive mail among users
+.SH Syntax
+.B /bin/mail
+[\fB+\fR] [\fB\-i\fR] [\|\fIperson...\fR\|] 
+.br
+.B /bin/mail
+[\fB+\fR]
+[\fB\-i\fR] \fB\-f\fI file\fR
+.PP
+.SH Description
+.NXR "binmail program"
+.NXR "mail" "sending"
+.NXA "binmail program" "mail program"
+This is the old version 7 UNIX system mail program.  The default
+.PN mail
+command is described in 
+.MS mail 1 ,
+and its binary is in the directory 
+.PN /usr/ucb .
+The 
+.PN /bin/mail
+program is still used to actually deliver
+a mail message into the users system-wide mailbox (
+.PN /usr/spool/mail/*
+),
+however, the reading of these messages has been replaced with
+the program 
+.PN /usr/ucb/mail .
+Do not remove 
+.PN /bin/mail
+from your system.
+.PP
+The
+.PN mail
+command
+with no argument prints a user's mail, message-by-message,
+in last-in, first-out order; the optional argument
+.B +
+displays the mail messages in first-in, first-out order.
+For each message, it reads a line from the standard input
+to direct the disposition of the message.
+.NXR "binmail program" "command reference list"
+.PP
+Issue the following commands from the 
+.PN mail
+program prompt: 
+.TP 20
+<CR>
+Go on to next message
+.TP 20
+d
+Delete message and go on to the next.
+.TP 20
+p
+Print message again.
+.TP 20
+\-
+Go back to previous message.
+.TP 20
+.RI "s [" "file..." "] 
+Save the message in the named
+.I files
+(`mbox' default).
+.TP 20
+.RI "w [" "file..." "] 
+Save the message, without a header, in the named
+.I files
+(`mbox' default).
+.TP 20
+.RI "m [" "person..." "] 
+Mail the message to the named
+.I persons
+(yourself is default).
+.TP 20
+EOT (control-D)
+Put unexamined mail back in the mailbox and stop.
+.TP 20
+q
+Same as EOT.
+.TP 20
+.RI ! command
+Escape to the Shell to do
+.IR command .
+.TP 20
+*
+Print a command summary.
+.PP
+An interrupt normally terminates the 
+.PN mail
+command; the mail file is unchanged.   
+.PP
+When
+.I persons
+are named,
+.PN mail
+takes the standard input up to an end-of-file (or a line with just `.')
+and adds it to each
+.I person's
+mail file.  The message is preceded by the sender's name and a postmark.
+Lines that look like postmarks are prepended with `>'.  A
+.I person
+is usually a user name recognized by 
+.MS login 1 .
+To denote a recipient on a remote system, prefix 
+.I person
+by the system name and exclamation mark.  For further information, see
+.MS uucp 1c .
+.PP
+The 
+.PN mail
+program sends a message to the screen that there is mail when 
+the user logs in.
+.PP
+When 
+.PN /bin/mail
+is used to deliver mail, (usually 
+.MS sendmail 8
+calls 
+.PN /bin/mail
+to do this), a mailbox is created for the user
+in the directory 
+.PN /usr/spool/mail ,
+if it doesn't already exist.  The mailbox
+is created with the mode 700 so that only its owner
+can access it.
+In addition, the directory 
+.PN /usr/spool/mail
+has the mode 777 with the sticky bit set.  The mode is 777 so that
+other mail programs, notably
+.PN /usr/ucb/mail ,
+can create the appropriate lock files to prevent another process from
+writing to the mailbox at the same time.  The sticky bit set on the
+directory prevents one user from unlinking another user's mailbox.
+.SH Options
+.NXR "binmail program" "options"
+.TP 20
+.B \-f
+Displays mail messages contained in the 
+specified file (next argument) in place of your mailbox file.
+.TP 20
+.B \-i
+Notifies mail to continue after interrupts.  
+.SH Restrictions
+.NXR "binmail program" "restricted"
+Race conditions sometimes result in a failure to remove a lock file.
+.SH Files
+.ta \w'/usr/spool/mail/*.lock 'u
+/etc/passwd	to identify sender and locate persons
+.br
+.li
+/usr/spool/mail/*	incoming mail for user *
+.br
+mbox		saved mail
+.br
+/tmp/ma*	temp file
+.br
+/usr/spool/mail/*.lock	lock for mail directory
+.br
+dead.letter	unmailable text
+.br
+.SH See Also
+mail(1), uucp(1c), uux(1c), write(1), sendmail(8)

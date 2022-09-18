@@ -1,0 +1,106 @@
+.TH socket_equal 3ncs
+.SH Name
+socket_equal \- compare two socket addresses
+.SH Syntax
+#include <idl/c/socket.h>
+
+boolean socket_$equal(\fIsockaddr1, s1length, sockaddr2, s2length, flags,\fP
+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\fIstatus\fP)
+.nf
+socket_$addr_t *\fIsockaddr1\fP;
+unsigned long \fIs1length\fP;
+socket_$addr_t *\fIsockaddr2\fP;
+unsigned long \fIs2length\fP;
+unsigned long \fIflags\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/socket.ins.pas'\fR
+.\"
+.\"\fBfunction socket_$equal(\fR
+.\"	\fBin \fIsockaddr1\fB: socket_$addr_t;\fR
+.\"	\fBin \fIs1length\fB: unsigned32;\fR
+.\"	\fBin \fIsockaddr2\fB: socket_$addr_t;\fR
+.\"	\fBin \fIs2length\fB: unsigned32;\fR
+.\"	\fBin \fIflags\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t): boolean;\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIsockaddr1\fR
+A socket address.  The socket address is the structure returned by either
+.PN rpc_use_family
+or 
+.PN rpc_use_family_wk .
+.TP 20
+\fIs1length\fR
+The length, in bytes, of \fIsockaddr1\fR.
+.TP 20
+\fIsockaddr2\fR
+A socket address.  The socket address is the structure returned by either
+.PN rpc_use_family
+or 
+.PN rpc_use_family_wk .
+.TP 20
+\fIs2length\fR
+The length, in bytes, of \fIsockaddr2\fR.
+.TP 20
+\fIflags\fR
+The logical OR of values selected from the following:
+.RS
+.TP 20
+\fBsocket_$eq_hostid\fR
+Indicates that the host IDs are to be compared.
+.TP 20
+\fBsocket_$eq_netaddr\fR
+Indicates that the network addresses are to be compared.
+.TP 20
+\fBsocket_$eq_port\fR
+Indicates that the port numbers are to be compared.
+.TP 20
+\fBsocket_$eq_network\fR
+Indicates that the network IDs are to be compared.
+.RE
+.TP 20
+\fIstatus\fR
+The completion status. If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN socket_$equal
+routine compares two socket addresses.
+The \fIflags\fR parameter determines which fields of the socket 
+addresses are compared.
+The call returns `true' (not zero) if all of the fields compared are
+equal, `false' (zero) if not.
+.NXR "Operations on Socket Addresses" "socket_equal"
+.ig
+.SH External Variables
+This section describes external variables used in \fBsocket_$\fR routines.
+.TP 20
+..
+.SH Examples
+The following routine compares the network and host IDs in the
+socket addresses
+.I sockaddr1
+and
+.I sockaddr2:
+.EX
+if (socket_$equal (&sockaddr1, s1length, &sockaddr2, s2length,
+        socket_$eq_network | socket_$eq_hostid, &status))
+printf ("sockaddrs have equal network and host IDs\en");
+.EE
+.ig
+.SH Status Codes
+This section lists status codes for errors returned by \fBsocket_$\fR routines.
+..
+.SH Files
+.PN /usr/include/idl/c/socket.h
+.br
+.PN /usr/include/idl/socket.idl
+.SH See Also
+intro(3ncs)

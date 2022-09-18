@@ -1,0 +1,25 @@
+.\" SCCSID: @(#)cs.4	8.1	9/11/90
+.\" SCCSID: @(#)cs.4	8.1	9/11/90
+.TH cs 4 VAX
+.SH Name
+cs \- RX50 console interface
+.SH Description
+.NXR "cs keyword"
+.NXA "console interface" "RX50 console interface"
+.NXR "RX50 console interface"
+This is a simple interface to the RX50
+disk unit, which is part of the console
+subsystem for the VAX 8200 (8200, 8300, 8500, 8550, 8700, 8800).
+Access is given to the entire
+RX50 consisting of 80 cylinders of one track of 10 sectors of 512 bytes.
+The RX50 sectors are accessed as logical 512-byte disk blocks.
+.PP
+The seek addresses in raw transfers should be a multiple
+of 512 and a multiple of 512 bytes should be transferred, as in other
+``raw''  disk interfaces.
+.SH Files
+.PN /dev/cs??
+.br
+.PN /dev/rcs??
+.SH See Also
+MAKEDEV(8)

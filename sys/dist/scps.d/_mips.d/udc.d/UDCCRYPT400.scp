@@ -1,0 +1,64 @@
+#!/bin/sh
+#
+#	@(#)UDCCRYPT400.scp	4.1 (ULTRIX) 7/2/90
+#
+#
+#	001	jon		18-apr-1988
+#		removed library images and put them in their
+#		own subset called ULCPGMR
+#
+#	000	ccb		11-nov-1986
+#		first pass.
+#
+
+PATH="/bin:/usr/bin:/etc:/usr/ucb"
+export PATH
+
+# path dummies
+B=./bin
+L=./lib
+NUL=/dev/null
+UB=./usr/bin
+UCB=./usr/ucb
+UK=./usr/kits
+UL=./usr/lib
+UT=./usr/tmp
+
+# symbol dummies
+C=crypt
+X=xsend
+
+case "$ACT" in
+POST_[AL])
+
+	# INSTALL BINARIES - ex, ed, xsend, xget, crypt, enroll
+	#
+	# easy ones - xsend, xget, crypt, enroll
+	for K in xsend xget crypt enroll
+	{
+		cp $UK/$K.crypt $UB/$K
+	}
+
+	# install the new ex(1)
+	cp $UK/ex.crypt $UCB/ex
+	for K in e vi view edit
+	{
+		rm -f $UCB/$K
+		ln $UCB/ex $UCB/$K
+	}
+
+	# install the new ed.
+	cp $UK/ed.crypt bin/ed
+	for K in e red
+	{
+		rm -f $B/$K
+		ln $B/ed $B/$K
+	}
+
+	exit 0
+	;;
+*)	exit 0
+	;;
+esac
+
+

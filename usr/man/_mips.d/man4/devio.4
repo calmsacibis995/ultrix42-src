@@ -1,0 +1,125 @@
+.TH devio 4
+.SH Name
+devio \- device information interface
+.SH Syntax
+\fB#include <sys/ioctl.h>\fR
+.br
+\fB#include <sys/devio.h>\fR
+.SH Description
+.NXS "devio file" "device interface"
+.NXR "device interface" 
+The 
+.PN devio 
+interface obtains status, device attributes,
+and other information by polling the controlling device driver.
+There are two ioctl requests associated with this interface:
+.RI DEVIOCGET
+and 
+.RI DEVGETGEOM.
+.PP
+The file 
+.PN <sys/devio.h>
+contains the needed structure and definitions to use the
+.RI DEVIOCGET
+and
+.RI DEVGETGEOM
+ioctl requests. 
+.PP
+The
+.RI DEVIOCGET 
+ioctl request is used to obtain generic device information by polling
+the underlying device driver.  
+The following example shows the basic structure used by this request: 
+.EX 0
+/* Structure for DEVIOCGET ioctl - device get status command */
+
+struct devget  {
+   short   category;            /* Category                   */
+   short   bus;                 /* Bus                        */
+   char    interface[DEV_SIZE]; /* Interface (string)         */
+   char    device[DEV_SIZE];    /* Device (string)            */
+   short   adpt_num;            /* Adapter number             */
+   short   nexus_num;           /* Nexus or node on adapter # */
+   short   bus_num;             /* Bus number                 */
+   short   ctlr_num;            /* Controller number          */
+   short   slave_num;           /* Plug or line number        */
+   char    dev_name[DEV_SIZE];  /* ULTRIX device mnemonic     */
+   short   unit_num;            /* ULTRIX device unit number  */
+   unsigned soft_count;         /* Driver soft error count    */
+   unsigned hard_count;         /* Driver hard error count    */
+   long    stat;                /* Generic status mask        */
+   long    category_stat;       /* Category specific mask     */
+};
+.EE
+.PP
+The
+.RI DEVGETGEOM
+ioctl request is used to obtain disk geometry and attributes by polling
+the underlying device driver.  This ioctl request is only supported on
+MSCP and SCSI disk drivers.  The ioctl fails on other types of drivers
+which do not support 
+.RI DEVGETGEOM.  
+The ioctl may fail if the device driver is unable to obtain
+geometry information.  This could happen if the disk media is removable and
+there is no media loaded in the drive.
+.PP
+The following example shows the basic structure used by this request:
+.EX 0
+/* Structure for DEVGETGEOM ioctl - disk geometry information */
+
+typedef union devgeom {
+  struct {
+     unsigned long  dev_size;   /* number of blocks in user area  */
+     unsigned short  ntracks;   /* number of tracks per cylinder  */
+     unsigned short  nsectors;  /* number of sectors per track    */
+     unsigned short  ncylinders; /* total number of cylinders     */
+     unsigned long   attributes; /* Device attributes             */
+   } geom_info;
+   unsigned char       pad[124];  /* Allocate space for expansion */
+} DEVGEOMST;
+.EE
+The following is a description of the fields of the DEVGEOMST data 
+structure.  Many of the fields correspond to attributes that
+are often specified in the disk description file
+.PN /etc/disktab .
+This ioctl is used by the 
+.PN creatdiskbyname
+subroutine to dynamically generate disktab entries.
+.TP 12 
+dev_size
+This field contains the number of user accessible blocks on the disk.  
+The corresponding disktab field is
+.PN pc ,
+which describes the size of the "c" partition.
+.TP
+ntracks
+This field contains the number of tracks per cylinder and corresponds 
+to the 
+.PN nt
+field of a disktab entry.
+.TP
+nsectors
+This field contains the number of sectors per track and corresponds to 
+the 
+.PN ns
+field of a disktab entry.
+.TP
+ncylinders
+This field contains the number of cylinders on the disk 
+and corresponds to the 
+.PN nc
+field of a disktab entry.
+.TP
+attributes
+This field represents disk attributes.
+.TP
+pad
+This field is not used to store disk information.  The pad
+element of the DEVGEOMST is used to provide room for future expansion of
+the information fields.
+.SH Restrictions
+The
+.RI DEVGETGEOM
+ioctl request is only supported on MSCP and SCSI disk drivers.
+.SH See Also
+creatediskbyname(3x), ra(4), rz(4), disktab(5)

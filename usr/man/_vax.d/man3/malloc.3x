@@ -1,0 +1,248 @@
+.\" SCCSID: @(#)malloc.3x	8.2	12/3/90
+.TH malloc 3x 
+.SH Name
+malloc, free, realloc, calloc, mallopt, mallinfo \- fast main memory allocator
+.SH Syntax
+.nf
+.B #include <malloc.h>
+.P
+.B char \(**malloc (size)
+.B unsigned size;
+.PP
+.B void free (ptr)
+.B char \(**ptr;
+.PP
+.B char \(**realloc (ptr, size)
+.B char \(**ptr;
+.B unsigned size;
+.PP
+.B char \(**calloc (nelem, elsize)
+.B unsigned nelem, elsize;
+.PP
+.B int mallopt (cmd, value)
+.B int cmd, value;
+.PP
+.B struct mallinfo mallinfo (max)
+.B int max;
+.SH Description
+.NXA "malloc subroutine (standard C)" "malloc subroutine (special library)"
+.NXB "malloc subroutine (special library)" 
+.NXB "memory" "allocating"
+.NXR "free subroutine (special library)"
+.NXR "realloc subroutine (special library)"
+.NXR "calloc subroutine (special library)"
+.NXR "mallopt subroutine"
+.NXR "mallinfo subroutine"
+The
+.PN malloc
+and
+.PN free
+subroutines
+provide a simple general-purpose memory allocation package,
+which runs considerably faster than the 
+.MS malloc 3
+package.
+It is found in the library
+.PN malloc ,
+and is loaded if the option
+.PN \-lmalloc
+is used with 
+.MS cc 1
+or
+.MS ld 1 .
+.PP
+The
+.PN malloc
+subroutine returns a pointer to a block of at least
+.I size\^
+bytes suitably aligned for any use.
+.PP
+The argument to
+.PN free
+is a pointer to a block previously allocated by
+.PN malloc .
+After
+.PN free
+is performed,
+this space is made available for further allocation,
+and its contents have been destroyed.  See 
+.PN mallopt
+below for a way to change this behavior.
+.PP
+Undefined results will occur if the space
+assigned by
+.PN malloc
+is overrun or if some random number is handed to
+.PN free .
+.PP
+The
+.PN realloc
+subroutine
+changes the size of the block pointed to by
+.I ptr
+to
+.I size
+bytes and returns a pointer to the (possibly moved)
+block.
+The contents will be unchanged up to the
+lesser of the new and old sizes.
+.PP
+The
+.PN calloc
+subroutine allocates space for an array of
+.I nelem
+elements of size
+.I elsize.
+The space is initialized to zeros.
+.PP
+The 
+.PN mallopt
+subroutine
+provides for control over the allocation algorithm.
+The available values for 
+.I cmd
+are:
+.TP .90i
+M_MXFAST
+Set 
+.I maxfast
+to 
+.I value .
+The algorithm allocates all blocks below the size
+of 
+.I maxfast
+in large groups and then doles them out very quickly.
+The default value for
+.I maxfast
+is 0.
+.TP
+M_NLBLKS
+Set 
+.I numlblks
+to 
+.I value .
+The above mentioned large groups each contain
+.I numlblks
+blocks.  
+The
+.I numlblks
+must be greater than 0.
+The default value for 
+.I numlblks
+is 100.
+.TP
+M_GRAIN
+Set 
+.I grain
+to 
+.I value .
+The sizes of all blocks smaller than 
+.I maxfast
+are considered to be rounded up to the nearest multiple of 
+.I grain .
+The
+.I grain
+must be greater than 0.
+The default value of 
+.I grain
+is the smallest number of bytes
+which will allow alignment of any data type.
+Value
+will be rounded up to a multiple of the default
+when
+.I grain
+is set.
+.TP
+M_KEEP
+Preserve data in a freed block until the next
+.PN malloc ,
+.PN realloc ,
+or
+.PN calloc .
+This option is provided only for compatibility with the old
+version of 
+.PN malloc
+and is not recommended.
+.PP
+These values are defined in the malloc.h
+header file.
+.PP
+The
+.PN mallopt
+subroutine may be called repeatedly, but may not be called after
+the first small block is allocated.
+.PP
+The
+.PN mallinfo
+subroutine
+provides information describing space usage.
+It returns the following structure:
+.NXR(e) "mallinfo subroutine" "structure returned"
+.EX 0
+.ps 8
+struct mallinfo  {
+        int arena;      /* total space in arena */
+        int ordblks;    /* number of ordinary blocks */
+        int smblks;     /* number of small blocks */
+        int hblkhd;     /* space in holding block headers */
+        int hblks;      /* number of holding blocks */
+        int usmblks;    /* space in small blocks in use */
+        int fsmblks;    /* space in free small blocks */
+        int uordblks;   /* space in ordinary blocks in use */
+        int fordblks;   /* space in free ordinary blocks */
+        int keepcost;   /* space penalty if keep option */
+                        /* is used */
+}
+.EE
+.PP
+This structure is defined in the 
+malloc.h header file.
+.PP
+Each of the allocation routines returns a pointer
+to space suitably aligned (after possible pointer coercion)
+for storage of any type of object.
+.SH Restrictions 
+.NXR "malloc subroutine (special library)" "restrictions"
+This package usually uses more data space than
+.MS malloc 3 .
+.br
+The code size is also bigger than 
+.MS malloc 3 .
+.br
+Note that unlike 
+.MS malloc 3 ,
+this package does not preserve
+the contents of a block when it is freed, unless 
+the M_KEEP
+option of
+.PN mallopt
+is used.
+.br
+Undocumented features of 
+.MS malloc 3
+have not been duplicated.
+.SH Return Values
+The
+.PN malloc ,
+.PN realloc ,
+and
+.PN calloc
+subroutines return a NULL
+pointer if there is not enough available memory.
+When 
+.PN realloc
+returns NULL, the block pointed to by
+.I ptr
+is left intact.
+If 
+.PN mallopt
+is called after any allocation or if
+.I cmd
+or
+.I value
+are invalid, nonzero is returned.
+Otherwise, it returns zero.
+.SH See Also
+brk(2), malloc(3)
+.NXE "malloc subroutine (special library)" 
+.NXE "memory" "allocating"

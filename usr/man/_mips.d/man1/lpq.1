@@ -1,0 +1,130 @@
+.TH lpq 1
+.SH Name
+lpq \- spool queue examination program
+.SH Syntax 
+.B lpq
+[
+.I options
+] [
+.I job
+.I #... 
+] [
+.I user...
+]
+.SH Description
+.NXR "lpq command"
+.NXAM "daemon" "lpd daemon" "lpq command"
+.NXA "printer" "printer queue"
+.NXR "printer queue" "displaying"
+The
+.PN lpq
+command examines the spooling area used by 
+.PN lpd
+for printing files on the printer,
+and reports the status of jobs.
+The
+.PN lpq
+command invoked without any arguments
+reports on any jobs currently in the default queue.
+.PP
+When jobs are being printed,
+.PN lpq
+reports the queue as being ``active''.
+For each job submitted,
+.PN lpq
+reports the user's name, current rank in the queue, the
+names of files comprising the job, the job identifier
+and the total size in bytes.
+The job identifier is a number which may be supplied to
+.PN lprm
+to remove a specific job.
+.PP
+Job ordering is determined by the FIFO (First In, First Out)
+algorithm used to scan the spooling directory.
+When the queue is empty,
+.PN lpq
+reports that there are ``no entries''.
+.PP
+File names may be unavailable for some jobs, for example, if the
+.PN lpr
+command is used without specifying a file name, or if
+.PN lpr
+is used in a pipe line.
+If file names are unavailable, the file name reported by
+.PN lpq
+is ``standard input''.
+.SH Arguments
+.TP 12
+.I job #...
+Causes
+.PN lpq
+to report on only the job number(s) specified.
+.TP
+.I user...
+Causes
+.PN lpq
+to report on only the jobs for the specified user(s).
+.SH Options
+.IP \fB+\fIn\fR 5
+Scan and display the spool queue until the queue is empty.
+The queue is scanned every \fIn\fR seconds, if no argument is specified the
+queue is scanned every 30 seconds.
+.IP \fB\-l\fR 
+Display the status of each job on more than one line if necessary.
+If this option is not used, the status of each job is displayed on one
+line.
+.IP \fB\-P\fIprinter\fR
+Report the status of the spool queue for the \fIprinter\fR specified.
+If this option is not used, the spool queue displayed is the one defined by
+the PRINTER environment variable.
+If a queue is not defined by the PRINTER environment variable, the spool
+queue displayed is for the printer named ``lp'' in the
+.PN printcap
+file.
+.SH Restrictions
+The displayed status of the spool queue may not always be the current
+status.
+This is because jobs may be completed after the queue has been examined,
+but before the status has been displayed.
+.SH Error Messages
+Two of the most common error messages from
+.PN lpq
+are:
+.br
+.sp
+.B
+Warning: no daemon present
+.R
+.br
+A daemon is not available for the specified printer.
+Refer to the
+.PN lpc(8)
+command to find out how to restart the printer daemon.
+.br
+.sp
+.B
+unknown printer
+.R
+.br
+The printer specified as an argument to the \fB\-P\fR
+option, doesn't have an entry in the
+.PN /etc/printcap
+file.
+.SH Files
+.TP 25
+.PN /etc/termcap
+For manipulating the screen for repeated display
+.TP
+.PN /etc/printcap
+To determine printer characteristics
+.TP
+.PN /usr/spool/*
+The spooling directory, as determined from printcap
+.TP
+.PN /usr/spool/*/cf*
+Control files specifying jobs
+.TP
+.PN /usr/spool/*/lock
+The lock file to obtain the currently active job 
+.SH See Also
+lpr(1), lprm(1), lpc(8), lpd(8)

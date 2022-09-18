@@ -1,0 +1,67 @@
+
+#ifndef lint
+static char *sccsid = "@(#)stdhosts.c	4.1	ULTRIX	7/2/90";
+#endif lint
+
+/****************************************************************
+ *								*
+ *  Licensed to Digital Equipment Corporation, Maynard, MA	*
+ *		Copyright 1985 Sun Microsystems, Inc.		*
+ *			All rights reserved.			*
+ *								*
+ ****************************************************************/
+
+#include <stdio.h>
+
+/* 
+ * Filter to convert addresses in /etc/hosts file to standard form
+ */
+
+main(argc, argv)
+	char **argv;
+{
+	char line[256];
+	char adr[256];
+	char *any(), *trailer;
+	FILE *fp;
+	
+	if (argc > 1) {
+		fp = fopen(argv[1], "r");
+		if (fp == NULL) {
+			fprintf(stderr, "stdhosts: can't open %s\n", argv[1]);
+			exit(1);
+		}
+	}
+	else
+		fp = stdin;
+	while (fgets(line, sizeof(line), fp)) {
+		if (line[0] == '#')
+			continue;
+		if ((trailer = any(line, " \t")) == NULL)
+			continue;
+		sscanf(line, "%s", adr);
+		fputs(inet_ntoa(inet_addr(adr)), stdout);
+		fputs(trailer, stdout);
+	}
+}
+
+/* 
+ * scans cp, looking for a match with any character
+ * in match.  Returns pointer to place in cp that matched
+ * (or NULL if no match)
+ */
+static char *
+any(cp, match)
+	register char *cp;
+	char *match;
+{
+	register char *mp, c;
+
+	while (c = *cp) {
+		for (mp = match; *mp; mp++)
+			if (*mp == c)
+				return (cp);
+		cp++;
+	}
+	return (NULL);
+}

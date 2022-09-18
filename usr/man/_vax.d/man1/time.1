@@ -1,0 +1,62 @@
+.\" SCCSID: @(#)time.1	8.3	3/28/91
+.TH time 1 
+.SH Name
+time \- time a command
+.SH Syntax
+.B time
+.I command
+.br
+.B /bin/time
+.I command
+.SH Description
+.NXR "time command"
+.NXR "command" "timing"
+The
+.PN time
+command lets the specified command execute and then outputs the amount
+of elapsed real time, the time spent in the operating system, and the
+time spent in execution of the command.  Times are reported in seconds
+and are written to standard error.
+.PP
+If you are using any shell except the C shell,
+.MS csh 1 ,
+you can give the
+.PN time
+command as shown on the first line of the Syntax section.  If you are
+using the C shell, you must use the
+.PN time
+command's full pathname as shown on the second line of the Syntax
+section.  If you do not use the full pathname,
+.PN csh
+will execute its own built-in
+.PN time
+command that supplies additional information and uses a different
+output format.
+.PP
+The 
+.PN time
+command can be used to cause a command to be timed no matter how much 
+CPU time it takes.  For example:
+.EX
+% /bin/time cp /etc/rc /usr/bill/rc
+        0.1 real         0.0 user         0.0 sys
+% /bin/time nroff sample1 > sample1.nroff
+        3.6 real         2.4 user         1.2 sys
+.EE
+This example indicates that the 
+.PN cp
+command used negligible amounts of user
+.Pn ( user )
+and system time
+.Pn ( sys ),
+and had an elapsed time
+.Pn ( real )
+of 1/10 second (0.1).  The
+.PN nroff
+command used 2.4 seconds of user time and 1.2 seconds of system time,
+and required 3.6 seconds of elapsed time.
+.SH Restrictions
+Times are measured to an accuracy of 1/10 second.  Thus, the sum of the
+user and system times can be larger than the elapsed time.
+.SH See Also
+csh(1)

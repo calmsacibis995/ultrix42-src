@@ -1,0 +1,183 @@
+.\" SCCSID: @(#)rmt.8c	8.1	9/11/90
+.TH rmt 8c 
+.SH Name
+rmt \- remote mass storage device protocol module
+.SH Syntax
+.B /etc/rmt
+.SH Description
+.NXR "rmt program"
+.NXR "file system" "copying across network"
+.NXS "remote mass storage protocol module" "rmt program"
+.NXA "rdump command" "rmt program"
+The
+.PN rmt
+program is used by the remote dump and restore programs
+to manipulate remote mass storage devices and files
+through an interprocess
+communication connection.
+The 
+.PN rmt
+program is normally started with an
+.MS rexec 3x
+or
+.MS rcmd 3x
+call.
+.PP
+The 
+.PN rmt
+program remotely ties its standard input and output to a socket,
+accepts commands that manipulate
+remote devices or files, performs the commands, and then responds with
+a status indication.  All commands and responses are in ASCII and in
+one of two forms. 
+Successful commands have responses of
+an acknowledgement (ack) such as:
+.PP
+.ti +0.5i
+\fBA\fInumber\fR\en
+.PP
+In this example, 
+.I number
+is an ASCII representation of a decimal number.
+Unsuccessful commands are responded to with the following:
+.PP
+.ti +0.5i
+\fBE\fIerror-number\fR\en\fIerror-message\fR\en,
+.PP
+In this example, 
+.I error-number
+is one of the possible error
+numbers described in
+.MS intro 2
+and
+.I error-message
+is the corresponding error string as printed
+from a call to
+.MS perror 3 .
+The protocol is comprised of the
+following commands (a newline (\\n)
+is present between each token):
+.NXR "rmt program" "commands"
+.TP 17
+\fBO \fIdevice mode\fR
+Open the specified 
+.I device
+using the indicated
+.IR mode .
+The 
+.I device
+is a full pathname and
+.I mode
+is an ASCII representation of a decimal
+number suitable for passing to
+.MS open 2 .
+If a device had already been opened, it is
+closed before a new open is performed.
+Device can be a regular file.
+.TP 17
+\fBC \fIdevice\fR
+Close the currently open device or file.  The
+.I device
+specified is ignored.
+.TP 17
+.B D
+Returns generic device information for the open device. A
+DEVIOCGET
+.MS ioctl 2 
+call is performed and the data returned. If the operation
+is successful, an ``ack'' is sent with the size of the information
+buffer.
+.TP 17
+\fBL \fIwhence offset\fR
+Perform an
+.MS seek 2
+operation using the specified parameters.
+The response value is that returned from the
+.PN lseek
+call.
+.TP 17
+.B P
+Returns disk partition information of the open device. A
+DIOCDGTPT
+.MS ioctl 2
+call is performed and the data returned. If the operation
+is successful, an ``ack'' is sent with the size of the information
+buffer.
+.TP 17
+\fBT \fIfilename\fR
+Returns file status information for the specified file. A
+.MS stat 2
+call is performed and the data returned. If the operation
+is successful, an ``ack'' is sent with the size of the information
+buffer.
+.TP 17
+\fBW \fIcount\fR
+Write data onto the open device.
+The
+.PN rmt
+program reads
+.I count
+bytes from the connection, aborting if
+a premature end-of-file is encountered.
+The response value is that returned from
+the
+.MS write 2
+call.
+If the operation was successful, an ``ack'' is sent containing
+the number of bytes written.
+.TP 17
+\fBR \fIcount\fR
+Read
+.I count
+bytes of data from the open device.
+If
+.I count
+exceeds the size of the data buffer (10 kilobytes), it is
+truncated to the data buffer size.
+The
+.PN rmt
+program then performs the requested 
+.MS read 2
+and responds with 
+\fBA\fIcount-read\fR\en if the read was
+successful.  Otherwise an error in the
+standard format is returned.  If the read
+was successful, the data read is then sent.
+.TP 17
+\fBI \fIoperation count\fR
+Perform a MTIOCTOP 
+.MS ioctl 2
+command using the specified parameters.
+The parameters are interpreted as the
+ASCII representations of the decimal values
+to place in the 
+.I mt_op
+and
+.I mt_count
+fields of the structure used in the
+.PN ioctl
+call.  The return value is the
+.I count
+parameter when the operation is successful.
+.TP 17
+.B S
+Return the status of the open device, as
+obtained with a MTIOCGET 
+.PN ioctl
+call.  If the operation was successful,
+an ``ack'' is sent with the size of the
+status buffer, then the status buffer is
+sent (in binary).
+.PP
+Any other command causes 
+.PN rmt
+to exit.
+.SH Restrictions
+.NXR "rmt program" "restricted"
+Do not use 
+.PN rmt
+for a remote file access protocol.
+.SH Diagnostics
+All responses are of the form described above.
+.SH See Also
+rcmd(3x), rexec(3x), mtio(4), rdump(8c), rrestore(8c)

@@ -1,0 +1,130 @@
+.TH staux 3 RISC
+.SH Name
+st_auxbtadd, st_auxbtsize, st_auxisymadd, st_auxrndxadd, st_auxrndxadd,
+st_addtq, st_tqhigh_aux, st_shifttq, st_iaux_copyty, st_changeaux,
+st_changeauxrndx  \- routines that provide scalar interfaces to auxiliaries
+.SH Syntax
+.nf
+.B #include <syms.h>
+.PP
+.ft B
+long st_auxbtadd(bt)
+long bt;
+.PP
+.ft B
+long st_auxbtsize(iaux,width)
+long iaux;
+long width;
+.PP
+.ft B
+long st_auxisymadd (isym)
+long isym;
+.PP
+.ft B
+long st_auxrndxadd (rfd,index)
+long rfd;
+long index;
+.PP
+.ft B
+long st_auxrndxadd (idn)
+long idn;
+.PP
+.ft B
+void st_addtq (iaux,tq)
+long iaux;
+long tq;
+.PP
+.ft B
+long st_tqhigh_aux(iaux)
+long iaux;
+.PP
+.ft B
+void st_shifttq (iaux, tq)
+int iaux;
+int tq;
+.PP
+.ft B
+long st_iaux_copyty (ifd, psym)
+long ifd;
+pSYMR psym;
+.PP
+.ft B
+void st_changeaux (iaux, aux)
+long iaux;
+AUXU aux;
+.PP
+.ft B
+void st_changeauxrndx (iaux, rfd, index)
+long iaux;
+long rfd;
+long index;
+.PP
+.ft B
+.fi
+.ft R
+.br
+.SH Description
+Auxiliary entries are unions with a fixed length of four bytes per entry.
+Much information is packed within the auxiliaries. Rather than have
+the compiler front-ends handle each type of auxiliary entry directly,
+the following set of routines provide a high-level
+scalar interface to the auxiliaries:
+.TP 20
+.I st_auxbtadd
+Adds a type information record (TIR) to the auxiliaries.  It
+sets the basic
+type (bt) to the argument and all other fields to zero. The index
+to this auxiliary entry is returned.
+.TP 20
+.I st_auxbtsize
+Sets the bit in the TIR, pointed to by the
+.I iaux
+argument.  This argument says the basic type is a bit field and adds
+an auxiliary with its width in bits.
+.TP 20
+.I st_auxisymadd
+Adds an index into the symbol table (or any other scalar) to the auxiliaries.
+It sets the value
+to the argument that will occupy all four bytes. The index
+to this auxiliary entry is returned.
+.TP 20
+.I st_auxrndxadd
+Adds a relative index, RNDXR, to the auxiliaries.  It sets the rfd and index
+to their respective arguments.
+The index to this auxiliary entry is returned.
+.TP 20
+.I st_auxrndxadd_idn
+Works the same as
+.I st_auxrndxadd
+except that RNDXR is referenced by an index into the dense number table.
+.TP 20
+.I st_iaux_copyty
+Copies the type from the specified file (ifd) for the specified symbol
+into the auxiliary table for the current file.  It returns the index to
+the new aux.
+.TP 20
+.I st_shifttq
+Shifts in the specified type qualifier,
+tq (see sym.h), into the auxiliary entry TIR, which is
+specified by the `iaux' index
+into the current file. The current 
+type qualifiers shift up one tq so that the first tq (tq0) is free
+for the new entry.
+.TP 20
+.I st_addtq
+Adds a type qualifier in the highest or most significant non-tqNil type
+qualifier.
+.TP 20
+.I st_tqhigh_iaux
+Returns the most significant type qualifier given an index into the files
+aux table.
+.TP 20
+.I st_changeaux
+Changes the iauxth aux in the current file's auxiliary table to aux.
+.TP 20
+.I st_changeauxrndx
+Converts the relative index (RNDXR) auxiliary, which is specified by iaux, 
+to the
+specified arguments.
+.SH See Also
+stfd(3)

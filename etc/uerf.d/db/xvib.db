@@ -1,0 +1,541 @@
+# @(#)xvib.db	4.2   (ULTRIX)   1/31/91
+
+
+sseg
+id CDS
+name vme_devctl_cds
+doc "specific registers for the 3via and mvia for vme"
+label "VME specific registers"
+elements
+    uba_name vme_num vme_csr1 vme_csr2 vme_errcode viacsr mvib_csr vfadr1 vfadr cfadr ivs mvib_besr errgi lvb mvib_err
+
+sseg
+id CDS
+name mvib_cds
+doc "specific registers for the 3via and mvia for vme"
+label "mvib specific registers"
+elements
+    vme_errcode viacsr mvib_csr vfadr1 vfadr cfadr ivs mvib_besr errgi lvb mvib_err
+
+sitem
+name uba_name
+type string
+class COMPOSITE
+size 4
+label "MODULE NAME"
+display nil
+doc "vme error code"
+map nil 
+
+sitem
+name vme_num
+type REGISTER
+class COMPOSITE
+size 4
+label "NODE NUM"
+display nil
+doc "vme num"
+map nil 
+
+sitem
+name vme_csr1
+type REGISTER
+class COMPOSITE
+size 4
+label "CSR1"
+display nil
+doc "csr1 address from uba structure"
+map nil 
+
+sitem
+name vme_csr2
+type REGISTER
+class COMPOSITE
+size 4
+label "CSR2"
+display nil
+doc "vme csr2 address from uba structure"
+map nil 
+
+sitem
+name vme_errcode
+type REGISTER
+class COMPOSITE
+size 4
+label "ERROR CODE"
+display nil
+doc "vme error code"
+map 
+    field
+    class coded
+    size 32 
+    doc nil 
+    label nil 
+    map
+	0 "GENERAL VME ERROR"
+	1 "GENERAL PARITY ERRORS"
+	2 "VME TIMEOUT ERRORS"
+	3 "IBUS CABLE FAULT"
+	4 "IBUS PARITY ERRORS"
+	5 "READ MOD WRITE/INTERLOCK"
+	6 "VMEBUS *BERR SIGNAL"
+	7 "XBIA INTERNAL GATE ARRAY"
+	8 "I/O WRITE FAILURE" 
+	9 "PAGE MAP FAULT ERRORS"
+	10 "YABUS ERRORS"
+	11 "VME MODULE FAILURE"
+	12 "VME AC BELOW SPEC"
+	13 "VIC CHIP LOCAL TIMEOUT"
+	14 "VIC SELF-ACCESS SELECT ERR"
+	15 "VIC *LBERR SIGNAL"
+	16 "INVALID PFN"
+	17 "MULTIPLE ERRORS"
+	18 "CORRECTABLE ECC"
+	19 "UNCORRECTABLE ECC"
+	20 "VME RESET SIGNAL ASSERTED"
+
+sitem
+name viacsr
+type REGISTER
+class COMPOSITE
+size 4
+label "XVIA CSR"
+display nil
+doc "xVIA control/status register"
+map 
+    field
+    class integer
+    size 8
+    doc "3via interrupt vector"
+    display hex
+    label "3via int vector"
+    map nil
+    field 
+    class coded 
+    size 1
+    doc "yabus idle error"
+    map
+	1 "YAbus idle error"
+    field 
+    class coded 
+    size 1
+    doc "yabus data parity error"
+    map
+	1 "YAbus data parity error"
+    field 
+    class coded 
+    size 1
+    doc "yabus TAM error"
+    map
+	1 "YAbus TAM error"
+    field 
+    class coded 
+    size 1
+    doc "yabus xaction error"
+    map
+	1 "YAbus transaction error"
+    field 
+    class coded 
+    size 1
+    doc " no yabus rx clock"
+    map
+	1 "no YAbus receive clock"
+    field 
+    class coded 
+    size 1
+    doc "yabus failack received"
+    map
+	1 "YAbus nack received"
+    field 
+    class coded 
+    size 1
+    doc "yabus Fail issued"
+    map
+	1 "YAbus Fail request sent"
+    field 
+    class coded 
+    size 1
+    doc "yabus Fail request received"
+    map
+	1 "YAbus Nack detected"
+    field 
+    class coded 
+    size 1
+    doc "3MIN bit "
+    map
+	1 "DS5000-100" 
+    field 
+    class coded 
+    size 1
+    doc "Reset MVIB"
+    map
+	1 "Reset MVIB"
+    field 
+    class coded 
+    size 1
+    doc "Reset 3VIA"
+    map
+	1 "Reset 3VIA"
+    field 
+    class coded 
+    size 1
+    doc "PROM location enabled"
+    map
+	1 "PROM location enabled"
+    field 
+    class coded 
+    size 1
+    doc "Select 4M/32Mbyte i/O"
+    map
+	1 "Select 4M/32Mbyte i/O"
+    field
+    size 2
+    class coded
+    doc "force error"
+    map 
+	0 "no action"
+	1 "sequence error"
+	3 "command error"
+    field
+    class coded
+    size 1
+    doc "enable local interrupt"
+    label nil 
+    map 
+	1 "enable local interrupt"
+    field
+    size 8
+    class filler
+    doc "filler"
+    map nil
+ 
+sitem
+name ivs
+type long
+class integer
+display hex
+size 4
+label "ivs"
+doc "ivs register"
+map nil
+
+sitem
+name mvib_csr
+type register
+class composite
+size 4
+display nil
+doc "mvib csr"
+label "CSR"
+map
+    field 
+    class coded
+    size 1
+    doc "mvib reset"
+    label nil
+    map
+    	1 "MVIB Reset"
+    field 
+    class coded
+    size 1
+    doc " VME reset"
+    label nil
+    map
+    	0 " VME Reset"
+    field 
+    class coded
+    size 1
+    doc "VME system reset"
+    label nil
+    map
+    	1 "VME system Reset"
+    field 
+    class coded
+    size 1
+    doc "VME AC LOW"
+    label nil
+    map
+    	1 "VME AC LOW"
+    field 
+    class coded
+    size 1
+    doc "VME Module Failure"
+    label nil
+    map
+    	1 "VME SYSFAIL"
+    field 
+    class coded
+    size 1
+    doc "cpu or dma yabus transaction error"
+    label nil
+    map
+    	1 "CPU or DMA YAbus transaction Fault"
+    field 
+    class coded
+    size 1
+    doc "YAbus Parity Error"
+    label nil
+    map
+    	1 "YAbus Parity Error"
+    field 
+    class coded
+    size 1
+    doc "PIO Page Fault Error"
+    label nil
+    map
+    	1 "nonvalid PIO Page Fault Detected"
+    field 
+    class coded
+    size 1
+    doc "DMA Page Fault Error"
+    label nil
+    map
+    	1 "DMA Page Fault Error"
+    field 
+    class coded
+    size 1
+    doc "YAbus Interlocked Xaction"
+    label nil
+    map
+    	1 "YAbus Interlocked Transaction"
+    field 
+    class integer
+    size 2
+    doc "Addr size control <1:0>"
+    label "Addr size control <1:0>"
+    display hex
+    map nil
+    field 
+    class coded
+    size 1
+    doc "DMA Page size"
+    label nil
+    map
+	1 "mapped to 4Kbyte page"
+    	0 "mapped as 512 bytes"
+    field 
+    class filler
+    size 19
+    doc "reserved"
+    label nil
+    map nil
+
+sitem
+name vfadr
+type register
+class composite
+size 4
+label nil
+display hex
+doc "vme failing address register"
+map
+    field
+    class integer
+    display nil
+    doc "failing addr"
+    size 32
+    label "Failing Adr "
+    map nil
+
+sitem
+name vfadr1
+type register
+class composite
+size 4
+label "VFADR"
+display nil
+doc "vme failing address register"
+map
+    field
+    class coded
+    size 1
+    doc "the access space"
+    map
+        0 "Access was in A32 space"
+        1 "Access was in A24 space"
+    field
+    class coded
+    size 1
+    doc "which type of space user or supervisor"
+    map
+        0 "Supervisor space"
+        1 "User space" 
+    field
+    class filler
+    display nil
+    doc "failing addr"
+    size 30
+    label "Failing adr"
+    map nil
+
+sitem
+name cfadr
+type long
+class integer
+size 4
+label "CFADR"
+display hex
+doc "cpu vme failing adr register"
+map nil
+
+sitem
+name mvib_besr
+type register
+class composite
+size 4
+label "BESR"
+display nil
+doc "bus error status register"
+map 
+    field
+    class coded
+    doc "local bus timeout during VME Acquisition"
+    size 1
+    label nil
+    map
+	1 "local bus timeout during VME Acquisition"
+    field 
+    class coded
+    doc "vic was selected by slsel1"
+    size 1
+    label nil
+    map
+	1 "self-access by slsel1"
+    field 
+    class coded
+    doc "vic was selected by slsel0"
+    size 1
+    label nil
+    map
+	1 "self-access by slsel0"
+    field
+    class coded
+    doc "local bus timeout w/o qualification"
+    size 1
+    label nil
+    map
+	1 "local bus timeout"
+    field
+    class coded
+    doc "vmebus timeout"
+    size 1
+    label nil
+    map
+	1 "VMEBUS timeout"
+    field 
+    class coded
+    doc "vmebus berr"
+    size 1
+    label nil
+    map 
+	1 "VMEBUS BERR"
+    field
+    class coded
+    doc "local bus lberr from other than VIC"
+    size 1
+    label nil
+    map
+	1 "local bus lberr"
+    field 
+    class coded
+    doc "vic is the vmebus master"
+    size 1
+    label nil
+    map
+	1 "vic is the vmebus master"
+
+sitem
+name errgi
+type register
+class composite
+size 4
+display nil
+label "VERRGI"
+doc "error group interrupt control register"
+map
+    field
+    class coded
+    size 3
+    doc "ipl2-0"
+    label nil
+    map nil
+    field 
+    class filler
+    size 1
+    doc "reserved always 1"
+    label nil
+    map nil
+    field
+    class coded
+    size 1
+    doc "vme sysfail interrupt mask enabled low"
+    label nil
+    map
+	0 "VME SYSFAIL"
+    field
+    class coded
+    size 1
+    doc "vme arbitration timeout "
+    label nil
+    map
+ 	0 "VME arbitration timeout"
+    field
+    class coded
+    size 1
+    doc "vme write post fail "
+    label nil
+    map
+	0 "vme write post fail"
+    field
+    class coded
+    size 1
+    doc "vme acfail interrupt"
+    label nil
+    map
+	0 "vme acfail interrupt"
+
+sitem
+name lvb
+type register
+class composite
+size 4
+doc "local interrupt vector base register"
+display nil
+label "lvb"
+map
+    field
+    class coded
+    size 3
+    label nil
+    doc "local interrupts"
+    map
+	1 "lirq1"
+	2 "lirq2"
+	3 "lirq3"
+	4 "lirq4"
+	5 "lirq5"
+	6 "lirq6"
+	7 "lirq7"
+
+sitem
+name mvib_err
+type register
+class composite
+size 4
+doc "error group interrupt vector base register"
+label "VERR"
+display nil
+map
+    field
+    class coded
+    size 3
+    label nil
+    doc "specific error cond generating the interrupt"
+    map
+	0 "acfail"
+  	1 "failed write post"
+	2 "arbitration timeout"
+	3 "sysfail"
+	4 "vmebus interrupter interrupt ack"
+	5 "dma interrupt"
+

@@ -1,0 +1,85 @@
+.\" SCCSID: @(#)USERFILE.5	8.1	9/11/90
+.TH USERFILE 5
+.SH Name
+USERFILE \- defines uucp security
+.SH Syntax
+.B /usr/lib/uucp/USERFILE
+.SH Description
+.NXR "USERFILE file" "format"
+.NXAM "uucp utility" "USERFILE file"
+.NXR "remote system" "specifying access"
+The
+.PN uucp
+utility uses the USERFILE to establish what access a
+remote system can have to the local system.  
+An entry should exist for each system.  If no entries
+exist for a particular system, the default entries
+are used.
+The entries for particular systems have the following
+format:
+.PP
+.I login-name
+,
+.I node-name 
+.B X
+.I # path-name
+...
+.PP
+.IP \fIlogin-name\fR 1i
+The name with which the remote system logs in.
+.IP \fInode-name\fR
+The name of the remote node. 
+.IP X\fI#\fR 1i
+The execution level for the remote system.  The remote
+system can execute commands defined in the 
+.MS L.cmds 5
+file that have an execution level less than or equal to
+the number \fI#\fR.
+.IP \fIpath-name\fR 1i
+The remote system can access anything at the local system
+with this prefix.
+.PP
+Two entries must also be provided for systems not otherwise
+listed:
+.IP "" .5i
+remote, X\fI# path-name\fR ...
+.br
+local, X\fI# path-name\fR ...
+.PP
+These entries define the execution level and access pathnames
+for the local system and all remote systems not defined by
+specific entries.
+.SH Examples
+.EX 
+remote, X1 /usr/spool/uucppublic
+local, X9 /
+max,systemY /usr/sources /usr/src/share
+max,systemZ X3 /usr
+.EE
+In the above example, the node named systemY with the
+login name max has access to anything with the pathname
+prefixes 
+.PN /usr/sources 
+and 
+.PN /usr/src/share.  
+The node
+named systemZ with the login name max can execute
+commands defined in
+.MS L.cmds 5
+with an execution level of 3 or lower.  It can access
+anything with the pathname prefix 
+.PN /usr .
+.PP
+Any other remote systems can execute commands defined
+in
+.MS L.cmds 5
+with an execution level of 1 or 0.  They can access
+anything with the pathname prefix of
+.PN /usr/spool/uucppublic .
+.PP
+Users on the local system can execute any of the commands 
+defined in 
+.PN L.cmd 
+and access anything on the system.
+.SH See Also
+.I "Guide to the uucp Utility"

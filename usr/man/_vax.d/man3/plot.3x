@@ -1,0 +1,119 @@
+.\" SCCSID: @(#)plot.3x	3.1	11/24/87
+.TH plot 3x 
+.SH Name
+openpl, erase, label, line, circle, arc, move, cont, point, linemod, space, closepl, box, color, dot \- graphics interface
+.SH Syntax
+.nf
+.B openpl()
+.PP
+.B erase()
+.PP
+.B label(\fIs\fP)
+.B char \fIs\fP[];
+.PP
+.B line(\fIx1\fP, \fIy1\fP, \fIx2\fP, \fIy2\fP)
+.PP
+.B circle(\fIx\fP, \fIy\fP, \fIr\fP)
+.PP
+.B arc(\fIx\fP, \fIy\fP, \fIx0\fP, \fIy0\fP, \fIx1\fP, \fIy1\fP)
+.PP
+.B move(\fIx\fP, \fIy\fP)
+.PP
+.B cont(\fIx\fP, \fIy\fP)
+.PP
+.B point(\fIx\fP, \fIy\fP)
+.PP
+.B linemod(\fIs\fP)
+.B char \fIs\fP[];
+.PP
+.B space(\fIx0\fP, \fIy0\fP, \fIx1\fP, \fIy1\fP)
+.PP
+.B closepl()
+.PP
+.B box(\fIx0\fP, \fIx1\fP, \fIy0\fP, \fIy1\fP)
+.PP
+.B color(\fIc\fP)
+.PP
+.B dot()
+.fi
+.PP
+.ft R
+.SH Description
+.NXR "plot keyword"
+.NXR "openpl subroutine"
+.NXR "erase subroutine (plot)"
+.NXR "label subroutine"
+.NXR "line subroutine (plot)"
+.NXR "circle subroutine"
+.NXR "arc subroutine"
+.NXR "move subroutine (plot)"
+.NXR "cont subroutine"
+.NXR "point subroutine"
+.NXR "linemod subroutine"
+.NXR "space subroutine"
+.NXR "closepl subroutine"
+.NXR "graphics interface"
+.NXAM "openpl subroutine" "plot command"
+.NXA "openpl subroutine" "plot file"
+These subroutines generate graphic output in a 
+device-independent manner.  See 
+.MS plot 5
+for a description of their effect.
+The
+.PN openpl
+subroutine
+precedes the other subroutines as it opens the device for writing.  
+The
+.PN closepl
+subroutine
+flushes the output. The 
+.PN box ,
+.PN color ,
+and 
+.PN dot
+routines are used by the lvp16 and hp7475a plotters only.
+.PP
+String arguments to
+.PN label
+and
+.PN linemod
+are null-terminated and do not contain newlines.
+.PP
+Many of these functions have additional options for different 
+output devices.  They are accessed by the 
+.MS ld 1
+options as follows:
+.IP \fB\-lplot\fR 14
+device-independent graphics stream on standard output for 
+.MS plot 1g
+filters
+.IP \fB\-lplotaed\fR
+AED 512 color graphics terminal
+.IP \fB\-lplotbg\fR
+BBN bitgraph graphics terminal
+.IP \fB\-lplotdumb\fR
+dumb terminals without cursor addressing or line printers
+.IP \fB\-lplotgigi\fR
+gigi graphics terminal
+.IP \fB\-lplotgrn\fR
+grn files
+.IP \fB\-lplot2648\fR
+HP 2648 graphics terminal
+.IP \fB\-lplot7221\fR
+HP 7221 graphics terminal
+.IP \fB\-lplotimagen\fR
+Imagen laser printer (default 240 DPI resolution)
+.IP \fB\-l300\fR
+GSI 300 terminal
+.IP \fB\-l300s\fR
+GSI 300S terminal
+.IP \fB\-l450\fR
+DASI 450 terminal
+.IP \fB\-l4013\fR
+Tektronix 4013 terminal
+.IP \fB\-l4014\fR
+Tektronix 4014 terminal
+.IP \fB\-llvp16\fR
+DEC LVP16 and HP7475A plotters
+.SH See Also
+graph(1g), plot(1g), plot(5)

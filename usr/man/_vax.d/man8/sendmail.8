@@ -1,0 +1,373 @@
+.TH sendmail 8
+.SH Name
+sendmail, newaliases, mailq \- send mail over the internet
+.SH Syntax
+.B /usr/lib/sendmail
+[
+.I flags
+] [
+.I address ...
+]
+.PP
+.B newaliases
+.PP
+.B mailq
+.SH Description
+.NXR "sendmail program"
+The 
+.PN sendmail
+command sends a message to one or more people,
+routing the message over whatever networks
+are necessary.  The
+.PN sendmail
+command does internetwork forwarding as necessary
+to deliver the message to the correct place.
+.PP
+The 
+.PN sendmail
+command is not intended as a user interface routine.  Other 
+programs provide user-friendly front ends, while
+.PN sendmail
+is used only to deliver pre-formatted messages.
+.PP
+With no flags,
+.PN sendmail
+reads its standard input
+up to a CTRL/D
+or a line with a single dot
+and sends a copy of the letter found there
+to all of the addresses listed.
+It determines the network to use
+based on the syntax and contents of the addresses.
+.PP
+Local addresses are looked up in a file
+and aliased appropriately.
+Aliasing can be prevented by preceding the address
+with a backslash.
+Normally the sender is not included in any alias
+expansions, for example,
+if `john' sends to `group',
+and `group' includes `john' in the expansion,
+then the letter will not be delivered to `john'.
+.SH Flags
+.IP \-ba 15
+Go into \s-1ARPANET\s0 mode.
+All input lines must end with a CR-LF,
+and all messages will be generated with a CR-LF at the end.
+Also,
+the `From:' and `Sender:'
+fields are examined for the name of the sender.
+.IP \-bd
+Run as a daemon.  This requires Berkeley IPC.
+.IP \-bi
+Initialize the alias database.
+.IP \-bm
+Deliver mail in the usual way (default).
+.IP \-bp
+Print a listing of the queue.
+.IP \-bs
+Use the \s-2SMTP\s0 protocol as described in RFC 821.
+This flag implies all the operations of the
+.B \-ba
+flag that are compatible with \s-2SMTP\s0.
+.IP \-bt
+Run in address test mode.
+This mode reads addresses and shows the steps in parsing;
+it is used for debugging configuration tables.
+.IP \-bv
+Verify names only.  Do not try to collect or deliver a message.
+Verify mode is normally used for validating
+users or mailing lists.
+.IP \-bz
+Create the configuration freeze file.
+.IP \-C\fIfile\fR
+Use alternate configuration file.
+.\" .IP \-d\fIX\fR
+.\" Set debugging value to
+.\" \fIX\fR.
+.IP \-F\fIfullname\fR
+Set the full name of the sender.
+.IP \-f\fIname\fR
+Sets the name of the from person, that is, the sender of the mail.
+The 
+.PN \-f
+flag can only be used
+by the special users
+.PN root ,
+.PN daemon ,
+and
+.PN network ,
+or if the person you are trying to become
+is the same as the person you are.
+.IP \-h\fIN\fR
+Set the hop count to
+.I N.
+The hop count is incremented every time the mail is
+processed.
+When it reaches a limit,
+the mail is returned with an error message,
+the victim of an aliasing loop.
+.IP \-n
+Do not do aliasing.
+.IP "\-o\fIx value\fR"
+Set option
+.I x
+to the specified
+.I value.
+Options are described below.
+.IP "\-q[ \fItime\fR ]"
+Process saved messages in the queue at given intervals.
+If
+.I time
+is omitted, process the queue once.  The
+.I time
+argument is given as a tagged number,
+with `s' being seconds,
+`m' being minutes,
+`h' being hours,
+`d' being days,
+and
+`w' being weeks.
+For example,
+`\-q1h30m' or `\-q90m'
+would both set the timeout to one hour thirty minutes.
+.IP \-r\fIname\fR
+An alternate and obsolete form of the
+.PN \-f
+flag.
+.IP \-t
+Read message for recipients.
+To:, Cc:, and Bcc: lines will be scanned for people to send to.
+The Bcc: line will be deleted before transmission.
+Any addresses in the argument list will be suppressed.
+.IP \-v
+Go into verbose mode.
+For example, alias expansions will be announced.
+.SH Options
+There are also a number of processing options that may be set.
+Normally these will only be used by a system administrator.
+Options may be set either on the command line
+using the
+.PN \-o
+flag
+or in the configuration file.
+.IP A\fIfile\fR 15
+Use alternate alias file.
+.IP c
+Do not initiate immediate connection to mailers that are considered 
+expensive to connect to.  This requires queueing.
+.IP d\fIx\fR
+Set the delivery mode to
+.I x.
+Delivery modes are
+`i' for interactive (synchronous) delivery,
+`b' for background (asynchronous) delivery,
+and
+`q' for queue only \- that is,
+actual delivery is done the next time the queue is run.
+.IP D
+Try to automatically rebuild the alias database
+if necessary.
+.IP e\fIx\fR
+Set error processing to mode
+.I x.
+Valid modes are
+`m' to mail back the error message,
+`w' to write back the error message
+(or mail it back if the sender is not logged in),
+`p' to print the errors on the terminal
+(default),
+`q' to throw away error messages
+(only exit status is returned),
+and `e'
+to do special processing for the BerkNet.
+If the text of the message is not mailed back
+by
+modes `m' or `w'
+and if the sender is local to this machine,
+a copy of the message is appended to the file
+.PN dead.letter 
+in the sender's home directory.
+.IP F\fImode\fR
+The mode to use when creating temporary files.
+.IP f
+Save UNIX \f(CWFrom\fP lines at the front of messages.
+.IP g\fIN\fR
+The default group id to use when calling mailers.
+.IP H\fIfile\fR
+The SMTP help file.
+.IP i
+Do not take dots on a line by themselves
+as a message terminator.
+.IP L\fIn\fR
+The log level.
+.IP m
+Send to me (the sender) also if I am in an alias expansion.
+.IP o
+If set, this message may have
+old style headers.
+If not set,
+this message is guaranteed to have new style headers
+(that is, commas instead of spaces between addresses).
+If set, an adaptive algorithm is used that will correctly
+determine the header format in most cases.
+.IP Q\fIqueuedir\fR
+Select the directory in which to queue messages.
+.IP r\fItimeout\fR
+The timeout on reads;
+if none is set,
+.PN sendmail
+will wait forever for a mailer.
+.IP S\fIfile\fR
+Save statistics in the named file.
+.IP s
+Always instantiate the queue file,
+even under circumstances where it is not strictly necessary.
+.IP T\fItime\fR
+Set the timeout on messages in the queue to the specified time.
+After sitting in the queue for this amount of time,
+they will be returned to the sender.
+The default is three days.
+.IP t\fIstz,dtz\fR
+Set the name of the time zone.
+.IP u\fIN\fR
+Set the default user id for mailers.
+.PP
+If the first character of the user name
+is a vertical bar,
+the rest of the user name is used as the name of a program
+to pipe the mail to.
+It may be necessary to quote the name of the user
+to keep
+.PN sendmail
+from suppressing the blanks from between arguments.
+.PP
+.PN Sendmail
+returns an exit status
+describing what it did.
+The codes are defined in
+.RI < sysexits.h >
+./".ta 3n +\w'EX_UNAVAILABLE'u+3n
+./".de XX
+./".ti \n(.iu
+./"..
+./".in +\w'EX_UNAVAILABLE'u+6n
+./".XX
+.TP 20
+EX_OK	
+Successful completion on all addresses.
+.TP 20
+./".XX
+EX_NOUSER	
+Username not recognized.
+./".XX
+.TP 20
+EX_UNAVAILABLE	
+Catchall meaning necessary resources were not available.
+./".XX
+.TP 20
+EX_SYNTAX	
+Syntax error in address.
+./".XX
+.TP 20
+EX_SOFTWARE	
+Internal software error, including bad arguments.
+./".XX
+.TP 20
+EX_OSERR	
+Temporary operating system error, such as 
+.PN cannot fork .
+./".XX
+.TP 20 	
+EX_NOHOST	
+Host name not recognized.
+./".XX
+.TP 20
+EX_TEMPFAIL	
+Message could not be sent immediately, but was queued.
+.PP
+If invoked as
+.PN newaliases ,
+.PN sendmail
+will rebuild the alias database.
+If invoked as
+.PN mailq ,
+.PN sendmail
+will print the contents of the mail queue.
+.SH Restrictions
+.PN Sendmail
+converts blanks in addresses to dots.
+This is incorrect according to the
+old ARPANET
+mail protocol RFC 733 (NIC 41952),
+but is consistent with the
+new protocols
+(RFC 822).
+.SH Files
+Except for
+.PN /usr/lib/sendmail.cf ,
+these pathnames are all specified in
+.PN /usr/lib/sendmail.cf .
+Thus,
+these values are only approximations.
+.PP
+.TP 20
+.PN /etc/aliases	
+Raw data for alias names
+.TP 20
+.PN /etc/aliases.pag
+.TP 20
+.PN /etc/aliases.dir	
+Database of alias names
+.TP 20
+.PN /var/yp/src/mail.aliases
+Raw data for alias names
+.TP 20
+.PN /var/yp/DOMAINNAME/mail.aliases.pag
+Yellow Pages alias database.  DOMAINNAME is the YP
+domainname for the local area network.
+.TP 20
+.PN /var/yp/DOMAINNAME/mail.aliases.dir
+Yellow Pages alias database.  DOMAINNAME is the YP
+domainname for the local area network.
+.TP 20
+.PN /var/dss/namedb/src/aliases
+Raw data for alias names
+.TP 20
+.PN /var/dss/namedb/aliases.db
+BIND/Hesiod alias database 
+.TP 20
+.PN /usr/lib/sendmail.cf	
+Configuration file
+.TP 20
+.PN /usr/lib/sendmail.fc	
+Frozen configuration
+.TP 20
+.PN /usr/lib/sendmail.hf	
+Help file
+.TP 20
+.PN /usr/lib/sendmail.st	
+Collected statistics
+.TP 20
+.PN /usr/bin/uux	
+To deliver 
+.PN uucp 
+mail
+.TP 20
+.PN /usr/lib/mailers/arpa	
+To deliver ARPANET mail
+.TP 20
+.PN /usr/spool/mqueue/*	
+Temp files
+.SH See Also
+biff(1),
+binmail(1),
+mail(1),
+rmail(1),
+aliases(5),
+mailaddr(7)
+.br
+DARPA Internet Request For Comments:
+RFC 819, RFC 821, RFC 822
+.br
+\fISendmail \- An Internetwork Mail Router\fP

@@ -1,0 +1,26 @@
+/*
+ * @(#)ASCII.cod	4.1
+ *
+ * This is the first part of the International UNIX data base for ASCII.
+ *
+ * ISO646 ASCII is equal to the primary set of ISO8859.
+ */
+
+#include "ISO646.inc"
+
+/*
+ * Giving name and property to the country spesific codes 2/3, 2/4, 4/0, 5/11, 
+ * 5/12, 5/13, 5/14, 6/0, 7/11, 7/12, 7/13 and 7/14
+ */
+numbsign = '#'	: PUNCT;	
+dollar = '$'	: PUNCT;
+comm_at = '@'	: PUNCT;
+l_sq_br = '['	: PUNCT;
+revsolidus = '\\' : PUNCT;
+r_sq_br = ']'	: PUNCT;
+circ = '^'	: PUNCT;
+grav_acc = '`'	: PUNCT;
+l_cur_br = '{'	: PUNCT;
+ver_line = '|'	: PUNCT;
+r_cur_br = '}'	: PUNCT;
+tilde = '~'	: PUNCT;

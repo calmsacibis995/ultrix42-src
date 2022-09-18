@@ -1,0 +1,37 @@
+.\" SCCSID: @(#)gettable.8c	8.2	12/3/90
+.TH gettable 8c "" "" Unsupported
+.SH Name
+gettable \- get NIC format host tables from a host 
+.SH Syntax
+.B /etc/gettable
+.I host
+.SH Description
+.NXR "gettable program"
+.NXA "gettable program" "htable program"
+.NXR "NIC standard host tables" "getting"
+The
+.PN gettable
+program is used to obtain the NIC standard
+host tables from a ``nicname'' server.  The indicated
+.I host
+is queried for the tables.  The tables, if retrieved,
+are placed in the file
+.IR hosts.txt .
+.PP
+The
+.PN gettable
+program
+operates by opening a TCP connection to the port indicated
+in the service specification for ``nicname''.  A request
+is then made for ``ALL'' names and the resultant information
+is placed in the output file.
+.PP
+The
+.PN gettable
+program is best used in conjunction with the
+.PN htable(8)
+program which converts the NIC standard file format to
+that used by the network library lookup routines.
+.SH See Also
+intro(3n),
+htable(8)

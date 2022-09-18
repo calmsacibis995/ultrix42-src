@@ -1,0 +1,205 @@
+.TH swapsex 3 RISC
+.SH Name
+swap_word, swap_half, swap_filehdr, swap_aouthdr, swap_scnhdr, swap_hdr, swap_fd, swap_fi, swap_sym, swap_ext, swap_pd, swap_dn, swap_opt, swap_aux, swap_reloc, swap_ranlib \- swap the sex of the specified structure
+.SH Syntax
+.B "#include <sex.h>
+.br
+.B "#include <filehdr.h>
+.br
+.B "#include <aouthdr.h>
+.br
+.B "#include <scnhdr.h>
+.br
+.B "#include <sym.h>
+.br
+.B "#include <symconst.h>
+.br
+.B "#include <cmplrs/stsupport.h>
+.br
+.B "#include <reloc.h>
+.br
+.B "#include <ar.h>
+.PP
+.B "long swap_word(
+.I word
+.B )
+.br
+.B "long word;
+.PP
+.B "short swap_half(
+.I half
+.B )
+.br
+.B "short half;
+.PP
+.B "void swap_filehdr(
+.I pfilehdr, destsex
+.B )
+.br
+.B "FILHDR *pfilehdr;
+.br
+.B "long destsex;
+.PP
+.B "void swap_aouthdr(
+.I paouthdr, destsex
+.B )
+.br
+.B "AOUTHDR *paouthdr;
+.br
+.B "long destsex;
+.PP
+.B "void swap_scnhdr(
+.I pscnhdr, destsex
+.B )
+.br
+.B "SCNHDR *pscnhdr;
+.br
+.B "long destsex;
+.PP
+.B "void swap_hdr(
+.I phdr, destsex
+.B )
+.br
+.B "pHDRR phdr;
+.br
+.B "long destsex;
+.PP
+.B "void swap_fd(
+.I pfd, count, destsex
+.B )
+.br
+.B "pFDR pfd;
+.br
+.B "long count;
+.br
+.B "long destsex;
+.PP
+.B "void swap_fi(
+.I pfi, count, destsex
+.B )
+.br
+.B "pFIT pfi;
+.br
+.B "long count;
+.br
+.B "long destsex;
+.PP
+.B "void swap_sym(
+.I psym, count, destsex
+.B )
+.br
+.B "pSYMR psym;
+.br
+.B "long count;
+.br
+.B "long destsex;
+.PP
+.B "void swap_ext(
+.I pext, count, destsex
+.B )
+.br
+.B "pEXTR pext;
+.br
+.B "long count;
+.br
+.B "long destsex;
+.PP
+.B "void swap_pd(
+.I ppd, count, destsex
+.B )
+.br
+.B "pPDR ppd;
+.br
+.B "long count;
+.br
+.B "long destsex;
+.PP
+.B "void swap_dn(
+.I pdn, count, destsex
+.B )
+.br
+.B "pRNDXR pdn;
+.br
+.B "long count;
+.br
+.B "long destsex;
+.PP
+.B "void swap_opt(
+.I popt, count, destsex
+.B )
+.br
+.B "pOPTR popt;
+.br
+.B "long count;
+.br
+.B "long destsex;
+.PP
+.B "void swap_aux(
+.I paux, type, destsex
+.B )
+.br
+.B "pAUXU paux;
+.br
+.B "long type;
+.br
+.B "long destsex;
+.PP
+.B "void swap_reloc(
+.I preloc, count, destsex
+.B )
+.br
+.B "struct reloc *preloc;
+.br
+.B "long count;
+.br
+.B "long destsex;
+.PP
+.B "void swap_ranlib(
+.I pranlib, count, destsex
+.B )
+.br
+.B "struct ranlib *pranlib;
+.br
+.B "long count;
+.br
+.B "long destsex;
+.SH Description
+.PP
+All 
+.PN swapsex
+routines that swap headers take a pointer to a 
+header structure to change the byte's sex. The
+.I destsex
+argument lets the swapsex routines decide whether 
+to swap bitfields before
+or after swapping the words in which they occur. If
+.I destsex
+equals the hostsex of the machine you are running on, the flip happens
+before the swap; otherwise, the flip happens after the swap.
+Although
+not all routines swap structures containing bitfields, the destsex is
+required.
+.PP
+The
+.PN swap_aux
+routine takes a pointer to an 
+.I aux 
+entry and a
+.IR type ,
+which is a ST_AUX_* constant in cmplrs/stsupport.h.  The 
+constant specifies
+the type of the aux entry to change the sex of.
+All other
+.PN swapsex
+routines are passed a pointer to an array of structures and a
+.I count
+of structures to have the byte sex changed.  The routines
+.PN swap_word
+and
+.PN swap_half
+are macros declared in
+.I sex.h.
+Only the include files that describe the structures being swapped
+have to be included.
+.SH See Also
+gethostsex(3)

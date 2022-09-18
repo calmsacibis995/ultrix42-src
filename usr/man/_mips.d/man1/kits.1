@@ -1,0 +1,193 @@
+.TH kits 1
+.SH Name
+kits \- generate setld format distribution kits
+.SH Syntax
+.B /usr/sys/dist/kits 
+.I key-file
+.I input-path
+.I output-path
+[
+.I subset...
+]
+.SH Description
+.NX R "setld" "format distribution kits"
+.NX R "kits" "setld format distribution kits"
+The
+.PN kits
+command produces subset images, inventories, and control files
+for an installation using the
+.PN setld
+command. 
+You need to know the key file which describes the product to be built,
+a hierarchy from which the component files to be kitted are to
+be taken, and a destination directory into which the kit information is to
+be placed.
+.PP
+The
+.PN kits
+command produces a subset image and a .image file
+in the
+.I output-path
+directory for each subset. In the
+.I instctrl
+subdirectory of
+.I output-path,
+.PN kits
+produces an inventory file and a control file. Any subset
+control program for the subset is transferred to
+.I output-path/instctrl.
+An
+.I instctrl
+directory is created if none existed.
+.SH Arguments
+.TP 15
+.I key-file
+The path name of the manufacturing key file which describes the
+product to be kitted. Unless optional
+.I subset
+arguments are specified, all subsets listed in the descriptor
+section of the
+.I key-file
+are kitted.
+.TP
+.I input-path
+The path name which specifies the top of a hierarchy of files. This
+hierarchy contains the files which are to be kitted into subsets.
+.TP
+.I output-path
+The name of the directory to be used to store the subset image and
+data files produced by the command.
+.TP
+.I subset...
+The names of individual subsets can be specified by optionally listing them
+on the command line. If they are specified,
+only those subsets will be kitted. The
+.PN kits
+program assumes that all other subsets for the product have been kitted
+and that their images are in the directory specified by
+.I output-path.
+The key file specified must contain descriptors for each of the
+optional named subsets.
+.SH Restrictions
+Any subset control programs to be provided with the kit must be located
+in a directory
+.I scps
+in the working directory where the
+.PN kits
+program is invoked. If no subset control program is found for a subset,
+an empty one is created.
+.SH Examples
+The following example shows the command used to produce a kit using
+key file
+.I ULT400.k
+in the current directory
+to package files from the hierarchy
+.I /var/kits/input
+and place the results in
+.I /var/kits/output.
+.EX
+    kits ULT400.k /var/kits/input /var/kits/output
+.EE
+The next example shows the same usage, but specifies that only the
+ULTACCT400 subset is to be created.
+.EX
+    kits ULT400.k /var/kits/input /var/kits/output ULTACCT400
+.EE
+.SH Diagnostics
+.B kits: 
+.I key-file
+.B not found
+.br
+The
+.PN kits
+program was unable to find the
+.I key-file
+specified on the command line.
+.PP
+.B kits: 
+.I input-path
+.B not found
+.br
+The
+.PN kits
+program was unable to find the specified
+.I input-path.
+.PP
+.B kits: 
+.I output-path
+.B not found
+.br
+The
+.PN kits
+program was unable to find the  specified
+.I output-path.
+.PP
+.B kits: cannot create instctrl directory.
+.br
+The
+.PN kits
+program cannot create an instctrl directory under
+.I output-path.
+Check that the user has write permission to
+.I output-path.
+.PP
+.B kits: 
+.I key-file
+.B format error
+.br
+One of the NAME, CODE, VERS, MI or ROOT values in the specified
+.I key-file
+is either missing or has a null value.
+.PP
+.B Inventory file
+.I pathname
+.B not found
+.br
+The master inventory file
+.I pathname
+specified in the MI entry of the
+.I key-file
+cannot be found. Verify that the
+.I pathname
+is accessible from the current directory.
+.PP
+.B "Generating media creation information...failed."
+.br
+There are no records in the master
+inventory file for a subset which is being kitted.
+Check the master inventory file for correctness of content
+and format.
+.PP
+.B No such subset in
+.I key-file
+.B subset
+.I subset
+.br
+A subset name specified on the command line does not have
+a descriptor line in the
+.I key-file.
+Check the spelling of the subset name on the command line.
+Check the contents of the
+.I key-file.
+.PP
+.B "compression failed. status ="
+.I status
+.br
+The compression option was specified in the
+.I key-file
+and an attempt to compress a subset failed. This
+should not happen. Run the
+.PN kits
+program once more.
+.SH Files
+.TP 15
+.PN ts.subset*
+temporary files.
+.TP
+.PN stderr
+log of subset packaging activity
+.SH See Also
+invcutter(1), tarsets(1), stl_comp(5), stl_ctrl(5), stl_image(5),
+stl_key(5), stl_mi(5), stl_scp(5), setld(8)
+.br
+\fIGuide to Preparing Software for Distribution on ULTRIX Systems\fP

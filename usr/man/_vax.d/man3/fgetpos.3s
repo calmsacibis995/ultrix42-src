@@ -1,0 +1,32 @@
+.TH fgetpos 3s
+.SH Name
+fgetpos, fsetpos \- save and restore stream position
+.SH Syntax
+.B #include <stdio.h>
+.PP
+.B int fgetpos (\fIstream, pos\fP)
+.br
+.B FILE *\fIstream\fP;
+.br
+.B fpos_t *\fIpos\fP;
+.PP
+.B int fsetpos (\fIstream, pos\fP)
+.br
+.B FILE *\fIstream\fP;
+.br
+.B fpos_t *\fIpos\fP;
+.SH Description
+The
+.PN fgetpos
+function stores the current position of \fIstream\fP in \fIpos\fP.
+.PP
+The
+.PN fsetpos
+function restores \fIstream\fP to the position returned by an earlier
+.PN fgetpos
+call.
+.SH Return Values
+If successful, the return value is zero; on failure, a nonzero value is
+returned and errno is set to the appropriate value.
+.SH See Also
+fseek(3s)

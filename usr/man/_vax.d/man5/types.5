@@ -1,0 +1,71 @@
+.\" SCCSID: @(#)types.5	8.1	9/11/90
+.TH types 5 VAX
+.SH Name
+types \- primitive system data types
+.SH Syntax
+.B #include <sys/types.h>
+.SH Description
+.NXR "type file" "format"
+.NXR "system data types" "accessible"
+The data 
+.PN types 
+defined in the include file
+are used in UNIX system code.
+Some data of these 
+.PN types 
+is accessible to user code:
+.EX 0
+#ifndef _TYPES_
+#define _TYPES_
+
+/* major part of a device */
+#define major(x)        ((int)(((unsigned)(x)>>8)&0377))
+
+/* minor part of a device */
+#define minor(x)        ((int)((x)&0377))
+
+/* make a device number */
+#define makedev(x,y)    ((dev_t)(((x)<<8) | (y)))
+
+typedef unsigned char   u_char;
+typedef unsigned short  u_short;
+typedef unsigned int    u_int;
+typedef unsigned long   u_long;
+typedef unsigned short  ushort;         /* sys III compat */
+
+#ifdef vax
+typedef struct  _physadr { int r[1]; } *physadr;
+typedef struct  label_t {
+        int     val[14];
+} label_t;
+#endif
+typedef struct  _quad { long val[2]; } quad;
+typedef long    daddr_t;
+typedef char *  caddr_t;
+typedef u_long  ino_t;
+typedef long    swblk_t;
+typedef int     size_t;
+typedef int     time_t;
+typedef short   dev_t;
+typedef int     off_t;
+
+typedef struct  fd_set { int fds_bits[1]; } fd_set;
+#endif
+.EE
+.PP
+The form
+.I daddr_t
+is used for disk addresses, except in an
+i-node on disk.  For further information, see 
+.PN fs .
+Times are encoded in seconds since 00:00:00 GMT, January 1, 1970.
+The major and minor parts of a device code
+specify kind and unit number of a device
+and are installation-dependent.
+Offsets are measured in bytes from the beginning of a file.
+The
+.I label_t
+variables are used to save the processor state
+while another process is running.
+.SH See Also
+adb(1), lseek(2), time(3), fs(5)

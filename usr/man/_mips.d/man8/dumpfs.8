@@ -1,0 +1,20 @@
+.\" SCCSID: @(#)dumpfs.8	8.1	9/11/90
+.TH dumpfs 8
+.SH Name
+dumpfs \- dump file system information
+.SH Syntax
+.B dumpfs
+.IR filesys | device
+.SH Description
+.NXR "dumpfs command"
+.NXR "file system" "printing information"
+The
+.PN dumpfs
+command prints out the super block and cylinder group information
+for the file system or special device specified.
+The listing is very long and detailed.  This
+command is useful mostly for finding out certain file system
+information such as the file system block size and minimum
+free space percentage.
+.SH See Also
+disktab(5), fs(5), fsck(8), newfs(8), tunefs(8)

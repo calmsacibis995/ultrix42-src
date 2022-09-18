@@ -1,0 +1,114 @@
+.TH rpc_name_to_sockaddr 3ncs
+.SH Name
+rpc_name_to_sockaddr \- convert a host name and port number to a socket address (client or server)
+.SH Syntax
+#include <idl/c/rpc.h>
+
+void rpc_$name_to_sockaddr(\fIname, nlength, port, family, sockaddr,\fP
+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\fIslength, status\fP)
+.nf
+unsigned char \fIname\fP;
+unsigned long \fInlength\fP;
+unsigned long \fIport\fP;
+unsigned long \fIfamily\fP;
+socket_$addr_t *\fIsockaddr\fP;
+unsigned long *\fIslength\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$name_to_sockaddr(\fR
+.\"	\fBin \fIname\fB: array [0..255] of char;\fR
+.\"	\fBin \fInlength\fB: unsigned32;\fR
+.\"	\fBin \fIport\fB: unsigned32;\fR
+.\"	\fBin \fIfamily\fB: unsigned32;\fR
+.\"	\fBout \fIsockaddr\fB: socket_$addr_t;\fR
+.\"	\fBout \fIslength\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIname\fR
+A string that contains a host name and, optionally, a port and an address family.
+The format is \fIfamily\fB:\fIhost\fB\|[\|\fIport\fB\|]\|\fR,
+where \fIfamily\fB:\fR and \fB\|[\|\fIport\fB\|]\|\fR are optional.
+.#L
+If you specify a \fIfamily\fR as part of the \fIname\fR parameter,
+you must specify \fBsocket_$unspec\fR in the \fIfamily\fR parameter.
+.#L
+The \fIfamily\fR part of the name parameter is \fBip\fR;
+\fIhost\fR is the host name;
+\fIport\fR is an integer port number.
+.TP 20
+\fInlength\fR
+The number of characters in \fIname\fR. \" terminator?
+.TP 20
+\fIport\fR
+The socket port number.
+This parameter should have the value \fBrpc_$unbound_port\fR
+if you are not specifying a well-known port;
+in this case, the returned socket address will specify
+the Local Location Broker (LLB) forwarding port at \fIhost\fR.
+If you specify the port number in the \fIname\fR parameter,
+this parameter is ignored.
+.TP 20
+\fIfamily\fR
+The address family to use for the socket address.
+This value corresponds to the communications protocol
+used to access the socket and determines how the \fIsockaddr\fR is expressed.
+If you specify the address family in the \fIname\fR parameter,
+this parameter must have the value \fBsocket_$unspec\fR.
+.TP 20
+\fIsockaddr\fR
+The socket address corresponding to \fIname\fR, \fIport\fR, and \fIfamily\fR.
+.TP 20
+\fIslength\fR
+The length, in bytes, of \fIsockaddr\fR.
+.TP 20
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$name_to_sockaddr
+routine provides the socket address for a socket,
+given the host name, the port number, and the address family.
+.PP
+.NXR "Interface to the Remote Procedure Call" "rpc_name_to_sockaddr"
+You can specify the socket address information
+either as one text string in the \fIname\fR parameter
+or by passing each of the three elements as separate parameters(
+.I name,
+.I port,
+and
+.I family
+);
+in the latter case, the \fIname\fR parameter should contain only the hostname.
+.SH Diagnostics
+This section lists status codes for errors returned by this 
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.NT 
+This routine has been superseded by the 
+.PN socket_$from_name
+routine.
+.NE
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs), rpc_sockaddr_to_name(3ncs), socket_from_name(3ncs)

@@ -1,0 +1,39 @@
+% LPS$$LOADDICT device control library module.
+% Version V2.0
+%
+%		Copyright © 1986, 1987, 1988, 1989 by
+%	Digital Equipment Corporation, Maynard, Mass.
+%               All rights reserved.
+%
+% This software is furnished under a license and may be used and copied
+% only in accordance with the terms of such license and with the inclusion
+% of the above copyright notice.  This software or any other copies thereof
+% may not be provided or otherwise made available to any other person.
+% No title to and ownership of the software is hereby transferred.
+%
+% The information in this software is subject to change without notice and
+% should not be construed as a commitment by Digital Equipment Corporation.
+%
+% Digital assumes no responsibility for the use or reliability of its
+% software on equipment which is not supplied by Digital.
+%
+/lps$output-tray where not{/lps$lpsdict 55 dict def statusdict begin
+lps$lpsdict begin/lps$output-tray(unspecified)def/lps$pn 31 string
+printername def}{pop}ifelse/lps$input-tray(unspecified)def/lps$page-layup?
+false
+def/lps$page-orientation(portrait)def/lps$page-size(letter)def/lps$redefine-restore?
+false def/lps$sides(unspecified)def/lps$sheet-count 1
+def/lps$sheet-defaulted true def/lps$page-limits? false
+def/lps$page-low-limit 0 def/lps$page-high-limit 0
+def/lps$sheet-size()def/lps$pages-printed 1 def/set-mode{dup where{pop cvx
+exec}{pop false}ifelse}def/lps$physical-duplex?/defaultduplexmode set-mode
+def/lps$logical-duplex? lps$physical-duplex? def/lps$tumble?/defaulttumble
+set-mode def/lps$sides-defaulted? true def
+mark/a/lettertray/a3/a3tray/a4/a4tray/a5/a5tray/b/11x17tray/b4/b4tray/b5
+/b5tray/c4/c4tray/c5/c5tray/dl/dltray/executive/executivetray/legal
+/legaltray/letter/lettertray/ledger/11x17tray/#10/#10envelopetray/9x12
+/9x12tray/10x13/10x13tray counttomark 2 idiv dup dict/paper-size-dict exch
+def paper-size-dict begin{def}repeat end cleartomark/lps$pop2{pop pop}bind
+def/lps$preserved-objects 10 dict
+def/lps$add-preserved-object{lps$preserved-objects exch null
+put/lps$redefine-restore? true def}def

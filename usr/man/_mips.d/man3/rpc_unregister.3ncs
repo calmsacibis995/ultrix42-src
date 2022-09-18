@@ -1,0 +1,82 @@
+.TH rpc_unregister 3ncs
+.SH Name
+rpc_unregister \- unregister an interface (server only)
+.SH Syntax
+.nf
+#include <idl/c/rpc.h>
+
+void rpc_$unregister(\fIifspec, status\fP)
+rpc_$if_spec_t *\fIifspec\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$unregister(\fR
+.\"	\fBin \fIifspec\fB: rpc_$if_spec_t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIifspec\fR
+An \fBrpc_$if_spec_t\fR.
+An interface specifier obtained from a previous RPC register call.  The
+interface being unregistered. 
+.TP 20
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$unregister
+routine unregisters an interface that the server previously registered with the RPC runtime library.
+.NXR "Interface to the Remote Procedure Call" "rpc_unregister" 
+After an interface is unregistered,
+the RPC runtime library will not pass requests
+for that interface to the server.
+.PP
+If a server uses several
+.PN rpc_$register
+or
+.PN rpc_$register_mgr
+routines to register an interface more than once, then it must call 
+.PN rpc_$unregister
+an equal number of times to unregister the interface.
+.SH Examples
+The following statement unregisters a matrix arithmetic interface:
+.EX
+rpc_$unregister (&matrix_$if_spec, &status);
+.EE
+.SH Diagnostics
+This section lists status codes for errors returned by this
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$op_rng_error\fR
+The requested operation does not correspond to a valid operation 
+in the requested interface.
+.TP 20
+\fBrpc_$unk_if\fR
+The requested interface is not known.
+It is not registered in the server,
+the version number of the registered interface is
+different from the version number specified in the request,
+or the UUID in the request does not match the UUID of the registered interface.
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs), rpc_register(3ncs), rpc_register_mgr(3ncs), rpc_register_object(3ncs)

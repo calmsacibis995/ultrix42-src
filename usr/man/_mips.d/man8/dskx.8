@@ -1,0 +1,132 @@
+.\" SCCSID: @(#)dskx.8	8.1	9/11/90
+.TH dskx 8 
+.SH Name
+dskx \- generic disk exerciser
+.SH Syntax
+.B /usr/field/dskx
+[
+.I options
+.B ] 
+.BI \-r dev
+.br
+.B /usr/field/dskx
+.B [
+.I options
+.B ]
+.BI \-p devpart
+.br
+.B /usr/field/dskx [
+.I options
+.B ]
+.BI \-c dev
+.SH Description
+.NXR "dskx exerciser"
+.NXR "disk" "testing"
+The 
+.PN dskx 
+exerciser tests the disk drives on your system.
+The exerciser has three main options which include
+read only, write/read/validate data on a partition, and 
+write/read/validate data of a disk. 
+.PP
+The exerciser does random seeks and reads of random block
+sizes and random seeks, writes, reads, and validations of random data
+patterns of random block sizes. The exerciser will run 
+until 
+.CT C
+or kill \-15 \fIpid\fR is sent to the
+process. 
+.PP
+A logfile is made in 
+.PN /usr/field
+for you to examine 
+and then remove. If there are errors in the logfile, make sure
+you check the 
+.PN /usr/adm/syserr/syserr.<hostname>
+file, 
+because that is where the
+driver and kernel error messages are saved.
+.PP
+CAUTION: Both the \fB\-c\fR and \fB\-p\fR options of the
+.PN dskx
+exerciser destroy data on the disk.  Use extreme caution before
+using them on any non-scratch media.  If you are unsure of
+what data is on the disk, contact your system manager before
+running
+.PN dskx
+with either of these options.
+.SH Arguments
+.NXR "dskx exerciser" "arguments"
+One of the following function flags and arguments must be specified.
+.IP \fB\-r\fIdev\fR 1i
+Performs a random read-only test on all partitions except the \fBc\fR
+partition.  The \fIdev\fR argument can be a raw or buffered
+device name and number.  For example, rhp0, ra3, hk1.
+.IP \fB\-p\fIdevpart\fR 1i
+Writes, reads, and validates data from the device name and
+number specified by \fIdev\fR and the partition specified
+by \fIpart\fR.  The \fIdev\fR argument can be a raw or
+buffered device name and number.  For example, rhp0, ra3, hk1.
+The \fIpart\fR argument can be any valid partition from \fBa\fR
+\- \fBh\fR.
+.IP "" 1i
+CAUTION:  Be careful when exercising partitions that overlap other
+partitions, as you may inadvertently destroy data on a
+partition that you do not want to test.  You can use the
+\fB\-q\fR option of the
+.MS chpt 8
+command to see what partitions overlap on the device on your
+system.
+.IP \fB\-c\fIdev\fR 1i
+Writes, reads, and validates data from all partitions except
+the \fBc\fR partition on the device specified by
+\fIdev\fR.  The \fIdev\fR argument can be a raw or buffered
+device name and number.  For example, rhp0, ra3, hk1.
+.SH Options
+.NXR "dskx exerciser" "options"
+.PP
+The 
+.PN dskx
+options are:
+.IP \fB\-h\fR 1i
+Prints help message for the
+.PN dskx 
+command.
+.IP \fB\-o\fIfile\fR 1i
+Saves output diagnostics in \fIfile\fR.
+.IP \fB\-t\fIn\fR 1i
+Specifies the run time in minutes (\fIn\fR).  The
+default is to run until the process receives
+a
+.CT C
+or \f(CWkill \-15 \fIpid\fR.
+.IP \fB\-d\fIm\fR
+Prints statistics every \fIm\fR minutes.
+.SH Restrictions 
+If there is a need to run a system exerciser over an NFS link or on a diskless
+system there are some restrictions.  For exercisers that need to write into a file
+system, such as 
+.MS fsx 8 ,
+the target file system must be writable by root.  Also the directory, in which any
+of the exercisers are executed, must be writable by root because temporary
+files are written into the current directory.  These latter restrictions are
+sometimes difficult to overcome because often NFS file systems are mounted in a
+way that prevents root from writing into them.  Some of the restrictions may be
+overcome by copying the exerciser to another directory and then executing it.  
+.SH Examples
+.NXR "dskx exerciser" "examples"
+The following example exercises RA disk unit 1,
+for 60 minutes in the background:
+.EX
+% /usr/field/dskx \-t60 \-cra1 &
+.EE
+The following example exercises raw HP disk unit 0,
+partition d, until 
+.CT C
+or
+\fBkill \-15 \fIpid\fR:
+.EX
+% /usr/field/dskx \-prhp0d
+.EE
+.SH See Also
+.I "Guide to System Exercisers"

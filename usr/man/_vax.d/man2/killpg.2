@@ -1,0 +1,50 @@
+.\" SCCSID: @(#)killpg.2	6.2	6/15/89
+.TH killpg 2
+.SH Name
+killpg \- send signal to process or process group
+.SH Syntax
+killpg(\fIpgrp, sig\fP)
+.br
+int \fIpgrp, sig\fP;
+.SH Description
+.NXR "killpg system call"
+.NXR "process group" "signaling"
+The
+.PN killpg
+system call sends the signal
+.I sig
+to the process group
+.IR pgrp .
+See 
+.MS sigvec 2
+for a list of signals.
+.PP
+The sending process and members of the process group must
+have the same effective user ID, otherwise
+this call is restricted to the superuser with the exception
+of the signal SIGCONT.  The signal SIGCONT can be sent to
+any process which is a descendant of the current process.
+.SH Return Values
+Upon successful completion, a value of 0 is returned.  Otherwise,
+a value of \-1 is returned, and the global variable 
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+The
+.PN killpg
+system call fails and a signal is not sent under the following
+conditions:
+.TP 15
+[EINVAL]
+The \fIsig\fP is not a valid signal number.
+.TP 15
+[EPERM]
+The sending process is not the superuser and all
+of the target processes have an effective user ID that differs
+from that of the sending process.
+.TP 15
+[ESRCH]
+No process can be found corresponding to that specified by
+.I pgrp.
+.SH See Also
+getpgrp(2), kill(2), sigvec(2)

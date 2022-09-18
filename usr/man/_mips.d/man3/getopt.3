@@ -1,0 +1,135 @@
+.\" SCCSID: @(#)getopt.3	8.1	9/11/90
+.TH getopt 3
+.SH Name
+getopt \- get option letter from argument vector
+.SH Syntax
+.B #include <stdio.h>
+.br
+.B int getopt (argc, argv, optstring)
+.br
+.B int argc;
+.br
+.B char \(**\(**argv;
+.br
+.B char \(**optstring;
+.PP
+.B extern char \(**optarg;
+.br
+.B extern int optind, opterr;
+.br
+.SH Description
+.NXR "getopt subroutine"
+.NXR "argument vector" "getting option letter"
+The
+.PN getopt
+subroutine
+returns the next option letter in
+.I argv\^
+that matches
+a letter in
+.IR optstring .
+The
+.I optstring
+is a string of recognized option letters;
+if a letter is followed by a colon, the option
+is expected to have an argument that may or
+may not be separated from it by white space.
+The
+.I optarg\^
+is set to point to the start of the option argument
+on return from
+.PN getopt .
+.PP
+The function
+.PN getopt\^
+places in
+.I optind\^
+the
+.I argv\^
+index of the next argument to be processed.
+The external variable optind is automatically initialized to 1 before
+the first call to 
+.PN getopt .
+.PP
+When all options have been processed
+(that is, up to the first non-option argument),
+.PN getopt
+returns EOF.
+The special option
+.B \-\-
+may be used to delimit the end of the options; EOF
+will be returned, and
+.B \-\-
+will be skipped.
+.SH Diagnostics
+The function
+.PN getopt\^
+prints an error message on
+.I stderr\^
+and returns a
+question mark
+.RB ( ? )
+when it encounters an option letter that is not included in
+.IR optstring .
+Setting opterr to 0 disables this error message.
+.SH Examples
+The following code fragment shows how one might process the arguments
+for a command that can take the mutually exclusive options
+.B a
+and
+.BR b ,
+and the options
+.B f
+and
+.BR o ,
+both of which require arguments:
+.EX 0
+#include <stdio.h>
+main (argc, argv)
+int argc;
+char \(**\(**argv;
+{
+       int c;
+       extern int optind, opterr;
+       extern char \(**optarg;
+       .
+       .
+       .
+       .
+       while ((c = getopt (argc, argv, "abf:o:")) != EOF)
+                switch (c) {
+                case 'a':
+                        if (bflg)
+                                errflg++;
+                        else
+                                aflg++;
+                        break;
+                case 'b':
+                        if (aflg)
+                                errflg++;
+                        else
+                                bproc( );
+                        break;
+                case 'f':
+                        ifile = optarg;
+                        break;
+                case 'o':
+                        ofile = optarg;
+                        bufsiza = 512;
+                        break;
+                case '?':
+                        errflg++;
+                }
+        if (errflg) {
+                fprintf (stderr, "usage: . . . ");
+                exit (2);
+        }
+        for ( ; optind < argc; optind++) {
+               if (access (argv[optind], 4)) {
+        .
+        .
+        .
+}
+.EE
+.SH See Also
+getopt(1)

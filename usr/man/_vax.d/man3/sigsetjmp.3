@@ -1,0 +1,85 @@
+.\" SCCSID: @(#)sigsetjmp.3	8.2	1/28/91
+.TH sigsetjmp 3
+.SH Name
+sigsetjmp, siglongjmp \- nonlocal goto
+.SH Syntax
+.nf
+.B #include <setjmp.h>
+.PP
+.B sigsetjmp(\fIenv, savemask\fP)
+.B sigjmp_buf \fIenv\fP;
+.PP
+.B void siglongjmp(\fIenv, val\fP)
+.B sigjmp_buf \fIenv\fP;
+.fi
+.SH Description
+.NXR "sigsetjmp subroutine"
+.NXR "siglongjmp subroutine"
+.NXR "program" "debugging"
+These routines deal with errors 
+and interrupts encountered in
+a low-level subroutine of a program.
+.PP
+The
+.PN sigsetjmp 
+subroutine
+saves its stack environment in
+.I env
+for later use by
+.PN siglongjmp .
+It returns a value of 0.  If the value of the
+.I savemask
+argument is not zero, the
+.PN sigsetjmp
+subroutine also saves the process\' current signal mask as part of the
+calling environment.
+.PP
+The
+.PN siglongjmp
+subroutine
+restores the environment saved by the last call of
+.PN sigsetjmp
+with the supplied
+.I env
+buffer.
+If the
+.I env
+argument was initialized by a call to the
+.PN sigsetjmp
+subroutine with a nonzero
+.I savemask
+argument, the
+.PN siglongjmp
+subroutine restores the saved signal mask.
+It then returns in such a way that execution
+continues as if the call of 
+.PN sigsetjmp
+had just returned the value
+.I val
+to the subroutine that invoked
+.PN sigsetjmp ,
+which must not itself have returned in the interim.
+However, 
+.PN siglongjmp
+cannot cause 
+.PN sigsetjmp
+to return the value 0. If 
+.PN siglongjmp
+is invoked with a 
+.I val
+of 0, 
+.PN sigsetjmp
+returns a value of 1.
+All accessible data have values as of the time
+.PN siglongjmp
+was called. 
+.SH Restrictions
+The
+.PN sigsetjmp
+subroutine
+does not save the current notion of whether the process is
+executing on the signal stack.  When you invoke the
+.PN siglongjmp
+subroutine, the signal stack is left in an incorrect state.
+.SH See Also
+sigstack(2), sigvec(2), signal(3), sigprocmask(3)

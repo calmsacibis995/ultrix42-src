@@ -1,0 +1,43 @@
+.\" SCCSID: @(#)sigpending.2	2.3	8/10/87
+.TH sigpending 2
+.SH Name
+sigpending \- examine pending signals
+.SH Syntax
+.nf
+.B #include <signal.h>
+.PP
+.B sigpending(\fIset\fP)
+.B sigset_t *\fIset\fP;
+.SH Description
+.NXR "sigpending system call"
+.NXR "signal" 
+The
+.PN sigpending
+system call
+stores the set of signals that is blocked from delivery and pending for
+the calling process in the space pointed to by the argument
+.I set.
+.PP
+The
+.I set
+argument is manipulated by using the 
+.MS sigsetops 3
+functions.
+.SH Return Values
+A zero (0) return value indicates that the call succeeded.  A \-1 return value
+indicates an error occurred, and
+.I errno
+is set to indicate the reason.
+.SH Diagnostics
+.NXR "sigpending system call" "diagnostics"
+The
+.PN sigpending
+system call fails if the following occurs:
+.TP 15
+[EFAULT]
+The
+.I set
+argument points to memory that is not a valid part of the process
+address space.
+.SH See Also
+ sigprocmask(3), sigsetops(3)

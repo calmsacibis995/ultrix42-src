@@ -1,0 +1,172 @@
+.\" SCCSID: @(#)malloc.3	8.1	9/11/90
+.TH malloc 3 VAX
+.SH Name
+malloc, free, realloc, calloc, alloca \- memory allocator
+.SH Syntax
+.nf
+.B #include <stdlib.h>
+.PP
+.B void *malloc(\fIsize\fP)
+.B size_t \fIsize\fP; 
+.PP
+.B free(\fIptr\fP)
+.B void *\fIptr\fP;
+.PP
+.B void *realloc(\fIptr, size\fP) 
+.B void *\fIptr\fP;
+.B size_t \fIsize\fP; 
+.PP
+.B void *calloc(\fInelem, elsize\fP) 
+.B size_t \fInelem, elsize\fP;
+.PP
+.B void *alloca(\fIsize\fP)
+.B size_t \fIsize\fP;
+.fi
+.SH Description
+.NXR "malloc subroutine (standard C)"
+.NXR "free subroutine (standard C)"
+.NXR "realloc subroutine (standard C)"
+.NXR "calloc subroutine (standard C)"
+.NXR "alloca subroutine"
+.NXR "memory" "shared memory"
+.NXR "memory" "allocating"
+The
+.PN malloc
+and
+.PN free
+subroutines
+provide a simple general-purpose memory allocation package.
+The
+.PN malloc
+subroutine
+returns a pointer to a block of at least
+.I size
+bytes beginning on a word boundary.
+.PP
+The argument to
+.PN free
+is a pointer to a block previously allocated by
+.PN malloc .
+This space is made available for further allocation,
+but its contents are left undisturbed.
+.PP
+Needless to say, grave disorder will result if the space assigned by
+.PN malloc
+is overrun or if some random number is handed to
+.PN free .
+.PP
+The
+.PN malloc
+subroutine
+maintains multiple lists of free blocks according to size,
+allocating space from the appropriate list.
+It calls
+.PN sbrk
+to get more memory from the system when there is no
+suitable space already free.
+For further information, see 
+.MS brk 2 .
+.PP
+The
+.PN realloc
+subroutine changes the size of the block pointed to by
+.I ptr
+to
+.I size
+bytes and returns a pointer to the (possibly moved) block.
+The contents will be unchanged up to the
+lesser of the new and old sizes.
+.PP
+If \fIptr\fP is a null pointer, then
+.PN realloc
+behaves like
+.PN malloc 
+for the specified \fIsize\fP.  If \fIsize\fP is zero, then
+.PN realloc
+frees the space pointed to by \fIptr\fP.
+.PP
+In order to be compatible with older versions,
+.PN realloc
+also works if
+.I ptr
+points to a block freed since the last call of
+.PN malloc ,
+.PN realloc ,
+or
+.PN calloc .
+Sequences of
+.PN free ,
+.PN malloc, 
+and
+.PN realloc
+were previously used to attempt storage compaction.
+This procedure is no longer recommended.
+.PP
+The
+.PN calloc
+subroutine allocates space for an array of
+.I nelem
+elements of size
+.I elsize.
+The space is initialized to zeros.
+.PP
+The
+.PN alloca
+subroutine allocates 
+.I size
+bytes of space in the stack frame of the caller.
+This temporary space is automatically freed on
+return.
+.PP
+Each of the allocation routines returns a pointer
+to space suitably aligned (after possible pointer coercion)
+for storage of any type of object.
+.SH Restrictions
+.NXR "malloc subroutine (standard C)" "restrictions"
+When
+.PN realloc
+returns 0, the block pointed to by
+.I ptr
+may be destroyed.
+.PP
+Currently, the allocator is unsuitable for direct use in a large
+virtual environment where many small blocks are kept, 
+since it keeps all allocated and freed blocks on a circular
+list.
+Just before more memory is allocated,
+all allocated and freed blocks are referenced.
+.PP
+The
+.PN alloca
+subroutine is machine dependent.
+.SH Diagnostics
+The
+.PN malloc ,
+.PN realloc ,
+and
+.PN calloc
+subroutines
+return a null
+pointer (0) if there is no available memory or if the arena
+has been detectably corrupted by storing outside the bounds of a block.
+.PP
+The
+.PN malloc ,
+.PN realloc ,
+.PN calloc ,
+and
+.PN alloca
+subroutines will fail and no additional memory will be allocated if
+one of the following is true:
+.TP 12
+[ENOMEM]
+The limit, as set by
+.MS setrlimit 2 ,
+is exceeded.
+.TP
+[ENOMEM]
+The maximum possible size of a data segment (compiled into the
+system) is exceeded.
+.TP
+[ENOMEM]
+Insufficient space exists in the swap area to support the expansion.

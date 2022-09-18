@@ -1,0 +1,116 @@
+.TH dmc 4 VAX
+.SH Name
+dmc \- DMC11/DMR11 communications interface
+.SH Syntax
+.B "device dmc0 at uba0 csr 0167600 flags 0x???? vector dmcrint dmcxint"
+.SH Description
+.NXS "dmc interface" "DMC11 communications interface"
+.NXS "dmc interface" "DMR11 communications interface"
+.NXR "DMC11 communications interface"
+.NXR "DMR11 communications interface"
+The
+.PN dmc
+interface provides access to a point-to-point communications
+device that runs at either 1 Mb/s or 56 Kb/s.  DMC11s communicate
+using the DDCMP link layer protocol.
+.PP
+The
+.PN dmc
+interface driver also supports a DMR11 providing point-to-point
+communication running at data rates from 2.4 Kb/s to 1 Mb/s.
+DMR11s are a more recent design and are preferred over DMC11s.
+.PP
+The host address must be specified with an SIOCSIFADDR ioctl
+before the interface will transmit or receive any packets.
+.PP
+Several protocols can be multiplexed over a
+.PN dmc
+link simultaneously.  Conversely, a
+.PN dmc
+can be set up such that only one protocol family can use
+that device.  If the latter approach is taken, an SIOCSTATE
+ioctl must be issued by the protocol family requesting
+device ownership.  The family address must appear in the
+``if_family'' structure member, and ``if_nomuxhdr'' must
+be set.  Before requesting ownership, make sure that access to
+the device for all other protocol families is disabled.
+.PP
+The first byte of the 
+.I flags 
+word can be set up to indicate
+what mode the device should use.  The supported modes are
+0 for full duplex, 1 for maintenance mode, and 2 for half
+duplex.  In addition, if the device is a
+.PN dmr ,
+the number of outstanding transmit buffers can be increased
+from a default of 7 to a maximum of 24 buffers by specifying
+a hexadecimal value in the second byte of the 
+.I flags 
+word.  For example, if the 
+.I flags 
+word is set to 0x1800, 24
+transmit buffers will be allocated on a device set up to run
+full duplex.
+.SH Restrictions
+Note that maintenance mode should be used only to diagnose 
+data link problems.  It is not intended to be used for normal 
+data link traffic.
+.SH Diagnostics
+.B "dmcprobe: can't start device" 
+.br
+The
+.PN dmc
+could not be started at boot time.
+.PP
+.B "dmcinit:  DMC not running"
+.br 
+The 
+.PN dmc
+unexpectedly stopped running.
+.PP
+.B "dmc%d: done unalloc rbuf"
+.br 
+The
+.PN dmc
+returned a receive or transmit buffer that was not
+allocated to it.
+.PP
+.B "dmc%d: bad control %o"
+.br 
+A bad parameter was passed to the
+.I dmcload
+routine.
+.PP
+.B "dmc%d: unknown address type %d" 
+.br
+An input packet was received that contained a type of
+address unknown to the driver.
+.PP
+.B "dmc%d: bad packet address 0x%x" 
+.br 
+The device returned a buffer with an unexpected buffer
+address.
+.PP
+.B "dmc%d: can't handle af%d"
+.br 
+The interface was handed a message that has addresses
+formatted in an unsuitable address family.  Formerly
+reported as
+.BR "dmc%d: af%d not supported" .
+.PP
+.B "dmc%d: internal loopback enable requested"
+.br 
+The device is being put in internal loopback at a user's
+request.
+.PP
+.B "dmc%d: internal loopback disable requested"
+.br 
+The device is being taken out of internal loopback at a user's
+request.
+.PP
+.B "DMC FATAL ERROR 0%o"
+.br 
+.PP
+.B "DMC SOFT ERROR 0%o" 
+.SH See Also
+inet(4f), intro(4n)

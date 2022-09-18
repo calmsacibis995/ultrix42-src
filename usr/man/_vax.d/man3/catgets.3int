@@ -1,0 +1,88 @@
+.TH catgets 3int
+.SH Name
+catgets \- read a program message
+.SH Syntax
+.B #include <nl_types.h>
+.PP
+.B char *catgets (\fIcatd, set_num, msg_num, s\fP)
+.br
+.B nl_catd \fIcatd\fP;
+.br
+.B int \fIset_num, msg_num\fP;
+.br
+.B char *\fIs\fP;
+.SH Description
+.NXR "catgets subroutine"
+The function
+.PN catgets
+attempts to read message 
+.I msg_num
+in set 
+.I set_num 
+from the message catalog identified by 
+.I catd. 
+The parameter 
+.I catd  
+is a catalog descriptor returned from an earlier call to
+.PN catopen .
+The pointer, \fIs\fP, points to a default message string.
+The
+.PN catgets
+function returns the default message if the identified message catalog
+is not currently available.
+.PP
+The
+.PN catgets
+function stores the message text it returns in an internal buffer
+area.  This buffer area might be written over by a subsequent call to
+.PN catgets .
+If you want to re-use or modify the message text, you should copy it 
+to another location.
+.PP
+The arguments 
+.I set_num
+and 
+.I msg_num
+are defined as integer values to make programs that contain the 
+.PN catgets
+call portable.  Where possible, you should use symbolic names for message and 
+set numbers, instead of hard-coding integer values into your source programs.
+If you use symbolic names, you must include the header file that 
+.PN gencat 
+.PN &\-h
+creates in all your program modules.
+.SH Examples
+The following example shows using the 
+.PN catgets
+call to retrieve a message from a message catalog that uses symbolic
+names for set and message numbers:
+.EX
+nl_catd catd = catopen (messages.msf, 0)
+message = catgets (catd, error_set, bad_value, "Invalid value")
+.EE
+When this call executes, 
+.PN catgets
+searches for the message catalog identified by the catalog descriptor
+stored in
+.PN catd .
+The function searches for the message identified by the 
+.PN bad_value
+symbolic name in the set identified by the
+.PN error_set
+symbolic name and stores the message text in
+.PN message .
+If 
+.PN catgets
+cannot find the message, it returns the message Invalid value.
+.SH Return Values
+If 
+.PN catgets
+successfully retrieves the message, it returns a pointer to an internal buffer 
+area containing the null terminated message string.
+If the call is unsuccessful for any reason,
+.I catgets
+returns the default message in \fIs\fP.
+.SH See Also
+intro(3int), gencat(1int), catgetmsg(3int), catopen(3int), nl_types(5int)
+.br
+.I Guide to Developing International Software

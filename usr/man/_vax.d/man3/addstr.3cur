@@ -1,0 +1,109 @@
+.TH addstr 3cur 
+.SH Name
+addstr, waddstr, mvaddstr, mvwaddstr \- add string to window
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int addstr(str)
+.br
+.B
+char \(**str;
+.PP
+.B
+int waddstr(win, str)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+char \(**str;
+.PP
+.B
+int mvaddstr(y, x, str)
+.br
+.B
+int y, x;
+.br
+.B
+char \(**str;
+.PP
+.B
+int mvwaddstr(win, y, x, str)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int y, x;
+.br
+.B
+char \(**str;
+.SH Description
+.NXR "addstr macro"
+.NXR "waddstr subroutine"
+.NXR "mvaddstr macro"
+.NXR "mvwaddstr macro"
+The 
+.PN addstr
+routine 
+writes all the characters of the
+null-terminated character string 
+.PN str
+on the default window at the current (y, x) coordinates.
+.PP
+The routine 
+.PN waddstr
+writes all the characters of the
+null terminated character string 
+.PN str
+on the specified window at the current (y, x) coordinates.
+.PP
+The routine 
+.PN mvaddstr
+writes all the characters of the
+null terminated character string 
+.PN str
+on the default window at the specified (y, x) coordinates.
+.PP
+The routine 
+.PN mvwaddstr
+writes all the characters of the
+null terminated character string 
+.PN str
+on the specified window at the specified (y, x) coordinates.
+.PP
+The following information applies to all the routines.
+All the routines return
+.PN ERR
+if writing the string causes illegal scrolling.
+In this case
+the routine will write as much as possible of the string
+on the window.
+.PP
+These routines are functionally
+equivalent to calling 
+.PN addch 
+or
+.PN waddch 
+once for each character in the string.
+.PP
+The routines 
+.PN addstr, 
+.PN mvaddstr, 
+and 
+.PN mvwaddstr
+are macros.
+.SH Return Values
+The
+.PN addstr ,
+.PN waddstr ,
+.PN mvaddstr ,
+and
+.PN mvwaddstr
+functions return OK on success and ERR on error.
+.SH See Also
+addch(3cur), waddch(3cur)

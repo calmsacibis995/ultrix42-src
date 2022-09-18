@@ -1,0 +1,46 @@
+.TH xf 8
+.SH Name
+xf \- transparent filter
+.SH Syntax
+/usr/lib/lpdfilters/xf
+.SH Description
+The 
+.PN xf
+filter is a transparent filter. The filter simply concatenates data 
+directly to the printer. The 
+.PN xf
+filter may be used with any printer.
+This filter allows device specific escape characters
+and control sequences to reach the printer.
+.PP
+There are no command line arguments passed to the 
+.PN xf
+filter by 
+.PN lpd
+and the filter does not maintain any accounting information.
+.PP
+The 
+.PN xf
+filter should be specified in the 
+.B xf
+field of the 
+.PN /etc/printcap
+file.  For further information, see 
+.MS printcap 5 .
+It is invoked when the \fB\-x\fP option is used with the
+.MS lpr 1
+command to print a job. Prior to its invocation the filter specified in
+the \fBof\fP field is invoked to print the banner
+page upon completion it is stopped
+and the 
+.PN xf
+filter sends the job to the printer.
+.SH Files
+.PN /etc/printcap
+.br
+.PN /dev/lp?
+.SH See Also
+lpr(1), pr(1), printcap(5), lpd(8), MAKEDEV(8), pac(8)
+.br
+``Line Printer Spooler Manual,''
+.I "ULTRIX Supplementary Documents, Volume 2: Programmer"

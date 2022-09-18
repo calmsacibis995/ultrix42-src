@@ -1,0 +1,166 @@
+.\" SCCSID: @(#)sysline.1	8.1	9/11/90
+." $Header: /usr/src/ucb/sysline/RCS/sysline.1,v 1.2 83/07/31 23:46:35 layer Exp $
+.TH sysline 1 "" "" Unsupported
+.SH Name
+sysline \- display system status on status line of a terminal
+.SH Syntax
+.B sysline
+[
+.B \-bcdehDilmpqrsj
+] [
+.B \-H\ 
+.I remote
+] [
+.B +N
+]
+.SH Description
+.NX R "sysline command"
+.NX R "System status" "displaying"
+The
+.PN sysline
+command runs in the background and periodically displays system status 
+information on the status line of the terminal.
+Not all terminals contain a status line.
+Those that do include the h19, concept 108, Ann Arbor Ambassador, vt100,
+Televideo 925/950 and Freedom 100.
+If no options are given,
+.PN sysline
+displays the time of day, the current load average, the change in load
+average in the last 5 minutes, the number of users (followed by a `u'),
+the number of runnable  process (followed by a `r')(VAX only), the number
+of suspended processes (followed by a `s')(VAX only), 
+and the users who have logged on and off since the last status report.
+Finally, if new mail has arrived, a summary of it is printed.
+If there is unread mail in your mailbox, an asterisk will appear after the
+display of the number of users.
+The display is normally in reverse video (if your terminal supports
+this in the status line) and is right justified to reduce distraction.
+Every fifth display is done in normal video to give the screen a chance
+to rest.
+.PP
+If you have a file named 
+.PN \&.who 
+in your home directory, then 
+.PN sysline 
+prints the contents of that file first.  One common use of this 
+feature is to alias chdir, pushd, and popd  to place the current directory 
+stack in 
+.PN ~/.who 
+after it changes the new directory.
+.SH Options
+.TP 12
+.B \-b
+Beep once every half hour and twice every hour, just like those obnoxious
+watches you keep hearing.
+.TP
+.B \-c
+Clear the status line for 5 seconds before each redisplay.
+.TP
+.B \-d
+Debug mode -- print status line data in human readable format.
+.TP
+.B \-D
+Print out the current day/date before the time.
+.TP
+.B \-e
+Print out only the information.  Do not print out the control commands
+necessary to put the information on the bottom line.  This option is
+useful for putting the output of
+.PN sysline
+onto the mode line of an emacs window.
+.TP
+.B \-H \fIremote\fP
+Print the load average on the remote host \fIremote\fP (VAX only).
+If the host is down, or is not sending out \fIrwhod\fP packets, then
+the down time is printed instead.
+.TP
+.B \-h
+Print out the host machine's name after the time (VAX only).
+.TP
+.B \-l
+Don't print the names of people who log in and out.
+.TP
+.B \-m
+Don't check for mail. 
+.TP
+.B \-p
+Don't report the number of processes which are runnable and suspended.
+.TP
+.B \-r
+Don't display in reverse video.
+.TP
+.B \+N
+Update the status line every N seconds. The default is 60 seconds.
+.TP
+.B \-q
+Don't print out diagnostic messages if something goes wrong when starting up.
+.TP
+.B \-i
+Print out the process id of the
+.PN sysline
+process onto standard output upon startup.
+With this information you can send the alarm signal to the
+.PN sysline
+process to cause it to update immediately.  The
+.PN sysline
+command writes to the standard error, so you can redirect the standard
+output into a file to catch the process id.
+.TP
+.B \-s
+Print "short" form of line by left-justifying.  No
+.I iff
+escapes are allowed in the status line.
+Some terminals (the Televideos and Freedom 100 for example)
+do not allow cursor movement (or other "intelligent" operations)
+in the status line.  For these terminals,
+.PN sysline
+normally uses blanks to cause right-justification.
+This flag will disable the adding of the blanks.
+.TP
+.B \-j
+Force 
+.PN sysline 
+output to be left-justified, even on terminals capable of
+cursor movement on the status line.
+.PP
+If you have a file .syslinelock in your home directory, then
+.PN sysline
+will not update its statistics and write on your screen; it will just go to
+sleep for a minute.  This is useful if you want to momentarily disable
+.PN sysline.
+Note that it may take a few seconds from the time the lock file
+is created until you are guaranteed that
+.PN sysline
+will not write on the screen.
+In order to use 
+.PN sysline 
+on a VT100 terminal, either of the following
+termcap entries should be used to specify terminal attributes:
+.TP 20
+vt100-s
+Creates a top-of-screen status line.
+.TP 20
+vt100-s-bot
+Creates a bottom of screen status line.
+.SH Restrictions
+If you interrupt the display, then you may find your cursor missing or 
+stuck on the status line.  The best thing to do is reset your terminal.
+If there is too much output for one line, the excess is thrown away.
+.SH Files
+.TP 25
+/etc/utmp
+Names of people who are logged in.
+.TP
+/dev/kmem
+Process table (VAX only).
+.TP
+/usr/spool/rwho/whod.*
+Who/uptime information for remote hosts (VAX only).
+.TP
+${HOME}/.who
+Information to print on bottom line.
+.TP
+${HOME}/.syslinelock
+When the .syslinelock file exists, 
+.PN sysline 
+will not print.

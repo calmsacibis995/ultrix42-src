@@ -1,0 +1,292 @@
+.TH whom 1mh
+.SH Name
+whom \- report to whom a message is addressed
+.SH Syntax
+.B whom
+[
+.I options
+] [
+.I file
+]
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.\" .SH Arguments
+.\" .IP \fIfile\fR 10
+.\" The file on which
+.\" .PN whom
+.\" is run.
+.\" This argument allows you to specify a named file;
+.\" if you want to run
+.\" .PN whom
+.\" on an existing message, use the
+.\" .B \-draftfolder
+.\" and
+.\" .B \-draftmessage
+.\" options.
+.\" If you do not give an absolute pathname (one beginning with 
+.\" a / or \&./ or \&.\&./ ),
+.\" .PN whom
+.\" assumes that the named file is in your current
+.\" working directory.
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "whom command"
+.NXR "listing addressees on a message"
+The
+.PN whom
+command is used to expand the headers of a 
+message into a set of addresses,
+and optionally to verify that those 
+addresses are deliverable at that time
+if 
+.B \-check
+is given.
+.PP
+The 
+.PN whom
+command is often invoked as one of the options
+offered by the 
+.PN whatnow
+program when you have finished editing a draft message.
+See
+.MS whatnow 1mh
+for more details.
+.\"
+.\" ***Info from old Arguments section
+.\"
+.PP
+If you want to run 
+.PN whom
+on a named file, 
+you can supply a
+.I file
+argument.
+This argument allows you to specify a named file;
+if you want to run
+.PN whom
+on an existing message, use the
+.B \-draftfolder
+and
+.B \-draftmessage
+options.
+If you do not give an absolute pathname (one beginning with
+a / or \&./ or \&.\&./ ),
+.PN whom
+assumes that the named file is in your current
+working directory.
+.\"
+.\" ***End of Arguments stuff
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-alias \fIaliasfile\fR" 10
+Specifies the alias file to be consulted by
+.PN whom .
+If you have used one or more aliases in your
+message header, 
+.PN whom 
+will consult the named file to find those aliases,
+and will print the full addresses as its output.
+You can reference more than one file, 
+but each file name must be preceded by the word \fB\-alias\fR.
+See 
+.MS mh-alias 5mh
+for more information.
+.\"
+.\"
+.IP \-check
+.PD 0
+.IP \-nocheck
+.PD
+Checks that the addresses are valid.
+.PN whom
+makes no guarantees that the addresses
+listed as being correct are really deliverable:
+rather, an address being listed
+as correct
+means that at the time that 
+.PN whom
+was run, the address was thought to be deliverable 
+by the transport service.
+For local addresses, this means that the local user
+does exist, and that the address was deliverable at the
+time of checking.
+For network
+.\" X.400 
+and uucp addresses, it means that the
+syntax of the address is valid.
+.\"
+.\"
+.IP \-draft
+Sets the draft message to be the standard 
+file 
+.PN draft
+in your Mail directory.
+.\"
+.\"
+.IP "\-draftfolder\ \fIfolder" 10
+.PD 0
+.IP \-nodraftfolder 10
+.PD
+Specifies the folder in which
+.PN whom 
+searches for the draft message.
+The default is to use the current message in the named folder.
+You can select another message by using the 
+.B \-draftmessage
+option.
+For more information on using a draft folder, see
+.MS comp 1mh .
+The
+.B \-draftfolder
+option is often set up in your user profile;
+see
+.MS mh_profile 5mh
+for more information.
+.\"
+.\"
+.IP \-draftmessage\ \fImsg\fR
+Specifies the draft message to be used.
+If you specify a folder with the
+.B \-draftfolder
+option, the 
+.B \-draftmessage
+option takes the number of a message in that folder.
+If you do not specify a folder,
+.B \-draftmessage
+takes the name of a file.
+If you do not give an absolute pathname (one beginning with
+a / or \&./ or \&.\&./ ),
+.B \-draftmessage
+assumes that the file is located in your Mail directory.
+.\"
+.\"
+.IP \-help
+Prints a list of the valid options to this command.
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.ig
+.IP \-mts\ \fImtsname\fR
+Indicates whether addresses to be checked are 
+X.400 or non-X.400 addresses.
+The 
+.B \-mts
+option takes one of two values:
+.B "\-mts x400"
+checks that addresses are in a valid format for 
+transport over the X.400 system;
+.B "\-mts smtp"
+checks that the addresses are deliverable to
+non-X.400 users.
+You can use upper- or lower-case letters,
+or a combination of the two.
+If the draft mail message contains an entry in the
+\f(CWX-mts:\fR header field, this overrides any 
+.B \-mts
+option in the command line.
+If no 
+.B \-mts
+option 
+or \f(CWX-mts:\fR field is specified, 
+the default is to assume non-X.400 addresses.
+See 
+.MS comp 1mh
+for more information.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.IP "\-mts smtp"
+Specifies the format of the addresses to be checked.
+The only value allowed is \fBsmtp\fR,
+which checks that addresses are deliverable over 
+the standard ULTRIX mail system.
+Additional values are supported only for use with other
+mail systems.
+.\"
+.\"
+.PP
+The defaults for this command are:
+.IP
+.I file
+defaults to 
+.PN <mh\-dir>/draft
+.br
+.B \-nocheck
+.br
+.B "\-alias /usr/lib/mh/MailAliases"
+.br
+.B "\-mts smtp"
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+For this version, the
+.B \-mts
+option only supports the value \fBsmtp\fR.
+Additional values are supported for use only with
+other mail systems.
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+In the following example, 
+.PN whom
+would use the current message in the 
+.PN +drafts
+folder:
+.EX
+% \f(CBwhom \-draftfolder +drafts
+\f(CW  smith: address OK
+.EE
+.PP
+In the next example,
+.PN whom
+searches for message 2 in the folder 
+.PN +drafts :
+.EX
+% \f(CBwhom \-draftfolder +drafts \-draftmessage 2
+\f(CW  davis@hostname: address OK
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:\fR+To determine your MH directory (mh-dir)
+Draft-Folder:\fR+To find the default draft-folder
+postproc:\fR+Program to post the message
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/\&.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+comp(1mh), mh-alias(5mh), post(8mh)

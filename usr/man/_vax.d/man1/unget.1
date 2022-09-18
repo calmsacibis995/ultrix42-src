@@ -1,0 +1,56 @@
+.\" SCCSID: @(#)unget.1	8.1	9/11/90
+.TH unget 1
+.SH Name
+unget \- undo a previous get of an SCCS file
+.SH Syntax
+.B unget
+[\fB\-r\fISID\fR\|] [\fB\-s\fR] [\fB\-n\fR] \fIfiles\fR
+.SH Description
+.NXR "unget command (sccs)"
+.NXR "SCCS file" "ungetting"
+The
+.PN unget 
+command undoes the effect of a
+.PN "get \-e"
+done prior to creating the intended new delta.
+If a directory is named,
+.PN unget
+behaves as though each file in the directory were
+specified as a named file, except that
+non-\s-1SCCS\s+1
+files and unreadable files are ignored.
+If 
+.B \-
+is given as a name, the standard input is read, with each line
+being taken as the name of an SCCS file to be processed.
+.SH Options
+Keyletter arguments apply independently to each
+named file.
+.IP \fB\-n\fR 10
+Retains copy of SCCS file which normally is removed from current directory.  
+.IP \fB\-r\fISID\fR
+Indicates delta version number.  
+This would have been specified by
+.PN get
+as the new delta.
+The use of this keyletter is necessary only if two or
+more outstanding
+.PN gets
+for editing on the same SCCS
+file were done by the same person (login name).
+A diagnostic results if the specified
+.I \s-1SID\s+1\^
+is ambiguous, or if it is necessary and omitted
+on the command line.
+.IP \fB\-s\fR
+Suppresses normal messages, on the standard output
+of the intended delta's
+.IR \s-1SID\s+1 .
+.SH Diagnostics
+See
+.MS sccshelp 1
+for explanations.
+.SH See Also
+delta(1), get(1), sccs(1)
+.br
+\fIGuide to the Source Code Control System\fP

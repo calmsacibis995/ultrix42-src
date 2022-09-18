@@ -1,0 +1,48 @@
+.TH socket_valid_family 3ncs
+.SH Name
+socket_valid_family \- check whether an address family is valid
+.SH Syntax
+#include <idl/c/socket.h>
+
+boolean socket_$valid_family(\fIfamily, status\fP)
+.nf
+unsigned long \fIfamily\fP;
+fBstatus_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/socket.ins.pas'\fR
+.\"
+.\"\fBfunction socket_$valid_family(\fR
+.\"	\fBin \fIfamily\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t): boolean;\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIfamily\fR
+The integer representation of an address family.
+.TP 20
+\fIstatus\fR
+The completion status. If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN socket_$valid_family
+routine returns `true' if the specified address family is valid
+for the calling host, `false' if not valid.
+.NXR "Operations on Socket Addresses" "socket_valid_family"
+.SH Examples
+The following routine checks whether \fBsocket_$internet\fR
+is a valid address family:
+.EX
+internetvalid = socket_$valid_family(socket_$internet, &status);
+.EE
+.SH Files
+.PN /usr/include/idl/socket.idl
+.br
+.PN /usr/include/idl/c/socket.h
+.SH See Also
+intro(3ncs), socket_valid_families(3ncs)

@@ -1,0 +1,89 @@
+.TH catgetmsg 3int
+.SH Name 
+catgetmsg \- get message from a message catalog
+.SH Syntax 
+.B #include <nl_types.h>
+.PP
+char *catgetmsg(\fIcatd, set_num, msg_num, buf, buflen\fP)
+.br
+.B nl_catd \fIcatd\fP;
+.br
+.B int \fIset_num, msg_num, buflen\fP;
+.br
+.B char \fI*buf\fP;
+.SH Description 
+.NXR "catgetmsg subroutine"
+The 
+.PN catgetmsg
+function has been superceded by the
+.PN catgets
+function.  You should use the 
+.PN catgets
+function to get messages from a message catalog.  
+You might want to rewrite calls to the 
+.PN catgetmsg
+function so that they use the
+.PN catgets 
+function.  The 
+.PN catgetmsg
+function is available for compatibility with XPG\-2 conformant software and 
+might not be available in the future.
+For more information on using 
+.PN catgets ,
+see the 
+.MS catgets 3int 
+reference page.
+.PP
+The function
+.PN catgetmsg
+attempts to read up to 
+.I buflen
+\-1 bytes of a message string into the area pointed to by 
+.I buf .
+The parameter
+.PN buflen
+is an integer value containing the size in bytes of 
+.IR buf .
+The return string is always terminated with a null byte.
+.PP
+The parameter 
+.I catd
+is a catalog descriptor returned from an earlier call to
+.PN catopen
+and identifies the message catalog containing the message set (
+.IR set_num ) 
+and the program message  (
+.IR msg_num ).
+.PP
+The arguments
+.I set_num 
+and 
+.I msg_num 
+are defined as integer values for maximum portability.
+Where possible, you should use symbolic names for message and set numbers,
+rather hard-coding integer values into your source programs.
+If you use symbolic names, you must 
+run 
+.PN mkcatdefs 
+prior to 
+.PN gencat 
+and be sure the appropriate include file is used in your program.
+.SH Return Value 
+.br
+If successful,
+.PN catgetmsg
+returns a pointer to the message string in 
+.IR buf .
+Otherwise, if 
+.I catd
+is invalid or if
+.I set_num
+or 
+.I msg_num 
+are not in the message catalog,
+.PN catgetmsg
+returns a pointer to an empty (null) string.
+.SH See Also 
+intro(3int), gencat(1int), catopen(3int), catgets(3int), nl_types(5int)
+.br
+\fIGuide to Developing International Software\fP

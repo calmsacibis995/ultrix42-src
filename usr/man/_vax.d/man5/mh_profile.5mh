@@ -1,0 +1,659 @@
+.TH mh_profile 5mh
+.SH Name
+mh_profile \- user customization for MH message system
+.SH Description
+.NXR "mh_profile file"
+.NXR "MH system" "user customization file"
+Each user of MH is expected to have a file named 
+.PN \&.mh_profile
+in his or her home directory.  
+This file contains a set of static user parameters 
+used by some or all of the MH family of programs.  
+Each line of the file is in the format:
+.EX
+profile\-component: \fIvalue\fP
+.EE
+.PP
+In addition, MH keeps information about changes in context
+(for example, the current folder and message) in the
+.PN context
+file, which is normally located in the user's Mail directory.
+MH also consults a number of environment variables.
+Both the 
+.PN context 
+file entries and these environment variables are described 
+in this reference page.
+.\"
+.\"
+.\"
+.SS Profile File Entries
+The possible profile components are described in the following table.
+Only \f(CWPath\fR is mandatory.  
+The others are optional;
+some have default values if they are not present.
+In the notation used below,
+the default value is given in parentheses ( ) 
+at the end of each entry.
+.PP
+When giving path names,
+.PN <mh-dir>
+is used to indicate the user's Mail directory.
+This is the directory given by the \f(CWPath\fR
+entry in the user's profile, 
+and is set up initially by MH to be
+.PN $HOME/Mail .
+.\"
+.TP 10
+.PN "Path: \fIpathname\fR"
+Locates MH transactions in the named directory. 
+If the directory path name is not absolute 
+(does not begin with a \f(CW/\fR ), it is assumed
+to begin in the user's home directory.
+When you first use MH, it creates a directory called 
+.PN Mail
+in your home directory, and adds the appropriate entry to the
+.PN \&.mh_profile .
+.br
+(no default)
+.\"
+.TP
+.PN "Context: context"
+Declares the location of the MH context file. 
+.br
+(default: 
+.PN <mh\-dir>/context )
+.\"
+.TP
+.PN "Previous-Sequence: pseq"
+Names the sequences which should be defined as the 
+.I msgs
+or 
+.I msg
+argument given to the program.  
+If not present, or empty, no sequences are defined.  
+Otherwise, for each name given, the sequence is first zeroed and 
+then each message is added to the sequence. 
+.br
+(no default)
+.\"
+.TP
+.PN "Sequence-Negation: not"
+Defines the string which, when prefixed to a sequence name,
+negates that sequence.
+Hence, the argument \f(CWnotseen\fR means all those messages 
+that are not a member of the sequence \f(CWseen\fR.
+.br
+(no default)
+.\"
+.TP
+.PN "Unseen-Sequence:\ unseen"
+Names the sequences which should be defined 
+as those messages recently incorporated by 
+.PN inc .
+The 
+.PN show
+command removes messages from this sequence once it thinks they
+have been seen.
+If not present, or empty, no sequences are defined.
+Otherwise, for each name given, the sequence is first zeroed 
+and then each message is added to the sequence.
+.br
+(no default)
+.\"
+.TP
+.PN "mh\-sequences: \&.mh_sequences"
+The name of the file in each folder which defines public sequences.
+To disable the use of public sequences,
+leave the value portion of this entry blank.
+.br
+(default: 
+.PN \&.mh_sequences )
+.\"
+.TP
+.PN "Editor: /usr/ucb/vi"
+Defines editor to be used by 
+.MS comp 1mh , 
+.MS dist 1mh , 
+.MS forw 1mh , 
+and 
+.MS repl 1mh .
+.br
+(default: 
+.PN prompter )
+.\"
+.\"
+.\" ***COMMENTED OUT
+.ig
+.TP
+.PN "Template-Editor: /usr/ucb/vi"
+Defines editor invoked by the 
+.B \-template
+option of
+.MS comp 1mh ,
+.MS dist 1mh ,
+.MS forw 1mh ,
+and
+.MS repl 1mh .
+This editor is used to fill in the X.400 address
+template.
+.br
+(default: 
+.PN prompter )
+..
+.\" ***END OF COMMENTS
+.\"
+.\" 
+.TP
+.PN "Msg\-Protect: 600"
+Defines octal protection bits for message files.
+See 
+.MS chmod 1 
+for an explanation of the octal number.
+.br
+(default: 0600)
+.\"
+.TP
+.PN "Folder\-Protect: 700"
+Defines protection bits for folder directories. 
+See 
+.MS chmod 1
+for an explanation of the octal number.
+.br
+(default: 0700)
+.\"
+.TP
+.PN "command: \fIoptions\fR"
+Sets options to be used 
+whenever an MH command is invoked.
+You should only set up options in your profile, 
+not arguments (options are usually introduced by a dash \f(CW-\fR ).
+You can override the options set up in the
+.PN \&.mh_profile
+by giving an option on the command line.
+For example, you could override the \f(CWEditor\fR
+profile component when replying to messages by 
+typing the command:
+.EX
+% \f(CBrepl \-editor /bin/ed\fR
+.EE
+.br
+(no default)
+.\"
+.TP
+.PN "Aliasfile: \fIfilename\fR"
+Defines the alias file to be used by MH commands 
+which take the 
+.B \-alias
+option.
+The named file must be in the correct format; see 
+.MS mh-alias 5mh .
+.br
+(no default)
+.\"
+.TP
+.PN "-next:\ nexteditor"
+Names \f(CWnexteditor\fR to be the default editor 
+after using \f(CWlasteditor\fR.
+This takes effect at \f(CWWhat now?\fR level in
+.PN comp , 
+.PN dist , 
+.PN forw , 
+and 
+.PN repl .
+After editing the draft with \f(CWlasteditor\fR,
+the default editor is set to be \f(CWnexteditor\fR.
+If the user types \f(CWedit\fR without any arguments 
+at the  \f(CWWhat now?\fR prompt,
+then \f(CWnexteditor\fR is used.
+.br
+(no default)
+.\"
+.TP
+.PN "mhe:"
+If present, tells 
+.PN inc
+to compose an Emacs
+audit file in addition to
+its other tasks.
+.br
+(no default)
+.\"
+.TP
+.PN "Alternate\-Mailboxes: mh@uci\-750a, bug-mh*"
+Tells 
+.PN repl
+and 
+.PN scan
+which addresses are really yours.
+In this way, 
+.PN repl
+knows which addresses should be included in the reply,
+and 
+.PN scan
+knows if the message really originated from you.
+Addresses must be separated by a comma,
+and the host names listed should be the official 
+host names for the mailboxes you indicate,
+as local nicknames for hosts are not replaced 
+with their official site names.
+For each address, if a host is not given,
+then that address on any host is considered to be you.
+In addition, an asterisk (\f(CW*\fR) may appear 
+at either or both ends of the mailbox and host
+to indicate wild-card matching.
+.br
+(default: your user-id)
+.\"
+.TP
+.PN "Draft\-Folder: \fI+folder"
+Specifies the name of the draft folder.
+This is used by 
+.PN comp , 
+.PN dist , 
+.PN forw ,
+and 
+.PN repl 
+to construct draft messages in, and to store unsent 
+draft messages.
+A draft folder allows you to have more than one unsent draft
+at a time.
+The draft folder is conventionally called 
+.PN +drafts .
+.br
+(no default)
+.\"
+.TP
+.PN "MailDrop: \&.mail"
+Tells 
+.PN inc
+your maildrop, if different from the default.
+This is superseded by the \f(CW$MAILDROP\fR
+environment variable.
+.br
+(default: /usr/spool/mail/$USER)
+.\"
+.TP
+.PN "Signature: \"Rand MH System\""
+Tells 
+.PN send
+your mail signature.
+This is superseded by the \fR$SIGNATURE\fR
+environment variable.  
+The signature must be enclosed in double quotes (\f(CW" "\fR).
+.br
+(no default)
+.\"
+.\"
+.PP
+The following profile elements are used whenever an 
+MH program invokes some other program such as 
+.MS more 1 .
+The 
+.PN \&.mh_profile
+can be used to select alternative
+programs if the user wishes.  
+The default values are as follows:
+.EX
+fileproc:       /usr/bin/mh/refile
+incproc:        /usr/bin/mh/inc
+installproc:    /usr/lib/mh/install\-mh
+lproc:          /usr/ucb/more
+mailproc:       /usr/bin/mh/mhmail
+mhlproc:        /usr/lib/mh/mhl
+moreproc:       /usr/ucb/more
+mshproc:        /usr/bin/mh/msh
+packproc:       /usr/bin/mh/packf
+postproc:       /usr/lib/mh/post
+rmmproc:         none
+rmfproc:        /usr/bin/mh/rmf
+sendproc:       /usr/bin/mh/send
+showproc:       /usr/ucb/more
+whatnowproc:    /usr/bin/mh/whatnow
+whomproc:       /usr/bin/mh/whom
+.EE
+.\"
+.\"
+.\"
+.SS Context File Entries
+Changes in context are made to the
+.PN context
+file kept in the users Mail directory.
+This includes, but is not limited to, the \f(CWCurrent-Folder\fR
+entry, and all private sequence information.
+Information kept in the 
+.PN context 
+file is updated by MH programs as they are used;
+the
+.PN \&.mh_profile
+contains only static information, which MH programs
+do not update.
+.PP
+The 
+.PN \&.mh_profile
+may override the path of the
+.PN context
+file by specifying a
+.PN context
+entry (this must be in lower-case).
+If the entry is not absolute (does not start with
+.PN / ),
+then it is interpreted relative to the user's Mail directory.
+.PP
+Private sequence information is kept in the 
+.PN context 
+file.
+Public sequence information is kept in a file called
+.PN \&.mh_sequences
+in each folder.
+.PP
+The 
+.PN context 
+file may contain the following components:
+.\"
+.TP
+.PN "Current-Folder: \fIfolder\fR"
+Keeps track of the current open folder. 
+.br
+(default:
+.PN +inbox )
+.\"
+.TP
+.PN "atr\-seq\-folder: 172\0178\-181\0212"
+Keeps track of the private sequence called 
+.PN seq
+in the specified folder.
+.br
+(no default)
+.\"
+.TP
+.PN "Folder-Stack: folders"
+The contents of the folder-stack for the 
+.PN folder
+command.
+.br
+(no default)
+.\"
+.TP
+.PN "digest\-issue\-list: 1"
+Tells 
+.PN forw
+the last issue of the last volume sent for the digest
+.PN list .
+.br
+(no default)
+.\"
+.TP
+.PN "digest\-volume\-list: 1"
+Tells 
+.PN forw
+the last volume sent for the digest 
+.PN list .
+.br
+(no default)
+.\"
+.\"
+.\"
+.\"
+.SS Environment Variables
+In addition to the 
+.PN \&.mh_profile
+and
+.PN context
+files, MH programs consult a number of environment variables.
+.PP
+If you define the environment variable \f(CW$MH\fR,
+you can specify a profile other than 
+.PN \&.mh_profile
+to be read by the MH programs that you invoke.
+If the value of \f(CW$MH\fR
+is not absolute,
+(that is, does not begin with \f(CW/\fR ),
+it will be presumed to start from the current working directory.
+This is one of the very few exceptions in MH where non-absolute
+pathnames are not considered relative to the user's Mail directory.
+.PP
+Similarly,
+if you define the environment variable \f(CW$MHCONTEXT\fR,
+you can specify a context other than the normal context file
+(as specified in the 
+.PN \&.mh_profile ).
+Unless the value of \f(CW$MHCONTEXT\fR
+is absolute, it will be presumed to start from your Mail directory.
+.PP
+MH programs also consult the following environment variables:
+.\"
+.TP 10
+.PN $MAILDROP
+Tells
+.PN inc
+the default maildrop.
+This supersedes the \f(CWMaildrop\fR profile entry.
+.\"
+.TP
+.PN $SIGNATURE
+Tells 
+.PN send
+and 
+.PN post
+your mail signature.
+This supersedes the \f(CWSignature\fR profile entry.
+.\"
+.TP
+.PN $HOME
+Tells all MH programs your home directory.
+.\"
+.TP
+.PN $TERM
+Tells MH your terminal type.
+The \f(CW$TERMCAP\fR
+environment variable is also consulted.
+In particular, these two environment variables tell
+.PN scan
+and 
+.PN mhl
+how to clear your terminal,
+and how many columns wide your terminal is.
+They also tell 
+.PN mhl
+how many lines long your terminal screen is.
+.\"
+.\"
+.PP
+Some environment variables are set by MH programs for
+.PN whatnowproc .
+These are:
+.\"
+.TP 10
+.PN $editalt
+The alternative message.
+Set by 
+.PN dist
+and 
+.PN repl
+during edit sessions
+so you can view the message being distributed or replied to.
+The message is also available through a link called \f(CW@\fR
+in the current directory, as long as your current working 
+directory has write permission.
+If your current working directory and
+the folder containing the message are on the same file system,
+this link is a hard link; otherwise, it is a symbolic link.
+.\"
+.TP
+.PN $mhdraft
+The path to the working draft.
+Set by 
+.PN comp , 
+.PN dist , 
+.PN forw , 
+and 
+.PN repl
+to tell the 
+.PN whatnowproc
+which file to ask \f(CWWhat now?\fR questions
+about.  
+In addition,
+.PN dist , 
+.PN forw , 
+and 
+.PN repl
+set \f(CW$mhfolder\fR
+if appropriate.  
+.\"
+.TP
+.PN $mhaltmsg
+Set by 
+.PN dist
+and 
+.PN repl
+to tell the
+.PN whatnowproc
+about an alternative message associated with the draft
+(the message being distributed or replied to).
+.\"
+.TP
+.PN $mhdist
+Set by 
+.PN dist
+to tell the 
+.PN whatnowproc
+that message redistribution is occurring.  
+.\"
+.TP
+.PN $mheditor
+Set to tell the 
+.PN whatnowproc
+your choice of editor (unless overridden by 
+\fB\-noedit\fR).
+.\"
+.TP
+.PN $mhuse
+May be set by 
+.PN comp .
+.\"
+.TP
+.PN $mhmessages
+.\"
+.TP
+.PN $mhannotate
+.\"
+.TP
+.PN $mhinplace
+Set by 
+.PN dist , 
+.PN forw , 
+and 
+.PN repl
+if annotations are to occur.
+The reason for this is that the MH user can select 
+any program as the 
+.PN whatnowproc , 
+including one of the standard shells.
+As a result, it is not possible to pass information 
+via an argument list.
+.\"
+.TP
+.PN $mhfolder
+The folder containing the alternate message.
+Set by 
+.PN dist
+and 
+.PN repl
+during edit sessions
+so you can view other messages in the current folder,
+besides the one being distributed or replied to.
+The \f(CW$mhfolder\fR
+environment variable is also set by 
+.PN show , 
+.PN prev , 
+and 
+.PN next
+for use by 
+.PN mhl .
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+The shell quoting conventions are not available in the 
+.PN \&.mh_profile .
+Each token is separated by white space.
+.PP
+It is recommended that you only set up 
+options to MH commands (and their values) in the 
+.PN \&.mh_profile .
+Arguments such as file names, folders, and message sequences
+should not be included in profile entries.
+.PP
+When conflicting options are given to MH commands, 
+the last option takes effect; earlier options are discarded.
+This means that you can override an option you have set up in your
+.PN \&.mh_profile
+by giving a conflicting option at the command line.
+Other arguments, such as file names, folders, or message sequences, 
+are always remembered, and are not superseded by later 
+arguments of the same kind.
+Hence it is unwise to give arguments of this kind in your
+.PN \&.mh_profile .
+(Files and folders can be included in the 
+.PN \&.mh_profile
+as values to options, for example,
+\fB\-draftfolder +drafts\fR.
+They should not be included when they stand as independent 
+arguments to the command.)
+.PP
+If you find that an MH program is being invoked again and again 
+with the same arguments (and these are not options),
+there are several possible solutions.
+.PP
+The first is to create a symbolic link in your 
+.PN $HOME/bin
+directory to the MH program of your choice.
+By giving this link a different name,
+you can create a new entry in your profile
+and use an alternate set of defaults for the MH command.
+.PP
+Similarly, you could create a small shell script which calls the MH
+program of your choice with an alternate set of invocation
+line switches. 
+Using links and an alternate profile entry is preferable
+to this solution.
+.PP
+Finally, if you are a 
+.PN csh
+user, you could create an alias for the command of the form:
+.EX
+alias cmd /usr/bin/mh/cmd arg1 arg2 ...
+.EE
+In this way, you can avoid typing lengthy commands to the shell,
+and still give MH commands safely.  
+Remember that some MH commands invoke others, 
+and that in all cases, the profile is read.
+This means that aliases are disregarded 
+beyond an initial command invocation.
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+The user profile.
+.\"
+.TP 
+.PN <mh\-dir>/context
+The user's context file.
+.\"
+.TP
+.PN \fIfolder\f(CW/.mh_sequences
+Public sequences for a particular folder.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+chmod(1), mh(1mh), environ(5)

@@ -1,0 +1,62 @@
+.TH fpc 3 RISC
+.SH Name
+fpc, get_fpc_csr, set_fpc_csr, swapRM, swapINX \- floating-point control registers
+.SH Syntax
+.nf
+.B #include <mips/fpu.h>
+.PP
+.B int get_fpc_csr()
+.PP
+.B int set_fpc_csr(\fIcsr\fP)
+.B int \fIcsr\fP;
+.PP
+.B int get_fpc_irr()
+.PP
+.B int swapRM(\fIx\fP)
+.B int \fIx\fP;
+.PP
+.B int swapINX(\fIx\fP)
+.B int \fIx\fP;
+.fi
+.SH Description
+These functions are to get and set the floating-point control
+registers of RISC floating-point units.  All of these
+functions take and return their values as 32 bit integers.
+.PP
+The file 
+.B <mips/fpu.h> 
+contains unions for each
+of the control registers. Each union contains a structure
+that breaks out the bit fields into the logical parts for
+each control register.  This file also contains constants
+for fields of the control registers.
+.PP
+RISC floating-point implementations have a
+control and status 
+register and an 
+implementation revision 
+register.  The 
+control and status 
+register is returned by 
+.PN get_fpc_csr .
+The routine 
+.PN set_fpc_csr 
+sets the 
+control and status 
+register and returns the old value.  The 
+implementation revision
+register is read-only and is returned by the routine
+.PN get_fpc_irr .
+.PP
+The function 
+.PN swapRM 
+sets only the rounding mode and returns the old 
+rounding mode.  The function 
+.PN swapINX 
+sets only the sticky inexact bit and 
+returns the old one.  The bits in the
+arguments and return values to 
+.PN swapRM 
+and 
+.PN swapINX 
+are right justified.

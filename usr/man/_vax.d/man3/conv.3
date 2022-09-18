@@ -1,0 +1,103 @@
+.\" SCCSID: @(#)atof.3	2.5	8/10/87
+.TH conv 3 
+.SH Name
+toupper, tolower, _toupper, _tolower, toascii \- translate characters
+.SH Syntax
+.nf
+.B #include <ctype.h>
+.PP
+.B int toupper(\fIc\fP)
+.B int c;
+.PP
+.B int tolower(\fIc\fP)
+.B int c;
+.PP
+.B int _toupper(\fIc\fP)
+.B int c;
+.PP
+.B int _tolower(\fIc\fP)
+.B int c;
+.PP
+.B int toascii(\fIc\fP)
+.B int c;
+.fi
+.SH Description
+.NXR "tolower subroutine (standard C)"
+.NXR "toupper subroutine"
+.NXR "_toupper subroutine"
+.NXR "_tolower subroutine"
+.NXR "toacsii  subroutine"
+The functions
+.PN toupper 
+and
+.PN tolower
+have as their domain the range of the 
+.PN getc
+function. If the argument to
+.PN toupper
+represents a lowercase letter, the output from the function is the corresponding
+uppercase letter. If the argument to
+.PN tolower 
+represents an uppercase letter, the result is the corresponding lowercase letter.
+.PP
+The case of 
+.I c 
+depends on the definition of the character in the language database. Because
+the case of a character can vary between language databases, the case of 
+.I c 
+depends on what language database is in use. Specifically, the case of arguments
+depends on what property tables are associated the LC_CTYPE category.
+Property tables are associated with the LC_CTYPE category by a successful call to
+the 
+.PN setlocale
+function that includes the LC_CTYPE category. If no successful call to define
+LC_CTYPE has occurred or if the character case information is unavailable for the
+language in use, the rules of the ASCII coded character set determine the case 
+of arguments.
+.PP
+If the argument to the
+.PN toupper
+function does not have the uppercase attribute, 
+.PN toupper 
+returns the argument unchanged.  Likewise, if the argument to the
+.PN tolower
+function does not have the lowercase attribute, 
+.PN tolower
+returns it unchanged.
+.PP
+The macros
+.PN _toupper
+and 
+.PN _tolower
+have the same affect as 
+.PN toupper
+and 
+.PN tolower .
+The difference is that the argument to the macros must be an ASCII character
+(that is, a character in the domain \-1 to 127) and the argument must have the
+appropriate case.  Arguments to 
+.PN _toupper 
+must have the uppercase attribute and arguments to
+.PN _tolower 
+must the lowercase attribute. The result of supplying arguments to these macros 
+that are outside the domain or do not have the appropriate case is undefined.
+These macros operate faster than the 
+.PN toupper
+and 
+.PN tolower
+functions.
+.PP
+The macro
+.PN toascii
+converts its argument to the ASCII character set. The macro converts its 
+argument by truncating the numerical representation of the argument so that 
+it is between \-1 and 127. You can use this macro when you move an application
+to a system other than an ULTRIX system.
+.SS International Environment
+.IP LC_CTYPE 15
+If this environment variable is set and valid,
+.PN conv
+uses the international language database named in the definition to
+determine character classification rules.
+.SH See Also
+ctype(3int), setlocale(3), getc(3)

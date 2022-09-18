@@ -1,0 +1,68 @@
+#!/bin/sh
+#
+# SCCSID=@(#)install_upgrade	4.1 (ULTRIX) 7/2/90
+# usage: install_upgrade [machinename] [/dev/*]
+# 	
+# 000 - January 13, 1987 - Tung-Ning Cherng
+#
+
+USAGE="usage: $0 [machinename] /dev/special"
+ris=ris
+machine=`hostname`
+RCP="/bin/cp "
+RSH="/bin/sh -c"
+case `whoami` in
+root) ;;
+* )
+	echo "You must be superuser."
+	exit 1
+	;;
+esac
+case $# in
+1 )
+	DEVICE=$1	# local machine
+	;;
+2 )
+	DEVICE=$2
+	case $1 in
+	$machine )	# local machine
+		;;
+	* )		# must be remote machine
+		machine=$1
+		RCP="rcp ${machine}.${ris}:"
+		RSH="rsh ${machine} -l ${ris} -n"
+		;;
+	esac
+	;;
+* )
+	echo "$USAGE"
+	exit 1
+	;;
+esac
+
+while :
+do
+	echo -n "
+Is the correct capacity upgrade kit loaded on $DEVICE at $machine <y/n>? "
+	read ans
+	case $ans in
+	y* | Y* )
+		break
+		;;
+	n* | n* )
+		exit 1	
+		;;
+	esac
+done
+$RSH '(cd /tmp; tar -xf "'${DEVICE}'" )' 
+${RCP}/tmp/upgrade /tmp/upg$$
+$RSH 'rm -f /tmp/upgrade'
+cp /tmp/upg$$ /upgrade	>/dev/null 2>&1 || 
+{
+	echo "Capacity Upgrade installation failed!"
+	rm -f /tmp/upg$$
+	exit 1
+}
+rm -f /tmp/upg$$
+(cd /; /bin/chmod 400 /upgrade)
+echo "Capacity Upgrade installation done."

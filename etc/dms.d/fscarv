@@ -1,0 +1,270 @@
+#!/bin/sh5
+# fscarv
+#
+# @(#)fscarv	4.1	(ULTRIX)	7/2/90
+#
+# Modification History
+# ~~~~~~~~~~~~~~~~~~~~
+#
+# 001 - 02-Dec-1988 - Jon Wallace
+#	added export to fix bug
+#
+# 000 - 16-Nov-1988 - Jon Wallace
+#	Created script with excerpts from John Williams (fscarv)
+#
+#
+#
+#########################
+#	Initializers	#
+#############################################
+
+ROOT=/
+DMS=/usr/diskless
+BIN=/usr/diskless/bin
+PATH=$DMS:$BIN:/bin:/usr/bin:/usr/ucb:/etc
+export PATH
+
+set -h			# Hash for subroutines
+
+
+#########################
+#	Subroutines	#
+#############################################
+
+: Newfs_routine
+Newfs_routine()
+{
+	newfs $DEVICE $DISKTYPE || exit 1 
+}
+
+: Device_chk -
+Device_chk()
+{
+        [ -c "$DEVICE" ] &&
+	{
+		dd if=$DEVICE of=/dev/null count=1 >/dev/null 2>&1 || 
+		{
+			echo "Cannot access $DEVICE."
+			exit 1
+		}
+		DISKTYPE=`file $DEVICE`
+		set $DISKTYPE
+		DISKTYPE=$7
+		DEVPATH=`expr "$DEVICE" : '\([a-zA-Z/][a-zA-Z/]*\)[0-9]'`
+		DISKUNIT=`basename $DEVICE`
+		DISKUNIT=`expr "$DISKUNIT" : '[^0-9][^0-9]*\([0-9][0-9]*\).*'`
+        	DISKPART=`expr "$DEVICE" : '.*[0-9][0-9]*\([a-h]\)'`
+		[ -n "$DISKPART" ] && SFLAG=1
+        }
+}
+
+: Part_size -
+Part_size()
+{
+	chpt -q "${DEVPATH}${DISKUNIT}c" > /tmp/DEV.size
+	PSIZE=`egrep "   $DISKPART   " /tmp/DEV.size`
+	set xxx $PSIZE
+	PSIZE=$5 
+	MB=`expr $PSIZE \* 512`
+	MBYTE=`expr $MB / 1000000`
+}
+
+: Dlenv_routine -
+Dlenv_routine()
+{
+	LAST=0
+	TEMP=0
+	DLNUM=
+
+	while test -z "$DLNUM"
+	do
+		grep -s "${DLCHOICE}${LAST}" /etc/fstab || DLNUM=$LAST
+		LAST=`expr $LAST + 1`
+	done
+	test -d /$DLCHOICE$DLNUM || mkdir /$DLCHOICE$DLNUM
+
+	DONE=
+	while test -z "$DONE"
+	do
+		TEMP=`expr $TEMP + 1`
+		grep -s "1:$TEMP" /etc/fstab || DONE=DONE
+	done
+
+	MOUNT=`echo $DEVICE |sed s@/r@/@`
+	echo " "
+	echo "Updating /etc/fstab with ${DLCHOICE}${DLNUM} entry"
+	echo "$MOUNT:/$DLCHOICE$DLNUM:rw:1:$TEMP:ufs::" >>/etc/fstab
+
+	echo "Mounting the $DLCHOICE$DLNUM filesystem"
+	/etc/mount $MOUNT /$DLCHOICE$DLNUM
+
+	if [ "$DLCHOICE" = "dlclient" ]
+	then
+		chmod 700 /$DLCHOICE$DLNUM
+	fi
+}
+
+: Clear_variables_routine -
+Clear_variables_routine()
+{
+	PSIZE=			# Partition size
+	MOUNT=			# Block mount point
+	DEVICE=                 # Device unit and partition
+	DISKTYPE=               # Device type
+	DISKPART=               # Parition letter
+	DLCHOICE=		# Menu selection of env or client
+	SFLAG=                  # Success flag
+}
+
+
+#########################
+
+while :
+do
+Clear_variables_routine
+echo "
+
+	Diskless Area Setup Menu
+
+	d - Diskless Environment Setup
+	c - Diskless Client Area Setup
+	r - Return to previous menu
+
+
+	Enter your choice: \c"
+read ANSWER
+case $ANSWER in
+        d | D )
+		DLCHOICE="dlenv"
+                while : [ -z SFLAG ]
+                do
+                echo "
+Enter disk and partition you want to use for the diskless environment.
+For example, /dev/rra1g: \c" 
+		read DEVICE
+                case $DEVICE in
+                "" ) ;;
+
+                x | X ) break ;;
+
+                * )
+                Device_chk
+                if [ -z "$SFLAG" ]
+                then
+                        echo "
+Invalid Disk/Partition combination - No such character special device for $DEVICE.  Make another choice or type  x  to return to the menu. " | fmt
+
+                else
+			Part_size
+			while :
+			do
+			echo "
+There are approximately $MBYTE Mbytes on $DEVICE.  Is this partition large
+enough to contain the software you intend to install? (y/n) []: \c"
+			read ANSWER
+			case $ANSWER in
+			y* | Y* ) 
+				while :
+				do
+                                echo "
+A new file system will be placed on $DEVICE, and then mounted, if you decide to continue.  Any data or file system already in place on $DEVICE will be overwritten." | fmt
+				echo "Do you want to continue? (y/n) []: \c"
+					read INITPART 
+					case $INITPART in
+					y* | Y* )
+						echo
+						Newfs_routine
+						Dlenv_routine
+						break 3
+						;;
+					n* | N* )
+						break 3
+						;;
+					* )	;;
+					esac
+				done
+				;;
+			n* | N* ) 
+				SFLAG=
+				break 
+				;;
+			* )	;;
+			esac
+			done
+                fi
+                esac
+                done
+                ;;
+
+	c | C )
+		DLCHOICE="dlclient"
+		while : [ -z SFLAG ]
+		do
+		echo "
+Enter disk and partition you want to use for the client environment.
+For example, /dev/rra1g: \c"
+                read DEVICE
+                case $DEVICE in
+                "" ) ;;
+
+                x | X ) break ;;
+
+                * )
+                Device_chk
+                if [ -z "$SFLAG" ]
+                then
+                        echo "
+Invalid Disk/Partition combination - No such character special device for $DEVICE.  Make another choice or enter  x  to return to the menu. " | fmt
+
+                else
+                        Part_size
+                        while :
+                        do
+                        echo "
+There are approximately $MBYTE Mbytes on $DEVICE.  Is this partition large
+enough to contain all the clients you intend to register? (y/n) []: \c"
+                        read ANSWER
+                        case $ANSWER in
+                        y* | Y* )
+                                while :
+                                do
+                                echo "
+A new file system will be placed on $DEVICE, and then mounted, if you decide to continue.  Any data or file system already in place on $DEVICE will be unrecoverable." | fmt
+				echo "Do you want to continue? (y/n) []: \c"
+				read INITPART
+                                case $INITPART in
+                                y* | Y* )
+					echo
+                                	Newfs_routine
+                                        Dlenv_routine
+                                        break 3
+                                        ;;
+                                n* | N* )
+           				break 3
+                                        ;;
+                                * )     ;;
+                                esac
+                                done
+                                ;;
+                        n* | N* )
+                                SFLAG=
+                                break
+                                ;;
+                        * )     ;;
+                        esac
+                        done
+                fi
+                esac
+                done
+                ;;
+
+        r | R ) 
+		break
+                ;;
+        * )     echo "
+Invalid choice - Make another selection from the menu"
+		;;
+esac
+done
+
+

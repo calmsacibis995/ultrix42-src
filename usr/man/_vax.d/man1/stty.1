@@ -1,0 +1,728 @@
+.\" SCCSID: @(#)stty.1	2.5	8/24/87
+.TH stty 1
+.SH Name
+stty \- set terminal options
+.SH Syntax
+.B stty
+[\|\fIoption...\fR\|]
+.SH Description
+.NX R "stty command"
+.NX R "Terminals" "setting input\/output characteristics"
+The
+.PN stty
+command
+sets or reports certain input/output characteristics of the current
+output terminal.
+Output from the 
+.PN stty
+program is sent to the diagnostic output (standard error).
+The
+.PN stty
+command is used in two terminal environments.  The terminal
+environment is determined by the setting of the terminal's
+line discipline.  If the terminal's line discipline is set to
+anything other than TERMIODISC (termio line discipline), refer
+to the sections entitled
+"Non-Termio Operation" and "Non-Termio Options."
+If your terminal 
+line is set to the termio line discipline, refer to the
+sections entitled "Termio Operation" and "Termio Options."
+.br
+.sp
+Note that you can use the command
+.PN stty 
+.PN disc
+to find out the current line discipline of your terminal.
+
+.SH Non-termio Operation
+With no argument, the
+.PN stty
+command reports the speed of the terminal and the
+settings of the options that are different from their defaults.
+The following arguments report the current settings of the terminal:
+.IP all 15
+Reports all normally used non-termio option settings. 
+.IP everything
+Reports all non-termio option settings.
+.sp
+.SH Non-Termio Options
+The option strings 
+for terminals that are not using the termio line discipline are
+selected from the following set:
+.sp
+.TP  15
+.B even 
+Allows even parity input.
+.TP 
+.B \-even 
+Disallows even parity input.
+.TP 
+.B odd 
+Allows odd parity input.
+.TP 
+.B \-odd 
+Disallows odd parity input.
+.TP 
+.B raw 
+Specifies raw mode input with
+no input processing (for example, erase, kill, interrupt);
+parity bit passed back.
+.TP 
+.B \-raw 
+Negates raw mode.
+.TP
+.B cooked 
+Negates raw mode.
+.TP
+.B cbreak
+Makes each character available to 
+.MS read 2 
+as it is received; all processing other than erase
+and kill processing is performed.
+.TP
+.B \-cbreak
+Makes characters available to 
+.I read
+only when new line is received.
+.TP
+.B \-nl 
+Allows carriage return for new-line,
+and outputs CR-LF for carriage return or new-line.
+.TP
+.B nl 
+Accepts only new-line to end lines.
+.TP
+.B echo 
+Echoes back every character typed.
+.TP
+.B \-echo 
+Does not echo characters.
+.TP
+.B lcase 
+Maps upper case to lower case.
+.TP
+.B \-lcase 
+Does not map case.
+.TP
+.B tandem
+Enables flow control.  The system sends out the stop character when
+its internal queue is in danger of overflowing on input; it sends the
+start character when it is ready to accept further input.
+.TP
+.B \-tandem
+Disables flow control.
+.TP
+.B \-tabs 
+Replaces tabs with spaces when printing.
+.TP
+.B tabs 
+Preserves tabs.  This option may cause unpredictable behavior
+if unprintable characters, such as escape sequences, are
+sent to the terminal.
+.TP
+.B ek 
+Sets erase and kill characters to the pound sign (#) and
+at sign (@) respectively.
+.TP
+.B termiod
+Sets line discipline to termio line discipline.  Note that once the line
+discipline has been changed to TERMIODISC, 
+the termio options to 
+.PN stty
+should be used.
+.TP
+.B disc
+Reports the current line discipline.
+.TP
+.B old
+Sets line discipline to the old line discipline (OTTDISC).
+.sp
+.PP
+The following commands take a character argument \fIc\fR.
+You may specify u or undef instead of \fIc\fR to leave the value
+undefined.  The two character sequence of 
+.CT x
+is also
+interpreted as a control character, with 
+.CT ?
+representing delete.
+.TP 15
+.BI erase \ c\fR
+Sets the erase character to
+.I c.
+The default is the pound sign (#), but it is often reset to 
+<CTRL/H>.
+.TP
+.BI kill \ c\fR
+Sets the kill character to
+.I c.
+The default is the at sign (@), but it is often reset to 
+<CTRL/U>.
+.TP
+.BI intr \ c\fR
+Sets the interrupt character to
+.I c.
+The default is DEL or
+.CT ? 
+but it is often reset to <CTRL/C>.
+.TP
+.BI quit \ c\fR
+Sets the quit character to
+.I c.
+The default is <CTRL/\\>.
+.TP
+.BI start \ c\fR
+Sets the start character to
+.I c.
+The default is <CTRL/Q>.
+.TP
+.BI stop \ c\fR
+Sets the stop character to
+.I c.
+The default is <CTRL/S>.
+.TP
+.BI eof \ c\fR
+Sets the end of file character to
+.I c.
+The default is <CTRL/S>.
+.TP
+.BI brk \ c\fR
+Sets the break character to
+.I c.
+The default is undefined.
+This character causes a wakeup.
+.TP
+.B  cr0 cr1 cr2 cr3
+Selects style of delay for carriage return; see
+.MS ioctl 2
+for more information.
+.TP
+.B  nl0 nl1 nl2 nl3
+Selects style of delay for linefeed.
+.TP
+.B  tab0 tab1 tab2 
+Selects style of delay for tab.
+.TP
+.B  ff0 ff1
+Selects style of delay for form feed.
+.TP
+.B bs0 bs1
+Selects style of delay for backspace.
+.TP
+.B dec
+Sets all modes suitable for Digital Equipment Corporation operating systems
+users.  This command sets erase to
+<CTRL/?>, kill to <CTRL/U>, and interrupt to <CTRL/C>.
+It also sets the decctlq and newcrt options.
+.TP
+.B size
+Prints the display size.  The format is (rows) (columns).
+.TP
+.B rows i
+Sets the number of rows in the display to
+.I i.
+.TP
+.B cols i
+Sets the number of columns in the display to
+.I i.
+.TP
+.B excl
+Sets line to exclusive use.
+.TP
+.B \-excl
+Clears exclusive use status.
+.TP
+.B 0 
+Hangs up phone line immediately.
+.TP
+.B  "50 75 110 134 150 200 300 600 1200 1800 2400 4800 9600 exta extb"
+Sets terminal baud rate to the number given, if possible.
+.sp
+.PP
+The following are unsupported terminal devices:
+.TP 15
+.B tty33 
+Sets all modes suitable for the
+Teletype Corporation Model 33 terminal.
+.TP
+.B tty37 
+Sets all modes suitable for the
+Teletype Corporation Model 37 terminal.
+.TP
+.B vt05 
+Sets all modes suitable for Digital Equipment Corporation VT05 terminal.
+.TP
+.B tn300 
+Sets all modes suitable for a General Electric TermiNet 300.
+.TP
+.B ti700 
+Sets all modes suitable for Texas Instruments 700 series terminal.
+.TP
+.B tek 
+Sets all modes suitable for Tektronix 4014 terminal.
+.sp
+.PP
+A teletype driver that supports the job control processing of
+.MS csh 1 
+and has more functionality than the basic driver is
+fully described in 
+.MS tty 4 .
+The following options apply only to it:
+.sp
+.TP 15
+.B new
+Uses new driver (switching flushes typeahead).
+Sets line discipline to NTTYDISC.
+.TP
+.B crt
+Sets options for a CRT (crtbs, ctlecho and, if greater
+than or equal to 1200 baud, it sets
+crterase and crtkill.)
+.TP
+.B crtbs
+Echoes backspaces on erase characters.
+.TP
+.B prterase
+Echoes characters that have been erased.
+.TP
+.B crterase
+Wipes out erased characters with the following combination
+of keystrokes:  backspace-space-backspace.
+.TP
+.B \-crterase
+Leaves characters visible that have been erased.  Invoke
+this option by using the
+backstroke key alone.
+.TP
+.B crtkill
+Wipes out input.  Similar to
+.B crterase
+in how it works.
+.TP
+.B \-crtkill
+Echoes the line kill character and a new line on line kill.
+.TP
+.B ctlecho
+Echoes control characters as a circumflex followed by the character.
+For example, 
+.CT X
+echoes as 
+.B ^X.  
+Type two backspaces following the
+EOT character (<CTRL/D>).
+.TP
+.B \-ctlecho
+Echoes control characters as themselves; in cooked mode EOT (<CTRL/D>)
+is not echoed.
+.TP
+.B decctlq
+Enables a start character (normally <CTRL/Q>) to restart
+output when it has been suspended.
+.TP
+.B \-decctlq
+Enables any character that you type to restart output when it
+has been suspended.
+The start character restarts output without providing any input.
+This is the default.
+.TP
+.B noflsh
+Suppresses flushing of input and output queues upon receipt of 
+an interrupt signal.
+.TP
+.B \-noflsh
+Flushes input and output queues upon receipt of interrupt signal.
+.TP
+.B tostop
+Stops background jobs if they attempt terminal output.
+.TP
+.B \-tostop
+Allows output from background jobs to the terminal.
+.TP
+.B tilde
+Converts the tilde (\~) to a backslash (\\) on output.
+.TP
+.B \-tilde
+Suppresses conversion of the tilde (\~) to a backslash (\\).
+.TP
+.B flusho
+Discards output usually because the user hit a
+.CT O
+(internal state bit).
+.TP
+.B \-flusho
+Output is not discarded.
+.TP
+.B pendin
+Resubmits input that is pending after a switch from cbreak to cooked.
+Activated when a read becomes pending or more input arrives
+(internal state bit).
+.TP
+.B \-pendin
+Specifies that input is not pending.
+.TP
+.B litout
+Sends output characters without any processing.
+.TP
+.B \-litout
+Does normal output processing, such as inserting delays.
+.TP
+.B autoflow
+Causes the terminal multiplexer to automatically respond to start and stop
+characters.  This functionality is only provided if the stop character is 
+.CT S
+and the start character is <CTRL/Q>.
+.TP
+.B \-autoflow
+Uses software controlled flow control.
+.TP
+.B nohang
+Does not send a hangup signal if the carrier drops.
+Note that the 
+.B nohang
+option should be used carefully.  For example, suppose that you have
+the
+.PN nohang
+option in your .login file and are logged in over a modem.  If the
+carrier drops, the next call in on this line gets your active
+shell.
+.TP
+.B \-nohang
+Sends a hangup signal to control process group when carrier drops.
+.TP
+.B pass8
+Allows full eight bit ascii characters in input and output.
+.TP
+.B \-pass8
+Strips characters to seven bits, thus disallowing the use of eight bit
+ascii characters.
+.sp
+.PP
+The following special characters are applicable only 
+when the line discipline is set to NTTYDISC.  They
+are not normally changed.  The 
+.PN stty
+.B new
+option sets the line discipline to NTTYDISC.
+.TP 15
+.BI susp \ c\fR
+Sets the suspend process character to \fIc\fR.
+The default is <CTRL/Z>.
+.TP
+.BI dsusp \ c\fR
+Sets the delayed suspend process character to \fIc\fR.
+The default is <CTRL/Y>.
+.TP
+.BI rprnt \ c\fR
+Sets the reprint line character to \fIc\fR.
+The default is <CTRL/R>.
+.TP
+.BI flush \ c\fR
+Sets the flush output character to \fIc\fR.
+The default is <CTRL/O>.
+.TP
+.BI werase \ c\fR
+Sets the word erase character to \fIc\fR.
+The default is <CTRL/W>.
+.TP
+.BI lnext \ c\fR
+Sets the literal next character to \fIc\fR.
+The default is <CTRL/V>.
+.TP
+.BI quote \ c\fR
+Sets the quote character (for erase and kill) to \fIc\fR.
+The default is <CTRL/\\>.
+.sp
+.SH Termio Operation
+This section describes the arguments and options that are used when
+the terminal line is set to the termio line discipline (TERMIODISC).  The
+termio line discipline is intended for programs that use either IEEE P1003
+termios, or System Five style termio.  Unless noted otherwise, all options in
+this section are applicable to both IEEE P1003 termios or System Five termio.
+.PP
+With no arguments, 
+.B stty
+reports the speed of the terminal and the
+settings of certain options.
+.sp
+.TP 5
+.B \-a
+Reports option settings relevant to System Five termios.
+.TP
+.B \-p
+Reports option settings relevant to IEEE POSIX termios.
+.PP
+For more information about the modes listed in the first five groups below
+refer to 
+.MS termio 4
+and
+.MS termios 4 . 
+.sp
+.SH Termio Options
+For terminals that are using the termio line discipline,
+select option strings 
+from the following set:
+.SS Control Modes
+.TP 18
+.BR parenb " (" \-parenb )
+Enables (disables) parity generation and detection.
+.TP
+.BR parodd " (" \-parodd )
+Selects odd (even) parity.
+.TP
+.B "cs5 cs6 cs7 cs8"
+Select character size.
+.TP
+.B 0
+Hangs up phone line immediately.
+.TP
+.B "50 75 110 134 150 200 300 600 1200 1800 2400 4800 9600 exta extb"
+Sets terminal baud rate to the number given, if possible.
+(All speeds are not supported by all hardware interfaces.)
+.TP 18
+.BR hupcl " (" \-hupcl )
+Sends (does not send) hangup signal on last close of terminal line.
+.TP
+.BR cstopb " (" \-cstopb )
+Uses two (one) stop bits per character.
+.TP
+.BR cread " (" \-cread )
+Enables (disables) the receiver.
+.TP
+.BR clocal " (" \-clocal )
+Assumes a line without (with) modem control.
+.TP
+.BR loblk " (" \-loblk )
+Blocks (does not block) output from a non-current layer.
+(System Five termio only)
+.TP
+.BR autoflow " (" \-autoflow )
+Line operates with (without) hardware monitored flow control. (POSIX only)
+.sp
+.SS Input Modes
+.TP 18
+.BR ignbrk " (" \-ignbrk )
+Ignores (does not ignore) break on input.
+.TP
+.BR brkint " (" \-brkint )
+Signals (does not signal) \s-1INTR\s+1 on break.
+.TP
+.BR ignpar " (" \-ignpar )
+Ignores (does not ignore) parity errors.
+.TP
+.BR parmrk " (" \-parmrk )
+Marks (does not mark) parity errors.
+.TP
+.BR inpck " (" \-inpck )
+Enables (disables) input parity checking.
+.TP
+.BR istrip " (" \-istrip )
+Strips (does not strip) input characters to seven bits.
+.TP
+.BR inlcr " (" \-inlcr )
+Maps (does not map) \s-1NL\s+1 to \s-1CR\s+1 on input.
+.TP
+.BR igncr " (" \-igncr )
+Ignores (does not ignore) \s-1CR\s+1 on input.
+.TP
+.BR icrnl " (" \-icrnl )
+Maps (does not map) \s-1CR\s+1 to \s-1NL\s+1 on input.
+.TP
+.BR iuclc " (" \-iuclc )
+Maps (does not map) upper-case alphabetics to lower case on input.
+.TP
+.BR ixon " (" \-ixon )
+Enables (disables) \s-1START\s+1/\s-1STOP\s+1
+output control.  Output is stopped by sending
+an \s-1ASCII DC3\s+1 and started by sending an \s-1ASCII DC1\s+1.
+.TP
+.BR ixany " (" \-ixany )
+Allows any character (only \s-1DC1\s+1) to restart output.
+.TP
+.BR ixoff " (" \-ixoff )
+Requests that the system send (not send) \s-1START/STOP\s+1 characters
+when the input queue is nearly empty/full.
+.sp
+.SS Output Modes
+.TP
+.BR opost " (" \-opost )
+Post-processes output (does not post-process output; ignores
+all other output modes).
+.TP
+.BR olcuc " (" \-olcuc )
+Maps (does not map) lower-case alphabetics to upper case on output.
+.TP
+.BR onlcr " (" \-onlcr )
+Maps (does not map) \s-1NL\s+1 to \s-1CR-NL\s+1 on output.
+.TP
+.BR ocrnl " (" \-ocrnl )
+Maps (does not map) \s-1CR\s+1 to \s-1NL\s+1 on output.
+.TP
+.BR onocr " (" \-onocr )
+Does not output (outputs) \s-1CR\s+1s at column zero.
+.TP
+.BR onlret " (" \-onlret )
+Performs (does not perform) the \s-1CR\s+1 function 
+on the terminal \s-1NL\s+1.
+.TP
+.BR ofill " (" \-ofill )
+Uses fill characters (uses timing) for delays.
+.TP
+.BR ofdel " (" \-ofdel )
+Specifies fill characters as \s-1DEL\s+1s (\s-1NUL\s+1s).
+.TP
+.B "cr0 cr1 cr2 cr3"
+Selects style of delay for carriage returns.
+.TP
+.B "nl0 nl1"
+Selects style of delay for line-feeds.
+.TP
+.B "tab0 tab1 tab2 tab3"
+Selects style of delay for horizontal tabs.
+.TP
+.B "bs0 bs1"
+Selects style of delay for backspaces.
+.TP
+.B "ff0 ff1"
+Selects style of delay for form-feeds.
+.TP
+.B "vt0 vt1"
+Selects style of delay for vertical tabs. 
+.sp
+.SS Local Modes
+.TP 18
+.BR isig " (" \-isig )
+Enables (disables) the checking of characters against the special control
+characters \s-1INTR\s+1 and \s-1QUIT\s+1.
+.TP
+.BR icanon " (" \-icanon )
+Enables (disables) canonical input (\s-1ERASE\s+1 and \s-1KILL\s+1 processing).
+.TP
+.BR xcase " (" \-xcase )
+Presents canonical (unprocessed) upper/lower-case.
+.TP
+.BR echo " (" \-echo )
+Echoes (does not echo) every character typed.
+.TP
+.BR echoe " (" \-echoe )
+Echoes (does not echo) \s-1ERASE\s+1 character as
+a backspace-space-backspace string.  Note that this mode erases the
+\s-1ERASE\s+1ed character on many \s-1CRT\s+1 terminals;
+however, it does
+.I not\^
+keep track of column position and, as a result, may be confusing
+on escaped characters, tabs, and backspaces.
+.TP
+.BR echok " (" \-echok )
+Echoes (does not echo) \s-1NL\s+1 after \s-1KILL\s+1 character.
+.TP
+.BR echonl " (" \-echonl )
+Echoes (does not echo) \s-1NL\s+1.
+.TP
+.BR noflsh " (" \-noflsh )
+Disables (enables) flush after \s-1INTR\s+1 or \s-1QUIT\s+1.
+.TP
+.BR ctlech " (" \-ctlech )
+Echoes (echo control characters unchanged) control characters as ^\fIx\fR
+and delete as ^?. (POSIX only)
+.TP
+.BR prtera " (" \-prtera )
+Echoes (does not echo) erased characters enclosed 
+within back and forward slashes (\\ /) for printing 
+terminals.  (POSIX only)
+.TP
+.BR crtera " (" \-crtera )
+Wipes out (simply backspace) erased characters with 
+backspace-space-backspace.
+(POSIX only)
+.TP
+.BR crtkil " (" \-crtkil )
+Wipes out line (kill character and newline) with backspace-space-backspace.
+(POSIX ONLY)
+.sp
+.SS Control Assignments
+.TP 18
+.I "control-character c"
+Sets
+.I control-character
+to
+.IR c ,
+where
+.I control-character
+is
+.BR erase ", " kill ", " intr ,
+.BR quit ", " eof ", " eol ,
+.BR min ", or " time
+.BR ( min " and " time
+are used with
+.BR \-icanon ".
+.PP
+The following control characters are applicable to POSIX mode only:
+.BR susp ", " dsusp ", " rprnt ,
+.BR flush ", " werase ", " lnext ", 
+.BR quote.
+.PP
+If
+.I c\^
+is preceded by a circumflex
+.RB ( ^ ),
+then the value used is the corresponding 
+.B CTRL 
+character (for example, ^d is a 
+.B CTRL-d );
+^? is interpreted as DEL and ^\-  is interpreted as undefined.
+.PP
+The
+.B new
+option
+sets the line discipline to NTTYDISC.  Note that this changes the line 
+discipline to be a non-termio line discipline.  Once this has been done
+the
+.PN stty
+options described in the non-termio section should be used.
+.sp
+.SS Combination Modes
+.TP 18
+.BR evenp "\ or\ " parity
+Enables
+.BR parenb " and " cs7 .
+.TP
+.B oddp
+Enables 
+.BR parenb ", " cs7 ", and " parodd .
+.TP
+.BR \-parity ", " \-evenp ", or " \-oddp
+Disables
+.BR parenb ,
+and set
+.BR cs8 .
+.TP
+.BR nl " (" \-nl )
+Unsets (sets)
+.BR icrnl ", " onlcr .
+In addition
+.B \-nl
+unsets
+.BR inlcr ", " igncr ", "
+.BR ocrnl ", and " onlret .
+.TP
+.BR lcase " (" \-lcase )
+Sets (unsets)
+.BR xcase ", " iuclc ", and " olcuc .
+.TP
+.BR \s-1LCASE\s+1 " (" \-\s-1LCASE\s+1 )
+Sets (unsets)
+.BR xcase ", " iuclc ", and " olcuc .
+.TP
+.BR tabs " (" \-tabs "\ or\ " tab3 )
+Preserves (expands to spaces) tabs when printing.
+.TP
+.B ek
+Resets \s-1ERASE\s+1 and \s-1KILL\s+1 characters back to normal
+.B #
+and
+.BR @ .
+.TP
+.B sane
+Resets all modes to some reasonable values.
+.SH See Also
+ioctl(2), tabs(1), tset(1), tty(4), termio(4), termios(4)

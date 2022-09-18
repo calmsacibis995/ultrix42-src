@@ -1,0 +1,148 @@
+.TH lpc 8
+.SH Name
+lpc \- line printer control program
+.SH Syntax
+.B /etc/lpc
+[
+.I command
+[
+.I argument...
+] ]
+.SH Description
+.NXR "lpc program"
+.NXS "line printer control program" "lpc program"
+.NXAM "lpc program" "lpq program"
+The
+.PN lpc
+program is used by the system administrator to control the
+operation of the line printer system.
+For each line printer with an entry in the
+.PN /etc/printcap
+file,
+.PN lpc
+may be used to start/stop several different functions.
+.PP
+Without any arguments,
+.PN lpc
+prompts for commands from the standard input.
+If arguments are supplied,
+.PN lpc
+interprets the first argument as a command and the remaining
+arguments as parameters to the command.
+The standard input may be redirected causing
+.PN lpc
+to read commands from file.
+The commands and their parameters are shown below.
+Commands may be abbreviated.
+.NXR "lpc program" "commands"
+.PP
+? [\fI \fIcommand...\fR ]
+.br
+\fBhelp\fR [ \fIcommand...\fR ]
+.NXR "help command (lpc)"
+.IP
+Prints a short description of each command specified 
+in the argument list,
+or, if no arguments are given, a list of the recognized commands.
+.PP
+\fBabort\fR [ \fIall\fR ] [ \fIprinter...\fR ]
+.NXR "abort command (lpc)"
+.IP
+Terminates an active spooling daemon on the local host immediately and
+then disables printing (preventing new daemons from being started by
+.PN lpr
+for the specified printers.
+.PP
+\fBclean\fR [ \fIall\fR ] [ \fIprinter...\fR ]
+.NXR "clean command (lpc)"
+.IP
+Removes all files beginning with ``cf'', ``tf'', or ``df''
+from the specified printer queue(s) on the local machine.
+.PP
+\fBenable\fR [ \fIall\fR ] [ \fIprinter...\fR ]
+.NXR "enable command (lpc)"
+.IP
+Enables spooling on the local queue for the listed printers.
+This will allow
+.PN lpr
+to put new jobs in the spool queue.
+.PP
+\fBexit\fR
+.br
+\fBquit\bR
+.IP
+Exits from
+.PN lpc .
+.PP
+\fBdisablefR [ \fIall\fR ] [ \fIprinter...\fR ]
+.NXR "exit command (lpc)"
+.NXR "quit command (lpc)"
+.NXR "disable command (lpc)"
+.IP
+Turns off the specified printer queues.
+This prevents new printer jobs from being entered into the queue by
+.PN lpr .
+.PP
+\fBrestart\fR [ \fIall\fR ] [ \fIprinter...\fR ]
+.NXR "restart command (lpc)"
+.IP
+Attempts to start a new printer daemon.
+This is useful when some abnormal condition causes the daemon to
+die unexpectedly leaving jobs in the queue.
+The
+.PN lpq
+command
+will report that there is no daemon present when this condition occurs.
+.PP
+\fBstart\fR [ \fIall\fR ] [ \fIprinter...\fR ]
+.NXR "start command (lpc)"
+.IP
+Enables printing and starts a spooling daemon for the listed printers.
+This
+command also creates an 
+.PN init
+file in the printer's spool directory.
+The
+.PN init
+file can be used by filters as an initialization flag.
+.PP
+\fBstatus\fR [ \fIall\fR ] [ \fIprinter...\fR ]
+.NXR "status command (lpc)"
+.IP
+Displays the status of daemons and queues on the local machine.
+.PP
+\fBstop\fR [ \fIall\fR ] [ \fIprinter...\fR ]
+.NXR "stop command (lpc)"
+.IP
+Stops a spooling daemon after the current job completes and disables
+printing.
+.PP
+\fBtopq printer\fR [ \fIjobnum...\fR ] [ \fIuser...\fR ]
+.NXR "topq printer command (lpc)"
+.IP
+Places the jobs in the order listed at the top of the printer queue.
+.SH Diagnostics
+.NXR "lpq program" "diagnostics"
+.B "?Ambiguous command"
+.br
+Abbreviation matches more than on command.
+.PP
+.B "?Invalid command"
+.br
+No match was found.
+.PP
+.B "?Privileged command"
+.br
+The command can only be executed by root.
+.SH Files
+.TP 20
+.PN /etc/printcap
+Printer description file
+.TP
+.PN /usr/spool/*
+Spool directories
+.TP
+.PN /usr/spool/*/lock
+Lock file for queue control
+.SH See Also
+lpq(1), lpr(1), lprm(1), printcap(5), lpd(8)

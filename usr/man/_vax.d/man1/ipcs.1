@@ -1,0 +1,267 @@
+.\" SCCSID: @(#)ipcs.1	8.1	9/11/90
+.\" SCCSID: @(#)ipcs.1	8.1	9/11/90
+.TH ipcs 1
+.SH Name
+ipcs \- report interprocess communication facilities status
+.SH Syntax
+.B
+ipcs [\|\fIoptions\fR\|]
+.SH Description
+.NX R "ipcs command"
+.NX R "interprocess communication package" "reporting status"
+.NX R "message queue" "reporting status"
+.NX R "semaphore set" "reporting status"
+.NX R "shared memory" "reporting status"
+The
+.Pn ipcs
+command provides information about active,
+interprocess communication facilities,
+message queues, shared memory, and semaphores
+that are currently active in the system.
+.SH Options
+.NXR "ipcs command" "options"
+The information is displayed in columns and
+is controlled by the following
+.IR options :
+.IP \fB\-m\fR
+Displays information about active shared memory segments
+.IP \fB\-q\fR 
+Displays information about active message queues
+.IP \fB\-s\fR 
+Displays information about active semaphores
+.PP
+If any of the options
+.B \-q,
+.B \-m,
+or
+.RB \-s
+are specified, information about only those indicated are printed.
+If none of these three is specified, information about all three are
+printed.
+.IP \fB\-a\fR 
+Uses all print
+.IR options
+(shorthand notation for
+.B \-b, \-c, \-o, \-p
+and
+.BR \-t )
+.IP \fB\-b\fR 
+Displays the biggest allowable size information (maximum number of bytes in
+messages on queue for message queues, size of segments for shared
+memory, and number of semaphores in each set for semaphores)  
+.IP \fB\-C\fR 
+Uses the specified core file (next argument) in place of 
+.PN /dev/kmem
+.IP \fB\-c\fR 
+Displays creator's login name and group name  
+.IP \fB\-N\fR o.3i 
+Uses the specified 
+.I namelist
+(next argument) in place of
+.PN /vmunix
+.IP \fB\-o\fR 
+Displays the outstanding usage information  (number of messages in queue, 
+size of each and number of processes attached to shared memory segments)
+.IP \fB\-p\fR 
+Displays the process ID information (process ID of last process to send a
+message and process ID of last process to receive a message on message
+queues and process ID of creating process and process ID of last process
+to attach or detach on shared memory segments) 
+.IP \fB\-t\fR 
+Displays all time statistics (time of the last control operation that
+changed the access permissions for all facilities, time of last
+.PN msgsnd
+and last
+.PN msgrcv
+on message queues, last
+.PN shmat
+and last
+.PN shmdt
+on shared memory, last 
+.MS semop 2 
+on semaphores) 
+.PP
+The column headings and the meaning of the columns in an
+.PN ipcs
+listing are given below.
+The letters in parentheses indicate the
+.I options
+that cause the corresponding heading to appear;
+.B all
+means that the heading always appears.  
+.NXR "ipcs command" "column headings listed"
+Note that these
+.I options
+only determine what information is provided for each facility; they do
+.I not
+determine which facilities are listed.
+.TP 20
+T (all)	
+Type of facility:
+.RS
+.TP
+q
+Message queue
+.TP
+m
+Shared memory segment
+.TP
+s
+Semaphore
+.RE
+.TP 20
+ID (all)	
+The identifier for the facility entry.
+.TP 20
+KEY (all)
+The key used as an argument to
+.PN msgget ,
+.PN semget ,
+or
+.PN shmget
+to create the facility entry.  Note:  The key of a shared memory
+segment is changed to IPC_PRIVATE
+when the segment has been removed until all processes attached to the
+segment detach it.
+.TP 20
+MODE (all)
+The facility access modes and flags.
+.sp .5
+The mode consists of 11 characters.
+The first two characters are interpreted as follows:
+.RS
+.TP
+R
+If the process is waiting on a
+.PN msgrcv .
+.TP
+S
+If a process is waiting on a
+.PN msgsnd .
+.TP
+D
+If the associated shared memory segment has been removed.  It 
+disappears when the last process attached to the segment detaches it.
+.TP
+C
+If the associated shared memory segment is to be clear when the first
+attach is executed.
+.fi
+.TP
+\-
+If the corresponding special flag is
+.I not
+set.
+.RE
+.IP
+The next 9 characters are interpreted as three sets of three bits each.
+The first set refers to the owner's permissions; the next, to
+permissions of others in the user-group of the facility entry; and the
+last to all others.  Within each set, the first character indicates
+permission to write or alter the facility entry, and the last character
+is currently unused.
+.sp .5
+The permissions are indicated as follows:
+.RS
+.TP
+r
+If read permission is granted
+.TP
+w
+If write permission is granted
+.TP
+a
+If alter permission is granted
+.fi
+.TP
+\-
+If the indicated permission is
+.I not
+granted
+.RE
+.TP 20
+OWNER (all)  
+The login name of the owner of the facility entry.
+.TP 20
+GROUP (all)  
+The group name of the group of the owner of the facility entry.
+.TP 20
+CREATOR (a,c)
+The login name of the creator of the facility entry.
+.TP 20
+CGROUP (a,c)
+The group name of the group of the creator of the facility entry.
+.TP 20
+CBYTES (a,o)
+The number of bytes in messages currently outstanding on the associated
+message queue.
+.TP 20
+QNUM (a,o)
+The number of messages currently
+outstanding on the associated message queue.
+.TP 20
+QBYTES (a,b)
+The maximum number of bytes allowed in messages outstanding
+on the associated message queue.
+.TP 20
+LSPID (a,p)
+The process ID of the last process to send a message to the associated
+queue.
+.TP 20
+LRPID (a,p)
+The process ID of the last process
+to receive a message from the associated
+queue.
+.TP 20
+STIME (a,t)
+The time the last message was sent to the associated queue.
+.TP 20
+RTIME (a,t)
+The time the last message was received from the associated queue.
+.TP 20
+CTIME (a,t)
+The time the associated entry was created or changed.
+.TP 20
+NATTCH (a,o)
+The number of processes attached to the associated shared memory
+segment.
+.TP 20
+SEGSZ (a,b)
+The size of the associated shared memory segment.
+.TP 20
+CPID (a,p)
+The process ID of the creator of the shared memory entry.
+.TP 20
+LPID (a,p)
+The process ID of the last process to attach or detach the shared memory
+segment.
+.TP 20
+ATIME (a,t)
+The time the last attach was completed to the associated shared memory
+segment.
+.TP 20
+DTIME (a,t)
+The time the last detach was completed on the associated shared memory
+segment.
+.TP 20
+NSEMS (a,b)
+The number of semaphores in the set associated with the semaphore
+entry.
+.TP 20
+OTIME (a,t)
+The time the last semaphore operation was completed on the set
+associated with the semaphore entry.
+.SH Restrictions
+Things can change while
+.PN ipcs
+is running.  The picture it gives is only a close approximation to
+reality.
+.SH Files
+.nf
+/vmunix	system namelist
+/dev/kmem	memory
+/etc/passwd	user names
+/etc/group	group names
+.fi
+.SH See Also
+ipcrm(2), msgop(2), semop(2), shmop(2)

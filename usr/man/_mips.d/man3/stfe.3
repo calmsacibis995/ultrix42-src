@@ -1,0 +1,234 @@
+.TH stfe 3 RISC
+.SH Name
+stfe, st_filebegin, st_endallfiles, st_fileend, st_blockbegin, st_textblock, st_blockend, st_procend, st_procbegin, st_str_idn, st_sym_idn, st_abs_ifd_index, st_fglobal_idn, st_psym_idn_offset, st_pdadd_idn \- routines that provide a high-level interface to basic functions needed
+to access and add to the symbol table
+.SH Syntax
+.nf
+.B #include <syms.h>
+.PP
+.ft B
+long st_filebegin (filename)
+char *filename;
+.PP
+.ft B
+long st_endallfiles ()
+.PP
+.ft B
+long st_fileend (idn)
+long idn;
+.PP
+.ft B
+long st_blockbegin(iss, value, sc)
+long iss;
+long value;
+long sc;
+.PP
+.ft B
+long st_textblock()
+.PP
+.ft B
+long st_blockend(size)
+long size;
+.PP
+.ft B
+long st_procend(idn)
+long idn
+.PP
+.ft B
+long st_procbegin (idn)
+long idn;
+.PP
+.ft B
+char *st_str_idn (idn)
+long idn;
+.PP
+.ft B
+char *st_sym_idn (idn, value, sc, st, index)
+long idn;
+long *value;
+long *sc;
+long *st;
+long *index;
+.PP
+.ft B
+long st_abs_ifd_index (ifd, index)
+long ifd;
+long index;
+.PP
+.ft B
+long st_fglobal_idn (idn)
+long idn;
+.PP
+.ft B
+pSYMR st_psym_idn_offset (idn, offset)
+long idn;
+long offset;
+.PP
+.ft B
+long st_pdadd_idn (idn)
+long idn;
+.fi
+.ft R
+.br
+.SH Description
+The
+.B stfe
+routines provide a high-level interface to the symbol table based on common
+needs of the compiler front-ends. 
+.TP 20
+.I st_filebegin
+Takes a file name and calls 
+.I st_fdadd (see 
+.MS stfd 3 ).
+If it is a new file, a symbol is added to the symbol table that for that
+file or symbol, and the user supplied routine,
+.I st_feinit,
+is called. This allows special file parameters to be initialized.
+For example, the C front-end adds basic type auxiliaries to each file's
+aux table so that all variables of that type can refer to a single
+instance instead of making individual copies of them. 
+The routine
+.I st_filebegin\fR
+returns a dense number that references the symbol added for this file.
+It tracks files as they appear in a CPP line directive with a stack.
+It detects (from the order of the CPP directives) 
+that a file ends and calls 
+.I st_filend.
+If a file is closed with a 
+.I st_fileend, 
+a new instance of the filename is created.  For example, multiply included 
+files.
+.TP 20
+.I st_fileend
+Requires 
+the dense number from the corresponding 
+.I st_filebegin call for the file
+in question. It then generates an end symbol and patches the references so
+that the index field of the begin file points to that of one beyond 
+the end file. The end file points to the begin file.
+.TP 20
+.I st_endallfiles
+Is called at the end of execution to close off all files that have not been
+ended by previous calls to 
+.I st_filebegin. 
+CPP directives might not
+reflect the return to the original source file; therefore, this routine can
+possibly close many files.
+.TP 20
+.I st_blockbegin
+Supports both language blocks (for example, 
+C's left curly brace blocks), beginning of
+structures, and unions. If the storage class is scText,
+it is the former; if it is scInfo, it is one of the latter.
+The iss (index into string space) specifies the name of the
+structure/etc, if any. 
+.PP
+If the storage class is scText, we must check the result of 
+.I st_blockbegin.
+It returns a dense number for outer blocks and a zero for nested blocks.
+The non-zero block number should be used in the BGNB ucode.
+Users of languages without nested blocks that provide variable 
+declarations can ignore the rest of this paragraph.
+Nested blocks are two-staged: one stage occurs when 
+the language block is detected and the other stage occurs when
+the block has content. If the block has content (for example, local 
+variables), the front-end must call 
+.I st_textblock 
+to get a non-zero dense number for the block's BGNB ucode. If the block 
+does not have content and 
+.I st_textblock
+is not called, the block's 
+.I st_blockbegin
+and
+.I st_blockend
+do not produce block and end symbols.
+.PP
+If it is scInfo,
+.I st_blockbegin 
+creates a begin block symbol in the symbol table and returns a dense 
+number referencing it.  The dense number is necessary to build the 
+auxiliary required to reference the structure/etc. It goes in the aux 
+after the TIR along with a file index. This dense number is also noted 
+in a stack of blocks used by 
+.I st_blockend.
+.PP
+The 
+.I st_blockbegin should not be called for
+language blocks when the front-end is not producing debugging
+symbols.
+.PP
+The
+.I st_blockend
+requires that blocks occur in a nested fashion. It retrieves the
+dense number for the most recently started block and creates a
+corresponding end symbol. As in 
+.I fileend, 
+both the begin and end symbol index fields point at the other end's symbol.
+If the symbol ends a structure/etc., as determined by the storage class of the
+begin symbol, the size parameter is assigned to the begin symbol's value field.
+It is usually the size of the structure or max value of a enum.
+We only know it at this point. The dense number of the end symbol
+is returned so that the ucode ENDB can use it.
+If it is an ignored text block, the dense number is zero and no ENDB
+should be generated.
+.PP
+In general, defined external procedures or functions appear in the
+symbols table and the externals table. The external table definition must
+occur first through the use of a 
+.I st_extadd.  After that definition,
+.I st_procbegin
+can be called with a dense number referring to the external
+symbol for that procedure. It checks to be sure we have a defined
+procedure (by checking the storage class). It 
+adds a procedure symbol to the symbol table. The external's index
+should point at its auxiliary data type information (or if 
+debugging is off, indexNil).
+This index is copied into
+the regular symbol's index field or a copy of its type is generated
+(if the external is in a different file than the regular symbol).
+Next, we put the index to symbol in the external's index field. The external's
+dense number is used as a block number in ucodes referencing it and
+is used to add a procedure when in the 
+.I st_pdadd_idn.
+.TP 20
+.I st_procend
+Creates an end symbol and fixes the indices as in 
+.I blockend 
+and
+.I fileend,
+except that the end procedure reference is kept in the begin procedure's
+aux rather than in the index field (because the begin procedure has a type
+as well as an end reference). This must be called with the dense
+number of the procedure's external symbol as an argument and returns
+the dense number of the end symbol to be used in the END ucode.
+.TP 20
+.I st_str_idn
+Returns the string associated with symbol or external referenced by the
+dense number argument. If the symbol was anonymous (for example, 
+there is not a
+symbol), a (char *), -1 is returned.
+.TP 20
+.I st_sym_idn
+Returns the same result as 
+.I st_str_idn, except that the rest of the fields of the symbol specified 
+by the
+.I idn
+are returned in the arguments.
+.TP 20
+.I st_fglobal_idn
+Returns a 1 if the symbol associated with the specified idn is non-static;
+otherwise, a 0 is returned.
+.TP 20
+.I st_abs_ifd_index
+Returns the absolute offset for a dense number. If the symbol is
+global, the global's index is returned. If the symbol occurred in a
+file, the sum of all symbols in files occurring before that file
+and the symbol's index within the file is returned.
+.TP 20
+.I st_pdadd_idn
+Adds an entry to the procedure table for the 
+.I st_proc entry 
+generated by procbegin. This should be called when the front-end generates code
+for the procedure in question.
+.SH See Also
+stcu(3), stfd(3), sym.h(5), stsupport.h(5)

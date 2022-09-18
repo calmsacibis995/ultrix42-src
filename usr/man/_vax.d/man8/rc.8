@@ -1,0 +1,62 @@
+.\" SCCSID: @(#)rc.8	8.2	10/3/90
+.TH rc 8
+.SH Name
+rc, rc.local \- command script for auto-reboot and daemons
+.SH Syntax
+.B /etc/rc
+.br
+.B /etc/rc.local
+.SH Description
+.NXR "rc command"
+.NXR "rc.local file" "contents"
+.NXR "bootstrap procedure" "automatic"
+The
+.PN rc
+command script controls the automatic reboot and 
+.PN rc.local
+is the script holding commands which are pertinent only
+to a specific site.
+.PP
+When an automatic reboot is in progress,
+.PN rc
+is invoked with the argument
+.PN autoboot
+and runs a
+.PN fsck
+with option
+.PN \-p
+to ``preen'' all the disks of minor inconsistencies resulting
+from the last system shutdown and to check for serious inconsistencies
+caused by hardware or software failure.
+If this auto-check and repair succeeds, then the second part of
+.PN rc
+is run.
+.PP
+The second part of
+.PN rc ,
+which is run after an auto-reboot succeeds and also if
+.PN rc
+is invoked when a single user shell terminates, 
+starts all the daemons on the system, preserves editor files
+and clears the scratch directory
+.PN /tmp .
+For further information, see 
+.MS init 8 .  
+The
+.PN rc.local
+command
+is executed immediately before any other commands after a successful
+.PN fsck .
+Normally, the first commands placed in the 
+.PN rc.local
+file define the machine's name, using 
+.MS hostname 1 ,
+and save any possible core image that might have been
+generated as a result of a system crash, 
+.MS savecore 8 .
+The latter command is included in the 
+.PN rc.local
+file because the directory in which core dumps are saved
+is usually site specific.
+.SH See Also
+init(8), reboot(8), savecore(8)

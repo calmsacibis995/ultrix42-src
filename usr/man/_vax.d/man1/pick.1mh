@@ -1,0 +1,463 @@
+.TH pick 1mh
+.SH Name
+pick \- select messages by content
+.SH Syntax
+.B pick
+[
+.I +folder
+] [
+.I msgs
+] [
+.I options
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "pick command"
+.NXR "messages" "select by content"
+The
+.PN pick
+command lets you search messages in a folder 
+on a diverse range of search criteria.
+.PP
+You can search the mail headers or the text 
+of some or all of the messages within a folder 
+for the specified criteria.  
+You can use pattern matching or date constraint operations.  
+You can use the messages that you find 
+with other MH commands,
+or you can place them in a sequence.
+.PP
+By default, 
+.PN pick 
+searches all the messages in the current folder.
+You can specify a folder other than the current folder using the
+.I +foldername
+option.  
+Also, if you do not want to search all messages 
+within the folder, you can specify more than one message 
+or a range of messages using the message numbers.  
+.PP
+You can search on the contents of the most common
+header fields by giving the name of the field as an option,
+preceded by a dash (\f(CW-\fR).
+The
+.PN pick
+command allows you to specify
+the following header fields in this way:
+\f(CWTo:\fR,
+\f(CWcc:\fR,
+\f(CWDate:\fR,
+\f(CWFrom:\fR,
+and
+\f(CWSubject:\fR.
+You can also search the contents of any other header field 
+by preceding the name of the field with two dashes.
+.PP
+The 
+.PN pick 
+also allows you to introduce time constraints.
+You can search for messages sent before, after,
+or between specified dates.
+.\"
+.SS Combining pick with Other Commands
+You can combine the output of
+.PN pick
+directly with any MH command.  
+by using a technique called back-quoting.
+Enclose the
+.PN pick 
+command and its associated arguments and options 
+in back quotes (\f(CW`\fR).
+The system performs back-quoted commands first.
+In the following example, the 
+.PN pick 
+command is performed first,
+and the output is then listed by the
+.PN scan 
+command:
+.EX
+% \f(CBscan `pick \-from jones`\f(CW
+   3  16/01 jones              Meeting 10.00 tomorrow<<There wi
+  17  22/01 jones              Minutes of meeting 16/1<<Any com
+  21  01/02 jones              Next week's meeting cancelled<<T
+.EE
+.PP
+If 
+.PN pick 
+finds that there is no mail from Jones, 
+it will output the illegal character \f(CW0\fR.
+This will cause the  
+.PN scan
+command to fail gracefully.
+.PP
+You can use back-quoting to combine 
+.PN pick 
+with any MH command.
+For more information on back-quoting, 
+see the reference page for your ULTRIX shell; for example,
+.MS csh 1
+or
+.MS sh 1 .
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-after \fIdate\fB" 10
+Searches for messages sent after the specified date.
+This command can be used with pattern-matching options,
+and also in conjunction with the 
+.B \-before
+option to specify a date range.
+The date must be enclosed in double quotes (").
+This option accepts RFC 822-style dates.
+It also accepts days of the week, and the special dates
+\f(CWtoday\fR and \f(CWyesterday\fR.
+Days of the week always refer to days in the past;
+for example, \f(CWsaturday\fR refers to last Saturday,
+not to next Saturday.
+.IP
+By default, 
+.PN pick
+consults the \f(CWDate:\fR field of the message.
+If you wish to use the date in another header field,
+you can specify this with the 
+.B \-datefield
+option.
+.\"
+.IP "\-before \fIdate\fB" 10
+Searches for messages sent before the specified date.
+This command can be used with pattern-matching options,
+and also in conjunction with the
+.B \-after
+option to specify a date range.
+The date must be enclosed in double quotes (").
+This option accepts RFC 822-style dates.
+It also accepts days of the week, and the special dates
+\f(CWtoday\fR, \f(CWtomorrow\fR, and \f(CWyesterday\fR.
+Days of the week always refer to days in the past;
+for example, \f(CWsaturday\fR refers to last Saturday,
+not to next Saturday.
+.IP
+By default,
+.PN pick
+consults the \f(CWDate:\fR field of the message.
+If you wish to use the date in another header field,
+you can specify this with the
+.B \-datefield
+option.
+.\"
+.IP "\-cc \fIpattern\fB" 10
+Searches for the specified pattern in the 
+\f(CWcc:\fR field of messages.
+This option is case-insensitive:
+lower- and upper-case letters are treated as identical.
+So a search for the pattern \f(CWphillips\fR 
+would also find \f(CWPhillips\fR and \f(CWPHILLIPS\fR.
+If the pattern contains spaces, you must enclose it
+in double quotes (").
+.\"
+.IP "\-date \fIpattern\fB" 10
+Searches for messages sent on a specified date.
+This option consults the \f(CWDate:\fR field 
+of messages.
+You must enclose the date that you give in double quotes (")
+if it contains spaces.
+.\"
+.IP "\-datefield \fIfield\fB"  10
+Specifies the header field to be used by the
+.B \-before
+and
+.B \-after
+options.
+By default, these options consult the
+\f(CWDate:\fR field of the message header.
+You can specify a different header field by naming it
+with this option.
+The 
+.B \-datefield
+option must precede the
+.B \-before
+or 
+.B \-after 
+options it is used with.
+.\"
+.IP "\-from \fIpattern\fB" 10
+Searches for the specified pattern in the 
+\f(CWFrom:\fR field of messages.
+This option is case-insensitive:
+lower- and upper-case letters are treated as identical.
+So a search for the pattern \f(CWphillips\fR 
+would also find \f(CWPhillips\fR and \f(CWPHILLIPS\fR.
+If the pattern contains spaces, you must enclose it
+in double quotes (").
+.\"
+.IP "\-help" 10
+Prints a list of the valid options to this command.
+.\"
+.IP "\-list" 10
+.PD 0
+.IP "\-nolist" 10
+.PD
+The
+.B \-list
+option lists the numbers of the messages that have met
+the search criteria.
+This is the usual default behavior of 
+.PN pick .
+If you use the 
+.B \-nolist 
+option, 
+.PN pick 
+indicates how many messages met the search criteria.
+.IP
+If you use the
+.B \-sequence 
+option to add the messages found to a sequence,
+the default behavior is to use the 
+.B \-nolist
+option.
+.\"
+.IP "\-public" 10
+.PD 0
+.IP "\-nopublic" 10
+.PD
+Sets the read permissions of sequences.
+Normally, when you create a sequence with the
+.B \-sequence
+option, the sequence will not be accessible 
+to other MH users.
+The 
+.B \-public 
+option makes the sequence accessible to other MH users.
+You can use the 
+.B \-nopublic
+option to ensure that the sequence that you create 
+is only accessible to yourself.
+.\"
+.IP "\-search \fIpattern\fB" 10
+Searches the entire message for the specified string.
+Each line of the message is searched for the pattern 
+that you specify.
+The
+.B \-search
+option is a modified
+.MS grep 1 .
+Like 
+.PN grep ,
+this option is case-sensitive;
+it treats upper- and lower-case letters as different.
+So a search for the word \f(CWstrawberries\fR
+would not find a messages which contained the word
+\f(CWSTRAWBERRIES\fR.
+If the search pattern contains spaces, 
+you must enclose it in double quotes (").
+.\"
+.IP "\-sequence \fIname\fB" 10
+Specifies a sequence in which 
+.PN pick 
+places the messages found.
+For more information on sequences, see
+.MS mark 1mh .
+The name of the sequence must begin with a letter, 
+and must consist entirely of alphabetic or numeric characters;
+no punctuation is allowed.
+.\"
+.IP "\-subject \fIpattern\fB" 10
+Searches for the specified pattern in the 
+\f(CWSubject:\fR field of messages.
+This option is case-insensitive:
+lower- and upper-case letters are treated as identical.
+So a search for the pattern \f(CWphillips\fR 
+would also find \f(CWPhillips\fR and \f(CWPHILLIPS\fR.
+If the pattern contains spaces, you must enclose it
+in double quotes (").
+.\"
+.IP "\-to \fIpattern\fB" 10
+Searches for the specified pattern in the 
+\f(CWTo:\fR field of messages.
+This option is case-insensitive:
+lower- and upper-case letters are treated as identical.
+So a search for the pattern \f(CWphillips\fR 
+would also find \f(CWPhillips\fR and \f(CWPHILLIPS\fR.
+If the pattern contains spaces, you must enclose it
+in double quotes (").
+.\"
+.IP "\-zero" 10
+.PD 0
+.IP "\-nozero" 10
+.PD
+Specifies whether to zero existing sequences 
+before adding new messages.
+Normally, 
+.PN pick 
+removes all existing messages from a sequence before
+adding messages to it.
+If you specify the 
+.B \-nozero
+option,
+.PN pick
+will add the messages it finds to the existing contents 
+of the sequence.
+This option only works with the
+.B \-sequence
+option.
+.\"
+.IP "\-\|\-\fIcomponent pattern\fB" 10
+Searches a specified header field.
+If you wish to search for a pattern in a particular header field,
+you can specify the field by placing two dashes (\f(CW-\fR)
+before the name of the field.
+This option is case-insensitive:
+lower- and upper-case letters are treated as identical.
+So a search for the pattern \f(CWphillips\fR
+would also find \f(CWPhillips\fR and \f(CWPHILLIPS\fR.
+If the pattern contains spaces, you must enclose it
+in double quotes (").
+.IP
+The 
+.PN pick 
+command recognizes the following common header fields:
+\f(CWTo:\fR,
+\f(CWcc:\fR,
+\f(CWDate:\fR,
+\f(CWFrom:\fR,
+and
+\f(CWSubject:\fR.
+You can search these fields by preceding the name
+with one dash only.
+.PP
+In addition to the above options, you can direct
+.PN pick 
+to start its search a specified number of days ago.
+To do this, precede the number of days with a dash (\f(CW-\fR).
+For example, the following command searches all messages
+sent in the last ten days:
+.EX
+% \f(CBpick \-subject strawberries \-10\f(CW
+1
+6
+.EE
+.\"
+.\"
+.PP
+The 
+.PN pick
+command also supports complex boolean operations.
+The
+.BR \-not ,
+.B \-or 
+and
+.B \-and
+options allow you to modify the behavior 
+of pattern-matching options.
+In the following command, the
+.B \-not 
+option means that 
+.PN pick 
+searches for messages that were not from fred:
+.EX
+% \f(CBpick -not -from fred\f(CW
+.EE
+.PP
+In the next example, the 
+.B \-or 
+option finds all messages from fred or from david.
+If the 
+.B \-or 
+option is not used, 
+.PN pick 
+searches for messages with both the string \f(CWfred\fR
+and the string \f(CWdavid\fR in the \f(CWFrom:\fR field.
+.EX
+% \f(CBpick -from fred -or -from david\f(CW
+.EE
+.PP
+The pattern-matching options normally take precedence over
+.BR \-not ,
+which in turn takes precedence over 
+.BR \-and ,
+which in turn takes precedence over 
+.BR \-or .
+.PP
+You can override the default precedence with the
+.B \-lbrace
+and
+.B \-rbrace
+options.
+These act just like opening and closing parentheses 
+in logical expressions.
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+.PP
+The sequence name, punctuation and message list must not exceed 1024
+characters.
+In practice, this gives a reasonable limit of approximately
+200 non-consecutive messages in a sequence.
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+The first example finds all the mail in the current folder 
+that was sent by Christine:
+.EX
+% \f(CBpick \-from christine\f(CW
+1
+3
+8
+.EE
+.PP
+In the next example,
+.PN pick
+searches messages 10-20 in the 
+.PN +sent 
+folder for messages that were sent to Kafka:
+.EX
+% \f(CBpick +sent 10-20 \-to Kafka\f(CW
+pick: no messages match specification
+.EE
+.PP
+The next example finds all messages from Jack, 
+and places them in a sequence called \f(CWtesting\fR:
+.EX
+% \f(CBpick \-from Jack \-sequence testing\f(CW
+3 hits
+.EE
+.PP
+The final example finds all messages sent 
+to Holloway since 10th June:
+.EX
+% \f(CBpick \-to holloway \-after "10 Jun 90"\f(CW
+19
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine your Mail directory
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also 
+csh(1), ed(1), grep(1), sh(1), inc(1mh), mark(1mh)

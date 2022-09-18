@@ -1,0 +1,40 @@
+.\" SCCSID: @(#)domainname.1yp	8.1	9/11/90
+.TH domainname 1yp
+.SH Name
+domainname \- display or set the name of the current domain for this system
+.SH Syntax
+.B domainname
+[\|\fInameofdomain\fR\|]
+.SH Description
+.NXR "domainname command"
+.NXR "domain" "getting name"
+.NXR "domain" "setting name"
+.NXR "domain" "defined"
+The
+.PN domainname
+command, when used without an argument, displays the name of the
+current domain.
+The 
+.PN /etc/rc.local
+startup script must be used to set the current domain name
+before any other YP commands can be issued.
+.PP
+A domain is a logical grouping
+of networked-connected systems established
+for the purpose of sharing a common set of data files.
+Domains are only used by the yellow pages (YP) service and are called 
+YP domains.
+A YP domain is a directory in 
+.PN /etc/yp ,
+established through the use of the
+.PN domainname
+command,
+where a YP server holds all of the YP maps.
+Each YP map contains a set of keys and associated key values.
+For example, in a map called 
+.PN hosts.byname ,
+the host names stored there constitute the keys.
+The corresponding internet addresses of each host
+constitute the associated key values.
+.SH See Also
+ypfiles(5yp), ypsetup(8yp)

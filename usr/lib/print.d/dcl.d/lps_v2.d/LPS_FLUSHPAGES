@@ -1,0 +1,11 @@
+
+% LPS$$FLUSHPAGES device control library module
+% Version V1.2
+%
+% Copyright ) 1987 by DEC, Maynard, Mass.  All rights reserved.
+
+% This module takes no data on the stack.
+
+lps$page-layup-dict begin
+  flush-pages
+end

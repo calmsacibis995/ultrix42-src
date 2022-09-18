@@ -1,0 +1,25 @@
+.\" SCCSID: @(#)abort.3f	8.1	9/11/90
+.TH abort 3f VAX "" Unsupported
+.SH Name
+abort \- terminate abruptly with memory image
+.SH Syntax
+.B subroutine abort (string)
+.br
+.B character*(*) string
+.SH Description
+.NXR "abort subroutine (FORTRAN)"
+.NXR "process" "terminating with core dump"
+The
+.PN abort
+subroutine
+cleans up the I/O buffers and then aborts producing a
+.I core
+file in the current directory.
+If
+.I string
+is given, it is written to logical unit 0 preceded by ``abort:''.
+.SH Files
+.ie \nM /usr/ucb/lib/libF77.a
+.el /usr/lib/libF77.a
+.SH See Also
+abort(3)

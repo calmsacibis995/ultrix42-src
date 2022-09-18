@@ -1,0 +1,34 @@
+/*        @(#)xlc_codegen.vc	4.1      7/2/90      */
+
+/*  Version 2.00   4/ 3/89 13:55:00.0000  */
+/* makehf /vc /cv /setup=portab.h,capdl.def xlc_codegen.def xlc_codegen.vc  */
+
+
+
+
+
+NOSHARE CODEGEN_STATE cg_st;
+NOSHARE PS_ST ps_st[8];
+NOSHARE PS_ST desired_st;
+NOSHARE PS_ST * cur_ps_st;
+NOSHARE float scalex;
+NOSHARE float scaley;
+NOSHARE LONG old_bitwidth;
+NOSHARE LONG old_stp;
+NOSHARE LONG stack_ptr;
+NOSHARE LONG old_ps_stack_ptr;
+NOSHARE BYTE str_buffer[128];
+NOSHARE UBYTE sixel_buffer[122400];
+CONST LONG sxl_mac_tbl[10][3] =  {  { 48,200,100 } 
+, { 48,200,100 } 
+, { 21,96,21 } 
+, { 32,300,100 } 
+, { 38,96,38 } 
+, { 48,200,100 } 
+, { 64,150,100 } 
+, { 74,96,74 } 
+, { 86,96,86 } 
+, { 96,100,100 } 
+ } 
+;
+

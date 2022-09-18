@@ -1,0 +1,213 @@
+.\" SCCSID: @(#)semctl.2	8.1	9/11/90
+.TH semctl 2
+.SH Name
+semctl \- semaphore control operations
+.SH Syntax
+.nf
+.B #include <sys/types.h\fP>
+.B #include <sys/ipc.h\fP>
+.B #include <sys/sem.h\fP>
+.PP
+.B int semctl (\fIsemid, semnum, cmd, arg\fP)
+.B int \fIsemid, cmd\fP;
+.B int \fIsemnum\fP;
+.B union \fIsemun\fP {
+	\fIint val\fP;
+	\fIstruct semid_ds *buf\fP;
+	\fIushort array[]\fP;
+} arg\fP;
+.fi
+.in \-8
+.SH Description
+.NXR "semctl system call"
+.NXR "semaphore" "control operations"
+.NXR "semctl system call" "semget system call"
+.NXR "semctl system call" "semop system call"
+The
+.PN semctl
+system call
+provides a variety of semaphore control operations as specified by 
+.IR cmd .
+The following 
+.IR cmd s
+are executed with respect to the semaphore specified by
+.I semid
+and
+.IR semnum :
+.TP 15
+GETVAL
+Return the value of 
+.IR semval .
+For further information, see
+.MS intro 2 .
+.TP 15
+SETVAL
+Set the value of 
+.I semval
+to arg.val.  When this command is successfully
+executed, the 
+.I semadj
+value corresponding
+to the specified semaphore in all
+processes is cleared.
+.TP 15
+GETPID
+Return the value of
+.IR sempid .
+.TP 15
+GETNCNT
+Return the value of 
+.IR semncnt . 
+.TP 15
+GETZCNT
+Return the value of
+.IR semzcnt . 
+.PP
+The following
+.IR cmd s
+return and set every 
+.I semval
+in the set of semaphores:
+.NXR "semctl system call" "commands"
+.TP 15
+GETALL
+Place 
+.IR semval s 
+into array pointed to by
+.IR arg.array .
+.TP 15
+SETALL
+Set 
+.IR semval s 
+according to the array pointed to by
+.I arg.array
+When this command is successfully executed,
+the 
+.I semadj
+values corresponding
+to each specified semaphore in all processes are cleared.
+.PP
+The following 
+.IR cmd s
+are also available:
+.TP 15
+IPC_STAT
+Place the current value of each member of the data structure associated with 
+.I semid 
+into the  structure pointed to by
+.IR arg.buf .
+The contents of this structure are defined in 
+.MS intro 2 .
+.TP 15
+IPC_SET
+Set the value of the following members of the data structure associated with
+.I semid 
+to the corresponding value found in the structure pointed to by
+.IR arg.buf :
+.EX
+sem_perm.uid
+sem_perm.gid
+sem_perm.mode /* only low 9 bits */
+.EE
+.PP
+This command can only be executed by a process that has an effective 
+user ID equal to superuser or to the values of
+.B sem_perm.uid
+or
+.B sem_perm.cuid
+in the data structure associated with
+.IR semid .
+.TP 15
+IPC_RMID
+Remove the semaphore identifier specified by 
+.I semid
+from the system and destroy the set
+of semaphores and data structure associated
+with it.
+This 
+.I cmd 
+can only be executed by a process that has an effective user
+ID equal to either that of superuser or to the value of
+.B sem_perm.uid
+in the data structure associated with
+.IR semid .
+.SH Return Values
+Upon successful completion, the value returned depends on 
+.IR cmd ,
+as follows:
+.TP 15
+GETVAL
+The value of
+.IR semval .
+.TP 15
+GETPID
+The value of
+.IR sempid .
+.TP 15
+GETNCNT
+The value of 
+.IR semncnt .
+.TP 15
+GETZCNT
+The value of 
+.IR semzcnt .
+.TP 15
+All other
+A value of 0.
+.RE
+.PP
+Otherwise, a value of \-1 is returned and
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+.NXR "semctl system call" "diagnostics"
+The
+.PN semctl
+system call fails if any of the following is true:
+.TP 15
+[EINVAL]
+The
+.I semid
+is not a valid semaphore identifier. 
+.TP 15
+[EINVAL]
+The
+.I semnum
+is less than zero or greater than
+.B sem_nsems.
+.TP 15
+[EINVAL]
+The
+.I cmd
+is not a valid command. 
+.TP 15
+[EACCES]
+Operation permission is denied to the calling process.
+For further information, see 
+.MS errno 2 . 
+.TP 15
+[ERANGE]
+The
+.I cmd
+is SETVAL or SETALL,
+and the value to which semval is to be set
+is greater than the system imposed maximum. 
+.TP 15
+[EPERM]
+The
+.I cmd
+is equal to IPC_RMID
+or IPC_SET 
+and the effective user ID of the calling
+process is not equal to that of superuser
+nor to the value of
+.B sem_perm.uid
+in the data structure associated with
+.IR semid .
+.TP 15
+[EFAULT]
+The
+.I arg.buf
+points to an illegal address. 
+.SH See Also
+errno(2), intro(2), semget(2), semop(2)

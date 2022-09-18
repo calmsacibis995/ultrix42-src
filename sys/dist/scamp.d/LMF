@@ -1,0 +1,148 @@
+#!/bin/sh5
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)LMF	4.1	(ULTRIX)	7/27/90"
+#
+#	000	Jonathan Wallace	1-Jun-1990
+#
+########################################################################
+#
+#
+trap 'continue' 1 2 3 18
+set -h
+LL="
+"
+
+#######################################################
+: LMF_Register_Routine - Register a PAK here
+#######################################################
+LMF_Register_Routine()
+{
+	clear
+	echo "
+*** License Management Facility - PAK Registration ***
+
+To register an LMF PAK, please enter the information from your
+LMF PAK when prompted by this procedure.
+
+If you make a mistake and want to start over, or if you want to
+exit this option for any reason, type a ^C. ${LL}"
+		
+	lmfsetup
+	lmf reset
+	LMF_Listing_Routine
+}
+
+
+#######################################################
+: LMF_Removal_Routine - Remove a PAK here
+#######################################################
+LMF_Removal_Routine()
+{
+	while :
+	do
+		clear
+		echo "
+*** License Management Facility - PAK Removal ***
+
+Current PAKs installed on this machine:
+________________________________________________________________________________"
+
+		lmf list
+		echo "________________________________________________________________________________
+
+Select a product from the above menu, or press <RETURN> without
+entering a product to exit this option: \c"
+		read PAK
+		case $PAK in
+		"" )
+			break
+			;;
+		esac
+
+		PAK=`echo ${PAK} | dd conv=ucase 2>/dev/null`
+		lmf list | egrep "^$PAK" > /dev/null
+		case $? in
+		0 )
+			while :
+			do
+				echo "
+Please confirm your choice to remove $PAK (y/n) [n]: \c"
+				read resp
+				case $resp in
+				[Yy]* )
+					echo "${LL}Removing $PAK..."
+					lmf delete $PAK
+					break 2
+					;;
+				[Nn]* | "" )
+					break
+					;;
+				* )
+					;;
+				esac
+			done
+			;;
+		* )
+			echo "${LL}Requested PAK '$PAK' is not installed"
+			echo "Press <RETURN> to continue \c"
+			read resp
+			;;
+		esac
+	done
+}
+
+
+#######################################################
+: LMF_Listing_Routine - List PAKs here
+#######################################################
+LMF_Listing_Routine()
+{
+	lmf reset
+	clear
+	echo "
+*** License Management Facility - PAK Listing ***
+
+Current PAKs Installed on this machine:
+________________________________________________________________________________"
+	lmf list
+	echo "________________________________________________________________________________
+
+Press <RETURN> to continue \c"
+	read resp
+}
+
+
+
+#######################################################
+# Main Program Procedure Routine #
+#######################################################
+case $1 in
+-R )
+	LMF_Register_Routine
+	;;
+-D )
+	LMF_Removal_Routine
+	;;
+-L )
+	LMF_Listing_Routine
+	;;
+esac

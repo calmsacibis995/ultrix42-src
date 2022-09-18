@@ -1,0 +1,1065 @@
+# @(#)sseg.db	4.3   (ULTRIX)   11/13/90
+
+sseg 
+id   EIS 1
+name EIS 
+doc NIL
+label "EVENT INFORMATION" 
+elements 
+  EVENTCLASS EVENTTYPE RECORDNUMBER OSTYPE DATETIME UPTIME HOSTNAME SYSID SYSID2 PMAX_PRID SYSTYPE SYSKTYPE CPUCNT CPULOG
+
+sseg 
+id   DIS 1
+name DIS 
+doc "Device Information Segment of standard record"
+label "Unit Information" 
+elements 
+  DEVCLASS DEVTYPE CONTROLLER UNITNUMBER SERIALID MEDIAID COARSESYNDROME DEVHDR_BLKCNT DEVHDR_BLKNO
+
+sseg 
+id   CDS 1
+name INFO_MSG_CDS 
+doc NIL
+label NIL 
+elements 
+  MESSAGE
+
+sseg 
+id   CDS 4
+name MC8600_CDS 
+doc "8600 machine check cds"
+label "MCK INFO" 
+elements 
+  M86EHM M86EBCS M86EDPSR M86IBESR M86MS1 M86MS2 M86MDECC M86CSES
+
+sseg 
+id   CDS 9
+name MC780CDS 
+doc "780 Machine check cds"
+label "MCK INFO" 
+elements 
+  MCKSUMM MC8UPC MC8VAVIBA MC8TB1 MC8TIMO MC8PAR AWER
+
+sseg 
+id   CDS 2
+name MC750_CDS 
+doc "750 machine check cds"
+label "MCK INFO" 
+elements 
+  MCKSUMM MC5VA MC5TBG MC5CACHE MC5BUS
+
+sseg 
+id   CDS 7
+name MCUVAX1_CDS 
+doc "uVAX1 Machine Check cds"
+label "MCK INFO" 
+elements 
+  MCUV1SUMM
+
+sseg 
+id   CDS 8
+name MCUVAX2_CDS 
+doc "uVAX2 Machine Check cds"
+label "MCK INFO" 
+elements 
+  MCUV2SUMM
+
+sseg 
+id   CDS 6
+name MC8800_CDS 
+doc "8800 Machine CHeck cds"
+label "MCK INFO" 
+elements 
+  M88IBER M88CBER M88EBER M88NMF
+
+sseg 
+id   CDS 5
+name MC8200_CDS 
+doc "8200 Machine Check CDS"
+label "MCK INFO" 
+elements 
+  M82SUMM M82STAT
+
+sseg 
+id   CDS 10
+name SBI_CDS 
+doc "SBI Error CDS"
+label NIL 
+elements 
+  AWFS
+
+sseg 
+id   CDS 12
+name SBIA8600_CDS 
+doc "8600 SBIA Error CDS"
+label "SBIA INFO" 
+elements 
+  IOAES IOACF SBIAER SBIATO SBIAFS SBIAWSILO
+
+sseg 
+id   CDS 13
+name UBA780_CDS 
+doc "780 UBA Error CDS"
+label "UBA INFO" 
+elements 
+  UBACF UBASR UBAFME UBAFUB
+
+sseg 
+id   CDS 14
+name PANIC_CDS 
+doc "Panic cds"
+label NIL 
+elements 
+  PNCMES
+
+sseg 
+id   ADS 1
+name MC86_ADS 
+doc "8600 mck ADS"
+label "ADDITIONAL INFO" 
+elements 
+  MCBCNT M86EVMQSAV M86CSLINT M86EW1 M86EW2 M86IVASAV M86VIBASAV M86ESASAV M86ISASAV M86CPC M86MERG M86CSHCTL M86MEAR M86MEDR M86FBER PC PSL
+
+sseg 
+id   ADS 2
+name MC78_ADS 
+doc "780 MCK ADS"
+label "ADDITIONAL INFO" 
+elements 
+  MCBCNT MC8CPUES MC8DREG MC8TB0 PC PSL
+
+sseg 
+id   ADS 3
+name MC75_ADS 
+doc "750 mck ADS"
+label "ADDITIONAL INFO" 
+elements 
+  MCBCNT MC5ERPC MC5MDR MC5SAV MC5RDT MC5MCE PC PSL
+
+sseg 
+id   ADS 4
+name MCK_ADS 
+doc "uVI mck ads"
+label "ADDITIONAL INFO" 
+elements 
+  MCBCNT MC1PM1 MC1PM2 PC PSL
+
+sseg 
+id   ADS 5
+name MCUVII_ADS 
+doc "uVII mck ads"
+label "ADDITIONAL INFO" 
+elements 
+  MCBCNT MC1VAP MC1PAP MC1INT PC PSL
+
+sseg 
+id   ADS 6
+name MC88_ADS 
+doc "8800 mck ads"
+label "ADDITIONAL INFO" 
+elements 
+  MCBCNT M88MCS M88IPC M88VAVIBA M88NME PC PSL
+
+sseg 
+id   ADS 7
+name MC82_ADS 
+doc "8200 mck ads"
+label "ADDITIONAL INFO" 
+elements 
+  MCBCNT M82PM1 M82VA M82VAP M82MAR M82PCF M82UPC PC PSL
+
+sseg 
+id   ADS 8
+name SBI78_ADS 
+doc "780 sbi ads"
+label "ADDITIONAL INFO" 
+elements 
+  AWER AWTOA AWSC AWMT SBIAWSILO SBIAWCSR PC PSL
+
+sseg 
+id   ADS 10
+name SBI86_ADS 
+doc "8600 SBI ads"
+label "Additional Info" 
+elements 
+  IOABA DMACID DMACCA DMABID DMABCA DMAAID DMAACA DMAIID DMAICA IOADC IOACS SBIASC SBIAMR SBIAWCSR PC PSL
+
+sseg 
+id   ADS 11
+name UBA78_ADS 
+doc "780 UBA ads"
+label "Additional Info" 
+elements 
+  UBACR UBADCR PC PSL
+
+sseg 
+id   ADS 12
+name STRAY_ADS 
+doc "stray interrupt ads"
+label "Additional Info" 
+elements 
+  STRIPL STRVEC
+
+sseg 
+id   ADS 13
+name EXPTFLT_ADS 
+doc "Except/flt ads"
+label "Additional Info" 
+elements 
+  FLTVA PC PSL
+
+sseg 
+id   ADS 15
+name MEM_ADS 
+doc "Memory Error ads"
+label "ADDITIONAL INFO" 
+elements 
+  CTRLR ERRCNT
+
+sseg 
+id   ADS 14
+name PANIC_ADS 
+doc "panic system registers (1st ADS)"
+label "SYSTEM REGISTERS" 
+elements 
+  SP PNCAP PNCFP PC PNCKSP PNCUSP PNCISP PNCP0B PNCP0L PNCP1B P1LR PNCSBR PNCSLR PNCPCB PNCSCB PNCIPL PNCAST PNCSIS PNCICC
+
+sseg 
+id   CDS 16
+name BUA_ERR_CDS 
+doc "BUA CDS"
+label "ADAPTER Information" 
+elements 
+  BIDEVREG BICSR BIBUSERREG BUACSR
+
+sseg 
+id   ADS 16
+name BUA_ERR_ADS 
+doc "BUA ADS"
+label "ADDITIONAL INFO" 
+elements 
+  BUAFUB PC PSL
+
+sseg 
+id   CDS 17
+name BI_BUS_ERR_CDS 
+doc "BI BUS Error Kludge!!"
+label "BUS INFO" 
+elements 
+  PC PSL
+
+sseg 
+id   ADS 17
+name BI_BUS_ERR_ADS 
+doc "ANOTHER BI BUS KLUDGE!!"
+label "BI ERR REGISTERS" 
+elements 
+  BIDEVREG BICSR BIBUSERREG BIERINT BIINTDST
+
+sseg 
+id   CDS 19
+name DSK_CTL_CDS 
+doc "DSA DISK MEMORY ERROR CDS"
+label NIL 
+elements 
+  HMEMADDR
+
+sseg 
+id   CDS 23
+name RA60_SDI_CDS 
+doc "RA60 SDI CDS"
+label "SDI INFO" 
+elements 
+  RA6PRVCYL CURCYL RA6PRVHD CURHD FPCOD
+
+sseg 
+id   CDS 24
+name RA8_SDI_CDS 
+doc "RA8 Disk Devices SDI CDS"
+label "SDI INFO" 
+elements 
+  SDIDRVDET CURCYL CURHD LED FPCOD
+
+sseg 
+id   CDS 25
+name SMALL_DISK_CDS 
+doc "DSA Small Disk Error CDS"
+label NIL 
+elements 
+  CYLINDER
+
+sseg 
+id   CDS 26
+name BAD_BLK_CDS 
+doc "Bad Block Replace cds"
+label "BAD BLOCK INFO" 
+elements 
+  BADLBN OLDRBN NEWRBN CAUSE
+
+sseg 
+id   CDS 28
+name STI_COM_CDS 
+doc "STI Communic/Cmd Failure cds"
+label "STI INFO" 
+elements 
+  POSITION STISUMM STI_SUMM
+
+sseg 
+id   SDS 2
+name DSK_COM_SDS 
+doc "DSA disk common sds"
+label "SUPPORTING DATA" 
+elements 
+  DSAFORMAT DSAFLAGS EVENT_CODE DSASTAT HDRCOD SDILSTOP REPLFLG
+
+sseg 
+id   SDS 12
+name STI_COM_SDS 
+doc "STI Common err sds"
+label "SUPPORTING DATA" 
+elements 
+  DSAFORMAT DSAFLAGS EVENT_CODE TA_DSASTAT TU_DSASTAT TK_DSASTAT RV_DSASTAT STIDRV0 STIDRV1 STIDRV2 STIDRV3
+
+sseg 
+id   ADS 18
+name DSA_GENERIC_ADS 
+doc "Common DSA error info acros devices (ads)"
+label "ADDITIONAL INFO" 
+elements 
+  UNITID2 TP_UNITID2 CMDREF DSAUNIT DSASEQ CNTRLIDNUM CNTRLID CSVRSN CHVRSN MULTI_UNIT REQ_PORT UNITID1 USVRSN USHVRSN CTL_ADDL_INFO
+
+sseg 
+id   ADS 25
+name SDI_GENERIC_ADS 
+doc "Common SDI Stuff for ads"
+label NIL 
+elements 
+  SDIREQBYTE SDIMODBYTE SDIERRBYTE SDICTLBYTE VOLSERNUM SDIRET
+
+sseg 
+id   ADS 26
+name SMALL_DSK_ADS 
+doc "DSA Small Disk Error ADS"
+label NIL 
+elements 
+  VOLSERNUM CTL_ADDL_INFO
+
+sseg 
+id   ADS 27
+name DSA_GEN2_ADS 
+doc "DSA Disk xfer ads"
+label NIL 
+elements 
+  STD_RETLVL VOLSERNUM ORIG_ERR HSC_ORIG_ERR ERR_REC_FLAGS LVL_A_RETRY LVL_B_RETRY BUF_DATA_MEM_ADDR SRC_DET_REQ
+
+sseg 
+id   ADS 28
+name BAD_BLK_ADS 
+doc "Bad Blk Replacement ads"
+label NIL 
+elements 
+  VOLSERNUM
+
+sseg 
+id   ADS 29
+name TAP_XFER_ADS 
+doc "DSA Tape xfer error ads"
+label NIL 
+elements 
+  STD_RETLVL FMT_SVR FMT_HVR CTL_ADDL_INFO
+
+sseg 
+id   ADS 30
+name STI_COMM_ADS 
+doc "STI Communic/Cmd Error ads"
+label NIL 
+elements 
+  FMT_SVR FMT_HVR
+
+sseg 
+id   ADS 31
+name STI_DRV_ADS 
+doc "STI Driver Error Ads"
+label NIL 
+elements 
+  FMT_SVR FMT_HVR ST1DRVST GAP_COUNT STI_DIAGSTS STI_OPSAV STI_ERRNUM STI_RPFAIL STI_RPATH_RSTAT STI_RMCLP STI_RDCH_STAT STI_RDCH_STAT2 STI_CRCWRD STI_ECC STI_RDNN_TIE STI_RDPB_TIE STI_PSTAT_TAMT STI_PERI_PRDD STI_WMCSTA STI_TUSEL STI_WRTDAT STI_BYTCNT STI_PADCNT STI_ERRCNT STI_WMCERR STI_INTSTA TU_STAT TU_STAT_AB STI_SER_NUM TU_DIAG
+
+sseg 
+id   ADS 32
+name STI_FMT_ADS 
+doc "STI Format error ads"
+label NIL 
+elements 
+  FMT_SVR FMT_HVR STI_ERRNUM STI_OPSAV STI_CONNST STI_PRTOSV STI_FSTOSV STI_PSWISV STI_LASSTA STI_RETRY STI_KICNT STI_SP
+
+sseg 
+id   CDS 31
+name MEMC78_CDS 
+doc "780-C MEM ERROR CDS"
+label "MEMORY INFO" 
+elements 
+  M8CMERA M8CMERB M8CMERC
+
+sseg 
+id   CDS 32
+name MEME78_CDS 
+doc "780-E MEM ERROR CDS"
+label "MEMORY INFO" 
+elements 
+  MEMER0 MEMER1 MEMER2 MEMER3
+
+sseg 
+id   CDS 33
+name MEM750_CDS 
+doc "750 MEMORY ERROR CDS"
+label "MEMORY INFO" 
+elements 
+  M5MER0 M5MER1 M5MER2
+
+sseg 
+id   CDS 34
+name MEM860_CDS 
+doc "8600 MEMORY ERROR CDS"
+label "MEMORY INFO" 
+elements 
+  M86MDECC M86MEAR M86MS1 M86MS2
+
+sseg 
+id   CDS 35
+name MEM880_CDS 
+doc "8800 MEM ERROR CDS"
+label "MEMORY INFO" 
+elements 
+  M88CSR0 M88CSR1 M88CSR2 M88CSR3
+
+sseg 
+id   CDS 36
+name MEM820_CDS 
+doc "Y"
+label "MEMORY INFO" 
+elements 
+  M82CSR0 M82CSR1
+
+sseg 
+id   ADS 33
+name PANIC_KERNEL1_ADS 
+doc "first kernel stack ads"
+label NIL 
+elements 
+  PNCKRNSTK
+
+sseg 
+id   ADS 34
+name PANIC_INTSTK1_ADS 
+doc "First interrupt stack ads"
+label NIL 
+elements 
+  PNCINTSTK
+
+sseg 
+id   SDS 14
+name NMIFLT_SDS 
+doc "NMI Fault SDS"
+label "SUPPORTING DATA" 
+elements 
+  M88NMF M88CSR0 M88NME
+
+sseg 
+id   CDS 37
+name NMIFLT_CDS 
+doc "NMI Fault CDS"
+label "NMI Fault BI Information" 
+elements 
+  NBIACSR0 NBIA1CSR0
+
+sseg 
+id   ADS 41
+name NMIFLT_ADS 
+doc "NMI fault ADS #1"
+label NIL 
+elements 
+  NMIFLTSILO
+
+sseg 
+id   CDS 38
+name NMIADP_CDS 
+doc "NMI Adapter Error CDS"
+label "NMI ADAPTER CSRS" 
+elements 
+  NBIACSR0 NBIACSR1
+
+sseg 
+id   SDS 16
+name NMIADP_SDS 
+doc "NMI Adapter Error SDS"
+label "SUPPORTING DATA" 
+elements 
+  BIBUSERREG BI1BUSERREG
+
+sseg 
+id   CDS 39
+name BVP_BIER_CDS 
+doc "BVP BI Bus error CDS"
+label "BVP BI ERROR INFO" 
+elements 
+  BVPSTS BIBUSERREG BIADDR
+
+sseg 
+id   CDS 40
+name BVP_GEN_CDS 
+doc "BVp Regular error cds"
+label "BVP ERROR REGS" 
+elements 
+  BVPSTS BVPERR PORT_DATA
+
+sseg 
+id   SDS 17
+name BVP_SDS 
+doc "BVP CDS"
+label "SUPPORTING DATA" 
+elements 
+  BIDEVREG BICSR BVPCNTL
+
+sseg 
+id   CDS 42
+name BLA_ERR_CDS 
+doc "BLA Error CDS"
+label "BLA Error CDS" 
+elements 
+  BIBSNUM BIDEVREG BLACSR
+
+sseg 
+id   SDS 18
+name BLA_ERR_SDS 
+doc "BLA Error SDS"
+label "SUPPORTING DATA" 
+elements 
+  BICSR BIBUSERREG
+
+sseg 
+id   ADS 49
+name BLA_ERR_ADS 
+doc "BLA Error ADS"
+label "ADDITIONAL INFO" 
+elements 
+  PC PSL
+
+sseg 
+id   ADS 52
+name CI_LPKT_ADS 
+doc "CI LOGGED PACKET ADS"
+label "ADDITIONAL INFO" 
+elements 
+  CIPORT CISTATUS CIOPCODE CIFLAGS
+
+sseg 
+id   ADS 53
+name CI_PPD_ADS 
+doc "CI PPD ADS"
+label "ADDITIONAL INFO" 
+elements 
+  CISYSAP CIMTYPE CIRSWTYPE CIRSWINCRN CIKSWINCRN CIKNAME CIKSYSID CIKLSADDR CIKRSADDR CILOCAL CIREMOTE CIMAXDG CIMAXMSG CISWTYPE CISWVER CISWINCRN CIHWTYPE CIHWVER CIRSWVER CIRHWTYPE CIRHWVER MESSAGE ADDL_INFO
+
+sseg 
+id   CDS 47
+name CI_GEN_CDS 
+doc "CI Generic info cds"
+label "COMMON INFO" 
+elements 
+  CIERRCOD CIERRCODE CIERRS CIREINITS CILPNAME CILNAME CILSYSID CILSADDR CINPATHS CIPSTATE MSI_CSR MSI_DSSR
+
+sseg 
+id   SDS 23
+name CI_COMMON_SDS 
+doc "Logged packet SDS"
+label "SUPPORTING DATA" 
+elements 
+  CIRNAME CIRSYSID CIRSADDR
+
+sseg 
+id   CDS 48
+name MEMUVAX2_CDS 
+doc "UVAX2 Memory Error cds"
+label "MEMORY INFO" 
+elements 
+  MVAXMSER MVAXCAER MVAXDAER
+
+sseg 
+id   CDS 49
+name UQ_PORT_CDS 
+doc "UQSSP Port Error CDS"
+label "UQSSP ATTN INFO" 
+elements 
+  SAREG BUSNUM
+
+sseg 
+id   CDS 50
+name UDA5X_ATTN_CDS 
+doc "UDA5X Status Address info (CDS)"
+label NIL 
+elements 
+  UDA5SA
+
+sseg 
+id   CDS 51
+name KDB50_ATTN_CDS 
+doc "kdb50 status addr register"
+label NIL 
+elements 
+  KDB5SA
+
+sseg 
+id   CDS 52
+name MC730_CDS 
+doc "730 MCK Summar Code"
+label NIL 
+elements 
+  MC73SUMM
+
+sseg 
+id   CDS 56
+name LYNX_ACP_CDS 
+doc "LYNX/ACP/SXERR CDS"
+label NIL 
+elements 
+  BICSR
+
+sseg 
+id   SDS 24
+name LYNX_ACP_SDS 
+doc "LYNX/ACP/SXERR Diagnostic reg"
+label "SUPPORTING DATA" 
+elements 
+  BVPERR PORT_DATA
+
+sseg 
+id   ADS 57
+name LYNX_ACP_ADS 
+doc "LYNX/ACP/SXERR ADS"
+label "ADDITIONAL INFO" 
+elements 
+  BIBUSERREG LX_ACP_STAT LX_ERRTST LX_ERRSUBTST LX_ERRNAME LX_PR1 LX_PR2 LX_PRCONF LX_PRREV
+
+sseg 
+id   CDS 57
+name RC25_ATTN_CDS 
+doc "RC25 Device Attn Error CDS"
+label NIL 
+elements 
+  RC25SA
+
+sseg 
+id   CDS 58
+name TK57_ATTN_CDS 
+doc "TK50/70 Attention CDS"
+label NIL 
+elements 
+  TK57SA
+
+sseg 
+id   CDS 59
+name MCCVAX_CDS 
+doc "CVAX MACHINE CHECK CDS"
+label "MCK INFO" 
+elements 
+  MCCVAXSUM
+
+sseg 
+id   ADS 64
+name MCCVAX_ADS 
+doc "CVAX MACHINE CHECK ADS"
+label "ADDITIONAL INFO" 
+elements 
+  MCBCNT MC1VAP MC1PAP MCCVAXINT1 MCCVAXINT2 PC PSL
+
+sseg 
+id   CDS 60
+name 650ESR_CDS 
+doc "KA650 ERROR & STATUS REGS CDS"
+label "ERROR & STATUS REGS" 
+elements 
+  ESR650_CACR ESR650_DSER ESR650_QBEAR ESR650_DEAR ESR650_CBTCR ESR650_IPCR0 ESR650_CADR ESR650_MSER MC1PAP
+
+sseg 
+id   CDS 61
+name MEMCVAX_CDS 
+doc "KA650 MEMORY ERROR CDS"
+label "MEMORY INFO" 
+elements 
+  MEMCSR16A MEMCSR16B MEMCSR16C MEMCSR16D MEMCSR17 MEMCON MEMCSRN
+
+sseg 
+id   ADS 66
+name UNKNOWN_REC_ADS 
+doc "unknown rec ads"
+label "UNKNOWN RECORD" 
+elements NIL 
+
+sseg 
+id   CDS 62
+name RA9_SDI_CDS 
+doc "RA9 Disk Devices SDI CDS"
+label "SDI INFO" 
+elements 
+  ERRECOV CURCYL CURHD LED FPCOD
+
+sseg 
+id   CDS 63
+name RA7_SDI_CDS 
+doc "RA7 Disk Devices SDI CDS"
+label "SDI INFO" 
+elements 
+  SDIDRVSTA CURCYL CURHD LED FPCOD
+
+sseg 
+id   ADS 51
+name CI_DATTN_ADS 
+doc "cibi dattn ads"
+label "ADDITIONAL INFO" 
+elements 
+  BIDEVREG BICSR BIBUSERREG BIERINT BIINTDST XDEV XBE XFADRL XFADRH PIDR PVR CIADDR CIBVALUE CIGVALUE CIROM CIRAM CIHWTYPE CIMINCPUREV CICURREVLEV
+
+sseg 
+id   SDS 21
+name CI_DATTN_SDS 
+doc "CIBCA DATTN SDS"
+label "SUPPORTING DATA" 
+elements 
+  CIPCNF CIBCIPCNF CIPSR CIBCAPSR cixcdpsr CIPER CIPPR cixcdppr CIBCAPPR CIPMCSR CIBCAPMCSR cixcdpmcsr CIPFADDR 
+
+sseg 
+id   ADS 19
+name RF3_FM4_POS_ADS 
+doc "Rf3 POSITIONER ERROR"
+label NIL 
+elements 
+  VOLSERNUM RF3_SEEK_CT RF3_PERF_CT RF3_EVENT_CT RF3_PERF_DAT
+
+sseg 
+id   ADS 20
+name RF3_FM4_NONPOS_ADS 
+doc "Rf3 NON POSSITIONER ERROR"
+label NIL 
+elements 
+  VOLSERNUM RF3_ERROR RF3_LBN RF3_BBSPACE RF3_WRTFLT RF3_SERVO_STAT RF3_PHX_DSR
+
+sseg 
+id   ADS 22
+name F8_TA81_ADS 
+doc NIL
+label NIL 
+elements 
+  STI_ERRSYM STI_SENSE0 STI_SENSE4 STI_SENSE8 STI_SENSE12 STI_SENSE16
+
+sseg 
+id   ADS 23
+name F7_TA81_ADS 
+doc NIL
+label NIL 
+elements 
+  FMT_SVR FMT_HVR ST1DRVST GAP_COUNT STI_DIAGSTS STI_SENSE0 STI_SENSE4 STI_SENSE8 STI_SENSE12 STI_SENSE16
+
+sseg 
+id   ADS 24
+name F5_TK50_ADS 
+doc NIL
+label NIL 
+elements 
+  STD_RETLVL FMT_SVR FMT_HVR STI_DRV_FLGS STI_LOC STI_TPCNT STI_STATE STI_OP_FLGS STI_STATUS STI_DRV_COD
+
+sseg 
+id   SDS 3
+name XCP_6200_SDS 
+doc NIL
+label "SUPPORTING DATA" 
+elements 
+  XDEV XBE CSR1 CSR2 ESR650_MSER
+
+sseg 
+id   SDS 4
+name XMI_BI_SDS 
+doc NIL
+label "SUPPORTING DATA" 
+elements 
+  XDEV XFADR AREAR AESR AIMR
+
+sseg 
+id   CDS 55
+name XBI_XMA_CDS 
+doc NIL
+label NIL 
+elements 
+  XNODE
+
+sseg 
+id   ADS 63
+name XCP_6200_ADS 
+doc NIL
+label "ADDITIONAL INFO" 
+elements 
+  ESR650_CADR XFADR XGPR XIQO BIDR XCFE XCC XIPE XPE XVBPE XTPE
+
+sseg 
+id   ADS 62
+name XMI_BI_ADS 
+doc NIL
+label "ADDITIONAL INFO" 
+elements 
+  AIVINTR ADG1 BCSR BESR BIDR BTIM BVOR BVR BDCR1
+
+sseg 
+id   ADS 61
+name XMA_ADS 
+doc NIL
+label "ADDITIONAL INFO" 
+elements 
+  SEADR MCTL1 MECER MECEA MCTL2
+
+sseg 
+id   SDS 5
+name XMA_SDS 
+doc NIL
+label "SUPPORTING DATA" 
+elements 
+  XDEV XBE
+
+sseg 
+id   CDS 3
+name STKDMP_CDS 
+doc NIL
+label "stack info" 
+elements 
+  STKDMP
+
+sseg 
+id   ADS 35
+name RV_CNTL_ADS 
+doc NIL
+label NIL 
+elements 
+  RV_INC RV_LESI RV_MEM RV_CMRW CTL_ADDL_INFO
+
+sseg 
+id   ADS 36
+name RV_F5_ADS 
+doc NIL
+label NIL 
+elements 
+  STD_RETLVL FMT_SVR FMT_HVR SEC_ADD RV_FLAW RV_SVOL
+
+sseg 
+id   ADS 37
+name RV_F7_ADS 
+doc NIL
+label NIL 
+elements 
+  FMT_SVR FMT_HVR RV_USTATE RV_CMSTAT RV_INTSTAT RV_DELSTAT RV_CURCM RV_SLAVE1 RV_SLAVE2 RV_FUNC RV_CM RV_SD RV_VER RV_CMADDR RV_DRVMOD
+
+sseg 
+id   CDS 11
+name NBWADP_CDS 
+doc NIL
+label "CSR INFO" 
+elements 
+  STAR_CSR0 STAR_CSR1 NEMO_CSR0 NEMO_CSR1 NEMO_CSR6
+
+sseg 
+id   CDS 64
+name PMAX_MEM_CDS 
+doc "PMAX MEMORY CDS"
+label "MEMORY INFO" 
+elements 
+  PMAX_MREG PMAX_PADDR PMAX_EPC badva
+
+sseg 
+id   CDS 65
+name PMAX_ESR_CDS 
+doc NIL
+label "ERROR & STATUS REGS" 
+elements 
+  PMAX_CAUS PMAX_COPRO PMAX_EPC PMAX_STAT0 PMAX_STAT1 PMAX_VADDR PMAX_CNTX SP
+
+sseg 
+id   ADS 67
+name PMAX_ESR_ADS 
+doc NIL
+label "ADDITIONAL INFO" 
+elements 
+  PMAX_CSR
+
+sseg 
+id   CDS 15
+name XRP_CDS 
+doc NIL
+label "MCK INFO" 
+elements 
+  MCODE VADDR VIBA RCSR XBER XFADR XFADRID XFADRIV SSCBTR
+
+sseg 
+id   SDS 6
+name XRP_SDS 
+doc NIL
+label NIL 
+elements 
+  ICCS_SISR ISTATE SC PC PSL
+
+sseg 
+id   ADS 40
+name XRP_ADS 
+doc NIL
+label "ADDITIONAL DATA" 
+elements 
+  BCCTL BCSTS1 BCSTS0A BCSTS0B BCERR PCSTS PCERR1 PCERR0 VINTSR
+
+sseg 
+id   ADS 38
+name TA9_F8_ADS 
+doc NIL
+label NIL 
+elements 
+  TA9_EID TA9_MMCD CTL_ADDL_INFO
+
+sseg 
+id   ADS 39
+name TA9_F5_7_B_ADS 
+doc NIL
+label NIL 
+elements 
+  FMT_SVR FMT_HVR TA9_CHR GAP_COUNT TA9_0_1 TA9_2A TA9_2B TA9_3 TA9_4_6 TA9_7 TA9_8A TA9_8B TA9_9A TA9_9B TA9_10_13A TA9_10_13B TA9_14_17A TA9_14_17B TA9_18_19A TA9_18_19B TA9_20_23A TA9_20_23B TA9_24_27A TA9_24_27B TA9_27_29 TA9_30_31A TA9_30_31B TA9_CC TA9_PAR TA9_CT1 TA9_CT2 TA9_CT3 TA9_CT4 TA9_CT5 TA9_CT6 TA9_CT7 TA9_CT8 TA9_CT9 TA9_CT10 TA9_CT11 TA9_CT12 TA9_CT13 TA9_CT14 TA9_CT15 TA9_CT16 TA9_CT17 TA9_CT18 TA9_CT19 TA9_CT20 TA9_CT21
+
+sseg 
+id   CDS 20
+name 60_CDS 
+doc NIL
+label "MEMORY INFO" 
+elements 
+  FF_ECCADDR0 FF_ECCADDR1 FF_ECCSYND0 FF_ECCSYND1
+
+sseg 
+id   CDS 21
+name MBUS_CDS 
+doc NIL
+label "MBUS INFO" 
+elements 
+  FF_FLAGS FF_MOD_ERR
+
+sseg 
+id   ADS 9
+name FF_ADS 
+doc NIL
+label "ADDITIONAL INFORMATION" 
+elements 
+  FF_CPUID FF_CPUIDX FF_VALID FF_MODTYPE FF_BUSCSR FF_BUSADDR FF_BUSDAT FF_FMDCSR FF_BASEADDR FF_ECCADDR0 FF_ECCADDR1 FF_ECCSYND0 FF_ECCSYND1 FF_FBICSR FF_RANGE FF_IPDVINT FF_IADR1 FF_IADR2
+
+sseg 
+id   CDS 46
+name MSI_CDS 
+doc NIL
+label "COMMON INFO" 
+elements 
+  MSI_ERRCODE CIERRCODE CIERRS CIREINITS CILPNAME CILNAME CILSYSID CILSADDR
+
+sseg 
+id   ADS 54
+name MSI_LPKT_ADS 
+doc NIL
+label "ADDITIONAL INFO" 
+elements 
+  CIRSADDR CIRSYSID CIRNAME MSITHREAD CISTATUS MSICOMMAND CIOPCODE MSIDST MSISRC MSILENGTH PKT_OPCODE MSIFLAGS
+
+sseg 
+id   ADS 55
+name MSI_DATTN_ADS 
+doc NIL
+label "ADDITIONAL INFO" 
+elements 
+  MSI_CSR MSIIDR MSISLCS MSIDESTAT MSITR MSIDMCTLR MSIDMLOTC MSIDMAADDRL MSIDMAADDRH MSISTLP MSITLP MSIILP MSIDSCR MSI_DSSR MSIDSTAT MSIDCR MSISAVEDSSR MSISAVEDSTAT
+
+sseg 
+id   CDS 45
+name SCS_CDS 
+doc NIL
+label "COMMON INFO" 
+elements 
+  SCS_ERRCODE CIERRCODE SCSLSYSAP SCSLCONNDATA SCSLCONNID CILNAME CILSYSID SCSCSTATE
+
+sseg 
+id   ADS 56
+name SCS_ADS 
+doc NIL
+label "ADDITIONAL INFO" 
+elements 
+  SCSRSYSAP SCSRCONNDATA SCSRCONNID CIRNAME CIRSYSID CIRSADDR CILPNAME CILSADDR SCSNCONNS SCSLDIRID SCSRREASON
+
+sseg 
+id   CDS 18
+name XNA_CDS 
+doc "xna registers"
+label "XNA INFORMATION" 
+elements 
+  XNA_TYPE XBE XFADR XFAER GACSR BER BICSR BCI3_CSR XPST_INIT XPST_FINAL
+
+sseg 
+id   ADS 42
+name XNA_ADS 
+doc "xna registers that get label and hex output"
+label "XNA ADDITIONAL INFORMATION" 
+elements 
+  XNA_DATE_LO XNA_DATE_HI R0_R3 R0_R12 DIAG XPD1_INIT XPD2_INIT XPD1_FINAL STACK
+
+sseg 
+id   CDS 66
+name ESR5400_CDS 
+doc "MIPSFAIR ESR"
+label "ERROR AND STATUS REGISTERS" 
+elements 
+  PMAX_CAUS PMAX_COPRO PMAX_EPC PMAX_STAT0 PMAX_STAT1 BADVA SP WEAR ESR650_DSER ESR650_QBEAR ESR650_DEAR ESR650_CBTCR ISR
+
+sseg 
+id   CDS 44
+name SCSI_CDS 
+doc "THESE ARE THE MAJOR REGISTERS IN SCSI"
+label "SCSI INFORMATION" 
+elements 
+  REVISION SCSI_ERRTYP SCSI_SUBERR SUBERR_TYPE SII_SUBERR DBBR_SUBERR UNITNUMBER SCSI_ID BUS_DATA INFO_FLAGS CMD_BLK DISK_CMD TAPE_CMD SCSI_STS SCSI_MSG SCSI_SELSTS
+
+sseg 
+id   ADS 58
+name SCSI_ADS 
+doc "THESE ARE THE CONTROLLER SPECIFIC REGISTERS"
+label "ADDITIONAL SCSI DATA" 
+elements 
+  INI_CMD MODE TAR_CMD CUR_STS SEL_ENABLE CTLR_STS DMA_ADR DMA_CNT DMA_DIR SCSI_DBP SCSI_CS1 SCSI_CS2 CSR DATA DMABYTE DIAG_CLK BH_DIAG IO_DIAG DM_DIAG MC_DIAG MSIIDR MSISLCS MSIDESTAT MSITR MSIDMCTLR MSIDMLOTC MSIDMAADDRL MSIDMAADDRH MSISTLP MSITLP MSIILP MSIDSCR MSIDSTAT MSIDCR MSICOMMAND SCSCSTATE SCSI_SENSE_KEY SCSI_ASC SCSI_LBN SECTOR_NUM PARTITION XFER_LEN TAPE_CTLR TAPE_DRV0 TAPE_DRV1 XSNS_DT ASC_TC ASC_CMD ASC_STAT ASC_SS ASC_INTR ASC_FFR ASC_CNF
+
+sseg 
+id   CDS 67
+name ESR5800_CDS 
+doc "ISIS error and status registers"
+label "error and status registers" 
+elements 
+  PMAX_CAUS PMAX_EPC PMAX_COPRO PMAX_STAT1 PMAX_STAT0 BADVA SP ISIS_CSR1 XDEV XBE XFADR XGPR CSR2
+
+sseg 
+id   CDS 68
+name MAX_ESR_CDS 
+doc NIL
+label "ERROR & STATUS REGS" 
+elements 
+  PMAX_CAUS PMAX_EPC PMAX_STAT0 PMAX_STAT1 PMAX_COPRO BADVA SP KN02CSR ERROR_ADR ERRADR CHKSYN
+
+sseg 
+id   CDS 69
+name MIPSFAIR_CDS 
+doc "MIPSFAIR 2 CDS FOR ESR5500"
+label "ERROR & STATUS REGS" 
+elements 
+  PMAX_CAUS PMAX_EPC PMAX_STAT0 PMAX_STAT1 PMAX_COPRO BADVA SP ESR650_DSER ESR650_QBEAR ESR650_DEAR ESR650_CBTCR MF2_ISR MF2_MESR MEAR IPCR
+
+sseg 
+id   CDS 70
+name MIPSFAIR2_MEM_CDS 
+doc "MIPSFAIR2 MEMORY SPECIFIC REGISTERS"
+label "MEMORY REGISTER INFORMATION" 
+elements 
+  MF2_MESR PMAX_PADDR PMAX_EPC BADVA board_num
+ 

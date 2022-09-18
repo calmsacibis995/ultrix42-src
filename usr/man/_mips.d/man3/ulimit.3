@@ -1,0 +1,58 @@
+.\" SCCSID: @(#)ulimit.3	2.5	8/18/87
+.TH ulimit 3
+.SH Name
+ulimit \- get and set user limits
+.SH Syntax
+.nf
+.ft B
+long ulimit (\fIcmd, newlimit\fP)
+int \fIcmd\fP;
+long \fInewlimit\fP;
+.fi
+.SH Description
+.NXR "ulimit system call"
+.NXR "process" "setting limits"
+.NXR "process" "getting limits"
+This function provides control over process limits.
+An explanation of the 
+.I cmd
+values follow.
+.IP "\fBValue\fP" 8
+.B Explanation
+.IP "\fB1\fP" 
+Get the process's file size limit.
+The limit is in units of 512-byte blocks
+and is inherited by child processes.
+Files of any size can be read.
+.IP "\fB2\fP"
+Set the process's file size limit to the value of
+.I newlimit.
+Any process can decrease this limit,
+but only a process with an effective user ID
+of superuser can increase the limit.
+The
+.PN ulimit
+system call
+fails and the limit remains unchanged,
+if a process with an effective user ID
+other than superuser attempts
+to increase its file size limit.
+.IP "\fB3\fP"
+Get the maximum possible break value.  For further information, see
+.MS brk 2 .
+.PP
+.SH Return Values
+Upon successful completion, a nonnegative value is returned.
+Otherwise, a value of \-1 is returned, and 
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+.TP 15
+[EINVAL]
+Bad value for \fIcmd\fP.
+.TP 15
+[EPERM]
+The effective user ID
+of the calling process is not superuser.
+.SH See Also
+brk(2), write(2)

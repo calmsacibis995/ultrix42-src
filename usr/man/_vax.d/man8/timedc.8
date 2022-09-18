@@ -1,0 +1,121 @@
+.TH timedc 8
+.SH Name
+timedc \- timed control program
+.SH Syntax
+.B /usr/etc/timedc
+[ \fIcommand\fR [ \fIargument\fR ...]]
+.SH Description
+The 
+.PN timedc
+program controls the operation of the 
+.PN timed
+.NXR "timedc" "timed control program"
+daemon.  If you run
+.PN timedc
+without any arguments, 
+.PN timedc
+enters interactive mode and
+displays the 
+.PN timedc>
+prompt.  
+.PP
+If you supply a
+.PN timedc 
+command on the command line,
+.PN timedc
+runs the command and then exits.  If you redirect the
+standard input of
+.PN timedc
+from an interactive terminal to a file,
+.PN timedc
+interprets the contents of the file as a list of 
+commands separated by carriage returns and 
+terminated with an EOF character.
+.SH Commands
+?[\fIcommand\fR...]
+.br
+.TP 20
+help[\fIcommand\fR...]
+.NXR "timedc" "options"
+Prints a short description of each command specified in the 
+argument list.  If no arguments are given, a list
+of the recognized commands is printed.
+.TP
+clockdiff[\fIhost\fR...]
+Computes the differences between the clock of the host machine
+and the clocks of the machines given as arguments.
+.TP 20
+trace[ on | off ]
+Enables or disables the logging of incoming messages to 
+.PN timed . 
+The 
+.PN trace
+command logs messages in the file
+.PN /usr/adm/timed.log .
+.TP 20
+[ incr | decr ] [ \-cd ][\fIminutes:\fR][\fIseconds.\fR][\fImicroseconds\fR]
+Increments or decrements the value of the local clock so that
+the clock gains or loses the specified amount of time.
+.RS
+.TP 10
+.B \-c
+Adjusts the local clock continuously.  Adjustments specified with the
+.PN \-c
+switch should be on the order of microseconds, and are added
+or subtracted from the local clock in small stages.  This type
+of adjustment avoids large instantaneous jumps and guarantees that 
+the graph of local clock time versus real time remains
+continuous.
+.IP
+The following example increments the local clock continuously
+by 500 microseconds:
+.EX0
+/etc/timedc incr \-c 500
+.EE
+.TP 10
+.B \-d
+Adjusts the local clock instantaneously.  Adjustments specified with
+the 
+.PN \-d
+switch should be on the order of seconds, and are added or subtracted
+from the local clock at once.  The graph of local clock time versus
+real time is discontinuous.
+.NXR(e) "timedc" 
+.IP
+The following example decrements the local clock discontinuously
+by five minutes and two seconds:
+.EX0
+/etc/timedc decr \-d 5:2
+.EE
+.RE
+.TP 20
+msite
+Indicates which site the master is running on currently.
+.TP 20
+quit
+Exits from the 
+.PN timedc
+program.
+.SH Diagnostics
+.B "?Ambiguous command"
+.br
+Abbreviation matches more than one command.
+.PP
+.B "?Invalid command"
+.br
+No match was found.
+.PP
+.B "?Privileged command"
+.br
+Command can be executed by root only.
+.SH Files
+.TP 35
+.PN /usr/adm/timed.log
+Tracing file for 
+.PN timed
+.TP 35
+.PN /usr/adm/timed.masterlog
+Log file for master
+.PN timed
+.SH See Also
+date(1), adjtime(2), settimeofday(2), timed(8)

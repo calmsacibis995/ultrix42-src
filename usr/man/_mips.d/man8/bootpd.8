@@ -1,0 +1,131 @@
+.TH bootpd 8
+.SH Name
+bootpd \- Server to help boot diskless clients
+.SH Syntax
+.B /usr/etc/bootpd 
+[
+.B \-d
+]
+[
+.B \-i
+]
+.SH Description
+.NXR "diskless client" "booting"
+.NXR "booting diskless clients"
+.NXR "bootpd server"
+The 
+.PN bootpd
+server is for the Internet BOOTP protocol (a UDP-based protocol).
+This allows a diskless machine to find out its Internet address,
+the address of a bootserver,
+and the name of a file to boot.  
+.PP
+The
+.PN bootpd
+server is either started from
+.PN /etc/rc.local ,
+or from
+.PN inetd .
+If 
+.PN bootpd
+is started from
+.PN inetd ,
+the 
+.B \-i 
+flag must be supplied by
+.PN /etc/inetd.conf .
+The
+.PN bootpd
+server reads its configuration file,
+.PN /etc/bootptab ,
+when it starts up. When a new request arrives,
+.PN bootpd
+checks to see if the file has been modified, and if so, reads it again.
+.PP
+If started by
+.PN inetd ,
+.PN bootpd
+waits until no new requests arrive for one minute.  This
+limits the overhead of restarting the daemon without tying up
+a process slot when nothing is happening.
+The following is an example of the format of the configuration file:
+.EX
+#
+# /etc/bootptab:  database for bootp server (/usr/etc/bootpd)
+#
+# Blank lines and lines beginning with '#' are ignored.
+#
+# home directory
+
+/usr/local/bootfiles
+
+# default bootfile 
+
+defaultboot
+
+# end of first section
+
+%%
+
+#
+# The remainder of this file contains one line per client 
+# interface with the information shown by the table headings 
+# below. The host name is also tried as a suffix for the 
+# bootfile when searching the home directory (that is, 
+# bootfile.host)
+#
+# host		htype haddr		iaddr		bootfile
+#
+
+hostx		1 02:60:8c:06:35:05	99.44.0.65	ultrix
+hosty		1 02:07:01:00:30:02	99.44.0.65	vms
+hostz		1 02:60:8c:00:77:78	99.44.0.03	lps40
+node1		1 02:60:8c:00:99:47	99.44.0.01	tops20
+.EE
+The first two lines specify the home (default) directory and the
+default bootfile, respectively.  A line starting with two 
+percent signs (%%) separates
+these first lines from the host information table, which contains
+an entry for each bootable host.
+.PP
+You should start with a configuration file similar to this and 
+edit the host entries
+to correspond to your local systems.  The host field does not have to
+be a formal host name; it is used for identification in the log file
+and also as a possible extension to the bootfile name.
+.PP
+The 
+.PN htype 
+is always 1 and corresponds to the hardware type assigned
+Ethernet by the Assigned Numbers RFC.  The 
+.PN haddr 
+field can use 
+a period (.), a hyphen (-), or a colon (:) as separators.  
+The 
+.PN bootfile 
+entry is the file used if the
+client does not know the name of the file it wants to boot.  This is
+frequently the case when a diskless workstation is booted.
+.PP
+The 
+.PN bootpd
+server logs interesting events using
+.PN syslog .
+.SH Options
+.IP \-d 5
+Logs all requests and indicates what responses are made.
+.IP \-i
+If 
+.PN bootpd
+is started from
+.PN inetd ,
+the 
+.B \-i 
+flag must be supplied by
+.PN /etc/inetd.conf .
+.SH Files
+.TP 15
+.PN /etc/bootptab
+Configuration file
+.SH See Also
+inetd(8c), tftpd(8c)

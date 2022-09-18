@@ -1,0 +1,178 @@
+#!/bin/sh
+#
+#
+#   This software is furnished under a license and may be used and
+#   copied  only  in accordance with the terms of such license and
+#   with the  inclusion  of  the  above  copyright  notice.   This
+#   software  or  any  other copies thereof may not be provided or
+#   otherwise made available to any other person.  No title to and
+#   ownership of the software is hereby transferred.
+#
+#   The information in this software is subject to change  without
+#   notice  and should not be construed as a commitment by Digital
+#   Equipment Corporation.
+#
+#   Digital assumes no responsibility for the use  or  reliability
+#   of its software on equipment which is not supplied by Digital.
+#
+#	001	ccb	29-apr-1987
+#		conforming with diskless
+#	002	ccb	09-jun-1987
+#		cause to comment out console during C INSTALL
+#		move changes in /dev to happen during a C DELETE
+
+#SCCSID="@(#)UWSX11021.scp	4.1 (ULTRIX) 7/2/90"
+
+NUL=/dev/null
+
+XCONSDATA="#xcons \"/usr/bin/xcons 10 ttyv0\" none on nomodem"
+
+QVSM0DATA="#ttyv0 \"/usr/bin/xterm -L -sb -rv -geometry =80x24+195+275 -d unix:0\" xterm on secure window=\"/usr/bin/Xqvsm -fd 75 0\"
+:0 \"/usr/bin/login -P /usr/bin/Xprompter -C /usr/bin/dxsession\" none on secure window=\"/usr/bin/Xqvsm -fd 75 \""
+
+
+QDSG0DATA="#ttyv0 \"/usr/bin/xterm -L -sb -rv -geometry =80x24+195+275 -d unix:0\" xterm on secure window=\"/usr/bin/Xqdsg -fd 75 :0\"
+:0 \"/usr/bin/login -P /usr/bin/Xprompter -C /usr/bin/dxsession\" none on secure window=\"/usr/bin/Xqdsg -fd 75 -bp #000080 c 70\""
+
+GB0DATA="#ttyv0 \"/usr/bin/xterm -L -sb -rv -geometry =80x24+195+275 -d unix:0\" xterm on secure window=\"/usr/bin/Xgb -fd 100 :0\"
+:0 \"/usr/bin/login -P /usr/bin/Xprompter -C /usr/bin/dxsession\" none on secure window=\"/usr/bin/Xgb -fd 100  -bp #000080 c 70\""
+
+QD1DATA="#ttyv1 \"/usr/bin/xterm -L -sb -rv -geometry =80x24+195+275 -d unix:1\" xterm on secure window=\"/usr/bin/Xqdsg -fd 75 :1\"
+:1 \"/usr/bin/login -P /usr/bin/Xprompter -C /usr/bin/dxsession\" none on secure window=\"/usr/bin/Xqdsg -fd 75 -bp #000080 c 70\""
+
+LX0DATA="#ttyv0 \"/usr/bin/xterm -L -sb -rv -geometry =80x24+195+275 -d unix:1\" xterm on secure window=\"/usr/bin/Xlx -fd 75 :1\"
+:0 \"/usr/bin/login -P /usr/bin/Xprompter -C /usr/bin/dxsession\" none on secure window=\"/usr/bin/Xlx -fd 75 -bp #000080 c 70\""
+
+NL="
+"
+
+RMLIST35="Xqdsg Xlx Xgb"	# QVSS
+RMLIST49="Xqdsg Xlx Xgb"	# SM
+RMLIST42="Xqvsm Xlx Xgb"	# QDSS
+RMLIST50=$RMLIST42		# SG
+RMLIST54="Xqvsm Xqdsg Xgb"	# LX
+RMLIST59="Xqvsm Xqdsg Xlx"	# GB
+
+umask 022
+case $ACT in
+POST_[AL])
+	# flat load, hit qv.o
+	[ -f usr/sys/BINARY.vax/qv.o ] &&
+		echo '
+qv_def_scrn?W 2
+$q
+' | adb -w usr/sys/BINARY.vax/qv.o 2>&1 > $NUL
+
+
+	;;
+C)
+	# configure.
+	case "$1" in
+	INSTALL)
+		case "`pwd`" in
+		/)	# straight install, read config data from dev/kmem
+			TYPE=`echo "ws_display_type/d" | adb /vmunix /dev/kmem |
+				awk 'NR == 2 {print $2}'`
+			case "$TYPE" in
+			59 | 54 | 42 | 49 | 50 | 35)
+				UNITS=`echo "ws_display_units/d" |
+					adb /vmunix /dev/kmem |
+					awk 'NR == 2 {print $2}'`
+				;;
+			*)	# no graphics device, bale out
+				exit 0
+			esac
+			;;
+		*)	# dot relatively.
+			# GDEV and WS_UNITS are exported by DMS
+			TYPE=$GDEV
+			case "$WS_UNITS" in
+			"")	# not called from DMS, bale out.
+				exit 0
+				;;
+			*)	# read UNITS as provided by DMS
+				UNITS="$WS_UNITS"
+				;;
+			esac
+			;;
+		esac
+
+		# rip apart UNIT code to see which heads to set up.
+		BIT0=`expr $UNITS % 2`
+		UNITS=`expr $UNITS / 2`
+		BIT1=`expr $UNITS % 2`
+		case "$BIT0" in
+		1)
+			# set up head 0
+			mv dev/ttypf dev/ttyv0 &
+			mv dev/ptypf dev/ptyv0 &
+			egrep -v "ttyv0" etc/ttys |
+				sed 's/^console/#console/' > tmp/ttys
+			case "$TYPE" in
+			35 | QV | 49 | SM)
+				echo "$QVSM0DATA$NL$XCONSDATA" >> tmp/ttys
+				;;
+			42 | 50 | SG | QD*)
+				echo "$QDSG0DATA$NL$XCONSDATA" >> tmp/ttys
+				;;
+			54 | LX)
+				echo "$LX0DATA$NL$XCONSDATA" >> tmp/ttys
+				;;
+			59 | FG)
+				echo "$GB0DATA$NL$XCONSDATA" >> tmp/ttys
+			esac
+
+			# next case guarantees that servers are safe
+			#  under DMS
+
+			case "$TYPE" in
+			35)
+				(cd usr/bin;rm -f $RMLIST35)
+				;;
+			49)
+				(cd usr/bin;rm -f $RMLIST49)
+				;;
+			42|50)
+				(cd usr/bin;rm -f $RMLIST42)
+				;;
+			54)
+				(cd usr/bin;rm -f $RMLIST54)
+				;;
+			59)	(cd usr/bin;rm -f $RMLIST59)
+			esac
+			mv tmp/ttys etc/ttys
+			ln -s ../tmp/X0 dev/X0 &
+			;;
+		esac
+		case "$BIT1" in
+		1)
+			# set up head 1 - QDSS only
+			wait
+			mv dev/ttype dev/ttyv1 &
+			mv dev/ptype dev/ptyv1 &
+			egrep -v "ttyv1" etc/ttys > tmp/ttys
+			echo "$QD1DATA" >> tmp/ttys
+			mv tmp/ttys etc/ttys &
+			ln -s ../tmp/X1 dev/X1 &
+			;;
+		esac
+		;;
+	DELETE)
+		# put the pty's back and clean up the ttys file.
+		[ -f dev/ttyv0 ] && mv dev/ttyv0 dev/ttypf &
+		[ -f dev/ptyv0 ] && mv dev/ptyv0 dev/ptypf &
+		[ -f dev/ttyv1 ] && mv dev/ttyv1 dev/ttype &
+		[ -f dev/ptyv1 ] && mv dev/ptyv1 dev/ptyv1 &
+		egrep -v "ttyv0|ttyv1" etc/ttys |
+			sed 's/^#console/console/' > tmp/ttys
+		mv tmp/ttys etc/ttys
+		;;
+	esac
+	;;
+POST_D)	
+		;;
+esac
+
+# let everybody die off...
+wait
+exit 0

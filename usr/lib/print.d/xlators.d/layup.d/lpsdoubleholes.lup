@@ -1,0 +1,8 @@
+! lpsdoubleholes.lup specifies a larger left margin to allow for 
+! hole punching. It alternates the larger margin for double-sided 
+! copying.  It is meant for printing one page per sheet.
+
+no borders
+margins = 19, 19, 60, 19
+alternate = left
+

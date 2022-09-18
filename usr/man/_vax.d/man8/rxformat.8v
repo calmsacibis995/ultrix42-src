@@ -1,0 +1,53 @@
+.\" SCCSID: @(#)rxformat.8v	8.1	9/11/90
+.TH rxformat 8v VAX
+.SH Name
+rxformat \- format floppy disks
+.SH Syntax
+.B /etc/rxformat
+[
+.B \-d
+] \fIspecial\fR
+.SH Description
+.NXR "rxformat program"
+.NXR "RX02 floppy disk" "formatting"
+The
+.PN rxformat
+program formats a diskette in the specified drive
+associated with the special device
+.IR special .
+(The
+.I special
+is normally /dev/rrx0, for drive 0, or /dev/rrx1,
+for drive 1.)
+By default, the diskette is formatted single density;
+a
+.PN \-d
+flag can be supplied to force double density formatting.
+Single density is compatible 
+with the IBM 3740 standard (128 bytes/sector). 
+In double density, each sector
+contains 256 bytes of data.
+.PP
+Before formatting a diskette
+.PN rxformat
+prompts for verification (this allows a user to cleanly
+abort the operation; note that
+formatting a diskette will destroy any existing data).
+Formatting is done by the hardware.
+All sectors are zero-filled.
+.SH Restrictions
+A floppy may not be formatted if the
+header information on sector 1, track 0 has been damaged.  
+Hence, it is not possible to format a completely degaussed disk. 
+(This is actually a problem in the hardware.)
+.SH Diagnostics
+.B "No such device" 
+.br
+The drive is not ready, 
+usually because no disk is in the drive or the drive door is open.
+.PP
+Other error messages are self-explanatory.
+.SH Files
+.PN /dev/rx?
+.SH See Also
+rx(4)

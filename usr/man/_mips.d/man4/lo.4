@@ -1,0 +1,24 @@
+.\" SCCSID: @(#)lo.4	8.1	9/11/90
+.TH lo 4
+.SH Name
+lo \- loop network interface
+.SH Syntax
+.B pseudo-device loop
+.SH Description
+.NXR "loop network interface"
+.NXR "lo keyword"
+The
+.PN loop
+interface is a software loopback mechanism that can be
+used for performance analysis, software testing, and/or local
+communication.   By default, the loopback interface is
+accessible at address 127.0.0.1 (nonstandard); this address
+may be changed with the SIOCSIFADDR ioctl.
+.SH Diagnostics
+.B "lo%d: can't handle af%d"
+.br
+The interface was handed
+a message with addresses formatted in an unsuitable address
+family; the packet was dropped.
+.SH See Also
+intro(4n), inet(4f)

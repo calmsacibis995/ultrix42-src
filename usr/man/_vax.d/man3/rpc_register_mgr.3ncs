@@ -1,0 +1,123 @@
+.TH rpc_register_mgr 3ncs
+.SH Name
+rpc_register_mgr \- register a manager (server only)
+.SH Syntax
+#include <idl/c/rpc.h>
+
+void rpc_$register_mgr(\fItype, ifspec, sepv, mepv, status\fP)
+.nf
+uuid_$t *\fItype\fP;
+rpc_$if_spec_t *\fIifspec\fP;
+rpc_$generic_epv_t \fIsepv\fP;
+rpc_$mgr_epv_t \fImepv\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$register_mgr(\fR
+.\"	\fBin \fItype\fB: uuid_$t;\fR
+.\"	\fBin \fIifspec\fB: rpc_$if_spec_t;\fR
+.\"	\fBin \fIsepv\fB: rpc_$generic_epv_t;\fR
+.\"	\fBin \fImepv\fB: rpc_$mgr_epv_t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fItype\fR
+The UUID of the type being registered.
+.TP 20
+\fIifspec\fR
+The interface being registered.
+.TP 20
+\fIsepv\fR
+The generic EPV, a vector of pointers to server stub procedures.
+.TP 20
+\fImepv\fR
+The manager EPV, a vector of pointers to manager procedures.
+.TP 20
+\fIstatus\fR
+The completion status.  
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$register_mgr
+routine registers the set of manager procedures that implement
+a specified interface for a specified type.
+.NXR "Interface to the Remote Procedure Call" "rpc_register_mgr"
+.PP
+Servers can invoke this routine
+several times with the same interface (\fIifspec\fR) and generic EPV (\fIsepv\fR)
+but with a different object type (\fItype\fR) and manager EPV (\fImepv\fR)
+on each invocation.
+This technique allows a server to export several implementations of the same interface.
+.PP
+Servers that export several versions of the same interface
+(but not different implementations for different types)
+must also use 
+.PN rpc_$register_mgr ,
+not 
+.PN rpc_$register .
+Such servers should supply 
+.B uuid_$nil
+as the \fItype\fR to 
+.PN rpc_$register_mgr .
+.PP
+If a server uses 
+.PN rpc_$register_mgr
+to register a manager for a specific interface and a specific type that
+is not nil, the server must use
+.PN rpc_$register_object
+to register an object.
+.SH Diagnostics
+This section lists status codes for errors returned by this
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$op_rng_error\fR
+The requested operation does not correspond to a valid operation 
+in the requested interface.
+.TP 20
+\fBrpc_$unk_if\fR
+The requested interface is not known.
+It is not registered in the server,
+the version number of the registered interface is
+different from the version number specified in the request,
+or the UUID in the request does not match the UUID of the registered interface.
+.TP 20
+\fBrpc_$too_many_ifs\fR
+The maximum number of interfaces is already registered with the RPC runtime library;
+the server must unregister some interface before it registers an additional interface.
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$you_crashed\fR
+This error can occur if a server has crashed and restarted.
+A client RPC runtime library sends the error to the server
+if the client makes a remote procedure call before the server crashes,
+then receives a response after the server restarts.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.TP 20
+\fBrpc_$illegal_register\fR
+You are trying to register an interface that is already registered 
+and you are using an EPV different from
+the one used when the interface was first registered.
+An interface can be multiply registered,
+but you must use the same EPV in each 
+.PN rpc_$register
+routine.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs), rpc_register(3ncs), rpc_register_object(3ncs), rpc_unregister(3ncs)

@@ -1,0 +1,331 @@
+.TH snmpd.conf 5n
+.SH Name
+snmpd.conf \- Simple Network Management Protocol (SNMP) daemon 
+configuration file
+.SH Description
+The 
+.PN /etc/snmpd.conf
+file is a configuration file that contains information used by the 
+.PN snmpd
+daemon to define the static variables whose values are not
+available in the kernel.  It is created for you when you
+run the
+.PN snmpsetup
+command, or you can create it manually. 
+The system or network manager is usually responsible for 
+maintaining it.
+.NXR "snmpd configuration file" "defined"
+.PP
+The following are the 
+.PN /etc/snmpd.conf
+file variables and their significance:
+.PP
+.NXR "snmpd configuration file" "parameters"
+.PP
+.IP "sysDescr \fIID-string\fP" 5
+The 
+.PN sysDescr 
+variable describes the host.
+The \fIID-string\fP is the value of the variable 
+.PN mgmt.mib.system.sysDescr .
+The default 
+.PN sysDescr
+entry is of the form:
+.IP
+hostname:machine-type:software id
+.IP
+For example, the 
+.PN sysDescr 
+entry for a MicroVAX II named 
+.PN host1 
+that is running ULTRIX Version 4.0 might read:
+.EX 0
+sysDescr	host1:MicroVAXII:ULTRIX V4.0 (Rev 64) System #2
+.EE
+.NXR "snmpd configuration file parameters" "sysDescr"
+.NX(e) "snmpd configuration file parameters" "sysDescr"
+.IP "interface speed \fIname\fP \fIspeed\fP" 5
+The 
+.PN "interface speed"
+variable describes a value for the Management
+Information Base (MIB) variable 
+defined as:
+.IP
+.PN mgmt.mib.interfaces.ifTable.ifEntry.ifSpeed
+.IP
+The \fIname\fP parameter must
+be an ULTRIX interface name, such as sl0.
+The following interfaces have default interface speeds and types:
+de, qe, ni, ln, se, scs, xna.  If your system has one of these
+interfaces, you do not need to specify this parameter.  
+.IP
+The \fIspeed\fP parameter is a decimal 
+number that describes the speed of the
+link in bits per second.  If you do not specify the \fIspeed\fP 
+parameter,
+.PN snmpd 
+does not return this variable and marks it as 
+unavailable.
+.NXR "snmpd configuration file parameters" "interface speed"
+.IP "interface type \fIname\fP \fItype\fP" 5
+The 
+.PN "interface type"
+variable describes a value for the MIB variable
+in the interface table defined as:
+.IP
+.PN mgmt.mib.interfaces.ifTable.ifEntry.ifType
+.IP
+The \fIname\fP 
+parameter must be an ULTRIX interface name, such as sl0.
+.IP
+See the sample 
+.PN /etc/snmpd.conf 
+file in the Examples section for a complete listing of the
+possible \fItype\fP specifications.  If the \fItype\fP parameter is not 
+specified, 
+.PN snmpd 
+marks it as unavailable.
+.NXR "snmpd configuration file parameters" "interface type"
+.IP "tcpRtoAlgorithm \fIalgorithm-type\fP" 5
+The 
+.PN tcpRtoAlgorithm 
+variable describes a value for the 
+MIB variable in the tcp group defined as
+.PN mgmt.mib.tcp.tcpRtoAlgorithm.  
+This variable defines
+the Retransmission Time-Out (RTO) algorithm your 
+system uses.
+.IP
+The \fIalgorithm-type\fP parameter is a
+numeric code that represents the type of RTO
+algorithm you are using.  
+The default algorithm 
+is Van Jacobson's, which is algorithm number 4.
+See the sample 
+.PN snmpd.conf
+file in the Examples section for a listing of the other algorithms.
+.IP
+If you do not specify
+this parameter, 
+.PN snmpd 
+does not return this variable, and marks it as unavailable.
+.NXR "snmpd configuration file parameters" "tcpRtoAlgorithm"
+.IP "community \fIname\fP \fIIP-address\fP \fItype\fP" 5
+The 
+.PN community 
+variable describes an SNMP community for the agent.
+.IP
+The \fIname\fP parameter is a string that describes
+the name of the community. 
+.IP
+The \fIIP-address\fP parameter is the dot-notation Internet Protocol (IP)
+address for the server.  Only SNMP packets coming from that
+address are accepted.  If you specify 0.0.0.0 in the \fIaddress\fP
+field, the SNMP agent honors the request from any Network
+Management Station (NMS) having the 
+\fIname\fP community.
+.IP
+The \fItype\fP parameter can be one of the following:
+.RS
+.IP read-only 0
+Permits only monitoring of variables.
+.IP read-write
+Permits both monitoring and setting of variables.
+.IP traps 0
+Generates traps when appropriate
+and sends them to the specified address with the specified
+community name.
+.IP
+The possible traps currently generated are
+cold start and authentication failure.
+.NXR "traps" "cold start"
+.NXR "traps" "authentication failure"
+.NXR "snmpd configuration file parameters" "community"
+.RE
+.IP
+If you do not specify any community, 
+.PN snmpd 
+uses the default community 
+.PN public
+with an address 0.0.0.0 and a read-only type.
+Invalid uses of communities
+are logged with the 
+.PN syslog
+command.  To limit the use of a 
+community to a finite group of machines, specify another
+community clause with the same community parameter \fIname\fP and a
+different address.
+.IP "timeout \fIvalue\fP" 5
+The 
+.PN timeout
+variable indicates the timeout value in seconds
+between the Agent 
+and the Extended Agent.  If the Agent does not receive a
+response within the allotted time, it returns an error message to the
+NMS.  The default timeout value is 5 seconds.
+.NXR "snmpd configuration file parameters" "timeout"
+.IP "extension \fIextended-agent\fP \fIp1\fP \fIp2\fP \fIp3\fP \fIp4\fP" 5
+The 
+.PN extension 
+variable lists the pathname of the \fIextended-agent\fP
+that the Agent activates.
+.IP
+Variables \fIp1\fP through \fIp4\fP are passed by the Agent to the
+Extended Agent; \fIp1\fP is usually the process name to be given to the
+Extended Agent. 
+.NXR "snmpd configuration file parameters" "extension"
+.SH Examples
+The default
+.PN snmpd.conf
+file contains only the following entry:
+.EX
+community public 0.0.0.0    read-only
+.EE
+The following is an example of an extensive
+.PN snmpd.conf
+file:
+.EX 0
+#
+#    snmpd.conf file
+#
+sysDescr        host1:MicroVAXII:ULTRIX V4.0 System #2
+
+
+#
+#  Describe the TCP RTO algorithm you are using.  Values
+#  are listed in RFC 1066, under the TCP group variable: 
+#  tcpRtoAlgorithm
+#  They are:
+#
+#  other    (1)  -- None of the below
+#  constant (2)  -- constant RTO
+#  rsre     (3)  -- MILSTD 1778, appendix B
+#  vanj     (4)  -- Van Jacobson's algorithm
+#
+tcprtoalgorithm	4
+
+#
+#  Describe who can use your SNMP daemon by
+#  defining "communities".    USAGE:
+#
+#  community <name><IP address><type>
+#
+#  This is a limited-use community; a finite number of 
+#  hosts can use it.
+#  Can only query from this community.
+#
+community test1	128.45.10.100 read-only
+community test1	128.45.10.101 read-only
+
+#
+#  These are our wide-open, general-use communities.  Specifying
+#  0.0.0.0 means that any address can use this community only
+#  to monitor variables.
+#
+community public 0.0.0.0 read-only
+
+#
+#  This is our only management community.  You can set variables 
+#  as well as monitor variables with this community.  It is a 
+#  wide-open community as well.
+#
+community testwrite 0.0.0.0 read-write
+
+#
+#  This is a trap community.  We send traps to these addresses 
+#  all from the same community name.  Note that a 0.0.0.0 
+#  address in a trap session is illegal and snmpd will ignore 
+#  that community definition.
+#
+community trap1	128.45.10.100 traps
+community trap1	128.45.10.101 traps
+
+#
+#  The interface speed is given in bits/sec.  USAGE:
+#
+#  interface speed <name> <speed>
+#
+interface speed sl0 9600
+
+#
+#  The <name> parameter for the interface type is the
+#  same as the <name> for the interface speed, sl0 for
+#  this example.  USAGE:
+#
+#  interface type <name> <type>
+#
+#  The code number for the proper interface hardware type 
+#  is specified in RFC 1066 under the ifType object
+#  definition.
+#
+#  Some possible values:
+#
+#  other                   (1)
+#  regular1822             (2)
+#  hdh1822                 (3)
+#  ddn-x25                 (4)
+#  rfc877-x25              (5)
+#  ethernet-csmacd         (6)
+#  iso88023-csmacd         (7)
+#  iso88024-tokenBus       (8)
+#  iso88025-tokenRing      (9)
+#  iso88026-man            (10)
+#  starLan                 (11)
+#  Proteon-10MBit          (12)
+#  Proteon-80MBit          (13)
+#  hyperchannel            (14)
+#  fddi                    (15)
+#  lapb                    (16)
+#  sdlc                    (17)
+#  t1-carrier              (18)
+#  cept                    (19) -- European equivalent of T-1
+#  basicIsdn               (20)
+#  primaryIsdn             (21)
+#  propPointToPointSerial  (22) -- proprietary serial
+#                             
+interface type  sl0 1
+
+#
+# Timer value to time out requests to extended agents.
+#
+timeout	6
+
+#
+# List of extended agents.
+#
+extension /etc/snmpextd		snmpextd
+.EE
+.PP
+In this example, note the following:
+.PP
+\(bu  Community 
+.PN test1 
+can be monitored by either 128.45.10.100 or 128.45.10.101.
+.PP
+\(bu  Community 
+.PN public 
+can be monitored by any NMS.
+.PP
+\(bu  Community 
+.PN testwrite 
+can be monitored and managed by any NMS.
+.PP
+\(bu  When a trap is generated, it is sent to community 
+.PN trap1 
+at 128.45.10.100 or 128.45.10.101.  Destination
+addresses must have a mechanism in place to handle the traps.
+.SH See Also
+.\" These are in alphabetical order by section number. 
+.\" For example,
+.\" cat(1), kill(1), tty(4), dump(8)
+.\"
+.\" Code as text as follows:
+.\"
+snmpext(3n), snmpd(8n), snmpsetup(8n)
+.br
+RFC 1066\(em\fIManagement Information Base for Network Management of TCP/IP-
+based Internets\fR
+.br
+RFC 1067\(em\fIA Simple Network Management Protocol\fR
+.br
+.I Guide to Networking

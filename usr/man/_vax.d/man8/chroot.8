@@ -1,0 +1,43 @@
+.TH chroot 8
+.SH Name
+chroot \- change root directory for a command
+.SH Syntax
+.B /usr/bin/chroot
+.I "newroot command"
+.SH Description
+.NXr "root directory change"
+.NXM "root directory" "chroot command"
+The 
+.PN chroot
+program is executed
+relative to the 
+.IR "new root" .
+The meaning of any initial slashes
+.RB ( / )
+in path names is changed for a command and any of its children to
+.IR newroot .
+Furthermore, the initial working directory is
+.IR newroot .
+.PP
+The new root path name is always relative to the current root: even if a
+.PN chroot
+is currently in effect, the
+.I newroot
+argument is relative to the current root of the
+running process.
+.SH Restrictions
+This program is restricted to processes with appropriate privileges.
+.PP
+Use extreme caution when referencing special files
+in the new root file system.
+.SH Examples
+The following example will create the file
+.B x
+relative to the original root, not the new one.
+.sp
+.RS
+%
+\fBchroot \|\fInewroot \|command\fP \|>x\fR
+.RE
+.SH See Also
+chdir(2), chroot(2)

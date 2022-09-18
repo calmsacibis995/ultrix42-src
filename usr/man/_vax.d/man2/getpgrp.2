@@ -1,0 +1,57 @@
+.\" SCCSID: @(#)getpgrp.2	2.4	8/10/87
+.TH getpgrp 2
+.SH Name
+getpgrp \- get process group
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.B #include <unistd.h>
+.PP
+.B pgrp = getpgrp(\fIpid\fP)
+.B pid_t pgrp;
+.B pid_t \fIpid\fP;
+.fi
+.SH Description
+.NXR "getpgrp system call"
+.NXA "getpgrp system call" "setpgrp system call"
+.NXA "getpgrp system call" "tty interface"
+.NXR "process" "getting process group"
+.NXR "process group" "defined"
+The system call 
+.PN getprgrp 
+returns the process group of the specified process.
+If
+.I pid
+is zero, the call applies to the current process.
+.PP
+Process groups are used for distribution of signals and
+by terminals to arbitrate requests for their input.  Processes
+that have the same process group as the terminal are the foreground
+and may read, while others block with a signal if they attempt
+to read.
+.PP
+This call is used by programs such as 
+.MS csh 1
+to create process groups in implementing job control.
+The TIOCGPGRP and TIOCSPGRP calls described in 
+.MS tty 4
+are used to get and set the process group of the control terminal.
+.SH Environment
+When your program is compiled in the System V or POSIX environment,
+.PN getpgrp
+is called without arguments and the process group of the
+current process is returned.  
+.PP
+Additionally, in POSIX mode, 
+.PN getpgrp 
+returns a value type of 
+.I pid_t.
+.SH Diagnostics
+The
+.PN getpgrp
+call fails under the following condition:
+.TP 15
+[ESRCH]
+No such process, PID.
+.SH See Also
+getuid(2), setpgrp(2), tty(4)

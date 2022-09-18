@@ -1,0 +1,298 @@
+.\" SCCSID: @(#)intro.4n	8.1	9/11/90
+.TH intro 4n
+.SH Name
+networking \- introduction to networking facilities
+.SH Syntax
+.nf
+.ft B
+#include <sys/socket.h>
+#include <net/route.h>
+#include <net/if.h>
+.fi R
+.fi
+.SH Description
+.NXR "intro(4) keyword"
+.NXB "network facilities" "introduction"
+This section briefly describes the networking facilities
+available in the system.
+Documentation in this part of Section
+4 is broken up into three areas: protocol families, protocols,
+and ``network interfaces''.
+Entries describing a protocol family are marked ``4f'',
+while entries describing protocol use are marked ``4p''.
+Hardware support for network interfaces is found
+among the standard ``4'' entries.
+.PP
+All network protocols are associated with a specific protocol family.
+.NXR "protocol family" "defined"
+A protocol family provides basic services to the protocol
+implementation to allow it to function within a specific
+network environment.  These services can include 
+packet fragmentation and reassembly, routing, addressing, and 
+basic transport.  A protocol family can support multiple
+methods of addressing, though the current protocol implementations
+do not.  A protocol family normally comprises a number
+of protocols, one per socket
+type.  It is not required that a protocol family support
+all socket types.  A protocol family can contain multiple
+protocols supporting the same socket abstraction. 
+.PP
+A protocol supports one of the socket abstractions detailed
+in
+.MS socket 2 .
+.NXR "protocol" "defined"
+A specific protocol can be accessed either by creating a
+socket of the appropriate type and protocol family or
+by requesting the protocol explicitly when creating a socket.
+Protocols normally accept only one type of address format,
+usually determined by the addressing structure inherent in
+the design of the protocol family/network architecture.
+Certain semantics of the basic socket abstractions are
+protocol-specific.  All protocols are expected to support
+the basic model for their particular socket type, but may,
+in addition, provide nonstandard facilities or extensions
+to a mechanism.  For example, a protocol supporting the
+SOCK_STREAM
+abstraction may allow more than one byte of out-of-band
+data to be transmitted per out-of-band message.
+.PP
+A network interface is similar to a device interface.
+Network interfaces make up the lowest layer of the
+networking subsystem, interacting with the actual transport
+hardware.  
+.NXR "network interface" "defined"
+An interface may support one or more protocol
+families or address formats.
+The SYNTAX section of each network interface
+entry gives a sample specification
+of the related drivers for use in providing
+a system description to
+.MS config 8.
+The DIAGNOSTICS section lists messages that may appear on the console
+and in the system error log file
+.PN /usr/adm/syserr/syserr.<hostname> 
+due to errors in device operation.
+.SH Addressing
+.NXR "protocol family" "address format list"
+Associated with each protocol family is an address
+format.  The following address formats are used by the system:
+.EX 0
+#define AF_UNIX    1  /* local to host (pipes, portals) */
+#define AF_INET    2  /* internetwork: UDP, TCP, etc. */
+#define AF_IMPLINK 3  /* arpanet imp addresses */
+.EE
+.SH Routing
+.NXR "routing table" "defined"
+The network facilities provide limited packet routing.
+A simple set of data structures make up a ``routing table''
+used in selecting the appropriate network interface when
+transmitting packets.  This table contains a single entry for
+each route to a specific network or host.  A user process,
+the routing daemon, maintains this data base with the aid
+of two socket-specific 
+.MS ioctl 2
+commands, SIOCADDRT and SIOCDELRT.  The commands allow
+the addition and deletion of a single routing
+table entry.  Routing table manipulations can
+only be carried out by superuser.
+.PP
+A routing table entry has the following form, as defined
+in <net/route.h>:
+.NXR(e) "routing table" "entry form"
+.EX 0
+struct rtentry {
+        u_long  rt_hash;
+        struct  sockaddr rt_dst;
+        struct  sockaddr rt_gateway;
+        short   rt_flags;
+        short   rt_refcnt;
+        u_long  rt_use;
+        struct  rtentry *rt_next;
+        struct  ifnet *rt_ifp;
+};
+.EE
+with
+.I rt_flags
+defined from,
+.EX 0
+#define  RTF_UP      0x1   /* route usable */
+#define  RTF_GATEWAY 0x2   /* destination is a gateway */
+#define  RTF_HOST    0x4   /* host entry (net otherwise) */
+.EE
+Routing table entries come in three types: for a specific
+host, for all hosts on a specific network, and for any destination
+not matched by entries of the first two types (a wildcard route). 
+.NXR "routing table" "entry types"
+When the system
+is booted, each network interface autoconfigured 
+installs a routing table entry when it wishes to have packets
+sent through it.  Normally, the interface specifies the route
+through it is a ``direct'' connection to the destination host
+or network.  If the route is direct, the transport layer of
+a protocol family usually requests the packet be sent to the
+same host specified in the packet.  Otherwise, the interface
+may be requested to address the packet to an entity different
+from the eventual recipient (that is, the packet is forwarded).
+.PP
+Routing table entries installed by a user process cannot specify
+the hash, reference count, use, or interface fields; these are filled
+in by the routing routines.  If
+a route is in use when it is deleted (rt_refcnt is nonzero),
+the resources associated with it are not
+reclaimed until further references to it are released. 
+.PP
+The routing code returns EEXIST if
+requested to duplicate an existing entry, ESRCH if
+requested to delete a nonexistent entry,
+or ENOBUFS if insufficient resources were available
+to install a new route.
+.PP
+User processes read the routing tables through the 
+.PN /dev/kmem 
+device.
+.PP
+The
+.I rt_use
+field contains the number of packets sent along the route.
+This value is used to select among multiple
+routes to the same destination.  When multiple routes to
+the same destination exist, the least used route is selected.
+.PP
+A wildcard routing entry is specified with a zero
+destination address value.  Wildcard routes are used
+only when the system fails to find a route to the
+destination host and network.  The combination of wildcard
+routes and routing redirects can provide an economical
+mechanism for routing traffic.
+.SH Interfaces
+.NXB "network interface"
+Each network interface in a system corresponds to a
+path through which messages can be sent and received.  A network
+interface usually has a hardware device associated with it, though
+certain interfaces such as the loopback interface, 
+.PN lo ,
+do not.
+.PP
+At boot time, each interface that has underlying hardware support
+makes itself known to the system during the autoconfiguration
+process.  Once the interface has acquired its address, it is
+expected to install a routing table entry so that messages can
+be routed through it.  Most interfaces require some part of
+their address specified with an SIOCSIFADDR ioctl before they
+allow traffic to flow through them.  On interfaces where
+the network-link layer address mapping is static, only the
+network number is taken from the ioctl; the remainder is found
+in a hardware-specific manner.  On interfaces that provide
+dynamic network-link layer address mapping facilities (for example,
+10Mb/s Ethernets), the entire address specified in the ioctl
+is used.
+.PP
+The following 
+.PN ioctl
+calls may be used to manipulate network interfaces.  Unless
+specified otherwise, the request takes an
+.I ifrequest
+structure as its parameter.  This structure has the form:
+.NXR(e) "ifrequest structure" "form"
+.EX 0
+struct  ifreq {
+  char    ifr_name[16];   /* name of interface (e.g. "ec0") */
+  union {
+         struct    sockaddr ifru_addr;
+         struct    sockaddr ifru_dstaddr;
+         short     ifru_flags;
+     } ifr_ifru;
+#define ifr_addr    ifr_ifru.ifru_addr    /* address */
+#define ifr_dstaddr ifr_ifru.ifru_dstaddr /* end of p-to-p link */
+#define ifr_flags   ifr_ifru.ifru_flags   /* flags */
+};
+.EE
+.NXB "network interface" "ioctl calls for manipulating"
+.TP
+SIOCSIFADDR
+Set interface address.  Following the address
+assignment, the ``initialization'' routine for
+the interface is called.
+.TP
+SIOCGIFADDR
+Get interface address.
+.TP
+SIOCSIFDSTADDR
+Set point-to-point address for interface.
+.TP
+SIOCGIFDSTADDR
+Get point-to-point address for interface.
+.TP
+SIOCSTATE
+Read or set ownership and state of a device.
+.TP
+SIOCSIFFLAGS
+Set interface flags field.  If the interface is marked down,
+any processes currently routing packets through the interface
+are notified.
+.TP
+SIOCGIFFLAGS
+Get interface flags.
+.TP
+SIOCGIFCONF
+Get interface configuration list.  This request takes an
+.I ifconf
+structure (see SIOCSIFBRDADDR) as a value-result parameter.  The 
+.I ifc_len
+field should be initially set to the size of the buffer
+pointed to by 
+.IR ifc_buf .
+On return it will contain the length, in bytes, of the
+configuration list.
+.TP
+SIOCGIFNETMASK
+Get network address mask.
+.TP
+SIOCSIFNETMASK
+Set network address mask.
+.TP
+SIOCGIFBRDADDR
+Get broadcast address associated with network interface.
+.TP
+SIOCSIFBRDADDR
+Set broadcast address associated with network interface.
+.NXE "network interface" "ioctl calls for manipulating"
+.NXR(e) "network interface" "associated broadcast address"
+.EX 0
+/*
+ * Structure used in SIOCGIFCONF request.
+ * Used to retrieve interface configuration
+ * for machine (useful for programs which
+ * must know all networks accessible).
+ */
+struct  ifconf {
+        int     ifc_len;    /* size of associated buffer */
+        union {
+               caddr_t  ifcu_buf;
+               struct   ifreq *ifcu_req;
+        } ifc_ifcu;
+#define ifc_buf ifc_ifcu.ifcu_buf /* buffer address */
+#define ifc_req ifc_ifcu.ifcu_req /* array of structures */
+};
+.EE
+The following is the structure used in an SIOCSTATE request
+to set device state and ownership.
+.EX 0
+struct ifstate {
+ char    ifr_name[IFNAMSIZ]; /* if name, e.g. "dmv0" */
+ u_short if_family;          /* current family ownership */
+ u_short if_next_family;     /* next family ownership */
+ u_short if_mode:3,          /* mode of device */
+         if_ustate:1,        /* user requested state */
+         if_nomuxhdr:1,      /* if set, omit mux header */
+         if_dstate:4,        /* current state of device */
+         if_xferctl:1,       /* xfer control to nxt family */
+         if_rdstate:1,       /* read current state */
+         if_wrstate:1        /* set current state */
+         if_reserved:4;
+};
+.EE
+.SH See Also
+socket(2), ioctl(2), intro(4), config(8), routed(8c)
+.NXE "network interface"
+.NXE "network facilities" "introduction"

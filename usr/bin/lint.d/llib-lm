@@ -1,0 +1,67 @@
+    /*LINTLIBRARY*/
+
+#ifdef SYSTEM_FIVE
+#include <math.h>
+#endif
+
+/* ASINH(3M) */
+double	asinh(x) double x; { return x;}
+double	acosh(x) double x; { return x;}
+double	atanh(x) double x; { return x;}
+/* ERF(3M) */
+double	erf(x) double x; { return x; }
+double	erfc(x) double x; { return x; }
+/* EXP(3M) */
+double	exp(x) double x; { return x; }
+double	expm1(x) double x; { return x; }
+double	log(x) double x; { return x; }
+double	log10(x) double x; { return x; }
+double	log1p(x) double x; { return x; }
+double	pow(x,y) double x,y; { return x; }
+/* FLOOR(3M) */
+double	ceil(x) double x; { return x; }
+double	fabs(x) double x; { return x; }
+double	floor(x) double x; { return x; }
+double	fmod(x,y) double x,y; {return x; }
+/* GAMMA(3M) */
+int	signgam;
+double	gamma(x) double x; { return x; }
+double	lgamma(x) double x; { return x; }
+/* HYPOT(3M) */
+double	cabs(z) struct {double x, y;} z; { return z.x; }
+double	hypot(x,y) double x,y; { return x; }
+/* ISNAN(3C) */
+int	isnan(x) double x; { return (0); }
+/* J0(3M) */
+double	j0(x) double x; { return x; }
+double	j1(x) double x; { return x; }
+double	jn(n,x) int n; double x; { return x; }
+double	y0(x) double x; { return x; }
+double	y1(x) double x; { return x; }
+double	yn(n,x) int n; double x; { return x; }
+/* SIN(3M) */
+double	acos(x) double x; { return x; }
+double	asin(x) double x; { return x; }
+double	atan(x) double x; { return x; }
+double	atan2(x,y) double x,y; { return x; }
+double	cos(x) double x; { return x; }
+double	sin(x) double x; { return x; }
+double	tan(x) double x; { return x; }
+/* SINH(3M) */
+double	cosh(x) double x; { return x; }
+double	sinh(x) double x; { return x; }
+double	tanh(x) double x; { return x; }
+/* SQRT(3M) */
+double	sqrt(x) double x; { return x; }
+double	cbrt(x) double x; { return x; }
+/* SUPPORT(3M) */
+double	drem(x,y) double x,y; { return x; }
+long	finite(x) double x; { return x; }
+double	scalb(x,n) double x; int n; { return x; }
+double	logb(x) double x; { return x; }
+double	copysign(x,y) double x,y; { return x; }
+double	rint(x) double x; { return x; }
+/* MATHERR(3M) */
+#ifdef SYSTEM_FIVE
+int 	matherr(x) struct exception *x; { return (0); }
+#endif

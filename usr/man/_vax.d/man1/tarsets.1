@@ -1,0 +1,111 @@
+.TH tarsets 1
+.SH Name
+tarsets \- subset kitting command file generator
+.SH Syntax
+.B /usr/sys/dist/tarsets 
+[
+.B \-d
+]
+.I pathname
+.SH Arguments
+.I pathname
+.PP
+Specify the root directory for the file hierarchy containing
+the files to be kitted in the subset.
+.SH Description
+.NX R "tarsets command"
+.NX R "Software kits" "producing"
+The
+.PN tarsets
+command reads subset inventory records from
+standard input and writes a command procedure to standard output.
+This command procedure contains the commands required to create
+subset images for the subset described in the input.
+.PP
+The
+.PN tarsets
+command is used by the
+.PN kits
+utility to produce software kits for use
+with the
+.PN setld
+utility.
+.PP
+All error diagnostics are written to the file
+.I stderr
+in the current directory.
+.SH Options
+.TP
+.B \-d
+Enable debugging. Debug trace diagnostics are written to
+.I ts.dbg
+in the current directory.
+.SH Restrictions
+The output command procedure produces multiple tar files.
+Each tar file has a goal size of 400Kb. This is an anachronism
+from the days of software distribution on RX50 diskettes.
+The command procedure is modified automatically to produce a
+single subset image when
+.PN tarsets
+is called from the
+.PN kits
+utility.
+.SH Return Values
+The exit status from the
+.PN tarsets
+command is zero unless a hard link referenced in the input
+inventory cannot be found in the input inventory, in which case
+the status is 1.
+.SH Diagnostics
+Invalid Record on line \fIn\fR
+.RS
+The input record on line
+.I n
+is not in subset inventory format.
+.RE
+.PP
+\fIpath1\fR -> \fIpath2\fR link reference unresolved.
+.RS
+The input record for
+.I path1
+contains a pointer to
+.I path2
+in the referent field and
+.I path2
+does not appear in the inventory. This indicates that
+.I path2
+was deleted from the inventory after being created
+by the
+.I invcutter
+command.
+.RE
+.PP
+Warning: file \fIfilename\fR is \fIn\fR blocks too large for diskette
+.RS
+This is an obsolete message. It can be ignored.
+.RE
+.PP
+Writing Oversized File Volume...
+.RS
+This is an obsolete message. It can be ignored.
+.RE
+.PP
+\fIi\fR Blocks, \fIj\fR Chars on Volume \fIk\fR
+.RS
+This is an informational message. The number
+.I j
+is the number of characters in the command written
+to the output to produce volume
+.I k.
+.RE
+.SH Files
+.TP
+stderr
+Diagnostic output.
+.TP
+ts.dbg
+Debug diagnostic output.
+.SH See Also
+invcutter(1), kits(1), stl_inv(5), setld(8)
+.br
+\fIGuide to Preparing Software for Distribution on ULTRIX Systems\fP

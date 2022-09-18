@@ -1,0 +1,127 @@
+.TH floor 3m RISC
+.SH Name
+floor, ffloor, fabs, ceil, ceil, trunc, ftrunc, fmod, rint \- floor, absolute value, ceiling, truncation, floating point remainder and round-to-nearest functions
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double floor(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float ffloor(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double ceil(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float fceil(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double trunc(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float ftrunc(\fIx\fP)
+.B float \fIx\fP;
+.PP
+.B double fabs(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double fmod (\fIx, y\fP)
+.B double \fIx, y\fP;
+.PP
+.B double rint(\fIx\fP)
+.B double \fIx\fP;
+.fi
+.SH Description
+.NXR "fabs subroutine"
+.NXR "ceil subroutine"
+.NXR "floor function" "returning integer"
+.NXR "ceiling function" "returning integer"
+.NXR "truncation"
+.NXR "absolute value function"
+.NXR "floating point remainder"
+.NXR "round-to-nearest function"
+The 
+.PN floor
+and 
+.PN ffloor
+routines return the largest integer which is not greater than x
+for double and float data types, respectively.
+.PP
+The 
+.PN ceil
+and
+.PN fceil
+routines return the smallest integer which is not less than x
+for double and float data types, respectively.
+.PP
+The
+.PN trunc
+and
+.PN ftrunc
+routines return the integer (represented as a floating-point number)
+of x with the fractional bits truncated
+for double and float data types respectively.
+.PP
+The 
+.PN fabs
+routine returns the absolute value |\|x|.
+.PP
+The
+.PN fmod
+routine returns the floating point remainder of the division of
+.I x\^
+by
+.IR y :
+zero if
+.I y\^
+is zero or if
+.I x/y\^
+would overflow;
+otherwise the number
+.I f\^
+with the same sign as
+.IR x ,
+such that
+.I "x = iy + f"
+for some integer
+.IR i ,
+and
+.RI | \|f "| < |" \|y |\|.
+.PP
+The
+.PN rint
+routine returns the integer (represented as a double precision number)
+nearest x in the direction of the prevailing rounding mode.
+.PP
+In the default rounding mode, to nearest,
+.PN rint(x) 
+is the integer nearest x with the additional stipulation
+that if |rint(x)\-x|=1/2 then 
+.PN rint(x) 
+is even.
+Other rounding modes can make 
+.PN rint 
+act like 
+.PN floor
+or
+.PN ceil ,
+or round towards zero.
+.PP
+Another way to obtain an integer near x is to declare (in C)
+.RS
+double x;\0\0\0\0 int k;\0\0\0\0k\0=\0x;
+.RE
+The C compiler rounds x towards 0 to get the integer k.
+Also note that, if x is larger than k can accommodate, the value of
+k and the presence or absence of an integer overflow are hard to
+predict.
+.PP
+The 
+.PN fabs 
+routine 
+is in libc.a rather than libm.a.
+.SH See Also
+abs(3),
+ieee(3m),
+math(3m)

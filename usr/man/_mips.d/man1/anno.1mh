@@ -1,0 +1,177 @@
+.TH anno 1mh
+.SH Name
+anno \- annotate messages
+.SH Syntax
+.B anno
+[
+.I +folder
+] [
+.I msgs
+] [
+.B "\-component"
+.I field
+] [
+.B "\-help"
+] [
+.B "\-[no]inplace"
+] [
+.B \-text 
+.I body
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "anno command"
+.NXR "annotating messages"
+The
+.PN anno
+command annotates a message by adding 
+one or more header fields to the message.
+.PP
+The
+.PN anno
+command allows you to choose the name of the header field 
+which you add.
+It records the date at which the message is annotated,
+and allows you to add an additional field containing text,
+if you wish.
+.PP
+You can use 
+.PN anno 
+with 
+.PN dist , 
+.PN forw ,
+and
+.PN repl ,
+to keep track of how you have distributed, forwarded, 
+or replied to messages.
+.PP
+By default, 
+.PN anno
+annotates the current message in the current folder.
+You can select another message by using the
+.I msg
+and
+.I +folder
+arguments.
+You can also annotate more than one message, 
+or a range of messages.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-component \fIfield\fP" 10
+Specifies the name of the header field which
+.PN anno 
+adds.
+It should be a valid RFC 822-style message field name,
+which means that it should consist of alphanumeric characters
+or dashes only.
+If you do not supply this option, 
+.PN anno
+will prompt you for the field name.
+.\"
+.IP "\-help" 10
+Prints a list of the valid options to this command.
+.\"
+.IP "\-inplace" 10
+.PD 0
+.IP "\-noinplace" 10
+.PD
+The 
+.B \-inplace 
+switch causes annotation to be done in place in order
+to preserve links to the annotated message.
+.\"
+.IP "\-text \fIbody\fP" 10
+Allows you to add a header field containing text to the message.
+The
+.PN anno
+command will create a second header field on the message,
+containing the text that you specify.
+If the text contains a space, you must enclose the text
+in double quotes (").
+If you do not supply this option, 
+.PN anno
+adds only one field, which contains the date of the annotation.
+.\"
+.\"
+.PP
+The default settings for this command are:
+.IP
+.I +folder
+defaults to the current folder
+.br
+.I msgs 
+defaults to the current message
+.br
+.B \-noinplace
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+This example annotates message number 1 in the folder 
+.PN +test .
+The 
+.B \-component 
+option specifies the name of the header field:
+.EX
+% \f(CBanno 1 +test -component Forwarded\fP
+.EE
+The following field is added to the message header:
+.EX
+Forwarded: Tue, 08 Jan 91 16:10:06 +0000
+.EE
+.PP
+The next example shows how to use the 
+.B \-text
+option to add an additional field:
+.EX
+% \f(CBanno -component Forwarded -text "to David - as requested"\fP
+.EE
+The following lines are added to the message header:
+.EX
+Forwarded: Tue, 08 Jan 91 16:13:27 +0000
+Forwarded: to David - as requested
+.EE
+.PP
+The final example shows how 
+.PN anno
+prompts for the name of the header field, if the 
+.B \-component 
+option is not supplied:
+.EX
+% \f(CBanno\f(CW
+Enter component name: \f(CBforwarded\fP
+.EE
+The following line is added to the message:
+.EX
+forwarded: Tue, 08 Jan 91 16:21:58 +0000
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine your Mail directory
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/\&.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.SH See Also
+dist(1mh), forw(1mh), repl(1mh)

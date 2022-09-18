@@ -1,0 +1,370 @@
+# @(#)vectors.db	4.1   (ULTRIX)   10/10/90
+
+sseg
+id cds
+name vec6400_cds
+label 'VECTOR (6400)'
+elements
+	vec6400_vintsr vec_vpsr vec6400_vctl_csr vec6400_lsx_ccsr
+
+sitem
+name vec6400_vintsr
+size 1
+class composite
+type register
+display nil
+label 'VECTOR INTERFACE ERR STATUS'
+map
+	field
+size 1
+class coded
+map
+	0	"VECTOR UNIT PRESENT"
+	1	"VECTOR UNIT ABSENT"
+	field
+size 1
+class coded
+map
+	1	"SOFT INTERNAL ERROR"
+	field
+size 1
+class coded
+map
+	1	"HARD INTERNAL ERROR"
+	field
+size 1
+class coded
+map
+	1	"VIB SOFT ERROR (VECTL)"
+	field
+size 1
+class coded
+map
+	1	"VIB HARD ERROR (VECTL)"
+	field
+size 1
+class coded
+map
+	1	"VIB SOFT ERROR (C-CHIP)"
+	field
+size 1
+class coded
+map
+	1	"VIB HARD ERROR (C-CHIP)"
+	field
+size 1
+class coded
+map
+	1	"DAL BUS TIMEOUT"
+	field
+size 1
+class coded
+map
+	1	"MODULE RESET BY SOFTWARE"
+	field
+size 1
+class coded
+map
+	1	"VECTOR FUNCTIONS DISABLED"
+
+#vec_vpsr used by 6400 and by 9000 (in aqmck.db)
+sitem
+name vec_vpsr
+size 1
+class composite
+type register
+display nil
+label 'VECTOR PROCESSOR STATUS'
+map
+	field
+size 1
+class coded
+map
+	0	"VECTOR PROCESSOR DISABLED"
+	1	"VECTOR PROCESSOR ENABLED"
+	field
+size 6
+class filler
+	field
+size 1
+class coded
+map
+	1	"ARITHMETIC DISABLING CONDITION"
+	field
+size 16
+class filler
+	field
+size 1
+class coded
+map
+	1	"DISABLED DUE TO HARDWARE ERROR"
+	field
+size 1
+class coded
+map
+	1	"ILLEGAL VECTOR OPCODE"
+	field
+size 5
+class coded
+	field
+size 1
+class coded
+map
+	0	"VECTOR PROCESSOR IDLE"
+	1	"VECTOR PROCESSOR BUSY"
+
+sitem
+name vec6400_vctl_csr
+size 1
+class composite
+type register
+display nil
+label 'VECTOR CONTROLLER STATUS'
+map
+	field
+size 1
+class coded
+map
+	1	"LOAD STORE CHIP SOFT ERROR"
+	field
+size 1
+class coded
+map
+	1	"LOAD STORE CHIP HARD ERROR"
+	field
+size 1
+class coded
+map
+	1	"SOFT INTERNAL BUS PARITY ERROR"
+	field
+size 1
+class coded
+map
+	1	"HARD INTERNAL BUS PARITY ERROR"
+	field
+size 1
+class coded
+map
+	1	"VIB BUS SOFT ERROR"
+	field
+size 1
+class coded
+map
+	1	"VIB BUS HARD ERROR"
+	field
+size 1
+class coded
+map
+	1	"ILLEGAL SEQUENCE ERROR"
+	field
+size 2
+class integer
+display decimal
+label	"MACHINE CHECK CODE"
+	field
+size 1
+class coded
+map
+	1	"SELF TEST FAILED"
+	field
+size 1
+class coded
+map
+	1	"EXTENDED TEST FAILED"
+	field
+size 1
+class coded
+map
+	1	"VERSE HARD ERROR"
+	field
+size 6
+class filler
+	field
+size 1
+class coded
+map
+	1	"SOFT ERROR ENABLE"
+	field
+size 1
+class coded
+map
+	1	"HARD ERROR ENABLE"
+	field
+size 1
+class coded
+map
+	1	"FORCE BAD RFA LOW PARITY"
+	field
+size 1
+class coded
+map
+	1	"FORCE BAD RFA HIGH PARITY"
+	field
+size 1
+class coded
+map
+	1	"FORCE BAD CD BUS LOW DATA PARITY"
+	field
+size 1
+class coded
+map
+	1	"FORCE BAD CD BUS HIGH DATA PARITY"
+	field
+size 2
+class integer
+display decimal
+label	"CURRENT MODE DURING ERROR"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1	"INHIBIT SCAN SYNCHRONIZATION"
+	field
+size 1
+class coded
+map
+	1	"FORCE SOFT ERROR"
+	field
+size 1
+class coded
+map
+	1	"FORCE BAD VIB BUS DATA PARITY"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1	"IMPLEMENTATION SPECIFIC ERROR"
+
+
+sitem
+name vec6400_lsx_ccsr
+size 1
+class composite
+type register
+display nil
+label 'CACHE CSR REGISTER'
+map
+	field
+size 1
+class coded
+map
+	1	"MEMORY ACTIVITY"
+	field
+size 4
+class integer
+display decimal
+label "LOAD STORE CHIP REVISION"
+	field
+size 4
+class integer
+display decimal
+label "NODE ID"
+	field
+size 1
+class coded
+map
+	1	"CACHE PARITY ERROR"
+	field
+size 1
+class coded
+map
+	1	"XMI INTERFACE SOFT ERROR"
+	field
+size 1
+class coded
+map
+	1	"XMI INTERFACE HARD ERROR"
+	field
+size 3
+class filler
+	field
+size 1
+class coded
+map
+	1	"CACHE ERROR ENABLED"
+	field
+size 1
+class coded
+map
+	1	"SOFT ERROR ENABLED"
+	field
+size 1
+class coded
+map
+	1	"CACHE ENABLED"
+	field
+size 1
+class coded
+map
+	1	"CACHE HIT"
+	field
+size 1
+class coded
+map
+	1	"FORCE HIT"
+	field
+size 1
+class coded
+map
+	1	"FLUSH CACHE"
+	field
+size 2
+class coded
+label "TIMEOUT SELECT"
+map
+	0	"4 XMI CYCLES"
+	1	"APPROX 8 MICROSECONDS"
+	2	"APROX 16 MILLISECONDS"
+	3	"APROX 64 MILLISECONDS"
+	field
+size 1
+class coded
+map
+	1	"FORCE BAD LOW RFA PARITY"
+	field
+size 1
+class coded
+map
+	1	"FORCE BAD LOW DATA PARITY"
+	field
+size 1
+class coded
+map
+	1	"FORCE3 BAD HIGH DATA PARITY"
+	field
+size 1
+class coded
+map
+	1	"INVERT VALID BIT SENSE"
+	field
+size 1
+class coded
+map
+	1	"I9NVERT PARITY SNESE"
+	field
+size 1
+class coded
+map
+	1	"DISABLE XMI TRANSACTIONS"
+	field
+size 1
+class coded
+map
+	1	"INVERT DUPLICATE TAG VALID SENSE"
+	field
+size 1
+class coded
+map
+	1	"INVERT DUPLICATE TAG PARITY SENSE"
+	field
+size 1
+class coded
+map
+	1	"DUPLICATE TAG CHECK"
+

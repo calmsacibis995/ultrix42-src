@@ -1,0 +1,75 @@
+.\" SCCSID: @(#)ustat.2	2.1	3/10/87
+.TH ustat 2
+.SH Name
+ustat \- get file system statistics
+.SH Syntax
+.nf
+.ft B
+#include <sys/types.h>
+#include <ustat.h>
+.PP
+.ft B
+int ustat (dev, buf)
+dev_t dev;
+struct ustat \(**buf;
+.fi
+.SH Description
+.NXR "ustat system call"
+.NXAM "ustat system call" "fs file"
+.\" fs file is unsupported
+.NXA "stat system call" "ustat system call"
+.NXR "file" "getting statistics"
+The
+.PN ustat
+call
+returns information about a mounted file system.
+The
+.I dev
+argument is a device number identifying a device containing
+a mounted file system.
+The
+.I buf
+argument is a pointer to a
+.PN ustat
+structure that includes the following elements:
+.EX
+daddr_t  f_tfree;       /\(** Total free blocks (Kbytes) \(**/
+ino_t    f_tinode;      /\(** Number of free inodes \(**/
+char     f_fname[512];  /\(** Filsys name \(**/
+char     f_fpack[6];    /\(** Filsys pack name \(**/
+.EE
+The 
+.I f_fpack
+always returns a null string.
+.SH Environment
+.SS SYSTEM V
+Differs from System V definition in that the size of the f_fname
+structure element is 512 instead of 6, and the 
+.I dev 
+parameter is type dev_t instead of int.
+.SH Diagnostics
+The
+.PN ustat
+call fails if any of the following is true:
+.TP 15
+.TP
+.SM
+\%[EINVAL]
+The 
+.I dev\^
+argument is not the device number of a 
+device containing a mounted file system.
+.TP
+.SM
+\%[EFAULT]
+The
+.I buf\^
+argument points outside the process's allocated address space.
+.TP
+[ETIMEDOUT]
+A connect request or remote file operation failed,
+because the connected party
+did not properly respond after a period
+of time that is dependent on the communications protocol.
+.SH See Also
+stat(2), fs(5)

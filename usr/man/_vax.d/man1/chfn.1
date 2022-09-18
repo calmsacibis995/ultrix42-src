@@ -1,0 +1,92 @@
+.\" SCCSID: @(#)chfn.1	6.1	4/27/89
+.TH chfn 1
+.SH Name
+chfn \- change system finger entry
+.SH Syntax
+.B chfn
+[
+.I loginname
+]
+.SH Description
+.NX R "chfn command"
+.NX A "chfn command" "finger command"
+.NX R "system" "changing user information"
+The
+.PN chfn
+command
+is used to change information about users.  This information is used
+by the
+.MS finger 1
+program, among others.  It consists of the user's real name, office room
+number, office phone number, and home phone number. The
+.PN chfn
+command prompts the user for each field.  Included in the prompt is a
+default value, which is enclosed between brackets.  The default value is
+accepted simply by typing <CR>.  To enter a blank field, type the word
+`none'.  This is an example:
+.if n .ig ++
+.EX
+% \f(CBchfn\fP
+Changing finger information for doe
+Name [John Doe]:
+Office number [ABC-1/K0]: \f(CBDEF-2/K1\fP
+Office Phone []: \f(CB1863\fP
+Home Phone [5771546]: \f(CBnone\fP
+.EE
+.++
+.if t .ig ++
+.EX
+% \fIchfn\fP
+Changing finger information for doe
+Name [John Doe]:
+Office number [ABC-1/K0]: \fIDEF-2/K1\fP
+Office Phone []: \fI1863\fP
+Home Phone [5771546]: \fInone\fP
+.EE
+.++
+.PP
+The
+.PN chfn
+command allows phone numbers to be entered with or without hyphens.  No
+entries may contain colons, commas, or control characters.
+.PP
+It is a good idea to run
+.PN finger
+after running
+.PN chfn
+to make sure everything is the way you want it.
+.PP
+The optional argument
+.I loginname
+is used to change another person's finger information.  This can only
+be done by the superuser.
+.SH Restrictions
+.NX R "chfn command" "restricted"
+The encoding of the office and extension information is installation
+dependent.
+.PP
+Because two users may try to write the
+.PN passwd
+file at once, a synchronization method was developed.  On rare
+occasions, a message that the password file is "busy" will be printed.
+In this case,
+.PN chfn
+sleeps for a while and then tries to write to the
+.PN passwd
+file again.
+.PP
+If the passwd entry is distributed from another host
+.PN chfn
+will not modify it.
+.NX R "passwd file (general)" "user name and"
+.\# .PP
+.\# The 
+.\# .PN chfn
+.\# command must be supplied with a user
+.SH Files
+.TP
+.PN /etc/passwd
+.TP
+.PN /etc/ptmp
+.SH See Also
+chsh(1), finger(1), passwd(1), passwd(5yp)

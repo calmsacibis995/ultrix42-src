@@ -1,0 +1,183 @@
+.\" SCCSID: @(#)L.sys.5	8.1	9/11/90
+.TH L.sys 5
+.SH Name
+L.sys \- information needed to connect to a system
+.SH Syntax
+.B /usr/lib/uucp/L.sys
+.SH Description
+.NXB "L.sys file" "format"
+.NXR "uucp utility" "L.sys file"
+.NXR "remote system" "specifying"
+The 
+.PN uucp
+utility uses the
+.PN L.sys
+file.  The file contains entries for each remote system
+that the local system can call and for each remote
+system for which the local system accepts calls but
+does not call.  More than one line can
+be used for a particular remote system.  In this case,
+the additional lines represent alternative communication
+paths that are tried in sequential order.
+.PP
+The format of each entry, with each field separated by
+blanks or tabs, is:
+.PP
+.I system-name time device class phone login
+.PP
+.IP \fIsystem-name\fR
+The name of the remote system.
+.IP \fItime\fR
+A string that indicates the days of the week and the times
+of day when the system can be called (for example,
+MoTuTh0800-1740).
+.IP "" 
+The day portion may be a list containing:
+.IP "" 
+Su Mo Tu We Th Fr Sa
+.IP ""
+The day may also be Wk for any weekday or Any for any
+day.
+.IP ""
+You can indicate hours in a range (for example, 0800-1230).
+If you do not specify a time, calls will be allowed at any
+time.
+.IP ""
+Note that a time range that spans 0000 is permitted.  For
+example, 0800-0600 means that all times are allowed except
+times between 6 AM and 8 AM. 
+.IP ""
+Multiple date specifications that are separated by a vertical bar
+(|) are allowed.  For example, Any0100-0600|Sa|Su means that
+the system can be called any day between 1 AM and y AM or
+any time on Saturday and Sunday.
+.IP ""
+An optional subfield is available to indicate the minimum time,
+in minutes, before retrying a failed connection.  A failed
+connection attempt is a login failure, as opposed to a dialing
+connection failure.  The subfield separator is a comma (,).
+For example, Any, 9 means call any time, but wait at least 9
+minutes after a failure has occurred.
+.IP \fIdevice\fR
+Either the ACU or the hard-wired device used for the call.  For the
+hard-wired device, use the last part of the special file name
+(for example, tty2).
+.IP \fIclass\fR
+The line speed for the call (for example, 1200).  The exception
+is when the BC library routine dialout is available, in which
+case this is the dialout class.
+.IP \fIphone\fR
+The telephone number, made up of an optional alphabetic abbreviation
+and a numeric part.  The abbreviation should be one that appears
+in the 
+.PN L-dialcodes 
+file (for example, ct5900, nh6511).  If a numeric number is used,
+it should be given in full.  For the hard-wired devices, this field
+contains the same string as used for the
+.I device
+field.
+.IP \fIlogin\fR
+The login information, given as a series of fields and subfields
+in this format:
+.EX
+\fIexpect1\fR\|[\-\[\fIsendspecial\|\fR]\-\fIexpect2\fR\|] \fIsend\fR ...
+.EE
+.IP
+The 
+.I expect1
+argument is the string the local system expects to
+read when logging in to
+the remote system, and the
+.I send
+argument is the string the local system is to send when the
+.I expect
+string is received.  If two double quotation marks ("") are specified
+instead of the \fIexpect1\fR argument, nothing is expected
+from the remote system.
+.IP ""
+The
+.I sendspecial
+argument specifies a special character to be sent to the
+remote system if the 
+.I expect1 
+argument is not received.  
+If
+.I sendspecial
+is omitted, and two dashes (--) follow the 
+.I expect1 
+argument, the local system sends a carriage return
+to the remote system.
+.IP ""
+Other special characters are:
+.IP 
+EOT		Send an EOT character
+.IP
+BREAK#	Send # break sequences (default is 3)
+.IP
+PAUSE#	Pause # seconds (default is 5)
+.IP
+\\d		Pause 1 second before sending next character
+.IP
+\\s		Send a blank character
+.IP
+\\r		Send a carriage return
+.IP
+\\b		Send a break character
+.IP
+\\#		Send the character represented by the octal number
+.br
+		#.  For example, \\05 is CTRL/e.
+.IP
+P_ZERO	Change parity from even (default) to zero
+.IP
+P_EVEN	Change parity to even
+.IP
+P_ODD		Change parity to odd
+.IP
+P_ONE		Change parity to one parity
+.IP
+The
+.I expect2
+argument defines another string expected to be read
+after transmission of the 
+.I sendspecial
+argument to the remote system.  
+.SH Examples
+.NXR(e) "L.sys file" 
+In the following example, the remote system is expected
+to send the string ``login:'', to which the local system
+replies ``xuucp''.  
+.EX 
+login: xuucp ssword: smiley
+.EE
+Then the word ``ssword:'' is expected
+from the remote system.  (The first letter of the password
+prompt varies from system to system, so it is safer to
+look for the ending characters.)  When ``ssword:'' is
+received, the local system sends ``smiley''.  If the login is
+successful, the conversation between the peer transfer processes
+(uucico) begins.  If the login fails, the connection attempt fails.
+.PP
+In the following example, ``login:'' is expected.  
+.EX 
+login:--login xuucp ssword: smiley
+.EE
+If it is received, ``xuucp'' is sent to the remote system.  If \*Qlogin:\*U
+is not received, a carriage return is sent to the remote system,
+and ``login:'' is expected.  If it is received, \*Qxuucp\*U is sent to
+the remote system.  The example then proceeds the same as the
+previous example.
+.PP
+In the following example, ``login:'' is expected.  
+.EX 
+login:-BREAK1-login: xuucp ssword: smiley
+.EE
+If it is not
+received, one break sequence is sent to change the baud
+rate of the remote process.  Then, ``login:'' is again expected,
+and the example proceeds the same as the previous examples.
+.SH See Also
+L-dialcodes(5)
+.br
+.I "Guide to the uucp Utility"
+.NXE "L.sys file" "format"

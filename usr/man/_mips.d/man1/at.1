@@ -1,0 +1,207 @@
+.\" SCCSID: @(#)at.1	8.2	3/28/91
+.TH at 1
+.SH Name
+at, batch \- execute commands at a later time
+.SH Syntax
+.B at
+\fItime\fR [\|\fIday\fR\|] [\|\fIfile\fR\|]
+.br
+.B at
+\fB\-r \fIjob...
+.br
+.B at \-l
+[\|\fIjob...\fR\|]
+.sp
+.br
+.B batch
+[\|\fIfile\fR\|]
+.SH Description
+.NXR "at command"
+.NXR "command" "executing later"
+.NXR "program" "executing later"
+The
+.PN at
+and
+.PN batch
+commands
+use a copy of the named
+.I file
+(standard input default)
+as input to
+.MS sh 1
+or
+.MS csh 1 
+at a later time.
+A
+.PN cd
+command to the current directory is inserted
+at the beginning,
+followed by assignments to all environment variables.
+When the script is run, it uses the user and group ID
+of the creator of the copy file.
+.PP
+The 
+.PN at
+command allows the user to specify when the commands should be executed,
+while jobs queued with
+.PN batch 
+execute when the load level of the system permits.
+.PP
+The environment variables,
+current directory,
+.PN umask ,
+and
+.PN ulimit
+are retained when the commands are executed.
+However, open files, traps, and priority are lost.
+.PP
+Users are permitted to use the
+.PN at
+and
+.PN batch
+commands if their name appears in the file
+.PN /usr/lib/cron/at.allow .
+If that file does not exist, the file
+.PN /usr/lib/cron/at.deny
+is checked to determine if the user should be denied access to
+.PN at
+and
+.PN batch .
+If neither file exists, only the superuser is allowed to submit a job.
+If only the
+.PN at.deny
+file exists and is empty, global usage is permitted.
+The 
+.PN allow/deny
+files consist of one user name per line.
+.PP
+The
+.I time
+is 1 to 4 digits.  It can, but does not have to be, followed by
+A, P, N or M which stand for
+AM, PM, noon or midnight, respectively. The A, P, N, and M 
+suffixes are case-insensitive.
+One and two digit numbers are interpreted as hours, three and
+four digits to be hours and minutes. If three digits 
+are specified, the first
+digit is interpreted to be an hour in the
+range 0-9, and the second and third digits as minutes.
+If no letters follow the digits, a 24 hour clock time is presumed.
+.PP
+In addition to 1-4 digits, and suffixes A, P, M, N, you 
+can also specify:
+.EX 10
+at hh:mm
+at h:mm
+at ham
+at hpm
+at noon
+at midnight
+.EE
+.PP
+The optional
+.I day
+is either
+a month name followed by a day number
+or by a day of the week.  If the word week follows, the
+.PN at
+or
+.PN batch 
+command is invoked in seven days.
+Both commands also recognize standard abbreviations for the
+days of the week and months of the year.
+The following are examples of legitimate commands:
+.EX 10
+at 8am jan 24
+.sp
+at 1530 fr week
+.EE
+.PP
+The
+.PN at
+programs are executed by periodic execution
+of the command 
+.PN /usr/lib/atrun
+from 
+.MS cron 8 .
+The granularity of
+.PN at
+depends upon how often
+.I atrun
+is executed.
+The 
+.PN cron
+command examines the 
+.PN crontab
+file every minute.  The 
+.PN crontab
+file determines when 
+.PN /usr/lib/atrun 
+is executed.  The default
+is every 15 minutes on the 1/4 hour. Editing 
+.PN /etc/crontab
+makes 
+.PN /usr/lib/atrun
+run more or less frequently.
+.PP
+Standard output or error output is lost unless it is redirected.
+.PP
+The 
+.PN at
+and
+.PN batch
+commands 
+write the job number to standard error.
+.SH Options
+.TP 20
+.B \-r
+Removes jobs previously scheduled by
+.PN at
+or
+.PN batch .
+The number is the number reported at invocation by
+.PN at
+or 
+.PN batch .
+Only the superuser is allowed to remove another user's jobs.
+.TP
+.B \-l
+Lists all job numbers for all jobs submitted by the user issuing the
+.PN at
+command.  Even if the user is "root", only numbers for jobs submitted by "root"
+are displayed.  To see the numbers of all jobs submitted, enter the
+following command:
+.EX
+% ls -l /usr/spool/at
+.EE
+.SH Restrictions
+.NXR "at command" "restricted"
+Due to the granularity of the execution of 
+.PN /usr/lib/atrun ,
+there may be bugs in scheduling jobs almost
+exactly 24 hours into the future.
+.SH Diagnostics
+Complains about various syntax errors and times that are
+out of range.
+.SH Files
+.ta 2i
+/usr/lib/atrun	executor run by cron(8)
+.sp
+in /usr/spool/at:
+.ta .5i 2i
+.br
+\&	yy.ddd.hhhh.*	activity for year yy, day dd, hour hhhh.
+.br
+\&	lasttimedone	last \fIhhhh\fR
+.br
+\&	past	activities in progress
+.br
+/usr/spool/at/at.allow	list of allowed users	
+.br
+/usr/spool/at/at.deny	list of denied users
+.br
+/usr/spool/at	spool directory
+.br
+/usr/lib/cron	XOPEN compatibility
+.SH See Also
+crontab(5), cron(8)

@@ -1,0 +1,51 @@
+.\" SCCSID: @(#)mknod.8	8.1	9/11/90
+.TH mknod 8 
+.SH Name
+mknod \- make special file
+.SH Syntax
+.B /etc/mknod
+name
+[
+.B c
+] [
+.B b
+]
+major
+minor
+.br
+.B /etc/mknod
+name 
+.B p
+.SH Description
+.NXR "mknod command"
+.NXAM "mknod command" "mknod system call"
+.NXR "special file" "building"
+The
+.PN mknod
+command makes a special file.
+The first argument is the
+.I name
+of the entry.
+The second is
+.B b
+if the special file is block-type (disks, tape) or
+.B c
+if it is character-type (other devices).
+The last two arguments are
+numbers specifying the
+.I major
+device type
+and the
+.I minor
+device (for example, unit, drive, or line number).
+.PP
+The assignment of major device numbers is specific to each system.
+These numbers are obtained from the system source file
+.I conf.c.
+.PP
+The
+.PN mknod
+command can also be used to create fifo's, also known as
+named pipes, (second case in the Syntax section above).
+.SH See Also
+mknod(2)

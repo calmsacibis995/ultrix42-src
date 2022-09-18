@@ -1,0 +1,59 @@
+.TH atomic_op 2
+.SH Name
+atomic_op \- perform test and set operation.
+.SH Syntax
+.nf
+.ft B 
+#include <sys/lock.h>
+.PP
+.ft B 
+int atomic_op(\fIop, addr\fR)
+int \fIop\fR;
+int \fI*addr\fR;
+.fi
+.SH Arguments
+.IP \fIop\fR 15
+This argument is the operation type.  If the operation type is ATOMIC_SET,
+this call specifies the test and set operation on location \fIaddr\fR.
+If the operation type is ATOMIC_CLEAR, this call specifies the clear
+operation on location \fIaddr\fR.
+.IP \fIaddr\fR 15
+This is the target address of the operation.
+.SH Description
+.NXR "interlocked access"
+.NXR "interlocked access" "test and set" "test and clear"
+.NXR "test and set" "test and clear"
+The 
+.PN atomic_op 
+call provides test and set operation at a user address.
+.PP
+For RISC systems, 
+.PN atomic_op
+is executed as a system call.
+For VAX systems, a system call is not executed for
+this library function.
+.SH Return Values
+If the atomic_op operation succeeds,
+then 0 is returned.  Otherwise a \-1 is returned,
+and a more specific error code is stored in \fIerrno\fP.
+.SH Diagnostics
+.TP 15
+[EBUSY]
+The location specified by 
+.I addr
+is already set.
+.TP
+[EINVAL]
+The 
+.I op
+is not a valid operation type.
+.TP
+[EACCES]
+The address specified in 
+.I addr
+is not write accessible.
+.TP
+[EALIGN]
+The
+.I addr
+is not on an integer boundary.

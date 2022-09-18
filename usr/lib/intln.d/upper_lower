@@ -1,0 +1,76 @@
+#  @(#)upper_lower	4.1	(ULTRIX)	7/2/90
+# 
+#  **********************************************************************
+#  *									*
+#  *			Copyright (c) 1989 by				*
+#  *		Digital Equipment Corporation, Maynard, MA		*
+#  *		            Bull, France				*
+#  *			   Siemens AG, FR Germany			*
+#  *			All rights reserved.				*
+#  *									*
+#  *   This software is furnished under license and may be used and	*
+#  *   copied  only  in accordance with the terms of such license and	*
+#  *   with the  inclusion  of  the  above  copyright  notice.   This	*
+#  *   software  or  any  other copies thereof may not be provided or	*
+#  *   otherwise made available to any other person.  No title to and	*
+#  *   ownership of the software is hereby transferred.			*
+#  *									*
+#  *   The information in this software is subject to change  without	*
+#  *   notice  and should not be construed as a commitment by Digital	*
+#  *   Equipment Corporation.						*
+#  *									*
+#  *   Digital assumes no responsibility for the use  or  reliability	*
+#  *   of its software on equipment which is not supplied by Digital.	*
+#  *									*
+#  **********************************************************************
+#
+# Example iconv(1) code conversion database.
+#
+# Use this conversion table, use:
+#
+#	iconv -f upper -t lower infile > outfile
+#
+# To strip out characters not specified in the conversion table use the -d
+# option to iconv.
+#
+# Converts upper to lower case.
+#
+#	Source Symbol		Destination Symbol
+#	-------------		------------------
+	     A				a
+	     B				b
+	     C				c
+	     D				d
+	     E				e
+	     F				f
+	     G				g
+	     H				h
+	     I				i
+	     J				j
+	     K				k
+	     L				l
+	     M				m
+	     N				n
+	     O				o
+	     P				p
+	     Q				q
+	     R				r
+	     S				s
+	     T				t
+	     U				u
+	     V				v
+	     W				w
+	     X				x
+	     Y				y
+	     Z				z
+
+
+#
+# Conversions can be performed with Octal (three digit only!) character
+# numbers (eg. convert tab to 3 spaces).
+#
+	    \011		    \040\040\040
+#
+# Multiple characters conversions are also handled correctly.
+#
+	     AE				ae

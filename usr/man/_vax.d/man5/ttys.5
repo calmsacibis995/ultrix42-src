@@ -1,0 +1,245 @@
+.\" SCCSID: @(#)ttys.5	3.1	11/24/87
+.TH ttys 5
+.SH Name
+ttys \- terminal initialization data
+.SH Description
+.NXR "ttys file" "format"
+.NXR "terminal" "initializing"
+.NXAM "ttys file" "tset command"
+The 
+.PN /etc/ttys
+file contains information used by various
+routines to initialize and control the use of terminal 
+special files.  This file is created when the system
+is installed and can be updated at any time.
+.PP
+Each terminal 
+special file (
+.PN /dev/ttyxx
+) has a line in the
+.PN ttys
+file.  Each line contains 
+several fields.  Fields are separated by tabs or spaces.  A field
+with more than one word should be enclosed in quotes.  Blank
+lines and comments can appear anywhere in the file.  Comments
+begin with a number sign (#) and are terminated by a newline character.
+Unspecified fields default to the empty string or zero,
+as appropriate.
+.PP
+The format of each line is as follows:
+.EX
+name command type flag1 flag2 ...
+.EE
+.IP \fIname\fR 10
+Is the name of the special file for the terminal in the 
+.PN /dev
+directory. Some examples are:
+.EX
+console
+ttyd0
+ttyd1
+.EE
+.IP \fIcommand\fR 10
+Is the command to be executed 
+each time the terminal is initialized.  This can happen
+when the system is booted, or when the superuser adds 
+new terminals to the
+.PN ttys
+file and initializes the new terminals. 
+The command is usually
+.PN getty ,
+which performs such tasks as baud-rate recognition,
+reading the login name, and calling
+.PN login .
+It can be any command you wish, such as the
+startup command for a window system terminal emulator or
+a command to maintain other daemon processes.
+.IP \fItype\fR 10
+Is the type of terminal normally connected to the terminal
+special file.  You can find the possible types by examining
+the 
+.PN /etc/termcap
+file on your system.  The types available are given as
+the third field in
+entries in that file.  Some examples are:
+.EX
+vt100
+vt200
+dialup
+.EE
+.IP \fIflags\fR 10
+Are the flags to be set in the
+.PN ty_status 
+or
+.PN ty_window
+fields of the structure returned by the 
+.MS getttyent 3
+routine.  If the line ends in a comment, the
+comment is included in the
+.PN ty_comment
+field of this structure.
+.IP 
+These fields are used by the
+.PN init
+command that is executed when terminals
+are initialized.
+.IP
+The 
+.PN ty_status
+flags are:
+.RS 10
+.IP \f(CWon\fR 10
+Sets the TTY_ON bit in the
+.PN getttyent
+.PN ty_status
+field.  This enables logins for this terminal.
+.IP 
+The default if this flag is not set is that logins
+are disabled for the terminal.
+.IP \f(CWoff\fR
+Clears the TTY_ON bit in the
+.PN getttyent 
+.PN ty_status
+field.  This disables logins for this terminal.
+.IP \f(CWsecure\fR
+Sets the TTY_SECURE bit in the 
+.PN getttyent 
+.PN ty_status
+field.  This allows the root user to log in on this
+terminal.  (The \f(CWon\fR flag should also be set.)
+.IP
+The default if this flag is not set is that the
+root user cannot log in on this terminal.
+.IP \f(CWsu\fR
+Sets the TTY_SU bit in the 
+.PN getttyent
+.PN ty_status
+field, to allow a user to su to root.
+.IP
+The default if this flag is not set is that users cannot su to root on
+this terminal.
+.IP \f(CWnomodem\fR
+Sets the TTY_LOCAL bit in the
+.PN getttyent 
+.PN ty_status
+field.  The line ignores modem signals.  This is the
+default if neither the \f(CWmodem\fR nor \f(CWnomodem\fR flag
+is set.
+.IP \f(CWmodem\fR
+Clears the TTY_LOCAL bit in the
+.PN getttyent 
+.PN ty_status
+field.  The line recognizes modem signals.
+.IP
+The default if this flag is not set is \f(CWnomodem\fR.  That is,
+the line does not recognize modem signals.
+.IP \f(CWshared\fR
+Sets the TTY_SHARED bit in the
+.PN getttyent 
+.PN ty_status
+field.  The line can be used for both incoming and
+outgoing connections.
+.IP
+The default if this flag is not set is that the
+line cannot be used for incoming and outgoing
+connections.
+.IP \f(CWtermio\fR
+Sets the TTY_TERMIO bit in the 
+.PN "getttyent ty_status"
+field. This flag causes the terminal line to open with System Five
+default termio attributes. If the \f(CWtermio\fR flag is not set, Berkeley
+compliant default terminal attributes are used.
+.PP
+The 
+.PN ty_window
+flag is:
+.IP \f(CWwindow="\fIstring\f(CW"\fR 10
+The quoted \fIstring\fR is a window system process
+that
+.PN init
+maintains for the terminal line.
+.RE
+.SH Examples
+.NXR(e) "ttys file" "entries"
+The following example permits the root user to log in
+on the console at 1200 baud:
+.EX
+console "/etc/getty std.1200" vt100 on secure
+.EE
+This example allows dialup at 1200 baud without root
+login:
+.EX
+ttyd0 "/etc/getty d1200" dialup on
+.EE
+These two examples allow login at 9600 baud with two
+different terminal
+types:  hp2621-nl and vt100.  In this example, the 
+terminals should be set up to operate in 7-bit mode, because
+the std.9600 
+.PN gettytab
+entry is specified:
+.EX
+tty00 "/etc/getty std.9600" hp2621-nl on
+tty01 "/etc/getty std.9600" vt100 on
+.EE
+This example shows the same two terminals as the previous
+example operating in full 8-bit mode.  Note the use of a
+different 
+.PN gettytab
+entry:
+.EX
+tty00 "/etc/getty 8bit.9600" hp2621-nl on
+tty01 "/etc/getty 8bit.9600" vt100 on
+.EE
+These two examples show network pseudoterminals, which
+should not have
+.PN getty
+enabled:
+.EX
+ttyp0 none network
+ttyp1 none network off
+.EE
+This example shows a terminal emulator and window-system
+startup entry and should be typed all on one line:
+.EX
+:0 "/usr/bin/login -P /usr/bin/Xprompter -C  /usr/bin/dxsession -e" none
+on secure  window="/usr/bin/Xcfb"
+.EE
+This example shows an example of an entry for an lta device:
+.EX
+tty01 "/etc/getty 8bit.9600" vt100 on modem secure # LAT
+.EE
+.NT
+Any terminal configured to run 
+.PN getty 
+in 8-bit mode should specify a
+.PN gettytab
+entry that declares 8-bit operation.  The command field of the 
+.PN ttys 
+entry is used to specify the 
+.PN gettytab 
+entry.  
+If the terminal device is set up to operate in 8-bit mode and the command
+field does not specify an 8-bit 
+.PN gettytab 
+entry, output to the terminal
+appears as multinational characters.  These characters are the result of
+the 
+.PN getty 
+program using the eighth bit of each character to represent parity
+attributes.  By using an 8-bit 
+.PN gettytab 
+entry, the high order bit of each
+character is unaffected by the 
+.PN getty 
+program.  The examples presented
+demonstrate the use of both 7- and 8-bit terminals.
+.NE
+.SH Files
+.TP 15
+.PN /etc/ttys
+The full pathname for the file
+.SH See Also
+login(1), getttyent(3), gettytab(5), getty(8), init(8)
+.br
+\fIGuide to System Environment Setup\fP

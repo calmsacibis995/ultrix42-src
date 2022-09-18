@@ -1,0 +1,153 @@
+.\" SCCSID: @(#)getttyent.3	3.1	11/24/87
+.TH getttyent 3
+.SH Name
+getttyent, getttynam, setttyent, endttyent \- get ttys file entry 
+.SH Syntax
+#include <ttyent.h>
+.br
+struct ttyent *getttyent()
+.br
+struct ttyent *getttynam(\fIname\fR) char *\fIname;\fR
+.br
+void setttyent()
+.br
+void endttyent() 
+.SH Arguments
+.TP
+\fIname\fP
+The name of the terminal's special file in the 
+.PN /dev
+directory.
+.SH Description
+.NXR "getttyent subroutine"
+.NXR "getttynam subroutine"
+.NXR "settyent subroutine"
+.NXR "endttyent subroutine"
+.NXR "ttys file" "accessing data"
+These functions allow a program to access data in the
+file 
+.PN /etc/ttys .
+The
+.PN getttyent
+function reads the 
+.PN /etc/ttys
+file line by line, opening the file if
+necessary.
+.PN setttyent 
+rewinds the file, and
+.PN endttyent
+closes it.
+.PN getttynam
+searches from the beginning of the file until a matching name
+is found, or until end-of-file is encountered.
+.PP
+The functions 
+.PN getttyent
+and 
+.PN getttynam
+each return a pointer to an object
+that has the following structure. 
+Each element of the structure contains
+one field of a line in the 
+.PN /etc/ttys
+file.
+.EX 0
+struct ttyent {         /* see getttyent(3) */
+       char *ty_name;   /* terminal device name */
+       char *ty_getty;  /* command to execute, usually getty */
+       char *ty_type;   /* terminal type for termcap (3x) */
+       int  ty_status;  /* status flags (see below for defines) */
+       char *ty_window; /* command to start up window manager */
+       char *ty_comment;/* usually the location of the terminal */
+       };
+
+#define TTY_ON      0x1  /* enable logins (startup getty) */
+#define TTY_SECURE  0x2  /* allow root to login */
+#define TTY_LOCAL   0x4  /* line is local direct connect and
+                         should ignore modem signals */
+#define TTY_SHARED  0x8  /* line is shared:  it can be use
+                         for both incoming and outgoing
+                         connections. */
+#define TTY_TRACK   0x10 /* track modem status changes */
+#define TTY_TERMIO  0x20 /* open line with termio defaults */
+#define TTY_SU      0x40 /* disallow su to root */   
+
+extern struct ttyent *getttyent();
+extern struct ttyent *getttynam();
+.EE
+A description of the fields follows:
+.NXR "ttys file" "field definitions"
+.IP ty_name
+is the name of the terminal's special file in
+the directory 
+.PN /dev .
+.IP ty_getty
+is the command 
+invoked by 
+.PN init
+to initialize terminal line characteristics.
+This command is usually
+.MS getty 8 ,
+but any arbitrary command  can
+be  used.  A typical use is to initiate a terminal
+emulator in a window system.
+.IP ty_type
+is the name of the default terminal type  connected
+to this tty line.  This is typically a
+name from the 
+.MS termcap 5 
+data base.  The
+environment variable `TERM' is initialized with
+this name by 
+.MS login 1 .
+.IP ty_status
+is a mask of bit flags that indicate  various
+actions allowed on this terminal line. The
+following is a description of each flag.
+.RS
+.IP TTY_ON
+Enables logins.  For instance, 
+.MS init 8
+will start the specified 
+.PN getty
+command on this entry.
+.IP TTY_SECURE 
+Allows root to login on this  terminal.  TTY_ON must
+also be
+included for this to work.
+.IP TTY_LOCAL
+Indicates that the line is to ignore modem signals.  
+.IP TTY_SHARED
+Indicates that the line can be used for both incoming
+and outgoing connections.
+.IP TTY_TERMIO
+Indicates that a line is to be opened with default
+terminal attributes which are compliant with System
+Five termio defaults.  The line discipline will be set
+to be TERMIODISC.
+.IP TTY_SU
+Indicates that a user is allowed to su to root on this terminal.
+The default if this flag is not set is that a user cannot su to root
+on this terminal.
+.RE
+.IP ty_window
+is the quoted string of a command to execute
+for a window system associated with the line.
+If no command is specified, this field is a null
+string.
+.IP ty_comment
+Currently unused. 
+.SH Restrictions
+.NXR "getttyent subroutine" "restrictions"
+.PP
+The information returned is in a static area, so
+you must copy it to save it.  
+.SH Return Values
+.PP
+A null pointer (0) is returned on an end-of-file
+or error.
+.SH Files
+.PN /etc/ttys 
+The file examined by these routines. 
+.SH See Also
+ttyname(3), ttys(5), init(8)

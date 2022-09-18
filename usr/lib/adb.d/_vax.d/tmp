@@ -1,0 +1,30 @@
+#
+#  @(#)tmp	4.1	ULTRIX	7/2/90
+#
+
+FILES = buf callout callout.next clist clist.nxt dino dir \
+	dir.nxt dirblk file file.nxt filsys findproc findproc.nxt \
+	host.nxt hosts hosts.nxt hosttable ifnet ifuba imp inode \
+	inpcb iovec ipreass ipreass.nxt mact mact.nxt cabase classb \
+	connb reqb rspid_tbl rspid_tbl.nxt unitb
+
+FILES2 =	mbstat mbuf mbuf.nxt mbufs mbufs.nxt mount nl nu oimp \
+	pcb proc protosw rawcb rtentry rusage setproc setproc.done \
+	setproc.nxt socket stacktrace stat tcpcb tcpip tcpreass \
+	tcpreass.nxt text traceall traceall.nxt tty u u.all \
+	ubahd ucred uio un vtimes
+
+all:
+
+depend:
+
+clean:
+	
+clobber: clean
+	sccs clean
+
+sccsget:
+	sccs get SCCS
+
+install: all 
+	for i in ${FILES} ${FILES2}; do (install -c $$i ${DESTROOT}/usr/lib/adb/$$i); done

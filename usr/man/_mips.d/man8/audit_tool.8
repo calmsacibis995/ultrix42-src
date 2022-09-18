@@ -1,0 +1,238 @@
+.\" SCCSID: @(#)audit_tool.8	4.0	5/54/13/89
+.TH audit_tool 8
+.SH Name
+audit_tool \- ULTRIX auditlog reduction tool
+.SH Syntax
+.B /usr/etc/sec/audit_tool [ \fIoption ...\fP ] \fIauditlog_filename\fP
+.SH Description
+.NXR "audit_tool command"
+.NXR "auditlog reduction tool"
+The 
+.PN audit_tool
+presents a human-understandable format of selected portions of the
+collected audit data.  If no arguments are provided, a brief help 
+message will be displayed.  The 
+auditlog file 
+may be compressed or uncompressed.  
+The 
+.PN audit_tool
+command will uncompress the 
+auditlog file 
+if necessary, and 
+re-compress it if it was originally compressed.
+.PP
+Options are used to select specific audit records of interest.   For a
+record to be selected, it must match at least one option of each option
+type specified.  For example, if two usernames and one hostname were
+specified, an audit record to be selected would have to match one of the
+usernames and the hostname.  Only one start/end time may be selected. 
+Only one deselection rulesfile may be selected.  It is possible to select
+as many events as exists on the system.  For all other option types, up to
+8 instances may be selected. 
+.SH Options
+.NXR "audit_tool command" "options"
+.IP "\fB-a \fIaudit_id\fR" 12
+Selects audit records with a matching 
+.I audit_id.
+The default is to select for all 
+.IR audit_id 's.  
+.IP "\fB-b\fR" 12
+Outputs selected records in binary format.  
+The output is in a format suitable for analysis by the 
+.PN audit_tool .  
+The default is to output in ASCII format.
+.IP "\fB-B\fR" 12
+Outputs selected records in an abbreviated format.  
+Each selected event is displayed along with its audit_id, ruid,
+result, error code, pid, event name, and parameter list.
+Suppressed information includes the username, ppid, 
+device id, current directory, gnode information, symbolic 
+name referenced by any descriptors, IP address, and timestamp.
+The default is to output in the non-abbreviated format.
+.IP "\fB-d \fIfilename\fR" 12
+Reads deselection rules from the specified file and suppress any records 
+matching any of the deselection rules.
+The deselection rulesets take 
+precedence over other selection options.  Each deselection rule is a tuple 
+consisting of hostname, audit_id, ruid, event, pathname, and flag.  The flag 
+component is used to specify read or write mode; it pertains only to open 
+events.  Wildcarding and simple pattern matching are supported.  
+Take, for example, the following lines from a deselection file:
+.EX
+# HOST, AUID, RUID, EVENT, PATHNAME, FLAG
+* * * open /usr/lib/* r
+grumpy * * * /usr/spool/rwho* *
+.EE
+These lines indicate
+that any open operations for read access on any object whose
+pathname starts with 
+.PN /usr/lib/ 
+will not be selected, and on system \fBgrumpy\fR 
+any operations performed on any object whose pathname starts on
+.PN /usr/spool/rwho 
+will not be selected.  (Lines beginning with number signs (#) are
+treated as comment lines).  Any field can be replaced with an asterisk
+(*), which indicates a match with any value.  Pathname matching requires
+an exact match between strings, unless the pathname is suffixed with an
+asterisk, which matches any string (so, for example, 
+.PN /usr/spool/rwho*
+matches 
+.PN /usr/spool/rwho/anything ).  
+The default is to apply no deselection rulesets.  
+(Specifying the 
+.PN \-D 
+option instead of 
+.PN \-d 
+will additionally print the deselection rulesets to be applied). 
+.IP "\fB-e \fIevent[:success:fail]\fR" 12
+Selects records with a matching event.  Optionally select only those
+records with a successful/failed return value.  
+For example, the option 
+.PN "\-e open:0:1"
+selects for only failed open events.  Multiple events may be
+specified on the command line.  
+The default is to select for all events, both
+successful and failed. 
+.IP "\fB-E \fIerror\fR" 12
+Selects records with a matching error.
+The default is to select for all errors.
+.IP "\fB-f\fR" 12
+Causes the 
+.PN audit_tool 
+not to quit at and end-of-file, but to continue 
+attempting to read data.  This is useful 
+for reviewing auditlog data as it 
+is being written by the audit daemon.  
+(For SMP systems, audit data should 
+be sorted first, as descriptor translation, loginname, current directory, 
+and root directory all rely on state information maintained by the 
+.PN audit_tool ).
+.IP "\fB-g \fIgnode_id \fR" 12
+Selects records with a matching gnode identifier number.
+The default is to select for all gnode id's.
+.IP "\fB-G \fIgnode_dev major#,minor#\fR" 12
+Selects records with matching gnode device major/minor numbers.
+The default is to select for all gnode devices.
+.IP "\fB-h \fIhostname/IP address\fR" 12
+Selects records with a matching hostname or IP address.  Hostnames are
+translated to their IP addresses via the local 
+.PN /etc/hosts 
+file.  If the local 
+.PN /etc/hosts 
+is not available or contains insufficient information, IP
+addresses should be used.  
+The default is to select for all hostnames and IP addresses. 
+.IP "\fB-i\fR" 12
+Enter interactive selection mode to specify options.  Interactive mode may 
+also be entered by hitting CTRL/C at any time, then specifying 
+``no'' to the exit prompt.  Once in interactive mode, 
+each option will be selected for.  Press Return
+to accept the current setting (or default); enter 
+an asterisk (*) to change the current setting back to the default.  
+The default, unless otherwise stated, is to select every audit record.
+.IP "\fB-o\fR" 12
+Whenever the audit daemon switches auditlogs, an audit_log_change event is 
+generated.  If that event did result in an auditlog change (that is, it 
+was an event which occurred on the local system),
+the 
+.PN audit_tool 
+will normally attempt to find and 
+process the succeeding auditlog.  This is possible, however,
+only if the auditlog is 
+maintained locally.  The \fB-o\fR option tells the 
+.PN audit_tool 
+not to process succeeding auditlogs.
+.IP "\fB-p \fIpid\fR" 12
+Selects records with a matching pid.
+The default is to select for all pids.
+.IP "\fB-P \fIppid\fR" 12
+Selects records with a matching parent pid (ppid).
+The default is to select for all ppids.
+.IP "\fB-r \fIruid\fR" 12
+Selects records with a matching read uid (ruid).
+The default is to select for all ruids.
+.IP "\fB-R\fR" 12
+Generates an ASCII report for each 
+.I audit_id 
+found in the selected events.  
+Each report consists of those events selected which have an 
+.I audit_id 
+matching that of report suffix.  Report names are of the format 
+report.xxxx, where xxxx is the 
+.I audit_id.
+.IP "\fB-s \fIstring\fR" 12
+Selects records which contain \fIstring\fR in either a parameter field or a 
+descriptor field.  
+The default is to select for all strings.
+.IP "\fB-S\fR" 12
+Performs a sort (by time) on the auditlog.  The sort performed is an
+inter-cpu sort only (for any specific cpu, data may be non-sequential for
+events such as fork and vfork; this information does not need to be sorted
+for proper operation of the reduction tool).  This option is useful only 
+for data collected on an SMP system. 
+.IP "\fB-t \fIstart_time\fR" 12
+Selects records which contain a timestamp no earlier than \fIstart_time\fR.
+Timestamp format is 
+.I yymmdd[hh[mm[ss]]].  
+The default is to select for all timestamps.
+.IP "\fB-T \fIend_time\fR" 12
+Selects records which contain a timestamp no later than \fIstart_time\fR.
+Timestamp format is 
+.I yymmdd[hh[mm[ss]]].  
+The default is to select for all timestamps.
+.IP "\fB-u \fIuid\fR" 12
+Selects audit records with a matching uid.
+The default is to select for all uid's.
+.IP "\fB-U \fIusername\fR" 12
+Selects audit records with a matching username.  Usernames are recorded at 
+the \fIlogin\fR event and are associated with all child processes.
+If \fIlogin\fR is not audited, no username will be present in the auditlog.  
+Selecting for a \fIusername\fR will display those records which have a 
+matching username.
+The default is to select for all usernames.
+.IP "\fB-x \fImajor#,minor#\fR" 12
+Selects audit records with matching device major/minor numbers.
+The default is to select for all devices.
+.PP
+The audit reduction tool generates auditlog header files, suffixed 
+with .hdr, when it completes processing of a auditlog file.  If the \fB-o\fR 
+option is used, no auditlog header file is generated.
+This header file contains the time range in which the 
+audited operations occurred, so searching for events by time requires only 
+those auditlogs which were actually written into during that time to be 
+processed by the reduction tool.  The header file also contains the sort 
+status of the auditlog, so previously sorted logs don't get sorted more 
+than once.
+.SH Restrictions
+The audit reduction tool maintains the state of each process in order to 
+translate descriptors back to pathnames, as well as provide current working 
+directory, root, and username.  In order not to run out of memory, 
+.MS exit 2 
+should be an audited event.  
+In order to provide current working directory, 
+.MS chdir 2 
+should be an audited event.  In order to provide current root (if 
+not /), 
+.MS chroot 2 
+should be an audited event.  In order to provide 
+username, login should be an audited event.
+.PP
+All state relevant information current at the time of an auditlog change 
+is maintained in the header file.  This allows subsequent scans of a 
+specific auditlog to not have any dependencies on previous auditlogs.
+.SH Examples
+.NXR "audit_tool command" "examples"
+The following example selects all \fBlogin\fR, \fBopen\fR and \fBcreat\fR
+events performed on system \fBgrumpy\fR by any process with audit_id 1123:
+.EX
+audit_tool \-e login \-e open \-e creat \-h grumpy \-a 1123 auditlog.000
+.EE
+.PP
+The following example applies deselection file \fIdeselect\fR to 
+auditlog.000 and selects for events between 10:47 a.m. on April 13, 1986 
+and 5:30 p.m. on April 20, 1986:
+.EX
+audit_tool \-d deselect \-t 8604131047 \-T 8604201730 auditlog.000
+.EE
+.SH See Also
+auditd(8), auditmask(8)

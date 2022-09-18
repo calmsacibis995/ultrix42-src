@@ -1,0 +1,57 @@
+.\" SCCSID: @(#)socketpair.2	8.1	9/11/90
+.TH socketpair 2
+.SH Name
+socketpair \- create a pair of connected sockets
+.SH Syntax
+.nf
+.ft B
+#include <sys/types.h>
+#include <sys/socket.h>
+.PP
+.ft B
+socketpair(d, type, protocol, sv)
+int d, type, protocol;
+int sv[2];
+.fi
+.SH Description
+.NXR "socketpair system call"
+.NXA "socketpair system call" "pipe system call"
+.NXA "socketpair system call" "getpeername system call"
+.NXR "socket" "creating connected pair"
+The
+.PN socketpair
+call creates an unnamed pair of connected sockets in
+the specified domain
+.IR d ,
+of the specified
+.IR type ,
+and using the optionally specified
+.IR protocol .
+The descriptors used in referencing the new sockets
+are returned in
+.IR sv [0]
+and
+.IR sv [1].
+The two sockets are indistinguishable.
+.SH Return Values
+A zero (0) is returned if the call succeeds, \-1 if it fails.
+.SH Diagnostics
+The call succeeds unless:
+.TP 20
+[EMFILE]
+Too many descriptors are in use by this process.
+.TP 20
+[EAFNOSUPPORT]
+The specified address family is not supported on this machine.
+.TP 20
+[EPROTONOSUPPORT]
+The specified protocol is not supported on this machine.
+.TP 20
+[EOPNOSUPPORT]
+The specified protocol does not support creation of socket pairs.
+.TP 20
+[EFAULT]
+The address \fIsv\fP does not specify a valid part of the
+process address space.
+.SH See Also
+pipe(2), read(2), write(2)

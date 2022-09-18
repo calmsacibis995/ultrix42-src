@@ -1,0 +1,97 @@
+.\" SCCSID: @(#)ecvt.3	2.4	8/10/87
+.TH ecvt 3 
+.SH Name
+ecvt, fcvt, gcvt \- output conversion
+.SH Syntax
+.nf
+.B char *ecvt(\fIvalue, ndigit, decpt, sign\fP)
+.B double value;
+.B int \fIndigit, *decpt, *sign\fP;
+.PP
+.B char *fcvt(\fIvalue, ndigit, decpt, sign\fP)
+.B double value;
+.B int \fIndigit, *decpt, *sign\fP;
+.PP
+.B char *gcvt(\fIvalue, ndigit, buf\fP)
+.B double value;
+.B char \fI*buf\fP;
+.fi
+.SH Description
+.NXR "ecvt subroutine"
+.NXR "fcvt subroutine"
+.NXR "gcvt subroutine"
+.NXR "ASCII string" "converting to"
+The
+.PN ecvt
+routine converts the 
+.I value
+to a null-terminated string of
+.I ndigit
+ASCII digits and returns a pointer thereto.
+The position of the radix character relative to the
+beginning of the string is stored indirectly through
+.I decpt 
+(negative means to the left of the returned digits).
+If the sign of the result is negative, the word pointed to by
+.I sign 
+is non-zero, otherwise it is zero.  The low-order digit is rounded.
+.PP
+The
+.PN fcvt 
+routine 
+is identical to 
+.PN ecvt ,
+except that the correct digit
+has been rounded for FORTRAN F-format output of the number
+of digits specified by
+.IR \(*_ndigits .
+.PP
+The
+.PN gcvt
+routine converts the
+.I value
+to a null-terminated ASCII string in
+.I buf
+and returns a pointer to 
+.I buf.
+It attempts to produce
+.I ndigit
+significant digits in FORTRAN F format if possible, otherwise E format is
+used, ready for printing.  Trailing zeros may be suppressed.
+.PP
+The symbol used to represent a radix character is obtained from the last
+successful call to
+.PN setlocale
+category
+.PN LC_NUMERIC .
+The symbol can be determined by calling:
+.EX
+nl_langinfo (RADIXCHAR);
+.EE
+.PP
+If
+.PN setlocale
+category
+.PN LC_NUMERIC
+has not been called successfully, or if the radix character is not defined for a supported language, the radix character defaults to a period (.).
+.SS International Environment
+.IP LC_NUMERIC 15
+If this environment is set and valid, 
+.PN ecvt
+uses the international language database named in the definition to determine
+radix character rules. 
+.IP LANG 15
+If this environment is set and valid, 
+.PN ecvt
+uses the international language database named in the definition to determine
+radix character rules. If 
+.PN LC_NUMERIC
+is defined, its definition supercedes the definition of 
+.PN LANG. 
+.SH Restrictions
+The return values point to static data
+whose content is overwritten by each call.
+.SH See Also
+setlocale(3), nl_langinfo(3int), printf(3int), printf(3s)
+.br
+.I Guide to Developing International Software

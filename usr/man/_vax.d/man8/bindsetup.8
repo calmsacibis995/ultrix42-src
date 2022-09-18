@@ -1,0 +1,189 @@
+.\" SCCSID: @(#)bindsetup.8	8.2	12/3/90
+.\"
+.TH bindsetup 8
+.SH Name
+bindsetup \- set up the Berkeley Internet Name Domain (BIND)/Hesiod service
+.SH Syntax
+.B /usr/etc/bindsetup
+[
+.B \-c
+[
+.B \-d
+\fIdirectory\fR
+]
+.B \-b
+\fIbinddomain  name1,IP1 name2,IP2 ...\fR
+]
+.SH Description
+.NXR "bindsetup command"
+.NXR "BIND environment" "setting up"
+The
+.PN bindsetup 
+command sets up the Berkeley Internet Name Domain (BIND)/Hesiod
+service on your system and places 
+.PN aliases , 
+.PN auth , 
+.PN group , 
+.PN hosts , 
+.PN networks ,
+.PN passwd , 
+.PN protocols , 
+.PN rpc , 
+and 
+.PN services
+resolution under BIND/Hesiod control.
+You can use this command to set up your system as a primary,
+secondary, slave, or caching server,
+or as a client.
+.PP
+In order to run BIND/Hesiod, your system's host name must
+include the BIND domain name.  The BIND host name consists
+of the local host name plus the BIND domain name, separated by
+periods.  For example, the BIND host name for a system whose
+local host name is 
+.PN orange ,
+and whose BIND domain name is 
+.PN col.ecd.com 
+is 
+.PN orange.col.ecd.com .
+.PP
+The 
+.PN bindsetup
+command edits the 
+.PN /etc/hosts
+and
+.PN /etc/rc.local
+files and changes the local host name to the BIND host name, if it is not
+there already.
+.PP
+If the 
+.PN bindsetup
+command changes your system's host name, you
+should reboot the system to be sure that the change is propagated throughout
+the system.
+.PP
+Before you run
+.PN bindsetup
+, your system must be established on a local area network.
+In addition,
+you must know the BIND domain name for your local area network, and
+whether your system will be a primary, secondary, slave,
+or caching server, or a client.
+.PP
+The
+.PN bindsetup
+command asks if you want to run a Kerberos authentication
+server. You must already have set up Kerberos to do do.
+For more information, see the \fIGuide to Kerberos\fR.
+.PP
+You should run the
+.PN bindsetup
+command as superuser and with the system in multiuser mode.
+.PP
+If you use the
+.PN \-c
+option with the respective arguments,
+the
+.PN bindsetup
+command sets up your system as a BIND/Hesiod client non-interactively.
+.PP
+If you run the
+.PN bindsetup
+command with no arguments,
+a menu is displayed giving you a choice of responses.
+You are then prompted for further information.
+Before
+.PN bindsetup
+exits,
+it lists the files that have been updated.
+.PP
+Once BIND/Hesiod is installed on a machine, it cannot be used until
+the 
+.PN /etc/svc.conf 
+file is modified to contain BIND entries on the desired database
+lines.  The 
+.PN bindsetup
+command reminds a user to run
+.PN /usr/etc/svcsetup
+or edit the
+.PN /etc/svc.conf
+file manually.
+.SH Options
+.NXR "bindsetup command" "options"
+.IP \-c 13
+Sets up your system as a BIND/Hesiod client according to the
+following arguments you supply on the command line:
+.IP "\-d   \fIdirectory\fR" 13
+This option and argument are required if you are setting up a diskless client
+from the diskless server.
+The
+\fIdirectory\fR
+is the full path name of the root directory for your system (a
+diskless client)
+on the diskless server.
+The following is an example of a root directory for a diskless client named
+.PN orange: 
+.EX
+/dlclient0/orange.root 
+.EE
+.IP "\-b   \fIbinddomain\fR" 13
+This is the name of the BIND domain on which your system will be
+a BIND client.
+For example, 
+.PN cities.us 
+is a sample BIND domain name.
+.IP "\fIname,IP\fR" 13
+This is the host name and the IP address of the BIND server on the domain,
+for example
+.PN foobar,128.11.22.33 .
+You can specify one or more BIND server by listing more \fIname,IP\fP
+arguments, each 
+separated by a space.
+.SH Files
+.TP 20
+.PN /etc/hosts 
+List of locally maintained host names and IP addresses
+.TP 20
+.PN /etc/rc.local 
+Startup commands pertinent to a specific system
+.TP 20
+.PN /etc/svc.conf 
+Database name with the selected naming services
+.TP 20
+.PN /etc/hesiod.conf 
+Hesiod configuration file
+.TP 20
+.PN /etc/kerb.conf
+List of Kerberos servers
+.PP
+Default BIND Files:
+.PP
+.TP 20
+.PN /var/dss/namedb 
+BIND server data file directory
+.TP 20
+.PN /var/dss/namedb/named.boot 
+BIND server boot file
+.TP 20
+.PN /var/dss/namedb/named.ca 
+BIND server cache file
+.TP 20
+.PN /var/dss/namedb/named.local 
+BIND server local host reverse address host file
+.TP 20
+.PN /var/dss/namedb/hosts.db 
+BIND primary server hosts file
+.TP 20
+.PN /var/dss/namedb/hosts.rev 
+BIND primary server reverse address hosts file
+.TP 20
+.PN /etc/resolv.conf 
+BIND data file
+.SH See Also
+nslookup(1), hesiod(3), 
+hesiod.conf(5), svc.conf(5), svcsetup(8), 
+named(8), krb.conf(5), resolv.conf(5)
+.br
+\fIGuide to the BIND/Hesiod Service\fR
+.br
+\fIGuide to Kerberos\fR

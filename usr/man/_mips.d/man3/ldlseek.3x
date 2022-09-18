@@ -1,0 +1,53 @@
+.TH ldlseek 3x RISC
+.SH Name
+ldlseek, ldnlseek \- seek to line number entries of a section of a common object file
+.SH Syntax
+.nf
+.B #include <stdio.h>
+.ie '\*p'' \{\
+.B #include <filehdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h>\}
+.el \{\
+.B #include "\s-1INCDIR\s+1\/filehdr.h"
+.B #include "\s-1INCDIR\s+1\/syms.h"
+.B #include "\s-1INCDIR\s+1\/ldfcn.h"\}
+.PP
+.BR "int ldlseek (" "ldptr, sectindx" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR "unsigned short" " sectindx" ;
+.PP
+.BR "int ldnlseek (" "ldptr, sectname" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR "char \(**" sectname ;
+.fi
+.SH Description
+The 
+.PN ldlseek
+function
+seeks to the line number entries of the section specified by
+.I sectindx
+of the common object file
+currently associated with
+.IR ldptr .
+.PP
+The
+.PN ldnlseek
+function
+seeks to the line number entries of the section specified by
+.IR sectname .
+.PP
+The
+.PN ldlseek
+and
+.PN ldnlseek
+functions return success or failure.
+.NT
+Line numbers are not associated with sections in the MIPS
+symbol table; therefore, the second argument is ignored, but maintained
+for historical purposes.
+.NE
+If they cannot seek to the specified line number entries,
+both routines fail.
+.SH See Also
+ldclose(3x), ldopen(3x), ldshread(3x), ldfcn(5)

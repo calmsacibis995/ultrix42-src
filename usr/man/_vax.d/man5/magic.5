@@ -1,0 +1,134 @@
+.\" SCCSID: @(#)MAGIC.5   11/3/88
+.TH magic 5
+.SH Name
+magic \- magic file for the file command
+.SH Syntax
+.B /usr/lib/file/magic
+.SH Description
+.NXR "file command" "magic file"
+.NXR "magic file"
+The magic file is used by the 
+.PN file
+command
+to identify files that have some sort of 
+.I magic number.
+A magic number
+is any numeric or string constant that identifies the file
+containing the constant.
+.PP
+The 
+.PN magic 
+file is formatted as follows:
+.IP "Byte offset" 5
+The byte offset is where 
+.PN magic 
+information is found in the file. This is 
+the number of bytes from the beginning of the
+file to the first byte of the magic number or string. This may,
+optionally,  be preceded by a right angle bracket (>) to 
+indicate a continuation
+line to supply extra information in the printed message.
+.IP "Value type" 
+The value type is the type of the information to be found at the
+specified byte offset.  The file data is interpreted as the following 
+valid types:
+.sp
+.RS 10
+.nf
+byte     Unsigned char type
+short    Unsigned short type
+long     Long type
+string   Character (byte) string
+.fi
+.RE
+.IP "Optional operator"
+Describes how the value specified here should be
+compared with the data at the desired offset.  Valid operator
+characters are: 
+an equal sign, a right angle bracket, and a left angle bracket
+(=, >, <).  If none is specified, = is assumed.
+.IP "Value" 
+The value to match. Numeric values may be decimal, octal,
+or hexadecimal.  String values are defined as regular expressions here.
+The regular expressions used here are extended in two ways from
+regular expression definition in ed(1).
+.RS 10
+.IP "1." 4
+Normally unprintable characters may be escaped with 
+a backslash (\\).  The
+special characters \\n, \\b, \\r, and \\f are allowed.  An octal
+representation can also be used to insert any desired byte value,
+except 0.  Normally, regular expression cannot handle such 
+character values.  Because the backslash is used as an escape
+character while the regular expression is being read in, normal
+occurrences of a backslash in a regular expression must be escaped
+with a second backslash. As an example, \\( must be written as \\\\(
+and \\. must be written as \\\\.
+.IP "2." 
+Text found in a file can also be inserted in the printed string
+with the use of the \\\\% delimiter.  All text found between these
+delimiters is substituted into the print string. 
+.IP
+This regular expression search never
+terminates until a match is explicitly found or rejected.  The special
+character \\n is
+a valid character in the patterns.  Therefore, the pattern .*
+should never be used here.
+.RE
+.IP "major, minor type" 
+The major and minor file type numbers are
+not used by the 
+.MS file 1 
+command.
+.IP "String to print"
+Any desired text string.  Data from the file
+can be included with the use of continuation lines beginning
+with a right angle bracket (>).  Two types of continuation lines are possible,
+depending on the sign of the byte offset entry.
+.IP
+If the byte offset
+is positive, the specified data can be printed in the string
+when requested with an appropriate 
+.MS printf 3
+format. 
+.IP
+If the offset
+is a negative number, an internal routine will be called
+to test if a particular string is necessary and, if so, to return
+it.  
+.IP
+The byte offset number is an index to an internal table of
+routines available for use. Two such routines are currently
+defined, both for a.out images:
+.sp
+.br
+.B Byte Offset	Returned String(s)
+.sp
+.br
+\-1:			["old version 7 style symbol table"]
+.br
+\-2:			["setuid "]["setgid "]["sticky "]
+.SH Examples
+The following is an example of a script.
+The second line adds setuid, setgid text, if appropriate:
+.EX 0
+0   string ^#![ ]*\\%[^ \n]*\\%  7,4   %s
+>-2 long   0                     7,4   %sscript
+.EE
+The following is an example of an executable image:
+.EX 0
+>-1 long   0               12,3   %s
+0   short  0413            12,4   demand paged pure
+>2  short  02              12,4   POSIX
+>2  short  01              12,4   SVID
+>-2 long   0               12,4   %sexecutable
+>16 long   >0              12,4   not stripped
+.EE
+The following is an example of a text file:
+.EX 0
+0   string ^\01h[0-9][0-9][0-9][0-9][0-9]  7,1  sccsfile
+.EE
+.SH Files 
+.PN /usr/lib/file/magic
+.SH See Also
+file(1)

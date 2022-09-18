@@ -1,0 +1,168 @@
+.TH t_snd 3xti
+.SH Name
+t_snd \- send data or expedited data over a connection
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_snd(\fIfd, buf, nbytes, flags\fB)
+.br
+.B int \fIfd\fB;
+.br
+.B char \fI*buf\fB;
+.br
+.B unsigned \fInbytes\fB;
+.br
+.B int \fIflags\fR;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint over which data should be sent.
+.IP \fIbuf\fR 10
+Points to the user data.
+.IP \fInbytes\fR 10
+Specifies the number of bytes of user data to be sent.
+.IP \fIflags\fR 10
+Specifies any optional flags described below:
+.RS 10
+.IP T_EXPEDITED 14
+If set in \fIflags\fP, the data is sent as expedited data and is 
+subject to the interpretations of the transport provider.
+.IP T_MORE 14
+If set in \fIflags\fP, this indicates to the transport provider that 
+the transport service data unit (TSDU) or expedited transport service 
+data unit (ETSDU) is being sent through multiple 
+.PN t_snd()
+calls. Each 
+.PN t_snd() 
+with the T_MORE flag set indicates that 
+another 
+.PN t_snd()
+follows with more data for the current TSDU. 
+The end of TSDU or ETSDU is identified by a 
+.PN t_snd()
+call with the T_MORE flag not set. Use of T_MORE enables a user to 
+break up large logical data units without losing boundaries
+of those units at the other end of the connection. The flag implies 
+nothing about how the data is packaged for transfer below the 
+transport interface.  If the transport provider does not support the 
+concept of a TSDU as indicated in the \fIinfo\fP argument on return 
+from 
+.PN t_open()
+or 
+.PN t_getinfo()\fR,\fR
+the T_MORE flag is not meaningful and should be ignored.
+.RE
+.sp 3
+.SH Description
+This function is used to send either normal or expedited data.
+.NXR "t_snd system call"
+.NXR "sendind data" "normal"
+.NXR "sending data" "expedited"
+.PP
+By default, 
+.PN t_snd()
+operates in synchronous mode and may wait if flow
+control restrictions prevent the data from being accepted by the local
+transport provider at the time the call is made. However, if
+O_NONBLOCK is set by means of 
+.PN t_open() 
+or 
+.PN fcntl()\fR,\fR
+.PN t_snd()
+executes in asynchronous mode, and fails immediately,
+if there are flow control restrictions. The process can arrange to be informed when
+the flow control restrictions are cleared by means of 
+.PN t_look()\fR.\fR
+.PP
+On successful completion, 
+.PN t_snd() 
+returns the number of bytes accepted by the transport provider. Normally, this equals the number
+of bytes specified in \fInbytes\fR. However, if O_NONBLOCK is set,
+it is possible that only part of the data is accepted by the
+transport provider. In this case, 
+.PN t_snd() 
+returns a value that is less than the value of \fInbytes\fR. If \fInbytes\fR is zero and
+sending of zero octets is not supported by the underlying transport
+service, the 
+.PN t_snd() 
+returns \-1 with \fBt_errno\fR set to [TBADDATA].
+.PP
+The size of each TSDU or ETSDU must not exceed the limits of the
+transport provider as returned in the TSDU or ETSDU fields of the
+\fIinfo\fR argument of 
+.PN t_open() 
+or 
+.PN t_getinfo()\fR.\fR
+Failure to comply results in protocol error (see [TSYSERR]
+under the DIAGNOSTICS section).
+.PP 
+The error [TLOOK] may be returned to inform the process that
+an event, such as a \fBdisconnect\fR, has occurred.
+.PP
+It is important to remember that the transport provider treats all users
+of a transport endpoint as a single user. Therefore if several processes
+issue concurrent 
+.PN t_snd()
+calls, then the different data may be
+intermixed.
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+buf@x(x)@/
+nbytes@x@/
+flags@x@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, \fBt_errno\fR returns the number of bytes
+accepted by the transport provider. On failure, a value of \-1 is returned, and 
+\fBt_errno\fR is set to indicate the error.
+.PP
+In asynchronous mode, if the number of bytes accepted by the transport
+provider is less than the number of bytes requested, this may indicate
+that the transport provider is blocked due to flow control.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20 
+[TOUTSTATE]
+The function was issued in the wrong sequence on the transport endpoint
+referenced by \fIfd\fR.
+.TP 20
+[TBADFLAG]
+An invalid flag was specified.
+.TP 20
+[TFLOW]
+O_NONBLOCK was set, but the flow control mechanism prevented the
+transport provider from accepting any data at this time.
+.TP
+[TBADDATA]
+Illegal amount of data: zero octets is not supported.
+.TP 20
+[TLOOK]
+An asynchronous event has occurred on the transport endpoint.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the underlying transport provider. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function. A protocol error may
+not cause \fBt_errno\fR to fail until a subsequent access of the transport endpoint.
+.SH See Also
+.MS t_getinfo 3xti , 
+.MS t_open 3xti ,
+.MS t_rcv 3xti 

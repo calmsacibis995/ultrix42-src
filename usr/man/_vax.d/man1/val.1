@@ -1,0 +1,114 @@
+.ds S)  \s-1SCCS\s0
+.ds I)  \fI\s-1SID\s0\fR
+.TH val 1
+.SH Name
+val \- validate SCCS file
+.SH Syntax  
+\fBval \-\fR
+.br
+.B val
+[\fB\-s\fR] [\fB\-r\fISID\fR\|] [\fB\-m\fIname\fR\|] [\fB\-y\fItype\fR\|] \fIfiles\fR
+.SH Description
+.NXR "val command (sccs)"
+.NXR "SCCS file" "validating"
+The
+.PN val
+command determines if the specified
+.I file\^
+is an \*(S) file meeting the characteristics specified by the optional
+argument list.
+Arguments to
+.PN val
+may appear in any order.
+The arguments consist of keyletter arguments that begin with a ``-'' and
+named files.
+.PP
+The
+.PN val
+command
+has a special argument, ``-,'' which causes reading of the standard input
+until an end-of-file condition is detected.
+Each line read is independently processed, as if it were 
+a command line argument
+list.
+.PP
+The
+.PN val
+command
+generates diagnostic messages on the standard output for each command line
+and file processed and also returns a single 8\fB-\fRbit code upon exit as
+described below.
+.SH Options
+.NXR "val command (sccs)" "keyletters"
+The effects of any keyletter argument apply independently to each named file
+on the command line.    
+The keyletter arguments are defined as follows:
+.RS
+.IP \fB\-\fR 0.3i
+Causes stdin to be read until end of file.  
+.IP \fB\-s\fR 0.3i
+Suppresses all error messages.  
+.IP \fB\-r\fISID\fR 0.3i
+Indicates specified delta version number.  
+A check is made to determine if the
+\*(I)
+is ambiguous, for example, 
+.B \*-r\c
+1 is ambiguous because it physically does 
+not exist but implies 1.1, 1.2,
+and so forth, which may exist) or invalid, for example, 
+.B \*-r\c
+1.0 or
+.B \*-r\c
+1.1.0 are invalid because neither case can exist as a valid delta number).
+If the
+\*(I)
+is valid and not ambiguous, a check is made
+to determine if it actually exists.
+.IP \fB\-m\fIname\fR 0.3i
+Compares specified value with the SCCS val.1 keyword.  
+.IP \fB\-y\fItype\fR 0.3i
+Compares specified type with SCCS  keyword.  
+.RE
+.PP
+The 8\fB-\fRbit code returned by
+.PN val
+is a disjunction of the possible errors.  It can be interpreted as
+a bit string where set bits are interpreted (from left to right) 
+as: 
+.NXR "val command (sccs)" "interpreting 8-bit exit code"
+.nf
+.PP
+.RS
+bit 0 = missing file argument
+bit 1 = unknown or duplicate keyletter argument
+bit 2 = corrupted \*(S) file
+bit 3 = can't open file or file not \*(S)
+bit 4 = \*(I) is invalid or ambiguous
+bit 5 = \*(I) does not exist
+bit 6 = %\&Y%, \fB\-y\fR mismatch
+bit 7 = %\&M%, \fB\-m\fR mismatch
+.RE
+.fi
+.PP
+Note that
+.PN val
+can process two or more files on a given command line and can
+process multiple command lines when reading the standard input.
+.NXR "val command (sccs)" "processing multiple files"
+In these cases, an aggregate code is returned \- a logical OR of the
+codes generated for each command line and file processed.
+.SH Restrictions
+.NXR "val command (sccs)" "restricted"
+The
+.PN val
+command can process up to 50 files on a single command line.
+Any number above 50 produces a core dump.
+.SH Diagnostics
+Use 
+.MS sccshelp 1
+for explanations.
+.SH See Also
+admin(1), delta(1), get(1), prs(1), sccs(1)
+.br
+\fIGuide to the Source Code Control System\fP

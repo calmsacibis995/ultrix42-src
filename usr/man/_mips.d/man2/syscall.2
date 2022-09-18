@@ -1,0 +1,28 @@
+.\" SCCSID: @(#)syscall.2	3.1	11/23/87
+.TH syscall 2 RISC
+.SH Name
+syscall \- indirect system call
+.SH Syntax
+.BR "syscall(number, args, ...)" 
+.SH Description
+.NXR "syscall system call"
+.NXR "system call" "performing indirect"
+The
+.PN syscall
+system call
+performs the system call whose assembly language
+interface has the specified
+.I number,
+and further arguments
+.IR args .
+There may be no arguments.
+.PP
+The return value of the system call is returned.
+.SH Diagnostics
+If an error occurs,
+.PN syscall
+returns \-1 and sets the
+external variable 
+.I errno.
+.SH See Also
+errno(2)

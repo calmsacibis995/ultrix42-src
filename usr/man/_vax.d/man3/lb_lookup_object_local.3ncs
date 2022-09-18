@@ -1,0 +1,171 @@
+.TH lb_lookup_object_local 3ncs
+.SH Name
+lb_lookup_object_local \- look up information about an object in a
+Local Location Broker database
+.SH Syntax
+#include <idl/c/lb.h>
+
+void lb_$lookup_object_local(\fIobject, location, location_length,
+\fIlookup_handle\fP
+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\fImax_num_results, num_results, results, status)\fP
+.nf
+uuid_$t *\fIobject;\fP
+socket_$addr_t *\fIlocation;\fP
+unsigned long \fIlocation_length;\fP 
+lb_$lookup_handle_t *\fIlookup_handle;\fP
+unsigned long \fImax_num_results;\fP
+unsigned long *\fInum_results;\fP
+lb_$entry_t \fIresults[ ];\fP
+status_$t *\fIstatus;\fP
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/lb.ins.pas'\fR
+.\"
+.\"\fBprocedure lb_$lookup_object_local(\fR
+.\"	\fBin \fIobject\fB: uuid_$t;\fR
+.\"	\fBin \fIlocation\fB: socket_$addr_t;\fR
+.\"	\fBin \fIlocation_length\fB: unsigned32;\fR
+.\"	\fBin out \fIlookup_handle\fB: lb_$lookup_handle_t;\fR
+.\"	\fBin \fImax_num_results\fB: unsigned32;\fR
+.\"	\fBout \fInum_results\fB: unsigned32;\fR
+.\"	\fBout \fIresults\fB: array [1..*] of lb_$entry_t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIobject\fR
+The UUID of the object being looked up.
+.TP 20
+\fIlocation\fR
+The location of the LLB database to be searched.
+The socket address must specify the network address of a host.
+However, the port number in the socket address is ignored,
+and the lookup request is always sent to the LLB port.
+.TP 20
+\fIlocation_length\fR
+The length, in bytes, of the socket address specified by the location field.
+.TP 20
+\fIlookup_handle\fR
+A location in the database.
+.if t .sp .5
+On input, the \fIlookup_handle\fR
+indicates the location in the database where the search begins.
+An input value of \fBlb_$default_lookup_handle\fR
+specifies that the search will start at the beginning of the database.  
+.if t .sp .5
+On return, the \fIlookup_handle\fR indicates the next unsearched 
+part of the database (that is, the point at which the next search 
+should begin).
+A return value of \fBlb_$default_lookup_handle\fR
+indicates that the search reached the end of the database;
+any other return value
+indicates that the search found at most \fImax_num_results\fR matching entries 
+before it reached the end of the database.
+.TP 20
+\fImax_num_results\fR
+The maximum number of entries that can be returned by a single routine.
+This should be the number of elements in the \fIresults\fR array.
+.TP 20
+\fInum_results\fR
+The number of entries that were returned in the \fIresults\fR array.
+.TP 20
+\fIresults\fR
+An array that contains the matching GLB database entries,
+up to the number specified by the \fImax_num_results\fR parameter.
+If the array contains any entries for servers on the local network,
+those entries appear first.
+.TP 20
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN lb_$lookup_object_local
+routine
+searches the specified LLB database and returns all entries
+whose 
+.I object
+field matches the specified object.
+.NXR "lb_lookup_object_local"   
+.PP
+The 
+.PN lb_$lookup_object_local
+routine cannot return more than 
+.I max_num_results
+matching entries at a time.
+The 
+.I lookup_handle
+parameter enables you to find all matching entries by doing sequential lookups. 
+.PP
+If you use a sequence of lookup routines to find entries in the database, 
+it is possible that the returned results will skip or duplicate entries.
+This is because
+the Location Broker does not prevent modification of the database between lookups,
+and such modification can change the locations of entries
+relative to a 
+.I lookup_handle
+value.
+.PP
+It is also possible that the results of a single lookup routine
+will skip or duplicate entries.
+This can occur if the size of the results exceeds 
+the size of an RPC packet (64K bytes).
+.SH Examples
+The following statement looks up information about the object
+\fBlocobj\fR.  
+Since there is only one entry on any host, the routine will return
+at most one result:
+.EX
+lb_$lookup_object_local (&locobj_id, &location, location_length,
+                             &lookup_handle, 1, &num_results,
+                             &results, &status);
+.EE
+.SH Diagnostics 
+This section lists status codes for errors returned by this 
+.PN lb_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBlb_$database_invalid\fR
+The format of the Location Broker database is out of date.
+The database may have been created by an old version of the Location Broker; 
+in this case, delete the out-of-date database and reregister any entries
+that it contained.
+The LLB that was accessed may be running out-of-date software;
+in this case, update all Location Brokers to the current software version.
+.TP 20
+\fBlb_$database_busy\fR
+The Location Broker database is currently in use in an incompatible manner.
+.TP 20
+\fBlb_$not_registered\fR
+The Location Broker does not have any entries that match
+the criteria specified in the lookup or unregister routine.
+The requested object, type, interface, or combination thereof
+is not registered in the specified database.
+If you are using
+an 
+.PN lb_$lookup_object_local
+or
+.PN lb_$lookup_range
+routine specifying an LLB, check that you have specified the correct LLB.
+.TP 20
+\fBlb_$cant_access\fR
+The Location Broker cannot access the database.
+Among the possible reasons:
+.IP
+1. The database does not exist.
+.IP
+2. The database exists, but the Location Broker cannot access it.
+.TP 20
+\fBlb_$server_unavailable\fR
+The Location Broker Client Agent cannot reach the requested LLB.
+A communications failure occurred or the broker was not running.
+.SH Files
+.PN /usr/include/idl/c/glb.h
+.SH See Also
+intro(3ncs), lb_lookup_range(3ncs)

@@ -1,0 +1,140 @@
+.\" SCCSID: @(#)getprotoent.3n	8.2	1/29/91
+.TH getprotoent 3n
+.SH Name
+getprotoent, getprotobynumber, getprotobyname, setprotoent, endprotoent \- get protocols entry
+.SH Syntax
+.nf
+.B #include <netdb.h>
+.PP
+.B struct protoent *getprotoent()
+.PP
+.B struct protoent *getprotobyname(\fIname\fP)
+.B char *\fIname\fP;
+.PP
+.B struct protoent *getprotobynumber(\fIproto\fP)
+.B int \fIproto\fP;
+.PP
+.B void setprotoent(\fIstayopen\fP)
+.B int \fIstayopen\fP;
+.PP
+.B void endprotoent()
+.fi
+.SH Description
+.NXR "getprotoent subroutine"
+.NXR "getprotobyname subroutine"
+.NXR "getprotobyname subroutine"
+.NXR "setprotoent subroutine"
+.NXR "endprotoent subroutine"
+.NXR "protocols file" "getting entry"
+The
+.PN getprotoent ,
+.PN getprotobyname ,
+and
+.PN getprotobynumber
+subroutines
+each return a pointer to an object with the
+following structure
+containing the broken-out
+fields of a line in the 
+.PN protocols
+database.
+.EX
+struct	protoent {
+	char	*p_name;	/* official name of protocol */
+	char	**p_aliases;	/* alias list */
+	long	p_proto;	/* protocol number */
+};
+.EE
+.PP
+The members of this structure are:
+.TP \w'p_aliases'u+2n
+p_name
+The official name of the protocol.
+.TP \w'p_aliases'u+2n
+p_aliases
+A zero terminated list of alternate names for the protocol.
+.TP \w'p_aliases'u+2n
+p_proto
+The protocol number.
+.PP
+If the
+.I stayopen
+flag on a 
+.PN setprotoent
+subroutine is NULL, the
+protocols database is opened.  Otherwise the
+.PN setprotoent
+has the effect of rewinding the protocols database.
+The
+.PN endprotoent
+may be called to
+close the protocols database
+when processing is complete.
+.PP
+The
+.PN getprotoent
+subroutine simply reads the next
+line while
+.PN getprotobyname
+and
+.PN getprotobynumber
+search until a matching
+.I name
+or
+.I proto
+number is found
+(or until EOF is encountered).
+The
+.PN getprotoent
+subroutine keeps a pointer in the database, allowing
+successive calls to be used 
+to search the entire file.
+.PP
+A call to
+.PN setprotoent
+must be made before a
+.PN while
+loop using
+.PN getprotoent
+in order to perform initialization and an
+.PN endprotoent
+must be used after the loop.  Both
+.PN getprotobyname
+and
+.PN getprotobynumber
+make calls to
+.PN setprotoent
+and
+.PN endprotoent .
+.SH Restrictions
+.NXR "getprotoent subroutine" "restrictions"
+All information
+is contained in a static area
+so it must be copied if it is
+to be saved.  Only the Internet
+protocols are currently understood.
+.PP
+.PP
+If YP is running, 
+.PN getprotoent
+does not return the entries in any particular order.
+See the 
+.I Guide to the Yellow Pages Service
+for setup information.
+.PP
+The services database may also be distributed using the BIND/Hesiod
+naming service.  See the 
+.I Guide to the BIND/Hesiod Service
+for more information.
+.SH Return Values
+Null pointer
+(0) returned on EOF or error.
+.SH Files
+.PN /etc/protocols
+.SH See Also
+protocols(5), svc.conf(5)
+.br
+.I Guide to the BIND/Hesiod Service
+.br
+.I Guide to the Yellow Pages Service
+ 

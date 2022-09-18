@@ -1,0 +1,44 @@
+.\" SCCSID: @(#)leave.1	8.1	9/11/90
+.TH leave 1
+.SH Name
+leave \- remind you when you have to leave
+.SH Syntax
+.B leave
+[ hhmm ]
+.SH Description
+.NXR "leave command"
+.NXR "reminder service" "reminding you to leave"
+The
+.PN leave
+command
+waits until the specified time, then reminds you that you
+have to leave.
+You are reminded 5 minutes and 1 minute before the actual
+time, at the time, and every minute thereafter.
+When you log off,
+.PN leave
+exits just before it would have
+printed the next message.
+.PP
+The time of day is in the form hhmm where hh is a time in
+hours (on a 12 or 24 hour clock).
+All times are converted to a 12 hour clock, and assumed to
+be in the next 12 hours.
+.PP
+If no argument is given,
+.PN leave
+prompts with ``When do you
+have to leave?''. A reply of newline causes
+.PN leave
+to exit,
+otherwise the reply is assumed to be a time.
+This form is suitable for inclusion in a 
+.PN \&.login
+or 
+.PN \&.profile .
+.PP
+Leave ignores interrupts, quits, and terminates.
+To get rid of it you should either log off or use ``kill \-9''
+giving its process ID.
+.SH See Also
+calendar(1)

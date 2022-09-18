@@ -1,0 +1,434 @@
+.TH inc 1mh
+.SH Name
+inc \- incorporate new mail
+.SH Syntax
+.B inc
+[
+.I +folder
+] [
+.I options
+]
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.\" .SH Arguments
+.\" .IP \fI+folder\fR 10
+.\" The folder into which 
+.\" .PN inc
+.\" places the mail it incorporates.
+.\" If no 
+.\" .I +folder
+.\" argument is given, mail is incorporated into your 
+.\" .PN +inbox
+.\" folder.
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "inc command"
+.NXR "incorporating mail"
+Use
+.PN inc
+to incorporate mail from your
+incoming maildrop into a folder.
+.\"
+.\" ***Info from old Arguments section
+.\"
+.PP
+Normally, 
+.PN inc
+incorporates new mail into your 
+.PN +inbox
+folder.
+If you supply a 
+.I +folder
+argument, mail is incorporated into the named folder 
+instead of your
+.PN +inbox .
+.\" 
+.\" ***End of Arguments stuff
+.\"
+.PP
+The new messages being incorporated are numbered sequentially 
+starting with the next highest available number in the folder.
+If the specified (or default) folder does not exist,
+.PN inc
+will ask you whether you want to create it. 
+As the messages are processed, a 
+.PN scan
+listing of the new mail is produced.  See
+.MS scan 1mh
+for details of the listing produced.
+.PP
+The folder into which messages are being incorporated 
+will become the current folder.
+.PP
+If your 
+.PN \&.mh_profile 
+contains a 
+\f(CWMsg\-Protect:\fR
+entry, the mail system 
+will use this as the protection on the newly created messages;
+otherwise, it will use the default of 0600.
+This means that messages created will have read
+and write permission for the user only.
+During all operations on messages, the mail system
+will preserve this initially assigned protection 
+for each message.
+You can also use
+.MS chmod 1
+to set a different protection on an individual message;
+in this case the mail system will preserve the new protection.
+.PP
+Note that
+.PN inc
+will incorporate improperly formatted 
+.\" SMTP 
+messages into your folder,
+inserting a blank line prior to the offending
+component and printing a comment identifying the bad message.
+.\" Invalid X.400 messages are moved to the Undeliverable Queue 
+.\" of the X.400 MTA, and an explanatory message replaces them.
+.\"
+.PP
+If the entry \f(CWUnseen-Sequence\fP
+is present in your profile,
+then 
+.PN inc
+will add each of the newly incorporated messages to each
+sequence named by the profile entry.
+This is similar to the 
+\f(CWPrevious-Sequence\fR
+.R
+profile entry supported by all MH commands which take 
+.I msg
+.R
+or 
+.I msgs
+arguments.  
+Note that 
+.PN inc
+will not zero each sequence prior to adding messages.
+.PP
+If the environment variable \f(CW$MAILDROP\fR is set,
+then
+.PN inc
+uses it as the location of your maildrop instead of the
+default.
+If this variable is not set,
+then
+.PN inc
+will consult the profile entry
+\f(CWMaildrop\fR
+.R
+for this information.
+If the value found is not absolute,
+then it is interpreted relative to your Mail directory,
+which is usually
+.PN $HOME/Mail .
+If the value is not found,
+then
+.PN inc
+.R
+will look in the standard system location for your maildrop.
+The 
+.B \-file 
+.R
+option will override all of these.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-audit \fIaudit-file\fR" 10
+.PD 0
+.IP \-noaudit 10
+.PD
+Keeps a record of all new mail that is incorporated.
+The
+.PN inc
+places a 
+.PN scan 
+line in the named audit file
+for each message it incorporates.
+This is useful for keeping track of the volume and source of incoming
+mail.
+.IP 
+This option is often set up in the 
+.PN \&.mh_profile 
+file.
+See
+.MS mh_profile 5mh
+for more information on how to add entries to the file.
+If this option is added to the 
+.PN \&.mh_profile ,
+it can be overridden using the 
+.B \-noaudit 
+option at the command line.
+.\"
+.\"
+.IP \-changecur 10
+.PD 0
+.IP \-nochangecur 10
+.PD
+Makes the first new message the current message.
+This is the default operation of
+.PN inc .
+If you want the current message to remain as it was, use the
+.B \-nochangecur
+option.
+.\"
+.\"
+.IP \-file\ \fIname\fR
+Incorporates mail from a named file. 
+This is usually a file other than your maildrop.
+.\"
+.\" ***COMMENTED OUT
+.ig
+If you specify a 
+.B \-file
+option, 
+.PN inc
+will look in the named file whether or not you have specified the
+.B \-source\ file
+option.
+..
+.\" ***END OF COMMENTS
+.\"
+Note that the mail system will not zero the named file
+unless the
+.B \-truncate
+switch is given.
+.\"
+.\"
+.IP \-form\ \fIformatfile\fR
+Controls the format of the display produced.
+The output of 
+.PN inc
+is formatted according to the instructions in 
+the named file.
+The file must be an mhl format file; see
+.MS mh-format 5mh
+for more information.
+.\"
+.\"
+.IP \-format\ \fIstring\fR
+Controls the format of the display produced.
+The output of
+.PN inc
+is formatted according to the instructions
+given by the string supplied.
+This must be a standard format string; see
+.MS mh-format 5mh
+for more information.
+If the string contains blank spaces, the whole 
+string must be enclosed in double quotes.
+.\"
+.\"
+.IP \-help
+Prints list of the valid options for this command.
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.ig
+.IP \-rpop 10
+.PD 0
+.IP \-norpop 10
+.PD
+Specifies whether X.400 mail should be fetched 
+over a trusted or non-trusted link.
+If you use the 
+.B \-source\ x400
+option, the incoming X.400 mail
+can be carried out over a trusted or a non-trusted link.
+In the non-trusted case, the mail system will prompt you
+to supply a password.
+You can specify a trusted link by using the
+.B \-rpop
+option, or a non-trusted link by using
+\fB\-norpop\fR.
+The default is
+\fB\-rpop\fR.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.IP \-silent 10
+.PD 0
+.IP \-nosilent 10
+.PD
+Directs 
+.PN inc
+to be quiet and not ask any questions
+at all.
+This is useful for putting 
+.PN inc
+in the background and going on to other
+things.
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.ig
+.IP \-source\ \fIsource\fR
+Retrieves mail from specified sources only.
+The option recognizes two sources:
+.B \-source\ file
+specifies the maildrop file;
+.B \-source\ x400
+specifies mail sent over the X.400 transport system.
+Both of these options are case-insensitive.
+You can specify one or more of these options with the same 
+command. 
+If you do not specify a
+.B \-source
+option,
+.PN inc
+will use all known sources.
+So you will receive all incoming mail,
+whatever source it comes from.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.IP "\-source file"
+Specifies the source from which mail is retrieved.
+The only value allowed is \fBfile\fR,
+which is the standard ULTRIX mail system.
+Additional values are supported only for use with other
+mail systems.
+.\"
+.\"
+.\"
+.IP \-truncate
+.PD 0
+.IP \-notruncate
+.PD
+Zeroes your maildrop file when mail is fetched from it.
+This is the default operation;
+your mail drop will be zeroed,
+unless the 
+.B \-notruncate
+option is given.
+.\"
+.\"
+.IP \-width
+Controls the width of the display produced by 
+.PN inc .
+The default is the width of the terminal;
+if no value is given,
+.PN inc
+prints its display as wide as the screen allows.
+.\"
+.\"
+.PP
+The defaults for this command are:
+.IP
+.PN +folder
+defaults to 
+.PN +inbox
+.br
+.B \-noaudit
+.br
+.B \-changecur
+.br
+.\" .B \-format
+.\" defaults as described above
+.\" .br
+.\" .B \-rpop
+.\" .br
+.B \-nosilent
+.br
+.B \-truncate
+if the
+.B \-file
+option is not given, 
+.B \-notruncate
+otherwise
+.br
+.B \-width
+defaults to the width of the terminal
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+For this version of MH, the
+.B \-source
+option only supports the value \fBfile\fR.
+Additional values are supported for use only with
+other mail systems.
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+.\"
+.\" ***EXAMPLES COMMENTED OUT
+.ig
+The following example fetches incoming X.400 mail only:
+.EX
+% inc -source x400
+.EE
+.PP
+The next example fetches incoming mail from your maildrop
+as well as incoming X.400 mail.
+Note that by default 
+.PN inc 
+fetches mail from all sources that it knows about:
+.EX
+% inc -source file -source x400
+.EE
+..
+.\" ***END OF COMMENTS
+.\"
+.PP
+The following example fetches incoming mail and places it in the folder 
+.PN +not_read :
+.EX
+% inc +not_read
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine your Mail directory
+Alternate-Mailboxes:+To determine your mailboxes
+Folder-Protect:+To set mode when creating a new folder
+Maildrop:+To determine the location of your maildrop
+Msg-Protect:+To set mode when creating a new message 
++and audit-file
+Unseen-Sequence:+To name sequences denoting unseen messages
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/\&.mh_profile
+The user profile.
+.TP
+.PN /usr/lib/mh/mtstailor
+The system customization file.
+.TP
+.PN /usr/spool/mail/$USER
+The user's maildrop.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+chmod(1), mhl(1mh), mhmail(1mh), scan(1mh), mh-mail(5mh), post(8mh)

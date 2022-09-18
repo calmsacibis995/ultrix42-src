@@ -1,0 +1,159 @@
+.\" SCCSID: @(#)intro.3s	8.1	9/11/90
+.TH intro 3s
+.SH Name
+stdio \- standard buffered input/output package
+.SH Syntax
+.B #include <stdio.h>
+.PP
+.SM
+.B FILE
+.B *stdin;
+.br
+.SM
+.B FILE
+.B *stdout;
+.br
+.SM
+.B FILE
+.B *stderr;
+.SH Description
+.NXR "stdio macro package"
+.NXS "standard buffered input/output package" "stdio macro package"
+The functions described in section 3s constitute a user-level buffering
+scheme.  The in-line macros
+.PN getc
+and
+.MS putc 3s
+handle characters quickly.  The higher level routines
+.PN gets ,
+.PN fgets ,
+.PN scanf ,
+.PN fscanf ,
+.PN fread ,
+.PN puts ,
+.PN fputs ,
+.PN printf ,
+.PN fprintf ,
+.PN fwrite
+all use
+.PN getc
+and
+.PN putc;
+they can be freely intermixed.
+.PP
+A file with associated buffering is called a
+.IR stream ,
+and is declared to be a pointer to a defined type
+.SM FILE.
+.NXR "stream" "defined"
+The 
+.MS fopen 3s
+subroutine
+creates certain descriptive data for a stream
+and returns a pointer to designate
+the stream in all further transactions.
+There are three normally open streams with constant pointers declared in
+the include file and associated with the standard open files:
+.TP 10n
+.B stdin
+standard input file
+.br
+.ns
+.TP
+.B stdout
+standard output file
+.br
+.ns
+.TP
+.B stderr
+standard error file
+.PP
+A constant `pointer' NULL (0) designates no stream at all.
+.PP
+An integer constant EOF
+(\-1) is returned upon end of file or error by integer functions that
+deal with streams.
+.PP
+Any routine that uses the standard input/output package
+must include the header file <stdio.h>
+of pertinent macro definitions.
+The functions and constants mentioned in sections labeled 3S
+are declared in the include file and need no further declaration.
+The constants, and the following `functions' are
+implemented as macros; redeclaration of these names is perilous:
+.PN getc ,
+.PN getchar ,
+.PN putc ,
+.PN putchar ,
+.PN feof ,
+.PN ferror ,
+.PN fileno .
+.NT "VAX Only"
+On VAX machines, the GFLOAT version of
+.IR libc
+is used when you use the 
+.MS cc 1
+command with the 
+.B \-Mg
+option, or you use the 
+.MS ld 1
+command with the 
+.B \-lcg
+option.
+The GFLOAT version of
+.IR libc
+must be used with modules 
+compiled with 
+.MS cc 1 
+using the
+.B \-Mg
+option. 
+.sp
+Also note that neither the compiler nor the linker 
+.MS ld 1
+can detect when mixed double floating point types
+are used, and the program may produce erroneous
+results if this occurs on VAX machines.
+.NE
+.SH System V Compatibility
+This library contains System V compatibility features that
+are available to general ULTRIX programs.  For a discussion of how
+these features are documented, and how to specify that the
+System V environment is to be used in compiling and linking
+your programs, see 
+.MS intro 3 .
+.SH Diagnostics
+.NXR "stdio macro package" "diagnostics"
+The value EOF
+is returned uniformly to indicate that a FILE
+pointer has not been initialized with
+.PN fopen ,
+input (output) has been attempted on an output (input) stream, or a
+FILE pointer designates corrupt or otherwise unintelligible
+FILE data.
+.PP
+For purposes of efficiency, this implementation of the standard library
+has been changed to line buffer
+output to a terminal by default and attempts
+to do this transparently by flushing the output whenever a 
+.MS read 2
+from the standard input is necessary.
+This is almost always transparent,
+but may cause confusion or malfunctioning of programs which use
+standard I/O routines but use 
+.MS read 2
+themselves to read from the standard input.
+.PP
+In cases where a large amount of computation is done after printing
+part of a line on an output terminal, it is necessary to 
+.MS fflush 3s
+the standard output before going off and computing so that the output
+will appear.
+.SH Files
+.nf
+/lib/libc.a
+/usr/lib/libcg.a   (VAX only)
+.fi
+.SH See Also
+open(2), close(2), read(2), write(2), fread(3s), fseek(3s), ferror(3s),
+fclose(3s), fopen(3s)  	

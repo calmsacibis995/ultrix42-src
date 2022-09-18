@@ -1,0 +1,300 @@
+.\" SCCSID: @(#)gettytab.5	3.2	2/8/88
+.TH gettytab 5
+.SH Name
+gettytab \- terminal configuration data base
+.SH Syntax
+/etc/gettytab
+.SH Description
+.NXB "gettytab file" "format"
+.NXR "terminal" "setting characteristics"
+.NXAM "getty program" "gettytab file"
+.NXA "termcap file" "gettytab file"
+The
+.PN gettytab
+file
+is a simplified version of the 
+.MS termcap 5
+data base
+used to describe terminal lines.
+The initial terminal login process 
+.MS getty 8
+accesses the
+.PN gettytab
+file each time it starts, allowing simpler
+reconfiguration of terminal characteristics.
+Each entry in the data base
+is used to describe one class of terminal.
+.PP
+There is a default terminal class,
+.IR default ,
+that is used to set global defaults for all other classes.
+That is, the
+.I default 
+entry is read, and then the entry for the class required
+is used to override particular settings.
+.SH Capabilities
+Refer to 
+.MS termcap 5
+for a description of the file layout.
+The
+.I default
+column below lists defaults obtained if there is
+no entry in the table obtained, nor one in the special
+.I default
+table.
+.NXR "gettytab file" "defaults"
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB lfHB
+lfR  lfR  lfR   lfR .
+_
+.sp 4p
+Name@Type@Default@Description
+.sp 4p
+_
+.sp 6p
+ab@bool@false@Auto-baud speed selection mechanism
+ap@bool@false@Terminal uses any parity
+bd@num@0@Backspace delay
+bk@str@0377@T{
+Alternate end of line character (input break)
+T}
+cb@bool@false@Use crt backspace mode
+cd@num@0@Carriage-return delay
+ce@bool@false@Use crt erase algorithm
+ck@bool@false@Use crt kill algorithm
+cl@str@NULL@Screen clear sequence
+co@bool@false@Console \- add \\n after login prompt
+ds@str@^Y@Delayed suspend character
+ec@bool@false@Leave echo 2OFF
+ep@bool@false@Terminal uses even parity
+er@str@^?@Erase character
+et@str@^D@End of text 2EOF character
+ev@str@NULL@Initial environment
+f0@num@unused@Tty mode flags to write messages
+f1@num@unused@Tty mode flags to read login name
+f2@num@unused@Tty mode flags to leave terminal as
+fd@num@0@Form-feed (vertical motion) delay
+fl@str@^O@Output flush character
+hc@bool@false@Do not hangup line on last close
+he@str@NULL@Hostname editing string
+hn@str@hostname@Hostname
+ht@bool@false@Terminal has real tabs
+ig@bool@false@T{
+Ignore garbage characters in login name
+T}
+im@str@NULL@Initial (banner) message
+in@str@^C@Interrupt character
+is@num@unused@Input speed
+kl@str@^U@Kill character
+lc@bool@false@Terminal has lower case
+lm@str@login:@Login prompt
+ln@str@^V@``literal next'' character
+lo@str@/bin/login@Program to exec when name obtained
+nd@num@0@Newline (line-feed) delay
+nl@bool@false@T{
+Terminal has (or might have) a newline character
+T}
+nx@str@default@Next table (for auto speed selection)
+op@bool@false@Terminal uses odd parity
+os@num@unused@Output speed
+p8@bool@false@Use 8-bit characters
+pc@str@\\0@Pad character
+pd@bool@false@Disable parity on output
+pe@bool@false@Use printer (hard copy) erase algorithm
+pf@num@0@T{
+Delay between first prompt and following flush (seconds)
+T}
+ps@bool@false@Line connected to a MICOM port selector
+qu@str@^\\@Quit character
+rp@str@^R@Line retype character
+rw@bool@false@Do not use raw for input, use cbreak
+sp@num@unused@Line speed (input and output)
+su@str@^Z@Suspend character
+tc@str@none@Table continuation
+to@num@0@Timeout (seconds)
+tt@str@NULL@Terminal type (for environment)
+ub@bool@false@T{
+Do unbuffered output (of prompts and so forth)
+T}
+uc@bool@false@Terminal is known upper-case only
+we@str@^W@Word erase character
+xc@bool@false@Do not echo control chars as ^X
+xf@str@^S@XOFF (stop output) character
+xn@str@^Q@XON (start output) character
+.sp 6p
+_
+.TE
+.PP
+If no line speed is specified, speed will not be altered
+from that which prevails when 
+.PN getty 
+is entered.
+Specifying an input or output speed will override
+line speed for stated direction only.
+.PP
+Terminal modes to be used for the output of the message,
+for input of the login name,
+and to leave the terminal set as upon completion,
+are derived from the Boolean flags specified.
+If the derivation should prove inadequate,
+any (or all) of these three may be overridden
+with one of the
+.PN f0 ,
+.PN f1 ,
+or
+.PN f2
+numeric specifications, which can be used to specify
+(usually in octal, with a leading 0)
+the exact values of the flags.
+Local (new tty) flags are set in the top 16 bits
+of this (32-bit) value.
+.PP
+Should
+.PN getty
+receive a null character
+(presumed to indicate a line break), 
+it will restart using the table indicated by the
+.PN nx
+entry. If there is none, it will reuse its original table.
+.PP
+Delays are specified in milliseconds; the nearest possible
+delay available in the tty driver will be used.
+Should greater certainty be desired, delays
+with values 0, 1, 2, and 3 are interpreted as
+choosing that particular delay algorithm from the driver.
+.PP
+The
+.PN cl
+screen clear string may be preceded by a (decimal) number
+of milliseconds of delay required (a la termcap).
+This delay is simulated by repeated use of the pad character
+.PN pc .
+.PP
+The initial message, and login message,
+.PN im
+and
+.PN lm
+may include the character sequence
+.PN %h
+to obtain the host name, 
+.PN %t
+to obtain the terminal name, and 
+.PN %d
+to obtain the date.
+(\fB%%\fP obtains a single percent (%) character.)
+The host name is normally obtained from the system,
+but may be set by the
+.PN hn
+table entry.
+In either case, it can be edited with
+.PN he .
+The
+.PN he
+string is a sequence of characters; each character that is neither an 
+at sign (@) nor a number sign (#) is copied into the final host name.
+An at sign (@) in the
+.PN he
+string causes one character from the real host name to
+be copied to the final host name.
+A number sign (#) in the
+.PN he
+string causes the next character of the real host name
+to be skipped.
+Surplus at signs (@) and number signs (#) are ignored.
+.PP
+When 
+.PN getty
+executes the login process, given in the
+.PN lo
+string (usually 
+.PN /bin/login) , 
+it will have set
+the environment to include the terminal type, as indicated by the
+.PN tt
+string, if it exists.
+The
+.PN ev
+string can be used to enter additional data into the environment.
+It is a list of comma-separated strings, each of which
+should be of the form
+.IR name=value .
+.PP
+If a nonzero timeout is specified with
+.PN to ,
+then 
+.PN getty
+will exit within the indicated
+number of seconds, either having
+received a login name and passed control
+to
+.PN login ,
+or having received an alarm signal, and exited.
+This may be useful to hang up dial-in lines.
+.PP
+The
+.PN p8
+flag allows use of 8-bit characters.
+.PP
+The
+.PN pd
+flag turns off parity on output.  Output from
+.PN getty
+is even parity unless the
+.PN op
+flag, the
+.PN pd
+flag, or the
+.PN p8
+flag is specified.  The
+.PN ap
+flag is used to allow any parity on input.
+The
+.PN op(ep)
+flag may be specified with the
+.PN ap
+flag to allow any parity on input, but generate odd(even)
+parity on output.
+The parity on output is accomplished by
+using the eighth bit as the parity bit.
+.PN getty(8)
+does not check parity of input characters in RAW mode
+or 8-bit mode.
+.PP
+Terminals that are set up to operate in 8-bit mode should use
+.PN gettytab 
+entries which include the 
+.PN p8 
+flag.  If a terminal that is set up
+in 8-bit mode fails to use an appropriate 
+.PN gettytab 
+entry, the output from
+.PN getty
+and
+.PN login
+can appear as multinational characters.  This is due to the fact that
+.PN getty
+uses the eighth bit of characters to provide software generated parity.
+The software parity generation will transform certain ASCII characters
+into multinational characters.  Earlier releases of the ULTRIX operating
+system did not display these multinational characters, due to the lack of
+full 8-bit support in the terminal subsystem.
+.SH Restrictions
+.NXR "gettytab file" "restricted"
+Because some users insist on changing their default special
+characters, it is wise to define at least the 
+erase, kill, and interrupt characters in the
+.B default
+table.
+In all
+cases, # or CTRL/H typed in a login name will be treated as
+an erase character, and @ will be treated as a kill character.
+.PP
+.MS login 1
+destroys the environment, so there is no point
+setting it in
+.PN gettytab .
+.SH See Also
+termcap(5), getty(8)
+.NXE "gettytab file" "format"

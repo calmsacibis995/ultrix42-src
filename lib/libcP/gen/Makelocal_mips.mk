@@ -1,0 +1,6 @@
+# @(#)Makelocal_mips.mk	4.1	ULTRIX	7/3/90
+
+CFLAGS=	-O -YPOSIX -D_POSIX_SOURCE -D_XOPEN_SOURCE
+
+$(GENOBJS):
+	$(CCCMD) $<

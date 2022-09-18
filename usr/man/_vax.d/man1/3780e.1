@@ -1,0 +1,94 @@
+.\" SCCSID: @(#)3780e.1	8.1	9/11/90
+.TH 3780e 1 VAX
+.SH Name
+3780e \- spooler for the IBM 3780 emulator
+.SH Syntax
+.B 3780e
+[\fB\-C\fR]
+[\fB\-m\fR]
+[\fB\-a\fR]
+[\fB\-q\fR\|]
+[\fB\-t\fR[\fBb\fR]]
+[\fB\-S\fIfile\fR]
+[\fB\-#\fInum\fR] \fIfile...\fR
+[\fB\-o\fI file\fR]
+.SH Description
+.NXAM "3780e emulator spooler" "2780e daemon"
+.NXA "3780e emulator spooler" "2780e emulator spooler"
+.NXR "3780e emulator spooler"
+The
+.PN 3780e
+command puts the files named as arguments, 
+along with a single control file that guides each file's
+execution, into
+.PN usr/spool/rje 
+and calls the
+.PN 2780d
+program.
+This program
+sends the files to the IBM system.
+.SH Options
+The following options may be needed to
+format the data transmitted to an IBM system.
+.TP 5
+.B \-#
+Waits for
+.I num
+files to be received as output and gives 
+default file names in 
+the form 
+.I Ruseridpid.
+.TP
+.B \-a
+Send file as a priority job. Used only by the superuser. 
+This file will be placed ahead of the next regular file or at the
+end of other priority jobs.
+.TP 
+.B \-C
+Prevents the compression of spaces when files are sent.
+.TP 
+.B \-m
+Sends mail when file is sent and when
+output from submitted file is received successfully.
+.TP 
+.B \-o
+Names output file with specified file names.
+This option must be at the end of the command line.
+Anything listed after this option is interpreted as
+an output file name.
+.TP 
+.B \-q
+Prepares file for transmission and places it in 
+.PN /usr/spool/rje
+but does not call 
+.PN 2780d 
+to transmit it.
+.TP 
+.B \-S
+Send contents of the file to the IBM
+as a sign-on card.  If this option is not specified, then a
+default sign-on card in the spool area will be used.
+.TP 
+.B \-t
+Sends data in transparent mode. This option is used for files
+which contain special control or protocol characters.
+Use this option if the IBM system does
+not accept multiple 80 column card records in
+transparent mode.
+.TP 
+.B \-tb
+Transmits the file to IBM that
+accepts multiple 80 column card records in transparent
+mode.
+.SH Files
+.TP 23
+/etc/2780d  
+Program that transmits files
+.TP
+/usr/spool/rje 
+Spool directory
+.TP
+/usr/spool/rje/rjetemp.out 
+Temporary file for incoming files
+.SH See Also
+2780d(8), 2780e(1)

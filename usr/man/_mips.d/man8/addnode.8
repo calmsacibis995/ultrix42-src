@@ -1,0 +1,130 @@
+.\" SCCSID: @(#)addnode.8	8.1	9/11/90
+.TH addnode 8 
+.SH Name
+addnode \- add or change an entry in the nodes database 
+.SH Syntax 
+.B /etc/addnode 
+.I node
+[
+.I options
+]
+.SH Description
+.NXR "addnode command"
+.NXA "addnode command" "getnode command"
+.NXA "addnode command" "remnode command"
+.NXR "node" "changing data base entry"
+The
+.PN addnode 
+command
+adds a new node entry to the nodes database or modifies an existing 
+entry.  The nodes database is the one used by DECnet.  
+The
+.PN addnode 
+command defines the information that is necessary for your ULTRIX node 
+to be capable of down-line loading and up-line 
+dumping a particular target node.
+The node address is the address of the target node.  
+If the target node is a DECnet node, then 
+the node address is mandatory and the node name is optional.
+However, if the 
+target node is a non-DECnet node,
+for example, a terminal server, you should 
+specify only the node name and omit the node address.
+.PP
+If you do not specify an absolute pathname for secondary load, 
+tertiary load, system load, diagnostic load, or dump file, the default 
+path, 
+.PN /usr/lib/mop ,
+is used during the load or dump process.
+.PP
+A node address is a 
+decimal integer in the range of 1 to 1023 for single area networks, or 
+has the format 
+.I a.n 
+for multiarea networks, where 
+.I a
+is the network area number (a decimal integer in the range of 1 to 63) 
+and 
+.I n
+is the node number (a decimal integer in the range of 1 to 
+1023).
+.PP 
+The node name is the node name of the target node.
+.PP
+If the target node is a DECnet node,
+the node name is optional.  However, if 
+the target node is 
+a non-DECnet node, for example, a terminal server, the node name is 
+mandatory (and the node address should be ignored).
+.PP
+A node name can be from 1 to 6 
+alphanumeric characters, including at least 1 alphabetic character.
+.SH Options
+.NXR "addnode command" "options"
+.TP 5
+.B \-A
+Uses the specified host address 
+(next argument) as that of the target node.
+.TP 5
+.B \-D
+Creates an up-line memory dump of the target node in the specified
+file (next argument).
+.TP 5
+.B \-N
+Uses the specified name (next argument) as that of the target node.
+.TP 5
+.B \-c
+Uses the specified service and device number (UBA-n or QNA-n)
+as the circuit to the target node.
+.TP 5
+.B \-d
+Sends the specified diagnostic load image (next argument)
+to the target node.
+.TP 5
+.B \-h
+Uses the specified address (next argument) as the Ethernet
+address of the target node.
+.TP 5
+.B \-l
+Sends the specified system load image (next argument) to the target node.
+.TP 5
+.B \-p
+Uses the specified service and password (next arguments) 
+in accessing the target node.
+.TP 5 
+.B \-s
+Sends the specified secondary load file (next argument) to the target node.
+.TP 5
+.B \-t
+Sends the specified tertiary load file (next argument) to the target node.
+.SH Examples
+.NXR(e) "node" "changing data base entry"
+.EX
+% /etc/addnode mynode \-h aa\-00\-03\-00\-01\-19 \\ <RET>
+.br
+-s /usr/download/secondary \\ <RET>
+.br
+-t /usr/download/tertiary \\ <RET>
+.br
+-l system <RET>
+.EE
+.PP
+This command adds the non-DECnet, node mynode,
+to the nodes database, which has 
+the Ethernet physical address aa-00-03-00-01-19. 
+This command also specifies the file names for the secondary loader, 
+the tertiary loader, and the system loader. 
+Note that a path name is not specified for the system loader;
+consequently, the 
+loader uses the default path 
+.PN /usr/lib/mop 
+when searching for that file.
+.EX
+# /etc/addnode 44.71 \-h aa\-00\-03\-00\-01\-20 <RET>
+.EE
+.PP
+This command adds the DECnet node 44.71 to the nodes database,
+which has the 
+Ethernet physical address aa-00-03-00-01-20. 
+.SH See Also
+ccr(8), getnode(8), load(8), mop_mom(8), remnode(8), trigger(8) 

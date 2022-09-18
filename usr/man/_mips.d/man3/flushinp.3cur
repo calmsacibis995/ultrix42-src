@@ -1,0 +1,17 @@
+.TH flushinp 3cur 
+.NXR "flushinp subroutine"
+.SH Name
+flushinp \- discard typeahead
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B int flushinp(\|)
+.SH Description
+Any typeahead input that has not been read by the program is discarded.
+.SH Return Values
+The
+.PN flushinp
+function returns OK on success and ERR on error.
+.SH See Also
+typeahead(3cur)

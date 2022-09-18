@@ -1,0 +1,35 @@
+.\" SCCSID: @(#)getc.3f	8.1	9/11/90
+.TH getc 3f VAX "" Unsupported
+.SH Name
+getc, fgetc \- get a character from a logical unit
+.SH Syntax
+.B integer function getc (char)
+.br
+.B character char
+.sp 1
+.B integer function fgetc (lunit, char)
+.br
+.B character char
+.SH Description
+.NXR "getc subroutine (FORTRAN)"
+.NXR "fgetc subroutine (FORTRAN)"
+.NXR "stream" "getting character from"
+These routines return the next character from a file associated with a
+FORTRAN logical unit, bypassing normal FORTRAN I/O. The
+.PN getc
+function reads from logical unit 5, 
+usually connected to the control terminal input.
+.PP
+The value of each function is a system status code. Zero indicates no
+error occurred on the read.  A \-1 indicates end of file was detected.
+A positive value will be either
+an ULTRIX system error code or an 
+.PN f77
+I/O error
+code.  For further information, see 
+.MS perror 3f .
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+intro(2), getc(3s), perror(3f)

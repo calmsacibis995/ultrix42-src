@@ -1,0 +1,169 @@
+.TH ls 1
+.SH Name
+ls \- list and generate statistics for files
+.SH Syntax
+.B ls 
+[
+.I options
+]
+.I name ... 
+.SH Description
+.NXR "ls command (general)"
+.NXR "directory" "listing"
+.NXR "file" "listing information"
+For each directory argument,
+.PN ls
+lists the contents of the directory.  For each file
+argument,
+.PN ls
+repeats the file name and gives any other information you
+request with the options available.  By default, the list
+is sorted alphabetically.
+When no argument is given, the current directory is listed.
+When several arguments
+are given, files are listed first,
+followed by directories and the files
+within each directory.
+Options are listed below.
+.SH Options
+.NXR "ls command (general)" "options"
+.IP \-1 5
+Displays one entry per line.  This is the
+default when output is not to a terminal.
+.IP \-a 
+Displays all entries including those beginning with a period (.).
+.IP \-C 
+Forces multicolumn output for pipe or filter.  This is the default when the output
+is to a terminal.
+.IP \-c 
+Uses time of last file status change (ctime), reflecting file
+creation, mode, etc., for sorting (with the 
+.B \-t 
+option) or
+printing (with the 
+.B \-l 
+option) rather than the time of file
+modification or access. See also the 
+.B \-t 
+and 
+.B \-u 
+options.
+.IP \-d 
+Displays names of directories only, not contents.  
+Use this option
+with \fB\-l\fR to get the status of
+a directory.
+.IP \-F 
+Marks directories with trailing slash (/), sockets
+with a trailing equal sign (=), symbolic links with a trailing 
+at sign (@),
+and executable files with a trailing asterisk (*).  
+.IP \-f 
+Displays names in the order they exist in directory.  
+For further information, see 
+.MS dir 5 .
+Entries beginning
+with a period (.) are also listed.  This option overrides the
+\fB\-l, \-t, \-s,\fR and \fB\-r\fR options.
+.IP \-g 
+Displays assigned group ID (used with 
+.B \-l
+only).  Default is assigned owner ID.
+.IP \-i 
+Displays the i-number for each file in the first column
+of the report.
+.IP \-L 
+Lists the information, if the file is a symbolic link, for
+the file or directory the link references rather than that
+for the link itself.
+.IP \-l 
+Lists the mode, number of links, owner,
+size in bytes, and time of last modification (mtime) for each file.
+If the file is a special file, the size field 
+contains the major and minor device numbers instead of the size.
+If the file is
+a symbolic link, the pathname of the linked-to file is printed,
+preceded by ``\->''.
+.IP
+The mode field consists of 11 characters.  The first
+character indicates the type of entry:
+.IP
+\fBd\fR if the entry is a directory
+.br
+\fBb\fR if the entry is a block-type special file
+.br
+\fBc\fR if the entry is a character-type special file
+.br
+\fBl\fR if the entry is a symbolic link
+.br
+\fBs\fR if the entry is a socket
+.br
+\fB\-\fR if the entry is a plain file
+.IP
+The next 9 characters are interpreted as three sets of
+three characters each.  The first set of three characters
+refers to file-access permissions for the user; the next
+set, for the user-group; and the last set, for all others.
+The permissions are indicated as follows:
+.IP
+\fBr\fR if the file is readable
+.br
+\fBw\fR if the file is writable
+.br
+\fBx\fR if the file is executable
+.br
+\fB\-\fR if the indicated permission is not granted.
+.IP
+The group-execute permission character is given as \fBs\fR
+if the file has the set-group-id bit set; likewise, the
+user-execute permission character is given as \fBs\fR if the
+file has the set-user-id bit set.
+.IP
+The last character of the mode (normally `x' or `\-') is
+\fBt\fR if the 1000 bit of the mode is on.  See
+.MS chmod 2
+for the meaning of this mode.
+.IP \-q 
+Forces the printing of nongraphic characters in file names as the
+question mark character (?).
+This is the default when output is to a
+terminal.
+.IP \-R 
+Recursively lists all subdirectories.  
+.IP \-r 
+Sorts entries in reverse alphabetic or time order.  
+.IP \-s 
+Displays the size in kilobytes of each file.
+This is the first item listed in each entry.
+.IP \-t 
+Sorts by time modified (most recently modified first) instead of
+by name. See also the 
+.B \-c 
+and 
+.B \-u 
+options.
+.IP \-u 
+Uses the time of last access (atime) instead of last modification for
+sorting (with the \fB\-t\fR option) or printing
+(with the \fB\-l\fR option).
+.SH Restrictions
+.NXR "ls command (general)" "restricted"
+The output device is assumed to be 80 columns wide.
+.PP
+New line and tab are considered printing characters in file names.
+.PP
+The option setting based on whether the output is a teletype
+is undesirable as "ls \-s" is much different than "ls \-s |lpr".
+On the other hand, not doing this setting would make old shell
+scripts which used
+.B ls
+almost certain to fail.
+.SH Files
+.TP 15
+.PN /etc/passwd
+Used to obtain user id's for \fBls \-l\fR
+.TP 15
+.PN /etc/group
+Used to obtain group id's for \fBls \-g\fR
+.SH See Also
+stat(2)

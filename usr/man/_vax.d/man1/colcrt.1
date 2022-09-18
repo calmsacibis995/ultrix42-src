@@ -1,0 +1,53 @@
+.\" SCCSID: @(#)colcrt.1	8.1	9/11/90
+.TH colcrt 1
+.SH Name
+colcrt \- filter nroff output for CRT previewing
+.SH Syntax
+.B colcrt
+[\fB\-\fR] [\fB\-2\fR] [\|\fIfile...\fR\|]
+.SH Description
+.NXR "colcrt command"
+.NXA "nroff text processor" "colcrt command"
+.NXA "colcrt command" "ul command"
+.NXR "nroff text processor" "previewing output"
+The
+.PN colcrt
+command
+provides virtual half-line and reverse line feed sequences
+for terminals without such capability, and on which overstriking
+is destructive.
+Half-line characters and underlining (changed to dashing `\-')
+are placed on new lines in between the normal output lines.
+.SH Options
+.IP \fB\-\fR 0.3i 
+Suppresses all underlining.
+It is especially useful for previewing
+.I allboxed
+tables from
+.MS tbl 1 .
+.IP \fB\-2\fR 0.3i
+Causes half-lines to be printed,
+double spacing the output.
+Normally, a minimal space output format
+is used which will suppress empty lines.
+The program never suppresses two consecutive empty lines, however.
+The
+.B \-2
+option is useful for sending output to the line printer when the output
+contains superscripts and subscripts which would otherwise be invisible.
+.SH Examples
+A typical use of
+.PN colcrt
+would be:
+.EX
+tbl exum2.n | nroff \-ms | colcrt \- | more
+.EE
+.SH Restrictions
+Can't back up more than 102 lines.
+.PP
+General overstriking is lost;
+as a special case `|' overstruck with `\-' or underline becomes `+'.
+.PP
+Lines are trimmed to 132 characters.
+.SH See Also
+col(1), more(1), nroff(1), ul(1)

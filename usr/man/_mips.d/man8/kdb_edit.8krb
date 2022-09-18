@@ -1,0 +1,57 @@
+.TH kdb_edit 8krb
+.SH Name
+kdb_edit \- Kerberos database editing utility
+.SH Syntax
+\fB/var/dss/kerberos/bin/kdb_edit\fP [\fI-n\fP]
+.SH Description
+.NXR "Kerberos routines" "kdb_edit"
+You use the
+.PN kdb_edit 
+command to create or change principals stored in the Kerberos
+database.  When you invoke \f(CWkdb_edit\fP,
+the command prompts you for the Kerberos database master key and verifies 
+that the key is
+the same as the master key of the Kerberos database.  If the \fI-n\fP 
+option is used,
+the key is fetched from the master key file.
+.PP
+Once the master key is verified, \f(CWkdb_edit\fP begins a loop that
+prompts you for the principal and instance name to modify. If
+\f(CWkdb_edit\fP does not find an entry, you can create one. Once
+\f(CWkdb_edit\fP finds or creates an entry, you can set the password,
+expiration date, maximum ticket lifetime, and attributes of a principal.
+.PP
+The \f(CWkdb_edit\fP command displays, in brackets, the default values for the
+expiration dates, maximum ticket lifetimes, and attributes.
+You can select any default by pressing the return key. The
+\f(CWkdb_edit\fP command indicates that you have successfully created
+or changed an entry by displaying the message, "Edit O.K."
+.PP
+There is no default password for a principal.  However, if you enter RANDOM as
+the password for a principal, \f(CWkdb_edit\fP selects a random Data
+Encryption Standard (DES) key for the principal.
+.PP
+Whenever the 
+.PN ndbm
+Kerberos database is changed by
+.PN kdb_edit ,
+the modification time of 
+.PN /var/dss/kerberos/dbase/principal.ok
+is updated.  The
+.PN principal.ok
+file indicates the age of the database.
+.SH Options
+.TP 7
+.B \-n
+If you specify the command with
+the \fI-n\fP option, \f(CWkdb_edit\fP fetches the key from the master
+key file.
+.SH Files
+.TP
+.PN /var/dss/kerberos/dbase/principal.pag
+.TP
+.PN /var/dss/kerberos/dbase/principal.dir
+.TP
+.PN /var/dss/kerberos/dbase/principal.ok
+.SH See Also
+kdb_init(8krb), kstash(8krb), kdb_util(8krb), kdb_destroy(8krb) 

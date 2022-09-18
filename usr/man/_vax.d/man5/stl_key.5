@@ -1,0 +1,161 @@
+.TH stl_key 5
+.SH Name
+stl_key \- setld kit manufacturing key file
+.SH Description
+.NX R "kits" "manufacturing key file format"
+.NX R "setld" "kits manufacturing key file format"
+The manufacturing key files are used by the software kitting program
+.PN kits
+in producing software distribution packages in
+.PN setld
+format.
+.PP
+A key file has a global data section and a subset
+descriptor section. The sections are separated by a line that
+is empty except for the %%
+character sequence.
+.PP
+The global section contains the product level attributes of the
+product. Comments are permitted
+in this section. They begin with the number sign (#)
+character and end at the next newline character.
+Attributes are specified by giving the attribute key,
+an equal sign (=), and a value for the attribute.
+There must be no white space surrounding
+the equals sign (=). There are five attributes that 
+must be present with non-null values. These are
+.I NAME,
+.I CODE,
+.I VERS,
+.I MI,
+and
+.I ROOT.
+An explanation of each of the attributes follows:
+.RS 3
+.TP 10
+NAME
+The name of the product. The value for
+.I NAME
+is a string of up to 40
+characters.
+.TP
+CODE
+The 3-character product code for the product, for example, ULT.
+.TP
+VERS
+The 3-digit version code for the product, for example, 040.
+.TP
+MI
+The pathname of the master inventory file for the product.
+.TP
+ROOT
+A flag with values of 0 or 1. It is used to determine if a ROOT image
+checksum should be computed for the product image file. There is no
+ROOT image in any product other than ULTRIX. Set it to 0.
+.TP
+RXMAKE
+A flag with values of 0 or 1. Setting it to 0 suppresses the manufacture
+of subset images for distribution on RX50 diskettes. Omitting this
+attribute from the key file will cause the
+.PN kits
+program to assume a default value of 1. Digital 
+recommends setting it to 0.
+.TP
+COMPRESS
+A flag with values of 0 or 1. Setting it to 1 causes the subset 
+images to be compressed using the
+.PN compress
+utility, thereby saving space on the distribution media. Setting it to 0
+suppresses compression. Omitting this attribute from the key file
+will cause the 
+.PN kits
+program to assign a default value of 0.
+.RE
+.PP
+The subset descriptor section contains one subset descriptor for
+each subset in the product. There is one subset descriptor per line
+in this section and comments are not permitted.
+.PP
+A subset descriptor contains subset-specific
+attributes in four fields separated by TAB (CTRL/I)
+characters. A description of each field follows:
+.RS 3
+.TP 10
+SUBSET
+This field contains the name of the subset being described by the
+descriptor. The subset name is composed of the product code, name and
+version code.
+.TP
+DEPENDENCIES
+A list of subsets on which the described subset depends. If there
+are no such subsets, the period character (.) is used. 
+Multiple subset dependencies are
+separated by a vertical bar character (|).
+.TP
+FLAGS
+A subset flags value. This is an integer. Bit 0 is used to mark
+the subset as irremovable. If bit 0 is set,
+.PN setld
+can never delete
+the subset. Bit 1 is used to mark the 
+subset as optional, otherwise it is mandatory
+and must be installed from the media when encountered by
+.PN setld .
+.TP
+DESCRIPTION
+This is a description of the subset in 40 or fewer characters.
+It is used in the menu that
+.PN setld
+presents to a user installing the software. If spaces are desired in
+this field, the field must be enclosed in single quotes.
+.RE
+.PP
+The subset descriptors must be listed in the order in
+which the subsets are installed by
+.PN setld .
+.SH Restrictions
+The required attributes and default values are not optimal.
+.PP
+Comments in the subset descriptor section will cause serious
+problems when encountered by the
+.PN kits
+program.
+.PP
+TAB formatting in the subset descriptors is tightly enforced by
+the
+.PN kits
+program.
+.SH Examples
+This is an example key file:
+.EX
+    #	ULW400.k -
+    #		ULTRIX WS V4.0 Server 2/2 (VAX) Mfg Key File
+    #
+    #	"@(#)ULW400.k	2.2 (ULTRIX) 4/12/89"
+    #
+    #	000	02-mar-1989	ccb
+    #	Copy from V2.0 (VAX) Sources
+    #	Revision update for V4.0
+
+    #% PRODUCT-LEVEL ATTRIBUTES
+    NAME='ULTRIX Worksystem Software V4.0'
+    CODE=UWS
+    VERS=400
+    MI=ULT400.mi
+    ROOT=0
+    RXMAKE=0
+    COMPRESS=1
+
+    #% SUBSET-LEVEL ATTRIBUTES
+    %%
+    UWSX11400	ULTINET400	0	'X11/DECwindows User Environment'
+    UWSFONT400	UWSX11400	0	'X11/DECwindows 75dpi Fonts'
+    UWSFONT15400	.	2	'X11/DECwindows 100dpi Fonts'
+    UWSDECW400	.	2	'Optional DECwindows Applications'
+    UWSXDEV400	ULTPGMR400	2	'Worksystems Development Software'
+    UWSMAN400	ULTDCMT400	2	'UWS Manual Pages'
+.EE
+.SH See Also
+kits(1), stl_comp(5), stl_ctrl(5), stl_image(5), setld(8)
+.br
+.I "Guide to Preparing Software for Distribution on ULTRIX Systems"

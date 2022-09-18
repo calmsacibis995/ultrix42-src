@@ -1,0 +1,82 @@
+.TH uuid_gen 1ncs
+.\".if '\nv'1' .TH UUID_GEN 1 domain
+.\".if '\nv'4' .TH UUID_GEN 8 domain
+.\".if '\nv'5' .TH UUID_GEN 1M domain
+.\".if !\nh  \{
+.SH Name
+uuid_gen \- UUID generating program
+.SH Syntax
+\fB/etc/ncs/uuid_gen\fR [ \fB\-c\fR ]
+.\"[ \fB\-p\fR ]
+[ \fB\-C\fR ]
+.\"[ \fB\-P\fR ]
+[ \fB\-version\fR ] \}
+.SH Description
+The
+.PN uuid_gen
+program generates Universal Unique Identifiers (UUIDs).
+Without options, it generates a character-string representation of a UUID.
+The \fB\-c\fR option enables you to generate a template for Network Interface
+Definition Language (NIDL) files.
+.NXR "Universal Unique Identifiers" "uuid_gen"
+The \fB\-C\fR option enables you to generate source-code representations of
+UUIDs, suitable for initializing variables of type 
+.PN uuid_$t .
+.SH Options
+.TP 1i
+\fB\-c\fR
+Generate a template,
+including a UUID attribute,
+for an interface definition in the C syntax of NIDL.
+.\".TP
+.\"\fB\-p\fR
+.\"Generate a template,
+.\"including a UUID attribute,
+.\"for an interface definition in the Pascal syntax of NIDL.
+.TP
+\fB\-C\fR
+Generate a C source-code representation of a UUID.
+.\".TP
+.\"\fB\-P\fR
+.\"Generate a Pascal source-code representation of a UUID.
+.TP
+\fB\-version\fR
+Display the version of the Network Computing Kernel (NCK) that this 
+.PN uuid_gen
+belongs to but do not generate a UUID.  (NCK is part of the Network
+Computing System (NCS) on which DECrpc is based.)
+.SH Examples
+Generate a character-string representation of a UUID:
+.EX  
+\fB$ /etc/ncs/uuid_gen\fP
+34dc23469000.0d.00.00.7c.5f.00.00.00
+.EE    
+Generate a template for an interface definition in the C syntax of NIDL:
+.EX
+\fB$ /etc/ncs/uuid_gen\0\-c\fP
+%c
+[
+uuid(34dc239ec000.0d.00.00.7c.5f.00.00.00),
+version(1)
+]
+interface INTERFACENAME {
+
+}
+.EE
+Generate a template for an interface definition in the C syntax of NIDL.
+Redirect the output to the file 
+.PN myfile.idl .
+.EX
+\fB$ /etc/ncs/uuid_gen\0\-c >myfile.idl\fP
+.EE
+Generate a C source-code representation of a UUID:
+.EX  
+\fB$ /etc/ncs/uuid_gen\0\-C\fP
+= { 0x34dc23af,
+0xf000,
+0x0000,
+0x0d,
+{0x00, 0x00, 0x7c, 0x5f, 0x00, 0x00, 0x00} };
+.EE
+.SH See Also
+\fIDECrpc Programming Guide\fP

@@ -1,0 +1,103 @@
+.\" SCCSID: @(#)quotacheck.8	8.1	9/11/90
+.TH quotacheck 8 
+.SH Name
+quotacheck \- file system quota consistency checker
+.SH Syntax
+.B /etc/quotacheck
+[
+.B \-v
+] [
+.B \-f
+]
+.I filesystem ...
+.br
+.B /etc/quotacheck
+[
+.B \-v
+]
+.B \-a
+.SH Description
+.NXR "quotacheck command"
+.NXAM "quotacheck command" "quota system call"
+.NXAM "quotacheck command" "setquota system call"
+.NXA "quotacheck command" "quotaon command"
+.NXA "quotacheck command" "repquota command"
+.NXR "disk quota" "checking"
+The
+.PN quotacheck
+command examines each file system,
+builds a table of current disc usage,
+and compares this table against that stored
+in the disc quota file for the file system.
+If 
+.PN quotacheck 
+detects any inconsistencies, it updates both the
+quota file and the current system copies of the
+incorrect quotas.  Inconsistencies occur only
+if an active file system is checked.
+.PP 			
+Normally, 
+.PN quotacheck
+returns a warning if it cannot find a
+valid quota file.  If you use the 
+.PN \-f 
+option, 
+.PN quotacheck 
+creates a quota file automatically and
+then performs its normal functions.	
+.PP
+If you use the
+.PN \-a
+flag in place of any file system
+name, 
+.PN quotacheck
+checks all the file systems listed in 
+.PN /etc/fstab
+to be read-write with disc quotas.
+.PP
+Normally
+.PN quotacheck
+reports only modified quotas. If the
+.PN \-v
+option is supplied,
+.PN quotacheck
+will indicate the calculated disc quotas for each
+user on a particular file system.
+.PP
+The
+.PN quotacheck
+command expects each file system to be checked to have a
+quota file named
+.PN quotas
+in the root directory.  If none is present, 
+.PN quotacheck
+will ignore the file system.
+.NXR "quotas file" "quotacheck command and"
+.PP
+The
+.PN quotacheck 
+command is normally run at boot time from the 
+.PN /etc/rc.local
+file, 
+before enabling disc quotas with
+.MS quotaon 8 .
+For further information, see 
+.MS rc 8 .
+.PP
+The
+.PN quotacheck
+command
+accesses the raw device in calculating the actual
+disc usage for each user.  Thus, the file systems
+checked should be quiescent while
+.PN quotacheck
+is running.
+.SH Files
+.TP 15
+.PN /etc/fstab
+Default file systems
+.SH See Also
+quota(2), setquota(2), quotaon(8)
+.br
+``Disk Quotas in a UNIX Environment,'' 
+.I "ULTRIX Supplementary Documents, Volume 3: System Manager"

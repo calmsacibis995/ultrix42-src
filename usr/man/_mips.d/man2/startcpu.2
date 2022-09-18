@@ -1,0 +1,40 @@
+.TH startcpu 2
+.SH Name
+startcpu \- start a CPU
+.SH Syntax
+.B startcpu(\fIcpunumber\fP)
+.br
+int \fIcpunumber\fP;
+.SH Description
+The 
+.PN startcpu 
+system call starts the CPU specified by 
+.I cpunumber. 
+.NXR "SMP" "startcpu"
+Any non-boot CPU can be started using this system call. Only a superuser
+can execute this system call. 
+.SH Return Values
+The
+.PN startcpu 
+call returns 0 if the CPU was started successfully, or else it returns
+-1 and sets errno appropriately.
+.SH Diagnostics
+.TP 15
+[EPERM]
+The caller is not a superuser
+.TP 15
+[EBUSY]
+The CPU is already running
+.TP 15
+[ENODEV]
+No CPU present by the given 
+.I cpunumber
+.TP 15
+[EINVAL]
+Invalid value for 
+.I cpunumber. 
+A valid
+.I cpunumber
+is between 0 and 31.
+.SH See Also
+stopcpu(2), startcpu(8), stopcpu(8) 

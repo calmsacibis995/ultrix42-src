@@ -1,0 +1,53 @@
+.\" SCCSID: @(#)expand.1	8.1	9/11/90
+.TH expand 1
+.SH Name
+expand, unexpand \- expand tabs to spaces, and vice versa
+.SH Syntax
+.B expand
+[\-\fItabstop\fR\|] [\-\fItabn...\fR\|] [\|\fIfile...\fR\|]
+.br
+.B unexpand
+[\fB\-a\fR] [\|\fIfile...\fR\|]
+.SH Description
+.NXR "expand command"
+.NXR "unexpand command"
+.NXA "expand command" "fold command"
+.NXR "file" "changing tabs to blanks in"
+.NXR "printer" "changing tabs to blanks for"
+.NXR "tab character" "changing to spaces"
+The
+.PN expand
+command processes the named files or the standard input writing
+the standard output with tabs changed into blanks.
+Backspace characters are preserved into the output and decrement
+the column count for tab calculations.
+The
+.PN expand
+command is useful for pre-processing character files
+(before sorting, looking at specific columns, and so forth) that
+contain tabs.
+.PP
+If a single
+.I tabstop
+argument is given then tabs are set
+.I tabstop
+spaces apart instead of the default 8.
+If multiple tabstops are given then the tabs are set at those
+specific columns.
+.PP
+The
+.PN unexpand
+command
+puts tabs back into the data from the standard input or the named
+files and writes the result on the standard output.
+By default only leading blanks and tabs
+are reconverted to maximal strings of tabs.  If the
+.B \-a
+option is given, then tabs are inserted whenever they would compress the
+resultant file by replacing two or more characters.
+.SH Options
+.IP \fB\-#\fR 5
+Sets tabstops the specified number of spaces (#) apart.  
+.IP \fB\-a\fR 
+When used with unexpand, compresses file by inserting tabs for
+two or more spaces.  

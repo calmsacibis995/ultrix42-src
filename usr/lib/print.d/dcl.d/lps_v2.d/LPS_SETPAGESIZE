@@ -1,0 +1,9 @@
+
+% LPS$$SETPAGESIZE device control library module
+% Version V1.2
+%
+% Copyright ) 1987 by DEC, Maynard, Mass.  All rights reserved.
+
+% This module expects the stack to be: page_size
+
+    /lps$page-size exch def

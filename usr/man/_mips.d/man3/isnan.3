@@ -1,0 +1,15 @@
+.TH isnan 3
+.SH Name
+isnan \- test for NaN
+.SH Syntax
+.B #include <math.h>
+.PP
+.B int isnan (\fIx\fP)
+.br
+.B double \fIx\fP;
+.SH Description
+The
+.PN isnan
+function returns 1 if \fIx\fP is NaN (the IEEE floating point reserved
+not-a-number value) and zero otherwise.  On VAX, the return value is
+always zero.

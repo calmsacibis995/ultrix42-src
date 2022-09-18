@@ -1,0 +1,230 @@
+.TH mh-mail 5mh
+.SH Name
+mh-mail \- message format for MH message system
+.SH Description
+.NXR "mh-mail formatter"
+.NXR "MH system" "message formatter"
+MH processes messages in a particular format.
+Although neither Bell nor Berkeley mailers 
+produce message files in the format that MH prefers, 
+MH can read message files in that format.
+.PP
+Each user has a maildrop that initially receives
+all messages processed by 
+.MS post 8mh .
+.PP
+The
+.PN inc
+command reads from the maildrop and 
+incorporates the new messages found there 
+into the user's own
+.PN +inbox
+folder.
+The maildrop consists of one or more messages.
+.PP
+Messages are expected to consist of lines of text.
+Graphics and binary data are not handled.
+No data compression is accepted.
+All text is in ASCII 7-bit data.
+.PP
+The general memo framework of RFC 822 is used.
+A message consists of a block of information in a rigid format,
+followed by general text with no specified format.
+The rigidly-formatted first part of a message is called the message header;
+the free-format portion is called the body.
+The header must always exist, but the body is optional.
+These parts are separated by a blank line or by a line of dashes.  
+The following example shows the standard default MH mail header:
+.EX
+To:
+cc:
+Subject:
+--------
+.EE
+.PP
+The header is composed of one or more header items.
+Each header item can be viewed as a single logical line 
+of ASCII characters.
+If the text of a header item extends across several real lines, 
+the continuation lines are indicated by leading spaces or tabs.
+.PP
+Each header item is called a component and is composed of a
+keyword or name, along with associated text.  
+The keyword begins at the left margin, 
+and is terminated by a colon (:).
+It cannot contain spaces or tabs, 
+and cannot exceed 63 characters, as specified by RFC 822.
+.PP
+The text for most formatted components,
+such as 
+\f(CWDate:\fR
+and 
+\f(CWMessage-Id:\fR,
+is produced automatically.
+The user enters address fields such as
+\f(CWTo:\fR 
+and 
+\f(CWcc:\fR, and the 
+\f(CWSubject:\fR field.
+Internet addresses are assigned mailbox names 
+and host computer specifications.
+The general format is 
+\f(CWlocal@domain\fR, 
+for example, 
+\f(CWMH@UCI\fR
+or 
+\f(CWMH@UCI-ICSA.ARPA\fR.
+A comma (,) separates multiple addresses.
+A missing host/domain is assumed to be the local host/domain.
+.PP
+A blank line (or a line of dashes) signals that all following text 
+up to the end of the file is the body of the message.  
+No formatting is expected or enforced within the body.
+.PP
+The following is a list of header components 
+that are considered meaningful to MH programs:
+.TP 10
+\f(CWDate:\fR
+Added by 
+.PN post , 
+contains the date and time of the message's entry 
+into the transport system.
+.TP 10
+\f(CWFrom:\fR
+Added by 
+.PN post , 
+contains the address of the author or authors 
+(there may be more than one if a 
+\f(CWSender:\fR 
+field is present).
+Replies are typically directed to addresses in the
+\f(CWReply-To:\fR
+or
+\f(CWFrom:\fR 
+field.
+The former has precedence, if present.
+.TP 10
+\f(CWSender:\fR
+Added by 
+.PN post
+in the event that the message already has a 
+\f(CWFrom:\fR
+line.
+This line contains the address of the actual sender.
+Replies are never sent to addresses in the 
+\f(CWSender:\fR
+field.
+.TP 10
+\f(CWTo:\fR
+Contains addresses of primary recipients.
+.TP 10
+\f(CWcc:\fR
+Contains addresses of secondary recipients.
+.TP 10
+\f(CWBcc:\fR
+Contains the addresses of recipients who receive 
+blind carbon copies of the message.
+The 
+\f(CWBcc:\fR
+line does not appear on the message as sent,
+so these recipients are not listed.
+Recipients in the 
+\f(CWBcc:\fR 
+field receive a copy of the message with a minimal header.
+MH uses an encapsulation method for blind copies; see
+.MS send 1mh .
+.TP 10
+\f(CWFcc:\fR
+Causes
+.PN post
+to copy the message into the specified folder for the sender, 
+if the message was successfully given to the transport system.
+.TP 10
+\f(CWMessage-ID:\fR
+A unique message identifier added by
+.PN post , 
+if the 
+.B \-msgid
+flag is set.
+.TP 10
+\f(CWSubject:\fR
+Sender's commentary.  
+It is displayed by
+.PN scan .
+.TP 10
+\f(CWIn-Reply-To:\fR
+A commentary line added by
+.PN repl
+when replying to a message.
+.TP 10
+\f(CWResent-Date:\fR
+Added by
+.PN post 
+when a message is re-distributed.
+.TP 10
+\f(CWResent-From:\fR
+Added by 
+.PN post
+when a message is re-distributed.
+.TP 10
+\f(CWResent-To:\fR
+New recipients for a message re-sent by
+.PN dist .
+.TP 10
+\f(CWResent-cc:\fR
+New secondary recipients for a message re-sent by
+.PN dist .
+.TP 10
+\f(CWResent-Bcc:\fR
+New blind carbon copy recipients for a message re-sent by
+.PN dist .
+.TP 10
+\f(CWResent-Fcc:\fR
+Places a copy of a message re-sent by
+.PN dist
+into the sender's folder.
+.TP 10
+\f(CWResent-Message-Id:\fR
+A unique identifier of a message re-sent by
+.PN dist .
+This is appended by 
+.PN post
+if the 
+.B \-msgid
+flag is set.
+.TP 10
+\f(CWResent:\fR
+Annotation added by
+.PN dist
+when the 
+.B \-annotate
+option is specified.
+.TP 10
+\f(CWForwarded:\fR
+Annotation added by
+.PN forw
+when the
+.B \-annotate
+option is specified.
+.TP 10
+\f(CWReplied:\fR
+Annotation added by
+.PN repl
+when the 
+.B \-annotate
+option is specified.
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN /usr/spool/mail/$USER
+Standard location of mail drop.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+.I "Standard for the Format of ARPA Internet Text Messages" 
+(RFC 822)

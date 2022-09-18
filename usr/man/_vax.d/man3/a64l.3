@@ -1,0 +1,69 @@
+.\" SCCSID: @(#)a64l.3	8.1	9/11/90
+.TH a64l 3
+.SH Name
+a64l, l64a \- convert long integer and base-64 ASCII string
+.SH Syntax
+.B long a64l (s)
+.br
+.B char \(**s;
+.PP
+.B char \(**l64a (l)
+.br
+.B long l;
+.SH Description
+.NXR "a64l subroutine"
+.NXR "l64a subroutine"
+.NXR "ASCII string" "converting long integer to"
+These functions are used to maintain numbers stored in base-64
+ASCII characters.
+This is a notation by which
+long integers can be represented by up to six characters; each character
+represents a ``digit'' in a radix-64 notation.
+.PP
+The characters used to represent ``digits''
+are
+.B .
+for 0,
+.B /
+for 1,
+.B 0
+through
+.B 9
+for 2\-11,
+.B A
+through
+.B Z
+for 12\-37, and
+.B a
+through
+.B z
+for 38\-63.
+.PP
+The
+.PN a64l
+subroutine
+takes a pointer to a null-terminated base-64 representation and returns
+a corresponding
+.B long
+value.
+If the string pointed to by
+.I s\^
+contains more than six characters,
+.PN a64l
+will use the first six.
+.PP
+The
+.PN l64a
+subroutine takes a
+.B long
+argument and returns a pointer
+to the corresponding base-64 representation.
+If the argument is 0,
+.PN l64a
+returns a pointer to a
+null string.
+.SH Restrictions
+The value returned by
+.PN l64a
+is a pointer into a static buffer, the contents of which are
+overwritten by each call.

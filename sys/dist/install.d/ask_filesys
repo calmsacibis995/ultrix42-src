@@ -1,0 +1,855 @@
+#!/bin/sh
+#
+# @(#)ask_filesys	4.5	(ULTRIX)	3/18/91 
+#
+# Usage: sh ask_filsys
+#
+# Description: During the advanced installation, the user will be asked
+#		about how to arrange the file system for /usr, /usr/users,
+#		var, swap area, and dump area.  
+#		This shell script probes the disk which the user want to
+#		install and figure out which partitions are suitable for.
+#		If the default partition is available.  It will show the
+#			default partition for the user.
+#
+# 008 - Mar, 1991 - Jon Wallace
+#	Moved read and write checks under var filesystem section
+#
+# 007 - Jan, 1991 - Jon Wallace
+#	Changed text to describe the current name of the ULTRIX instal-
+#	lation guide.
+#
+# 006 - Aug 31, 1990 - Jon Wallace
+#	Put in fix to echo the read into a variable to remove embedded
+#	spaces.
+#
+# 005 - Aug 09, 1989 - Jon Wallace
+#	Added confirmation query when returning from finder in all
+#	instances.
+#
+# 004 - Jun 01, 1989 - Jon Wallace
+#	Added variable ROUTINE which allows finder to page through large
+#	menus of disks at installation time.
+#
+# 003 - Jan 26, 1988 - Tung-Ning Cherng
+#	Allowed using the existing partition of the system disk.
+#
+# 002 - May, 1987  - Donnie Cherng
+#		Added the location of the var file system request.
+# 
+# 001 - July, 1986    - Tungning Cherng
+#		Probe the disks and partitions to show the table for the user.
+#
+# 000 - June, 1986    - Tung-Ning Cherng created
+#
+#	Edited prompts on Aug. 4, 1986 by Al Wojtas
+#
+LL="
+"
+ERMSG11=" ${LL}You have used all of the available partitions on this disk.
+You must select another disk from the table, and then
+choose a partition available on that disk."
+
+ERMSG13=" ${LL}One possible cause for the error is a corrupt disk.
+Choose another disk from the table."
+
+USRSIZE=24000  # Minimum size for /usr, only bin and base subsets
+SWAPSIZE=6000  # Optimum for swap area
+DUMPSIZE=4000  # Optimum for dump area
+
+#
+#This while loop obtains the location of the /usr file system.
+#
+while : true
+do
+	echo "
+*** /usr FILE SYSTEM ALLOCATION ***
+
+You can allocate the /usr file system to one of the disks listed in the
+table below.  See the Guide to Installing ULTRIX for an explanation of
+this table: "
+	ROUTINE="/usr FILE SYSTEM ALLOCATION"
+	export ROUTINE
+	if [ "$PASS" = "REPEAT" ]
+	then
+		USR=`finder -f`
+	else
+		USR=`finder -d`
+	fi
+	set xx $USR
+	usr_D=$2; usr_d=$3; usr_u=$4
+	while :
+	do
+		echo -n "
+You selected ${usr_D}, device number ${usr_u}.  Make sure this disk is
+on line and write-enabled (if applicable to this drive) and then
+confirm your choice.
+
+Use ${usr_D}, ${usr_d}${usr_u} for /usr file system? (y/n) []: "
+		read ANS
+		ANS=`echo $ANS`
+		case $ANS in
+		Y | y )
+			PASS=
+			break
+			;;
+		N | n )
+			PASS=REPEAT
+			continue 2
+			;;
+		* )
+			echo "
+You must answer 'y' or 'n' to the following question."
+			continue
+			;;
+		esac
+	done
+	case $usr_d$usr_u in
+	$media_d$media_u )
+		echo "
+You attempted to allocate the /usr file system on ${media_d}${media_u}, which
+contains your distribution medium."
+		continue
+		;;
+	$root_d$root_u )
+			;;
+	* )	
+		(cd /dev; MAKEDEV $usr_d$usr_u >/dev/null)
+		;;
+	esac
+	dd if=/dev/r${usr_d}${usr_u}c of=/tmp/wrdisk count=1 >/dev/null 2>&1 ||
+	{
+		echo "
+The $usr_D, $usr_d$usr_u is not accessible.  Make sure the device is
+on-line and write enabled."
+		continue
+	}
+	dd if=/tmp/wrdisk of=/dev/r${usr_d}${usr_u}c count=1 >/dev/null 2>&1 ||
+	{
+		echo "
+The $usr_D, $usr_d$usr_u must be write enabled."
+		continue
+	}
+	/etc/chpt -q /dev/r${usr_d}${usr_u}c | sed 1,3d > /tmp/ptable
+	case $? in
+	0 )	;;
+	* )
+		echo "
+The chpt command failed. Contact your DIGITAL representative."
+		exit 1 ;;
+	esac
+	availp='a b c d e f g h'
+	case  $usr_d$usr_u in
+	$root_d$root_u )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$root_p'" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp $root_p"	#take out a partition
+		availp=`delet_part "$avoidp" "$availp"`
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "b" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp b"	#take out b partition
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+	part=`size_part "$availp" $USRSIZE`
+	def_part=x	
+	case $DEF_PT in
+	1 )
+		case $usr_d$usr_u in
+		$root_d$root_u )
+			case $root_D in
+			RA82 | RA90 )
+				def_part=d	;;
+			* )
+				def_part=g	;;
+			esac
+			;;
+		esac
+		;;
+	esac
+	>/tmp/partsize
+	for k in $part
+	do
+	 	awk '{if ($1 == "'$k'") {yy=$1; xx=$4/2; zz=$5}} END \
+{printf "    %s\t  --- \t%9d\t%s\n",yy,xx,zz}' /tmp/ptable >>/tmp/partsize
+	done
+	part=`cat /tmp/partsize`	
+	usr_p=`ask_part "$part" "/usr file system" "$usr_d$usr_u" $def_part`
+	echo "
+Making the new file system for /usr on /dev/r$usr_d$usr_u$usr_p $usr_D ${LL}"
+	echo "
+Making the new file system for /usr on /dev/r$usr_d$usr_u$usr_p $usr_D" 2>&1 >> /FILESYS.log
+	umount /usr > /dev/null 2>&1 
+	newfs -n /dev/r$usr_d$usr_u$usr_p $usr_D 2>&1 >> /FILESYS.log
+	case $? in
+	0 )	;;
+	* )
+		echo "
+The newfs command failed to construct the /usr file system on
+/dev/r$usr_d$usr_u$usr_p $usr_D. ${ERMSG13}"
+		continue 
+		;;
+	esac
+	mount /dev/$usr_d$usr_u$usr_p /usr
+	case $? in
+	0 )	;;
+	* )
+		echo "
+The mount command failed to mount the /usr file system on
+/dev/r$usr_d$usr_u$usr_p. ${ERMSG13} "
+		continue 
+		;;
+	esac
+	break
+done
+
+## for the first swap area
+#
+
+while : true
+do
+	echo "
+*** ALLOCATE THE SWAP1 SPACE ***
+
+You can allocate the swap1 space to one of the disks listed in the
+table below.  See the Guide to Installing ULTRIX for an explanation of
+this table: "
+	ROUTINE="SWAP1 SPACE ALLOCATION"
+	export ROUTINE
+	SWAP1=`finder -f`
+	set xx $SWAP1
+	swap1_D=$2; swap1_d=$3; swap1_u=$4
+	while :
+	do
+		echo -n "
+You selected ${swap1_D}, device number ${swap1_u}.  Make sure this disk is
+on line and write-enabled (if applicable to this drive) and then
+confirm your choice.
+
+Use ${swap1_D}, ${swap1_d}${swap1_u} for swap1 space? (y/n) []: "
+		read ANS
+		ANS=`echo $ANS`
+		case $ANS in
+		Y | y )
+			PASS=
+			break
+			;;
+		N | n )
+			continue 2
+			;;
+		* )
+			echo "
+You must answer 'y' or 'n' to the following question."
+			continue
+			;;
+		esac
+	done
+	case $swap1_d$swap1_u in
+	$root_d$root_u )
+		;;
+	* )
+		echo -n "
+The swap1 space on $swap1_d$swap1_u $swap1_D, which is not the same disk as 
+root file system located $root_d$root_u $root_D.  Are you sure <y/n>? "
+		read ans
+		ans=`echo $ans`
+		case $ans in
+		[Yy]* ) ;;
+		* ) continue
+			;;
+		esac	
+		;;
+	esac
+	case $swap1_d$swap1_u in
+	$media_d$media_u )
+		echo "
+You attempted to allocate the swap1 space on ${media_d}${media_u}, which
+contains your distribution medium."
+		continue
+		;;
+	$root_d$root_u | $usr_d$usr_u ) 
+		;;
+	* )
+		(cd /dev; MAKEDEV $swap1_d$swap1_u  >/dev/null)
+		;;
+	esac
+	dd if=/dev/r${swap1_d}${swap1_u}c of=/tmp/wrdisk count=1 >/dev/null 2>&1 ||
+	{
+		echo "
+The $swap1_D, $swap1_d$swap1_u is not accessible.  Make sure the device is
+on-line and write enabled."
+		continue
+	}
+	dd if=/tmp/wrdisk of=/dev/r${swap1_d}${swap1_u}c count=1 >/dev/null 2>&1 ||
+	{
+		echo "
+The $swap1_D, $swap1_d$swap1_u must be write enabled. "
+		continue
+	}
+	/etc/chpt -q /dev/r${swap1_d}${swap1_u}c | sed 1,3d > /tmp/ptable
+	case $? in
+	0 )	;;
+	* )
+		echo "
+The chpt command failed. Contact your DIGITAL representative."
+		exit 1 ;;
+	esac
+
+	# Not allow 'a' to prevent destroying disk partition table.
+	availp="b c d e f g h" 
+	case $swap1_d$swap1_u in
+	$root_d$root_u )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$root_p'" ) print $5}' | sed s/,/\ /g`
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+	case $swap1_d$swap1_u in
+	$usr_d$usr_u )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$usr_p'" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp $usr_p"
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+	part=`size_part "$availp" $SWAPSIZE` 
+	case $part in
+	"" )
+		echo "
+${ERMSG11}"
+		continue
+		;;
+	esac
+	def_part=x	
+	case $DEF_PT in
+	1 )
+		case $swap1_d$swap1_u in
+		$root_d$root_u )
+				def_part=b	;;
+		esac
+		;;
+	esac
+	>/tmp/partsize
+	for k in $part
+	do
+	 	awk '{if ($1 == "'$k'") {yy=$1; xx=$4/2; zz=$5}} END \
+{printf "    %s\t  --- \t%9d\t%s\n",yy,xx,zz}' /tmp/ptable >>/tmp/partsize
+	done
+	part=`cat /tmp/partsize`	
+	swap1_p=`ask_part "$part" "swap1 space" "$swap1_d$swap1_u" $def_part`
+	break
+done
+
+## for the second swap area
+#
+while : true
+do
+	echo -n "
+*** ALLOCATE THE SWAP2 SPACE ***
+
+Do you want to allocate a second swap space? (y/n) [n]: "
+	read ans
+	ans=`echo $ans`
+	case $ans in
+	y )
+			;;
+	n | "" )
+		break ;;
+	* )
+		continue ;;
+	esac
+
+echo "
+
+You can allocate the swap2 space to one of the disks listed in the
+table below.  See the Guide to Installing ULTRIX for an explanation of
+this table: "
+	ROUTINE="SWAP2 SPACE ALLOCATION"
+	export ROUTINE
+	SWAP2=`finder -f`
+	set xx $SWAP2
+	swap2_D=$2; swap2_d=$3; swap2_u=$4
+	while :
+	do
+		echo -n "
+You selected ${swap2_D}, device number ${swap2_u}.  Make sure this disk is
+on line and write-enabled (if applicable to this drive) and then
+confirm your choice.
+
+Use ${swap2_D}, ${swap2_d}${swap2_u} for swap2 space? (y/n) []: "
+		read ANS
+		ANS=`echo $ANS`
+		case $ANS in
+		Y | y )
+			PASS=
+			break
+			;;
+		N | n )
+			continue 2
+			;;
+		* )
+			echo "
+You must answer 'y' or 'n' to the following question."
+			continue
+			;;
+		esac
+	done
+	case $swap2_d$swap2_u in
+	$media_d$media_u )
+		echo "
+You attempted to allocate the swap2 space on ${media_d}${media_u}, which
+contains your distribution medium."
+		continue
+		;;
+	$root_d$root_u | $usr_d$usr_u | $swap1_d$swap1_u )
+			;;
+	* )
+		(cd /dev; MAKEDEV $swap2_d$swap2_u  >/dev/null)
+		;;
+	esac
+	dd if=/dev/r${swap2_d}${swap2_u}c of=/tmp/wrdisk count=1 >/dev/null 2>&1 ||
+	{
+		echo "
+The $swap2_D, $swap2_d$swap2_u is not accessible.  Make sure the device is
+on-line and write enabled."
+		continue
+	}
+	dd if=/tmp/wrdisk of=/dev/r${swap2_d}${swap2_u}c count=1 >/dev/null 2>&1 ||
+	{
+		echo "
+The $swap2_D, $swap2_d$swap2_u must be write enabled. "
+		continue
+	}
+	/etc/chpt -q /dev/r${swap2_d}${swap2_u}c | sed 1,3d > /tmp/ptable
+	case $? in
+	0 )	;;
+	* )
+		echo "
+The chpt command failed. Contact your DIGITAL representative."
+		exit 1 ;;
+	esac
+	# Not allow 'a' to prevent destroying disk partition table.
+	availp="b c d e f g h"
+	case "$swap2_d$swap2_u" in
+	"$root_d$root_u" )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$root_p'" ) print $5}' | sed s/,/\ /g`
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+	case "$swap2_d$swap2_u" in
+	"$usr_d$usr_u" )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$usr_p'" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp $usr_p"
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+	case "$swap2_d$swap2_u" in
+	"$swap1_d$swap1_u" )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$swap1_p'" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp $swap1_p"
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+	part=`size_part "$availp" 0`
+	case $part in
+	"" )
+		echo "${LL}${ERMSG11}"
+		continue
+		;;
+	esac
+	def_part=x	
+	case $DEF_PT in
+	1 )
+	case $swap2_d$swap2_u in
+		$root_d$root_u )
+				def_part=b	;;
+		esac
+		;;
+	esac
+	>/tmp/partsize
+	for k in $part
+	do
+	 	awk '{if ($1 == "'$k'") {yy=$1; xx=$4/2; zz=$5}} END \
+{printf "    %s\t  --- \t%9d\t%s\n",yy,xx,zz}' /tmp/ptable >>/tmp/partsize
+	done
+	part=`cat /tmp/partsize`	
+	swap2_p=`ask_part "$part" "swap2 space" "$swap2_d$swap2_u" $def_part`
+	break
+done
+
+## for the dump area
+#
+while : true
+do
+	echo "
+
+*** ALLOCATE THE CRASH DUMP SPACE ***
+
+You can allocate the crash dump space to one of the disks listed in the
+table below.  See the Guide to Installing ULTRIX for an explanation of
+this table: "
+	ROUTINE="CRASH DUMP SPACE ALLOCATION"
+	export ROUTINE
+	DUMP=`finder -f`
+	set xx $DUMP
+	dump_D=$2; dump_d=$3; dump_u=$4
+	while :
+	do
+		echo -n "
+You selected ${dump_D}, device number ${dump_u}.  Make sure this disk is
+on line and write-enabled (if applicable to this drive) and then
+confirm your choice.
+
+Use ${dump_D}, ${dump_d}${dump_u} for crash dump space? (y/n) []: "
+		read ANS
+		ANS=`echo $ANS`
+		case $ANS in
+		Y | y )
+			PASS=
+			break
+			;;
+		N | n )
+			continue 2
+			;;
+		* )
+			echo "
+You must answer 'y' or 'n' to the following question."
+			continue
+			;;
+		esac
+	done
+	case $dump_d$dump_u in
+	$media_d$media_u )
+		echo "
+You attempted to allocate the dump space on ${media_d}${media_u}, which
+contains your distribution medium."
+		continue
+		;;
+	$root_d$root_u | $usr_d$usr_u | $swap1_d$swap1_u | $swap2_d$swap2_u )
+			;;
+	* )
+		(cd /dev; MAKEDEV $dump_d$dump_u  >/dev/null)
+		;;
+	esac
+       dd if=/dev/r${dump_d}${dump_u}c of=/tmp/wrdisk count=1 >/dev/null 2>&1 ||
+	{
+		echo "
+The $dump_D, $dump_d$dump_u is not accessible.  Make sure the device is
+on-line and write enabled."
+		continue
+	}
+       dd if=/tmp/wrdisk of=/dev/r${dump_d}${dump_u}c count=1 >/dev/null 2>&1 ||
+	{
+		echo "
+The $dump_D, $dump_d$dump_u must be write enabled. "
+		continue
+	}
+	/etc/chpt -q /dev/r${dump_d}${dump_u}c | sed 1,3d > /tmp/ptable
+	case $? in
+	0 )	;;
+	* )
+		echo "
+The chpt command failed. Contact your DIGITAL representative."
+		exit 1 ;;
+	esac
+	availp="a b c d e f g h"
+	case "$dump_d$dump_u" in
+	"$root_d$root_u" )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$root_p'" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp $root_p"
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+	case "$dump_d$dump_u" in
+	"$usr_d$usr_u" )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$usr_p'" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp $usr_p"
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+	case "$dump_d$dump_u" in
+	"$swap1_d$swap1_u" )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$swap1_p'" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp $swap1_p"
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+	case "$dump_d$dump_u" in
+	"$swap2_d$swap2_u" )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$swap2_p'" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp $swap2_p"
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+### dump area can be the same as swap area.
+	case $dump_d$dump_u in
+	$swap1_d$swap1_u )
+		swap1_flg=0
+		for p in "$availp"
+		do
+			case $p in
+			$swap1_p )
+				swap1_flg=1 
+				break
+				;;
+			esac
+		done
+		case $swap1_flg in
+		0 )
+			availp="$availp $swap1_p"
+			;;
+		esac
+		;;
+	esac
+	case $dump_d$dump_u in
+	$swap2_d$swap2_u )
+		swap2_flg=0
+		for p in "$availp" 
+		do
+			case $p in
+			$swap2_p )
+				swap2_flg=1 
+				break
+				;;
+			esac
+		done
+		case $swap2_flg in
+		0 )
+			availp="$availp $swap2_p"
+			;;
+		esac
+		;;
+	esac
+	part=`size_part "$availp" $DUMPSIZE`
+	case $part in
+	"" )
+		echo "
+${ERMSG11}"
+		continue
+		;;
+	esac
+	def_part=x	
+	case $DEF_PT in
+	1 )
+		case $dump_d$dump_u in
+		$root_d$root_u )
+				def_part=b	;;
+		esac
+		;;
+	esac
+	>/tmp/partsize
+	for k in $part
+	do
+	 	awk '{if ($1 == "'$k'") {yy=$1; xx=$4/2; zz=$5}} END \
+{printf "    %s\t  --- \t%9d\t%s\n",yy,xx,zz}' /tmp/ptable >>/tmp/partsize
+	done
+	part=`cat /tmp/partsize`	
+	dump_p=`ask_part "$part" "crash dump space" "$dump_d$dump_u" $def_part`
+	break
+done
+
+#
+# the while loop contains the location of var file system
+#
+while : true
+do
+	echo "
+
+*** ALLOCATE THE var FILE SYSTEM ***
+
+You can allocate the var file system to one of the disks listed in the
+table below. See the Guide to Installing ULTRIX for an explanation of
+this table: "
+	ROUTINE="var FILE SYSTEM ALLOCATION"
+	export ROUTINE
+	VAR=`finder -f`
+	set xx $VAR
+	var_D=$2; var_d=$3; var_u=$4
+	while :
+	do
+		echo -n "
+You selected ${var_D}, device number ${var_u}.  Make sure this disk is
+on line and write-enabled (if applicable to this drive) and then
+confirm your choice.
+
+Use ${var_D}, ${var_d}${var_u} for var file system? (y/n) []: "
+		read ANS
+		ANS=`echo $ANS`
+		case $ANS in
+		Y | y )
+			PASS=
+			break
+			;;
+		N | n )
+			continue 2
+			;;
+		* )
+			echo "
+You must answer 'y' or 'n' to the following question."
+			continue
+			;;
+		esac
+	done
+	case $var_d$var_u in
+	$media_d$media_u )
+		echo "
+You attempted to allocate the var area on ${media_d}${media_u}, which
+contains your distribution medium."
+		continue
+		;;
+	$root_d$root_u | $usr_d$usr_u | $swap1_d$swap1_u | \
+		$swap2_d$swap2_u | $dump_d$dump_u )
+			;;
+	* )
+		(cd /dev; MAKEDEV $var_d$var_u  >/dev/null)
+		dd if=/dev/r${var_d}${var_u}c of=/tmp/wrdisk count=1 >/dev/null 2>&1 ||
+		{
+			echo "
+The $var_D, $var_d$var_u is not accessible.  Make sure the device is
+on-line and write enabled."
+			continue
+		}
+		dd if=/tmp/wrdisk of=/dev/r${var_d}${var_u}c count=1 >/dev/null 2>&1 ||
+		{
+			echo "
+The $var_D, $var_d$var_u must be write enabled. "
+			continue
+		}
+		;;
+	esac
+
+	/etc/chpt -q /dev/r${var_d}${var_u}c | sed 1,3d > /tmp/ptable
+	case $? in
+	0 )	;;
+	* )
+		echo "
+The chpt command failed. Contact your DIGITAL representative."
+		continue ;;
+	esac
+	availp="a b c d e f g h"
+	case "$var_d$var_u" in
+	"$root_d$root_u" )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$root_p'" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp $root_p "	#take out a partition
+		availp=`delet_part "$avoidp" "$availp"`
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "b" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp b"	#take out b partition
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+
+## take out the /usr overlap area
+
+	case "$var_d$var_u" in
+	"$usr_d$usr_u" )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$usr_p'" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp $usr_p"    
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+	case "$var_d$var_u" in
+	"$swap1_d$swap1_u" )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$swap1_p'" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp $swap1_p"
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+	case "$var_d$var_u" in
+	"$swap2_d$swap2_u" )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$swap2_p'" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp $swap2_p"
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+	case "$var_d$var_u" in
+	"$dump_d$dump_u" )
+		avoidp=`cat /tmp/ptable | awk '{if ( $1 == "'$dump_p'" ) print $5}' | sed s/,/\ /g`
+		avoidp="$avoidp $dump_p"
+		availp=`delet_part "$avoidp" "$availp"`
+		;;
+	esac
+#
+# the var can be in the /usr
+#
+	case $var_d$var_u in
+	$usr_d$usr_u )
+		usr_flg=0
+		for p in "$availp"
+		do
+			case $p in
+			$usr_p )
+				usr_flg=1
+				break ;;
+			esac
+		done
+		case $usr_flg in
+		0 ) availp="$availp $usr_p" ;;
+		esac
+		;;
+	esac
+	def_part=x	
+	case $DEF_PT in
+	1 )
+		case $var_d$var_u in
+		$root_d$root_u )
+			case $root_D in
+			RA82 | RA90 )
+				def_part=d	;;
+			* )	
+				def_part=g	;;
+			esac
+			;;
+		esac
+		;;
+	esac
+	part=`size_part "$availp" 0`
+	case $part in
+	"" )
+		echo "${LL}${ERMSG11}"
+		continue
+		;;
+	esac
+	>/tmp/partsize
+	for k in $part
+	do
+	 	awk '{if ($1 == "'$k'") {yy=$1; xx=$4/2; zz=$5}} END \
+{printf "    %s\t  --- \t%9d\t%s\n",yy,xx,zz}' /tmp/ptable >>/tmp/partsize
+	done
+	part=`cat /tmp/partsize`	
+	var_p=`ask_part "$part" "var file system" "$var_d$var_u" $def_part`
+	case $var_d$var_u$var_p in
+	$usr_d$usr_u$usr_p )
+		mkdir /usr/var
+		chmod 755 /usr/var
+		ln -s /usr/var /var
+		;;
+	* )
+		mkdir /var
+		chmod 755 /var
+		(cd /usr; ln -s ../var /usr/var)
+		echo "
+Making the new file system for var on /dev/r$var_d$var_u$var_p $var_D ${LL}"
+		echo "
+Making the new file system for var on /dev/r$var_d$var_u$var_p $var_D" 2>&1 >> /FILESYS.log
+		umount /var > /dev/null 2>&1
+		newfs -n /dev/r$var_d$var_u$var_p $var_D 2>&1 >> /FILESYS.log
+		case $? in
+		0 ) ;;
+		* )
+			echo "
+The newfs command failed to construct the var file system on
+/dev/r$var_d$var_u$var_p $var_D ${ERMSG13}"
+			continue  
+			;;
+		esac
+		mount /dev/$var_d$var_u$var_p /var
+		case $? in
+		0 )	;;
+		* )
+			echo "
+The mount command failed to mount the /var file system on
+/dev/$var_d$var_u$var_p. ${ERMSG13} "
+			continue 
+			;;
+		esac
+		;;
+	esac
+	break
+done
+

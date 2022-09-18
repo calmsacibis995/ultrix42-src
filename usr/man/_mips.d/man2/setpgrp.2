@@ -1,0 +1,60 @@
+.\" SCCSID: @(#)setpgrp.2	2.3	8/10/87
+.TH setpgrp 2
+.SH Name
+setpgrp \- set process group
+.SH Syntax
+.ft B
+setpgrp(pid, pgrp)
+.br
+int pid, pgrp;
+.ft R
+.SH Description
+.NXR "setpgrp system call"
+.NXA "setpgrp system call" "getpgrp system call"
+.NXR "process group" "setting"
+The
+.PN setpgrp
+system call
+sets the process group of the specified process
+.I pid
+to the specified
+.IR pgrp .
+If
+.I pid
+is zero, the call applies to the current process.
+.PP
+If the invoker is not the superuser, the affected process
+must either have the same effective user-id as the invoker or be 
+a descendant of the invoking process.
+.SH Return Values
+The
+.PN setpgrp
+system call
+returns zero (0) when the operation is successful.  If
+the request fails, \-1 is returned, and the global
+variable
+.I errno
+indicates the reason.
+.SH Environment
+SYSTEM_FIVE
+.PP
+When your program is compiled using the System V environment,
+.PN setpgrp
+is called without arguments and
+the new process group id is returned if successful.
+.SH Diagnostics
+The
+.PN setpgrp
+system call
+fails and the process group is not altered, if
+one of the following occur:
+.TP 15
+[EPERM]
+The effective user ID of the requested process is different
+from that of the caller and the process is not a descendent
+of the calling process.
+.TP 15
+[ESRCH]
+The requested process does not exist.
+.SH See Also
+getpgrp(2)

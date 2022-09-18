@@ -1,0 +1,93 @@
+.TH stl_ctrl 5
+.SH Name
+stl_ctrl \- software subset control files
+.SH Description
+.NX R "stl_ctrl file"
+.NX R "software subset control file"
+.NX R "software kits" "subset control files for"
+Each software subset that is distributed on media used
+with the
+.PN setld
+command has an associated 
+.I control file.
+This control file is created by the
+.PN kits
+utility. It contains the attribute
+information for the subset. Once the subset
+has been installed on a system,
+the control file is placed in the
+.PN usr/etc/subsets
+directory. The control file for each subset has a name
+formed by appending the extension
+.PN .ctrl
+to the end of the subset name.
+.PP
+The attribute definitions in the file are stored as attribute
+name and value pairs separated by an equal sign (=). The attributes
+are:
+.TP
+NAME
+.br
+The name of the product of which this subset is a member. This attribute
+has the same value as the
+.I NAME
+attribute defined for the product in the product attributes section
+of the
+key
+file.
+.TP
+DESC
+.br
+The text description of the subset as given in the subset descriptor
+for this subset in the
+key
+file.
+.TP
+NVOLS
+.br
+Obsolete.
+.TP
+MTLOC
+.br
+A pair of integers separated by a colon (:).
+These integers are used by the
+.PN setld
+utility to find the subset on tape media. The first number is the
+volume in the product tape set; the second is the location
+within the volume. The values established for this attribute
+by the
+.PN kits
+utility are place holders. The values are later updated as the
+subset is being written to tape by the
+.PN gentapes
+command.
+.TP
+DEPS
+.br
+The dependency list for this subset. The information for this
+list is taken from the subset descriptor in the
+key
+file.
+.TP
+FLAGS
+.br
+The flags value from the key file.
+.SH Examples
+Here are the contents of
+.PN UDTBASE400.ctrl ,
+the control file for the
+.PN UDTBASE400
+subset:
+.EX
+    NAME='ULTRIX/UWS T4.0 (RISC)'
+    DESC='Base System'
+    NVOLS=1:112
+    MTLOC=1:1
+    DEPS="."
+    FLAGS=1
+.EE
+.SH See Also
+genra(1), gentapes(1), kits(1), stl_key(5), stl_tape(5), setld(8)
+.br
+.I Guide to Preparing Software for
+.I Distribution on ULTRIX Systems

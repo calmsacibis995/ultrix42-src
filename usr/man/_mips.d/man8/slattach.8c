@@ -1,0 +1,33 @@
+.TH slattach 8c "" "" Unsupported
+.SH Name
+slattach \- attach serial lines
+.SH Syntax
+.B /usr/new/slattach
+[
+.I host
+]
+.SH Description
+.NXR "serial line connection"
+.NXR "slattach"
+.NXR "sliphosts" "serial line connection"
+The
+.PN slattach
+command uses the serial line internet protocol to connect to another
+system. Master systems initiate a connection by specifying a host for the
+connection. The host must be listed in the file
+.PN /etc/sliphosts .
+Slave systems use
+.PN slattach
+as their login shell.
+.SH Restrictions
+The appropriate entries in
+.PN sliphosts
+must exit for the connection to be successful.
+.PP
+The pseudo-device
+.PN sl
+must be compiled into your kernel.
+.SH Files
+.PN /etc/sliphosts
+.SH See Also
+netstat(1), ifconfig(8c), sliphosts(5)

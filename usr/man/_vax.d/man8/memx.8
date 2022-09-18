@@ -1,0 +1,115 @@
+.\" SCCSID: @(#)memx.8	8.1	9/11/90
+.TH memx 8 
+.SH Name
+memx \- memory exerciser
+.SH Syntax
+.B /usr/field/memx
+[
+.B \-h
+] [
+.B \-s
+] [
+.BI \-o file
+.B ] [
+.BI \-t i
+.B ] [
+.BI \-m j
+.B ] [
+.BI \-p k
+.B ] 
+.SH Description
+.NXR "memx exerciser"
+.NXR "memory" "testing"
+The 
+.PN memx 
+memory exerciser spawns processes to 
+exercise memory
+by writing and reading three patterns: 1's and 0's, 0's and 1's,
+and a random pattern.
+.PP
+You specify the number of processes to spawn 
+and the size of memory to be tested by each 
+process. The first process is a shared memory
+exerciser, the remaining are standard memory
+exercisers. The 
+.PN memx
+exerciser
+will run until the process
+receives a
+.CT C
+or a kill \-15 \fIpid\fR.
+.PP
+A logfile is made in 
+.PN /usr/field
+for you to examine and then remove. If there are errors
+in the logfile, check the 
+.PN /usr/adm/syserr/syserr.<hostname> 
+file, where the driver and kernel error
+messages are saved.
+.SH Options
+.NXR "memx" "options"
+The
+.PN memx
+options are:
+.IP \fB\-h\fR 1i
+Print the help message for the
+.PN memx
+command.
+.IP \fB\-s\fR 1i
+Disable shared memory testing.
+.IP \fB\-o\fIfile\fR 1i
+Save diagnostic output in \fIfile\fR.
+.IP \fB\-t\fIi\fR 1i
+Run time in minutes (\fIi\fR).  The default is to run until
+the process receives a
+.CT C 
+or a kill \-15 \fIpid\fR.
+.IP \fB\-m\fIj\fR 1i
+The memory size in bytes (\fIj\fR) to be tested by each spawned
+process.  Must be greater than 4095.  The default is
+(total-memory)/20.
+.IP \fB\-p\fIk\fR 1i
+The number of processes to spawn (\fIk\fR).  The default is 20.
+The maximum is also 20.
+.SH Restrictions
+.NXR "memx exerciser" "restricted"
+The 
+.PN memx 
+exerciser is restricted by the size
+of swap space available.  The size of the swap space and
+the size of internal memory available will determine how
+many processes can run on the system.  For example,
+If there were 16Mbytes
+of swap space and 16Mbytes of memory, all of the
+swap space would be used if all 20 spawned memory exercisers
+were running.  In that event, no new processes would be able to run.
+On systems with large amounts of memory and small swap
+space, you must restrict the number of memory exercisers and/or the
+size of memory being tested.
+.PP
+If there is a need to run a system exerciser over an NFS link or on a diskless
+system there are some restrictions.  For exercisers that need to write into a file
+system, such as 
+.MS fsx 8 ,
+the target file system must be writable by root.  Also the directory, in which any
+of the exercisers are executed, must be writable by root because temporary
+files are written into the current directory.  These latter restrictions are
+sometimes difficult to overcome because often NFS file systems are mounted in a
+way that prevents root from writing into them.  Some of the restrictions may be
+overcome by copying the exerciser to another directory and then executing it.  
+.SH Examples
+.NXR "memx exerciser" "examples"
+The following example tests all of memory by running 20
+spawned processes until a
+.CT C
+or kill \-15 \fIpid\fR is received.
+.EX
+% /usr/field/memx 
+.EE
+The following example runs 10 spawned processes, memory size 500,000
+bytes, for 180 minutes in the background.
+.EX
+% /usr/field/memx \-t180 \-m500000 \-p10 &
+.EE
+.SH See Also
+.I "Guide to System Exercisers"

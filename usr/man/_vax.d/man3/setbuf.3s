@@ -1,0 +1,171 @@
+.\" SCCSID: @(#)setbuf.3s	8.2	1/29/91
+.TH setbuf 3s 
+.SH Name
+setbuf, setbuffer, setlinebuf, setvbuf \- assign buffering to a stream
+.SH Syntax
+.B #include <stdio.h>
+.PP
+.B void setbuf(\fIstream, buf\fP)
+.br
+.SM
+.B FILE
+.B *\fIstream\fP;
+.br
+.B char *\fIbuf\fP;
+.PP
+.B void setbuffer(\fIstream, buf, size\fP)
+.br
+.SM
+.B FILE
+.B *\fIstream\fP;
+.br
+.B char *\fIbuf\fP;
+.br
+.B int \fIsize\fP;
+.PP
+.B void setlinebuf(\fIstream\fP)
+.br
+.SM
+.B FILE
+.B *\fIstream\fP;
+.PP
+.B int setvbuf(\fIstream, buf, type, size\fP)
+.br
+.B FILE *\fIstream\fP;
+.br
+.B char *\fIbuf\fP;
+.br 
+.B int \fItype\fP;
+.B size_t \fIsize\fP; 
+.SH Description
+.NXR "setbuf subroutine"
+.NXR "setbuffer subroutine"
+.NXR "setlinebuf subroutine"
+.NXR "setvbuf subroutine"
+.NXR "stream" "assigning buffering to"
+.NXR "buffering" "types of"
+The three types of buffering available are unbuffered, block buffered,
+and line buffered.
+When an output stream is unbuffered, information appears on the
+destination file or terminal as soon as written;
+when it is block buffered many
+characters are saved up and written as a block;
+when it is line buffered characters are saved up until a new line is
+encountered or input is read from stdin.
+The routine
+.PN fflush ,
+may be used to force the block out early.
+Normally all files are block buffered.
+For further information, see 
+.MS fclose 3s .
+A buffer is obtained from 
+.MS malloc 3
+upon the first
+.PN getc
+or
+.PN putc
+on the file.
+If the standard stream
+.B stdout
+refers to a terminal it is line buffered.
+The standard stream
+.B stderr
+is always unbuffered.
+.PP
+The
+.PN setbuf
+routine is used after a stream has been 
+opened but before it is read or written.
+The character array
+.I buf
+is used instead of an automatically allocated buffer.  If
+.I buf
+is the constant pointer NULL,
+input/output will be completely unbuffered.
+A manifest constant BUFSIZ
+tells how big an array is needed:
+.EX
+char buf[BUFSIZ];
+.EE
+.PP
+The
+.PN setbuffer
+routine, an alternate form of 
+.PN setbuf ,
+is used after a stream has been opened but before it is read or written.
+The character array
+.I buf
+whose size is determined by the 
+.I size
+argument is used instead of an automatically allocated buffer.  If
+.I buf
+is the constant pointer NULL,
+input/output will be completely unbuffered.
+.PP
+The
+.PN setlinebuf
+routine is used to change
+.B stdout
+or
+.B stderr
+from block buffered or unbuffered to line buffered.
+Unlike
+.PN setbuf
+and
+.PN setbuffer
+it can be used at any time that the file descriptor is active.
+.PP
+The
+.PN setvbuf
+routine may be used after a stream has been opened but
+before it is read or written.
+.I Type
+determines how \fIstream\fP will be buffered.
+Legal values for \fItype\fP, defined in stdio.h are:
+.TP 15
+ _IOFBF
+causes input/output to be fully buffered.
+.TP 15
+ _IOLBF
+causes output to be line buffered; the buffer will be
+flushed when a new line is written, the buffer is full, 
+or input is requested.
+.TP 15
+ _IONBF
+causes input/output to be completely unbuffered.
+.PP
+If \fIbuf\fP is not the NULL pointer, the array it points to 
+will be used for buffering,
+instead of an automatically allocated buffer.
+The
+.I size
+specifies the size of the buffer to be used.  The constant
+BUFSIZ in <stdio.h> is suggested as a good buffer size.
+If input/output is unbuffered, \fIbuf\fP and \fIsize\fP
+are ignored.
+.PP
+By default, output to a terminal is line buffered
+and all other input/output is fully buffered.
+.PP
+A file can be changed from unbuffered or line buffered to block buffered
+by using
+.PN freopen .
+For further information, see 
+.MS fopen 3s .
+A file can be changed from block buffered or line buffered to unbuffered
+by using
+.PN freopen
+followed by
+.PN setbuf
+with a buffer argument of NULL.
+.SH Restrictions
+The standard error stream should be line buffered by default.
+.PP
+The
+.PN setbuffer
+and
+.PN setlinebuf
+functions are not portable to non 4.2 BSD versions of UNIX.
+.SH See Also
+malloc(3), fclose(3s), fopen(3s), fread(3s), 
+getc(3s), printf(3s), putc(3s), puts(3s).

@@ -1,0 +1,29 @@
+.\" SCCSID: @(#)wall.1	8.1	9/11/90
+.TH wall 1
+.SH Name
+wall \- write to all users
+.SH Syntax
+.B wall
+.SH Description
+.NXR "wall command"
+.NXA "wall command" "write command (general)"
+.NXR "broadcast message" "sending"
+The
+.PN wall
+command reads its standard input until an EOF.
+It then sends this message,
+preceded by
+`Broadcast Message ...',
+to all logged in users.
+.PP
+The sender should be super-user to override
+any protections the users may have invoked.
+.SH Diagnostics
+`Cannot send to ...' when the open on
+a user's tty file fails.
+.SH Files
+/dev/tty?
+.br
+/etc/utmp
+.SH See Also
+mesg(1), write(1)

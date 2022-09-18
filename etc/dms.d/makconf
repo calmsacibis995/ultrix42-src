@@ -1,0 +1,19 @@
+#!/bin/sh 
+#
+#	@(#)makconf	4.1	(ULTRIX)	7/2/90
+# 
+
+echo "CLIROOT=\"$CLIROOT\"" > dlparam
+echo "CLIROOT0=\"$CLIROOT0\"" >> dlparam
+echo "CLIDLR0=\"$CLIDLR0\"" >> dlparam
+echo "CLISWAP0=\"$CLISWAP0\"" >> dlparam
+echo "CLIUSR=\"$CLIUSR\"" >> dlparam
+echo "CLIROTP=$CLIROTP" >> dlparam
+echo "CLISWTP=$CLISWTP" >> dlparam
+echo "CLISWSZ=$CLISWSZ" >> dlparam
+echo "DMPTYP=$DMPTYP" >> dlparam
+echo "CLIDMPS=$CLIDMPS" >> dlparam
+echo "CLINET=\"$CLINET\"" >> dlparam
+echo "CLIARP=\"$CLIARP\"" >> dlparam
+
+chmod 644 dlparam

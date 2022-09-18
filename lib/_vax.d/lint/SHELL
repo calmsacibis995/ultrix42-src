@@ -1,0 +1,192 @@
+#! /bin/sh
+#
+#	@(#)SHELL	4.1	(ULTRIX)	7/3/90
+#
+# 001 - Linda Wilson 04-oct-1989
+#	Changes for standards conformance.
+#	For SYSTEM V and POSIX environments, use -c switch for incremental
+#	linting.  Otherwise, use -c switch to flag casts with questionable 
+#	portability.  Add support for -o for creating lint libraries.
+#	Recognize but ignore -g and -O.
+#
+# 002 -	Jon Reeves, 19-Oct-1989
+#	More standards: search llib-lcP in POSIX mode
+#
+TOUT=/tmp/lint.$$		# combined input for second pass
+PATH=/lib:/bin:/usr/bin:
+LDIR=/usr/lib/lint/lint		# where first & second pass are
+LLDIR=/usr/lib/lint		# where lint libraries are found
+CPPF="-C -Dlint"		# options for the cpp command
+LINTF=				# options for the lint passes
+FILES=				# the *.c and *.ln files in order
+NDOTC=				# how many *.c were there
+LLIB=				# lint library file to create
+CONLY=				# set for ``compile only''
+pre=				# these three variables used for
+post=				# handling options with arguments
+optarg=				# list variable to add argument to
+#
+trap "rm -f $TOUT; exit 2" 1 2 3 15
+# Before we start, determine the environment
+case $PROG_ENV in
+	SYSTEM_FIVE) ENV=sysV ;;
+	POSIX) ENV=posix;;
+	*) ENV=unix;;
+esac
+#
+# First, run through all of the arguments, building lists
+#
+#	lint's options are "C:abchl:no:puvx" with extensions "PXY:sz"
+#	cpp options are "I:D:U:"
+#	cc  options are "gO"
+#
+for OPT in "$@"
+do
+	if [ "$optarg" ]
+	then
+		if [ "$optarg" = "LLIB" ]	# special case for -C,-o
+		then
+			OPT=`basename $OPT`
+			LINTF="$LINTF -L -C$pre$OPT$post"
+		fi
+		eval "$optarg=\"\$$optarg \$pre\$OPT\$post\""
+		pre=
+		post=
+		optarg=
+		continue
+	fi
+	case "$OPT" in
+	*.c)	FILES="$FILES $OPT"	NDOTC="x$NDOTC";;
+	*.ln)	FILES="$FILES $OPT";;
+	-*)	OPT=`echo x$OPT | sed s/x-//`
+		while [ "$OPT" ]
+		do
+			O=`echo $OPT | sed 's/\\(.\\).*/\\1/'`
+			OPT=`echo $OPT | sed s/.//`
+			case $O in
+			p)	ENV=port;;
+			n)	ENV= ;;
+			c)	if [ "$ENV" ]
+				then
+					case $ENV in
+					sysV)	CONLY=1 ;;
+					posix)	CONLY=1 ;;
+					*)	LINTF="$LINTF -c" ;;
+					esac
+				fi
+				break ;;
+			[abhuvx]) LINTF="$LINTF -$O";;
+			[szP]) LINTF="$LINTF -$O";;
+			[gO])	;;
+			[IDU])	if [ "$OPT" ]
+				then
+					CPPF="$CPPF -$O$OPT"
+				else
+					optarg=CPPF
+					pre=-$O
+				fi
+				break;;
+			l)	if [ "$OPT" ]
+				then
+					FILES="$FILES $LLDIR/llib-l$OPT.ln"
+				else
+					optarg=FILES
+					pre=$LLDIR/llib-l
+					post=.ln
+				fi
+				break;;
+			[Co])	if [ "$OPT" ]
+				then
+					OPT=`basename $OPT`
+					LLIB="llib-l$OPT"
+					LINTF="$LINTF -L -C$LLIB"
+				else
+					LLIB=
+					optarg=LLIB
+					pre=llib-l
+					post=
+				fi
+				break;;
+			X)	LLDIR=/usr/src/usr.bin/lint
+				LDIR=/usr/src/usr.bin/lint/lpass ;;
+			Y)	if [ "$OPT" ]
+				then
+					case $OPT in
+					SYSTEM_FIVE) ENV=sysV;;
+					POSIX) ENV=posix;;
+					BSD) ENV=unix;;
+					esac
+				else
+					ENV=sysV
+				fi
+				break;;
+			*)	echo "lint: bad option ignored: $O";;
+			esac
+		done;;
+	*)	echo "lint: file with unknown suffix ignored: $OPT";;
+	esac
+done
+
+DEFL=$LLDIR/llib-lc.ln		# the default library to use
+
+# We now know just what the environment will be.  Set up the files accordingly.
+#
+case $ENV in
+	sysV)	CPPF="$CPPF -DSYSTEM_FIVE"
+		DEFL=$LLDIR/llib-lcV.ln ;;
+	unix)	DEFL=$LLDIR/llib-lc.ln ;;
+	posix)	CPPF="$CPPF -DPOSIX"
+		DEFL=$LLDIR/llib-lcP.ln ;;
+	port)	LINTF="$LINTF -p"
+		DEFL=$LLDIR/llib-port.ln;;
+	"")	LINTF="$LINTF -n"
+		DEFL=;;
+esac
+#
+# Second, walk through the FILES list, running all .c's through
+# lint's first pass, and just adding all .ln's to the running result
+#
+if [ "$NDOTC" != "x" ]	# note how many *.c's there were
+then
+	NDOTC=1
+else
+	NDOTC=
+fi
+if [ "$CONLY" ]		# run lint1 on *.c's only producing *.ln's
+then
+	for i in $FILES
+	do
+		case $i in
+		*.c)	T=`basename $i .c`.ln
+			if [ "$NDOTC" ]
+			then
+				echo $i:
+			fi
+			(cpp $CPPF $i | ${LDIR}1 $LINTF >$T) 2>&1
+		esac
+	done
+else			# send all *.c's through lint1 run all through lint2
+	rm -f $TOUT
+	for i in $FILES
+	do
+		case $i in
+		*.ln)	cat <$i >>$TOUT;;
+		*.c)	if [ "$NDOTC" ]
+			then
+				echo $i:
+			fi
+			(cpp $CPPF $i | ${LDIR}1 $LINTF >>$TOUT)2>&1;;
+		esac
+	done
+	if [ "$LLIB" ]
+	then
+		cp $TOUT $LLIB.ln
+	else
+		if [ "$DEFL" ]
+		then
+			cat <$DEFL >>$TOUT
+		fi
+		${LDIR}2 $TOUT $LINTF
+	fi
+fi
+rm -f $TOUT

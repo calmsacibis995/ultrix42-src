@@ -1,0 +1,160 @@
+.TH t_getinfo 3xti
+.SH Name
+t_getinfo \- get protocol-specific service information 
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_getinfo(\fIfd, info\fB)
+.br
+.B int \fIfd\fB;
+.br
+.B struct t_info \fI*info\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the file descriptor that is associated with the underlying 
+transport protocol from which the current characteristics are to be returned.
+.IP \fIinfo\fR 10
+Specifies the structure that is used to return the same information
+returned by 
+.PN t_open()\fR.\fR 
+Points to a \fBt_info\fR structure which contains the following members:
+.RS
+.IP "long \fIaddr\fP;" 15
+/* max size of the transport protocol address */
+.IP "long \fIoptions\fP;" 15
+/* max number of bytes of protocol-specific options */
+.IP "long \fItsdu\fP;" 15
+/* max size of a transport service data unit (TSDU) */
+.IP "long \fIetsdu\fP;" 15
+/* max size of an expedited transport service data unit (ETSDU) */
+.IP "long \fIconnect\fP;" 15
+/* max amount of data allowed on connection establishment functions */
+.IP "long \fIdiscon\fP;" 15
+/* max amount of data allowed on 
+.PN t_snddis()
+and 
+.PN t_rcvdis()
+functions */
+.IP "long \fIservtype\fP;" 15
+/* service type supported by the transport provider */
+.RE
+.IP 
+The values of the fields have the following meanings:
+.RS 10
+.IP \fIaddr\fP 12
+A value greater than or equal to zero indicates the maximum size of a transport protocol address; 
+a value of \-1 specifies that there is no limit on the address size; and a value of \-2 specifies that
+the transport provider does not provide user access to transport protocol addresses.
+.IP \fIoptions\fP 12
+A value greater than or equal to zero indicates the maximum number of bytes of protocol-specific 
+options supported by the provider; a value of \-1 specifies that there is no limit on the option 
+size and a value of \-2 specifies that the transport provider does not support user-settable options.
+.IP \fItsdu\fP 12
+A value greater than zero specifies the maximum size of a transport service data unit (TSDU); a 
+value of zero specifies that the transport provider does not support the concept of TSDU, although 
+it does support the sending of a data stream with no logical boundaries preserved across a 
+connection; a value of \-1 specifies that there is no limit on the size of a TSDU and a value of \-2 
+specifies that the transfer of normal data is not supported by the transport provider.
+.IP \fIetsdu\fP 12
+A value greater than zero specifies the maximum size of an expedited transport service data unit 
+(ETSDU); a value of zero specifies that the transport provider does not support the concept of 
+ETSDU, although it it does support the sending of an expedited data stream with no logical 
+boundaries preserved across a connection; a value of \-1 specifies that there is no limit on the 
+size of ETSDU; and a value of \-2 specifies that the transfer of expedited data is not supported 
+by the transport provider.
+.IP \fIconnect\fP 12
+A value greater than or equal to zero specifies the maximum amount of data that may be associated 
+with connection establishment functions; a value of \-1 specifies that there is no limit on the 
+amount of data sent during connection establishment; and a value of \-2 specifies that the transport 
+provider does not allow data to be sent with connection establishment functions.
+.IP \fIdiscon\fP 12
+A value greater than or equal to zero specifies the maximum amount of data that may be associated 
+with the 
+.PN t_snddis()
+and 
+.PN t_rcvdis()
+functions; a value \-1 specifies that there 
+is no limit on the amount of data sent with these abortive release functions; and a value of \-2 
+specifies that the transport provider does not allow data to be sent with the abortive release 
+functions.
+.IP \fIservtype\fP 12
+This field specifies the service type supported by the transport provider, as described.
+.RE
+.IP
+.sp 2
+If a transport user is concerned with protocol independence, the sizes may be accessed
+to determine how large the buffers must be to hold each piece of information. Alternatively, 
+the 
+.PN t_alloc()
+function can be used to allocate these buffers. An error results if a transport user 
+exceeds the allowed data size on any function. The value of each field may change as a result 
+of option negotiation, and 
+.PN t_getinfo() 
+enables a user to retrieve the current characteristics of the underlying transport protocol.
+.IP
+The \fIservtype\fR field of \fIinfo\fR specifies one of the following values on return:
+.RS 10
+.IP T_COTS 12
+The transport provider supports a connection-mode service but does not support the optional orderly 
+release facility.
+.IP T_COTS_ORD 12 
+The transport provider supports a connection-mode service with the optional orderly release facility.
+.IP T_CLTS	 12
+The transport provider supports a connectionless-mode service. For this service type, 
+.PN t_open()
+returns \-2 for ETSDU, 
+.PN connect
+and 
+.PN discon\fR.\fR
+.RE
+.SH Description
+This function returns the current characteristics of the underlying
+transport protocol associated with file descriptor \fIfd\fR. The
+\fIinfo\fR structure is used to return the same information returned by
+.PN t_open()\fR.\fR 
+This function enables a transport user to access
+this information during any phase of communications.
+.NXR "transport protocol" "returning characteristics"
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 4p
+Parameters@Before Call@After Call
+.sp 4p
+_
+.sp 6p
+fd@x@/
+info->addr@/@x
+info->options@/@x
+info->tsdu@/@x
+info->etsdu@/@x
+info->connect@/@x
+info->discon@/@x
+info->sertype@/@x
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, a value of 0 is returned. On failure,  a
+value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the current implementation of XTI. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+t_alloc(3xti), 
+t_open(3xti)

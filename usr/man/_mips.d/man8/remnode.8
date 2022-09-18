@@ -1,0 +1,52 @@
+.\" SCCSID: @(#)remnode.8	8.1	9/11/90
+.TH remnode 8
+.SH Name
+remnode \- remove one or more entries from the nodes database
+.SH Syntax
+.B /etc/remnode 
+[
+.I node
+]
+.SH Description
+.NXR "remnode command"
+.NXA "remnode command" "addnode command"
+.NXR "node" "removing from data base"
+For each given 
+.I node 
+argument, 
+.PN remnode
+deletes the corresponding node entry (or entries)
+from the nodes database. The nodes database is the one used by DECnet.
+The
+.I node 
+is either the node address or the node name for each node 
+entry that you want to delete.
+Note, you can specify more than one 
+.I node 
+argument in a single command.
+.PP
+A node address is a decimal integer in the range of 1 to 1023 
+for single area networks, or has the format 
+.I a.n 
+for multiarea networks, where 
+.I a
+is the network area number (a decimal integer in the range of 2 to 63) 
+and 
+.I n
+is the node number (a decimal integer in the range of 1 to 
+1023).
+.PP
+A node name can be from one to six
+alphanumeric characters, including at least one letter.
+.SH Examples
+This command removes the entries for nodes 44.70 and Mynode 
+from the nodes database:
+.EX
+# /etc/remnode 44.70 mynode <RET>
+.EE
+This command removes the entry for node lttwi from the nodes database:
+.EX
+# /etc/remnode lttwi <RET> 
+.EE
+.SH See Also
+addnode(8), ccr(8), getnode(8), load(8), mop_mom(8), trigger(8)

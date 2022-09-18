@@ -1,0 +1,130 @@
+.\" SCCSID: @(#)pty.4	3.1	11/24/87
+.TH pty 4
+.SH Name
+pty \- pseudoterminal driver
+.SH Syntax
+\fBpseudo-device pty[\|\fIn\fB\|]\fR
+.SH Description
+.NXR "pty interface"
+.NXR "pseudoterminal interface"
+.NXR "pseudoterminal" "defined"
+.NXR "slave pseudoterminal" "defined"
+.NXR "master pseudoterminal" "defined"
+The
+.PN pty
+driver provides support for a device-pair termed a
+.I pseudoterminal.
+A pseudoterminal is a pair of character devices, a
+.I master
+device and a
+.I slave
+device.  The slave device provides processes with
+an interface identical
+to that described in 
+.MS tty 4 .
+However, whereas all other devices that provide the 
+interface described in 
+.MS tty 4
+have a hardware device of some sort behind them, the slave
+device has, instead, another process manipulating
+it through the master half of the pseudoterminal.
+That is, anything written on the master device is
+given to the slave device as input and anything written
+on the slave device is presented as input on the master
+device.
+The slave device can be opened multiple times, while the master
+half can be opened only once.
+.PP
+If no optional \fIn\fR value is given defining
+the number of pseudoterminal pairs to be configured, 
+16 pseudoterminal pairs are configured.
+All pseudoterminal lines should have a corresponding entry in the
+/etc/ttys file.  This must be done to insure that logins that use 
+pseudoterminals will be tracked in the utmp and wtmp files.
+.PP
+The following 
+.PN ioctl
+calls apply only to pseudoterminals:
+.NXR "pseudoterminal interface" "ioctl list"
+.TP
+TIOCSTOP
+Stops output to a terminal (for example, like typing CTRL/S).  Takes
+no parameter.
+.TP
+TIOCSTART
+Restarts output (stopped by TIOCSTOP or by typing CTRL/S).
+Takes no parameter.
+.TP
+TIOCPKT
+Enable/disable 
+.I packet
+mode.  Packet mode is enabled by specifying (by reference)
+a nonzero parameter and disabled by specifying (by reference)
+a zero parameter.  When applied to the master side of a pseudoterminal, 
+each subsequent 
+.PN read 
+from the terminal will return data written on the slave part of
+the pseudoterminal preceded by a zero byte (symbolically
+defined as TIOCPKT_DATA), or a single byte reflecting control
+status information.  In the latter case, the byte is an inclusive-or
+of zero or more of the bits:
+.RS
+.TP
+TIOCPKT_FLUSHREAD
+whenever the read queue for the terminal is flushed.
+.TP
+TIOCPKT_FLUSHWRITE
+whenever the write queue for the terminal is flushed.
+.TP
+TIOCPKT_STOP
+whenever output to the terminal is stopped by typing CTRL/S.
+.TP
+TIOCPKT_START
+whenever output to the terminal is restarted.
+.TP
+TIOCPKT_DOSTOP
+whenever 
+the stop character
+is CTRL/S
+and 
+the start character
+is CTRL/Q.
+.TP
+TIOCPKT_NOSTOP
+whenever the start and stop characters are not CTRL/S and/or CTRL/Q.
+.RE
+.IP
+This mode is used by 
+.MS rlogin 1c
+and
+.MS rlogind 8c
+to implement a remote-echoed, locally flow-controlled (using CTRL/S
+or CTRL/Q, or both) remote login with proper back-flushing of output.
+It can be used by other similar programs.
+.TP
+TIOCREMOTE
+A mode for the master half of a pseudoterminal, independent
+of TIOCPKT.  This mode causes input to the pseudoterminal
+to be flow controlled and not input edited (regardless of the
+terminal mode).  Each write to the control terminal produces
+a record boundary for the process reading the terminal.  In
+normal usage, a write of data is like the data typed as a line
+on the terminal; a write of 0 bytes is like typing an end-of-file
+character.  TIOCREMOTE can be used when doing remote line
+editing in a window manager, or whenever flow-controlled input
+is required.
+.TP
+TIOCMASTER
+Allows the master to have complete control over the pseudoterminal and
+causes the slave side to sleep until the master relinquishes control.
+This is useful in preventing changes on the pseudoterminal from
+going undetected and being reset by the master.
+.SH Files
+.TP 15
+.PN /dev/pty??
+(master pseudoterminals)
+.TP
+.PN /dev/tty??
+(slave pseudoterminals)
+.SH See Also
+tty(4), MAKEDEV(8)

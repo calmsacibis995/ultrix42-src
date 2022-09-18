@@ -1,0 +1,21 @@
+.\" SCCSID: @(#)flush.3f	8.1	9/11/90
+.TH flush 3f VAX "" Unsupported
+.SH Name
+flush \- flush output to a logical unit
+.SH Syntax
+.B subroutine flush (lunit)
+.SH Description
+.NXR "flush subroutine (FORTRAN)
+.NXR "file" "flushing buffer to"
+The
+.PN flush
+function causes the contents of the buffer for logical unit
+.I lunit
+to be flushed to the associated file.
+This is most useful for logical units 0 and 6 when they are both
+associated with the control terminal.
+.SH Files
+.ie \nM /usr/ucb/lib/libI77.a
+.el /usr/lib/libI77.a
+.SH See Also
+fclose(3s)

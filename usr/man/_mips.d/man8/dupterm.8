@@ -1,0 +1,246 @@
+.\" to produce output: 
+.\" ditroff -Tln01 -t -man filename | lpr -n -Pln &
+.TH dupterm 8
+.SH Name
+dupterm \- DUP virtual terminal program
+.SH Syntax
+.B /usr/etc/dupterm
+.SH Description
+.NXR "dupterm utility"
+.NXR "DUP virtual terminal program"
+.NXR "DSA disk" "DSA tape" "managing"
+.NXS "Digital Storage Architecture" "DSA disk" "DSA tape"
+The DUP virtual terminal program 
+.PN dupterm
+provides access to the diagnostic and utility features of DSA (DIGITAL Storage
+Architecture) intelligent disk and tape controllers.
+.PP
+Depending upon the particular controller, operations may include the execution
+of controller resident diagnostics and utilities or those downloaded from the
+host system.
+.PP 
+Further information regarding the operation of the utility and diagnostic
+capabilities associated with a particular controller may be obtained from the
+appropriate documentation set for that controller. 
+.PP
+Once invoked, 
+.PN dupterm 
+prompts the user with "DUP>> ", and waits for a command.
+.PN dupterm
+can be in one of three states at any time. When it is started, it is in
+.PN local
+state. 
+When it has established a connection to the 
+.PN DUP
+.PN SYSAP
+on the remote controller, it is in the 
+.PN connect
+state.
+When it starts execution of a diagnostic or utility on the remote
+controller, it enters the
+.PN run
+state.
+In this state, user typein is normally transmitted to the remote
+program.
+To force 
+.PN dupterm
+to interpret a command locally instead, enter a '.' character as the
+first character of the command line.
+To transmit a '.' as the first character of a command line to the remote
+program, enter two periods as the first two characters of the command.
+.PP
+The 
+.PN dupterm
+program recognizes the following commands.
+Commands are case insensitive. 
+The minimum acceptable abbreviation for each command is shown in uppercase.
+.PP
+.IP "\fBHelp\fR" 8
+Displays a brief description of all commands.
+.IP "\fBABort\fI" 8
+Valid only in 
+.PN run
+state.
+Aborts the execution of the remote program. 
+Enters the 
+.PN connect
+state.
+.IP "\fBConnect \fIscs-node-name\fR" 8
+Valid only in 
+.PN local
+state.
+Attempts to establish a connection to the SCS node named
+.PN scs-node-name .
+If successful, 
+.PN dupterm
+enters the
+.PN connect
+state. Use the 
+.PN info
+command to get a list of available SCS nodes.
+.IP "\fB^ \fIchar\fR" 8
+Valid in 
+.PN run
+state.
+Sends a control character to the remote program. 
+The space between the "^" and 
+.PN char
+is ignored. 
+.IP "\fBDIsconnect\fR" 8
+Valid only in states 
+.PN connect
+or
+.PN run .
+Breaks the connection. 
+If a remote program was executing, terminates it as well.
+.IP "\fBDust\fR" 8
+Valid in states
+.PN connect
+or
+.PN run .
+Issues a GET DUP STATUS command to the connected controller, and
+displays the results.
+.IP "\fBINFO\fR" 8
+Valid in all states.
+Displays SCS related information, such as the node names and their SCS
+id's.
+.IP "\fBLOG [\fIlog-file-name\fR]" 8
+Valid in all states.
+If a file name is given, all interaction is logged in the file. If no
+file is given, terminates logging.
+.IP "\fBQuit\fR" 8
+Quits the 
+.PN dupterm
+session.
+.IP "\fBRunl \fItask-name\fR" 8
+Valid only in
+.PN connect
+state.
+Loads the  program 
+.PN task-name
+from the local media on the controller, and  starts its execution.
+If successful, 
+.PN dupterm
+enters the 
+.PN run
+state. 
+Whether
+.PN task-name
+is case-sensitive or not depends on the controller.
+.IP "\fBRUNS \fItask-or-file-name\fR" 8
+Valid only in
+.PN connect
+state.
+Attempts to load the program
+.PN task-or-file-name
+first from the file 
+.PN /usr/field/dup/
+.PN task-or-file-name.ext ,
+on the local host, and if not found, from the file
+.PN task-or-file-name ,
+and  starts its execution.
+.PN ext
+is the program name extension as returned by the controller.
+If successful, 
+.PN dupterm
+enters the
+.PN connect
+state.
+.IP "\fBSEt HSCmode \fI{ON|OFf}\fR" 8
+Valid in any state. When 
+.PN HSCMODE
+is set to 
+.PN ON , 
+.PN dupterm
+does some special processing needed by the HSC-nn controllers.
+.IP "\fBSEt SERver {\fI-d|scs_sysap_name\fR}" 8
+Valid in any state.
+Sets the name of the SYSAP name to use to establish the connection. If
+.B \-d
+option is given, tells it to use the default servers "DUP", 
+"MSCP$DUP", and "DUP$SERVER" in order.
+.IP "\fBSHOw NODe\fR" 8
+Valid only in the states
+.PN connect
+or
+.PN run .
+Displays the name of the node 
+.PN dupterm
+is connected to currently.
+.IP "\fBSHOw SERver\fR" 8
+Valid in any state. 
+Displays the current server setting.
+.IP "\fBSHOw STATus\fR" 8
+Valid in any state. Displays the current status of 
+.PN dupterm , 
+including which controller it is connected to, and which program it 
+is executing, if any.
+.IP "\fBSHOw TASk\fR" 8
+Valid only in 
+.PN run
+state.
+Shows the name of the remote diagnostic or utility currently executing.
+.IP "\fBSHOw VERsion\fR" 8
+Displays version information about dupterm and the dup driver. Useful for reporting problems.
+.IP "\fBSYNChronize\fR" 8
+Valid in all states. 
+Forces
+.PN dupterm
+to change its state to confirm to the actual state of the remote
+controller. 
+This is useful if the remote program does not confirm to the DUP
+Standard Dialogue.
+In this case, there is no way for 
+.PN dupterm
+to know that the remote program has terminated.
+This command can change the state appropriately.
+.SH Restrictions
+Execution of some diagnostic and utility programs may interfere with normal
+activities of the controller.  Refer to the appropriate controller
+documentation set for further specifics.
+.PP
+To use 
+.PN dupterm
+with a HSC-nn controller, first execute the command
+.PN set 
+.PN hsc
+.PN on
+before connecting. 
+When the connection is established, the "HSC-nn>> " prompt is displayed. 
+At this point, HSC commands may be entered. 
+When an HSC command completes, one must type 
+.br 
+.B \ \&.^Y
+.br
+to get the "HSC-nn>> " prompt again.
+To quit, type the command
+.br
+.B \ \&.abort
+.br
+to abort the program on the HSC, or
+.br
+.B \ \&.disconnect
+.br
+to abort and disconnect.
+Note that these commands must be preceded by a "." in order
+to force them to be interpreted by
+.PN dupterm
+locally, rather than being passed on to the controller.
+.PP
+The
+.PN dupterm
+program cannot be run with its input redirected. This has to do with the fact that it has
+to wait on both the controller, and the user input, and there is no reliable way
+to determine when the next line of input from the user should be read and sent to 
+the controller. This is a limitation of the 
+.PN DUP
+protocol.
+.SH Diagnostics
+The
+.PN dupterm
+utility generates messages when the user does not have the appropriate
+privileges and when operational errors occur.
+.SH Files
+.TP 20
+.PN /dev/fya<n>
+Device special files to connect to the driver.

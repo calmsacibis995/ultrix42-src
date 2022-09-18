@@ -1,0 +1,73 @@
+.TH hypot 3m RISC
+.ds up \fIulp\fR
+.ds nn \fINaN\fR
+.SH Name
+hypot, cabs \- Euclidean distance, complex absolute value
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double hypot(\fIx,y\fP)
+.B double \fIx,y;
+.PP
+.B float fhypot(float x, float y)
+.PP
+.B double cabs(\fIz\fP)
+.B struct {double x,y;} \fIz\fP;
+.PP
+.B float fcabs(\fIz\fP)
+.B struct {float x,y;} \fIz\fP;
+.fi
+.SH Description
+.NXR "hypot function"
+.NXR "cabs function"
+The 
+.PN hypot ,
+.PN fhypot ,
+.PN cabs ,
+and
+.PN fcabs
+functions return the following:
+.EX
+sqrt(x\(**x+y\(**y)
+.EE
+This computation prevents underflows and overflows only if
+the final result dictates it.
+.PP
+The functions
+.PN fhypot
+and
+.PN fcabs
+are equivalent to the
+.PN hypot
+and
+.PN cabs
+function with the exception of float data type.
+.SS Error 
+When rounding off, for example, below 0.97 \*(ups.  Consequently
+.PN hypot
+(5.0,12.0)\0=\013.0 exactly;
+in general,
+.PN hypot
+and
+.PN cabs
+return an integer whenever an integer might be expected.
+.PP
+The same cannot be said for the shorter and faster version of
+.PN hypot
+and
+.PN cabs
+that is provided in the comments in cabs.c; its error can
+exceed 1.2 \*(ups.
+.SH Return Values
+If the correct value overflows, 
+.PN hypot
+and
+.PN cabs
+return HUGE_VAL.   If
+.I x
+or
+.I y
+is \*(nn, then \*(nn is returned.
+.SH See Also
+math(3m), sqrt(3m)

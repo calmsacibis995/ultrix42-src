@@ -1,0 +1,58 @@
+% LPS$$SETCONTEXT device control library module.
+% Version V2.1-3
+%
+% Copyright (c) 1986, 1987, 1988, 1989 by Digital, Maynard, Mass.  All rights reserved.
+%
+/lps$paper-supported{lps$current-sheet where{pop}{mark lps$sheet-size
+lps$pn 66 returnstatus $error/newerror false put
+stop}ifelse}def/lps$paper-loaded{lps$current-sheet cvx{exec}stopped{mark
+lps$sheet-size lps$pn 58 returnstatus $error/newerror false put
+stop}if}def/paper-in-tray{pop mark lps$sheet-size lps$input-tray lps$pn 74
+returnstatus stop}def/lps$current-sheet papersize pop def
+lps$sheet-defaulted not{paper-size-dict lps$sheet-size get dup
+lps$current-sheet ne{lps$input-tray(unspecified)eq{/lps$current-sheet exch
+def lps$paper-supported
+lps$paper-loaded}{paper-in-tray}ifelse}{pop}ifelse}if
+10{checkconfiguration{exit}{pop dup/cantduplexfaceup
+eq{lps$output-tray(unspecified)eq{3 setoutputtray mark(TOP)lps$pn 99
+returnstatus}{mark lps$pn 170 returnstatus}ifelse}{mark exch lps$pn 84
+returnstatus}ifelse cleartomark}ifelse}repeat
+lps$sides-defaulted?{statusdict begin/defaultduplexmode where{pop
+defaultduplexmode not{/defaulttumblemode where{pop defaulttumblemode
+not{/firstside true def}if}{/firstside true def}ifelse}if}if end}if
+lps$page-layup?{lps$page-layup-dict begin mark 841.89 1190.55/a3tray 595.28
+841.89/a4tray 419.53 595.28/a5tray 728.5 1031.81/b4tray 515.91 728.5/b5tray
+649.13 918.43/c4tray 459.21 649.13/c5tray 311.80 623.62/dltray 540
+756/executivetray 396 612/halflettertray 612 792/lettertray 792
+1224/11x17tray 612 1008/legaltray 720 936/10x13tray 648 864/9x12tray 297
+684/#10envelopetray counttomark 1 add copy{dup mark eq{exit}if
+lps$current-sheet eq{set-sheet-size exit}if pop pop}loop
+cleartomark/lps$page-size-name paper-size-dict lps$page-size get def{dup
+mark eq{exit}if lps$page-size-name eq{set-page-size exit}if pop pop}loop
+cleartomark lps$page-orientation(portrait)eq set-orientation
+lps$tumble?{(t)set-default-margin-flip}{lps$logical-duplex?{(l)
+set-default-margin-flip}if}ifelse lps$logical-duplex?
+set-firstside-alternates do-page-layup plu-hooks end 2{currentdict
+end}repeat 3 -1 roll 3{begin}repeat}if/lps$old-copypage/copypage load
+def/lps$old-restore/restore load def/lps$old-showpage/showpage load def
+lps$page-limits?{/lps$incr-pages-printed{lps$lpsdict/lps$pages-printed 2
+copy get 1 add put}bind def/lps$pages-printed
+lps$add-preserved-object/lps$throw-out-page{erasepage initgraphics}bind
+def/showpage{lps$pages-printed lps$page-low-limit lt{lps$throw-out-page
+lps$incr-pages-printed}{lps$page-high-limit 0 ne{lps$page-high-limit
+lps$pages-printed lt{lps$page-layup?{lps$page-layup-dict begin flush-pages
+end}if mark 91 statusdict begin returnstatus end stop}{lps$old-showpage
+lps$incr-pages-printed}ifelse}{lps$old-showpage}ifelse}ifelse}bind
+def/copypage{lps$pages-printed lps$page-low-limit
+lt{lps$incr-pages-printed}{lps$page-high-limit 0 ne{lps$page-high-limit
+lps$pages-printed lt{mark 91 statusdict begin returnstatus end
+stop}{lps$old-copypage
+lps$incr-pages-printed}ifelse}{lps$old-copypage}ifelse}ifelse}bind def}if
+lps$redefine-restore?{/restore{lps$preserved-objects{pop dup load}forall
+lps$preserved-objects length mul 2 1 add -1 roll lps$old-restore
+lps$preserved-objects length -1 1{pop store}for}bind
+def}if/lps$enter-standard-state{lps$page-layup?{lps$page-layup-dict begin
+flush-pages end}if save systemdict begin 10 dict begin/lps$strange-state
+exch def initgraphics erasepage/#copies 1 def}bind
+def/lps$exit-standard-state{lps$strange-state end end restore}bind def end
+end lps$lpsdict begin userdict begin

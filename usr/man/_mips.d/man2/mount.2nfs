@@ -1,0 +1,229 @@
+.\" SCCSID: @(#)mount.2nfs	8.2	12/3/90
+.TH mount 2nfs
+.SH Name
+mount, umount \- mount or remove an NFS file system
+.SH Syntax
+#include <sys/types.h>
+.br
+#include <sys/fs_types.h>
+.sp
+mount(\fIspecial, name, rwflag, type, options\fP)
+.br
+char \fI*special, *name\fP;
+.br
+int \fIrwflag, type\fP;
+.br
+char \fI*options\fP;
+.PP
+.ft B
+.B umount(\fIdev\fP)
+.br
+.B dev_t \fIdev\fP;
+.SH Description
+.NXB "mount system call (NFS)"
+.NXB "NFS file system" "mounting remote"
+.NXR "umount system call (NFS)"
+The 
+.PN mount
+system call announces to the system that a remote NFS file system has
+been mounted on
+directory
+.I name.
+References to file
+.I name
+refer to
+the root file on the newly mounted file system.
+.PP
+The 
+.I special 
+argument is a pointer to a null-terminated string containing
+the pathname of the file system being mounted. It is of the form: 
+.EX
+host:pathname
+.EE
+The 
+.I name 
+argument is a pointer to a null-terminated string containing the
+pathname of the root file on the newly mounted file system.
+The
+.I name
+must already exist and must be a directory.
+Its old contents
+are inaccessible while the file system
+is mounted.
+.PP
+The
+.I rwflag
+argument is used to determine whether
+the file system can be written to; if it is 0, the file system is writable,
+if nonzero, the file system is write-protected.
+.PP
+The 
+.I type 
+argument identifies the file system type that is being mounted.
+The DEFINE statement for the
+.I nfs
+type is:
+.EX
+#define GT_NFS   0x04 
+.EE
+The
+.I nfs 
+file system type is defined in the <fs_types.h> file.
+.PP
+The 
+.I options 
+argument specifies certain parameters that can be used to define how
+the file system is to be mounted.  The
+.MS mount(8nfs)
+description lists the available NFS options.
+.PP
+./" THE FOLLOWING COMMENTED-OUT TEXT HAS BEEN LEFT IN FOR HISTORICAL
+./" PURPOSES.  THE TEXT IS FROM THE ORIGINAL NFS MOUNT ROUTINE AND MAY
+./" NEEDED AT A LATER DATE.
+./"The
+./".I data
+./"argument is a pointer to a structure which contains the type-specific
+./"arguments to mount.  Below is a list of the filesystem types supported
+./"and the type specific arguments to each:
+./".nf
+./".ta \w'#include'u +\w'fhandle_t\0\0'u +\w'retrans;\0\0'u
+./".TP 4
+./".B MOUNT_UFS
+./"struct ufs_args {
+./"	char    *fspec;		/* Block special file to mount */
+./"};
+./".TP 4
+./".B MOUNT_NFS
+./"#include	<nfs/nfs.h>
+./"#include	<netinet/in.h>
+./"struct nfs_args {
+./"	struct sockaddr_in  *addr;  /* file server address */
+./"	fhandle_t	*fh;	/* File handle to be mounted */
+./"	int	flags;	/* flags */
+./"	int	wsize;	/* write size in bytes */
+./"	int	rsize;	/* read size in bytes */
+./"	int	timeo;	/* initial timeout in .1 secs */
+./"	int	retrans;	/* times to retry send */
+./"};
+./".fi
+
+.PP
+The following structure is used by the 
+.PN nfs_mount 
+user-level
+routine as the fifth argument when making a 
+.PN mount 
+system call.
+.EX 0
+struct nfs_gfs_mount {                                        
+       struct sockaddr_in addr;   /* File server address /* 
+       fhandle_t  fh;             /* File handle to be mounted /* 
+       int   flags;               /* Flags handler /*         
+       int   wsize;               /* Write size in bytes /*     
+       int   rsize;               /* Read size in bytes /*       
+       int   timeo;               /* Initial timeout in .1 secs. /* 
+       int   retrans;             /* Times to retry send /*   
+       char *hostname;            /* Server's host name /*     
+       char *optstr;              /* Options string /*
+       int   gfs_flags;           /* GFS flags /*
+       int   pg_thresh;           /* Page threshold for exec /*
+    };
+.EE
+.SH Return Values
+The
+.PN mount
+system call returns a value of 0 upon successful completion of a 
+operation, \-1 if the operation fails.  
+.PP
+The
+.PN umount
+system call announces to the system that the remote file system mounted
+on directory
+.I name 
+is no longer available.
+The directory 
+.I name 
+reverts to its ordinary interpretation.
+.PP
+The
+.PN umount
+system call
+returns 0 if the dismount operation succeeds, \-1 if it fails.  
+.SH Diagnostics
+.NXR "mount system call (NFS)" "diagnostics"
+The
+.PN mount
+call fails under the following conditions:
+.TP 15
+[EPERM]
+The caller is not the superuser and is not the owner of the mount point.
+.TP 15
+[ENODEV]
+A component
+of
+.I special
+does not exist.
+.TP 15
+[EINVAL]
+The pathname contains a character with the high-order bit set.
+.TP 15
+[ENOTDIR]
+A component of
+.I name
+is not a directory.
+.TP 15
+[EBUSY]
+Another process currently holds a reference to
+.I name.
+.TP 15
+[ENAMETOOLONG]
+A component of the pathname exceeded 255 characters,
+or the entire length of the pathname exceeded 1023
+characters.
+.TP 15
+[ELOOP]
+Too many symbolic links were encountered in translating
+the pathname.
+.TP 15
+[ENOENT]
+A component of
+.I name
+does not exist.
+.TP 15
+[EMFILE]
+No space remains in the mount table.
+.TP 15
+[EFAULT]
+The
+.I special
+or
+.I name
+points outside the process's allocated address space space.
+.TP 15
+[ESTALE]
+The 
+.I fhandle
+given in the argument was invalid.  The file referred to by
+that file handle no longer exists or has been revoked.
+.PP
+The
+.PN umount
+call fails under the following conditions:
+.TP 15
+[EPERM]
+The caller is not the superuser and is not the owner of the mount point.
+.TP 15
+[EINVAL]
+The requested mounted-on directory is not in the mount table.
+.TP 15
+[EBUSY]
+A process is holding a reference to a file located
+on the file system.
+.TP 15
+[EIO]
+An I/O error occurred while writing cached file system information.
+.SH See Also
+mount(2), gfsi(5), mount(8nfs)
+.NXE "mount system call (NFS)"
+.NXE "NFS file system" "mounting remote"

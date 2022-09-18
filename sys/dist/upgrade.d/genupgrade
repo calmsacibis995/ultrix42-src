@@ -1,0 +1,95 @@
+#!/bin/sh
+#@(#)genupgrade	4.1 (ULTRIX) 7/2/90
+# usage: sh genupgrade [ /dev/** ] 
+#
+# Description: generate the upgrade capacity kit.
+#		tu58, rx01, rx50, tk50, and mt9.
+#
+# 000 - Jan , 1987 - Tung-Ning Cherng created.
+#
+
+SOURCEDIR=${SORUCEDIR-'/usr/release/build/sys/dist/upgrade'}
+PROG=$0
+USAGE="usage: sh $PROG [ /dev/* ]"
+LL="
+"
+
+DEVICE=${1-xxx}
+while : true
+do
+	case $DEVICE in
+	xxx )
+		echo -n "
+Making V2.0 upgrade CAPACITY
+
+	RX01: /dev/floppy
+	TU58: /dev/tu?
+	RX50: /dev/rra?a
+	TK50: /dev/rmt?h
+	MT9: /dev/rmt?? /* make sure is 1600 bpi */
+
+Enter the device name [no default]?  "
+		read DEVICE 
+		;;
+	esac
+	case $DEVICE in
+	/dev/rmt* )
+		echo "Rewinding ..."
+		mt -f $DEVICE rew
+		case $? in
+		0 )	;;
+		* )
+			echo "$DEVICE can not access."
+			DEVICE="xxx"
+			continue
+			;;
+		esac
+		;;
+	/dev/floppy | /dev/*ra* | /dev/tu* )
+		dd if=$DEVICE bs=1b count=1 > /dev/null 2>&1	
+		case $? in
+		0 )	;;
+		* )
+			echo "$DEVICE can not access."
+			DEVICE="xxx"
+			continue
+			;;
+		esac
+		;;
+	* )
+		echo "Invalid name. Please enter again"
+		DEVICE="xxx"
+		continue
+		;;
+	esac
+	break
+done
+
+echo "${LL}Starting... `date`"
+while :
+do
+	echo -n "
+How many users capacity < 65+ 64 32 16 8 2 >?  (Type q for exit )
+Enter the number: "
+	read ans
+	case $ans in
+	65* )
+		echo "${LL}Making 65+ nolimt users upgrade kit."
+		cp ${SOURCEDIR}/upgrade0 /tmp/upgrade || exit 1
+		(cd /tmp; tar cf $DEVICE ./upgrade )
+		echo "Removing the media now."
+		;;
+	64 | 32 | 16 | 8 | 2 )
+		echo "${LL}Making $ans users upgrade kit."
+		cp ${SOURCEDIR}/upgrade$ans /tmp/upgrade || exit 1
+		(cd /tmp; tar cf $DEVICE ./upgrade )
+		echo "Removing the media now."
+		;;
+	q* )
+		exit 0 ;;
+	* )
+		echo "Invalid input"
+		;;
+	esac
+done
+

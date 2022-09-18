@@ -1,0 +1,1281 @@
+.TH nawk 1
+.SH Name
+nawk \- data transformation, report generation language
+.SH Syntax
+.B nawk
+[
+.B \-f
+.I programfile
+] [
+.BI \-F s
+] [
+.I program
+] [
+.IB var = value ...
+] [
+.I file ...
+]
+.SH Description
+.NX R "nawk utility" "described"
+.NX A "awk programming language" "nawk utility"
+The
+.PN nawk
+language is a file-processing language which is well-suited to
+data manipulation and retrieval of information from text files.
+This reference page provides a full technical description of
+.PN nawk ;
+if you are unfamiliar with the language, you will probably
+find it helpful to read the
+\fIGuide to the nawk Utility\fP
+before reading the following material.
+.PP
+A
+.PN nawk
+program consists of any number of user-defined functions
+and `rules' of the form:
+.EX
+\fIpattern\fP {\fIaction\fP}
+.EE
+There are two ways to specify the
+.PN nawk
+program:
+.IP (a) .5i
+Directly on the command line.  In this case, the
+.I program
+is a single command line argument, usually enclosed in apostrophes
+.Pn ( ' ).
+.IP (b) .5i
+By using the
+.B \-f
+.I programfile
+option (where
+.I programfile
+contains the
+.PN nawk
+program).  More than one
+.B \-f
+option can appear on the command line.  The program will consist of the
+concatenation of the contents of all the specified
+.IR programfiles .\ 
+You can use
+.B \-
+in place of a file name, to obtain input from the standard input.
+.PP
+The input data manipulated by the
+.PN nawk
+program is provided in
+.I files
+specified on the command line.  If no such files are specified, data is
+read from the standard input.  You can also specify a file name of
+.B \-
+to mean the standard input.
+.PP
+Input to
+.PN nawk
+is divided into
+.IR records .\ 
+By default, records are separated by new-line characters; however, you
+can specify a different record separator if you wish.
+.PP
+One at a time, and in order, each input record is compared with the
+pattern of every `rule' in the
+.PN nawk
+program.  When a pattern matches, the action part of the rule is
+performed on the current input record. Patterns and actions often refer
+to separate
+.I fields
+within a record.  By default, fields are separated by white space
+(blanks, new-lines, or horizontal tab characters); however, you can
+specify a different field separator string using the
+.BI \-F s
+option (see
+.BR Input ).
+.PP
+You can omit the
+.I pattern
+or
+.I action
+part of a
+.PN nawk
+rule (but not both).
+If
+.I pattern
+is omitted, the
+.I action
+is performed on every input record (as if every record matches).
+If
+.I action
+is omitted, every record matching the
+.I pattern
+will be written to the standard output.
+.PP
+If a line in a
+.PN nawk
+program contains a `#' character, the `#' and everything after it is
+considered to be a comment.
+.PP
+Program lines can be continued by adding a backslash `\e'
+to the end of the line.  Statement lines ending with a comma `,',
+double or-bars `||', or double ampersands `&&', are automatically
+continued.
+.SH Options
+.IP "\-f \fIprogramfile\fP"
+Tells
+.PN nawk
+to obtain its program from the specified file.  There can be more than
+one of these on the command line.
+.IP \-F\fIs\fP
+Says that
+.I s
+is the field separator character within records.
+.SS Variables and Expressions
+There are three types of
+.I variables
+in
+.PN nawk :
+.IR identifiers ,
+.IR fields ,
+and
+.IR "array elements" .
+.PP
+An
+.I identifier
+is a sequence of letters, digits, and underscores beginning with a
+letter or an underscore.
+.PP
+.I Fields
+are described in the
+.B Input
+subsection.
+.PP
+.NX R "nawk utility" "arrays"
+Arrays are associative collections of values called the
+.I elements
+of the array.  Array elements are referenced with constructs of the
+form
+.EX
+\fIidentifier\fP[\fIsubscript\fP]
+.EE
+where
+.I subscript
+has the form
+.I expr
+or
+.I expr,expr,...
+Each such
+.I expr
+can have any string value.  Arrays with multiple
+.I expr
+subscripts are implemented by concatenating the string values of each
+.I expr
+with a separator character SUBSEP
+separating multiple
+.IR expr .\ 
+The initial value of SUBSEP is set to `\e034' (ASCII field separator).
+.PP
+Fields and identifiers are sometimes called
+.I "scalar variables"
+to distinguish them from arrays.
+.PP
+Variables are not declared and need not be initialized.  The value of
+an uninitialized variable is the empty string.  Variables can be
+initialized on the command line using
+.EX
+\fIvar\fP=\fIvalue\fP
+.EE
+Such initializations can be interspersed with the names of input files
+on the command line.  Initializations and input files will be processed
+in the order they appear on the command line.  For example, the command
+.EX
+nawk \-f progfile A=1 f1 f2 A=2 f3
+.EE
+sets A to 1 before input is read from f1 and sets A to 2 before input
+is read from f3.
+.PP
+Certain built-in variables have special meaning to
+.PN nawk ,
+as described in later sections.
+.PP
+Expressions consist of constants, variables, functions, regular
+expressions and `subscript in array' conditions (see below) combined
+with operators.  Each variable and expression has a string value and a
+corresponding numeric value; the value appropriate to the context is
+used.  If a string is used in a numeric context, and the contents of
+the string cannot be interpreted as a number, the `value' of the string
+is taken to be zero.
+.PP
+Numeric constants are sequences of decimal digits.
+.PP
+String constants are quoted, as in
+.B "x".
+Escape sequences accepted in literal strings are:
+.RS
+.PP
+.TS
+tab(@);
+lfHB lfHB
+lfCW l.
+Escape@ASCII Character
+_
+\ea@audible bell
+\eb@backspace
+\ef@formfeed
+\en@new-line
+\er@carriage return
+\et@horizontal tab
+\ev@vertical tab
+\e\fIooo\fP@octal value \fIooo\fP
+\ex\fIdd\fP@hexadecimal value \fIdd\fP
+\e"@quotation mark
+\e\fIc\fP@any other character \fIc\fP
+.TE
+.PP
+.RE
+The regular expression syntax understood by
+.PN nawk
+is the extended regular expressions of the
+.PN egrep
+utility described in
+.MS grep 1 .\ 
+Characters enclosed in slash characters `/' are compiled as regular
+expressions when the
+.PN nawk
+program is read.  In addition, literal strings and variables are
+interpreted as dynamic regular expressions on the right side of a `~'
+or `!~' operator, or as certain arguments to built-in matching and
+substitution functions.  Note that when literal strings are used as
+regular expressions, extra backslashes are needed to escape regular
+expression metacharacters because the backslash is also the literal
+string escape character.
+.PP
+The `subscript in array' condition is defined as:
+.EX
+\fIindex\fP in \fIarray\fP
+.EE
+where
+.I index
+looks like
+.I expr
+or
+.IR (expr,...,expr) .
+This condition evaluates to 1 if the string value of
+.I index
+is a subscript of
+.IR array ,
+and to 0 otherwise.  This is a way to determine if an array element
+exists.  If the element does not exist, this condition will
+.B not
+create it.
+.SS Symbol Table
+The symbol table can be accessed through the built-in array SYMTAB.
+.EX
+SYMTAB[\fIexpr\fP]
+.EE
+is equivalent to the variable named by the evaluation of
+.IR expr .\ 
+For example,
+.EX
+SYMTAB["var"]
+.EE
+is a synonym for the variable
+.IR var .
+.SS Environment
+A
+.PN nawk
+program can determine its initial environment by examining the ENVIRON
+array.
+If the environment consists of entries of the form:
+.EX
+\fIname\fP=\fIvalue\fP
+.EE
+then
+.EX
+ENVIRON[\fIname\fP]
+.EE
+has string value
+.EX
+"\fIvalue\fP"
+.EE
+For example, the following program is equivalent to the default output
+of
+.MS env 1 :
+.EX
+BEGIN   {
+        for (i in ENVIRON)
+                printf("%s=%s\en", i, ENVIRON[i])
+        exit
+}
+.EE
+.SS Operators
+The usual precedence order of arithmetic operations is followed unless
+overridden with parentheses; a table giving the order of operations
+appears at the end of the
+\fIGuide to the nawk Utility\fP.
+The unary operators are
+.RS
+.PP
+.TS
+tab(@);
+lfCW l.
+\&-@Negation
+\&+@Nothing (place holder)
+\&--@Decrement by one
+\&++@Increment by one
+.TE
+.PP
+.RE
+where the `++' and `\-\^\-' operators can be used as either
+postfix or prefix operators, as in C.
+.PP
+The binary arithmetic operators are
+.RS
+.PP
+.TS
+tab(@);
+lfCW l.
+\&+@Addition
+\&-@Subtraction
+\&*@Multiplication
+\&/@Division
+\&%@Modulus
+\&^@Exponentiation
+.TE
+.PP
+.RE
+The conditional operator
+.EX
+\fIexpr\fP ? \fIexpr1\fP : \fIexpr2\fP
+.EE
+evaluates to
+.I expr1
+if the value of
+.I expr
+is non-zero, and to
+.I expr2
+otherwise.
+.PP
+If two expressions are not separated by an operator, their string
+values are concatenated.
+.PP
+The operator `~' yields 1 (true) if the regular expression
+on the right side matches the string on the left side.  The operator
+`!~' yields 1 when the right side has no match on the left.  To
+illustrate:
+.EX
+$2 ~ /[0-9]/
+.EE
+selects any line where the second field contains at least one digit.
+Any string or variable on the right side of `~' or `!~' is
+interpreted as a dynamic regular expression.
+.PP
+The relational operators are the usual `<', `<=', `>', `>=', `==', and `!='.
+.PP
+The boolean operators are `||' (or), `&&' (and),
+and `!' (not).
+.PP
+Values can be assigned to a variable with
+.EX
+\fIvar\fP = \fIexpr\fP
+.EE
+If
+.I op
+is a binary arithmetic operator,
+.EX
+var op= expr
+.EE
+is equivalent to
+.EX
+var = var op expr
+.EE
+.SS "Command Line Arguments"
+The built-in variable ARGC
+is set to the number of command line arguments.
+The built-in array ARGV
+has elements subscripted with digits from zero to ARGC-1,
+giving command line arguments in the order they appeared
+on the command line.
+.PP
+The ARGC count and the ARGV vector do not include command line options
+(beginning with `\-') or the program file (following
+.PN \-f ).\ 
+They do include the name of the command itself, initialization
+statements of the form
+.EX
+\fIvar\fP=\fIvalue\fP
+.EE
+and the names of input data files.
+.PP
+The
+.PN nawk
+language actually creates ARGC and ARGV before doing anything else.  It
+then walks through ARGV processing the arguments.  If an element of ARGV
+is the empty string, it is simply skipped.  If it contains an equals
+sign `=', it is interpreted as a variable assignment.  If it is a minus
+sign `\-', it stands for the standard input and input is immediately
+read from the standard input until end-of-file is encountered.
+Otherwise, the argument is taken to be a file name; input will be read
+from that file until end-of-file is reached.  Note that the program is
+executed by `walking through' ARGV in this way; thus if the program
+changes ARGV, different files can be read and assignments made.
+.SS Input
+Input is divided into records.  Each record is separated from the next
+with a
+.IR "record separator character" .
+The value of the built-in variable RS gives the current record
+separator character; by default, it begins as the new-line `\en'.  If
+you assign a different character to RS,
+.PN nawk
+will use that as the record separator character from that point on.
+.PP
+Records are divided into fields.  Each field is separated from the next
+with a
+.IR "field separator string" ,
+given by the value of the built-in variable FS.
+You can set a specific separator string by assigning a value to FS
+or by specifying the
+.BI \-F  s
+option on the command line.  FS can be be assigned a regular
+expression. For example,
+.EX
+FS = "[,:$]"
+.EE
+says that fields can be separated by commas, colons, or dollar signs.
+As a special case, assigning FS a string containing only a blank character
+sets the field separator to white space.  In this case, any sequence of
+contiguous space and/or tab characters is considered a single field
+separator.  This is the default for FS.  However, if FS is assigned a
+string containing any other character, that character designates the
+start of a new field.  For example, if we set
+.EX
+FS="\et"
+.EE
+(the tab character),
+.EX
+texta \et textb \et  \et  \et textc
+.EE
+contains five fields, two of which only contain blanks.  With the
+default setting, the above would only contain three fields because the
+sequence of multiple blanks and tabs would be considered a single
+separator.
+.PP
+Various pieces of information about input are provided by the
+built-in variables listed below.
+.PP
+.TS
+tab(@);
+lfCW l.
+NF       @Number of fields in the current record
+NR       @Number of records read so far
+FILENAME @Name of file containing current record
+FNR      @Number of records read from current file
+.TE
+.PP
+.I "Field specifiers"
+have the form
+.BI $ i
+where
+.I i
+runs from 1 through NF.  Such a field specifier refers to the
+.IR i th
+field of the current input record.
+.B $0
+(zero) refers to the entire current input record.
+.PP
+The
+.B getline
+function can read a value for a variable or
+.B $0
+from the current input, from a file, or from a pipe.  The result of
+.B getline
+is an integer indicating whether the read operation was successful.  A
+value of 1 indicates success; 0 indicates end-of-file encountered; and
+\-1 indicates that an error occurred. Possible forms for
+.B getline
+are:
+.IP getline .5i
+Reads next input record into
+.B $0
+and splits the record into fields.  NF, NR, and FNR are set
+appropriately.
+.IP "getline \fIvar\fP"
+Reads next input record into the variable
+.IR var .\ 
+The record is not split into fields (which means that the current
+.BI $ i
+values do not change).  NR and FNR are set appropriately.
+.IP "getline <\fIexpr\fP"
+Interprets the string value of
+.I expr
+to be a file name.  The next record from that file is read into
+.B $0
+and split into fields.  NF is set appropriately.
+.IP "getline \fIvar\fP <\fIexpr\fP"
+Interprets the string value of
+.I expr
+to be a file name, and reads the next record from that file into
+the variable
+.IR var .\ 
+The record is not split into fields.
+.IP "\fIexpr\fP | getline"
+Interprets the string value of
+.I expr
+as a command line to be executed.  Output from this command is piped
+into
+.BR getline ,
+and read into
+.B $0
+in a manner similar to \fBgetline <\fP\fIexpr\fP.  See the SYSTEM
+FUNCTION section for additional details.
+.IP "\fIexpr\fP | getline \fIvar\fP"
+Executes the string value of
+.I expr
+as a command and pipes the output of the command into
+.BR getline .\ 
+The result is similar to
+\fBgetline \fP\fIvar\fP\fB <\fP\fIexpr\fP.
+.IP "close(\fIexpr\fP)"
+Only a limited number of files and pipes can be open at one time.  This
+function will close open files or pipes.  The
+.I expr
+must be one that came before `|' or after `>' in
+.BR getline ,
+or after `>', `>>', or `|' in
+.B print
+or
+.B printf
+as described in the
+.B Output
+section.  By closing files and pipes that are no longer needed, you can
+use any number of files and pipes in the course of executing a
+.PN nawk
+program.
+.SS Built-In Arithmetic Functions
+.NX R "nawk utility" "built-in functions"
+.IP "int(\fIexpr\fP)" .4i
+Returns the integer part of the numeric value of
+.IR expr .\ 
+If
+.BI ( expr )
+is omitted, the integer part of
+.B $0
+is returned.
+.IP "exp(\fIexpr\fP), log(\fIexpr\fP), sqrt(\fIexpr\fP)"
+Returns the exponential, natural logarithm, and square root
+of the numeric value of
+.IR expr .\ 
+If
+.RI ( expr )
+is omitted,
+.B $0
+is used.
+.IP "sin(\fIexpr\fP), cos(\fIexpr\fP)"
+Returns the sine and cosine of the numeric value of
+.I expr
+(interpreted as an angle in radians).
+.IP "atan2(\fIexpr1\fP, \fIexpr2\fP)"
+Returns the arctangent of
+.I expr1/expr2
+in the range of \-\(*p through \(*p.
+.IP "rand()"
+Returns a random floating-point number in the range 0 through 1.
+.IP "srand(\fIexpr\fP)"
+Sets the seed of the
+.B rand
+function to the integer value of
+.IR expr .\ 
+If
+.RI ( expr )
+is omitted,
+.PN nawk
+sets a default seed (which is the same each time
+.PN nawk
+is invoked).
+.SS "Built-In String Functions"
+.NX R "nawk utility" "built-in functions"
+.IP "\fIlen\fP = length(\fIexpr\fP)"
+Returns the number of characters in the string value of
+.IR expr .
+If (\fIexpr\fP) is omitted,
+.B $0
+is used.
+.IP "\fIn\fP = split\fP(\fIstring\fP, \fIarray\fP, \fIregexp\fP)"
+Splits the
+.I string
+into fields.  The expression
+.I regexp
+is a regular expression giving the field separator string for
+the purposes of this operation.  The elements of
+.I array
+are assigned the separated fields in order; subscripts for
+.I array
+begin at 1.  All other elements of
+.I array
+are discarded.  The result of
+.B split
+is the number of fields into which
+.I string
+was divided (which is also the maximum subscript for
+.IR array ).
+Note that
+.I regexp
+divides the record in the same way that the FS field separator string
+does.  If
+.I regexp
+is omitted in the call to
+.BR split ,
+the current value of FS will be used.
+.IP "\fIstr\fP = substr(\fIstring\fP, \fIm\fP, \fIlen\fP)"
+Returns the substring of
+.I string
+that begins in position
+.I m
+and is at most
+.I len
+characters long.  The first character of the string has
+.I m
+equal to one.  If
+.I len
+is omitted, the rest of
+.I string
+is returned.
+.IP "\fIpos\fP = index\fP(\fIs1\fP, \fIs2\fP)"
+Returns the position of the first occurrence of string
+.I s2
+in string
+.IR s1 ;
+if
+.I s2
+is not found in
+.IR s1 ,
+.B index
+returns zero.
+.IP "\fIpos\fP\fP = match\fP(\fIstring\fP, \fIregexp\f(CW)"
+Searches
+.I string
+for the first substring matching the regular expression
+.IR regexp ,
+and returns an integer giving the position of this substring.  If no
+such substring is found,
+.B match
+returns zero.  The built-in variable RSTART
+is set to
+.I pos
+and the built-in variable RLENGTH
+is set to the length of the matched string.  These are both set to zero
+if there is no match.  The
+.I regexp
+can be enclosed in slashes or given as a string.
+.IP "\fIn\fP = gsub\fP(\fIregexp\fP, \fIrepl\fP, \fIstring\fP)"
+globally replaces all substrings of
+.I string
+that match the regular expression
+.IR regexp ,
+and replaces the substring with the string
+.IR repl .\ 
+If
+.I string
+is omitted, the current record (\f(CW$0\fP) is used.  The notation
+.B gsub
+returns the number of substrings that were replaced
+or zero if no match occurred.
+.IP "\fIn\fP = sub\fP(\fIregexp\fP, \fIrepl\fP, \fIstring\fP)"
+Works like
+.B gsub
+except that at most one match and substitution is attempted.
+.IP "\fIstr\fP = sprintf\fP(\fIfmt\fP, \fIexpr\fP, \fIexpr...\fP)"
+Formats the expression list
+.I "expr, expr, ..."
+using specifications from the string
+.IR fmt ,
+then returns the formatted string.  The
+.I fmt
+string consists of conversion specifications which convert and add
+the next
+.I expr
+to the string, and ordinary characters which are simply added to the
+string.  Conversion specifications have the form
+.EX
+%[-][\fIx\fP][.\fIy\fP]\fIc\fP
+.EE
+where
+.\"	.PP not used in order to preserve horizontal location.
+.IP ""
+.TS
+tab(@);
+lfI  l.
+\-@left justifies the field
+x@is the minimum field width
+y@is the precision
+c@is the conversion character
+.TE
+.IP ""
+.\"	.PP not used in order to preserve horizontal location.
+In a string, the precision is the maximum number of characters to be
+printed from the string; in a number, the precision is the number of
+digits to be printed to the right of the decimal point in a floating
+point value.  If
+.I x
+or
+.I y
+is `*' (asterisk), the minimum field width or precision will be
+the value of the next
+.I expr
+in the call to
+.BR sprintf .
+.IP ""
+The conversion character
+.I c
+is one of following:
+.\"	.PP not used in order to preserve horizontal location.
+.IP ""
+.TS
+tab(@);
+lfCW l.
+d@Decimal integer
+o@Unsigned octal integer
+x@Unsigned hexadecimal integer
+u@Unsigned decimal integer
+f@Floating point
+e@Floating point (scientific notation)
+g@The shorter of e and f (suppresses non-significant zeros)
+c@Single character of an integer value
+s@String
+.TE
+.IP ""
+.\"	.PP not used in order to preserve horizontal location.
+.IP "\fIn\fP = ord\fP(\fIexpr\fP)"
+Returns the integer value of first character in the string value of
+.IR expr .\ 
+This is useful in conjunction with `%c' in
+.BR sprintf .
+.IP "\fIstr\fP = tolower\fP(\fIexpr\fP)"
+Converts all letters in the string value of
+.I expr
+into lower case, and returns the result.  If
+.I expr
+is omitted,
+.B $0
+is used.
+.IP "\fIstr\fP = toupper\fP(\fIexpr\fP)"
+Converts all letters in the string value of
+.I expr
+into upper case, and returns the result.  If
+.I expr
+is omitted,
+.B $0
+is used.
+.SS "The System Function"
+.IP "\fIstatus\fP = system\fP(\fIexpr\fP)"
+Executes the string value of
+.I expr
+as a command.  For example,
+.EX
+system("tail " $1)
+.EE
+calls the
+.MS tail 1
+command, using the string value of
+.B $1
+as the file that
+.PN tail
+should examine.  See the
+.B Restrictions
+section for a discussion of the execution of
+the command.
+.SS "User-Defined Functions"
+.NX R "nawk utility" "user-defined functions"
+You can define your own functions using the form
+.EX
+function \fIname\fP(\fIparameter-list\fP) {
+        \fIstatements\fP
+}
+.EE
+A function definition can appear in the place of a
+.IB pattern\  { action }
+rule.  The
+.I parameter-list
+contains any number of normal (scalar) and array variables separated by
+commas.  When a function is called, scalar arguments are passed by
+value, and array arguments are passed by reference.  The names
+specified in the
+.I parameter-list
+are local to the function; all other names used in the function are
+are global.  Local scalar variables can be defined by adding them to
+the end of the parameter list.  These extra parameters are not used in
+any call to the function.
+.PP
+A function returns to its caller either when the final statement
+in the function is executed, or when an explicit
+.B return
+statement is executed.
+.SS "Patterns and Actions"
+A
+.I pattern
+is a regular expression, a special pattern, a pattern range, or any
+arithmetic expression.
+.PP
+.B BEGIN
+is a special pattern used to label actions that should be performed
+before any input records have been read.\ 
+.B END
+is a special pattern used to label actions that should be
+performed after all input records have been read.
+.PP
+A pattern range is given as
+.EX
+\fIpattern1\fP,\fIpattern2\fP
+.EE
+This matches all lines from one that matches
+.I pattern1
+to one that matches
+.IR pattern2 ,
+inclusive.
+.PP
+If a pattern is omitted, or if the numeric value of the pattern is
+non-zero (true), the resulting action is executed for the line.
+.PP
+An
+.I action
+is a series of statements terminated by semicolons,
+new-lines, or closing braces.  A
+.I condition
+is any expression; a non-zero value is considered true, and a
+zero value is considered false.
+.NX R "nawk utility" "statement list"
+A
+.I statement
+is one of the following:
+.EX
+\fIexpression\fP
+.sp
+if (\fIcondition\fP)
+        \fIstatement\fP
+\s+2[\s0else
+        \fIstatement\fP\s+2]\s0
+.sp
+while (\fIcondition\fP)
+        \fIstatement\fP
+.sp
+do
+        \fIstatement\fP
+while (\fIcondition\fP)
+.sp
+for (\fIexpression1\fP; \fIcondition\fP; \fIexpression2\fP)
+        \fIstatement\fP
+.EE
+The
+.B for
+statement is equivalent to:
+.EX
+\fIexpression1\fP
+while (\fIcondition\fP) {
+        \fIstatement\fP
+        \fIexpression2\fP
+}
+.EE
+The
+.B for
+statement can also have the form
+.EX
+for (\fIi\fP in \fIarray\fP)
+        \fIstatement\fP
+.EE
+The
+.I statement
+is executed once for each element in
+.IR array ;
+on each repetition, the variable
+.I i
+will contain the name of a subscript of
+.IR array ,
+running through all the subscripts in an
+.B arbitrary
+order.
+If
+.I array
+is multi-dimensional (has multiple subscripts),
+.I i
+will be expressed as a single string with the SUBSEP character
+separating the subscripts.  The following simple statements are
+supported:
+.IP \f(CWbreak\fP
+Exits a
+.B for
+or a
+.B while
+loop immediately.
+.IP  \f(CWcontinue\fP
+Stops the current iteration of a
+.B for
+or
+.B while
+loop and begins the next iteration (if there is one).
+.IP \f(CWnext\fP
+Terminates any processing for the current input record and immediately
+starts processing the next input record.  Processing for the next
+record will begin with the first appropriate rule.
+.IP "\f(CWexit\fP[ (\fIexpr\fP) ]"
+Immediately goes to the
+.B END
+action if it exists; if there is no
+.B END
+action, or if
+.PN nawk
+is already executing the
+.B END
+action, the
+.PN nawk
+program terminates.  The exit status of the program is set to the
+numeric value of
+.IR expr .\ 
+If (\fIexpr\fP) is omitted, the exit status is 0.
+.IP "\f(CWreturn \fP[\fIexpr\fP]"
+Returns from the execution of a function.
+If an
+.I expr
+is specified, the value of the expression is returned as the
+result of the function.  Otherwise, the function result is undefined.
+.IP "\f(CWdelete \fP\fIarray\fP[\fIi\fP]"
+Deletes element
+.I i
+from the given
+.IR array .
+.IP "\f(CWprint \fP\fIexpr\fP, \fIexpr\fP, \fI...\fP"
+Described below.
+.IP "\f(CWprintf \fP\fIfmt\fP, \fIexpr\fP, \fIexpr\fP,\fI ...\fP"
+Described below.
+.SS Output
+The
+.B print
+and
+.B printf
+statements write to the standard output.  Output can be redirected to a
+file or pipe as described below.
+.PP
+If
+.RI > expr
+is added to a
+.B print
+or
+.B printf
+statement, the string value of
+.I expr
+is taken to be a file name, and output is written to that file.
+Similarly, if
+>RI >> expr
+is added, output will be appended to the current contents of the file.
+The distinction between `>' and `>>' is only important for the first
+.B print
+to the file
+.IR expr .\ 
+Subsequent outputs to an already open file will append to what
+is there already.
+.PP
+In order to eliminate ambiguities, statements such as
+.EX
+print a > b c
+.EE
+are syntactically illegal.  Parentheses must be used to resolve the
+ambiguity.
+.PP
+If
+.RI | expr
+is added to a
+.B print
+or
+.B printf
+statement, the string value of
+.I expr
+is taken to be an executable command.  The command is executed with the
+output from the statement piped as input into the command.
+.PP
+As noted earlier, only a limited number of files and pipes can be open
+at any time.  To avoid going over the limit, you should use the
+.B close
+function to close files and pipes when they are no longer needed.
+.PP
+The
+.B print
+statement prints its arguments with only simple formatting.  If it has
+no arguments, the current input record is printed in its entirety.  The
+output record separator ORS
+is added to the end of the output produced by each
+.B print
+statement; when arguments in the
+.B print
+statement are separated by commas, the corresponding output values
+will be separated by the output field separator OFS.
+ORS and OFS are built-in variables whose values can be changed by assigning
+them strings.  The default output record separator is a new-line and
+the default output field separator is a space. The format of numbers
+output by
+.B print
+is given by the string OFMT.
+By default, the value is `%.6g'; this can be changed by assigning OFMT
+a different string value.
+.PP
+The
+.B printf
+statement formats its arguments using the
+.I fmt
+argument.  Formatting is the same as for the built-in function
+.BR sprintf .
+Unlike
+.BR print ,
+.B printf
+does not add output separators automatically.  This gives the program
+more precise control of the output.
+.SH Restrictions
+.NX R "nawk utility" "restrictions"
+The longest input record is restricted to 20,000 bytes and the maximum
+number of fields supported is 4000.  The length of the string produced
+by
+.B sprintf
+is limited to 1024 bytes.
+.PP
+The
+.B ord
+function
+may not be recognized by other versions of
+.PN awk .\ 
+The
+.B toupper
+and
+.B tolower
+functions and the ENVIRON array variable are found in the Bell Labs
+version of
+.PN awk ;
+this version is a superset of `New
+.PN AWK '
+as described in
+.I "The AWK Programming Language"
+by Aho, Weinberger, and Kernighan.
+.PP
+The
+.I shell
+that is used by the functions
+.EX
+getline    print    printf    system
+.EE
+and the return value of the
+.B system
+function is described in
+.MS system 3 .
+.SH Examples
+The following example outputs the contents of the file
+.PN input1
+with line numbers prepended to each line:
+.EX
+nawk '{print NR ":" $0}' input1
+.EE
+.PP
+The following is an example using
+.IR var = value
+on the command line:
+.EX
+nawk '{print NR SEP $0}' SEP=":" input1
+.EE
+.PP
+The
+.PN nawk
+program script can also be read from a file as in the command line:
+.EX
+nawk \-f addline.nawk input1
+.EE
+This example produces the same output as the previous example when the
+file
+.PN addline.nawk
+contains
+.EX
+{print NR ":" $0}
+.EE
+.PP
+The following program appends all input lines starting with `January'
+to the file
+.PN jan
+(which can already exist or not), and all lines starting with
+`February' or `March' to the file
+.PN febmar :
+.EX
+/^January/ {print >> "jan"}
+/^February|^March/ {print >> "febmar"}
+.EE
+.PP
+This program prints the total and average for the last column of each
+input line:
+.EX
+        {s += $NF}
+END     {print "sum is", s, "average is", s/NR}
+.EE
+.PP
+The following program interchanges the first and second fields of input
+lines:
+.EX
+{
+        tmp = $1
+        $1 = $2
+        $2 = tmp
+        print
+}
+.EE
+.PP
+The following example inserts line numbers so that output lines are
+left-aligned:
+.EX
+{printf "%\-6d: %s\en", NR, $0}
+.EE
+.PP
+This example prints input records in reverse order (assuming sufficient
+memory):
+.EX
+{
+        a[NR] = $0 # index using record number
+}
+END {
+        for (i = NR; i>0; --i)
+                print a[i]
+}
+.EE
+.PP
+The next program determines the number of lines starting with the same
+first field:
+.EX
+{
+        ++a[$1] # array indexed using the first field
+}
+END {   # note output will be in undefined order
+        for (i in a)
+                print a[i], "lines start with", i
+}
+.EE
+.PP
+The following program can be used to determine the number of lines in
+each input file:
+.EX
+{
+        ++a[FILENAME]
+}
+END {
+        for (file in a)
+                if (a[file] =\|= 1)
+                        print file, "has 1 line"
+                else
+                        print file, "has", a[file], "lines"
+}
+.EE
+.PP
+This program illustrates how a two dimensional array can be used in
+.PN nawk .
+Assume the first field contains a product number, the second
+field contains a month number, and the third field contains a quantity
+(bought, sold, or whatever).  The program generates a table of products
+versus month.
+.EX
+BEGIN   {NUMPROD = 5}
+{
+        array[$1,$2] += $3
+}
+END     {
+        print "\et Jan\et Feb\etMarch\etApril\et May\et" \e
+            "June\etJuly\et Aug\etSept\et Oct\et Nov\et Dec"
+        for (prod = 1; prod <= NUMPROD; prod++) {
+                printf "%-7s", "prod#" prod
+                for (month = 1; month <= 12; month++){
+                        printf "\et%5d", array[prod,month]
+                }
+                printf "\en"
+        }
+}
+.EE
+.PP
+As this program reads in each line of input, it reports whether the
+line matches a pre-determined value:
+.EX
+function randint() {
+        return (int((rand()+1)*10))
+}
+BEGIN   {
+        prize[randint(),randint()] = "$100";
+        prize[randint(),randint()] = "$10";
+        prize[1,1] = "the booby prize"
+        }
+{
+        if (($1,$2) in prize)
+                printf "You have won %s!\en", prize[$1,$2]
+}
+END
+.EE
+.PP
+This example prints lines whose first and last fields are the same,
+reversing the order of the fields:
+.EX
+$1=\|=$NF {
+        for (i = NF; i > 0; --i)
+                printf "%s", $i (i>1 ? OFS : ORS)
+}
+.EE
+.PP
+The following program prints the input files from the command line.
+The
+.B infiles
+function first empties the array passed to it, and then fills the array.
+Notice that the extra parameter
+.B i
+of
+.B infiles
+is a local variable.
+.EX
+function infiles(f,   i) {
+        for (i in f)
+                delete f[i]
+        for (i = 1; i < ARGC; i++)
+                if (index(ARGV[i],"=") =\|= 0)
+                        f[i] = ARGV[i]
+}
+BEGIN   {
+        infiles(a)
+        for (i in a)
+                print a[i]
+        exit
+}
+.EE
+.PP
+This example is the standard recursive factorial function:
+.EX
+function fact(num) {
+        if (num <= 1)
+                return 1
+        else
+                return num * fact(num - 1)
+}
+{ print $0 " factorial is " fact($0) }
+.EE
+.PP
+The last program illustrates the use of
+.B getline
+with a pipe.  Here,
+.B getline
+sets the current record from the output of the
+.MS wc 1
+command.
+The program prints the number of words in each input file.
+.EX
+function words(file,   string) {
+        string = "wc " fn
+        string | getline
+        close(string)
+        return ($2)
+}
+BEGIN   {
+        for (i=1; i<ARGC; i++) {
+                fn = ARGV[i]
+                printf "There are %d words in %s.",
+                    words(fn), fn
+        }
+}
+.EE
+.SH See Also
+ed(1), grep(1), sed(1), ex(1), system(3), ascii(7),
+.br
+"Awk \- A Pattern Scanning and Processing Language"
+.I "ULTRIX Supplementary Documents, Vol. II: Programmer

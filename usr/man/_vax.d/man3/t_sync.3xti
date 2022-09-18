@@ -1,0 +1,107 @@
+.TH t_sync 3xti
+.SH Name
+t_sync \- synchronize transport library 
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_sync(\fIfd\fB)
+.br
+.B int \fIfd\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint. 
+.SH Description
+For the transport endpoint specified by \fIfd\fR, 
+.PN t_sync()
+synchronizes the data structures managed by the transport library with
+information from the underlying transport provider. In doing so, 
+.PN t_sync()
+can convert an uninitialized file descriptor to an initialized transport endpoint, by
+updating and allocating the necessary library data structures. The file descriptor, which is
+assumed to have referenced a transport endpoint, has to be obtained by means of an
+.PN open()\fR,\fR
+.PN dup()\fR,\fR
+or be the result of a fork and
+.PN exec()\fR.\fR
+The function also allows two
+cooperating processes to synchronize their interaction with a transport
+provider.
+.NXR "t_sync system call"
+.NXR "transport library" "synchronizing"
+.PP
+For example, if a process forks a new process and issues an
+.PN exec()\fR,\fR 
+the new process must issue a 
+.PN t_sync() 
+to build the
+private library data structure associated with a transport endpoint and
+to synchronize the data structure with the relevant provider
+information.
+.PP
+It is important to remember that the transport provider treats all users
+of a transport endpoint as a single user. If multiple processes are
+using the same endpoint, they should coordinate their activates so as not
+to violate the state of the transport endpoint. The 
+.PN t_sync()
+function returns the current state of the transport endpoint to the
+user, thereby enabling the user to verify the state before taking
+further action. This coordination is valid only among cooperating
+processes; it is possible that a process or an incoming event could
+change the endpoint's state after a 
+.PN t_sync() 
+is issued.
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, 
+.PN t_sync
+returns the state of the
+transport endpoint. On failure, a value of \-1 is returned, and \fBt_errno\fR 
+is set to indicate the error. The state returned is one of the
+following:
+.IP \fBT_IDLE\fP 10
+Idle
+.IP \fBT_OUTCON\fP
+Outgoing connection pending
+.IP \fBT_INCON\fP
+Incoming connection pending
+.IP \fBT_DATAXFER\fP
+Data transfer
+.IP \fBT_OUTREL\fP
+Outgoing orderly release (waiting for an orderly release indication).
+.IP \fBT_INREL\fP
+Incoming orderly release (waiting for an orderly release request) 
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+This error may be returned when the \fIfd\fR has been previously closed
+or an erroneous number may have been passed to the call.
+.TP 20 
+[TSTATECHNG]
+The transport endpoint is undergoing a state change.
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+dup(2), 
+exec(2), 
+fork(2), 
+open(2)

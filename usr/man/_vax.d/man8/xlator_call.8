@@ -1,0 +1,113 @@
+.TH xlator_call 8
+.SH Name
+xlator_call \- shell script to invoke PostScript translators
+.SH Syntax
+.B xlator_call
+.I datatype
+.I orientation
+.I pagesize
+.I width
+.I length
+.I indent
+.SH Description
+This Bourne shell script can be called by the
+.PN lpd
+line printer daemon to invoke the appropriate translator to convert each
+data type to PostScript.
+The data type passed by
+.PN lpd
+may be specified by using the
+.PN lpr
+command with the \fB\-D\fIdatatype\fR option,
+or by using the \fBDa=datatype\fR capability in the
+.PN printcap
+file.
+.PP
+For a file in a data syntax to be translated to PostScript, the
+.PN xlator_call
+script must contain a case branch which recognizes the data type string and
+calls a suitable filter.
+The supplied
+.PN xlator_call
+recognizes the ANSI, ASCII, ReGIS and Tektronix 4014 data types.
+.SH Arguments
+.I datatype
+.br
+The valid data types are:
+.PN ansi , 
+.PN ascii , 
+.PN postscript , 
+.PN regis , 
+.PN tek4014 ,
+or any other for which a translator has been installed.
+.PP
+.I orientation
+.br
+The valid orientations are:
+.I
+portrait \fRor\fI landscape.
+.PP
+.I pagesize
+.br
+The valid page sizes are:
+.PN letter , 
+.PN a , 
+.PN ledger , 
+.PN b , 
+.PN legal , 
+.PN executive , 
+.PN a5 , 
+.PN a4 , 
+.PN a3 , 
+.PN b5 ,
+or
+.PN b4 .
+.PP
+.I width
+.br
+The width (in characters) of the page.
+.PP
+.I length
+.br
+The length (in lines) of the page.
+.PP
+.I indent
+.br
+The amount (in spaces) the output is to be indented.
+.PP
+All the valid arguments are described in detail by the
+.PN lpr(1)
+reference page.
+.SH Examples
+An example shell script is shown below:
+.EX
+case $datatype in
+ansi)
+	exec ansi_ps \-F $pagesize \-O $orientation \-e "$@";;
+ascii)
+	echo "(\\004) cvn {} def"
+	exec ln03rof \-w$width \-l$length \-i$indent;;
+postscript)
+	exec cat;;
+tek4014)
+	exec tek4014_ps \-F $pagesize \-O $orientation;;
+regis)
+	exec regis_ps \-F $pagesize \-O $orientation;;
+*)
+	echo "$0: Translator for data type $datatype not installed" >&2
+esac
+.EE
+.PP
+When the shell script is called, the path searched is:
+.EX
+/usr/local/lib/lpdfilters:/usr/ucb:/bin:/usr/bin:
+                            /usr/lib:/usr/lib/lpdfilters
+.EE
+.SH Files
+.TP 40
+.PN /usr/lib/lpdfilters/xlator_call
+The
+.PN xlator_call
+script
+.SH See Also
+lno3rof(8), printcap(5), ansi_ps(8), lpd(8)

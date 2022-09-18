@@ -1,0 +1,52 @@
+.TH newpad 3cur
+.SH Name
+newpad \- create new pad
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+WINDOW \(**newpad(nlines, ncols)
+.br
+.B
+int nlines, ncols;
+.SH Description
+.NXR "newpad subroutine"
+The 
+.PN newpad
+routine
+creates a new 
+.PN pad
+data structure.
+A pad differs from
+a window in that 
+it is not restricted by the screen size,
+and it is not necessarily associated 
+with a particular part of the screen.
+Pads can be used when large windows are needed. 
+Only part of the pad
+will be on the screen at any one time.
+.PP
+Automatic refreshes of pads 
+for example, from scrolling or echoing of input, do not occur.
+.PP
+You cannot call the
+.PN refresh 
+routine with a pad as an argument; use the routines 
+.PN prefresh 
+or 
+.PN pnoutrefresh 
+instead.
+.PP
+Note that these two routines require additional parameters 
+to specify both the part of the pad to be displayed 
+and the screen location for the display.
+.SH Return Values
+On success the
+.PN newpad
+function returns a pointer to the new WINDOW structure created.  On failure
+the function returns a null pointer.
+.SH See Also
+pnoutrefresh(3cur), prefresh(3cur), refresh(3cur)

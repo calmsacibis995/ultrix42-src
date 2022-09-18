@@ -1,0 +1,75 @@
+.\" SCCSID: @(#)signal.3f	8.1	9/11/90
+.TH signal 3f VAX "" Unsupported
+.SH Name
+signal \- change the action for a signal
+.SH Syntax
+.B integer function signal(signum, proc, flag)
+.br
+.B integer signum, flag
+.br
+.B external proc
+.SH Description
+.NXR "signal subroutine (FORTRAN)"
+.NXR "signal" "changing action"
+When a process incurs a signal, 
+the default action
+is usually to clean up and abort.
+For further information, see 
+.MS signal 3 .
+The user may choose to write an alternative signal handling routine.
+A call to
+.PN signal
+is the way this alternate action is specified to the system.
+.PP
+The
+.I signum
+is the signal number.  For further information, see 
+.MS signal 3 .
+If
+.I flag
+is negative, then
+.I proc
+must be the name of the user signal handling routine.
+If
+.I flag
+is zero or positive, then
+.I proc
+is ignored and the value of
+.I flag
+is passed to the system as the signal action definition.
+In particular, this is how previously saved signal actions can
+be restored.
+Two possible values for
+.I flag
+have specific meanings:
+0 means "use the default action" (See Note),
+1 means "ignore this signal".
+.PP
+A positive returned value is the previous action definition.
+A value greater than 1 is the address of a routine that
+was to have been called on occurrence of the given signal.
+The returned value can be used in subsequent calls to
+.PN signal
+in order to restore a previous action definition.
+A negative returned value is the negation of a system error code.
+For further information, see 
+.MS perror 3f .
+.NT
+The
+.PN f77
+arranges to trap certain signals when a process is started.
+The only way to restore the default
+.PN f77
+action is to save the returned
+value from the first call to
+.PN signal .
+.PP
+If the user signal handler is called,
+it will be passed the signal number
+as an integer argument.
+.NE
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+kill(1), kill(3f), signal(3)

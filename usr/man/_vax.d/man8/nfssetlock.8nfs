@@ -1,0 +1,56 @@
+.\" SCCSID: @(#)nfssetlock.8nfs	8.1	9/11/90
+.TH nfssetlock 8nfs
+.SH Name
+nfssetlock \- turn on or off the NFS locking service
+.SH Syntax
+\fB/etc/nfssetlock\fR \fIoption\fR
+.SH Description
+.NXR "nfssetlock command"
+.NXR "NFS locking service" "turning on the"
+.NXR "NFS locking service" "turning off the"
+The
+.PN nfssetlock
+command turns the NFS locking service on or off at the kernel level.
+By default,
+the NFS locking service is turned off.
+.PP
+If the NFS locking service is turned off,
+local locking is active.
+Local locking only coordinates the dispersal of advisory locks to
+local files and file regions.
+The NFS locking service coordinates the dispersal of
+advisory locks to both local
+and remote files and file regions through the
+.PN fcntl
+and
+.PN lockf
+primitives.
+.PP
+Only the superuser or root can run
+.PN nfssetlock .
+The best way to run
+.PN nfssetlock
+is through the
+.PN nfssetup
+command,
+which provides an interactive means for enabling and disabling
+the NFS locking service.
+.SH Restrictions
+If you run
+.PN nfssetlock
+manually,
+you must issue it while the system is in single-user mode.
+Otherwise,
+the locking information could become lost during the transition
+between local and NFS locking.
+.SH Options
+.IP \fBon\fR 7
+Turn on the NFS locking service.
+.IP \fBoff\fR
+Turn off the NFS locking service.
+.SH Files
+.PN /etc/rc.local
+.SH See Also
+fcntl(2), lockf(3), nfssetup(8nfs)
+.br
+.I "Guide to the Network File System"

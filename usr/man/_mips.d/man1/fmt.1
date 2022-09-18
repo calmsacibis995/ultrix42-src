@@ -1,0 +1,44 @@
+.\" SCCSID: @(#)fmt.1	8.1	9/11/90
+.TH fmt 1
+.SH Name
+fmt \- simple text formatter
+.SH Syntax
+.B fmt
+[\fIname...\fR\]
+.SH Description
+.NXR "fmt text formatter"
+.NXR "mail" "formatting"
+.NXA "vi screen editor" "fmt text formatter"
+.NXA "fmt text formatter" "pr command"
+.NXA "mail program" "fmt text formatter"
+The
+.PN fmt
+command
+is a simple text formatter which reads the concatenation of input
+files (or standard input if none are given) and produces on
+standard output a version of its input with lines as close to
+72 characters long as possible.  The spacing at the beginning
+of the input lines is preserved in the output, as are blank lines
+and interword spacing.
+.PP
+The
+.PN fmt
+command
+is meant to format mail messages prior to sending,
+but may also be useful for other simple tasks.
+For instance,
+within visual mode of the
+.PN ex
+editor (for example,
+.PN vi)
+the command
+.EX
+!}fmt
+.EE
+will reformat a paragraph, evening the lines.
+.SH Restrictions
+The program was designed to be simple and fast \- for more complex
+operations, the standard text processors are likely 
+to be more appropriate.
+.SH See Also
+mail(1), nroff(1)

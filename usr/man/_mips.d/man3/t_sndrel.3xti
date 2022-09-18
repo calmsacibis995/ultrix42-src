@@ -1,0 +1,78 @@
+.TH t_sndrel 3xti
+.SH Name
+t_sndrel \- initiate an orderly release
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_sndrel(\fIfd\fB)
+.br
+.B int \fIfd\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint where the connection exists.
+.SH Description
+This function is used to initiate an orderly release of a transport
+connection and indicates to the transport provider that the transport
+user has no more data to send. After issuing 
+.PN t_sndrel()\fR,\fR 
+the user
+can not send any more data over the connection. However, a user can 
+continue to receive data if an orderly indication has not been received.
+.NXR "t_sndrel system call"
+.NXR "transport connection" "orderly release"
+.PP
+This function is an optional service of the transport provider and is
+only supported if the transport provider returned service type
+T_COTS_ORD on 
+.PN t_open() 
+or 
+.PN t_getinfo()\fR.\fR
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, a value of 0 is returned. On failure, a
+value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20 
+[TOUTSTATE]
+The function was issued in the wrong sequence on the transport endpoint
+referenced by \fIfd\fR.
+.TP 20
+[TFLOW]
+O_NONBLOCK was set, but the flow control mechanism prevented the
+transport provider from accepting the function at this time.
+.TP 20
+[TLOOK]
+An asynchronous event has occurred on the transport endpoint referenced
+by \fIfd\fR and requires immediate attention.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the underlying transport provider. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+t_getinfo(3xti), 
+t_open(3xti),
+t_rcvrel(3xti)

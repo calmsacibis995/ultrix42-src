@@ -1,0 +1,173 @@
+.TH mop_mom 8 
+.UC 4
+.SH Name
+mop_mom \- MOP down-line/up-line load listener 
+.SH Syntax
+.B /etc/mop_mom 
+.SH Description
+.NXR "mop_mom command"
+.NXR "Maintenance Operation Protocol"
+.NXA "mop_mom command" "load command"
+.NXR "down-line load listener" "prerequisites"
+.NXR "up-line load listener"
+The
+.PN mop_mom 
+command listens for down-line load and up-line dump requests on behalf of 
+your local ULTRIX node.  The 
+.PN mop_mom
+command, 
+.PN /etc/mop_mom ,
+is usually included in the    
+.PN /etc/rc.local
+file. 
+When a 
+down-line load or up-line dump request is received from a target node, 
+.PN mop_mom
+spawns the loader, 
+.PN mop_dumpload , 
+to process the load request.  
+.NXR "mop_dumpload loader" "prerequisites for load request"
+.PP
+To process a load request, the loader requires 
+the name of the load file. 
+During a down-line load process, the target 
+system can either request that the loader search the
+nodes data base for the name of the load file,
+or it can specify an image name as part of its request. 
+If the target system specifies an image name, 
+the loader does not search the data base for the file before
+processing the load request. 
+.PP
+If no absolute pathname is associated with the image file name,
+the loader searches for the file
+using the primary default path, 
+.PN /usr/lib/mop .
+If the image file is not in 
+.PN /usr/lib/mop , 
+it uses the secondary default, 
+.PN /usr/lib/dnet .  
+The names of the files in 
+.PN /usr/lib/dnet 
+must be in lowercase with a 
+.PN .sys 
+extension. Otherwise, the loader interprets
+the file specification literally without appending the 
+.PN .sys 
+extension.
+For example, if you give the loader the file name 
+.PN /usr/lib/mop/LOADME , 
+it attempts to open a file with an exact match.
+.PP
+The loader must have the following information before it can
+accept and process a load request:
+.PP
+.B Ethernet Physical Address
+.RS 5
+If the name of the image is not in the program request message itself,
+the Ethernet physical address of the target node 
+must be specified in the nodes data base entry for the requesting 
+target node.  For further information, see 
+.MS addnode 8 .
+The same is true if the environment variable, 
+LOADUMP_SECURE 
+is enabled.
+.RE
+.PP
+.B Image File Name
+.RS 5
+The loader must be given the name of the image file to down-line load. 
+If the image file name is specified in a target node's down-line load 
+request, then the loader uses that file.  Otherwise, the file name 
+must be defined in the requesting node's data base entry.  For further
+information, see 
+.MS addnode 8 .
+.RE 
+.PP
+.B Dump File Name
+.RS 5
+The loader must be given the name of the dump file that will contain the 
+up-line dump image of the requesting node's memory.  The dump file 
+name must be defined in the requesting node's data base entry.  For
+further information, see 
+.MS addnode 8 .
+.RE 
+.PP
+Note that the System Manager can force the loader to search the nodes
+data base, even when the target node specifies a file name.  The loader
+verifies that an entry exists for the requesting node before proceeding
+with the down-line load.  
+Any file name specified in the request message
+supersedes a file name specified in the data base. 
+.PP
+To force the nodes data base search,
+use the following syntax before executing
+.PN /etc/mop_mom :
+.EX
+# setenv LOADUMP_SECURE on
+.EE
+To permanently enable this feature, enter the following line in the
+.PN /etc/rc.local
+file after the section on local daemons:
+.EX
+LOADUMP_SECURE=on /etc/mop_mom
+.EE
+The
+.PN mop_mom
+command
+is installed in 
+.PN /etc .
+The down-line loader, 
+.PN mop_dumpload ,  
+is installed in 
+.PN /usr/lib/dnet .
+.PP 
+The file
+.PN /usr/lib/mop
+is the primary default pathname for all image files and  
+.PN usr/lib/dnet
+is the secondary default pathname.  The 
+names of the image files in 
+.PN /usr/lib/dnet 
+must be in lowercase with a 
+.PN .sys 
+extension.
+.SH Examples
+.EX
+/etc/mop_mom 
+.EE
+This command is usually included in the 
+.PN /etc/rc.local 
+file, which causes 
+.PN mop_mom 
+to listen for down-line and up-line load requests.
+.SH Restrictions 
+The
+.PN mop_mom
+command does not turn on network devices.  When executed, it listens only
+on those devices that were previously started by network utilities
+such as 
+.PN ifconfig
+or
+DECnet
+.PN ncp .
+Generally, you can ensure that  
+.PN mop_mom
+performs properly by putting it at the end of your rc.local file.
+.PP
+Currently, 
+.PN mop_mom
+only supports RSX, a.out, and VMS downline load images.
+.SH Files 
+.TP 15
+.PN /usr/lib/dnet
+Down-line loader
+.TP
+.PN /usr/lib/mop
+Primary default pathname for all image files  
+.TP
+.PN /usr/lib/dnet
+Secondary default pathname  
+.SH See Also
+addnode(8), ccr(8), getnode(8), load(8), remnode(8), trigger(8)
+.br
+.I "Guide to Ethernet Communication Servers"

@@ -1,0 +1,157 @@
+# @(#)Makefile	4.11	(ULTRIX)	8/9/88
+#
+#	Makefile	4.2	83/07/17
+#
+# makefile for line printer filters and associated programs
+#
+# 001	Grant Sullivan, 12-Jun-88
+#	added ln -f link of lpdfilters/rvsort to ../rvsort since rvsort was
+#		moved for 2.2 but impacted programs were't updated for move
+# 002	Pradeep Chetal, 14-Jul-88
+#	added LIBINTLN (Internationalization library) for 8-bit filters
+#
+
+DESTROOT=
+CFLAGS=	-O
+LIBDIR=	/usr/lib/lpdfilters
+CXREF=	/usr/ucb/ctags -x
+SRCS=	lg31of.c lg02of.c lpf.c necf.c lqf.c ln01of.c ln03of.c \
+	ln03rof.c lcg01of.c lj250of.c la75.c\
+	chrtab.c rvsort.c rvcat.c vsort.c vcat.c vpf.c vpsf.c vdmp.c vpltdmp.c \
+	vplotf.c vfontinfo.c vwidth.c vfw.c fcvt.c rotate.c rotprt.c
+PRINTER=lg31of lg02of lpf necf lqf ln01of ln03of ln03rof ln01pp \
+	lcg01of lj250of la75of
+VARIAN=	rvsort rvcat vsort vcat vpf vpsf vdmp vpltdmp vplotf vfontinfo vwidth \
+	vfw fcvt rotate rotprt
+LOADFILES=lcg01sw.dat
+LIBINTLN = -li
+
+all:	printer varian
+
+printer: ${PRINTER}
+
+varian:	${VARIAN}
+
+lpf:	lpf.c
+	${CC} -o lpf ${CFLAGS} lpf.c
+
+necf:	necf.c
+	${CC} -o necf ${CFLAGS} necf.c
+
+rvsort:	rvsort.c
+	${CC} -o rvsort ${CFLAGS} rvsort.c
+
+rvcat:	rvcat.c
+	${CC} -o rvcat ${CFLAGS} rvcat.c
+
+vsort:	vsort.c
+	${CC} -o vsort ${CFLAGS} vsort.c
+
+vcat:	vcat.c
+	${CC} -o vcat ${CFLAGS} vcat.c
+
+vpf:	vpf.c
+	${CC} -o vpf ${CFLAGS} vpf.c
+
+vpsf:	vpsf.c
+	${CC} -o vpsf ${CFLAGS} vpsf.c
+
+vdmp: vdmp.c
+	${CC} -o vdmp ${CFLAGS} vdmp.c
+
+vpltdmp: vpltdmp.c
+	${CC} -o vpltdmp ${CFLAGS} vpltdmp.c
+
+vplotf: vplotf.c chrtab.o
+	${CC} -o vplotf ${CFLAGS} vplotf.c chrtab.o
+
+vfontinfo: vfontinfo.c
+	${CC} -o vfontinfo ${CFLAGS} vfontinfo.c
+
+vwidth: vwidth.c
+	${CC} -o vwidth ${CFLAGS} vwidth.c
+
+vfw: vfw.c
+	${CC} -o vfw ${CFLAGS} vfw.c
+
+fcvt: fcvt.c
+	${CC} -o fcvt ${CFLAGS} fcvt.c
+
+rotate: rotate.c
+	${CC} -o rotate ${CFLAGS} rotate.c
+
+rotprt: rotprt.c
+	${CC} -o rotprt ${CFLAGS} rotprt.c
+
+ln01of: ln01of.c
+	${CC} -o $@ ${CFLAGS} $@.c
+
+ln01pp: ln01pp.c
+	${CC} -o $@ ${CFLAGS} $@.c
+
+ln03of: ln03of.c
+	${CC} -o $@ ${CFLAGS} $@.c ${LIBINTLN}
+
+ln03rof: ln03rof.c
+	${CC} -o $@ ${CFLAGS} $@.c
+
+lcg01of: lcg01of.c
+	${CC} -o $@ ${CFLAGS} $@.c
+
+lg31of: lg31of.c
+	${CC} -o $@ ${CFLAGS} $@.c ${LIBINTLN}
+
+lg02of: lg02of.c
+	${CC} -o $@ ${CFLAGS} $@.c ${LIBINTLN}
+
+lj250of: lj250of.c
+	${CC} -o $@ ${CFLAGS} $@.c
+
+la75of: la75.c
+	${CC} -o la75of ${CFLAGS} la75.c ${LIBINTLN}
+
+lqf: lqf.c
+	${CC} -o $@ ${CFLAGS} $@.c
+
+install: printer installv
+	for i in ${PRINTER}; do \
+		install -c -s $$i ${DESTROOT}${LIBDIR}/$$i; done
+	install -c lcg01sw.dat ${DESTROOT}${LIBDIR}/lcg01sw.dat
+	install -c xf.sh ${DESTROOT}${LIBDIR}/xf
+
+installv: varian
+	install -c -s vfontinfo ${DESTROOT}/${LIBDIR}/vfontinfo
+	install -c -s vwidth ${DESTROOT}/${LIBDIR}/vwidth
+	install -c -s vfw ${DESTROOT}/${LIBDIR}/vfw
+	install -c -s fcvt ${DESTROOT}/${LIBDIR}/fcvt
+	install -c -s rotate ${DESTROOT}/${LIBDIR}/rotate
+	install -c -s rotprt ${DESTROOT}/${LIBDIR}/rotprt
+	install -c -s rvsort ${DESTROOT}/${LIBDIR}/rvsort
+	ln -s  lpdfilters/rvsort ${DESTROOT}/usr/lib/rvsort
+	install -c -s rvcat ${DESTROOT}/${LIBDIR}/rvcat
+	install -c -s vsort ${DESTROOT}/${LIBDIR}/vsort
+	install -c -s vcat ${DESTROOT}/${LIBDIR}/vcat
+	install -c -s vpf ${DESTROOT}/${LIBDIR}/vpf
+	ln -f ${DESTROOT}/${LIBDIR}/vpf ${DESTROOT}/${LIBDIR}/vpfW
+	install -c -s vpsf ${DESTROOT}/${LIBDIR}/vpsf
+	ln -f ${DESTROOT}/${LIBDIR}/vpsf ${DESTROOT}/${LIBDIR}/vpsfW
+	install -c -s vdmp ${DESTROOT}/${LIBDIR}/vdmp
+	install -c -s vpltdmp ${DESTROOT}/${LIBDIR}/vpltdmp
+	install -c -s vplotf ${DESTROOT}/${LIBDIR}/vplotf
+
+clean:
+	rm -f ${PRINTER} ${VARIAN} *.o
+
+clobber: clean
+	sccs clean
+
+sccsinfo:
+	sccs info
+
+sccsget:
+	${SCCS} get SCCS
+
+print:
+	@pr Makefile
+	@${CXREF} *.c | pr -h XREF
+	@pr *.h *.c

@@ -1,0 +1,67 @@
+.\" SCCSID: @(#)netsetup.8	8.1	9/11/90
+.TH netsetup 8
+.SH Name
+netsetup \- network set up program
+.SH Syntax
+.B /etc/netsetup [ install ]
+.br
+.SH Description
+.NXR "netsetup command"
+.NXR "local area network" "setting up files"
+The
+.PN netsetup
+command allows you to add your system to a local area network (LAN).
+It also enables you to update the
+.PN /etc/hosts
+and
+.PN /etc/hosts.equiv
+files.
+.PP
+To add your system to a LAN,
+bring the system to single-user mode.
+Then run the
+.PN netsetup
+command with the 
+.PN install
+option and answer the questions.
+The network manager should be able to provide you with the
+information that you need.  
+You will need to know your network number
+and your host number.
+In addition, you need to find out your Internet Protocol (IP) broadcast address
+and if the LAN uses all zeros (0) or ones (1).
+Furthermore, you have to know if the LAN uses subnet routing.
+If the answer is yes,
+then you need to know how many bits of the host part of the Internet address
+are used to specify the subnet part of the network address.
+.NT
+If your LAN uses subnet routing,
+remember to enter the subnet number as part of the host number.
+.NE
+After the
+.PN netsetup
+command has completed,
+reboot the system.
+.PP
+To add or modify hosts in the
+.PN /etc/hosts
+or
+.PN /etc/hosts.equiv
+files,
+run the
+.PN netsetup
+command without the
+.PN install
+option and answer all the questions.
+There is no need to bring the system to single-user mode
+to update these files.
+.SH Files
+.PN /etc/hosts
+.br
+.PN /etc/hosts.equiv
+.br
+.PN /etc/networks
+.br
+.PN /etc/rc.local
+.SH See Also
+.I "Guide to Local Area Networks"

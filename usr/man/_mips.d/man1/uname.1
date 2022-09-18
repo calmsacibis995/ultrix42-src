@@ -1,0 +1,34 @@
+.TH uname 1
+.SH Name
+uname \- print name of current UNIX system
+.SH Syntax
+.B uname
+[
+.I options
+]
+.SH Description
+The 
+.PN uname
+command prints the current system name of the UNIX system on the
+standard output file.
+The command determines which system is being used.
+.SH Options
+.TP
+.B \-s
+Print the system name (default).
+.TP
+.B \-n
+Print the nodename (the nodename may be a name that the system 
+is known by to a communications network).
+.TP
+.B \-r
+Print the operating system release.
+.TP
+.B \-v
+Print the operating system version.
+.TP
+.B \-m
+Print the machine hardware name.
+.TP
+.B \-a
+Print all the above information.

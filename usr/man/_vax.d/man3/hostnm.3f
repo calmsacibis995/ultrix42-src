@@ -1,0 +1,21 @@
+.\" SCCSID: @(#)hostnm.3f	8.1	9/11/90
+.TH hostnm 3f VAX "" Unsupported
+.SH Name
+hostnm \- get name of current host
+.SH Syntax
+.B integer function hostnm (name)
+.br
+.B character*(*) name
+.SH Description
+.NXR "hostnm subroutine (FORTRAN)"
+.NXR "host" "getting name"
+This function puts the name of the current host into
+character string
+.IR name .
+.SH Return Values
+The return value should be 0; any other value indicates an error.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+gethostname(2)

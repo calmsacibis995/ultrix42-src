@@ -1,0 +1,42 @@
+.\" SCCSID: @(#)L-dialcodes.5	8.1	9/11/90
+.TH L-dialcodes 5
+.SH Name
+L-dialcodes \- dial code abbreviations
+.SH Syntax
+.B /usr/lib/uucp/L.dialcodes
+.SH Description
+.NXR "L-dialcodes file"
+.NXA "L.sys file" "L-dialcodes file"
+.NXAM "uucp utility" "L-dialcodes file"
+.NXR "dial code" "specifying"
+The
+.PN uucp
+utility uses the 
+.PN L-dialcodes 
+file.  The file contains the
+dialcodes used in the 
+.MS L.sys 5
+file (for example, nh, which stands for New Hampshire).
+The entry format, with
+the fields separated by blanks or tabs, is:
+.IP "" 1i
+\fIabb dial-seq\fR
+.IP \fIabb\fR .7i
+The abbreviation used in the 
+.MS L.sys 5
+file.
+.IP \fIdial-seq\fR .7i
+The dial sequence to call that location.
+.SH Examples
+The following entry in the
+.PN L-dialcodes
+file would force any
+.PN L.sys
+file entry that used the prefix ``nh'' in the phone
+field to send 603 to the dial unit before the rest of
+the phone number is dialed:
+.EX
+nh 603
+.EE
+.SH See Also
+.I "Guide to the uucp Utility"

@@ -1,0 +1,1182 @@
+# @(#)aqbi.db	4.1   (ULTRIX)   9/4/90
+
+sseg
+id cds
+name aqbi_scm_cds
+label 'BI SCM'
+elements
+	aqbi_dtype bicsr ber
+	aqbi_uintcsr
+	aqbi_gpr0 aqbi_gpr1 aqbi_gpr2
+	aqbi_gpr3_1 aqbi_gpr3_2 aqbi_gpr3_3 aqbi_gpr3_4 aqbi_gpr3_5
+	aqbi_gpr3_6 aqbi_gpr3_7 aqbi_gpr3_8 aqbi_gpr3_9 aqbi_gpr3_10
+	aqbi_gpr3_11
+	aqbi_sp aqbi_scccsr aqbi_clkctl
+	aqbi_dcsr aqbi_dmao aqbi_dmai
+	aqbi_dmam aqbi_dmae aqbi_dyrc
+	bci3_csr
+	aqbi_bci3dm aqbi_bci3bi aqbi_bci3ii aqbi_bci3ev
+	aqbi_lasterror 
+	aqbi_eintrcsr aqbi_intrdes
+
+sseg
+id cds
+name aqbi_sja_cds
+label 'BI SJA'
+elements
+	aqbi_dtype
+	aqbi_sjcs aqbi_flag aqbi_cmnd aqbi_addr
+	aqbi_datlo aqbi_dathi aqbi_dmask aqbi_dxcs
+	aqbi_dxspu aqbi_dxmem aqbi_dxcnt aqbi_rxpar
+
+sitem
+name aqbi_lasterror
+class composite
+type register
+size 1
+display nil
+label "LAST ERROR CODE"
+map
+	field
+size 16
+class integer
+display hex
+label 'LAST PORT ERR CODE ='
+	field
+size 16
+class integer
+display hex
+label 'LAST ERR VECTOR ='
+
+sitem
+name aqbi_dtype
+class composite
+type register
+size 1
+display nil
+label 'DTYPE REGISTER'
+map
+	field
+size 8
+class integer
+display hex
+label 'DEVICE TYPE ='
+	field
+size 7
+class coded
+map
+	0 'SLAVE-ONLY'
+	1 'NOT-SLAVE-ONLY'
+	field
+size 1
+class filler
+	field
+size 16
+class integer
+display hex
+label 'SCM REVISION ='
+
+sitem
+name aqbi_gpr0
+class composite
+type register
+size 1
+display nil
+label 'PORT CTRL REG'
+map
+	field
+size 7
+class coded
+map
+	1 'INITIALIZE PORT'
+	2 'ENABLE PORT'
+	3 'READ PIV'
+	4 'SHUTDOWN PORT'
+	5 'GOTO MAINT. STATE'
+	6 'CMD QUE. NOT EMPTY'
+	7 'FREE QUE. NOT EMPTY'
+	8 'GET PORT STATUS'
+	9 'ENABLE TRANS ERR RPT'
+	10 'DISABLE TRANS ERR RPT'
+	11 'RESTART PORT'
+	12 'ABORT CURR OPERATION'
+	field
+size 1
+class coded
+map
+	1 'ADAPTER BUSY'
+	field
+size 24
+class integer
+display hex
+label 'DATA ='
+
+sitem
+name aqbi_gpr1
+class composite
+type register
+size 1
+display nil
+	field 
+size 6
+class filler
+	field
+size 1
+class coded
+map
+	1 'ERROR HAS OCCURRED'
+	field
+size 1
+class coded
+map
+	1 'RSP'
+	field
+size 8
+class coded
+map
+	1 'TRANSIENT BI ERROR'
+	2 'ADAPTER EXCEPTION'
+	3 'NON-FATAL BI ERROR'
+	4 'FATAL BI ERROR'
+	5 'DATA STRUCTURE ERROR'
+	6 'PORT LOGICAL ERROR'
+	7 'ADAPTER HARD ERROR'
+	field
+size 3
+class coded
+label 'STATE ='
+map
+	1 'UNDEFINED'
+	2 'INITIALIZED'
+	4 'ENABLED'
+	6 'STOPPED'
+	7 'MAINT'
+	field
+size 6
+class filler
+	field
+size 1
+class coded
+map
+	1 'FREE QUEUE EXHAUSTED'
+	field
+size 1
+class coded
+map
+	1 'ERROR LOST, PE IN USE''
+	field
+size 1
+class coded
+map
+	0 'FAILED EXTENDED SELFTEST'
+	field
+size 1
+class coded
+map
+	0 'ADAPTER NOT AVAILABLE'
+	field
+size 1
+class coded
+map
+	0 'EXECUTING SELF TEST'
+
+sitem
+name aqbi_gpr2
+label 'PORT ERR REG'
+size 1
+class composite
+type register
+display nil
+map
+	field
+size 32
+class coded
+map
+	2 'ADAPTER BUGCHECK'
+	3 'FAILED MIN FUNC BIST'
+	4 'FAILED BI SPEC BIST'
+	5 'FAILED EXTENDED BIST'
+	8 'INVALID PQB'
+	9 'INTERLOCK RETRY ERR'
+	10 'ILLEGAL QUEUE OFFSET'
+	11 'ILLEGAL OR RESERVED PORT'
+	12 'ILLEGAL PORT INSTRUCTION'
+	13 'PS OWNERSHIP TIMEOUT'
+	14 'HOST INACTIVE/ADAPT TIMEOUT'
+	15 'FREE QUEUE EXHAUSED'
+	16 'FAILED TO ENTER MAINT'
+	17 'FAILED TO ENTER INIT'
+	18 'FAILED TO ENTER ENABLED'
+	19 'BUFFER KEY MISMATCH'
+	20 'DATA BUFFER OVERFLOW'
+	21 'BUFFER ACCESS CHECK'
+	22 'FAILED TO TRANS VIRTUAL'
+	23 'BDT INDEX OUT OF RANGE'
+	24 'POWER FAILURE'
+	25 'HOST INTERRUP0T TIMEOUT'
+	26 'QUEUE ENTRY SIZE VIOLATION'
+	27 'ADDRESS INVALID FOR MAINT'
+	28 'ADAPTER ROM PE'
+	29 'ADAPTER RAM PE'
+
+sitem
+name aqbi_gpr3_1
+size 1
+class integer
+type long
+display hex
+label 'PHYS ADDR'
+
+sitem
+name aqbi_gpr3_2
+size 1
+class integer
+type long
+display hex
+label 'BUGCHECK TYPE'
+
+sitem
+name aqbi_gpr3_3
+size 1
+class integer
+type long
+display hex
+label 'PHYS ADDR OF BAD PQB'
+
+sitem
+name aqbi_gpr3_4
+size 1
+class integer
+type long
+display hex
+label 'CURR PHYS ADDR'
+
+sitem
+name aqbi_gpr3_5
+size 1
+class integer
+type long
+display hex
+label 'PC REGISTER CONTENTS'
+
+sitem
+name aqbi_gpr3_6
+size 1
+class integer
+type long
+display hex
+label 'PS REG AT ERROR'
+
+sitem
+name aqbi_gpr3_7
+size 4
+class character
+type string
+display nil
+label 'BUFFER NAME'
+
+sitem
+name aqbi_gpr3_8
+size 1
+class integer
+type long
+display hex
+label 'FAILED VIRT ADDR'
+
+sitem
+name aqbi_gpr3_9
+size 1
+class integer
+type long
+display hex
+label 'BUFFER ADDR'
+
+sitem
+name aqbi_gpr3_10
+size 1
+class integer
+type long
+display hex
+label 'PIV CONTENTS'
+
+sitem
+name aqbi_gpr3_11
+size 1
+class integer
+type long
+display hex
+label 'BAD ADDRESS'
+
+
+sitem
+name aqbi_sp
+class integer
+type counted_long_vector
+size 8
+display hex
+label 'STACK POINTER OFFSET'
+
+sitem
+name aqbi_scccsr
+class composite
+type register
+size 1
+display nil
+label 'SCC CTRL/STATUS'
+map
+	field
+size 1
+class coded
+map
+	1 "DMA ERROR"
+	field
+size 1
+class coded
+map
+	1 "PATTERN COMPARE ERROR"
+	field
+size 4
+class coded
+map
+	1 "CPU0 COMPARE ERROR"
+	field
+size 1
+class coded
+map
+	1 "CPU1 COMPARE ERROR"
+	field
+size 1
+class coded
+map
+	1 "CPU2 COMPARE ERROR"
+	field
+size 1
+class coded
+map
+	1 "CPU3 COMPARE ERROR"
+	field
+size 1
+class coded
+map
+	1 "DMA STEP DONE"
+	field
+size 1
+class coded
+map
+	1 "DONE SET"
+	field
+size 1
+class coded
+map
+	1 "MCM TACK"
+	field
+size 1
+class coded
+map
+	1 "MCM DATA REG VALID"
+	field
+size 1
+class coded
+map
+	0 "CCE MASK DISABLED"
+	1 "CCE MASK ENABLED"
+	field
+size 1
+class coded
+map
+	1 "DONE INTS ENABLED"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	0 "WRITE DISABLED"
+	1 "WRITE ENABLED"
+	field
+size 1
+class coded
+map
+	0 "EXECUTE UNDER STEP"
+	1 "EXECUTE UNDER DMA"
+	field
+size 1
+class coded
+map
+	1 "ATTN ON CP0"
+	field
+size 1
+class coded
+map
+	1 "ATTN ON CP1"
+	field
+size 1
+class coded
+map
+	1 "ATTN ON CP2"
+	field
+size 1
+class coded
+map
+	1 "ATTN ON CP3"
+	field
+size 1
+class coded
+map
+	1 "ATTN ON SCU"
+	field
+size 1
+class coded
+map
+	1 "ATTN ON MCM"
+	field
+size 2
+class filler
+	field
+size 1
+class coded
+map
+	0 "CP0 INTERRUPT DISABLED"
+	1 "CP0 INTERRUPT ENABLED"
+	field
+size 1
+class coded
+map
+	0 "CP1 INTERRUPT DISABLED"
+	1 "CP1 INTERRUPT ENABLED"
+	field
+size 1
+class coded
+map
+	0 "CP2 INTERRUPT DISABLED"
+	1 "CP2 INTERRUPT ENABLED"
+	field
+size 1
+class coded
+map
+	0 "CP3 INTERRUPT DISABLED"
+	1 "CP3 INTERRUPT ENABLED"
+	field
+size 1
+class coded
+map
+	0 "SCU INTERRUPT DISABLED"
+	1 "SCU INTERRUPT ENABLED"
+	field
+size 1
+class coded
+map
+	0 "MCM INTERRUPT DISABLED"
+	1 "MCM INTERRUPT ENABLED"
+
+sitem
+name aqbi_clkctl
+size 1
+class composite
+type register
+display nil
+label 'CLK/PARITY CTL'
+map
+	field
+size 3
+class integer
+display hex
+label 'SCAN CLOCK RATE ='
+	field
+size 13
+class filler
+	field
+size 1
+class coded
+map
+	1 'BYTE 0 PARITY ERR'
+	field
+size 1
+class coded
+map
+	1 'BYTE 1 PARITY ERR'
+	field
+size 1
+class coded
+map
+	1 'BYTE 2 PARITY ERR'
+	field
+size 1
+class coded
+map
+	1 'BYTE 3 PARITY ERR'
+	field
+size 1
+class coded
+map
+	1 'MULTIPLE PARITY ERRS'
+	field
+size 4
+display hex
+class integer
+label 'FLIP BYTE PARITY ='
+	field
+size 1
+class coded
+map
+	1 'PARITY CHECKING ENABLED'
+
+sitem
+name aqbi_dcsr
+size 1
+class composite
+type register
+display nil
+label 'DMA CTL/STATUS'
+map
+	field
+size 1
+class coded
+map
+	1 'OUTPUT ADDR VALID'
+	field
+size 1
+class coded
+map 
+	1 'SCAN-INPUT ADDR VALID'
+	field
+size 1
+class coded
+map 
+	1 'MASK ADDR OFFSET VALID'
+	field
+size 1
+class coded
+map 
+	1 'EXP RES ADDR VALID'
+	field
+size 2
+class coded
+map 
+	0 'SOURCE=SCI DI'
+	1 'SOURCE=SCI DI'
+	2 'XOR OF ESR + SCI DI=PCE''
+	3 'XOR OF DI+PORT SEL=CCE'
+	field
+size 2
+class integer
+display hex
+label 'CCE PORT SELECT ='
+	field
+size 4
+class filler
+	field
+size 4
+class integer
+display hex
+label 'II32 BUS ERR ='
+
+sitem
+name aqbi_dmao
+size 1
+class integer
+type long
+display hex
+label 'SCC DMAO ADDR OFFSET ='
+
+sitem
+name aqbi_dmai
+size 1
+class integer
+type long
+display hex
+label 'SCC DMAI ADDR OFFSET ='
+
+sitem
+name aqbi_dmam
+size 1
+class integer
+type long
+display hex
+label 'SCC DMAM ADDR OFFSET ='
+
+sitem
+name aqbi_dmae
+size 1
+class integer
+type long
+display hex
+label 'SCC DMAE ADDR OFFSET ='
+
+sitem
+name aqbi_dyrc
+size 1
+class composite
+type register
+display nil
+label 'DYRC FAULT ADDR/CSR'
+map
+	field
+size 12
+class filler
+	field
+size 1
+class coded
+map
+	1 'BTO = 1'
+	field
+size 1
+class coded
+map
+	0 'PARITY DISABLED'
+	1 'PARITY ENABLED'
+	field
+size 1
+class coded
+map
+	1 'WWP = 1'
+	field
+size 1
+class coded
+map
+	1 'PARITY ERR DETECTED'
+	field
+size 11
+class integer
+display hex
+label 'FAILING PAGE ADDR ='
+	field
+size 2
+class integer
+display hex
+label 'BANK SELECT ='
+	field
+size 1
+class coded
+map
+	1 'PARITY ERR DETECTED'
+
+sitem
+name aqbi_bci3dm
+size 1
+class composite
+type register
+display nil
+label 'BCI DM CONFIG'
+map
+	field
+size 14
+class integer
+display decimal
+label 'TRANSACTION COUNT ='
+	field
+size 7
+class filler
+	field
+size 1
+class coded
+map
+	1 'DIAG MODE SET'
+	field
+size 6
+class filler
+	field
+size 4
+class integer
+display hex
+label 'BI CMD ='
+
+sitem
+name aqbi_bci3bi
+size 1
+class composite
+type register
+display nil
+label 'BCI3 BI ADDRESS'
+map
+	field
+size 30
+class integer
+display hex
+label 'BUS ADDRESS ='
+	field
+size 2
+class filler
+
+sitem
+name aqbi_bci3ii
+size 1
+class integer
+type long
+display hex
+label 'II32 ADDRESS '
+
+sitem
+name aqbi_bci3ev
+size 1
+class integer
+type long
+display hex
+label 'BI EV '
+
+sitem
+name aqbi_eintrcsr
+class composite
+type register
+size 1
+display nil
+label 'USER INT CTRL'
+map
+	field
+size 2
+class filler
+	field
+size 12
+class integer
+display hex
+label 'INTERRUPT VECTOR USED ='
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 'EXTERNAL VECTOR USED'
+	field
+size 4
+class integer
+display hex
+label 'ASSERT INT AT LEVEL ='
+	field
+size 4
+class integer
+display hex
+label 'SENT INT LEVEL ='
+	field
+size 4
+class integer
+display hex
+label 'DONE INT LEVEL ='
+	field
+size 4
+class integer
+display hex
+label 'ABORT INT LEVEL ='
+
+sitem
+name aqbi_intrdes
+size 1
+class integer
+type long
+display hex
+label 'INTERRUPT DEST NODE'
+
+sitem
+name aqbi_uintcsr
+size 1
+class composite
+type register
+display nil
+map
+	field
+size 2
+class filler
+	field
+size 12
+class integer
+display hex
+label 'INTERRUPT VECTOR USED ='
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 'EXTERNAL VECTOR USED'
+	field
+size 4
+class integer
+display hex
+label 'ASSERT INT. AT LEVEL'
+	field
+size 4
+class integer
+display hex
+label 'SENT INT LEVEL'
+	field
+size 4
+class integer
+display hex
+label 'DONE INT LEVEL'
+	field
+size 4
+class integer
+display hex
+label 'ABORT INT LEVEL'
+
+# bi scm entries
+
+sitem
+name aqbi_sjcs
+size 1
+class composite
+type register
+display nil
+label 'SPU/JBOX INTERFACE'
+map
+	field
+size 1
+class integer
+display hex
+label 'RX IE ='
+	field
+size 1
+class integer
+display hex
+label 'TX IE ='
+	field
+size 1
+class integer
+display hex
+label 'RXFCT IE ='
+	field
+size 1
+class integer
+display hex
+label 'TXFCT IE ='
+	field
+size 1
+class integer
+display hex
+label 'RX PAR IE ='
+	field
+size 1
+class integer
+display hex
+label 'TX PAR IE ='
+	field
+size 1
+class integer
+display hex
+label 'DA IE ='
+	field
+size 1
+class integer
+display hex
+label 'DMA COMPLETE IE ='
+	field
+size 2
+class integer
+display decimal
+label 'PRIMARY CPU SELECTED ='
+	field
+size 2
+class coded
+label 'DA MODE ='
+map
+	0 'NORMAL'
+	1 'NORMAL'
+	2 'MULTI'
+	3 'DUMB'
+	field
+size 4
+class filler
+	field
+size 1
+class coded
+map
+	1 'CONSOLE REBOOT BIT SET'
+	field
+size 1
+class integer
+display hex
+label 'REBOOT IE ='
+	field
+size 1
+class coded
+map
+	1 'SJA RESET BIT SET'
+	field
+size 1
+class integer
+display hex
+label 'LOOPBACK MODE ='
+	field
+size 1
+class coded
+map
+	1 'TX LOCK BIT SET'
+	field
+size 3
+class filler
+	field
+size 2
+class coded
+map
+	0 'CPU PF IE DISABLED'
+	1 'PF IE CAB A ENABLED'
+	2 'PF IE CAB B ENABLED'
+	3 'PF IE CAB A OR B ENABLED'
+	field
+size 2
+class coded
+map
+	0 'NO INT ON CPU PF'
+	1 'PF INT SEL = CPU 0/1'
+	2 'PF INT SEL = ALL CPUS'
+	3 'PF INT PRIMARY CPU ONLY'
+	field
+size 1
+class coded
+map
+	1 'CPU CAB A PF'
+	field
+size 1
+class coded
+map
+	1 'CPU CAB B PF'
+	field
+size 1
+class integer
+display hex
+label 'SPU PF IE ='
+
+
+sitem
+name aqbi_flag
+size 1
+class composite
+type register
+display nil
+label 'INT FLAG REG'
+map
+	field
+size 1
+class integer
+display hex
+label 'RX INT'
+	field
+size 1
+class integer
+display hex
+label 'TX INT'
+	field
+size 1
+class integer
+display hex
+label 'RXFCT INT'
+	field
+size 1
+class integer
+display hex
+label 'TXFCT INT'
+	field
+size 1
+class integer
+display hex
+label 'RX PARITY INT'
+	field
+size 1
+class integer
+display hex
+label 'TX PARITY INT'
+	field
+size 1
+class integer
+display hex
+label 'DA INT'
+	field
+size 1
+class integer
+display hex
+label 'DMA COMPLETE'
+	field
+size 12
+class filler
+	field
+size 1
+class integer
+display hex
+label 'TX READY'
+	field
+size 10
+class filler
+	field
+size 1
+class integer
+display hex
+label 'POWER FAIL INT'
+
+sitem
+name aqbi_cmnd
+size 1
+class composite
+type register
+display nil
+label 'DA CMND'
+map
+	field
+size 8
+class integer
+display hex
+label 'BYTE MASK'
+	field
+size 4
+class integer
+display hex
+label 'COMMANDMASK'
+	field
+size 4
+class integer
+display hex
+label 'CPU ID MASK'
+
+sitem
+name aqbi_addr
+size 1
+class integer
+type long
+display hex
+label 'SJA ADDRESS REG'
+map
+
+sitem
+name aqbi_datlo
+size 1
+class integer
+type long
+display hex
+label 'QUADWORD LOW DATA'
+map
+
+sitem
+name aqbi_dathi
+size 1
+class integer
+type long
+display hex
+label 'QUADWORD HIGH DATA'
+map
+
+sitem
+name aqbi_dmask
+size 1
+class composite
+type register
+display nil
+label 'DATA WRITE MASK'
+map
+	field
+size 8
+class integer
+display hex
+label 'DMASK ='
+
+sitem
+name aqbi_dxcs
+size 1
+class composite
+type register
+display nil
+label 'DXCS'
+map
+	field
+size 1
+class integer
+display hex
+label 'DA DMA R/W ='
+	field
+size 1
+class filler
+	field
+size 1
+class integer
+display hex
+label 'DA DMA MODE ='
+	field
+size 1
+class integer
+display hex
+label 'DA DX LOCK ='
+	field
+size 3
+class filler
+	field
+size 1
+class integer
+display hex
+label 'DA DX DONE ='
+	field
+size 1
+class integer
+display hex
+label 'DA DX CS ERR ='
+
+sitem
+name aqbi_dxspu
+size 1
+class composite
+type register
+display nil
+label 'DXSPU'
+map
+	field
+size 2
+class filler
+	field
+size 30
+class integer
+display hex
+label 'DX SPU II32 ADDR ='
+
+sitem
+name aqbi_dxmem
+size 1
+class integer
+type long
+display hex
+label 'DX MEM ADDR'
+
+sitem
+name aqbi_dxcnt
+size 1
+class composite
+type register
+display nil
+label 'DX CNT'
+map
+	field
+size 2
+class filler
+	field
+size 16
+class integer
+display hex
+label 'DXCNT DMA BYTE COUNT ='
+
+sitem
+name aqbi_rxpar
+size 1
+class composite
+type register
+display nil
+label 'RX PAR'
+map
+	field
+size 14
+class integer 
+display hex
+label 'RX BUFFER PARITY ='
+	field
+size 16
+class filler
+	field
+size 1
+class integer 
+display hex
+label 'FORCE RX BAD PAR BIT ='
+	field
+size 1
+class integer 
+display hex
+label 'FORCE TX BAD PAR BIT ='
+
+

@@ -1,0 +1,194 @@
+.TH nl_printf 3int
+.SH Name 
+nl_printf, nl_fprintf, nl_sprintf \- print formatted output
+.SH Syntax 
+.B #include <stdio.h>
+.PP
+.B int nl_printf (
+.I format
+[,
+.I arg
+] ...
+.B )
+.br
+.B char 
+.IR *format ;
+.PP
+.B int nl_fprintf (
+.IR stream , 
+.I format
+[,
+.I arg
+] ...
+.B )
+.br
+.B FILE 
+.IR *stream ;
+.br
+.B char 
+.IR *format ;
+.PP
+.B int nl_sprintf (
+.IR s , 
+.I format
+[,
+.I arg
+] ...
+.B )
+.br
+.B char
+.IR *s ,
+.IR format ;
+.SH Description 
+.NXR "nl_printf subroutine"
+.NXR "nl_fprintf subroutine"
+.NXR "nl_sprintf subroutine"
+The international functions
+.PN nl_printf ,
+.PN nl_fprintf ,
+and
+.PN nl_sprintf 
+are identical to and have been superceded by the
+international functions
+.PN printf ,
+.PN fprintf ,
+and
+.PN sprintf 
+in a library. You should use the 
+.PN printf ,
+.PN fprintf ,
+and
+.PN sprintf 
+functions when you write new calls to print formatted output in an international
+program. For more information on these functions, see the 
+.MS printf 3int
+reference page.
+.PP
+You can continue to use existing calls to the 
+.PN nl_printf ,
+.PN nl_fprintf ,
+or 
+.PN nl_sprintf
+international functions.
+These functions remain available for compatibility with XPG\-2
+conformant software, but may not be supported in future releases of the 
+ULTRIX system.
+.PP
+The 
+.PN nl_printf ,
+.PN nl_fprintf ,
+and 
+.PN nl_sprintf
+international functions are similar to the 
+.PN printf 
+standard I/O function. (For more information about the
+.PN printf
+standard I/O function, see the 
+.MS printf 3s
+reference page.)
+The difference is that the international
+functions allow you to use the 
+.I I%digit$ 
+conversion sequence in place of the 
+.I %
+character you use in the standard I/O functions. The 
+.I digit
+is a decimal digit
+.I n
+from 1 to 9.  The international functions apply 
+conversions to the
+.I n
+th argument in the argument list, rather than to the next unused argument.
+.PP
+You can use 
+.I %
+conversion character in the international functions.  However, you cannot
+mix the 
+.I %
+conversion character with the
+.I %digit$
+conversion sequence in a single call.
+.PP
+You can indicate a field width or precision by an asterisk (*), instead of a
+digit string, in 
+.PN format
+strings containing the
+.I %
+conversion character. If you use an asterisk, you can supply an
+integer argument 
+that specifies the field width or precision.
+In 
+.PN format 
+strings containing the
+.I %digit$
+conversion character, you can indicate field width or precision 
+by the sequence
+.I *digit$.
+You use a decimal digit from 1 to 9 to indicate which argument
+contains an integer that specifies the field width or precision.
+.PP
+The conversion characters and their meanings are identical to
+.PN printf .
+.PP
+You must use each \fIdigit\fR argument at least once.
+The results of not using an argument are undefined.
+.SS International Environment
+.IP LC_NUMERIC 15
+If this environment is set and valid, 
+.PN nl_printf
+uses the international language database named in the definition to
+determine radix character rules.
+.IP LANG 15
+If this environment variable is set and valid 
+.PN nl_printf
+uses the international language database named in the definition to
+determine collation and character classification rules.  If
+.PN LC_NUMERIC 
+is defined, its definition supercedes the definition of
+LANG.
+.SH Examples
+The following example illustrates using an argument to specify field width:
+.EX 0
+nl_printf ("%1$d:%2$.*3$d:%4$.*3$d\\n",
+				hour, min, precision, sec);
+.EE
+The format string 
+.I *3$  
+indicates that the third argument, which
+is named precision, contains the integer field width specification.
+.PP
+To print the language independent date and time format, use the following
+.PN nl_printf
+statement:
+.EX
+nl_printf (format, weekday, month, day, hour, min);
+.EE
+For United States of America use,
+.PN format
+could be a pointer to the following string:
+.EX
+"%1$s,  %2$s %3$d, %4$d:%5$.2d\\n"
+.EE
+This 
+.PN format 
+string produces the following message:
+.EX
+Sunday, July 3, 10:02
+.EE
+For use in a German environment, 
+.PN format
+could be a pointer to the following string:
+.EX
+"%1$s, %3$d. %2$s, %4$d:%5$.2d\\n"
+.EE
+This
+.PN format
+produces the following message:
+.EX
+Sonntag, 3. Juli, 10:02
+.EE
+.SH See Also 
+intro(3int), setlocale(3), nl_scanf(3int), printf(3int), scanf(3int), 
+printf(3s), putc(3s), scanf(3s), stdio(3s)
+.br
+.I Guide to Developing International Software

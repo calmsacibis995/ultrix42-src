@@ -1,0 +1,21 @@
+% LPS$$SETINPUTTRAY device control library module.
+% Version V1.0
+%
+% Copyright ) 1986 by DEC, Maynard, Mass.  All rights reserved.
+
+% Remember, you are still in lps$lpsdict!
+%
+% This module expects the input tray to be on the stack.
+
+    dup /lps$input-tray exch def % Store paper tray used.
+
+% Table for Input_tray
+%
+    /input-tray-dict 3 dict def
+    input-tray-dict begin
+      /top	{1 setpapertray} bind def
+      /middle	{2 setpapertray} bind def
+      /bottom	{3 setpapertray} bind def
+      end
+
+    input-tray-dict exch get exec % Now set the paper tray used.

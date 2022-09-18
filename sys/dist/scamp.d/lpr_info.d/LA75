@@ -1,0 +1,18 @@
+#la75 Printer Definition
+	:af=/usr/adm/lpacct:\
+	:br#4800:\
+	:ct=dev:\
+	:fc#0177777:\
+	:fs#023:\
+	:if=/usr/lib/lpdfilters/la75of:\
+	:lf=/usr/adm/lperr:\
+	:lp=/dev/tty01:\
+	:mx#0:\
+	:of=/usr/lib/lpdfilters/la75of:\
+	:pl#66:\
+	:pw#80:\
+	:sd=/usr/spool/lpd:\
+	:uv=4.0:\
+	:xc#0177777:\
+	:xf=/usr/lib/lpdfilters/xf:\
+	:xs#044000:

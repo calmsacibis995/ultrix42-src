@@ -1,0 +1,89 @@
+.TH rpc_allow_remote_shutdown 3ncs
+.SH Name
+rpc_allow_remote_shutdown \- allow or disallow remote shutdown of a
+server (server only)
+.SH Syntax
+#include <idl/c/rpc.h>
+
+void rpc_$allow_remote_shutdown(\fIallow, checkproc,
+\fIstatus\fP)
+.nf
+unsigned long \fIallow\fP;
+rpc_$shut_check_fn_t \fIcheckproc\fR;
+status_$t *\fIstatus\fR;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$allow_remote_shutdown(\fR
+.\"	\fBin \fIallow\fB: unsigned32;\fR
+.\"	\fBin \fIcheckproc\fB: rpc_$shut_check_fn_t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20 15
+\fIallow\fR
+A value indicating `false' if zero, `true' otherwise.
+.TP 20 15
+\fIcheckproc\fR
+A pointer to a Boolean function.
+.TP 20 15
+\fIstatus\fR
+The completion status.  If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$allow_remote_shutdown
+routine allows or disallows remote callers to shut down a server using 
+.PN rrpc_$shutdown .
+.NXR "Interface to the Remote Procedure Call"
+.NXR "rpc_allow_remote_shutdown"
+.PP
+By default, servers do not allow remote shutdown via 
+.PN rrpc_$shutdown .
+If a server calls 
+.PN rpc_$allow_remote_shutdown
+with 
+.I allow
+true
+(not zero) and 
+\fIcheckproc\fR
+nil, then remote shutdown will be allowed.
+If 
+.I allow
+is true and 
+\fIcheckproc\fR
+is not nil, then when a remote shutdown request arrives,
+the function denoted by 
+.I checkproc
+is called and the shutdown is allowed if the function returns true.
+If 
+.I allow
+is false (zero), remote shutdown is disallowed.
+.SH Diagnostics
+This section lists status codes for errors returned by this 
+.PN rpc_$
+routine in
+.PN status.all .
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$you_crashed\fR
+This error can occur if a server has crashed and restarted.
+A client RPC runtime library sends the error to the server
+if the client makes a remote procedure call before the server crashes,
+then receives a response after the server restarts.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs), rpc_shutdown(3ncs), rrpc_shutdown(3ncs)

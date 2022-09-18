@@ -1,0 +1,86 @@
+.\" SCCSID: @(#)hy.4	8.1	9/11/90
+.TH hy 4 VAX "" Unsupported
+.SH Name
+hy \- Network Systems Hyperchannel interface
+.SH Syntax
+.B "device hy0 at uba0 csr 0172410 vector hyint"
+.SH Description
+The
+.PN hy
+interface provides access to a Network
+Systems Corporation Hyperchannel Adapter.
+.PP
+The network to which the interface is attached
+is specified at boot time with an SIOCSIFADDR ioctl.  
+The host's address is discovered by reading the adapter status
+register.  The interface will not transmit or receive
+packets until the network number is known.
+.SH Restrictions
+If the adapter does not respond to the status command
+issued during autoconfigure, the adapter is assumed down.
+A reboot is required to recognize it.
+.SH Diagnostics
+\fBhy%d: unit number 0x%x port %d type %x microcode level 0x%x\fP.
+.br
+Identifies the device during autoconfiguration.
+.PP
+\fBhy%d: can't handle af%d\fP.
+.br
+The interface was handed
+a message with addresses formatted in an unsuitable address
+family; the packet was dropped.
+.PP
+\fBhy%d: can't initialize\fP.
+.br
+The interface was unable to allocate UNIBUS resources. This
+is usually due to having too many network devices on an 11/750
+where there are only 3 buffered data paths.
+.PP
+\fBhy%d: NEX - Non Existent Memory\fP.
+.br
+Non existent memory error returned from hardware.
+.PP
+\fBhy%d:  BAR overflow\fP.
+.br
+Bus address register
+overflow error returned from hardware.
+.PP
+\fBhy%d: Power Off bit set, trying to reset\fP.
+.br
+Adapter has lost power, driver will reset the bit
+and see if power is still out in the adapter.
+.PP
+\fBhy%d: Power Off Error, network shutdown\fP.
+.br
+Power was really off in the adapter, network
+connections are dropped.
+Software does not shut down the network unless
+power has been off for a while.
+.PP
+\fBhy%d: RECVD MP > MPSIZE (%d)\fP.
+.br
+A message proper was received that is too big.
+Probable a driver bug.
+Shouldn't happen.
+.PP
+\fBhy%d: xmit error \- len > hy_olen [%d > %d]\fP.
+.br
+Probable driver error.
+Shouldn't happen.
+.PP
+\fBhy%d: DRIVER BUG \- INVALID STATE %d\fP.
+.br
+The driver state machine reached a non-existent state.
+Definite driver bug.
+.PP
+\fBhy%d: watchdog timer expired\fP.
+.br
+A command in the adapter has taken too long to complete.
+Driver will abort and retry the command.
+.PP
+\fBhy%d: adapter power restored\fP.
+.br
+Software was able to reset the power off bit,
+indicating that the power has been restored.
+.SH See Also
+intro(4n), inet(4f)

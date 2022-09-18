@@ -1,0 +1,45 @@
+.TH reset_prog_mode 3cur 
+.SH Name
+reset_prog_mode, reset_shell_mode \- restore terminal mode
+.SH Syntax
+.br
+.B
+int reset_prog_mode(\|)
+.PP
+.B
+int reset_shell_mode(\|)
+.SH Description
+.NXR "reset_prog_mode subroutine"
+.NXR "reset_shell_mode subroutine"
+.PP
+The 
+.PN reset_prog_mode
+routine restores the terminal modes to those 
+saved by 
+the
+.PN def_prog_mode 
+routine.
+.PP
+The 
+.PN reset_shell_mode
+routine restores the terminal modes saved by
+the
+.PN def_shell_mode 
+routine.
+.PP
+These routines are called automatically by 
+.PN endwin 
+and 
+.PN doupdate 
+after an 
+.PN endwin .
+Normally these routines would not be called before
+.PN endwin .
+.SH Return Values
+The
+.PN reset_prog_mode
+and
+.PN reset_shell_mode
+functions return OK on success and ERR on error.
+.SH See Also
+def_prog_mode(3cur), def_shell_mode(3cur), doupdate(3cur), endwin(3cur)

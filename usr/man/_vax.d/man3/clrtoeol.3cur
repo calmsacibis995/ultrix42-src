@@ -1,0 +1,40 @@
+.TH clrtoeol 3cur 
+.SH Name
+clrtoeol, wclrtoeol \- clear to end of line
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B
+int clrtoeol(\|)
+.PP
+.B
+int wclrtoeol(win)
+.br
+.B
+WINDOW \(**win;
+.SH Description
+.NXR "clrtoeol macro"
+.NXR "wclrtoeol subroutine"
+The
+.PN clrtoeol
+routine
+erases the 
+current line to the right of the cursor, inclusive,
+on the default window.
+.PP
+The routine
+.PN wclrtoeol
+erases the 
+current line to the right of the cursor, inclusive,
+on the specified window.
+.PP
+The routine
+.PN clrtoeol
+is a macro.
+.SH Return Values
+The
+.PN clrtoeol
+and
+.PN wclrtoeol
+functions return OK on success and ERR on error.

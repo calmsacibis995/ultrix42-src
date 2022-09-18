@@ -1,0 +1,38 @@
+.TH nlist 3x RISC
+.UC 4
+.SH Name
+nlist \- get entries from name list
+.SH Syntax
+.nf
+.B #include <nlist.h>
+.PP
+.B nlist(filename, nl)
+.B char *filename;
+.B struct nlist nl[];
+.PP
+.B "cc ... -lmld"
+.fi
+.SH Description
+The 
+.PN nlist
+subroutine examines the name list in the given executable output file
+and selectively extracts a list of values.  The name list consists of an 
+array of structures containing names, types and values.
+The list is terminated with a null name.
+Each name is looked up in the name list of the file.
+If the name is found, the type and value of the
+name are inserted in the next two fields.
+If the name is not found, both entries are set to 0.
+For the structure declaration, see 
+.IR /usr/include/nlist.h .
+.PP
+This subroutine is useful for examining the system name list kept in the file
+.BR /vmunix .
+In this way programs can obtain system addresses that are up to date.
+.SH Diagnostics
+If the file cannot be found or if it is not a valid namelist \-1 is returned;
+otherwise, the number of unfound namelist entries is returned.
+.PP
+The type entry is set to 0 if the symbol is not found.
+.SH See Also
+a.out(5)

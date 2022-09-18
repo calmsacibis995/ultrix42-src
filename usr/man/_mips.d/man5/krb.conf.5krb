@@ -1,0 +1,31 @@
+.TH krb.conf 5krb
+.SH Name
+krb.conf \- Kerberos configuration file
+.SH Syntax
+.B /etc/krb.conf
+.SH Description
+.NXR "Kerberos files" "krb.conf"
+The 
+.PN krb.conf
+file contains configuration information describing the Kerberos realm
+and the Kerberos servers for each realm.
+.PP
+The first line of the 
+.PN /etc/krb.conf
+file contains the name of the realm for the local host. The following
+lines of the file indicate additional realm/host entries.
+These lines can contain two parts. The
+first part is the realm name; the second part is the host running a
+Kerberos server for that realm.  
+.SH Examples
+The following example shows a Kerberos configuration file:
+.EX
+dec.com
+dec.com   mercury.dec.com
+dec.com   venus.dec.com
+dec.com   earth.dec.com
+.EE
+.SH Files
+.PN /etc/krb.conf
+.SH See Also
+krb_get_lrealm(3krb)

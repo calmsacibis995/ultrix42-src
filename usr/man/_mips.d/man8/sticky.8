@@ -1,0 +1,57 @@
+.\" SCCSID: @(#)sticky.8	3.2	7/13/88
+.TH sticky 8 RISC
+.SH Name
+sticky \- executable files with persistent text
+.SH Description
+.NXR "file" "sharing executable"
+.NXR "sticky file" "removing"
+The sticky bit (file mode bit 01000),
+is used to indicate special treatment
+for certain executable files and directories.
+.PP
+While the sticky bit, mode 01000
+is set on a sharable executable file,
+the text of that file will not be removed from the system swap area.
+Thus the file does not have to be fetched from the file system
+upon each execution.
+As long as a copy remains in the swap area, the
+original text cannot be overwritten in the file system,
+nor can the file be deleted.
+Directory entries can be removed so long as one link remains.
+.PP
+Sharable files are made by the
+.PN \-n
+and
+.PN \-z
+options of
+.MS ld 1 .
+.PP
+To replace a sticky file that has been used,
+clear the sticky bit with
+.PN chmod
+and execute the old program to flush the swapped copy.
+This can be done safely even if others are using it.
+Overwrite the sticky file.
+If the file is being executed by any process,
+writing will be prevented.  It suffices to simply remove the file
+and then rewrite it, being careful to reset the owner and mode with
+.PN chmod
+and
+.PN chown .
+Set the sticky bit again.
+.PP 
+A directory whose sticky bit is set becomes an append-only directory,
+or, more accurately, a directory in which the deletion of files is 
+restricted.  A file in a sticky directory may only be removed
+or renamed by a user if the user has write permission for the directory 
+and the user is the owner of the file, the owner of the directory,
+or the superuser.  This feature is usefully applied to directories such 
+as 
+.PN /tmp 
+which must be publicly writeable
+but should deny users the license to arbitrarily delete or rename each 
+others' files.
+.SH Restrictions
+Only the superuser can set the sticky bit.
+.SH See Also
+chmod(2)

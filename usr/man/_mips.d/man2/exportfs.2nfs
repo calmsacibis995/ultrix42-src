@@ -1,0 +1,80 @@
+.TH exportfs 2nfs
+.SH Name
+exportfs \- exports an NFS file system
+.SH Syntax
+.nf
+.br
+.br
+.ft B
+#include <sys/mount.h>
+exportfs(name, rootuid, exflags)
+char *name;
+int rootuid, exflags;
+.PP
+.fi
+.SH Description
+.NXR "exportfs system call"
+.NXR "file system" "exporting"
+The 
+.PN exportfs
+system call allows the specified local file system to be mounted
+remotely by an NFS client.  This system call is usually called from 
+.PN mountd .
+Security on the
+exported file systems can be improved
+by setting the root mapped user
+ID,
+.I rootuid,
+and two mount structure flags,
+.I exflags
+for the local file system,
+.I name.
+.PP
+The
+.I name 
+argument is a pointer to a null-terminated string containing
+the path name of the file system being exported.
+.PP
+The
+.I rootuid
+argument is used to set the user ID that root maps to.  By default, root
+maps to user id \-2.
+.PP
+The 
+.I exflags 
+argument contains the flags that are to be set in the mount structure
+corresponding to
+.I name.
+The following flags are the only possible flags accepted by 
+.PN exportfs:
+.EX
+#define M_NOFH          0x1000          /* no fhandle flag */
+#define M_EXRONLY       0x2000          /* export read-only */
+.EE
+.PP
+Setting the M_NOFH flag does not allow access to the fhandle of
+the file system's root gnode.  The M_EXRONLY flag exports a filesystem
+read only. 
+.PP
+The
+.PN exportfs
+system call returns a value of 0 upon successful completion of a 
+operation, and \-1 upon failure.  
+.SH Diagnostics
+.TP 15
+[EPERM]
+Not superuser.
+.TP 15
+[EIO]
+Not enough memory in the system to service the request.
+.TP 15
+[EFAULT]
+Bad address or bad length of 
+.I name.
+.TP 15
+[ENOENT]
+The
+.I name
+cannot be found.
+.SH See Also
+exports(5nfs), mountd(8nfs)

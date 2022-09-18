@@ -1,0 +1,165 @@
+.\" SCCSID: @(#)quota.2	8.1	9/11/90
+.TH quota 2
+.SH Name
+quota \- manipulate disk quotas
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.B #include <sys/param.h>
+.B #include <sys/quota.h>
+.PP
+.B quota(cmd, uid, arg, addr)
+.B int cmd, uid, arg;
+.B caddr_t addr;
+.fi
+.SH Description
+.NXR "quota system call"
+.NXAM "quota system call" "quotacheck command"
+.NXR "disk quota" "manipulating"
+The
+.PN quota
+call manipulates disk quotas for file systems
+that have had quotas enabled with 
+.PN setquota .
+The
+.I cmd
+parameter indicates a command in the following list that is applied to
+the user ID
+.IR uid .
+The
+.I arg
+parameter is a command specific argument and
+.I addr
+is the address of an optional, command specific data structure,
+which is copied in or out of the system.  The interpretation of
+.I arg
+and
+.I addr
+is given with each command in the list that follows:
+.NXR "quota system call" "command list"
+.TP
+Q_SETDLIM
+Set disk quota limits and current usage for the user with ID
+.IR uid .
+The
+.I arg
+parameter is a major-minor device indicating a particular file system.
+The
+.I addr
+parameter is a pointer to a struct dqblk structure,
+defined in <sys/quota.h>.
+Only the superuser can issue this call.  
+.TP
+Q_GETDLIM
+Get disk quota limits and current use for the user with ID
+.IR uid .
+The remaining parameters are identical to the Q_SETDLIM command
+parameters.
+.TP
+Q_SETDUSE
+Set disk use limits for the user with ID
+.IR uid .
+The
+.I arg
+parameter is a major-minor device indicating a particular file system.
+The
+.I addr
+is a pointer to a struct
+dqusage structure, defined in <sys/quota.h>.
+Only the superuser can issue this call.
+.TP
+Q_SYNC
+Update the on-disk copy of quota uses.
+The
+.IR uid ,
+.IR arg ,
+and
+.I addr 
+parameters are ignored.
+.TP
+Q_SETUID
+Change the calling process's quota limits to those of the
+user with ID
+.IR uid .
+The 
+.I arg
+and
+.I addr
+parameters are ignored.  Only the superuser can issue this call.
+.TP
+Q_SETWARN
+Alter the disk usage warning limits for the user with ID
+.IR uid .
+The
+.I arg
+is a major-minor device indicating a particular file system.
+The
+.I addr
+parameter is a pointer to a struct dqwarn structure, which is 
+defined in <sys/quota.h>.
+Only the superuse can issue this call.
+.TP
+Q_DOWARN
+Warn the user with user ID
+.I uid
+about excessive disk use.
+This call causes the system to check its current disk use
+information and print a message on the terminal of
+the caller for each file system on which the user is over quota.
+If the
+.I arg
+parameter is specified as NODEV, all file systems that have
+disk quotas are checked.  Otherwise, 
+.I arg
+indicates a specific major-minor device to be checked.
+Only the superuser can issue this call.
+.SH Return Values
+A successful call returns 0 and, possibly, more
+information specific to the command specified in the 
+.I cmd
+parameter; when an error occurs, the value \-1
+is returned and the global variable
+.I errno
+is set to indicate the reason.
+.SH Diagnostics
+.NXR "quota system call" "diagnostics"
+A
+.I quota
+call fails when one of the following occurs:
+.TP 15
+[EINVAL]
+The kernel has not been compiled with the QUOTA option.
+.TP 15
+[EINVAL]
+The
+.I cmd
+parameter is invalid.
+.TP 15
+[ESRCH]
+No disk quota is found for the indicated user.
+.TP 15
+[EPERM]
+Only the superuser can issue the call and the caller is not the
+superuser.
+.TP 15
+[ENODEV]
+The
+.I arg
+parameter is being interpreted as a major-minor device,
+and it indicates an unmounted file system.
+.TP 15
+[EFAULT]
+An invalid
+.I addr
+parameter is supplied; the associated structure could not be copied in or out
+of the kernel.
+.TP 15
+[EUSERS]
+The quota table is full.
+.SH See Also
+.MS setquota 2, 
+.MS quotacheck 8, 
+.MS quotaon 8
+.br
+"Disk Quotas in a UNIX Environment",
+.I ULTRIX Supplementary Documents, Volume 3:System Manager

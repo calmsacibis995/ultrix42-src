@@ -1,0 +1,79 @@
+.TH t_rcvrel 3xti
+.SH Name
+t_rcvrel \- acknowledge receipt of an orderly release indication
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_rcvrel(\fIfd\fB)
+.br
+.B int \fIfd\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint. 
+.SH Description
+This function is used to acknowledge receipt of an orderly release
+indication. After receipt of this indication, the user cannot attempt
+to receive more data, because such an attempt will block forever.
+However, the user can continue to send data over the connection if
+.PN t_sndrel() 
+has not been issued by the user.
+.NXR "t_rcvrel. system call"
+.NXR "orderly release" "acknowledging receipt"
+.PP
+This function is an optional service of the transport provider, and is
+only supported if the transport provider returned service type
+T_COTS_ORD on 
+.PN t_open() 
+or 
+.PN t_getinfo()\fR.\fR
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, a value of 0 is returned. Otherwise, a
+value of \-1 is returned, and \fBt_errno()\fR 
+is set to indicate the error.
+.SH Diagnostics
+On failure, 
+.PN t_errno() 
+is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20 
+[TOUTSTATE]
+The function was issued in the wrong sequence on the transport endpoint
+referenced by \fIfd\fR.
+.TP 20
+[TNOREL]
+No orderly release indication currently exists on the specified
+transport endpoint.
+.TP 20
+[TLOOK]
+An asynchronous event has occurred on the transport endpoint and requires 
+immediate attention.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the underlying transport provider. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+t_getinfo(3xti), 
+t_open(3xti),
+t_sndrel(3xti)

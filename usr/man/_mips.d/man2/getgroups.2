@@ -1,0 +1,68 @@
+.\" SCCSID: @(#)getgroups.2	3.1	11/23/87
+.\" Last modified by MJT on 3-Jul-86  0838
+.\"  Merged RR and Jenkins changes with latest library version.  Sigh.
+.\"
+.TH getgroups 2
+.SH Name
+getgroups \- get group access list
+.SH Syntax
+.nf
+#include <sys/types.h>
+#include <unistd.h>
+.PP
+int getgroups(\fIgidsetsize, grouplist\fP) 
+int \fIgidsetsize\fP;
+int \fIgrouplist\fP[];
+.fi
+.SH Description
+.NXR "getgroups system call"
+.NXR "group access list" "getting"
+The 
+.PN getgroups
+call gets the current group access list of the user process
+and stores it in the array of int 
+.IR grouplist .
+The 
+.I gidsetsize
+parameter indicates the number of entries that can be placed in 
+.IR grouplist .
+.SH Return Values
+Upon success, the call returns the 
+number of groups as the value of the function.
+No more than NGROUPS, as defined in <sys/param.h>, are
+returned.
+.PP
+A value of \-1 indicates that an error occurred, and the error
+code is stored in the global variable, \fIerrno\fP\|.
+.SH Diagnostics
+The 
+.PN getgroups
+call fails under the following conditions: 
+.TP 15
+[EINVAL]
+The 
+.I gidsetsize
+argument is smaller than the number of groups in the group set.
+.TP 15
+[EFAULT]
+The \fIgrouplist\fP argument specifies
+invalid addresses.
+.SH Environment
+.SS POSIX
+When your program is compiled in the POSIX environment, the
+.IR grouplist
+argument should be defined as follows:
+.sp
+.ft B
+gid_t	grouplist[];
+.PP
+Additionally, in the POSIX environment, if the 
+.IR gidsetsize 
+argument is zero,
+.PN getgroups
+returns the number of supplemental group IDs associated with 
+the calling process, without modifying the array pointed to by the 
+.IR grouplist
+argument.
+.SH See Also
+setgroups(2), initgroups(3x)

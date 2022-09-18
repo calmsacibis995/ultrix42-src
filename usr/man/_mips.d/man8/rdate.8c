@@ -1,0 +1,43 @@
+.\" SCCSID: @(#)rdate.8c	8.1	9/11/90
+.TH rdate 8c
+.SH Name
+rdate \- network date client
+.SH Syntax
+.B /etc/rdate
+[
+.B \-s
+] [
+.B \-v
+] [
+.I network
+]
+.SH Description
+.NXR "rdate command"
+.NXAM "date command" "rdate command"
+.NXR "system" "resetting date"
+.NXR "system" "resetting time"
+The 
+.PN rdate
+command is invoked at boot time to reset the system date and time to
+the current network date and time.
+The
+.PN rdate
+program sends a broadcast datagram packet on the specified network
+or on the system default network if no network is specified.
+The program will then wait two seconds for responses.  After that
+time, the arithmetic median of the responses is taken.  
+.SH Options
+.IP \fB\-s\fR 0.3i
+The system date and time will be set to the median value.
+.IP \fB\-v\fR 0.3i
+The time values returned by all responding hosts will
+be reported.
+.SH Restrictions
+In order for
+.PN rdate
+to determine a network time, at least one of the running hosts
+on the network must be running the internet time service.
+Machines with their own battery-backed-up time-of-day clock
+may not desire to set time in this manner.
+.SH See Also
+date(1)

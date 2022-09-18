@@ -1,0 +1,356 @@
+.\" SCCSID: @(#)tar.1	4.1	12/9/88
+.TH tar 1
+.SH Name
+tar \- multivolume archiver
+.SH Syntax
+.B tar
+[\|\fIkey\fR\|] [\|\fIname...\fR\|]
+.SH Description
+.NXA "tar command" "mdtar command"
+.NXA "tar command" "ar program"
+.NXAM "tar command" "tar file"
+.NXR "tar command"
+.NXR "file" "backing up"
+The tape archiver command,
+.PN tar ,
+saves and restores multiple files to and from a single archive.
+The default archive device is 
+.PN /dev/rmt0h ,
+but any file or device may be requested through the use of options.
+.PP
+The
+.I key
+is a string of characters containing at most one function
+letter and possibly names specifying which files to dump or 
+restore.
+In all cases, appearance of a directory name refers to the files and
+(recursively) subdirectories of that directory.
+.PP
+This utility supports EOT handling which allows the use of
+multiple media.  The utility prompts for the next volume when it
+encounters the end of the current volume.
+.SH Function Keys
+.NXR "tar command" "keys"
+The function portion of the key is specified by one of
+the following letters:
+.TP 8
+.B c
+Create a new archive on tape, disk or file.
+Writing starts at the beginning of the archive
+instead of after the last file.
+.TP 8
+.B r
+Write the named files to the end of the archive.
+.TP 8
+.B t
+List the names of the files as they occur on the input archive.
+.TP 8
+.B u
+Add the named files to the archive if they are not
+there already or if they have been modified since they were
+last put in the archive.
+.TP 8
+.B x
+Extract the named files from the archive.
+If the named file matches a directory whose contents
+had been written into the archive,
+the directory is recursively extracted.
+The owner, modification time,
+and mode are restored, if possible.
+If no file argument is given, the entire content
+of the archive is extracted.
+Note that if multiple entries specifying the same
+file are in the archive,
+the last one overwrites all previous versions extracted.
+.SH Options
+.NXR "tar command" "options"
+You can use one or more of the following options in
+addition to the letter which selects the function
+desired.
+.TP 10
+.B 0...9
+Substitute number for the device unit number as in 
+.PN /dev/rmt#h .
+The default is the high density rewind
+tape device number zero named 
+.PN /dev/rmt0h .
+The command 
+.EX
+tar cv4 tar.c
+.EE
+uses device 
+.PN /dev/rmt4h .
+.TP 10
+.B A
+Use next argument as archive number with which to begin output.
+.TP 10
+.B B
+Force input and output blocking to 20 blocks/record. 
+This option allows
+.PN tar
+to work across a communications channel where the blocking may not
+be maintained.
+.TP 10
+.B D
+Directory output in original 
+.PN tar
+style.
+.TP 10
+.B C
+Use to perform a directory change prior to archiving data.
+.TP 10
+.B "\F[ F ]"
+Operate in 
+.I fast mode .
+When
+.B \-F
+is specified,
+.PN tar
+skips all SCCS directories, core files, and error files.
+When
+.B \-FF
+is specified,
+.PN tar
+also skips all
+.PN a.out
+and
+.B *.o
+files.
+.TP 10
+.B H
+Help mode.
+Print a summary of the function keys and options.
+.TP 10
+.B M
+Next arg specifies maximum archive number to be written and
+prints current archive number on output line.
+.TP 10
+.B N
+No multi-archive, file splitting, or new header format on output.
+Output directories in previous tar format. On input, set file
+UID & GID from file header vs. values in 
+.PN /etc/passwd
+and group files.
+.TP 10
+.B O
+Include file owner & group names in verbose output (t & x functions)
+if present in archive header.  Output warning message if owner
+or group name not found in
+.PN /etc/passwd
+or
+.PN /etc/group
+file (cru functions).
+.TP 10
+.B P
+Used to specify POSIX format tapes.
+Unnecessary with keys other than the \fBc\fR key.
+.TP 10
+.B R
+Each named file contains a list of file names separated by newlines
+which is added to (\fBc\fP function key) or extracted
+from (\fBx\fP function key) the archive.
+.TP 10
+.B S
+Output User Group Standard archive format.
+.TP 10
+.B V
+Display extended verbose information.
+Included are the version number of
+.PN tar ,
+the number of blocks used on the device,
+the number of blocks in a file,
+and the protection modes given in a format similar to the
+.B ls
+.B \-l
+command.
+In addition to this information,
+.B V
+provides the information given by the
+.B v
+option.
+.TP 10
+.B b
+Use the next argument as the blocking factor for tape records.
+The default is 20 (the maximum is 127).
+This option should only be used with raw magnetic tape archives (See 
+the
+.B f
+option).
+The block size is determined automatically
+when reading tapes (\fBx\fP and \fBt\fR)
+keys. See the \fBRestrictions\fP section. 
+.TP 10
+.B d
+Use 
+.PN /dev/rra1a 
+as the default device.
+The 
+.PN mdtar
+command is recommended for use with floppy disks.
+.TP 10
+.B f
+Use the next argument as the name of the archive instead of
+/dev/rmt0h.
+If the name of the file is
+.B \- ,
+.PN tar
+writes to standard output or
+reads from standard input,
+whichever is appropriate.
+Thus,
+.PN tar
+can be used as the head or tail of a filter chain.
+You can also use
+.PN tar
+to move hierarchies.
+The following example shows how to move the directory
+.I fromdir
+to the directory
+.I todir :
+.EX
+# cd fromdir; tar cf \- . | (cd todir; tar xpf \-)
+.EE
+.TP
+.B h
+Save a copy of the actual file on the output device under the
+symbolic link name,
+instead of placing the symbolic information on the output.
+The default action of
+.PN tar
+is to place symbolic link information on the output device.
+A copy of the file itself is not saved on the output device.
+.TP
+.B i
+Ignore checksum errors found in the archive.
+.TP 10
+.B l
+Complain if
+.PN tar
+cannot resolve all of the links to the files dumped.
+If this is not specified,
+no error messages are printed.
+.TP 10
+.B m
+Do not restore the modification times.
+The modification time is the time of extraction.
+Tar normally restores modification times of regular and
+special files.
+.TP 10
+.B o
+Suppress the normal directory information.  On output, 
+.PN tar
+normally places information specifying owner and modes of 
+directories in the archive.  Former versions of 
+.PN tar ,
+when
+encountering this information will give error message of the 
+form,
+.EX
+<name>/: cannot create
+.EE
+.PN tar
+will place information specifying owner and modes
+of directories in the archive.
+.TP 10
+.B p
+Restore the named files to their original modes,
+ignoring the present 
+.MS umask 2 .
+Setuid and sticky bit information
+is also restored to the superuser.
+.TP 10
+.B s
+Next argument specifies size of archive in 512 byte blocks.
+.TP 10
+.B v
+Write the name of each file treated,
+preceded by the function letter,
+to diagnostic output.  
+Normally,
+.PN tar
+does its work silently.
+With the
+.B t
+function key,
+the verbose option provides more information about the
+tape entries than just their names.
+.EX
+#cd /
+#tar cvf tar-out vmunix
+.EE
+Produces the output ``a vmunix 1490 blocks'' where 1490 is the number of 512 byte
+blocks in the file ``vmunix''.
+.EX
+#tar xvf tar-out
+.EE
+Produces the output ``x vmunix, 762880 bytes, 1490 blocks'' where 762880 is the
+number of bytes and 1490 is the number of 512 byte blocks in the file ``vmunix''
+which was extracted.
+.TP 10
+.B w
+Print the action to be taken, followed by file name,
+then wait for user confirmation.
+If a word beginning with the letter
+.B y
+is given,
+the action is done.
+Any other input means do not do it.
+.SH Restrictions
+.NXR "tar command" "restricted"
+There is no way to ask for the
+.IR n\^\^th
+occurrence of a file.
+.PP
+Tape errors are handled ungracefully.
+.PP
+The 
+.B u
+key can be slow.
+.PP
+The limit on file name length is 100 characters.
+.PP
+There is no way to follow symbolic links selectively.
+.PP
+On SCSI tape devices tar (when reading) may end on one volume 
+of a multi-volume set
+without prompting for the next volume. This is a very infrequent
+condition. The next volume should be loaded and the command issued
+again.
+.PP
+Using a blocking factor other than the default (\fBb\fP option) may lead 
+to higher performance. However, you must select a value that is compatible 
+with the hardware limitations of the source and destination machines. 
+Software limitations may apply for other versions of 
+.PN tar .
+.PP
+When extracting (\fBx\fP), 
+.PN tar
+reads the entire tape. See the \fBr\fP and \fBu\fP keys.
+.SH Examples
+.NXR(e) "tar command"
+To archive files from 
+.PN /usr/include
+and 
+.PN /etc ,
+type:
+.EX
+# tar c \-C /usr/include . \-C /etc .
+.EE
+.PP
+The
+.PN tar
+command can properly handle blocked archives.
+.SH Diagnostics
+.NXR "tar command" "diagnostics"
+Indicates bad key characters and read/write errors.
+.PP
+Indicates if enough memory is not available to hold the link tables.
+.SH Files
+.br
+.PN /dev/rmt0h
+.br
+.PN /dev/rra1a
+.br
+.PN /tmp/tar*
+.SH See Also
+mdtar(1), mt(1), tar(5)

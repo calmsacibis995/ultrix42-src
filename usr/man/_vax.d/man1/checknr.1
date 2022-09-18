@@ -1,0 +1,95 @@
+.\" SCCSID: @(#)checknr.1	8.2	11/2/90
+.TH checknr 1
+.SH Name
+checknr \- check nroff/troff files
+.SH Syntax
+.B checknr
+[\fB\-s\fR] [\fB\-f\fR\|] [\fB\-a\fR.x1.y1.x2.y2. ... .xn.yn] 
+[\fB\-c\fR.x1.x2.x3... .xn] [\fIfile\fR...]
+.SH Description
+.NXR "checknr command"
+.NXA "nroff text processor" "checknr command"
+The
+.PN checknr
+command checks a list of
+.MS nroff 1 
+or 
+.MS troff 1
+input files for certain kinds of errors
+involving mismatched opening and closing delimiters
+and unknown commands.
+If no files are specified,
+.PN checknr
+checks the standard input.
+Delimiters checked are:
+.IP 5 
+Font changes using \efx ... \efP.
+.IP 
+Size changes using \esx ... \es0.
+.IP 
+Macros that come in open ... close forms, for example,
+the .TS and .TE macros which must always come in pairs.
+.PP
+The
+.PN checknr
+command knows about the
+.MS ms 7 
+and 
+.MS me 7 
+macro packages.
+.PP
+The
+.PN checknr
+command
+is intended to be used on documents that are prepared with
+.PN checknr
+in mind, much the same as
+.MS lint 1 .
+It expects a certain document writing style for \ef and \es commands,
+in that each \efx must be terminated with \efP and
+each \esx must be terminated with \es0.
+While it will work to directly go into the next font or explicitly
+specify the original font or point size,
+and many existing documents actually do this,
+such a practice will produce complaints from
+.PN checknr .
+Since it is probably better to use the \efP and \es0 forms anyway,
+you should think of this as a contribution to your document
+preparation style.
+.SH Options
+.NXR "checknr command" "options"
+.TP 5
+.B \-a
+Allows additional pairs of macros to be added to the list. 
+This must be followed by groups of six characters, each group defining
+a pair of macros.
+The six characters are
+a period,
+the first macro name,
+another period,
+and the second macro name.
+For example, to define a pair .BS and .ES, use \-\fBa\fP.BS.ES.
+.TP
+.B \-c
+Defines commands otherwise complained about
+as undefined.
+.TP
+.B \-f
+Ignores \ef font changes.
+.TP
+.B \-s
+Ignores \es size changes.
+.SH Restrictions
+There is no way to define a 1 character macro name using
+.BR \-a .
+.br
+Does not correctly recognize certain reasonable characters,
+such as conditionals.
+.SH Diagnostics
+Complaints about unmatched delimiters.
+.PP
+Complaints about unrecognized commands.
+.PP
+Various complaints about the syntax of commands.
+.SH See Also
+eqn(1), nroff(1), troff(1), ms(7), me(7)

@@ -1,0 +1,129 @@
+.\" SCCSID: @(#)ifconfig.8c	3.1	11/24/87
+.TH ifconfig 8c
+.SH Name
+ifconfig \- configure network interface parameters
+.SH Syntax
+.B /etc/ifconfig
+.I interface
+[
+.I address
+[
+.I dest_address
+] ] [
+.I parameters
+]
+.SH Description
+.NXR "ifconfig command" "description"
+.NXR "network interface" "configuring parameters"
+The
+.PN ifconfig
+command assigns an address
+to a network interface and/or configures
+network interface parameters.
+You must use
+.PN ifconfig
+at boot time to define the network address
+of each interface present on a machine. You can also use 
+it at a later time to redefine an interface's address.  The
+.I interface
+parameter is a string of the form: name, unit, for example, en0. 
+.NXR "ifconfig command" "interface parameter"
+The address is either a host name present in the host name data
+base, 
+.MS hosts 5 ,
+or a DARPA Internet address expressed in the Internet standard
+dot notation.
+.SH Arguments
+You can set the following parameters with 
+.PN  ifconfig:
+.NXR "ifconfig command" "arguments"
+.IP up 10
+Marks an interface up.
+.IP down 10
+Marks an interface down.  When an interface is
+marked down, the system does not attempt to
+transmit messages through that interface. 
+.IP trailers 10
+Enables the use of a trailer link level encapsulation when
+sending.  If a network interface supports
+.IR trailers ,
+the system, when possible, encapsulates outgoing
+messages in a manner that minimizes the number of
+memory-to-memory copy operations performed by the receiver.
+.sp .5
+Although 
+.I trailers
+is the default on some network interfaces, the use of trailers is 
+not recommended;
+failures in trailer negotiation can disrupt
+network transmissions.
+See 
+.IR \-trailers .
+.IP \-trailers 10
+Disables the use of a trailer link level encapsulation.
+This is the recommended setting.
+.IP promisc 10
+Enables the use of the 
+.MS packetfilter 4 
+in the promiscuous
+mode. The promiscuous mode allows the network interface to receive
+all the packets off the wire and pass it onto to the
+packet filter. 
+./"Protocols normally handled by Data Link Interface (DLI)
+./"will fail to receive any traffic while the interface is operating
+./"in the promiscuous mode. For example, one cannot run
+./"DECnet if operating in the promiscuous mode.
+.IP \-promisc 10
+Disables the promiscuous mode of the packet filter. This is
+the default.
+.IP \fB+copyall\fR 1i
+Sets the interface into copy-all mode
+(receives packets sent/received by the kernel-resident protocol
+software [for example, IP, ARP, DECnet, LAT] on this host).
+.IP \fB\-copyall\fR 1i
+Disables copy-all mode. (See 
+.MS pfconfig 8c
+for more information aboutut the
+.PN copyall
+flag.)
+.IP arp 10
+Enables the use of the Address Resolution Protocol in mapping
+between network level addresses and link level addresses.  This
+is the default.  This is currently implemented for mapping between
+DARPA Internet addresses and 10Mb/s Ethernet addresses.
+.IP \-arp 10
+Disables the use of the Address Resolution Protocol.
+.IP debug 10
+Enables driver-dependent debugging code. Usually, this turns on
+extra console error logging.
+.IP \-debug 10
+Disables driver dependent debugging code.
+.IP netmask 10
+Specifies how many bits of the address you wish to
+reserve for subdividing Class A and B networks
+into sub-networks.  (Inet only).
+.IP dstaddr 10
+Specifies the correspondent on the other end of
+a point to point link.
+.IP broadcast 10
+Specifies the address you wish to use to
+represent broadcasts to the network.
+.PP
+The
+.PN ifconfig
+command displays the current configuration for a network interface
+when no optional parameters are supplied.
+.PP
+Only the superuser can modify the configuration of a network interface.
+.SH Diagnostics
+.NXR "ifconfig command" "diagnostics"
+The 
+.PN ifconfig 
+command returns messages indicating the specified interface does not
+exist, the requested address is unknown, the user 
+tried to alter an interface's configuration
+but is not privileged.
+.SH See Also
+netstat(1), intro(4n), packetfilter(4), MAKEDEV(8),
+pfconfig(8c), pfstat(8),
+rc(8)

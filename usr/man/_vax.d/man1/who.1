@@ -1,0 +1,58 @@
+.\" SCCSID: @(#)who.1	8.1	9/11/90
+.\" SCCSID: @(#)who.1	8.1	9/11/90
+.TH who 1 
+.SH Name
+who \- print who and where users are logged in 
+.SH Syntax
+.B who
+[\|\fIwho-file\fR\|] [\fBam i\fR]
+.SH Description
+.NXR "who command"
+.NXA "who command" "finger command"
+.NXA "who command" "whoami command"
+.NXA "who command" "users command"
+.NXR "terminal" "showing name"
+.NXR "login time" "showing"
+.NXR "date" "showing"
+.NXR "time" "showing"
+.NXR "system" "showing uptime"
+.NXR "system" "showing users"
+.NXR "run queue" "showing average"
+.NXR "system" "showing user activity"
+.NXR "process" "printing status"
+.NXR "user ID" "showing"
+The
+.PN who
+command,
+without an argument,
+lists the login name, terminal name, and login time
+for each current UNIX user.
+.PP
+Without an argument,
+.PN who
+examines the /etc/utmp
+file to obtain its information.
+If a file is given, that file is examined.
+Typically the given file will be /usr/adm/wtmp,
+which contains a record of all the logins since it
+was created.
+Then
+.PN who
+lists logins, logouts, and crashes since the creation of
+the wtmp file.
+Each login is listed with user name,
+terminal name (with /dev/ suppressed),
+and date and time.
+When an argument is given,
+logouts produce a similar line without a user name.
+Reboots produce a line with `~' in the place of the device name,
+and a fossil time indicative of when the system went down.
+.PP
+With two arguments,
+as in `who am I' (and also `who are you'),
+.PN who
+tells who you are logged in as.
+.SH Files
+/etc/utmp
+.SH See Also
+getuid(2), utmp(5)

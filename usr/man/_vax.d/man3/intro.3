@@ -1,0 +1,242 @@
+.\" SCCSID: @(#)intro.3	3.1	11/24/87
+.TH intro 3
+.SH Name
+intro \- introduction to library functions
+.SH Description
+.NXR "intro(3) keyword"
+.NXA "subroutine" "\fIspecific subroutines\fP"
+This section describes functions that may be found
+in various libraries.  The library functions are those other than the
+functions that directly invoke ULTRIX system primitives,
+described in section 2.
+.NXR "library" "functions"
+Section 3 has the libraries physically grouped together.  
+The functions described in this
+section are grouped into various libraries:
+.SH Sections 3 and 3s
+The (3) functions are the standard C library functions.  The
+C library also includes all the functions described in Section 2.  
+.NXR "libc library" "contents"
+.NXA "C library" "libc library"
+These routines are
+included for compatibility with other systems.  In particular,
+a number of system call interfaces provided in 
+4.2BSD have been included for source code compatibility.
+The (3s) functions comprise the standard I/O library.  
+Together with the
+(3n), (3xti), (3yp) and (3) routines, these functions constitute
+library \fIlibc\fP,
+which is automatically loaded by the C compiler
+(cc), the Pascal compiler (pc), and the FORTRAN compiler
+(f77).
+(FORTRAN
+and Pascal are optional and may not be installed on your system.)
+Declarations for these functions may be obtained from
+the include file, <stdio.h>.
+The link editor 
+.MS ld 1
+searches this library under the \-lc option.
+Declarations for some of these functions may be obtained
+from include files indicated on the appropriate pages.
+.NT "VAX Only"
+On VAX machines, the GFLOAT version of
+.I libc
+is used when you use the 
+.MS cc 1
+command with the
+.B \-Mg
+option, or you use the 
+.MS ld 1
+command with the
+.B \-lcg
+option.  
+The GFLOAT version of
+.IR libc
+must be used with modules 
+compiled with 
+.MS cc 1
+using the 
+.B \-Mg
+option. 
+.sp
+Note that neither the compiler nor the linker 
+.MS ld 1
+can detect when mixed double floating point types are used,
+and your program may produce erroneous results if this occurs on a
+VAX machine.
+.NE
+.SH Section 3cur
+The (3cur) library routines make up the X/Open curses library.  These
+routines are different from the 4.2BSD curses routines contained in
+Section 3x.
+.SH Section 3f
+The (3f) functions are all functions callable from FORTRAN.  These
+functions perform the same jobs as do the (3) functions.
+An unsupported FORTRAN compiler, f77, is included in the VAX
+distribution. FORTRAN is available as a layered product on both VAX
+and RISC machines.
+.SH Section 3int
+The (3int) functions assist programs in supporting native language
+interfaces.  They are found in the internationalization library
+.IR libi .
+.SH Section 3krb
+The library of routines for the Kerberos authentication service. These
+routines support the authentication of commonly networked applications
+across machine boundaries in a distributed network.
+.SH Section 3m
+.NXR "libm library"  "contents"
+The (3m) functions constitute the math library,
+.IR libm .
+They are automatically loaded as needed by the Pascal
+compiler (pc)
+and the FORTRAN compiler (f77).
+The link editor searches this library under the 
+.B \-lm 
+option.  Declarations for these functions 
+may be obtained from the include file, < math.h >.
+.NT "VAX Only"
+On VAX machines, the GFLOAT version of
+.IR libm
+is used when you use the 
+.MS ld 1
+command with the
+.B \-lcg
+option. Note that you must use
+the GFLOAT version of
+.IR libm
+with modules compiled using the 
+.MS cc 1
+command with the
+.B \-Mg
+option. 
+.sp
+Note that neither the compiler nor the linker 
+.MS ld 1
+can detect when mixed double floating point
+types are used, and the program may produce
+erroneous results if this occurs on a VAX machine.
+.NE
+.SH Section 3ncs
+This section describes the NCS (Network Computing System) library 
+routines.
+The Title, Name, and See Also sections of the NCS reference pages do not
+contain the dollar ($) sign in the command names and library routines.
+The actual NCS commands and library routines do contain the
+dollar ($) sign.
+.SH Section 3n
+These functions constitute the internet network library,
+.SH Section 3x
+Various specialized libraries have not been given distinctive captions.
+Files in which such libraries are found are named on appropriate pages.
+.SH Section 3xti
+The X/Open Transport Interface defines a 
+transport service interface that is
+independent of any specific transport provider.  
+The interface is provided by
+way of a set of library functions for the C programming language.
+.SH Section 3yp
+These functions are specific to the Yellow Pages (YP) service.
+.SH Environmental Compatibility
+.NXS "environment (System V)" "System V environment"
+.NXR "System V environment" "specifying"
+.NXS "environment (POSIX)" "POSIX environment"
+.NXR "POSIX environment" "specifying"
+The libraries in Sections 3, 3m, and 3s contain System V and POSIX
+compatibility features that are available to general ULTRIX
+programs.  This compatibility sometimes conflicts with
+features already present in ULTRIX.  That is, the function
+performed may be slightly different in the System V or POSIX environment.
+These features are provided for applications that are being
+ported from System V or written for a POSIX environment.
+.PP
+The descriptions in these sections include an ENVIRONMENT
+section to describe any differences in function between
+System V or POSIX and the standard C runtime library.
+.PP
+The System V compatibility features are not contained in the
+standard C runtime library.  To get System V-specific behavior,
+you must specify that the System V environment is to be used in
+compiling and linking programs.  You can do this in one of two
+ways:
+.IP 1. 5
+Using the \fB\-YSYSTEM_FIVE\fR option for the 
+.PN cc
+command.
+.IP 2. 5
+Globally setting the environment variable PROG_ENV to SYSTEM_FIVE.
+If you are using the C shell, you would execute the following line,
+or include it in your .login file:
+.EX
+setenv PROG_ENV SYSTEM_FIVE
+.EE
+If you are using the Bourne shell, you would execute the following
+line, or include it in your .profile file:
+.EX
+PROG_ENV=SYSTEM_FIVE ; export PROG_ENV
+.EE
+.PP
+In both cases, the 
+.MS cc 1
+command defines the preprocessor symbol SYSTEM_FIVE, so that the
+C preprocessor, 
+.PN /lib/cpp, 
+will select the System V version of various data structures
+and symbol definitions.
+.PP
+In addition, if 
+.MS cc 1
+invokes 
+.MS ld 1 ,
+the library libcV.a 
+(the System V version of the Standard C library) is searched before
+libc.a to resolve references to the
+System-V-specific routines.  Also, if
+\fB\-lm\fR is specified on either the 
+.MS cc 1
+or the
+.MS ld 1
+command line, then the
+System V version of the math
+library will be used instead of the regular ULTRIX math library.
+.PP
+The POSIX compatibility features are included in the library libcP.a, so
+the only special action needed is to specify \fB-YPOSIX\fP on the
+.MS cc 1
+command line or set the environment variable PROG_ENV to POSIX.  Either
+action will cause the
+.MS cc 1
+command to define the preprocessor symbol POSIX and 
+search the POSIX library.
+.SH Files
+.TP 30
+/usr/lib/libc.a 
+.TP 
+/usr/lib/lib_cg.a 
+(VAX only)
+.TP
+/usr/lib/libm.a 	
+.TP
+/usr/lib/libc_p.a 
+(VAX only)
+.TP
+/usr/lib/m_g.a     
+(VAX only)
+.TP
+/usr/lib/libm_p.a  
+(VAX only)
+.fi
+.SH Diagnostics
+.NXR "libm library" "diagnostics and"
+Functions in the math library (3m) may return
+conventional values when the function is undefined for the
+given arguments or when the value is not representable.
+In these cases the external variable
+.I errno
+is set to the value EDOM (domain error) or ERANGE (range error).
+For further information, see 
+.MS intro 2 .
+The values of EDOM and ERANGE are defined in the include file
+<math.h>.
+.SH See Also
+cc(1), ld(1), nm(1), intro(2)
+intro(3m), intro(3n), intro(3ncs), intro(3s), intro(3xti)

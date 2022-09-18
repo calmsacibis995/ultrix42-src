@@ -1,0 +1,21 @@
+.\" SCCSID: @(#)tee.1	8.1	9/11/90
+.TH tee 1 
+.SH Name
+tee \- pipe output to terminal and file
+.SH Syntax
+.B tee
+[\fB\-i\fR] [\fB\-a\fR] [\|\fIfile...\fR\|] 
+.SH Description
+.NXR "tee command"
+.NXR "file" "overwriting"
+.NXR "file" "appending"
+The
+.PN tee
+command transcribes the standard input to the standard
+output and makes copies in the 
+.I files.
+.SH Options
+.IP \-a 5
+Appends input to existing files.  
+.IP \-i
+Ignores interrupts.  

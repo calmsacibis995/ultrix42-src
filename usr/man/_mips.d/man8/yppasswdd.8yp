@@ -1,0 +1,67 @@
+.\" SCCSID: @(#)yppasswdd.8yp	8.1	9/11/90
+.TH yppasswdd 8yp
+.SH Name
+yppasswdd \- server daemon for modifying the yellow pages (YP) password file
+.SH Syntax
+.B /usr/etc/rpc.yppasswdd
+.I file 
+[
+.B \-m
+.I "arg1 arg2 ..." 
+]
+.SH Description
+.NXR "yppasswdd daemon"
+./" .NXAM "passwd file (YP)" "yppasswdd daemon"
+.NXR "password file (YP)" "modifying"
+The
+.PN yppasswdd
+daemon is a server that handles password change requests from
+.MS yppasswd 1yp .
+It changes a password entry in the specified
+.I file,
+which is assumed to be in the same format described in
+.MS passwd 5yp .
+An entry in
+.I file
+will be changed only if the password presented by
+.MS yppasswd 1yp
+matches the encrypted password of that entry.
+.PP
+If the
+.PN \-m
+option is given, then after
+.I file
+is modified, a
+.MS make 1
+will be performed in
+.PN /var/yp .
+Any arguments following the flag will be passed to
+.PN make .
+The 
+.PN \-m
+option should be set only at a YP master server machine.
+.PP
+This server is not run by default, nor can it be started up from
+.MS inetd 8c .
+If it is desired
+to enable remote password updating for the yellow pages,
+then an entry for
+.PN yppasswdd
+should be put in the
+.PN /etc/rc.local
+file of the host serving as the master for the yellow pages
+.PN passwd
+file.
+.SH Examples
+If the yellow pages password file is stored as
+.PN /var/yp/src/passwd ,
+then to have password changes propagated immediately,
+the server should be invoked as:
+.EX
+/usr/etc/rpc.yppasswdd /var/yp/src/passwd \
+-m passwd DIR= /var/yp/src
+.EE
+.SH Files
+.PN /var/yp/Makefile
+.SH See Also
+yppasswd(1yp), passwd(5yp), ypfiles(5yp), ypmake(8yp)

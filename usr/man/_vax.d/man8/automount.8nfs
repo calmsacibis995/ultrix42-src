@@ -1,0 +1,562 @@
+.TH automount 8nfs
+.SH Name
+automount \- automatically and transparently mounts and unmounts NFS file systems
+.SH Syntax
+.B /usr/etc/automount
+[
+.B \-mnTv
+.\" v
+]
+[
+.I \-D name=
+.I value
+]
+[
+.B \-f 
+.I master-file
+]
+.br
+[
+.B \-M 
+.I mount-directory
+]
+[
+.B \-tl
+.I duration 
+.\" .I sub-options
+]
+[
+.B \-tm
+.I interval
+]
+[
+.B \-tw
+.I interval  
+]
+.br
+[
+.I directory mapname
+[
+.B \-
+.I mount-options
+]]
+.SH Description
+The 
+.PN automount 
+.NXR "automount command"
+command  
+transparently mounts and
+unmounts NFS file systems on an as-needed basis.  
+It is useful for mounting file systems and directories that are
+needed only occasionally, and
+it provides an alternative to using
+.PN /etc/fstab
+.\" .NXR "automount command" "/etc/fstab file"
+.\" .NXR "automount command" "/etc/rc.local file"
+for NFS mounting file systems on client machines.
+.PP
+The 
+.PN automount
+program can be started from the
+.PN /etc/rc.local
+file or the command line. 
+.\".NXR "automount command" "and /etc/fstab file"
+.\".NXR "automount command" "and /etc/rc.local file"
+The daemon forked by the
+.PN automount
+program sleeps until a user attempts to access a directory that is
+associated with an 
+.PN aautomount 
+map.
+The daemon then consults the appropriate map and mounts the NFS
+file system.  If the indicated directory has not already been created,
+the daemon creates it and removes it after automatic 
+.PN unmount .
+.PP
+Local 
+.PN automount 
+maps are typically located in the
+.PN /etc
+directory but can be placed in any directory. 
+You also can use the Yellow Pages Service to distribute
+.PN automount
+maps. 
+The maps indicate where to find the file system to be
+mounted, the local mount point, and mount options.  After a specified 
+period of inactivity on a file system, 5 minutes by default, the
+.PN automount
+daemon unmounts that file system.
+.PP
+An individual automount map is either local or served by the Yellow
+Pages.  A system, however,
+can use both local and Yellow Pages automount maps.
+When a map is referenced, the
+.PN automount
+program first looks for the designated 
+.I mapname 
+locally.  If it 
+cannot find the 
+.I mapname 
+locally, it looks for a Yellow
+Pages map by that name.
+The names of the maps are passed to  
+.PN automount
+from the command line, or from a master map. 
+.PP
+If the command line
+and the master 
+map contain contradictory arguments, those on the command line take precedence.
+.PP
+By default, the daemon mounts the remote file system under the directory
+.PN /tmp_mnt
+and creates a symbolic link between the requested and the actual
+mount points.
+.SS Maps
+Conventionally, 
+.PN automount 
+maps are files that are located in the
+.PN /etc 
+directory with names that have the prefix
+.PN auto .  
+.NXR "automount maps"
+They indicate which remote file systems to mount,
+where to mount them, and which options to use.  
+.ne 6
+.SS "\fIThe Master Map"
+The 
+.PN automount
+program can consult a master map, which contains entries that point to other
+maps that can be either direct or indirect.  If Yellow Pages is running,
+.PN automount
+checks for the presence of a YP map named 
+.PN auto.master .
+You are not required to run YP or have an 
+.PN auto.master
+map.  A master map can also be a file whose location is specified with 
+the 
+.PN \-f 
+command line option.  
+.PP
+The master map provides 
+.PN automount 
+with a list of maps, and with arguments that pertain
+to each of the maps. 
+Each line in the
+master map has the following syntax:
+.PP
+.I "mount-point   map  [mount-options]"
+.PP
+.IP \(bu 4
+.I Mount-point
+is the full pathname of a local directory if the
+.I map
+argument is the name of an indirect map or the name of a special map.
+If the
+.I map 
+argument is the name of a direct map, the dummy directory ``/-'' is 
+specified as the 
+.I mount-point.
+.IP \(bu 4
+.I Map
+is the name of the map the automount command uses to find the mount points
+and locations.  This can either be a filename, a YP map name, or a
+special map name.
+.IP \(bu 4
+.I Mount-options
+is a list of options used to regulate the mounting of entries listed in
+.I map.
+.ne 6
+.SS "\fIDirect Maps"
+Direct maps specify which remote file systems to mount locally and what
+the local mount points are. They do not point to other maps. They also
+can specify mount options. 
+Direct maps have the following syntax:
+.PP
+.I "key   [mount-options]   location"
+.PP
+.IP \(bu 4
+.I Key
+is the full pathname of the mount point.
+.IP \(bu 4
+.I Mount-options
+are the options for this specific mount. When present, these options  
+override any mount options specified on the command line
+or in the master map.
+.IP \(bu 4
+.I Location
+is the location of the resource being mounted, specified as:
+.I server:pathname.  
+Multiple 
+.I location
+fields can be specified, in which case 
+.PN automount
+sends multiple mount requests and mounts from the first server to 
+respond.
+.ne 6
+.SS "\fIIndirect Maps"
+Indirect maps have the same format as direct maps.
+The only difference between a direct and an indirect map is that the key
+in a direct map is a full pathname, whereas the key in an indirect
+map is a simple name that does not begin with a slash.  (Remember that
+the indirect map as a whole has been associated with a directory
+specified in the master map or on the command line.  The entries in an
+indirect map list subdirectories that are individually mounted within
+the directory associated with the map.)
+.\" 
+.\" (the next section is commented out from the original version
+.\"  of this manpage due to the fact that it seemed curiously misleading
+.\"
+.\".PP
+.\" The maps contain entries in the following format.  While multiple locations
+.\" for a particular \fIbasename\fR can be specified, they
+.\"should only be used for read-only file systems.
+.\".EX
+.\"[\fIbasename\fR [\fI\-mount-options\fR][\fIlocation1\fR][\fIlocation2\fR]...
+.\".EE
+.\"The \fIbasename\fR field specifies a subdirectory within the 
+.\".I directory
+.\"designated in the 
+.\".PN automount 
+.\"command line.  
+.\"The \fI\-mount-options\fR tell the 
+.\".PN automount 
+.\"program what parameters and access restrictions apply to that mount.  
+.\"See mount(8nfs) for more information.
+.\".PP
+.\"Each \fIlocation\fR field indicates where the file system resides on
+.\"the remote host, and has the following format:
+.\"Maps are considered either direct or indirect depending
+.\"on how the \fIbasename\fR field is specified.
+.\"In a direct map the \fIbasename\fR is a full pathname.
+.\"In an indirect map the \fIbasename\fR is a simple name.  
+.\"The rest of the required information about where the remote file system
+.\"is located is provided either on the command line or in another map.
+.\"The rest of the information that 
+.\".PN automount
+.\"requires about
+.\"the remote file system location is provided either on the command line
+.\"or in another map.
+.\".EX
+.\"\fIhost:remote-pathname[:subdirectory]
+.\".EE
+.\"The \fIhost\fR field specifies the remote host from which
+.\"to mount the designated file system.  The \fIremote-pathname\fR is 
+.\"the absolute pathname of a file system or subtree of a file system that
+.\"is exported by \fIhost\fR.  
+.\".PP
+.\"If you specify more than one location for a file system, the 
+.\".PN automount 
+.\"program broadcasts a mount request to all specified hosts.
+.\"The first to respond gets mounted.
+.\".PP
+.\"The \fIsubdirectory\fR field is optional.
+.\"When supplied, it indicates the subdirectory within the 
+.\"remote file system to which you want \fIbasename\fR linked.  
+.\"Specifying subdirectories allows mount points to be shared.
+.\"Rather than creating a symbolic link directly to the mount point,
+.\".PN automount
+.\"creates a symbolic link to the specified subdirectory.  One 
+.\"mount point can have multiple symbolic links to subdirectories
+.\"within the mounted file system.
+.ne 6
+.SS "\fISpecial Maps"
+The 
+.PN \-hosts
+map is a special 
+.PN automount 
+map that is used to access all directories
+exported by a server to a client.  
+.PP
+The following command allows a client to access directories 
+that are exported from any host in its
+.PN /etc/hosts
+file, the Yellow Pages hosts database, or the BIND database.
+.EX 
+# \f(CBautomount /net \-hosts\f(CW
+.EE
+.NXR "automount maps" "and Yellow Pages"
+.PP
+For example, suppose that 
+.PN hera 
+and 
+.PN sheba 
+are both hosts on a
+local area network that is running Yellow Pages.
+If the 
+.PN /etc/rc.local
+file on 
+.PN hera
+contains the command 
+.PN "automount /net \-hosts" ,
+then users on 
+.PN hera 
+can access any directories that 
+.PN sheba 
+exports to 
+.PN hera .
+All of the exported directories are mounted under
+.PN /net/sheba 
+on 
+.PN hera .
+.PP
+The 
+.PN \-null
+map, when indicated on the command line, cancels the map associated with
+the directory indicated.  It can be used to cancel a map specified in the
+master map.  For example, invoking the
+.PN automount
+command in the following manner causes the 
+.PN /net
+entry in 
+.PN auto.master
+to be ignored:
+.EX
+# \f(CBautomount /net \-null\f(CW
+.EE
+.SS Pattern Matching
+The ampersand (&)
+is expanded into the key field in 
+a map wherever it appears.  In the following example, 
+the ampersand (&) expands to
+.PN oak :
+.EX
+        #key      mount_options	     location
+        #
+        oak                           &:/export/&
+.EE
+.PP
+The asterisk (*), when supplied as the key field, is recognized as the
+catch-all entry.  It is used to substitute for lines that are all 
+formatted similarly. 
+Any entry following the asterisk is ignored.  
+In the following example, the
+.PN automount 
+program uses the asterisk to match any hostname other than 
+.PN oak :
+.EX
+	#key         mount_options        location
+	#
+	oak                               &:/export/&
+	*                                 &:/home/&
+.EE
+.SS Environment Variables
+The value of an environment variable can be used within an automount map
+by prefixing a dollar sign ($)
+to its name.  You can also use braces to delimit the name of the
+variable from appended letters or digits.  The environment variables
+can be inherited from the environment or can be explicitly defined with
+the 
+.PN \-D 
+command line option.
+.SS Hierarchical Mounts
+You can mount different directories within an 
+.PN automount
+file system hierarchy from different servers.  For example,
+if you are mounting the 
+.PN /usr/local
+file system on your machine, you can mount the various 
+subdirectories within 
+.PN /usr/local
+from different servers.
+.PP
+In the following example, the directories
+.PN /usr/local ,
+.PN /usr/local/bin ,
+.PN /usr/local/src ,
+and
+.PN /usr/local/tools
+are mounted from the machines host1, host2, host3, and host4
+respectively.  When the root of the hierarchy is referenced,
+the
+.PN automount
+program mounts the whole hierarchy.
+.PP
+.EX
+
+/usr/local\\
+		/         -ro       host1:/usr/local \\
+		/bin      -ro       host2:/usr/local/bin \\
+		/src      -ro       host2:/usr/local/src \\
+		/tools    -ro       host2:/usr/src/tools
+.EE
+.PP
+Readability has been improved by splitting the entry into five
+lines and indenting the continuation lines.
+.SH Options
+.NXR "automount command" "options"
+.IP \-m 10 
+Ignores directory-mapname pairs listed in the
+.PN /etc/auto.master 
+Yellow Pages database.
+.IP \-n 10 
+Disables dynamic mounts.  Lookups intercepted by the 
+.PN automount
+daemon succeed when the target file system has been previously 
+mounted.
+.IP \-T 10 
+Traces all NFS requests received by the daemon.  Information about
+the details of the request are expanded and sent to standard output.
+.IP \-v 10 
+Logs status messages to the console.  (Stands for ``verbose.'')
+.IP "\-D \fIname\fR=\fIvalue\fR" 10 
+Defines an 
+.PN automount
+environment variable by assigning
+.I value
+to the 
+variable. 
+.\".I  name
+.\"and assigns it the value
+.\".I value
+.\"to be used in 
+.\".PN automount 
+.\"maps.
+.IP "\-f \fImaster-file\fR" 10 
+Uses \fImaster-file\fR 
+for a list of initial directory to mapname pairs, ahead of the 
+.PN auto.master 
+Yellow Pages map.  If an entry exists in both
+.I master-file
+and
+.PN auto.master ,
+that specified in 
+.I master-file
+is used since it is read first.  Similarly, entries on the
+command line take precedence over 
+.I master-file
+entries.  This technique can be used to replace entries in 
+global maps with your own.
+.IP "\-M \fImount-directory\fR" 10 
+Uses 
+.I mount-directory 
+instead of the default,
+.PN /tmp_mnt .
+.IP "\-tl \fIduration\fR" 10
+Specifies a
+.I duration
+in seconds, that a file system is to remain mounted when not in use.
+The default is 5 minutes.
+.IP "\-tm \fIinterval\fR" 10
+Specifies an
+.I interval
+in seconds, between attempts to mount a file system. The default
+is 30 seconds.
+.IP "\-tw \fIinterval\fR" 10
+Specifies an   
+.I interval
+in seconds, between attempts to unmount file systems that have exceeded
+their cached times. The default is 1 minute.
+.\".IP "-t \fIsub-options\fR" 10
+.\"Specify the NFS mount options.  All mount options 
+.\"apply except background
+.\".PN (bg) 
+.\"and foreground (
+.\".PN (fg).
+.\".IP "\fIdirectory\fR" 10  
+.\"Specifies the mount point for
+.\".PN automount
+.\"itself.  
+.\".I Directory
+.\"is an absolute pathname starting with a slash ( / ).  If the
+.\"directory does not exist, it is created by the 
+.\".PN automount
+.\"daemon and is removed when the daemon exits.
+.\".IP "\fImapname\fR" 10 
+.\"Specifies the name of the map file that 
+.\".PN automount 
+.\"is searching for.  The
+.\".PN automount 
+.\"command first searches locally for a file called 
+.\".I mapname.
+.\"If the file does not exist, 
+.\".PN automount 
+.\"looks for a Yellow Pages map called
+.\".I mapname.
+.IP \fI\-mount_options\fR 10 
+Specifies the mount options to be applied to all of the directories listed
+in 
+.I mapname.  
+If mount options are listed in the specified map, they take precedence
+over these options.
+.NT
+Sending the SIGTERM signal to the 
+.PN automount
+daemon causes it to unmount all file systems that it has 
+mounted, and to exit.
+.sp
+Sending the SIGHUP signal to the 
+.PN automount
+daemon causes it to reread the system mount table to update its internal
+record of currently mounted file systems.  If a file system mounted
+with
+.PN automount
+is unmounted by a 
+.PN umount
+command, 
+.PN automount
+should be forced to reread the system mount table.
+.NE
+.SH Restrictions
+Shell filename expansion does not apply to objects not currently
+mounted.
+.PP
+Because 
+.PN automount
+is single-threaded, any request that is delayed by a slow or
+non-responding NFS server will delay all subsequent 
+.PN automount
+requests
+until the delayed request has been completed.
+.SH Examples
+The following is a sample
+.PN auto.master
+map:
+.EX 
+#
+# mount-point           mapname           mount-options
+#
+/net                    -hosts		
+/home                   auto.indirect     -rw
+/-                      auto.direct       -ro,intr
+.EE
+The following is a typical 
+.PN automount 
+indirect map: 
+.EX
+#
+# key               mount-options         location
+#
+john                                      merge:/home/merge/john
+mary                                      stripe:/home/stripe/mary
+fred                                      blur:/usr/staff/fred
+.EE
+The following is a typical 
+.PN automount 
+direct map: 
+.EX
+#
+# key               mount-options         location
+#
+/usr/source         -ro                   merge:/usr/src/proto
+/usr/local                                blur:/usr/bin/tools
+.EE
+The following is a sample indirect map that specifies multiple
+mount locations for the file system
+.PN reference .
+The file system is mounted from the first server to respond to 
+the
+.PN mount 
+request. 
+.EX
+reference           \-ro            earl:/usr/src/ref\\
+                                   fern:/usr/staff/ron/ref\\
+                                   irv:/usr/backup/reference
+.EE
+.SH Files
+.TP 15
+.PN /tmp_mnt
+Directory where automounted file systems reside
+.SH See Also
+mount(8), mount(8nfs), umount(8)
+.br
+\fIGuide to the Network File System\fP

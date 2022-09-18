@@ -1,0 +1,92 @@
+for i in 730cons 750cons 780cons 8200cons 8600cons ;do  	if [ -d $i/. ]; then  		echo "$i:";cd $i;make clean;cd ..; 	fi;  done
+730cons:
+rm -f vmb.exe cassette
+750cons:
+rm -f 750cons vmb.exe ci780.bin pcs750.bin
+780cons:
+rm -f floppy vmb.exe ci780.bin
+8200cons:
+rm -f 8200cons vmb.exe ci780.bin cibca.bin
+8600cons:
+if [ ! -d /Ultrix/usr/sys ] ; then  	mkdir /Ultrix/usr/sys;  	/etc/chown root /Ultrix/usr/sys;  	chgrp system /Ultrix/usr/sys;  	chmod 0755 /Ultrix/usr/sys;  else true;  fi
+Installing 730cons
+cp /dev/null cassette
+cp cnsl.cmd defboo.cmd
+cp /usr/mdec/vmb.exe .
+/etc/arff imvf cassette 512,1,ULTRIX-32,Distribution,
+Number of blocks in device:     512
+Number of directory segments:   1
+Volume ID:                      ULTRIX-32
+Owner:                          Distribution
+Extra words in directory entry: 0
+
+/etc/arff rmvf cassette defboo.cmd vmb.exe ubara.cmd ubaidc.cmd cnsl.cmd
+r DEFBOO.CMD, 1 blocks
+r VMB.EXE, 86 blocks
+r UBARA.CMD, 1 blocks
+r UBAIDC.CMD, 1 blocks
+r CNSL.CMD, 1 blocks
+rm -f vmb.exe defboo.cmd
+for i in ubara.cmd ubaidc.cmd cnsl.cmd cassette ;do  	install -c -m 644 $i /Ultrix/usr/sys/730cons/$i;  done
+Installing 750cons files.
+dd if=750console of=bblock count=1
+1+0 records in
+1+0 records out
+/etc/arff imf cons 512,1,ULTRIX-32,Console, 
+dd if=cons of=cons1 skip=1
+7+0 records in
+7+0 records out
+cat bblock cons1 > 750cons
+rm -f cons cons1 bblock
+rm -rf tmp
+mkdir tmp;  	cd tmp; 	arff xmf ../750console;  	rm -f *.cmd *xdt *gen ;  	cp ../cnsl.cmd defboo.cmd;  	cp ../cnsl.cmd .;  	cp ../cira.cmd .;  	cp /usr/mdec/vmb.exe vmb.exe;  	cp /usr/mdec/ci780.bin ci780.bin;  	cp /usr/mdec/pcs750.bin pcs750.bin;  	/etc/arff rmf ../750cons *
+rm -rf tmp
+ set xx `arff tmvf 750cons | grep BOOT58.EXE` ; while [ "$2" != "BOOT58.EXE" ]; do  	shift; done;  SIZE=$3; LBN=$5;  echo "20?W 0t$SIZE" >> /tmp/750cons.adb ; echo "6?w 0t$LBN" >> /tmp/750cons.adb
+adb -w 750cons < /tmp/750cons.adb 
+20:		17		=	17
+6:		18d	=	8
+rm -f /tmp/750cons.adb
+for i in cira.cmd cnsl.cmd 750cons ;do  	install -c -m 644 $i /Ultrix/usr/sys/750cons/$i;  done
+Installing 780cons files.
+cp /dev/null floppy
+/etc/arff ivf floppy 494,1,ULTRIX-32,Distribution,
+Number of blocks in device:     494
+Number of directory segments:   1
+Volume ID:                      ULTRIX-32
+Owner:                          Distribution
+Extra words in directory entry: 0
+
+cp cnsl.cmd defboo.cmd
+cp /usr/mdec/vmb.exe vmb.exe
+cp /usr/mdec/ci780.bin ci780.bin
+/etc/arff rvf floppy defboo.cmd cira.cmd mbahp.cmd ubara.cmd cnsl.cmd vmb.exe ci780.bin
+r DEFBOO.CMD, 2 blocks
+r CIRA.CMD, 2 blocks
+r MBAHP.CMD, 2 blocks
+r UBARA.CMD, 2 blocks
+r CNSL.CMD, 2 blocks
+r VMB.EXE, 86 blocks
+r CI780.BIN, 36 blocks
+rm -rf vmb.exe defboo.cmd ci780.bin
+for i in cira.cmd mbahp.cmd ubara.cmd cnsl.cmd floppy ;do  	install -c -m 644 $i /Ultrix/usr/sys/780cons/$i;  done
+Installing 8200cons files.
+dd if=8200console of=bblock count=1
+1+0 records in
+1+0 records out
+/etc/arff imf cons 800,1,ULTRIX-32,Console, 
+dd if=cons of=cons1 skip=1
+7+0 records in
+7+0 records out
+cat bblock cons1 > 8200cons
+rm -f cons cons1 bblock
+rm -rf tmp
+mkdir tmp;  	cd tmp; 	arff xmf ../8200console;  	rm -f *.cmd;  	cp ../cnsl.cmd defboo.cmd;  	cp ../cnsl.cmd .;  	cp ../cira.cmd .;  	cp /usr/mdec/vmb.exe .;  	cp /usr/mdec/ci780.bin .;  	cp /usr/mdec/cibca.bin .;  	/etc/arff rmf ../8200cons *
+rm -rf tmp
+ set xx `arff tmvf 8200cons | grep BOOT58.EXE` ; while [ "$2" != "BOOT58.EXE" ]; do  	shift; done;  SIZE=$3; LBN=$5;  echo "20?W 0t$SIZE" >> /tmp/8200cons.adb ; echo "6?w 0t$LBN" >> /tmp/8200cons.adb
+adb -w 8200cons < /tmp/8200cons.adb 
+20:		17		=	17
+6:		e	=	8
+rm -f /tmp/8200cons.adb
+for i in cira.cmd cnsl.cmd 8200cons ;do  	install -c -m 644 $i /Ultrix/usr/sys/8200cons/$i;  done
+Installing 8600cons
+for i in cira.com ubara.com mbahp.com cnsl.com ;do  	install -c -m 644 $i /Ultrix/usr/sys/8600cons/$i;  done

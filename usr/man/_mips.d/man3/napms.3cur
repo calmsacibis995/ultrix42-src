@@ -1,0 +1,15 @@
+.TH napms 3cur 
+.SH Name
+napms \- sleep
+.SH Syntax
+.B
+napms(ms)
+.br
+.B
+int ms;
+.SH Description
+.NXR "napms subroutine"
+This function causes the program to sleep for  
+.PN ms
+milliseconds.
+The number of milliseconds is limited to 1000.

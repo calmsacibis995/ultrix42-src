@@ -1,0 +1,20 @@
+.\" SCCSID: @(#)newaliases.1	8.1	9/11/90
+.TH newaliases 1
+.SH Name
+newaliases \- rebuild the data base for the mail aliases file
+.SH Syntax
+.B newaliases
+.SH Description
+.NXAM "daemon" "sendmail daemon" "newaliases command"
+.NXAM "newaliases command" "aliases file"
+.NXR "newaliases command"
+.NXR "aliases file" "rebuilding"
+The
+.PN newaliases
+command rebuilds the random access data base for the mail aliases file
+.PN /usr/lib/aliases .
+It must be run each time 
+.PN /usr/lib/aliases
+is changed in order for the change to take effect.
+.SH See Also
+aliases(5), sendmail(8)

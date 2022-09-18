@@ -1,0 +1,45 @@
+.\" SCCSID: @(#)rand.3	8.2	1/28/91
+.TH rand 3
+.SH Name
+rand, srand \- random number generator
+.SH Syntax
+.nf
+.B #include <stdlib.h>
+.PP
+.B void srand(\fIseed\fP)
+.B unsigned \fIseed\fP; 
+.PP
+.B rand()
+.fi
+.SH Description
+The newer 
+.MS random 3
+should be used in new applications.
+.NXR "rand subroutine (standard C)"
+.NXR "srand subroutine"
+.NXA "rand subroutine (standard C)" "random subroutine"
+.NXR "random number generator"
+The
+.PN rand
+subroutine remains for compatibility.
+.PP
+The
+.PN rand
+subroutine uses a multiplicative congruential
+random number generator
+with period 2\u\s732\s0\d
+to return successive pseudo-random
+numbers in the range from 0 to 2\u\s731\s10\d\-1.
+.PP
+The generator is reinitialized by calling
+.PN srand
+with 1 as argument.
+It can be set to a random starting point by calling
+.PN srand
+with whatever you like as argument.
+.SH Environment
+For the System V environment, the
+.PN rand
+subroutine returns numbers in the range from 0 to 2\u\s715\s10\d\-1.
+.SH See Also
+random(3)

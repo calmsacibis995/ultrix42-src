@@ -1,0 +1,128 @@
+
+#ifdef X400
+set_which_mts(msg_fp)
+FILE	*msg_fp;
+{
+    register int  state;
+    register char tmpbuf[BUFSIZ];
+    char          name[NAMESZ];
+    extern char   need_x400_me;
+
+    for (state = FLD;state == FLD || state == FLDPLUS;) {
+	state = m_getfld (state, name, tmpbuf, BUFSIZ, msg_fp);
+	switch (state) {
+	    case FLD: 
+	    case FLDPLUS: 
+fprintf(stderr,"name = '%s', tmpbuf = '%s'\n",name,tmpbuf);
+		if (uleq(name, "X-mts"))
+		    if (uleq(tmpbuf, "x400"))
+			need_x400_me = 1;
+		while (state == FLDPLUS)
+		    state = m_getfld (state, name, tmpbuf, BUFSIZ, msg_fp);
+		break;
+
+	    case LENERR: 
+	    case FMTERR: 
+	    case BODY: 
+	    case FILEEOF:
+		break;
+
+	    default: 
+		adios (NULLCP, "m_getfld() returned %d", state);
+	}
+    }
+    rewind(msg_fp);
+fprintf(stderr,"need_x400_me = %d\n",need_x400_me);
+}
+
+char *
+get_x400_orname()
+{
+int		pid, fid, len;
+char		*tfile, *ambx;
+char		*ptr = NULL;
+struct stat	sbuf;
+
+/* Replace stdout with a temporary file to grab the x400_whois output... */
+    close(1);
+    tfile = m_tmpfil("x400repl");
+/* This 'open' replaces the closed stdout... */
+    if (open(tfile, O_WRONLY|O_CREAT, 0600) < 0) {
+	fprintf(stderr,"Can't open temporary file for writing to...\n");
+	return((char *)NULL);
+    }
+
+    pid = fork();
+    if (pid == -1)
+	return((char *)NULL);
+
+    if (pid > 0) {	/* Parent process. */
+	if (wait(NULL) != pid)
+	    fprintf(stderr,"Wait returned without pid\n");
+    }
+    else {		/* Child process. */
+	execl("/usr/bin/x400_whois", "x400_whois", (char *)NULL);
+	execlp("x400_whois", "x400_whois", (char *)NULL);
+	fprintf(stderr,"Can't find 'x400_whois'...\n");
+	exit(1);
+    }
+
+/* Back to the main repl invocation again... */
+
+/* Replace the tempfile stdout with the stderr. */
+    close(1);
+    dup(2);
+
+    if (stat(tfile, &sbuf) < 0)
+	fprintf(stderr,"Can't stat the temp file...\n");
+    else {
+	if (sbuf.st_size <= 0)
+	    fprintf(stderr,"No X.400 address...\n");
+	else {
+	    ptr = malloc((unsigned)sbuf.st_size + 2);
+
+	    fid = open(tfile, O_RDONLY);
+	    if (fid < 0)
+	        fprintf(stderr,"Failed to open tempfile for reading from.\n");
+	    else {
+	        len = read(fid, ptr, sbuf.st_size);
+
+/* If the output of x400_whois does not begin with a '/' then it is not an
+ * ORaddress...
+ */
+		if (*ptr == '/') {
+
+/* Terminate the string, and delete any trailing newline... */
+		    ptr[sbuf.st_size] = '\0';
+		    if (sbuf.st_size > 0 && ptr[sbuf.st_size - 1] == '\n')
+			ptr[sbuf.st_size - 1] = '\0';
+
+		    if (len != sbuf.st_size) {
+			fprintf(stderr,"Read %d instead of %d\n",len,sbuf.st_size);
+			ptr = (char *)NULL;
+		    }
+#ifdef NOTDEF
+/* PJS: Can't m_replcae the alternate-mailboxes entry, as it usually resides
+ * in the mh_profile rather than the context: those entries in the profile
+ * are not changeable in program code...
+ */
+		    else {
+			ambx = m_find("Alternate-mailboxes");
+			if (ambx != (char *)NULL) {
+			    ptr = realloc(ptr,(unsigned)sbuf.st_size+strlen(ambx)+4);
+			    strcat(ptr, ",");
+			    strcat(ptr, ambx);
+			}
+			m_replace("Alternate-mailboxes",ptr);
+		    }
+#endif NOTDEF
+		}
+	        close(fid);
+	    }
+	}
+    }
+    unlink(tfile);
+fprintf(stderr,"get_x400_orname() -> '%s'\n",(ptr==(char *)NULL)?"NULL":ptr);
+    return(ptr);
+}
+#endif X400

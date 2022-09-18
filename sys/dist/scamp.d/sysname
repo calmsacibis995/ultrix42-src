@@ -1,0 +1,65 @@
+#!/bin/sh5
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)sysname	4.1	(ULTRIX)	7/27/90"
+#
+#	000	Jonathan Wallace	1-Jun-1990
+#
+########################################################################
+#
+		clear
+		/etc/doconfig -n
+		if [ -f /tmp/realsysname ]
+		then
+			set `cat /tmp/realsysname`
+			REALSYSNAME=$1
+			CONFIGNAME=$2
+			/bin/hostname $REALSYSNAME
+			cp /etc/rc.local /tmp/rc.tmp
+			if egrep -s "^/bin/hostname" /tmp/rc.tmp
+			then
+				ed /tmp/rc.tmp <xxEOFxx 1>/dev/null
+				/^\/bin/hostname/d
+i
+/bin/hostname $REALSYSNAME
+.
+w
+q
+xxEOFxx
+			else
+				ed /tmp/rc.tmp <xxEOFxx 1>/dev/null
+1
+a
+/bin/hostname $REALSYSNAME
+.
+w
+q
+xxEOFxx
+			fi
+			cp /tmp/rc.tmp /etc/rc.local
+			chmod 644 /etc/rc.local
+			sizer -n $CONFIGNAME 2>&1 >/dev/null
+			cp /tmp/$CONFIGNAME /usr/sys/conf/$MACHTYPE/$CONFIGNAME
+		else
+			echo "
+Could not set system name.  Press <RETURN> to go back to Main Menu."
+			read resp
+		fi

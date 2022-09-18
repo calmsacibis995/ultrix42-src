@@ -1,0 +1,69 @@
+.\" SCCSID: @(#)vwidth.1	8.1	9/11/90
+.TH vwidth 1 VAX "" Unsupported
+.SH Name
+vwidth \- make troff width table for a font
+.SH Syntax
+.B vwidth
+\fIfontfile pointsize\fP > ft\fIxx\fP.c
+.br
+.B cc -c ft\fIxx\fP.c
+mv ft\fIxx\fP.o /usr/lib/font/ft\fIxx\fP
+.SH Description
+The
+.PN vwidth
+command translates from the width information stored in the vfont style
+format to the format expected by 
+.PN troff .
+.PN troff 
+wants an object file in a.out(5) format.
+(This fact does not seem to be documented anywhere.)
+.PN troff 
+should look directly in the font file but it doesn't.
+.PP
+.PN vwidth 
+should be used after editing a font with
+.MS fed 1 .
+It is not necessary to use 
+.PN vwidth 
+unless you have made a change
+that would affect the width tables.
+Such changes include numerically editing the width field,
+adding a new character,
+and moving or copying a character to a new position.
+It is
+.I not
+always necessary to use 
+.PN vwidth 
+if the physical width of the glyph
+(for example, the number of columns in the bit matrix) has changed, but
+if it has changed much the logical width should probably be changed
+and 
+.PN vwidth 
+run.
+.PP
+.PN vwidth 
+produces a C program on its standard output.
+This program should be run through the C compiler and
+the object (that is, the .o file) saved.
+The resulting file should be placed in 
+.PN /usr/lib/font
+in the file
+.RI ft xx
+where
+.II xx
+is a one or two letter code that is the logical (internal to 
+.PN troff )
+font name.
+This name can be found by looking in the file
+.RI /usr/lib/fontinfo/ fname *
+where
+.I fname
+is the external name of the font.
+.SH Restrictions
+Produces the C file using obsolete syntax
+about which the portable C compiler complains.
+.SH See Also
+fed(1),
+vfont(5),
+troff(1),
+vtroff(1)

@@ -1,0 +1,96 @@
+.\" SCCSID: @(#)arp.4p	2.1	3/10/87
+.\" SCCSID: @(#)arp.4p	2.1	3/10/87
+.TH arp 4p
+.SH Name
+arp \- Address Resolution Protocol
+.SH Syntax  
+.B "pseudo-device ether"
+.SH Description
+.NXR "Address Resolution Protocol"
+.NXR "Address Resolution Protocol" "communicating with non-ARP system"
+.NXR "Ethernet address" "mapping to Internet address"
+.NXR "Internet address" "mapping to Ethernet address"
+The
+ARP protocol is used to map dynamically between DARPA Internet
+and 10Mb/s Ethernet addresses.  It is
+used by all the 10Mb/s Ethernet interface drivers.
+.PP
+The ARP protocol 
+caches Internet-Ethernet address mappings.  When an interface
+requests a mapping for an address not in the cache, ARP queues the
+message which requires the mapping and broadcasts
+a message on the associated network requesting the address mapping.
+If a response is provided, the new mapping is cached and any pending
+messages are transmitted.  The ARP protocol 
+queues only the most recently ``transmitted''  
+packet while waiting for a mapping request to be responded to.
+.PP
+To enable communications with systems which do not use ARP, ioctls
+are provided to enter and delete
+entries in the Internet-to-Ethernet tables.
+The usage is:
+.EX 0
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <net/if.h>
+struct arpreq arpreq;
+
+ioctl(s, SIOCSARP, (caddr_t)&arpreq);
+ioctl(s, SIOCGARP, (caddr_t)&arpreq);
+ioctl(s, SIOCDARP, (caddr_t)&arpreq);
+.EE
+.PP
+Each ioctl takes the same structure as an argument.
+SIOCSARP sets an ARP entry, SIOCGARP gets an ARP entry, and SIOCDARP
+deletes an ARP entry.
+These ioctls may be applied to any socket descriptor
+.I s,
+but only by the superuser.
+The
+.I arpreq
+structure contains:
+.EX 0
+/*
+ * ARP ioctl request
+ */
+struct arpreq {
+    struct sockaddr   arp_pa;     /* protocol address */
+    struct sockaddr   arp_ha;     /* hardware address */
+    int               arp_flags;  /* flags */
+};
+/*  arp_flags field values */
+#define ATF_COM  2   /* completed entry (arp_ha valid) */
+#define	ATF_PERM 4   /* permanent entry */
+#define	ATF_PUBL 8   /* publish (respond for other host) */
+.EE
+.PP
+The address family for the
+.I arp_pa
+sockaddr must be AF_INET; for the 
+.I arp_ha
+sockaddr, it must be AF_UNSPEC.
+The only flag bits that can be written are ATF_PERM and ATF_PUBL.
+ATF_PERM causes the entry to be permanent if the ioctl call succeeds.
+The ioctl may fail if more
+than four permanent Internet host addresses hash to the same slot.
+ATF_PUBL specifies that the ARP code
+should respond to ARP requests for the
+indicated host coming from other machines.  This lets a SUN act as an
+ARP server, which can be used to make an ARP-only machine talk
+to a non-ARP machine.
+.PP
+The ARP protocol watches passively for a host 
+that responds to an ARP mapping request for the local host's address.
+.SH Restrictions 
+.NXR "Address Resolution Protocol" "restricted"
+ARP packets on the Ethernet use only 42 bytes of data.  The smallest
+legal Ethernet packet is 60 bytes, however, not including CRC.
+Some systems may not enforce the minimum packet size.  
+.SH Diagnostics
+.NXR "Address Resolution Protocol" "diagnostics"
+.B "duplicate IP address!! sent from Ethernet address: %x:%x:%x:%x:%x:%x"
+.br
+ARP has discovered another host on the local network that responds to
+mapping requests for its own Internet address.
+.SH See Also
+inet(4f), arp(8c), ifconfig(8c)

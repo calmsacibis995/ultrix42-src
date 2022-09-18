@@ -1,0 +1,60 @@
+.\" SCCSID: @(#)tk.1	8.1	9/11/90
+.TH tk 1 "" "" Unsupported
+.SH Name
+tk \- paginator for the Tektronix 4014
+.SH Syntax
+.B tk
+[
+.B \-t
+]
+[
+.B \-\c
+.I  N
+]
+[
+.B \-p\c
+.I L
+]
+[
+.I file
+]
+.SH Description
+The output of
+.PN tk
+is intended for a Tektronix 4014 terminal.
+.PN tk
+arranges for 66 lines to fit on the screen,
+divides the screen into
+.I N
+columns,
+and
+contributes an eight space page offset
+in the (default) single-column case.
+Tabs, spaces, and backspaces are collected and plotted
+when necessary.
+Teletype Model 37 half- and reverse-line sequences
+are interpreted and plotted.
+At the end of each page
+.PN tk
+waits for a newline (empty line) from the keyboard before
+continuing on to the next page.
+In this wait state, the command
+.BI ! command
+will send the
+.I command
+to the shell.
+.SH Options
+.TP
+.B \-t
+Don't wait between pages; for directing output into a file.
+.PP
+.TP
+.BI \- N
+Divide the screen into \fIN\fR columns and
+wait after the last column.
+.TP
+.BI \-p L
+Set page length to \fIL\fR
+lines.
+.SH See Also
+pr(1)

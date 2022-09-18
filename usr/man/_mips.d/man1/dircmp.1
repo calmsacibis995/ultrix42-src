@@ -1,0 +1,47 @@
+.TH dircmp 1
+.SH Name
+dircmp \- directory comparison
+.SH Syntax
+.B dircmp
+[ \fB\-d\fR ] [ \fB\-s\fR ] [ \fB\-w\fIn\fR ]
+.I dir... 
+.SH Description
+.NXR "dircmp command"
+The
+.PN dircmp
+command examines
+.I dir1
+and
+.I dir2
+and generates tabulated information
+about the contents of the directories. Listings
+of files that are unique to each directory are generated
+for all the options.
+If no option is entered,
+a list is output indicating whether the
+filenames common to both directories
+have the same contents.
+.PP
+This command is supplied for X/OPEN compliance.  The same results are
+available from
+.MS diff 1 ,
+which produces results more quickly and effectively.
+.SH Options
+.TP 5
+.B \-d
+Compares the contents of files with the same name in
+both directories and output a list telling what must
+be changed in the two files to bring them into agreement.
+The list format is described in
+.MS diff 1 .
+.TP
+.B \-s
+Suppresses messages about identical files.
+.TP
+.BI \-w n
+Changes the width of the output line to
+.I n
+characters.
+The default width is 72.
+.SH See Also
+cmp(1), diff(1).

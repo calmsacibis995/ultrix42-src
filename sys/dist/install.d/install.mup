@@ -1,0 +1,172 @@
+#!/bin/sh5
+#
+#	SCCSID "@(#)install.mup	4.3 (ULTRIX) 8/2/90"
+#
+#	install.mup
+#
+#		install mandatory upgrade from during system install
+#
+#	args:	$1 - device type in {TAPE,DISK}
+#		$2 - device special file name for installation device
+#
+#	does:	permits in-line installation of Mandatory Upgrades (MUPS)
+
+PROG=$0
+MOUNTED=
+
+:	Error
+#		print an error message
+#
+#	given:	$* - message string(s)
+#	does:	formats an error string "$PROG: $*" and prints it on
+#		standard error
+#	return:	ignore.
+
+Error()
+{
+	1>&2 echo "$PROG: $*"
+}
+
+
+:	Exit
+#		Exit routine
+#
+#	given:	$1 - exit status
+
+Exit()
+{
+	STATUS=$1
+	case "$DEVTYPE" in
+	DISK)
+		umount $DEVNAME
+		;;
+	TAPE)
+		[ "$MOUNTED" ] && echo "
+You can now remove the tape containing the software subsets from
+the device."
+	esac
+	exit $STATUS
+}
+
+
+
+:	LeftJustify
+#		return text with leading white space removed
+#
+#	given:	$1 - text to justify
+#	does:	echos it back
+#	return:	NIL
+
+LeftJustify()
+{
+	echo $1
+}
+
+
+Main()
+{
+	case "$1,$#" in
+	TAPE,2)
+		DEVTYPE=$1
+		KITPATH=$2
+		[ -c $KITPATH ] ||
+		{
+			Error "$KITPATH: device file not found"
+			Exit 1
+		}
+		;;
+	DISK,3)
+		DEVTYPE=$1
+		KITPATH=$2
+		DEVNAME=$3
+		;;
+	*)	Error "$*: argument error"
+		Exit 1
+	esac
+
+	case "$DEVTYPE" in
+	TAPE)
+		while :
+		do
+			echo "
+Do you have a Mandatory Upgrade to be installed at this time? (y/n) [n]: \c"
+
+			read ANS
+			ANS=`LeftJustify $ANS`
+			case "$ANS" in
+			[Nn]*|"")
+				exit 0
+				;;
+			[Yy]*)
+				break
+				;;
+			esac
+		done
+		;;
+	DISK)	[ -d "$KITPATH" ] || Exit 0	# no upgrade
+		echo "Installing Mandatory Upgrade"
+		;;
+	esac
+
+	RETRY=
+	while [ "$RETRY" != xx ]
+	do
+		case "$RETRY" in
+		x)	echo "
+*** Attempting again to install the Mandatory Upgrade subsets ***"
+			;;
+		esac
+
+		case "$DEVTYPE" in
+		TAPE)
+			while :
+			do
+				echo "
+Please mount the tape containing the Mandatory Upgrade subsets.
+
+Are you ready? \c"
+				read ANS
+				ANS=`LeftJustify $ANS`
+				case "$ANS" in
+				[yY]*)
+					MOUNTED=1
+					break
+				esac
+			done
+		esac
+
+		setld -l $KITPATH
+		SETLD_STATUS=$?
+
+		case "$SETLD_STATUS" in
+		0)	echo "
+The installation procedure has successfully installed the Mandatory Upgrade
+subsets"
+			Exit 0
+			;;
+		*)	echo "
+The installation procedure was unable to install the Mandatory Upgrade
+subsets."
+			RETRY=x$RETRY
+			;;
+		esac
+	done
+	echo $SETLD_STATUS
+	# retries exceeded.
+	case "$SETLD_STATUS" in
+	0)	Error "warning: retries exceeded"
+		Exit 0
+		;;
+	1)	1>&2 echo "
+The installation procedure failed to install the Mandatory Upgrade
+subsets. This causes the installation procedure to stop. Contact your
+DIGITAL representative."
+
+		Exit 1
+		;;
+	*)	Exit 0
+	esac
+}
+
+[ "$MUP_DEBUG" ] || Main $*
+

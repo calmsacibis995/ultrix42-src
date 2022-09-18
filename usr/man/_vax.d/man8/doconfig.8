@@ -1,0 +1,97 @@
+.TH doconfig 8 VAX
+.SH Name
+doconfig \- a program to aid system configuration
+.SH Syntax
+\fB/etc/doconfig\fR 
+[\fB\-c \fIconfig_file\fR] [\fB\-e \fIed_script\fR]
+.SH Description
+.NXR "doconfig program"
+.NXA "config program" "doconfig program"
+.NXA "doconfig program" "sizer program"
+.NXR "configuration file (syslog)" "building"
+The
+.PN doconfig
+shell script uses the 
+.MS sizer 8
+program to help the user generate a configuration file for a
+new ULTRIX system kernel.  The script prompts the 
+user for a system name and if the name does not already exist, builds a
+system configuration file with that system name. 
+.PP
+Whether the configuration file is built or not, the script then puts
+the user into an edit-configure-build loop until both the configuration
+and the kernel build run without errors. 
+Additional runs of
+.PN doconfig
+can be made to tune the configuration further.
+.PP
+When new hardware is added to a system, the configuration file
+should be updated to reflect the new system configuration.  When updating 
+an existing configuration file or creating a new configuration file with
+.PN doconfig ,
+the system must be operating the generic kernel, or new hardware may not be
+found.  The following steps should be used for successful completion of
+.PN doconfig :
+.IP 1. 5
+Save the running
+.PN vmunix
+as 
+.PN vmunix.old .
+.IP 2.
+Move 
+.PN genvmunix
+to 
+.PN vmunix .
+.IP 3.
+Reboot the system to single user mode.
+.IP 4.
+Check file systems. 
+.IP 5.
+Mount the 
+.PN usr
+file system.
+.IP 6.
+Run the
+.PN doconfig
+program.  (When execution is complete, make a note of 
+the message
+.PN doconfig
+prints showing the path and location of the new
+.PN vmunix .)
+.IP 7.
+Move
+.PN /vmunix
+to
+.PN /genvmunix .
+.IP 8.
+Copy the new
+.PN vmunix
+(from the message noted above) to
+.PN /vmunix .
+.IP 9.
+Reboot the system.
+.SH Options
+.TP
+.B \-c
+The name of the existing configuration file should be supplied without
+specifying the pathname.  This file should exist in the
+.PN /sys/conf/vax
+\fRdirectory.
+A new kernel will be built using the specified configuration file.
+.TP
+.B \-e 
+When specified, the configuration file will be edited using the
+.PN ed
+script before building the new kernel.
+.SH Files
+.PN /tmp/\fISYSTEMNAME\fP
+.br
+.PN /sys/VAX/\fISYSTEMNAME\fP
+.br
+.PN /sys/conf/vax/\fISYSTEMNAME\fP
+.SH See Also
+ed(1), config(8), sizer(8) 
+.br
+.I "Basic Installation Guide"
+.br
+.I "Guide to System Configuration File Maintenance"

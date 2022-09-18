@@ -1,0 +1,188 @@
+/*        @(#)xlc_debug.vc	4.1      7/2/90      */
+/* file:   xlc_debug.def - Variable declarations needed by MAKETEST for error
+ *			mesages. And error handler used for debug.
+ *
+ * edit:	mgb	 15-JUL-1987 13:25:35 
+ *			Origin entry - this was extracted from xlv_ps.c
+ *
+ *		mgb	 6-JUN-1988 15:24
+ *			Changed str_ps_vm_snapshot_3 to str_ps_vm_snapshot_4
+ *			and made str_ps_vm_snapshot_3 reflect spaced level.
+ *
+ */
+
+/************************************************************************
+ *                                                                      *
+ *      COPYRIGHT  (c)  DIGITAL  EQUIPMENT CORPORATION 1985,            *
+ *            1986.   ALL RIGHTS RESERVED.                              *
+ *                                                                      *
+ *      THIS SOFTWARE IS FURNISHED UNDER A LICENSE AND MAY BE           *
+ *      USED AND COPIED ONLY IN ACCORDANCE  WITH THE TERMS OF           *
+ *      SUCH  LICENSE  AND  WITH  THE  INCLUSION OF THE ABOVE           *
+ *      COPYRIGHT  NOTICE.  THIS SOFTWARE OR ANY OTHER COPIES           *
+ *      THEREOF   MAY  NOT  BE  PROVIDED  OR  OTHERWISE  MADE           *
+ *      AVAILABLE  TO  ANY  OTHER  PERSON.  NO  TITLE  TO AND           *
+ *      OWNERSHIP  OF  THE  SOFTWARE  IS  HEREBY TRANSFERRED.           *
+ *                                                                      *
+ *      THE INFORMATION IN THIS SOFTWARE IS SUBJECT TO CHANGE           *
+ *      WITHOUT  NOTICE  AND SHOULD  NOT BE  CONSTRUED  AS A            *
+ *      COMMITMENT  BY  DIGITAL EQUIPMENT CORPORATION.                  *
+ *                                                                      *
+ *      DIGITAL  ASSUMES  NO RESPONSIBILITY  FOR THE  USE  OR           *
+ *      RELIABILITY  OF ITS SOFTWARE ON EQUIPMENT THAT IS NOT           *
+ *      SUPPLIED BY DIGITAL.                                            *
+ ************************************************************************/
+
+
+
+/************************************************************************
+ *
+ * This module defins the global variables and string constants needed
+ * by the postscript code generator routines.
+ *
+ * WARNING:  If any strings are defined below that will be output within
+ * a currently open 'show' (as part of a string going to Postscript),
+ * then the following characters must be translated in the defined string
+ * as follows:
+ *	(  must be translated to \050
+ *	)  must be translated to \051
+ *	\  must be translated to \\
+ ************************************************************************/
+
+
+
+CONST BYTE *type_of_error_condition [2] = {
+  "(WARNING CONDITION %d) print flush\n",
+  "(ABORT CONDITION %d) print flush\n"
+};
+
+
+
+/**************************************************************
+ * PostScript String Definitions VM snapshots during preamble *
+ **************************************************************/
+
+
+CONST BYTE str_ps_vm_snapshot_1 [] =
+{"(preamble snapshot 1) print flush vmdump\n vmstatus pop /dllvminit exch def pop\n"};
+
+CONST BYTE str_ps_vm_snapshot_2 [] =
+{"(preamble snapshot 2) print flush vmdump\n"};
+
+CONST BYTE str_ps_vm_snapshot_3 [] = 
+{"(preamble snapshot 3) print flush vmdump\n"};
+
+CONST BYTE str_ps_vm_snapshot_4 [] = 
+{"(ANSI translator data stream) print flush vmdump\n"};
+
+CONST BYTE str_error_handler [] = {"\
+%!\n\
+% lib/ehandler.ps -- Downloaded Error Break-page handler\n\
+% Copyright (c) 1984, 1985, 1986 Adobe Systems Incorporated. \n\
+% All Rights Reserved.\n\
+% RCSID: $Header: ehandler.ps,v 2.1 85/11/24 12:20:03 shore Rel $\n\
+%\n\
+% Modified 1986 Digital Equipment Corporation.\n\
+\n\
+/$brkpage 40 dict def $brkpage begin\n\
+/prnt\n\
+ {dup type/stringtype ne{=string cvs}if\n\
+  0 setgray show}bind def\n\
+/nl{currentpoint dup bmargin lt { pop pop showpage lmargin tmargin moveto }\n\
+{ exch pop lmargin exch moveto 0 -10 rmoveto} ifelse }def\n\
+/=={/cp lmargin def typeprint nl}def\n\
+/mytprint{currentpoint pop /cp exch def typeprint}readonly def\n\
+/typeprint{dup type dup currentdict exch known\n\
+  {exec}{unknowntype}ifelse}readonly def\n\
+/lmargin 72 def\n\
+/rmargin 576 def\n\
+/tmargin 720 def\n\
+/bmargin 30 def\n\
+/tprint\n\
+ {dup length 6 mul cp add rmargin gt{nl/cp lmargin def}if\n\
+  dup length 6 mul cp add/cp exch def prnt}readonly def\n\
+/cvsprint{=string cvs tprint( )tprint}readonly def\n\
+/unknowntype{exch pop cvlit(??)tprint cvsprint}readonly def\n\
+/integertype{cvsprint}readonly def\n\
+/realtype{cvsprint}readonly def\n\
+/booleantype{cvsprint}readonly def\n\
+/operatortype{(//)tprint cvsprint}readonly def\n\
+/marktype{pop(-mark- )tprint}readonly def\n\
+/dicttype{pop(-dictionary- )tprint}readonly def\n\
+/nulltype{pop(-null- )tprint}readonly def\n\
+/filetype{pop(-filestream- )tprint}readonly def\n\
+/savetype{pop(-savelevel- )tprint}readonly def\n\
+/fonttype{pop(-fontid- )tprint}readonly def\n\
+/nametype{dup xcheck not{(/)tprint}if cvsprint}readonly def\n\
+/stringtype\n\
+ {dup rcheck{(\()tprint tprint(\))tprint}{pop(-string- )tprint}ifelse\n\
+ }readonly def\n\
+/arraytype\n\
+ {dup rcheck{dup xcheck\n\
+  {({)tprint{typeprint}forall(})tprint}\n\
+  {([)tprint{typeprint}forall(])tprint}ifelse}{pop(-array- )tprint}ifelse\n\
+ }readonly def\n\
+/packedarraytype\n\
+ {dup rcheck{dup xcheck\n\
+  {({)tprint{typeprint}forall(})tprint}\n\
+  {([)tprint{typeprint}forall(])tprint}ifelse}{pop(-packedarray- )tprint}\n\
+  ifelse\n\
+ }readonly def\n\
+/courier/Courier findfont 10 scalefont def\n\
+/OLDhandleerror errordict /handleerror get def\n\
+/CTM matrix def\n\
+end %$brkpage\n\
+\n\
+\n\
+errordict\n\
+/handleerror\n\
+ {systemdict begin $error begin $brkpage begin \n\
+  %Note -- newerror is created in $error by all default error operators.\n\
+  newerror\n\
+   {clear\n\
+    /newerror false store \n\
+    $brkpage begin\n\
+    /CTM CTM currentmatrix def\n\
+    /Color currentgray def\n\
+    /pathnotempty false def\n\
+    { /nocurrent false def } {} {} {} pathforall\n\
+    pathnotempty { currentpoint /PositionY exch def /PositionX exch def } if\n\
+    /LineWidth currentlinewidth def\n\
+    /LineCap currentlinecap def\n\
+    /LineJoin currentlinejoin def\n\
+    /Flatness currentflat def\n\
+    /MiterLimit currentmiterlimit def\n\
+    currentdash /DashPatternOffset exch def /DashPattern exch def\n\
+    end % $brkpage\n\
+    showpage\n\
+    vmstatus pop pop 0 ne{grestoreall}if initgraphics courier setfont\n\
+    lmargin 720 moveto(ERROR: )prnt errorname prnt\n\
+    nl(OFFENDING COMMAND: )prnt/command load prnt\n\
+    $error/ostack \n\
+    known{nl nl(OPERAND STACK:)prnt nl nl\n\
+    $error/ostack get aload length{==}repeat}if\n\
+    $error/estack \n\
+    known{nl nl(EXECUTION STACK:)prnt nl nl\n\
+    $error/estack get aload length 12 sub {==}repeat 12 {pop} repeat }if\n\
+    nl (GRAPHICS STATE:) prnt nl\n\
+    $brkpage begin\n\
+    (   Current Matrix: ) prnt CTM mytprint nl\n\
+    (   Color: ) prnt Color prnt nl\n\
+    (   Current position: ) prnt\n\
+    pathnotempty { (x = ) prnt PositionX prnt\n\
+    (, y = ) prnt PositionY prnt } { (NONE) prnt } ifelse nl\n\
+    (   Line width: ) prnt LineWidth prnt nl\n\
+    (   Line cap: ) prnt LineCap prnt nl\n\
+    (   Line join: ) prnt LineJoin prnt nl\n\
+    (   Flatness: ) prnt Flatness prnt nl\n\
+    (   Miter limit: ) prnt MiterLimit prnt nl\n\
+    (   Dash pattern: ) prnt DashPattern mytprint\n\
+    ( ) prnt DashPatternOffset prnt nl\n\
+    end % $brkpage\n\
+    systemdict/showpage get exec\n\
+    /newerror true store/OLDhandleerror load end end end exec}{end end end}\n\
+  ifelse}\n\
+dup 0 systemdict put	%bind true systemdict value\n\
+dup 4 $brkpage put 	%bind true $breakpage value\n\
+bind readonly 		%lock it up\n\
+put			%into errordict\n"};

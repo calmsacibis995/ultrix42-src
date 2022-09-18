@@ -1,0 +1,126 @@
+.\" SCCSID: @(#)crash.8v	8.1	9/11/90
+.TH crash 8v VAX
+.SH Name
+crash \- what happens when the system crashes
+.SH Description
+.NXR "crash keyword"
+.NXR "system crash"
+This section explains what happens when the system crashes and shows
+how to analyze crash dumps.
+.PP
+When the system crashes voluntarily it prints a message
+on the console in the form:
+.IP
+panic: explanation
+.PP
+The system takes a dump on a mass storage peripheral device,
+and then invokes an automatic reboot procedure as
+described in
+.MS reboot 8 .
+Unless there is some unexpected inconsistency in the state
+of the file systems due to hardware or software failure, the system
+then resumes multi-user operations.
+If auto-reboot is disabled on the front panel of the machine, 
+the system halts at this point.
+.PP
+The system has a large number of internal consistency checks; if one
+of these fails, it prints a short message indicating
+which one failed.
+.PP
+The most common cause of system failures is hardware failure.  
+In all cases there is the possibility that hardware or software
+error produced the message in some unexpected way.  These 
+messages are the ones you are likely to encounter: 
+.NXR "system crash" "error messages"
+.TP
+.B IO err in push
+.ns
+.TP
+.B hard IO err in swap
+The system encountered an error when trying to write
+to the paging device
+or an error in reading critical information from a disk drive.
+Fix your disk if it is broken or unreliable.
+.TP
+.B timeout table overflow
+.ns
+Due to the current data structure, 
+running out of entries causes a crash.
+If this happens, make the timeout table bigger.
+.TP
+.B KSP not valid
+.ns
+.TP
+.B SBI fault
+.ns
+.TP
+.B CHM? in kernel
+.ns
+These indicate either a problem in the system or failing hardware.
+If SBI faults recur, check out the hardware or call
+field service.  Run the processor microdiagnostics to 
+determine if the problem is caused by an unreliable processor.
+.TP
+.B machine check %x:
+.I description
+.ns
+.TP
+.I \0\0\0machine dependent machine-check information
+.ns
+Call field service.
+.TP
+.B trap type %d, code=%d, pc=%x
+An unexpected trap has occurred within the system; the trap types are:
+.sp
+.nf
+0	reserved addressing fault
+1	privileged instruction fault
+2	reserved operand fault
+3	bpt instruction fault
+4	xfc instruction fault
+5	system call trap
+6	arithmetic trap
+7	ast delivery trap
+8	segmentation fault
+9	protection fault
+10	trace trap
+11	compatibility mode fault
+12	page fault
+13	page table fault
+.fi
+.sp
+The most common traps in system crashes are trap types 8 and 9,
+indicating
+a wild reference.  The code is the referenced address, and the pc at the
+time of the fault is printed.  These problems tend to be easy to track
+down if they are kernel problems because the processor stops, but there
+are random occurrences with unpredictable causes.
+.TP
+.B init died
+The system initialization process has exited.  The only solution is the
+automatic reboot procedure described in
+.MS reboot 8 . 
+Until this is done, no new users can log in.
+.PP
+When the system crashes, it attempts to write 
+an image of memory into the back end of the primary swap
+area.  After the system is rebooted, the program
+.MS savecore 8
+runs and preserves a copy of this core image and the current
+system in a specified directory for later access.  See
+.MS savecore 8
+for details.
+.PP
+To analyze a dump, you should begin by running
+.MS adb 1
+with the 
+.PN \-k
+flag on the core dump.
+.NXR "crash dump" "analyzing"
+Normally, the command
+.PN *(intstack-4)$c
+provides a stack trace from the point of
+the crash and this should provide a clue as to
+what went wrong.
+.SH See Also
+adb(1), reboot(8), savecore(8)

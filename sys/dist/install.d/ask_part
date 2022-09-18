@@ -1,0 +1,78 @@
+#!/bin/sh
+#
+# @(#)ask_part	4.2	(ULTRIX)	9/4/90
+#
+# Usage: sh ask_part $1 $2 $3 $4
+#   	  	$1: validpart
+#		$2: /usr, or /usesr, or swap, or dump
+#		$3: special file /dev/ra?
+#		$4: default partition.
+#
+# Description: Due to the ask_filesys needs to ask 4 times some type question,
+#		this shell wrote for a called routine.
+#
+# 001 - Aug 31, 1990 - Jon Wallace
+#	Put in fix to remove embedded spaces when doing a "read".
+#
+# 000 - June, 1986 - by Tung-Ning Cherng created.
+#
+#	Edited prompts on Aug. 4, 1986 by Al Wojtas
+#
+
+default="no default"
+for i in $1
+do
+	case $i in
+	$4 ) default=$4
+	     break 
+		;;
+	esac
+done
+
+while : true
+do
+	echo -n " 
+The disk ${3} you selected from the previous table has the following 
+partitions available, on which you can allocate the ${2}:
+
+partition      size (Kbytes)  overlap
+------------------------------------------------
+$1	
+------------------------------------------------ 
+
+Type the letter of the partition on which you want
+to allocate the ${2} [$default]: " 1>&2
+	read ans
+	ans=`echo $ans`
+	case $ans in
+	"" )
+		ans=$default ;;
+	esac
+	found=n
+	for i in $1
+	do
+		case $i in
+		[abcdefgh] )
+			case $i in
+			$ans )
+				found=y 
+				break
+				;;
+			esac
+			;;
+		esac
+	done
+	case $found in
+	y )
+		echo $ans
+		exit 0
+		;;
+	* )
+		echo "
+The partition you specified, $ans, is not valid.  Check the list of 
+available partitions for the disk you have selected."  1>&2
+		continue
+		;;
+	esac
+done
+	

@@ -1,0 +1,132 @@
+.TH netrc 5
+.SH Name
+netrc \- file used by ftp auto-login procedure (.netrc)
+.SH Description
+.NXR "netrc=>\\&.netrc file" "format"
+The
+.PN \&.netrc 
+file contains frequently needed options for
+.PN ftp
+transfers.
+The file resides in the owner's home directory on the machine
+from which the owner initiates the file transfer.
+If the file includes passwords, set permissions on the file with
+.MS chmod 1
+so that only the owner has read
+permission.
+.PP
+The 
+.PN \&.netrc
+file uses the following format:
+.IP \(bu 5
+Each line of the 
+.PN \&.netrc 
+file defines options for a specific machine.  
+.IP \(bu 5
+A line in the 
+.PN \&.netrc 
+file can be either a machine line or a
+default line.  
+.IP \(bu 5
+The default line must be the first line in the file if it
+is present.  
+.IP \(bu 5
+Fields in a default line appear in this order:
+default, default machine name.
+.IP \(bu 5
+Fields in a machine line appear in this order: machine, machine
+name, options.
+.IP \(bu 5
+Fields on each line are separated by spaces or tabs.
+.PP
+The following are valid options for a machine line:
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB lfHB
+lfR  lfR  lfR lfR .
+_
+.sp 4p
+Option@Parameter@Default@Description
+.sp 4p
+_
+.sp 6p
+machine@machine name@none@Identifies a remote 
+@@@machine name
+login@name@local name@Identifies user on the 
+@@@remote machine
+password@password@none@Password for remote 
+@@@login name
+account@password@none@Additional account password
+macdef@macro name@none@Defines a macro like the 
+@@@\f(CWftp macdef \fRcommand
+.sp 6p
+_
+.TE
+.ne 13
+.SH Example
+This is an example of a 
+.PN \&.netrc 
+file:
+.EX
+machine cactus login smith
+machine nic.ddn.mil login anonymous password anonymous
+machine palm.stateu.edu login smith password ualonerwelcome
+macdef byenow
+quit
+
+macdef ls
+dir
+
+.EE
+The first line allows 
+.PN ftp
+to log Smith into the machine
+.PN cactus
+after prompting for and receiving Smith's password, 
+as shown in this example:
+.br
+.ne 8
+.EX
+$ ftp cactus
+Connected to cactus.tech.edu
+FTP server ready.
+Password required for SMITH.
+User logged in
+ftp>
+.EE
+.PP
+The second line of the file allows the user to perform an
+anonymous 
+.PN ftp
+transfer after typing this command:
+.EX
+$ ftp nic.ddn.mil
+.EE
+See 
+.MS ftp 1c
+for a description of anonymous FTP transfers.
+.PP
+The third line allows Smith to log into the machine
+.PN palm.stateu.edu .
+Smith will not be prompted for a password because this
+machine line includes password information.  Because 
+the 
+.PN \&.netrc
+file includes password information, the file
+must not have read permission set for world and group.
+.PP
+The 
+.PN macdef
+lines are macro definitions, which operate much like shell aliases.  
+A blank line
+must follow each macro definition 
+to signal the end of the macro. 
+The first macro definition defines 
+.PN byenow
+as an alias for the
+.PN ftp
+.PN quit
+command.
+.SH See Also
+ftp(1c)

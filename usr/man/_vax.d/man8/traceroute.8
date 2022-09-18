@@ -1,0 +1,259 @@
+.TH traceroute 8 "" "" Unsupported
+.SH Name
+traceroute \- print the route that packets take to the network host
+.SH Syntax
+.B /usr/etc/traceroute
+[
+.B \-m
+max_ttl
+] [
+.B \-n
+] [
+.B \-p
+port
+] [
+.B \-q
+nqueries
+] [
+.B \-r
+] [
+.B \-s
+src_addr
+] [
+.B \-t
+tos
+] [
+.B \-w
+] [
+.B \-w
+waittime
+]
+.I host
+[
+.I packetsize
+]
+.SH Description
+.NXR "traceroute command"
+The Internet is a large and complex aggregation of
+network hardware connected together by gateways.
+Tracking the route one's packets follow (or finding the miscreant
+gateway that is discarding your packets) can be difficult.
+The 
+.PN traceroute
+command uses the IP protocol `time to live' field and attempts to elicit an
+ICMP TIME_EXCEEDED response from each gateway along the path to a particular
+host.
+.PP
+The only mandatory parameter is the destination host name or IP number.
+The default probe datagram length is 38 bytes, but this may be increased
+by specifying a packet size (in bytes) after the destination host
+name.
+.PP
+This program attempts to trace the route an IP packet would follow to some
+internet host by launching UDP probe
+packets with a small ttl (time to live) then listening for an
+ICMP "time exceeded" reply from a gateway.  We start our probes
+with a ttl of one and increase by one until we get an ICMP "port
+unreachable" (which means we got to "host") or hit a max (which
+defaults to 30 hops and can be changed with the \-m flag).  Three
+probes (which can be changed with the \-q flag) are sent at each 
+ttl setting and a
+line is printed showing the ttl, address of the gateway and
+round trip time of each probe.  If the probe answers come from
+different gateways, the address of each responding system will
+be printed.  If there is no response within a 3 second timeout
+interval (which can be changed with the \-w flag), a "*" is printed for that
+probe.
+.PP
+We do not want the destination
+host to process the UDP probe packets so the destination port is set to an
+unlikely value.  The destination port value can be changed with the \-p flag,
+if necessary.
+.SH Options
+Additional
+.PN traceroute
+options are:
+.TP
+.B \-m
+Sets the max time-to-live (max number of hops) used in outgoing probe
+packets.  The default is 30 hops which is the same default used for TCP
+connections.
+.TP
+.B \-n
+Prints hop addresses numerically rather than symbolically and numerically.
+This saves a nameserver address-to-name lookup for each gateway found on the
+path.
+.TP
+.B \-p
+Sets the base UDP port number used in probes (default is 33434).
+The  
+.PN traceroute
+command presumes that nothing is listening on UDP ports
+.I base
+to
+.I base+nhops-1
+at the destination host (so an ICMP PORT_UNREACHABLE message will
+be returned to terminate the route tracing).  If another process
+islistening on a port in the default range, this option can be used
+to pick an unused port range.
+.TP
+.B \-r
+Bypasses the normal routing tables and sends directly to a host on an attached
+network.
+If the host is not on a directly-attached network,
+an error is returned.
+This option can be used to ping a local host through an interface
+that has no route through it (for example, after the interface was dropped by
+.MS routed 8c .
+.TP
+.B \-s
+Uses the following IP address (which must be given as an IP number, not
+a hostname) as the source address in outgoing probe packets.  On
+hosts with more than one IP address, this option can be used to
+force the source address to be something other than the IP address
+of the interface on which the probe packet is sent. If the IP address
+is not one of this machine's interface addresses, an error is
+returned and nothing is sent.
+.TP
+.B \-t
+Sets the
+.I type-of-service
+in probe packets to the following value (default zero).  The value must be 
+a decimal integer in the range 0 to 255.  This option can be used to
+see if different types-of-service result in different paths.  (If you
+are not running 4.4BSD, this option is not relevant to you because
+services like telnet and ftp do not let you control the 
+.I type-of-service .)
+Not all values of 
+.I type-of-service 
+are legal or meaningful \- see the IP spec for definitions.
+Useful values are probably `-t 16' (low delay) and `-t 8' (high throughput).
+.TP
+.B \-v
+Verbose output.  Received ICMP packets other than TIME_EXCEEDED and
+UNREACHABLEs are listed.
+.TP
+.B \-w
+Sets the time (in seconds) to wait for a response to a probe.  The
+default is 3 seconds.
+.SH Examples
+The following command traces the route a packet takes
+from localhost to the host nis.nsf.net:
+.EX
+localhost> \f(CBtraceroute nis.nsf.net\fP
+
+traceroute to nis.nsf.net (35.1.1.48), 30 hops max, 56 byte packet
+ 1  helios.ee.lbl.gov (128.3.112.1)  19 ms  19 ms  0 ms
+ 2  lilac-dmc.Berkeley.EDU (128.32.216.1)  39 ms  39 ms  19 ms
+ 3  lilac-dmc.Berkeley.EDU (128.32.216.1)  39 ms  39 ms  19 ms
+ 4  ccngw-ner-cc.Berkeley.EDU (128.32.136.23)  39 ms  40 ms  39 ms
+ 5  ccn-nerif22.Berkeley.EDU (128.32.168.22)  39 ms  39 ms  39 ms
+ 6  128.32.197.4 (128.32.197.4)  40 ms  59 ms  59 ms
+ 7  131.119.2.5 (131.119.2.5)  59 ms  59 ms  59 ms
+ 8  129.140.70.13 (129.140.70.13)  99 ms  99 ms  80 ms
+ 9  129.140.71.6 (129.140.71.6)  139 ms  239 ms  319 ms
+10  129.140.81.7 (129.140.81.7)  220 ms  199 ms  199 ms
+11  nic.merit.edu (35.1.1.48)  239 ms  239 ms  239 ms
+.EE
+Note that lines 2 and 3 are identical.  This is due to a bug in the 
+kernel on the 2nd hop system \- lbl-csam.arpa \- that forwards
+packets with a zero ttl (a bug in the distributed version
+of 4.3BSD).  Note that you have to guess what path
+the packets are taking cross-country since the NSFNet (129.140)
+does not supply address-to-name translations for its NSSes.
+.PP
+The following is another example of output from the 
+.PN traceroute
+command.  Packets from localhost to the host allspice.lcs.mit.edu
+are being traced:
+.EX
+localhost> \f(CBtraceroute allspice.lcs.mit.edu.\fP
+
+traceroute to allspice.lcs.mit.edu (18.26.0.115), 30 hops max
+ 1  helios.ee.lbl.gov (128.3.112.1)  0 ms  0 ms  0 ms
+ 2  lilac-dmc.Berkeley.EDU (128.32.216.1)  19 ms  19 ms  19 ms
+ 3  lilac-dmc.Berkeley.EDU (128.32.216.1)  39 ms  19 ms  19 ms
+ 4  ccngw-ner-cc.Berkeley.EDU (128.32.136.23)  19 ms  39 ms  39 ms
+ 5  ccn-nerif22.Berkeley.EDU (128.32.168.22)  20 ms  39 ms  39 ms
+ 6  128.32.197.4 (128.32.197.4)  59 ms  119 ms  39 ms
+ 7  131.119.2.5 (131.119.2.5)  59 ms  59 ms  39 ms
+ 8  129.140.70.13 (129.140.70.13)  80 ms  79 ms  99 ms
+ 9  129.140.71.6 (129.140.71.6)  139 ms  139 ms  159 ms
+10  129.140.81.7 (129.140.81.7)  199 ms  180 ms  300 ms
+11  129.140.72.17 (129.140.72.17)  300 ms  239 ms  239 ms
+12  * * *
+13  128.121.54.72 (128.121.54.72)  259 ms  499 ms  279 ms
+14  * * *
+15  * * *
+16  * * *
+17  * * *
+18  ALLSPICE.LCS.MIT.EDU (18.26.0.115)  339 ms  279 ms  279 ms
+.EE
+Note that the gateways 12, 14, 15, 16 and 17 hops away
+either do not send ICMP "time exceeded" messages or send them
+with a ttl too small to reach localhost.  Gateways 14 through 17 are 
+running the MIT C Gateway code that does not send "time exceeded"
+messages.  It is unclear what is happening with gateway 12.
+.PP
+The silent gateway 12 in the above may be the result of a bug in
+the 4.[23]BSD network code (and its derivatives):  4.x (x <= 3)
+sends an unreachable message using whatever ttl remains in the
+original datagram.  Since, for gateways, the remaining ttl is
+zero, the ICMP "time exceeded" is guaranteed to not make it back
+to us.  
+.PP
+When this bug appears on the destination system
+it behaves as follows:
+.EX
+ 1  helios.ee.lbl.gov (128.3.112.1)  0 ms  0 ms  0 ms
+ 2  lilac-dmc.Berkeley.EDU (128.32.216.1)  39 ms  19 ms  39 ms
+ 3  lilac-dmc.Berkeley.EDU (128.32.216.1)  19 ms  39 ms  19 ms
+ 4  ccngw-ner-cc.Berkeley.EDU (128.32.136.23)  39 ms  40 ms  19 ms
+ 5  ccn-nerif35.Berkeley.EDU (128.32.168.35)  39 ms  39 ms  39 ms
+ 6  csgw.Berkeley.EDU (128.32.133.254)  39 ms  59 ms  39 ms
+ 7  * * *
+ 8  * * *
+ 9  * * *
+10  * * *
+11  * * *
+12  * * *
+13  rip.Berkeley.EDU (128.32.131.22)  59 ms !  39 ms !  39 ms !
+.EE
+Note that there are 12 "gateways" (13 is the final
+destination) and the last half of them are "missing".
+What is happening is that the host rip (a Sun-3 running Sun OS3.5)
+is using the ttl from our arriving datagram as the ttl in its
+ICMP reply.  The reply will time out on the return path
+(with no notice sent to anyone since ICMP's are not sent for
+ICMP's) until we probe with a ttl that is at least twice the path
+length.  This means that the host rip is really only 7 hops away.  
+.PP
+A reply that
+returns with a ttl of 1 is a clue this problem exists.
+The 
+.PN traceroute 
+prints a "!" after the time if the ttl is less than or 
+equal to 1.  Since many systems continue to run obsolete or
+non-standard software, expect to see this problem frequently.
+.PP
+Other possible annotations after the time are
+.BR !H ,
+.BR !N ,
+.B !P
+(got a host, network or protocol unreachable, respectively),
+.B !S
+or
+.B !F
+(source route failed or fragmentation needed \- if either of these
+occurs, the associated gateway is broken).  If
+almost all the probes result in some kind of unreachable, the
+.PN traceroute
+command will give up and exit.
+.PP
+This program is intended for use in network testing, measurement
+and management.  It should be used primarily for manual fault isolation.
+Because of the load it could impose on the network, you should not use
+.PN traceroute
+during normal operations or from automated scripts.
+.SH See Also
+netstat(1), ping(8)

@@ -1,0 +1,142 @@
+.TH t_rcv 3xti
+.SH Name
+t_rcv \- receive data or expedited data sent over a connection 
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_rcv(\fIfd, buf, nbytes, flags\fB)
+.br
+.B int \fIfd\fB;
+.br
+.B char \fI*buf\fB;
+.br
+.B unsigned \fInbytes\fB;
+.br
+.B int \fI*flags\fR;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint through which data arrives.
+.IP \fIbuf\fR 10
+Points to a receive buffer where user data is placed.
+.IP \fInbytes\fR 10
+Specifies the size of the receive buffer.
+.IP \fIflags\fR 10
+Specifies optional flags. Can be set on return from
+.PN t_rcv().
+.SH Description
+This function receives either normal or expedited data.
+.NXR "t_rcv system call"
+.NXR "connection" "receiving normal data"
+.NXR "connection" "receiving expedited data"
+.PP
+By default, 
+.PN t_rcv()
+operates in synchronous mode and waits for
+data to arrive if none is currently available. However, if
+O_NONBLOCK is set (by means of 
+.PN t_open()
+or
+.PN fcntl()\fR,\fR 
+.PN t_rcv()
+executes in asynchronous mode and fails if no data is available.
+.PP
+On return from the call, if T_MORE is set in \fIflags\fR this
+indicates that there is more data and the current transport service
+data unit (TSDU) or expedited transport service data (ETSDU) must be
+received in multiple 
+.PN t_rcv() 
+calls. Each 
+.PN t_rcv()
+with the T_MORE flag set indicates that another 
+.PN t_rcv()
+must follow immediately to get more data from the current TSDU. The end
+of the TSDU is identified by the return of a 
+.PN t_rcv() 
+call with the T_MORE flag not set. If the transport provider does not
+support the concept of a TSDU as indicated in the \fIinfo\fR argument
+on return from 
+.PN t_open() 
+or 
+.PN t_getinfo()\fR,\fR 
+the
+T_MORE flag is not meaningful and should be ignored.
+.PP 
+On return, the data returned is expedited data if T_EXPEDITED is
+set in \fIflags\fR. If the number of bytes of expedited data exceeds
+\fInbytes\fR, 
+.PN t_rcv() 
+sets T_EXPEDITED and T_MORE
+on return from the initial call. Subsequent calls to retrieve the
+remaining ETSDU have T_EXPEDITED set on return. The end of
+the ETSDU is identified by the return of a 
+.PN t_rcv
+call with the
+T_MORE flag not set.
+.PP
+If expedited data arrives after part of a TSDU has been retrieved,
+receipt of the remainder of the TSDU is suspended until the ETSDU
+has been processed. Only after the full ETSDU has been retrieved
+(T_MORE not set) will the remainder of the TSDU be available to
+the user.
+.PP
+In synchronous mode, the only way for the user to be notified of the
+arrival of normal or expedited data is to issue this function or check
+for the T_DATA or T_EXDATA events using the
+.PN t_look() 
+function. 
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+buf@x@(x)
+nbytes@x@/
+flags@/@x
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, 
+.PN t_rcv()
+returns the number of
+bytes received. On failure, a value of \-1 is returned, and \fBt_errno\fR 
+is set to indicate the error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20 
+[TOUTSTATE]
+The function was issued in the wrong sequence on the transport endpoint
+referenced by \fIfd\fR.
+.TP 20
+[TNODATA]
+O_NONBLOCK was set, but no data is currently available from the
+transport provider.
+.TP 20
+[TLOOK]
+An asynchronous event has occurred on the transport endpoint and
+requires immediate attention.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the underlying transport provider. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+fcntl(2), 
+t_getinfo(3xti), 
+t_look(3xti), 
+t_open(3xti),
+t_snd(3xti)

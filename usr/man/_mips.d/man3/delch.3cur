@@ -1,0 +1,82 @@
+.TH delch 3cur 
+.SH Name
+delch, mvdelch, mvwdelch, wdelch \- remove character from window
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B
+int delch(\|)
+.PP
+.B
+int wdelch(win)
+.br
+.B
+WINDOW \(**win;
+.PP
+.B
+int mvdelch(y, x)
+.br
+.B
+int y, x;
+.PP
+.B
+int mvwdelch(win, y, x)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int y, x;
+.SH Description
+.NXR "delch subroutine"
+.NXR "mvdelch subroutine"
+.NXR "mvwdelch subroutine"
+.NXR "wdelch subroutine"
+The
+.PN delch
+routine 
+deletes the character under the cursor in the default window.
+All characters to the right on the same line are moved to the left one
+position and the last character on the line is filled with a blank.
+The cursor position does not change.
+.PP
+The routine 
+.PN wdelch
+deletes the character under the cursor in the specified window.
+All characters to the right on the same line are moved to the left one
+position and the last character on the line is filled with a blank.
+The cursor position does not change.
+.PP
+The routine 
+.PN mvdelch
+moves the cursor to the specified position in the default 
+window.
+The character found at this location is deleted.
+All characters to the right on the same line are moved to the left one
+position and the last character on the line is filled with a blank.
+The cursor position does not change.
+.PP
+The routine 
+.PN mvwdelch
+moves the cursor to the specified position in the specified 
+window.
+The character found at this location is deleted.
+All characters to the right on the same line are moved to the left one
+position and the last character on the line is filled with a blank.
+The cursor position does not change.
+.PP
+The routines 
+.PN delch, 
+.PN mvdelch
+and 
+.PN mvwdelch
+are macros.
+.SH Return Values
+The 
+.PN delch ,
+.PN mvdelch ,
+.PN mvwdelch
+and
+.PN wdelch
+functions return OK on success and ERR on error.

@@ -1,0 +1,26 @@
+.\" SCCSID: @(#)from.1	8.1	9/11/90
+.TH from 1
+.SH Name
+from \- identifies sender of mail 
+.SH Syntax
+.B from
+[\fB\-f\fI mailbox\fR\|] [\fB\-s\fI sender\fR\|]
+.SH Description
+.NXR "from command (mail)"
+.NXR "mail" "listing header lines in mailbox file"
+.NXA "mail program" "from command (mail)"
+The
+.PN from
+command prints out the mail header lines in a mailbox file
+to show you who has sent mail to you.
+.SH Options
+.IP "\fB\-\|f\fI mailbox\fR" 20
+Uses specified file instead of your normal
+mail file.  If this option is used, but file 
+argument is not specified, read your mbox file.  
+.IP "\fB\-\|s\fI sender\fR" 20
+Prints mail headers for mail sent by specified sender.
+.SH Files
+/usr/spool/mail/*
+.SH See Also
+mail(1) 

@@ -1,0 +1,506 @@
+.\" SCCSID: @(#)ctrace.1	8.2	11/8/90
+.TH ctrace 1
+.SH Name
+ctrace \- C program debugger
+.SH Syntax
+\fBctrace\fR [\|\fIoptions\fR\|] [\|\fIfile\fR\|]
+.br
+\fBctc\fR [\|\fIoptions\fR\|] [\|\fIfile\fR\|] 
+.br
+\fBctcr\fR [\|\fIoptions\fR\|] [\|\fIfile\fR\|]
+.SH Description
+.NXR "ctrace debugger"
+.NXA "cc compiler" "ctrace debugger"
+.NXR "ctc command"
+.NXR "ctcr command"
+The 
+.PN ctrace
+command allows you
+to follow the execution of a C program, statement by statement.
+The
+.PN ctrace
+command reads the C program in \fIfile\fR (or from standard
+input if you do not specify \fIfile\fR) and inserts statements to print
+both the text of each executable statement and the values of all
+variables referenced or modified.  It then
+writes the modified program to the standard output.
+You must put the output of 
+.PN ctrace
+into a temporary file because
+the 
+.PN cc
+command does not allow the use of a pipe.
+You then compile and execute this file.
+.PP
+As each statement in the program executes it is listed at the
+terminal.  The statement is followed by the name and value
+of any variables referenced or
+modified in the statement, which is followed by any output from the statement.
+Loops in the trace output are detected and tracing is stopped until the
+loop is exited or a different sequence of statements within the loop is
+executed.
+A warning message is printed every 1000 times through the loop to
+help you detect infinite loops.
+.PP
+The trace output goes to the standard output so you 
+can put it into a file for examination with an editor or the
+.PN tail
+command.
+.PP
+The
+.PN ctc
+command is a shell script that prepares the specified C program
+.I file
+for later execution.
+The
+.PN ctcr
+command is a shell script that both prepares and 
+executes the specified C program
+.I file\^.
+.SH Options
+.NXR "ctrace debugger" "options"
+The only options you will commonly use are:
+.TP 20
+.BI \-f " functions"
+Trace only these
+.I functions.
+.TP
+.BI \-v " functions"
+Trace all but these
+.I functions.
+.PP
+You may want to add to the default formats for printing variables.
+Long and pointer variables are always printed as signed integers.
+Pointers to character arrays are also printed as strings if appropriate.
+Char, short, and int variables are also printed
+as signed integers and, if appropriate, as characters.
+Double variables are printed
+as floating point numbers in scientific notation.
+.ig
+String arguments to the
+.MS string 3
+functions and return values from
+.PN gets ,
+.PN fgets ,
+and
+.PN sprintf
+are printed as strings.
+..
+.sp .5
+You can request that variables be printed in additional formats, if
+appropriate, with these options:
+.TP 20
+.B \-e
+Floating point
+.TP
+.B \-o
+Octal
+.TP
+.B \-u
+Unsigned
+.TP
+.B \-x
+Hexadecimal
+.PP
+These options are used only in special circumstances:
+.TP 20
+.BI \-l " n"
+Checks
+.I n
+consecutively executed statements
+for looping trace output, instead of the
+default of 20.  Use 0 to get all the trace output from loops.
+.TP
+.B \-P
+Runs the C preprocessor on the input before tracing it.
+You can also use the
+.BR \-D ,
+.BR \-I ,
+and
+.B \-U
+cc(1)
+preprocessor options.
+.TP
+.BI \-p " s"
+Changes the trace print functions from the default of \*(lqprintf(\*(rq.
+For example, \*(lqfprintf(stderr,\*(rq
+would send the trace to the standard error
+output.
+.TP
+.BI \-r " f"
+Uses file
+.I f
+in place of the
+.I runtime.c
+trace function package.
+This lets you change the entire print function, instead of just the
+name and leading arguments.  For further information, see the
+.B \-p
+option.
+.TP
+.B \-s
+Suppresses redundant trace output from simple assignment statements and
+string copy function calls.
+This option can hide a bug caused by use
+of the = operator in place of the
+== operator.
+.TP
+.BI \-t " n"
+Traces
+.I n
+variables per statement instead of the default of 10
+(the maximum number is 20).
+The DIAGNOSTICS section explains when to use this option.
+.SH Examples
+.NXR(e) "ctrace command"
+Assume the file \fIlc.c\fR contains the following C program:
+.EX
+ 1 #include <stdio.h>
+ 2 main()	/* count lines in input */
+ 3 {
+ 4 	int c, nl;
+ 5 
+ 6 	nl = 0;
+ 7 	while ((c = getchar()) != EOF)
+ 8 		if (c = '\\n')
+ 9 			++nl;
+10 	printf("%d\\n", nl);
+11 }
+.EE
+.sp .5
+When you enter the following commands and test data
+the program is compiled and executed:
+.EX
+cc lc.c
+a.out
+1
+<CTRL/D>
+.EE
+The output of the program is the number \fB2\fR, which is not
+correct because there is only one line in the test data.
+The error in this program is common, but subtle.
+When you invoke 
+.PN ctrace
+with the following commands:
+.EX
+ctrace lc.c >temp.c
+cc temp.c
+a.out
+.EE
+the output is
+.EX
+ 2 main()
+ 6 	nl = 0;
+    	/* nl == 0 */  
+ 7 	while ((c = getchar()) != EOF)
+.EE
+The program is now waiting for input.
+If you enter the same test data as before, the output is the following:
+.EX
+   	/* c == 49 or '1' */
+ 8 		if (c = '\\n')
+    		/* c == 10 or '\\n' */  
+ 9 			++nl;
+   			/* nl == 1 */
+ 7 	while ((c = getchar()) != EOF)
+   	/* c == 10 or '\\n' */
+ 8 		if (c = '\\n')
+    		/* c == 10 or '\\n' */  
+ 9 			++nl;
+   			/* nl == 2 */
+ 7 	while ((c = getchar()) != EOF)
+.EE
+If you now enter an end of file character <CTRL/D>, the final output
+is the following:
+.EX
+   	/* c == \-1 */
+10 	printf("%d\\n", nl);
+   	/* nl == 2 */2
+	\* return \*
+
+.EE
+.br
+Note that the program output printed at the end of the trace line
+for the \fBnl\fR variable.
+Also note the \fBreturn\fR comment added
+by 
+.PN ctrace
+at the end of the trace output.
+This shows the implicit return at the terminating brace in the function.
+.PP
+The trace output shows that variable \fBc\fR is assigned
+the value \*(lq1\*(rq in
+line 7, but in line 8 it has been assigned the value \*(lq\\n\*(rq.
+Once your attention is drawn to this \fIif\fR statement,
+you realize that you used the assignment operator (=)
+instead of the equal operator (==) as intended in line 8.
+You can easily miss this error during code reading.
+.SH Execution-time Trace Control
+.NXR "ctrace debugger" "statement-by-statement control"
+The default operation for
+.PN ctrace
+is to trace the entire program file, unless you use the
+.B \-f
+or
+.B \-v
+options to trace specific functions.
+This does not give you statement by statement control
+of the tracing, nor
+does it let you turn the tracing off and on when executing the traced
+program.
+.PP
+You can do both of these by adding
+.PN ctroff
+and 
+.PN ctron
+function calls to your program to turn the tracing off and on,
+respectively, at execution time.
+Thus, you can code arbitrarily complex criteria for trace control with
+.I if
+statements, and you can even conditionally include this code because 
+.PN ctrace
+defines the CTRACE preprocessor variable.
+For example:
+.EX
+#ifdef CTRACE
+	if (c == '!' && i > 1000)
+		ctron();
+#endif
+.EE
+You can also turn the trace off and on
+by setting static variable tr_ct_ to
+0 and 1, respectively.
+This is useful if you are using a debugger that cannot call these
+functions directly, such as 
+.MS adb 1 .
+.SH Restrictions
+The
+.NXR "ctrace debugger" "restricted"
+.PN ctrace
+command does not know about the components
+of aggregates such as structures,
+unions, and arrays.  It cannot choose a format to print all the
+components of an aggregate when an assignment is made to the entire
+aggregate.  The
+.PN ctrace 
+command may choose to print the address of an aggregate
+or use the wrong format
+(for example, %e for a structure with two integer
+members) when printing the value of an aggregate.
+.PP
+Pointer values are always treated as pointers to character strings.
+.PP
+The loop trace output elimination is done separately for each file of a
+multi-file program.  This can result in functions called from a
+loop still being traced, or the elimination of trace output from one
+function in a file until another in the same file is called.
+.SH Warnings
+You get a
+.PN ctrace
+syntax error if you omit the semicolon at the end of the last element
+declaration in a structure or union, just before the right brace (}).
+This is optional in some C compilers.
+.PP	
+Defining a function with the same name as a system function
+may cause a syntax error if the number of arguments is
+changed.  Use a different name.
+.PP
+The
+.PN ctrace
+command assumes that BADMAG is a preprocessor macro, and that
+EOF and NULL are 
+.PN #defined
+constants.
+Declaring any of these to be variables, for example,
+.PN int\0EOF; ,
+will cause a
+syntax error.
+.SH Diagnostics
+This section contains diagnostic messages from both
+.PN ctrace
+and
+.PN cc ,
+since the traced code often gets some
+.PN cc
+warning messages.
+You can get
+.PN cc
+error messages in some rare cases, all of which can be avoided.
+.SS ctrace Diagnostics
+.NXR "ctrace debugger" "diagnostics"
+warning: some variables are not traced in this statement
+.sp .5
+.RS
+Only 10 variables are traced in a statement to prevent the C compiler
+"out of tree space; simplify expression" error.
+Use the \fB\-t\fR option to increase this number.
+.RE
+.PP
+warning: statement too long to trace
+.sp .5
+.RS
+This statement is over 400 characters long.
+Make sure that you are using tabs to indent your code, not spaces.
+.RE
+.PP
+cannot handle preprocessor code, use 
+.B \-P option
+.sp .5
+.RS
+This is usually caused by 
+.PN #ifdef/#endif
+preprocessor statements in the
+middle of a C statement, or by a semicolon at the end of a 
+.PN #define
+preprocessor statement.
+.RE
+.PP
+\&'if ... else if' sequence too long
+.sp .5
+.RS
+Split the sequence by removing an \fBelse\fR from the middle.
+.RE
+.PP
+possible syntax error, try -P option
+.sp .5
+.RS
+Use the
+.B \-P
+option to preprocess the
+.PN ctrace
+input, along with any appropriate
+.BR \-D ,
+.BR \-I ,
+and
+.B \-U
+preprocessor options.
+If you still get the error message, check the Warnings section above.
+.sp .5
+Using
+.PN ctrace
+with the
+.B \-P
+option on a program that
+includes 
+.PN <sys/types.h>
+or a header file that includes
+.PN <sys/types.h> 
+also causes this error even though you are already using the
+.BR \-P
+option.
+.sp .5
+To avoid the problem, when you are using 
+.PN ctrace\0-P ,
+surround the
+.PN #include
+line for
+.PN <sys/types.h>
+with 
+.PN #ifndef\0CTRACE/
+.PN #endif\0CTRACE
+pairs as shown in this example:
+.EX
+#ifndef CTRACE
+#include <sys/types.h>
+#endif CTRACE
+.EE
+.sp .5
+The 
+.PN ctrace
+program defines the CTRACE preprocessor variable 
+during its execution and ignores the files when it processes your
+program.
+Later when you compile your program, the files are included
+as usual by the C preprocessor.
+Note that the files listed here also include
+.PN <sys/types.h> 
+or they may be included in other include files.
+Surrounding them with
+.PN #ifndef\0CTRACE/
+.PN #endif\0CTRACE
+pairs may allow 
+.PN ctrace 
+to process your program successfully.
+.EX
+<sys/audit.h>             <auth.h>
+<sys/file.h>              <grp.h>
+<sys/param.h>             <pwd.h>
+<sys/socket.h>            <signal.h>
+<sys/sysmacros.h>         <sys/time.h>
+<sys/wait.h>
+.EE
+.RE
+.SS cc Diagnostics
+.NXR "cc compiler" "diagnostics"
+warning: floating point not implemented
+.br
+warning: illegal combination of pointer and integer
+.br
+warning: statement not reached
+.br
+warning: sizeof returns 0
+.sp .5
+.RS
+Ignore these messages.
+.RE
+.PP
+compiler takes size of function
+.sp .5
+.RS
+See the
+.PN ctrace
+"possible syntax error" message above.
+.RE
+.PP
+yacc stack overflow
+.sp .5
+.RS
+See the
+.PN ctrace
+\ 'if .. else if' "sequence too long" 
+message above.
+.RE
+.PP
+out of tree space; simplify expression
+.sp .5
+.RS
+Use the \fB\-t\fR option to reduce the number of
+traced variables per statement from the default of 10.
+Ignore the "ctrace: too many variables to trace"
+warnings you will now get.
+.RE
+.br
+.ne 7
+.PP
+redeclaration of signal
+.sp .5
+.RS
+You may either need to correct the declaration of
+.MS signal 3 ,
+or to surround the 
+.PN #include
+.PN <signal.h>
+statement with an
+.PN #ifndef\0CTRACE/
+.PN #endif\0CTRACE
+pair as described in the 
+.PN ctrace
+Diagnostics section.
+.RE
+.PP
+unimplemented structure assignment
+.sp .5
+.RS
+Use 
+.PN pcc
+instead of 
+.MS cc 1 .
+.RE
+.SH Files
+/usr/bin/ctc			preparation shell script
+.br
+/usr/bin/ctcr			preparation and run shell script
+.br
+/usr/lib/ctrace/runtime.c		run-time trace package
+.SH See Also
+ctype(3), printf(3s), setjmp(3), signal(3), string(3)

@@ -1,0 +1,1162 @@
+/*        @(#)cpast.vc	4.1      7/2/90      */
+
+/*  Version 2.00   4/ 3/89 13:47:00.0000  */
+/* makehf /vc /cp /setup=portab.h,capdl.def,pdl_st.def,cpsys.def,casys.def cpa
+  ...  st.def cpast.vc*/
+
+
+
+
+
+CONST SEARCH ast_esc_srch[33] =  {  { 49, TOK_dec_hts } 
+, { 50, TOK_dec_caht } 
+, { 51, TOK_dec_vts } 
+, { 52, TOK_dec_cavt } 
+, { 68, TOK_pr_ind } 
+, { 69, TOK_ac_nel } 
+, { 72, TOK_pr_hts } 
+, { 74, TOK_pr_vts } 
+, { 75, TOK_pr_pld } 
+, { 76, TOK_pr_plu } 
+, { 77, TOK_pr_ri } 
+, { 78, TOK_pr_ss2 } 
+, { 79, TOK_pr_ss3 } 
+, { 80, TOK_pr_dcs } 
+, { 91, TOK_pr_csi } 
+, { 92, TOK_pr_st } 
+, { 93, TOK_pr_osc } 
+, { 94, TOK_pr_pm } 
+, { 95, TOK_pr_apc } 
+, { 99, TOK_pr_ris } 
+, { 110, TOK_pr_ls2 } 
+, { 111, TOK_pr_ls3 } 
+, { 124, TOK_pr_ls3r } 
+, { 125, TOK_pr_ls2r } 
+, { 126, TOK_pr_ls1r } 
+, { 8246, TOK_dec_tc1 } 
+, { 8247, TOK_dec_ac1 } 
+, { 8262, TOK_pr_s7c1t } 
+, { 8263, TOK_pr_s8c1t } 
+, { 8268, TOK_pr_ascef1 } 
+, { 8269, TOK_pr_ascef2 } 
+, { 8270, TOK_pr_ascef3 } 
+, { 65535, TOK_ac_nop } 
+ } 
+;
+CONST SEARCH ast_csi_srch[55] =  {  { 65, TOK_pr_cuu } 
+, { 82, TOK_pr_cpr } 
+, { 96, TOK_pr_hpa } 
+, { 97, TOK_pr_hpr } 
+, { 99, TOK_pr_da } 
+, { 100, TOK_pr_vpa } 
+, { 101, TOK_pr_vpr } 
+, { 103, TOK_pr_tbc } 
+, { 104, TOK_pr_set } 
+, { 106, TOK_pr_hpb } 
+, { 107, TOK_pr_vpb } 
+, { 108, TOK_pr_reset } 
+, { 109, TOK_pr_sgr } 
+, { 110, TOK_pr_dsr } 
+, { 114, TOK_dec_stbm } 
+, { 115, TOK_dec_slrm } 
+, { 116, TOK_dec_slpp } 
+, { 117, TOK_dec_shts } 
+, { 118, TOK_dec_svts } 
+, { 119, TOK_dec_shorp } 
+, { 122, TOK_dec_verp } 
+, { 8257, TOK_pr_cuu } 
+, { 8258, TOK_pr_gsm } 
+, { 8259, TOK_pr_gss } 
+, { 8262, TOK_pr_jfy } 
+, { 8263, TOK_pr_spi } 
+, { 8265, TOK_pr_ssu } 
+, { 8266, TOK_pr_pfs } 
+, { 8267, TOK_pr_shs } 
+, { 8268, TOK_pr_svs } 
+, { 8275, TOK_pr_spd } 
+, { 8314, TOK_dec_vpfs } 
+, { 8316, TOK_dec_rvec } 
+, { 8560, TOK_dec_str } 
+, { 8565, TOK_dec_fnvr } 
+, { 8566, TOK_dec_asfc } 
+, { 8572, TOK_dec_vec } 
+, { 8816, TOK_dec_scl } 
+, { 8819, TOK_dec_hpwa } 
+, { 8826, TOK_dec_den } 
+, { 8827, TOK_dec_rfs } 
+, { 9841, TOK_dec_snc } 
+, { 9845, TOK_dec_rqupss } 
+, { 10102, TOK_dec_spp } 
+, { 10864, TOK_dec_rbmm } 
+, { 10865, TOK_dec_rfnm } 
+, { 10868, TOK_dec_sss } 
+, { 15971, TOK_pr_da2 } 
+, { 32872, TOK_dec_set } 
+, { 32876, TOK_dec_reset } 
+, { 32877, TOK_dec_sgr } 
+, { 41030, TOK_dec_jfy } 
+, { 41033, TOK_dec_ssu } 
+, { 41034, TOK_dec_pfs } 
+, { 65535, TOK_ac_nop } 
+ } 
+;
+CONST SEARCH ast_dcs_srch[10] =  {  { 113, TOK_ac_dec_graph } 
+, { 118, TOK_ac_pr_ansb } 
+, { 121, TOK_ac_dec_lff } 
+, { 123, TOK_ac_dec_dld } 
+, { 125, TOK_ac_dec_atff } 
+, { 126, TOK_ac_dec_dtff } 
+, { 255, TOK_ac_dec_uffm } 
+, { 8565, TOK_ac_dec_aupss } 
+, { 8816, TOK_ac_dec_mac } 
+, { 65535, TOK_ac_dcs_invalid } 
+ } 
+;
+CONST SEARCH ast_mode_srch[4] =  {  { 3, TOK_pr_crm } 
+, { 11, TOK_pr_pum } 
+, { 20, TOK_pr_lnm } 
+, { 65535, TOK_ac_text } 
+ } 
+;
+CONST SEARCH ast_decmode_srch[7] =  {  { 7, TOK_dec_awm } 
+, { 27, TOK_dec_psp } 
+, { 29, TOK_dec_psm } 
+, { 40, TOK_dec_crnlm } 
+, { 52, TOK_dec_opm } 
+, { 65, TOK_dec_bcmm } 
+, { 65535, TOK_ac_text } 
+ } 
+;
+CONST SEARCH ast_tbc_srch[6] =  {  { 0, TOK_pr_htac } 
+, { 1, TOK_pr_vtac } 
+, { 2, TOK_pr_htcl } 
+, { 3, TOK_pr_htc } 
+, { 4, TOK_pr_vtc } 
+, { 65535, TOK_ac_text } 
+ } 
+;
+CONST SEARCH ast_sgr_srch[33] =  {  { 0, TOK_pr_sgr_off } 
+, { 1, TOK_pr_bold } 
+, { 2, TOK_pr_faint } 
+, { 3, TOK_pr_italics } 
+, { 4, TOK_pr_under } 
+, { 9, TOK_pr_strike } 
+, { 10, TOK_pr_font } 
+, { 11, TOK_pr_font } 
+, { 12, TOK_pr_font } 
+, { 13, TOK_pr_font } 
+, { 14, TOK_pr_font } 
+, { 15, TOK_pr_font } 
+, { 16, TOK_pr_font } 
+, { 17, TOK_pr_font } 
+, { 18, TOK_pr_font } 
+, { 19, TOK_pr_font } 
+, { 21, TOK_pr_dou_under } 
+, { 22, TOK_pr_bold_off } 
+, { 23, TOK_pr_italics_off } 
+, { 24, TOK_pr_under_off } 
+, { 29, TOK_pr_strike_off } 
+, { 30, TOK_pr_black } 
+, { 31, TOK_pr_red } 
+, { 32, TOK_pr_green } 
+, { 33, TOK_pr_yellow } 
+, { 34, TOK_pr_blue } 
+, { 35, TOK_pr_magenta } 
+, { 36, TOK_pr_cyan } 
+, { 37, TOK_pr_no } 
+, { 39, TOK_pr_default } 
+, { 53, TOK_dec_over } 
+, { 55, TOK_dec_over_off } 
+, { 65535, TOK_ac_text } 
+ } 
+;
+CONST SEARCH ast_decsgr_srch[9] =  {  { 0, TOK_dec_sgr_off } 
+, { 4, TOK_dec_super } 
+, { 5, TOK_dec_sub } 
+, { 6, TOK_dec_over } 
+, { 8, TOK_dec_trans } 
+, { 24, TOK_dec_super_sub_off } 
+, { 26, TOK_dec_over_off } 
+, { 28, TOK_dec_trans_off } 
+, { 65535, TOK_ac_text } 
+ } 
+;
+CONST SEARCH ast_ssu_srch[3] =  {  { 2, TOK_pr_decipoints } 
+, { 7, TOK_pr_pixels } 
+, { 65535, TOK_ac_text } 
+ } 
+;
+CONST SEARCH ast_decssu_srch[2] =  {  { 1, TOK_dec_centipoints } 
+, { 65535, TOK_ac_text } 
+ } 
+;
+CONST SEARCH ast_jfy_srch[3] =  {  { 0, TOK_pr_jfy_off } 
+, { 2, TOK_pr_jfy_limits } 
+, { 65535, TOK_ac_text } 
+ } 
+;
+CONST SEARCH ast_decjfy_srch[2] =  {  { 2, TOK_dec_jfy_nolimits } 
+, { 65535, TOK_ac_text } 
+ } 
+;
+CONST SEARCH ast_cmd_srch[6] =  {  { 33, TOK_dec_gri } 
+, { 34, TOK_dec_gra } 
+, { 35, TOK_dec_gci } 
+, { 36, TOK_dec_gcr } 
+, { 45, TOK_dec_gnl } 
+, { 65535, TOK_ac_nop } 
+ } 
+;
+CONST BYTE ast_nvm_equ[2] =  { 127,127 } 
+;
+CONST WORD ast_nvm_tok[2] =  { TOK_nvm_recall,TOK_nvm_recall } 
+;
+CONST SECOND ast_gen_nvm =  { 
+/*  ** WARNING File cpast.def Line 459 -
+ *  Expression error - can't evaluate [ast_nvm_tok]
+ */
+& ast_nvm_tok, 1, 
+/*  ** WARNING File cpast.def Line 462 -
+ *  Expression error - can't evaluate [ast_nvm_equ]
+ */
+& ast_nvm_equ } 
+;
+CONST FIRST ast_nvm =  { ac_exit, 0, 1,  { & ast_gen_nvm,& ast_gen_nvm,& ast_gen_nvm,& ast_gen_nvm } 
+ } 
+;
+CONST BYTE ast_gen_c0_equ[13] =  { 7,8,9,10,11,12,13,14,15,24,26,27,31 } 
+;
+CONST WORD ast_gen_c0_tok[13] =  { TOK_pr_bel,TOK_pr_bs,TOK_pr_ht,TOK_pr_lf,TOK_pr_vt,TOK_pr_ff,TOK_pr_cr,TOK_pr_so,
+TOK_pr_si,TOK_pr_can,TOK_pr_sub,TOK_pr_esc,TOK_ac_nop } 
+;
+CONST SECOND ast_gen_c0 =  { 
+/*  ** WARNING File cpast.def Line 531 -
+ *  Expression error - can't evaluate [ast_gen_c0_tok]
+ */
+& ast_gen_c0_tok, 12, 
+/*  ** WARNING File cpast.def Line 534 -
+ *  Expression error - can't evaluate [ast_gen_c0_equ]
+ */
+& ast_gen_c0_equ } 
+;
+CONST BYTE ast_gen_c1_equ[16] =  { 4,5,8,10,11,12,13,14,15,16,27,28,29,30,31,31 } 
+;
+CONST WORD ast_gen_c1_tok[16] =  { TOK_pr_ind,TOK_ac_nel,TOK_pr_hts,TOK_pr_vts,TOK_pr_pld,TOK_pr_plu,TOK_pr_ri,
+TOK_pr_ss2,TOK_pr_ss3,TOK_pr_dcs,TOK_pr_csi,TOK_pr_st,TOK_pr_osc,TOK_pr_pm,TOK_pr_apc,
+TOK_cp_exit_cur_mode } 
+;
+CONST SECOND ast_gen_c1 =  { 
+/*  ** WARNING File cpast.def Line 591 -
+ *  Expression error - can't evaluate [ast_gen_c1_tok]
+ */
+& ast_gen_c1_tok, 15, 
+/*  ** WARNING File cpast.def Line 594 -
+ *  Expression error - can't evaluate [ast_gen_c1_equ]
+ */
+& ast_gen_c1_equ } 
+;
+CONST BYTE ast_text_gl_equ[3] =  { 32,127,127 } 
+;
+CONST WORD ast_text_gl_tok[3] =  { TOK_pr_space,TOK_pr_del,TOK_pr_text } 
+;
+CONST SECOND ast_text_gl =  { 
+/*  ** WARNING File cpast.def Line 626 -
+ *  Expression error - can't evaluate [ast_text_gl_tok]
+ */
+& ast_text_gl_tok, 2, 
+/*  ** WARNING File cpast.def Line 629 -
+ *  Expression error - can't evaluate [ast_text_gl_equ]
+ */
+& ast_text_gl_equ } 
+;
+CONST BYTE ast_text_gr_equ[3] =  { 32,127,127 } 
+;
+CONST WORD ast_text_gr_tok[3] =  { TOK_pr_xa0,TOK_pr_xff,TOK_pr_text } 
+;
+CONST SECOND ast_text_gr =  { 
+/*  ** WARNING File cpast.def Line 659 -
+ *  Expression error - can't evaluate [ast_text_gr_tok]
+ */
+& ast_text_gr_tok, 2, 
+/*  ** WARNING File cpast.def Line 662 -
+ *  Expression error - can't evaluate [ast_text_gr_equ]
+ */
+& ast_text_gr_equ } 
+;
+CONST WORD astx_text[256] =  { TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_pr_bel,TOK_pr_bs,TOK_pr_ht,TOK_pr_lf,TOK_pr_vt,TOK_pr_ff,TOK_pr_cr,TOK_pr_so,
+TOK_pr_si,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_pr_can,TOK_ac_nop,TOK_pr_sub,TOK_pr_esc,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_fast_space,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,TOK_ac_fast_text_gl,
+TOK_pr_del,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,
+TOK_pr_ind,TOK_ac_nel,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_pr_hts,TOK_cp_exit_cur_mode,
+TOK_pr_vts,TOK_pr_pld,TOK_pr_plu,TOK_pr_ri,TOK_pr_ss2,TOK_pr_ss3,TOK_pr_dcs,
+TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,
+TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,
+TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_pr_csi,TOK_pr_st,TOK_pr_osc,TOK_pr_pm,
+TOK_pr_apc,TOK_pr_xa0,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,
+TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_ac_fast_text_gr,TOK_pr_xff } 
+;
+CONST WORD astx_fast_text_gl[256] =  { TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text } 
+;
+CONST WORD astx_fast_text_gr[256] =  { TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,TOK_ac_abort_fast_text,
+TOK_ac_abort_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,TOK_pr_fast_text,
+TOK_ac_abort_fast_text } 
+;
+CONST FIRST ast_text =  { ac_exit, 0, 0,  { & astx_text,& astx_text,& astx_text,& astx_text } 
+ } 
+;
+CONST FIRST ast_fast_text_gl =  { ac_exit, 0, 0,  { & astx_fast_text_gl,& astx_fast_text_gl,& astx_fast_text_gl,& astx_fast_text_gl } 
+ } 
+;
+CONST FIRST ast_fast_text_gr =  { ac_exit, 0, 0,  { & astx_fast_text_gr,& astx_fast_text_gr,& astx_fast_text_gr,& astx_fast_text_gr } 
+ } 
+;
+CONST BYTE ast_esc_gl_equ[9] =  { 91,80,93,94,95,39,47,126,127 } 
+;
+CONST WORD ast_esc_gl_tok[9] =  { TOK_pr_csi,TOK_pr_dcs,TOK_pr_osc,TOK_pr_pm,TOK_pr_apc,TOK_ac_esc2,TOK_ac_scs,
+TOK_cp_text_search,TOK_ac_nop } 
+;
+CONST SECOND ast_esc_gl =  { 
+/*  ** WARNING File cpast.def Line 1114 -
+ *  Expression error - can't evaluate [ast_esc_gl_tok]
+ */
+& ast_esc_gl_tok, 5, 
+/*  ** WARNING File cpast.def Line 1117 -
+ *  Expression error - can't evaluate [ast_esc_gl_equ]
+ */
+& ast_esc_gl_equ } 
+;
+CONST FIRST ast_esc =  { ac_exit, 
+/*  ** WARNING File cpast.def Line 1126 -
+ *  Expression error - can't evaluate [ast_esc_srch]
+ */
+& ast_esc_srch, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_esc_gl,& ast_esc_gl } 
+ } 
+;
+CONST BYTE ast_esc2_gl_equ[3] =  { 47,126,127 } 
+;
+CONST WORD ast_esc2_gl_tok[3] =  { TOK_ac_esc_invalid,TOK_cp_text_search,TOK_ac_nop } 
+;
+CONST SECOND ast_esc2_gl =  { 
+/*  ** WARNING File cpast.def Line 1165 -
+ *  Expression error - can't evaluate [ast_esc2_gl_tok]
+ */
+& ast_esc2_gl_tok, 0, 
+/*  ** WARNING File cpast.def Line 1168 -
+ *  Expression error - can't evaluate [ast_esc2_gl_equ]
+ */
+& ast_esc2_gl_equ } 
+;
+CONST FIRST ast_esc2 =  { ac_exit, 
+/*  ** WARNING File cpast.def Line 1177 -
+ *  Expression error - can't evaluate [ast_esc_srch]
+ */
+& ast_esc_srch, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_esc2_gl,& ast_esc2_gl } 
+ } 
+;
+CONST BYTE ast_escinv_gl_equ[3] =  { 47,126,127 } 
+;
+CONST WORD ast_escinv_gl_tok[3] =  { TOK_ac_nop,TOK_ac_text,TOK_ac_nop } 
+;
+CONST SECOND ast_escinv_gl =  { 
+/*  ** WARNING File cpast.def Line 1216 -
+ *  Expression error - can't evaluate [ast_escinv_gl_tok]
+ */
+& ast_escinv_gl_tok, 0, 
+/*  ** WARNING File cpast.def Line 1219 -
+ *  Expression error - can't evaluate [ast_escinv_gl_equ]
+ */
+& ast_escinv_gl_equ } 
+;
+CONST FIRST ast_escinv =  { ac_exit, 0, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_escinv_gl,& ast_escinv_gl } 
+ } 
+;
+CONST BYTE ast_scs_gl_equ[3] =  { 47,126,127 } 
+;
+CONST WORD ast_scs_gl_tok[3] =  { TOK_cp_add_to_esc_ibuf,TOK_pr_scs,TOK_ac_nop } 
+;
+CONST SECOND ast_scs_gl =  { 
+/*  ** WARNING File cpast.def Line 1267 -
+ *  Expression error - can't evaluate [ast_scs_gl_tok]
+ */
+& ast_scs_gl_tok, 0, 
+/*  ** WARNING File cpast.def Line 1270 -
+ *  Expression error - can't evaluate [ast_scs_gl_equ]
+ */
+& ast_scs_gl_equ } 
+;
+CONST FIRST ast_scs =  { ac_exit, 0, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_scs_gl,& ast_scs_gl } 
+ } 
+;
+CONST BYTE ast_csi_gl_equ[7] =  { 59,63,47,57,63,126,127 } 
+;
+CONST WORD ast_csi_gl_tok[7] =  { TOK_ac_csi_startp,TOK_cp_set_private,TOK_ac_add_csii,TOK_ac_csi_addp,TOK_ac_csi_invalid,
+TOK_cp_text_search,TOK_ac_nop } 
+;
+CONST SECOND ast_csi_gl =  { 
+/*  ** WARNING File cpast.def Line 1326 -
+ *  Expression error - can't evaluate [ast_csi_gl_tok]
+ */
+& ast_csi_gl_tok, 2, 
+/*  ** WARNING File cpast.def Line 1329 -
+ *  Expression error - can't evaluate [ast_csi_gl_equ]
+ */
+& ast_csi_gl_equ } 
+;
+CONST FIRST ast_csi =  { ac_exit, 
+/*  ** WARNING File cpast.def Line 1338 -
+ *  Expression error - can't evaluate [ast_csi_srch]
+ */
+& ast_csi_srch, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_csi_gl,& ast_csi_gl } 
+ } 
+;
+CONST BYTE ast_csip_gl_equ[6] =  { 59,47,57,63,126,127 } 
+;
+CONST WORD ast_csip_gl_tok[6] =  { TOK_ac_csi_startp,TOK_ac_add_csii,TOK_ac_csi_addp,TOK_ac_csi_invalid,TOK_cp_text_search,
+TOK_ac_nop } 
+;
+CONST SECOND ast_csip_gl =  { 
+/*  ** WARNING File cpast.def Line 1383 -
+ *  Expression error - can't evaluate [ast_csip_gl_tok]
+ */
+& ast_csip_gl_tok, 1, 
+/*  ** WARNING File cpast.def Line 1386 -
+ *  Expression error - can't evaluate [ast_csip_gl_equ]
+ */
+& ast_csip_gl_equ } 
+;
+CONST FIRST ast_csip =  { ac_exit, 
+/*  ** WARNING File cpast.def Line 1395 -
+ *  Expression error - can't evaluate [ast_csi_srch]
+ */
+& ast_csi_srch, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_csip_gl,& ast_csip_gl } 
+ } 
+;
+CONST BYTE ast_csii_gl_equ[4] =  { 47,63,126,127 } 
+;
+CONST WORD ast_csii_gl_tok[4] =  { TOK_cp_add_to_csi_ibuf,TOK_ac_csi_invalid,TOK_cp_text_search,TOK_ac_nop } 
+;
+CONST SECOND ast_csii_gl =  { 
+/*  ** WARNING File cpast.def Line 1436 -
+ *  Expression error - can't evaluate [ast_csii_gl_tok]
+ */
+& ast_csii_gl_tok, 0, 
+/*  ** WARNING File cpast.def Line 1439 -
+ *  Expression error - can't evaluate [ast_csii_gl_equ]
+ */
+& ast_csii_gl_equ } 
+;
+CONST FIRST ast_csii =  { ac_exit, 
+/*  ** WARNING File cpast.def Line 1448 -
+ *  Expression error - can't evaluate [ast_csi_srch]
+ */
+& ast_csi_srch, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_csii_gl,& ast_csii_gl } 
+ } 
+;
+CONST BYTE ast_csiinv_gl_equ[3] =  { 63,126,127 } 
+;
+CONST WORD ast_csiinv_gl_tok[3] =  { TOK_ac_nop,TOK_ac_text,TOK_ac_nop } 
+;
+CONST SECOND ast_csiinv_gl =  { 
+/*  ** WARNING File cpast.def Line 1487 -
+ *  Expression error - can't evaluate [ast_csiinv_gl_tok]
+ */
+& ast_csiinv_gl_tok, 0, 
+/*  ** WARNING File cpast.def Line 1490 -
+ *  Expression error - can't evaluate [ast_csiinv_gl_equ]
+ */
+& ast_csiinv_gl_equ } 
+;
+CONST FIRST ast_csiinv =  { ac_exit, 0, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_csiinv_gl,& ast_csiinv_gl } 
+ } 
+;
+CONST BYTE ast_crm_c0_equ[4] =  { 10,12,27,31 } 
+;
+CONST WORD ast_crm_c0_tok[4] =  { TOK_ac_crm_lf,TOK_ac_crm_ff,TOK_ac_crm2_esc,TOK_ac_crm_c0 } 
+;
+CONST SECOND ast_crm_c0 =  { 
+/*  ** WARNING File cpast.def Line 1540 -
+ *  Expression error - can't evaluate [ast_crm_c0_tok]
+ */
+& ast_crm_c0_tok, 3, 
+/*  ** WARNING File cpast.def Line 1543 -
+ *  Expression error - can't evaluate [ast_crm_c0_equ]
+ */
+& ast_crm_c0_equ } 
+;
+CONST BYTE ast_crm_c1_equ[2] =  { 27,31 } 
+;
+CONST WORD ast_crm_c1_tok[2] =  { TOK_ac_crm3_csi,TOK_ac_crm_c1 } 
+;
+CONST SECOND ast_crm_c1 =  { 
+/*  ** WARNING File cpast.def Line 1572 -
+ *  Expression error - can't evaluate [ast_crm_c1_tok]
+ */
+& ast_crm_c1_tok, 1, 
+/*  ** WARNING File cpast.def Line 1575 -
+ *  Expression error - can't evaluate [ast_crm_c1_equ]
+ */
+& ast_crm_c1_equ } 
+;
+CONST BYTE ast_crm_gl_equ[3] =  { 32,127,127 } 
+;
+CONST WORD ast_crm_gl_tok[3] =  { TOK_ac_crm_crnr,TOK_ac_crm_crnr,TOK_ac_crm } 
+;
+CONST SECOND ast_crm_gl =  { 
+/*  ** WARNING File cpast.def Line 1607 -
+ *  Expression error - can't evaluate [ast_crm_gl_tok]
+ */
+& ast_crm_gl_tok, 2, 
+/*  ** WARNING File cpast.def Line 1610 -
+ *  Expression error - can't evaluate [ast_crm_gl_equ]
+ */
+& ast_crm_gl_equ } 
+;
+CONST FIRST ast_crm =  { ac_ex_crm, 0, 1,  { & ast_crm_c0,& ast_crm_c1,& ast_crm_gl,& ast_crm_gl } 
+ } 
+;
+CONST BYTE ast_crm2_gl_equ[5] =  { 32,91,99,127,127 } 
+;
+CONST WORD ast_crm2_gl_tok[5] =  { TOK_ac_crm_crnr,TOK_ac_crm3,TOK_ac_crm_ris,TOK_ac_crm_crnr,TOK_ac_crm } 
+;
+CONST SECOND ast_crm2_gl =  { 
+/*  ** WARNING File cpast.def Line 1663 -
+ *  Expression error - can't evaluate [ast_crm2_gl_tok]
+ */
+& ast_crm2_gl_tok, 4, 
+/*  ** WARNING File cpast.def Line 1666 -
+ *  Expression error - can't evaluate [ast_crm2_gl_equ]
+ */
+& ast_crm2_gl_equ } 
+;
+CONST FIRST ast_crm2 =  { ac_ex_crm, 0, 1,  { & ast_crm_c0,& ast_crm_c1,& ast_crm2_gl,& ast_crm2_gl } 
+ } 
+;
+CONST BYTE ast_crm3_gl_equ[8] =  { 32,33,59,108,127,47,57,127 } 
+;
+CONST WORD ast_crm3_gl_tok[8] =  { TOK_ac_crm_crnr,TOK_ac_crm4,TOK_ac_crm3_startp,TOK_ac_crm_reset,TOK_ac_crm_crnr,
+TOK_ac_crm,TOK_ac_crm3_addp,TOK_ac_crm } 
+;
+CONST SECOND ast_crm3_gl =  { 
+/*  ** WARNING File cpast.def Line 1725 -
+ *  Expression error - can't evaluate [ast_crm3_gl_tok]
+ */
+& ast_crm3_gl_tok, 5, 
+/*  ** WARNING File cpast.def Line 1728 -
+ *  Expression error - can't evaluate [ast_crm3_gl_equ]
+ */
+& ast_crm3_gl_equ } 
+;
+CONST FIRST ast_crm3 =  { ac_ex_crm, 0, 1,  { & ast_crm_c0,& ast_crm_c1,& ast_crm3_gl,& ast_crm3_gl } 
+ } 
+;
+CONST BYTE ast_crm4_gl_equ[4] =  { 32,112,127,127 } 
+;
+CONST WORD ast_crm4_gl_tok[4] =  { TOK_ac_crm_crnr,TOK_ac_crm_str,TOK_ac_crm_crnr,TOK_ac_crm } 
+;
+CONST SECOND ast_crm4_gl =  { 
+/*  ** WARNING File cpast.def Line 1779 -
+ *  Expression error - can't evaluate [ast_crm4_gl_tok]
+ */
+& ast_crm4_gl_tok, 3, 
+/*  ** WARNING File cpast.def Line 1782 -
+ *  Expression error - can't evaluate [ast_crm4_gl_equ]
+ */
+& ast_crm4_gl_equ } 
+;
+CONST FIRST ast_crm4 =  { ac_ex_crm, 0, 1,  { & ast_crm_c0,& ast_crm_c1,& ast_crm4_gl,& ast_crm4_gl } 
+ } 
+;
+CONST BYTE ast_dcs_gl_equ[6] =  { 59,47,57,63,126,127 } 
+;
+CONST WORD ast_dcs_gl_tok[6] =  { TOK_ac_dcs_startp,TOK_ac_add_dcs,TOK_ac_dcs_addp,TOK_ac_dcs_invalid,TOK_cp_search_cur_tab,
+TOK_ac_dcs_invalid } 
+;
+CONST SECOND ast_dcs_gl =  { 
+/*  ** WARNING File cpast.def Line 1838 -
+ *  Expression error - can't evaluate [ast_dcs_gl_tok]
+ */
+& ast_dcs_gl_tok, 1, 
+/*  ** WARNING File cpast.def Line 1841 -
+ *  Expression error - can't evaluate [ast_dcs_gl_equ]
+ */
+& ast_dcs_gl_equ } 
+;
+CONST FIRST ast_dcs =  { ac_exit, 
+/*  ** WARNING File cpast.def Line 1850 -
+ *  Expression error - can't evaluate [ast_dcs_srch]
+ */
+& ast_dcs_srch, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_dcs_gl,& ast_dcs_gl } 
+ } 
+;
+CONST BYTE ast_dcsp_gl_equ[6] =  { 59,47,57,63,126,127 } 
+;
+CONST WORD ast_dcsp_gl_tok[6] =  { TOK_ac_dcs_startp,TOK_ac_add_dcs,TOK_ac_dcs_addp,TOK_ac_dcs_invalid,TOK_cp_search_cur_tab,
+TOK_ac_dcs_invalid } 
+;
+CONST SECOND ast_dcsp_gl =  { 
+/*  ** WARNING File cpast.def Line 1895 -
+ *  Expression error - can't evaluate [ast_dcsp_gl_tok]
+ */
+& ast_dcsp_gl_tok, 1, 
+/*  ** WARNING File cpast.def Line 1898 -
+ *  Expression error - can't evaluate [ast_dcsp_gl_equ]
+ */
+& ast_dcsp_gl_equ } 
+;
+CONST FIRST ast_dcsp =  { ac_exit, 
+/*  ** WARNING File cpast.def Line 1907 -
+ *  Expression error - can't evaluate [ast_dcs_srch]
+ */
+& ast_dcs_srch, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_dcsp_gl,& ast_dcsp_gl } 
+ } 
+;
+CONST BYTE ast_dcsi_gl_equ[4] =  { 47,63,126,127 } 
+;
+CONST WORD ast_dcsi_gl_tok[4] =  { TOK_cp_add_to_dcs_ibuf,TOK_ac_dcs_invalid,TOK_cp_search_cur_tab,TOK_ac_dcs_invalid } 
+;
+CONST SECOND ast_dcsi_gl =  { 
+/*  ** WARNING File cpast.def Line 1948 -
+ *  Expression error - can't evaluate [ast_dcsi_gl_tok]
+ */
+& ast_dcsi_gl_tok, 0, 
+/*  ** WARNING File cpast.def Line 1951 -
+ *  Expression error - can't evaluate [ast_dcsi_gl_equ]
+ */
+& ast_dcsi_gl_equ } 
+;
+CONST FIRST ast_dcsi =  { ac_exit, 
+/*  ** WARNING File cpast.def Line 1960 -
+ *  Expression error - can't evaluate [ast_dcs_srch]
+ */
+& ast_dcs_srch, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_dcsi_gl,& ast_dcsi_gl } 
+ } 
+;
+CONST BYTE ast_sxl_c0_equ[7] =  { 7,14,15,24,26,27,31 } 
+;
+CONST WORD ast_sxl_c0_tok[7] =  { TOK_pr_bel,TOK_pr_so,TOK_pr_si,TOK_pr_can,TOK_pr_sxl_sub,TOK_pr_esc,TOK_ac_nop } 
+;
+CONST SECOND ast_sxl_c0 =  { 
+/*  ** WARNING File cpast.def Line 2007 -
+ *  Expression error - can't evaluate [ast_sxl_c0_tok]
+ */
+& ast_sxl_c0_tok, 6, 
+/*  ** WARNING File cpast.def Line 2010 -
+ *  Expression error - can't evaluate [ast_sxl_c0_equ]
+ */
+& ast_sxl_c0_equ } 
+;
+CONST BYTE ast_dcs_c0_equ[7] =  { 7,14,15,24,26,27,31 } 
+;
+CONST WORD ast_dcs_c0_tok[7] =  { TOK_pr_bel,TOK_pr_so,TOK_pr_si,TOK_pr_can,TOK_pr_sub,TOK_pr_esc,TOK_ac_nop } 
+;
+CONST SECOND ast_dcs_c0 =  { 
+/*  ** WARNING File cpast.def Line 2049 -
+ *  Expression error - can't evaluate [ast_dcs_c0_tok]
+ */
+& ast_dcs_c0_tok, 6, 
+/*  ** WARNING File cpast.def Line 2052 -
+ *  Expression error - can't evaluate [ast_dcs_c0_equ]
+ */
+& ast_dcs_c0_equ } 
+;
+CONST BYTE ast_dcsignore_gl_equ[1] =  { 127 } 
+;
+CONST WORD ast_dcsignore_gl_tok[1] =  { TOK_ac_nop } 
+;
+CONST SECOND ast_dcsignore_gl =  { 
+/*  ** WARNING File cpast.def Line 2080 -
+ *  Expression error - can't evaluate [ast_dcsignore_gl_tok]
+ */
+& ast_dcsignore_gl_tok, 0, 
+/*  ** WARNING File cpast.def Line 2083 -
+ *  Expression error - can't evaluate [ast_dcsignore_gl_equ]
+ */
+& ast_dcsignore_gl_equ } 
+;
+CONST FIRST ast_dcsignore =  { ac_exit, 0, 1,  { & ast_dcs_c0,& ast_gen_c1,& ast_dcsignore_gl,& ast_dcsignore_gl } 
+ } 
+;
+CONST FIRST ast_sxlignore =  { ac_exit, 0, 1,  { & ast_sxl_c0,& ast_gen_c1,& ast_dcsignore_gl,& ast_dcsignore_gl } 
+ } 
+;
+CONST FIRST ast_dcsinv =  { ac_exit, 0, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_dcsignore_gl,& ast_dcsignore_gl } 
+ } 
+;
+CONST BYTE ast_graph_gl_equ[11] =  { 32,33,36,45,47,57,58,59,62,126,127 } 
+;
+CONST WORD ast_graph_gl_tok[11] =  { TOK_ac_nop,TOK_ac_store_cmd2,TOK_ac_cr_sxl,TOK_ac_nl_sxl,TOK_ac_store_cmd1,
+TOK_ac_nop,TOK_ac_store_cmd1,TOK_ac_nop,TOK_ac_store_cmd1,TOK_ac_gr_sxl,TOK_ac_nop } 
+;
+CONST SECOND ast_graph_gl =  { 
+/*  ** WARNING File cpast.def Line 2188 -
+ *  Expression error - can't evaluate [ast_graph_gl_tok]
+ */
+& ast_graph_gl_tok, 4, 
+/*  ** WARNING File cpast.def Line 2191 -
+ *  Expression error - can't evaluate [ast_graph_gl_equ]
+ */
+& ast_graph_gl_equ } 
+;
+CONST FIRST ast_graph =  { ac_ex_graphics, 0, 1,  { & ast_sxl_c0,& ast_gen_c1,& ast_graph_gl,& ast_graph_gl } 
+ } 
+;
+CONST BYTE ast_graphsxl_gl_equ[11] =  { 32,34,36,45,47,57,58,59,62,126,127 } 
+;
+CONST WORD ast_graphsxl_gl_tok[11] =  { TOK_ac_nop,TOK_ac_nop,TOK_ac_cr_sxl,TOK_ac_nl_sxl,TOK_ac_store_cmd2,TOK_ac_nop,
+TOK_ac_store_cmd2,TOK_ac_nop,TOK_ac_store_cmd2,TOK_ac_gr_sxl,TOK_ac_nop } 
+;
+CONST SECOND ast_graphsxl_gl =  { 
+/*  ** WARNING File cpast.def Line 2257 -
+ *  Expression error - can't evaluate [ast_graphsxl_gl_tok]
+ */
+& ast_graphsxl_gl_tok, 4, 
+/*  ** WARNING File cpast.def Line 2260 -
+ *  Expression error - can't evaluate [ast_graphsxl_gl_equ]
+ */
+& ast_graphsxl_gl_equ } 
+;
+CONST WORD astx_graphsxl[256] =  { TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_pr_bel,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_pr_so,TOK_pr_si,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_pr_can,TOK_ac_nop,TOK_pr_sxl_sub,TOK_pr_esc,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_store_cmd2,TOK_ac_nop,TOK_ac_store_cmd2,
+TOK_ac_cr_sxl,TOK_ac_store_cmd2,TOK_ac_store_cmd2,TOK_ac_store_cmd2,TOK_ac_store_cmd2,
+TOK_ac_store_cmd2,TOK_ac_store_cmd2,TOK_ac_store_cmd2,TOK_ac_store_cmd2,TOK_ac_nl_sxl,
+TOK_ac_store_cmd2,TOK_ac_store_cmd2,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_store_cmd2,
+TOK_ac_nop,TOK_ac_store_cmd2,TOK_ac_store_cmd2,TOK_ac_store_cmd2,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_nop,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,
+TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_pr_ind,TOK_ac_nel,TOK_cp_exit_cur_mode,
+TOK_cp_exit_cur_mode,TOK_pr_hts,TOK_cp_exit_cur_mode,TOK_pr_vts,TOK_pr_pld,TOK_pr_plu,
+TOK_pr_ri,TOK_pr_ss2,TOK_pr_ss3,TOK_pr_dcs,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,
+TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,
+TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,
+TOK_pr_csi,TOK_pr_st,TOK_pr_osc,TOK_pr_pm,TOK_pr_apc,TOK_ac_nop,TOK_ac_store_cmd2,
+TOK_ac_nop,TOK_ac_store_cmd2,TOK_ac_cr_sxl,TOK_ac_store_cmd2,TOK_ac_store_cmd2,
+TOK_ac_store_cmd2,TOK_ac_store_cmd2,TOK_ac_store_cmd2,TOK_ac_store_cmd2,TOK_ac_store_cmd2,
+TOK_ac_store_cmd2,TOK_ac_nl_sxl,TOK_ac_store_cmd2,TOK_ac_store_cmd2,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_ac_store_cmd2,TOK_ac_nop,TOK_ac_store_cmd2,TOK_ac_store_cmd2,
+TOK_ac_store_cmd2,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,
+TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_gr_sxl,TOK_ac_nop } 
+;
+CONST FIRST ast_graphsxl =  { ac_ex_graphics, 0, 0,  { & astx_graphsxl,& astx_graphsxl,& astx_graphsxl,& astx_graphsxl } 
+ } 
+;
+CONST BYTE ast_graphcmd1_gl_equ[10] =  { 32,33,36,45,59,47,57,62,126,127 } 
+;
+CONST WORD ast_graphcmd1_gl_tok[10] =  { TOK_ac_nop,TOK_ac_do_store_cmd2,TOK_ac_do_cr_sxl,TOK_ac_do_nl_sxl,TOK_ac_start_cmd1,
+TOK_ac_do_store_cmd1,TOK_ac_add_cmd1,TOK_ac_do_store_cmd1,TOK_ac_do_gr_sxl,TOK_ac_nop } 
+;
+CONST SECOND ast_graphcmd1_gl =  { 
+/*  ** WARNING File cpast.def Line 2439 -
+ *  Expression error - can't evaluate [ast_graphcmd1_gl_tok]
+ */
+& ast_graphcmd1_gl_tok, 5, 
+/*  ** WARNING File cpast.def Line 2442 -
+ *  Expression error - can't evaluate [ast_graphcmd1_gl_equ]
+ */
+& ast_graphcmd1_gl_equ } 
+;
+CONST FIRST ast_graphcmd1 =  { ac_ex_graphics, 0, 1,  { & ast_sxl_c0,& ast_gen_c1,& ast_graphcmd1_gl,& ast_graphcmd1_gl } 
+ } 
+;
+CONST BYTE ast_graphcmd2_gl_equ[10] =  { 32,34,36,45,59,47,57,62,126,127 } 
+;
+CONST WORD ast_graphcmd2_gl_tok[10] =  { TOK_ac_nop,TOK_ac_do_sxl,TOK_ac_do_cr_sxl,TOK_ac_do_nl_sxl,TOK_ac_start_cmd2,
+TOK_ac_do_store_cmd2,TOK_ac_add_cmd2,TOK_ac_do_store_cmd2,TOK_ac_do_gr_sxl,TOK_ac_nop } 
+;
+CONST SECOND ast_graphcmd2_gl =  { 
+/*  ** WARNING File cpast.def Line 2507 -
+ *  Expression error - can't evaluate [ast_graphcmd2_gl_tok]
+ */
+& ast_graphcmd2_gl_tok, 5, 
+/*  ** WARNING File cpast.def Line 2510 -
+ *  Expression error - can't evaluate [ast_graphcmd2_gl_equ]
+ */
+& ast_graphcmd2_gl_equ } 
+;
+CONST FIRST ast_graphcmd2 =  { ac_ex_graphics, 0, 1,  { & ast_sxl_c0,& ast_gen_c1,& ast_graphcmd2_gl,& ast_graphcmd2_gl } 
+ } 
+;
+CONST BYTE ast_lff_gl_equ[6] =  { 33,44,59,62,126,127 } 
+;
+CONST WORD ast_lff_gl_tok[6] =  { TOK_ac_start_lff_rpt,TOK_ac_reset_font_lff,TOK_ac_lff_term_ignore,TOK_ac_nop,
+TOK_dec_lff_sxl,TOK_ac_nop } 
+;
+CONST SECOND ast_lff_gl =  { 
+/*  ** WARNING File cpast.def Line 2564 -
+ *  Expression error - can't evaluate [ast_lff_gl_tok]
+ */
+& ast_lff_gl_tok, 3, 
+/*  ** WARNING File cpast.def Line 2567 -
+ *  Expression error - can't evaluate [ast_lff_gl_equ]
+ */
+& ast_lff_gl_equ } 
+;
+CONST WORD astx_lff[256] =  { TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_pr_bel,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_pr_so,TOK_pr_si,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_pr_can,TOK_ac_nop,TOK_pr_sxl_sub,TOK_pr_esc,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_start_lff_rpt,TOK_ac_store_cmd2,
+TOK_ac_nop,TOK_ac_cr_sxl,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_ac_reset_font_lff,TOK_ac_nl_sxl,TOK_ac_nop,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_lff_term_ignore,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_ac_nop,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,
+TOK_pr_ind,TOK_ac_nel,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_pr_hts,TOK_cp_exit_cur_mode,
+TOK_pr_vts,TOK_pr_pld,TOK_pr_plu,TOK_pr_ri,TOK_pr_ss2,TOK_pr_ss3,TOK_pr_dcs,
+TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,
+TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,
+TOK_cp_exit_cur_mode,TOK_cp_exit_cur_mode,TOK_pr_csi,TOK_pr_st,TOK_pr_osc,TOK_pr_pm,
+TOK_pr_apc,TOK_ac_nop,TOK_ac_start_lff_rpt,TOK_ac_store_cmd2,TOK_ac_nop,TOK_ac_cr_sxl,
+TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_ac_reset_font_lff,TOK_ac_nl_sxl,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_ac_nop,TOK_ac_nop,TOK_ac_lff_term_ignore,TOK_ac_nop,TOK_ac_nop,TOK_ac_nop,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,
+TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_dec_lff_sxl,TOK_ac_nop } 
+;
+CONST FIRST ast_lff =  { ac_ex_lff, 0, 0,  { & astx_lff,& astx_lff,& astx_lff,& astx_lff } 
+ } 
+;
+CONST BYTE ast_lffrpt_gl_equ[9] =  { 32,33,44,59,47,57,62,126,127 } 
+;
+CONST WORD ast_lffrpt_gl_tok[9] =  { TOK_ac_nop,TOK_ac_reset_start,TOK_ac_reset_font_lff,TOK_ac_lff_term_ignore,
+TOK_ac_reset_lff,TOK_cp_add_to_cur_param,TOK_ac_reset_lff,TOK_ac_reset_sxl_lff,
+TOK_ac_nop } 
+;
+CONST SECOND ast_lffrpt_gl =  { 
+/*  ** WARNING File cpast.def Line 2731 -
+ *  Expression error - can't evaluate [ast_lffrpt_gl_tok]
+ */
+& ast_lffrpt_gl_tok, 4, 
+/*  ** WARNING File cpast.def Line 2734 -
+ *  Expression error - can't evaluate [ast_lffrpt_gl_equ]
+ */
+& ast_lffrpt_gl_equ } 
+;
+CONST FIRST ast_lffrpt =  { ac_ex_lff, 0, 1,  { & ast_sxl_c0,& ast_gen_c1,& ast_lffrpt_gl,& ast_lffrpt_gl } 
+ } 
+;
+CONST BYTE ast_ansb_gl_equ[8] =  { 47,57,64,70,96,102,126,127 } 
+;
+CONST WORD ast_ansb_gl_tok[8] =  { TOK_ac_dcs_ignore,TOK_pr_ansb_num,TOK_ac_dcs_ignore,TOK_pr_ansb_cap,TOK_ac_dcs_ignore,
+TOK_pr_ansb_lc,TOK_ac_dcs_ignore,TOK_ac_nop } 
+;
+CONST SECOND ast_ansb_gl =  { 
+/*  ** WARNING File cpast.def Line 2792 -
+ *  Expression error - can't evaluate [ast_ansb_gl_tok]
+ */
+& ast_ansb_gl_tok, 0, 
+/*  ** WARNING File cpast.def Line 2795 -
+ *  Expression error - can't evaluate [ast_ansb_gl_equ]
+ */
+& ast_ansb_gl_equ } 
+;
+CONST FIRST ast_ansb =  { ac_ex_ansb, 0, 1,  { & ast_dcs_c0,& ast_gen_c1,& ast_ansb_gl,& ast_ansb_gl } 
+ } 
+;
+CONST BYTE ast_atff_gl_equ[6] =  { 47,57,64,90,126,127 } 
+;
+CONST WORD ast_atff_gl_tok[6] =  { TOK_ac_dcs_ignore,TOK_cp_font_name,TOK_ac_dcs_ignore,TOK_cp_font_name,TOK_ac_dcs_ignore,
+TOK_ac_nop } 
+;
+CONST SECOND ast_atff_gl =  { 
+/*  ** WARNING File cpast.def Line 2849 -
+ *  Expression error - can't evaluate [ast_atff_gl_tok]
+ */
+& ast_atff_gl_tok, 0, 
+/*  ** WARNING File cpast.def Line 2852 -
+ *  Expression error - can't evaluate [ast_atff_gl_equ]
+ */
+& ast_atff_gl_equ } 
+;
+CONST FIRST ast_atff =  { ac_ex_atff, 0, 1,  { & ast_dcs_c0,& ast_gen_c1,& ast_atff_gl,& ast_atff_gl } 
+ } 
+;
+CONST BYTE ast_dtff_gl_equ[6] =  { 47,57,64,90,126,127 } 
+;
+CONST WORD ast_dtff_gl_tok[6] =  { TOK_ac_dcs_ignore,TOK_cp_font_name,TOK_ac_dcs_ignore,TOK_cp_font_name,TOK_ac_dcs_ignore,
+TOK_ac_nop } 
+;
+CONST SECOND ast_dtff_gl =  { 
+/*  ** WARNING File cpast.def Line 2906 -
+ *  Expression error - can't evaluate [ast_dtff_gl_tok]
+ */
+& ast_dtff_gl_tok, 0, 
+/*  ** WARNING File cpast.def Line 2909 -
+ *  Expression error - can't evaluate [ast_dtff_gl_equ]
+ */
+& ast_dtff_gl_equ } 
+;
+CONST FIRST ast_dtff =  { ac_ex_dtff, 0, 1,  { & ast_dcs_c0,& ast_gen_c1,& ast_dtff_gl,& ast_dtff_gl } 
+ } 
+;
+CONST BYTE ast_aupss_gl_equ[2] =  { 47,127 } 
+;
+CONST WORD ast_aupss_gl_tok[2] =  { TOK_cp_font_name,TOK_ac_font_ignore } 
+;
+CONST SECOND ast_aupss_gl =  { 
+/*  ** WARNING File cpast.def Line 2955 -
+ *  Expression error - can't evaluate [ast_aupss_gl_tok]
+ */
+& ast_aupss_gl_tok, 0, 
+/*  ** WARNING File cpast.def Line 2958 -
+ *  Expression error - can't evaluate [ast_aupss_gl_equ]
+ */
+& ast_aupss_gl_equ } 
+;
+CONST FIRST ast_aupss =  { ac_ex_aupss, 0, 1,  { & ast_dcs_c0,& ast_gen_c1,& ast_aupss_gl,& ast_aupss_gl } 
+ } 
+;
+CONST BYTE ast_mac_gl_equ[6] =  { 33,44,59,62,126,127 } 
+;
+CONST WORD ast_mac_gl_tok[6] =  { TOK_ac_start_mac_rpt,TOK_ac_reset_font_mac,TOK_ac_mac_term_ignore,TOK_ac_nop,
+TOK_ac_reset_sxl_mac,TOK_ac_nop } 
+;
+CONST SECOND ast_mac_gl =  { 
+/*  ** WARNING File cpast.def Line 3012 -
+ *  Expression error - can't evaluate [ast_mac_gl_tok]
+ */
+& ast_mac_gl_tok, 3, 
+/*  ** WARNING File cpast.def Line 3015 -
+ *  Expression error - can't evaluate [ast_mac_gl_equ]
+ */
+& ast_mac_gl_equ } 
+;
+CONST FIRST ast_mac =  { ac_ex_mac, 0, 1,  { & ast_sxl_c0,& ast_gen_c1,& ast_mac_gl,& ast_mac_gl } 
+ } 
+;
+CONST BYTE ast_macrpt_gl_equ[9] =  { 32,33,44,59,47,57,62,126,127 } 
+;
+CONST WORD ast_macrpt_gl_tok[9] =  { TOK_ac_nop,TOK_ac_reset_start,TOK_ac_reset_font_mac,TOK_ac_mac_term_ignore,
+TOK_ac_reset_mac,TOK_cp_add_to_cur_param,TOK_ac_reset_mac,TOK_ac_reset_sxl_mac,
+TOK_ac_nop } 
+;
+CONST SECOND ast_macrpt_gl =  { 
+/*  ** WARNING File cpast.def Line 3075 -
+ *  Expression error - can't evaluate [ast_macrpt_gl_tok]
+ */
+& ast_macrpt_gl_tok, 4, 
+/*  ** WARNING File cpast.def Line 3078 -
+ *  Expression error - can't evaluate [ast_macrpt_gl_equ]
+ */
+& ast_macrpt_gl_equ } 
+;
+CONST FIRST ast_macrpt =  { ac_ex_mac, 0, 1,  { & ast_sxl_c0,& ast_gen_c1,& ast_macrpt_gl,& ast_macrpt_gl } 
+ } 
+;
+CONST FIRST ast_keyboard =  { ac_exit, 0, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_text_gl,& ast_text_gl } 
+ } 
+;
+CONST FIRST ast_macro =  { ac_exit, 0, 1,  { & ast_gen_c0,& ast_gen_c1,& ast_text_gl,& ast_text_gl } 
+ } 
+;
+

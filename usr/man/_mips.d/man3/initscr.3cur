@@ -1,0 +1,53 @@
+.TH initscr 3cur 
+.SH Name
+initscr \- initialize terminal environment
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+WINDOW \(**initscr  
+.SH Description
+.NXR "initscr subroutine"
+.NXA "initscr subroutine" "refresh macro"
+.NXA "initscr subroutine" "newterm subroutine"
+This routine 
+determines the terminal type, initializes all
+.PN curses
+data
+structures and allocates memory space for the windows.  
+It also arranges that the first call to 
+the
+.PN refresh 
+routine will clear the screen.
+.PP
+The first routine called in a program using
+.PN curses 
+routines should almost always be 
+.PN initscr .
+If errors occur, 
+.PN initscr
+will write an appropriate error message to standard error and exit.
+If the program needs an indication of error conditions, 
+.PN newterm 
+should be used instead of 
+.PN initscr .
+.PP
+Note that the 
+.PN curses
+program should only call 
+.PN initscr
+once as it may overflow core memory if it is called repeatedly.
+If this does occur, ERR is returned.
+.SH Return Values
+The
+.PN initscr
+function returns 
+.PN stdscr
+on success, and calls
+.PN exit
+on error.
+.SH See Also
+newterm(3cur), refresh(3cur)

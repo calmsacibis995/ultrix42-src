@@ -1,0 +1,81 @@
+.TH rpc_inq_binding 3ncs
+.SH Name
+rpc_inq_binding \- return the socket address represented by an RPC
+handle (client or server)
+.SH Syntax
+.nf
+#include <idl/c/rpc.h>
+
+void rpc_$inq_binding(\fIhandle, sockaddr, slength, status\fP)
+handle_t \fIhandle\fP;
+socket_$addr_t *\fIsockaddr\fP;
+unsigned long *\fIslength\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$inq_binding(\fR
+.\"	\fBin \fIhandle\fB: handle_t;\fR
+.\"	\fBout \fIsockaddr\fB: socket_$addr_t;\fR
+.\"	\fBout \fIslength\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIhandle\fR
+An RPC handle.
+.TP 20
+\fIsockaddr\fR
+The socket address represented by \fIhandle\fR.
+.TP 20
+\fIslength\fR
+The length, in bytes, of \fIsockaddr\fR.
+.TP 20
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$inq_binding
+routine enables a client to determine the socket address,
+and therefore the server, identified by an RPC handle.
+It is useful when a client uses an unbound handle in a remote procedure call
+and wishes to determine the particular server that responded to the call.
+.NXR "Interface to the Remote Procedure Call" "rpc_inq_binding"
+.SH Examples
+The Location Broker administrative tool, 
+.PN lb_admin ,
+uses the following statement to determine the GLB that last responded to a
+lookup request:
+.EX
+rpc_$inq_binding(lb_$handle, &global_broker_addr,
+                    &global_broker_addr_len, &status);
+.EE
+.SH Diagnostics
+This section lists status codes for errors returned by this
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.TP 20
+\fBrpc_$unbound_handle\fR
+The handle is not bound and does not represent a particular host address.
+Returned by 
+.PN rpc_$inq_binding .
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs), rpc_bind(3ncs), rpc_set_binding(3ncs)

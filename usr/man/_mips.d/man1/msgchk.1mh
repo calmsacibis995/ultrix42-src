@@ -1,0 +1,246 @@
+.TH msgchk 1mh
+.SH Name
+msgchk \- check for messages
+.SH Syntax
+.B msgchk
+[
+.B \-help
+] [
+.B \-nodate
+] [
+.B "\-notify \fIall|mail|nomail"
+] 
+.\" [
+.\" .B \-[no]rpop
+.\" ] [
+.\" .B "\-source \fIsourcename"
+.\" ] 
+[
+.I "users ..."
+]
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.\" .SH Arguments
+.\" .IP \fIusers 10
+.\" Name of the user or users whose maildrops you are checking.
+.\" You can use 
+.\" .PN msgchk
+.\" to check on the status of other users' maildrops 
+.\" by specifying their user names.  
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "msgchk command"
+.NXR "messages" "checking for" 
+The 
+.PN msgchk
+program checks all known mail drops for mail that is waiting
+for you.  
+It displays whether you have mail waiting to be read or not 
+and shows the date that you last read your mail.  
+.\"
+.\" ***Old Arguments info
+.\"
+.PP
+You can check other user's maildrops by specifying their user
+names as the
+.I users
+argument on the command line.
+.\"
+.\" ***End of old Arguments info
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP \-help 10
+Prints a list of the valid options for this command.
+.\"
+.\"
+.IP \-date 10
+.PD 0
+.IP \-nodate 10
+.PD
+Prints the date when you last read your mail.
+This is the default behavior of 
+.PN msgchk .
+The
+.B \-nodate
+option can be used of you do not want to print this date.
+.\"
+.\"
+.IP \-notify "\fIall|mail|nomail" 10
+.PD 0
+.IP \-nonotify "\fIall|mail|nomail" 10
+.PD
+Indicates under what circumstances 
+.PN msgchk
+should produce a message.
+There are three legal values:
+\fBall\fR, \fBmail\fR, and \fBnomail\fR.
+The default is \fB\-notify all\fR, which reports the status 
+of the maildrop regardless of whether it has mail in it or not.  
+The 
+.B \-notify\ mail
+option reports the status of the maildrop 
+only if there is mail waiting.
+The 
+.B \-notify\ nomail
+option reports the status of the maildrop
+only if there is no mail in it.
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.ig
+.IP \-rpop 10
+.PD 0
+.IP \-norpop 10
+.PD
+Indicates whether incoming mail should be carried over
+a trusted or non-trusted link.
+If you use the
+.B \-source\ x400
+option, the incoming X.400 mail
+can be carried over a trusted or a non-trusted link.
+In the non-trusted case, the mail system prompts
+you to supply a password.
+You can specify a trusted link by using the
+.B \-rpop
+option, or a non-trusted link by using \fB\-norpop\fR.
+.\"
+.\"
+.\"
+.IP \-source\ \fIsourcename
+Specifies which sources 
+.PN msgchk
+should check for incoming mail.
+The option recognizes two arguments:
+.B \-source\ file
+checks the maildrop; and
+.B \-source\ x400
+checks for incoming mail sent over the X.400 transport system.
+You can specify one or both of these options with the same command.
+In this case,
+.PN msgchk
+will display a separate message for each option.
+If you do not specify a
+.B \-source
+option,
+.PN msgchk
+will check all known sources.
+So 
+.PN msgchk
+notifies you of all incoming mail,
+whatever source it comes from.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.IP "\-source file"
+Specifies the source which are checked for mail.
+The only value allowed is \fBfile\fR,
+which is the user's maildrop.
+Additional values are supported only for use with other
+mail systems.
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+.PN msgchk
+does not understand the \f(CW$MAILDROP\fR
+environmental variable.
+If mail is fetched from a location other than 
+.PN /usr/spool/mail/$USER ,
+.PN msgchk
+will not be able to determine if new mail has arrived.
+However, 
+.PN inc
+can still be used to fetch mail when it arrives.
+.\" 
+.\" This restriction applies only to the standard maildrop,
+.\" not to the X.400 maildrop.
+.\"
+.PP
+For this version, the
+.B \-source
+option only supports the value \fBfile\fR.
+Additional values are supported for use only with
+other mail systems.
+.\"
+.\"
+.\"
+.SH Examples
+This example shows a user \f(CWSmith\fR checking his own maildrop:
+.EX
+% \f(CBmsgchk\f(CW
+Smith:
+   New file source mail waiting ; last read on Tue, 07 Jun 88 17
+:21:49 WET
+.EE
+.PP
+The next example shows a user checking the maildrops of two other
+local users on the same system, \f(CWRabb\fR and \f(CWJones\fR:
+.EX
+% \f(CBmsgchk Rabb Jones\f(CW
+Rabb:
+   No file-source mail waiting ; last read on Tue, 07 Jun 13:22:
+25 WET 
+Jones:
+   New file source mail waiting ; last read on Tue, 07 Jun 17:30
+:05 WET
+.EE
+.\"
+.\" ***EXAMPLE COMMENTED OUT
+.ig
+.PP
+The next example shows a user checking his maildrop,
+and also checking for new X.400 mail, by using the
+.B \-source
+option:
+.EX
+% \f(CBmsgchk -source file -source x400\f(CW
+Smith:
+   No file-source mail waiting ; last read on Tue, 07 Jun 17:23:
+04 WET
+   New x400 source mail waiting ; last read on Tue, 07 Jun 17:27
+:59 WET
+.EE
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/\&.mh_profile
+The user profile.
+.TP 10
+.PN /usr/lib/mh/mtstailor
+The system customization file.
+.TP 10
+.PN /usr/spool/mail/$USER
+The user's maildrop.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+inc(1mh)

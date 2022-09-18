@@ -1,0 +1,75 @@
+.TH mkpasswd 8
+.SH Name
+mkpasswd \- generate hashed password table
+.SH Syntax
+.B /etc/mkpasswd [\fB\-uv\fP]
+\fIpasswdfile\fP
+.SH Description
+.NXR "mkpasswd command"
+The
+.PN mkpasswd
+command is used to generate the hashed password database used by the
+library routines
+.PN getpwnam()
+and
+.PN getpwuid().
+.PP
+If the
+.B \-u
+option is present the
+hashed files will not be built unless they already exist.
+In any case, the hashed files will not be built if the time
+of last modification of the
+.I passwdfile
+is less recent than that of an existing hashed files.
+.PP
+If the
+.B \-v
+option is supplied, each entry will be listed as it is added.
+.PP
+The file
+.I passwdfile
+is usually 
+.PN /etc/passwd 
+and must be in the format of 
+.PN passwd(5).
+The
+.PN mkpasswd
+command will generate database files named
+\fIpasswdfile\f(CW.pag\fR
+and
+\fIpasswdfile\f(CW.dir\fR.
+The
+.PN mkpasswd
+command will exit with a non-zero exit code if any errors are detected.
+Otherwise it will print the number of entries processed and the length
+of the longest entry.
+.PP
+The presence of the hashed files is optional. They are not required for
+correct operation of
+.PN getpwnam()
+or
+.PN getpwuid()
+but will improve their
+performance on systems with moderate to large sized 
+.PN /etc/passwd 
+files.
+.SH Diagnostics
+.B "The data base is already up to date. 
+.br
+If the specified file has been modified less recently than the
+hashed files.
+.PP 
+.B "Database not created." 
+.br
+When used with the \f(CW\-u\fP option
+and the database does not already exist.
+.SH Files
+.TP 15
+\fIpasswdfile\f(CW.dir\fR
+Database filename
+.TP
+\fIpasswdfile\f(CW.pag\fR
+Database filename
+.SH See Also
+getpwent(3), passwd(5), vipw(8)

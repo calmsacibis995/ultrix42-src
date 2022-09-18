@@ -1,0 +1,94 @@
+.\"	@(#)pfm_enable_faults.3ncs	8.1 of 9/11/90
+.TH pfm_enable_faults 3ncs
+.SH Name
+pfm_enable_faults \- enable asynchronous faults
+.SH Syntax
+.nf
+#include <idl/c/base.h>
+#include <idl/c/pfm.h>
+
+void pfm_$enable_faults()
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/sys/ins/base.ins.pas';\fR
+.\"\fB%include '/sys/ins/pfm.ins.pas';\fR
+.\"
+.\"\fBprocedure pfm_$enable_faults;\fR
+.\".DE
+.ig
+.SH Synopsis (fortran)
+.nf
+\fB%include '/sys/ins/base.ins.ftn'\fR
+\fB%include '/sys/ins/pfm.ins.ftn'\fR
+
+	 \fBcall pfm_$enable_faults\fR
+.fi
+..
+.SH Description
+The 
+.PN pfm_$enable_faults
+routine enables asynchronous faults
+after they have been inhibited
+by a call to 
+.PN pfm_$inhibit_faults;
+.PN pfm_$enable_faults
+causes the operating system
+to pass asynchronous faults on to the calling process.
+.PP
+While faults are inhibited,
+the operating system holds
+at most one asynchronous fault.
+Consequently,
+when 
+.PN pfm_$enable_faults
+returns, there can be at most one fault
+waiting on the process.
+If more than one fault was received
+between routines to 
+.PN pfm_$inhibit_faults
+and 
+.PN pfm_$enable_faults ,
+the process receives the first asynchronous fault received
+while faults were inhibited.
+.NXR "Fault Management" "pfm_enable_faults"
+.SH Diagnostics 
+This section lists the status codes for errors returned by this
+.PN pfm_$
+routine.
+.TP 20
+\fBpfm_$bad_rls_order\fR
+Attempted to release a clean-up handler out of order.
+.TP 20
+\fBpfm_$cleanup_not_found\fR
+There is no pending clean-up handler.
+.TP 20
+\fBpfm_$cleanup_set\fR
+A clean-up handler was established successfully.
+.TP 20
+\fBpfm_$cleanup_set_signalled\fR
+Attempted to use \fBpfm_$cleanup_set\fR as a signal.
+.TP 20
+\fBpfm_$invalid_cleanup_rec\fR
+Passed an invalid clean-up record to a routine.
+.TP 20
+\fBpfm_$no_space\fR
+Cannot allocate storage for a clean-up handler.
+.SH Files
+.PN /usr/include/idl/c/base.h
+.br
+.PN /usr/include/idl/base.idl
+.br
+.PN /usr/include/idl/c/pfm.h
+.SH See Also
+intro(3ncs), pfm_enable(3ncs), pfm_inhibit_faults(3ncs)
+.\".DM "\
+.\"path syscalls/pfm/pfm_$enable_faults\
+.\"type reference\
+.\"book syscalls\
+.\"chapter pfm\
+.\"section pfm_$enable_faults\
+.\""
+.\".DD "\
+.\"enable(ed)(s)(ing) asyn(chronous) fault(s) pfm pfm_$\
+.\""

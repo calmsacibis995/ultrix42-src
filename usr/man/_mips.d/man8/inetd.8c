@@ -1,0 +1,67 @@
+.\" SCCSID: @(#)inetd.8c	8.1	9/11/90
+.TH inetd 8c
+.SH Name
+inetd \- internet service daemon
+.SH Syntax
+.B /etc/inetd
+[
+.B \-d
+] [
+.I configfile
+.B ]
+.SH Description
+.NXR "inetd server daemon"
+.NXR "Internet service daemon"
+The
+.PN inetd
+daemon is the listener daemon for 
+most of the internet service functions.
+.PP
+When
+.PN inetd
+is started, it reads the configuration file specified
+(\fIconfigfile\fR) and opens a socket
+for each specified service.  
+.PP
+When
+.PN inetd
+receives a connection on a stream socket or a packet on
+a datagram socket, then 
+.PN inetd
+invokes the server specified in the
+configuration file to service the request.  The server
+is given a socket descriptor of 0 for the service
+requested.
+The
+.I configfile
+is the configuration file specifying the services requiring
+the
+.PN inetd
+daemon's services.
+If a configuration file is not
+specified, then
+.PN inetd
+uses the default file,
+.PN /etc/inetd.conf .
+The format of this file is described in
+.MS inetd.conf 5 .
+The configuration file is reread whenever
+.PN inetd
+receives a hangup signal.
+.SH Options
+.IP \fB\-d\fR 0.3i
+Open all sockets with the debug option.  
+The socket will be passed to the server with debug enabled.
+.SH Restrictions
+The
+.PN inetd
+daemon can only handle a limited number of services at any one
+time.  This number is related to the maximum number of
+file descriptors that a process can have.  If many 
+services are needed, you should run multiple copies of
+.PN inetd ,
+each with its own individual configuration file.
+.SH Files
+.PN /etc/inetd.conf
+.SH See Also
+inetd.conf(5)

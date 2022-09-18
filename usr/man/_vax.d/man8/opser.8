@@ -1,0 +1,72 @@
+.\" SCCSID: @(#)opser.8	8.1	9/11/90
+.TH opser 8
+.SH Name
+opser \- interactive program for system maintenance
+.SH Syntax   
+.B opser
+.SH Description
+.NXR "opser utility"
+.NXR "system" "backing up"
+The
+.PN opser
+program
+is a utility that simplifies normal system and incremental backup.
+It is invoked by default when the system
+operator logs in to the operator account.  The system then runs the
+.PN /opr/opser
+utility in place of a shell.  The 
+.PN opser 
+utility
+prompts the operator to bring the system to single-user mode for file
+maintenance. This includes a file system consistency check and 
+file system backup, and then prompts to restart multiuser mode.
+.PP
+Network 
+.PN opser 
+allows the operator to perform 
+.PN opser 
+commands on a slave
+system. The master system name must be in the 
+.PN /.rhosts
+file on the
+slave system and the slave name in the in the
+master system's 
+.PN /.rhosts
+file. 
+If necessary, the operator can
+escape to the shell, execute commands, and return.
+Online help is provided.
+The
+.PN opser
+program allows remote file system backup, file system check, restart
+and both local and remote shell command execution.
+.SH Restrictions
+.IP \(bu 4
+The local 
+.PN opser 
+utility supports only tape as a backup media.
+.IP \(bu 4
+The remote 
+.PN opser 
+utility allows backup to files, disks, or tapes.
+.IP \(bu 4
+The 
+.PN opser 
+utility must be run from the system console; if run from a
+terminal, its operation is limited.  
+.IP \(bu 4
+The 
+.PN opser 
+utility does not contain file restore capability.
+.IP \(bu 4
+The operator must escape to the shell to perform this function.
+.SH Diagnostics
+Included in the utility as it runs.
+.SH Files
+.PN /opr/opser
+.br
+.PN /opr/backup
+.br
+.PN /opr/dobackup
+.SH See Also
+.I "Guide to System Backup and Restore"

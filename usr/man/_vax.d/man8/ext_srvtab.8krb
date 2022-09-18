@@ -1,0 +1,46 @@
+.TH ext_srvtab 8krb
+.SH Name
+ext_srvtab \- extracts service key files.
+.SH Syntax
+\fB/var/dss/kerberos/bin/ext_srvtab\fP [\fI\-n\fP] [\fIhostname ...\fP]
+.SH Arguments
+.TP 9
+.I hostname
+Name of the service key file.
+.SH Description
+.NXR "Kerberos routines" "ext_srvtab"
+The
+.PN ext_srvtab
+utility extracts service key files from the Kerberos
+database.  When you invoke the utility, it prompts you to
+enter the master key string for the database. 
+If the \f(CW-n\fP option is
+specified, \f(CWext_srvtab\fP fetches the master key from the master
+key cache file, produced by
+.PN kstash(8krb) .
+.PP
+For each \fIhostname\fP that you specify in the command line,
+\f(CWext_srvtab\fP creates the service key file
+\fIhostname-new-srvtab\fP. This file contains all the entries in the
+Kerberos database with an instance field that matches \fIhostname\fP.
+In addition, the \fIhostname-new-srvtab\fP file contains all the keys
+registered for Kerberos services
+.ig ++
+, using the \f(CWkrb_get_host\fP(3)
+principal and instance conventions, 
+.++
+that can run on the host specified
+in \fIhostname\fP.
+.SH Options
+.TP 7
+.B \-n
+Causes \f(CWext_srvtab\fP utility to fetch the master key from the
+master key cache file.
+.SH Files
+.PN /var/dss/kerberos/dbase/principal.pag
+.br
+.PN /var/dss/kerberos/dbase/principal.dir
+.br
+.PN /var/dss/kerberos/dbase/principal.ok
+.SH See Also
+kdb_edit(8krb), kdb_init(8krb), kdb_util(8krb), kdb_destroy(8krb)

@@ -1,0 +1,83 @@
+.TH ping 8 
+.SH Name
+ping \- send ICMP ECHO_REQUEST packets to network hosts
+.SH Syntax
+.B /etc/ping
+[ \fIoptions\fR ]
+.I host
+[
+.I datasize
+[
+.I npackets
+]]
+.SH Description
+.NXR "ping command"
+.NXR "ICMP ECHO_REQUEST"
+The DARPA Internet is a large and complex 
+network of hardware connected together by gateways.
+The 
+.PN ping
+command utilizes the
+ICMP protocol's mandatory ECHO_REQUEST datagram to elicit an
+ICMP ECHO_RESPONSE from a host or gateway.
+ECHO_REQUEST datagrams (pings) have an IP and ICMP header,
+followed by a \fBstruct timeval\fR, and then an arbitrary number
+of pad bytes used to fill out the packet.
+The length of the default datagram 64 bytes, but this may be changed
+using the command-line option.
+.PP
+Typing ``ping \fIhost\fR'' without any options will either report ``\fIhost\fR
+is alive'' or ``no answer from \fIhost\fR''.
+To get more statistics use the 
+.B \-l
+option or one of the other options.
+.PP
+When using 
+.PN ping
+for fault isolation,
+it should first be run on the local
+host to verify that the local network interface is up and
+running.
+Then, hosts and gateways further and further away
+should be pinged.
+The
+.PN ping
+command with options sends one datagram per second and
+prints one line of output for every ECHO_RESPONSE returned.
+No output is produced if there is no response.
+If an optional
+.I npackets
+is given, only that number of requests is sent.
+Round-trip times and packet loss statistics are computed.
+When all responses have been received or the program times out with
+.I npackets
+specified,
+or if the program is terminated with a SIGINT, a brief
+summary is displayed.
+.SH Options
+.IP \fB-d\fR 5
+Turns on SO_DEBUG flag on the socket.
+.IP \fB-l\fR 5
+Gives more statistics than if 
+.PN ping
+is used without options.  Long output. 
+.IP \fB-r\fR 5
+Bypasses the normal routing tables and sends directly to a host on an attached
+network.
+If the host is not on a directly-attached network,
+an error is returned.
+This option can be used to ping a local host through an interface
+that has no route through it.  For example, after the interface was dropped by
+.MS routed 8c .
+.IP \fB-v\fR 5
+Lists ICMP packets other than ECHO RESPONSE that are received. Verbose output.
+.SH Restrictions
+This program is intended for use in network testing, measurement,
+and management.
+It should be used primarily for manual fault isolation.
+Because of the load it could impose on the network,
+it is unwise to use
+.PN ping
+during normal operations or from automated scripts.
+.SH See Also
+netstat(1), ifconfig(8c)

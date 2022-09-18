@@ -1,0 +1,82 @@
+.\" SCCSID: @(#)elcsd.8	8.1	9/11/90
+.TH elcsd 8
+.UC 4
+.SH Name
+elcsd \- error logging daemon 
+.SH Syntax
+.B /etc/elcsd 
+.SH Description 
+.NXR "elcsd daemon"
+.NXA "elcsd daemon" "uerf command"
+.NXAM "elcsd daemon" "errlog file"
+.NXAM "elcsd daemon" "elcsd.conf file"
+.NXR "error logging daemon"
+.NXA "error logging daemon" "error report formatter"
+.NXAM "error logging daemon" "error logging interface"
+.NXAM "error logging daemon" "elcsd.conf file"
+The 
+.PN elcsd
+daemon logs hardware and system-related error packets, or error
+messages, from the kernel errorlog buffer to the file
+\f(CWsyserr.<\fIhostname\fP>\fR.  
+Hostname is the name of the local system.  At
+system startup, the 
+.PN elcsd 
+daemon is invoked out of 
+.PN /etc/rc. 
+For further information, see 
+.MS rc 8 .
+The 
+.PN elcsd 
+daemon must be running whenever the system is in multiuser
+mode.
+.PP
+To invoke the 
+.PN elcsd 
+daemon in single-user mode, use the 
+.pN eli 
+command
+with the
+.B \-s 
+option.  
+.PP
+You can configure the 
+.PN elcsd 
+daemon to log error packets locally from a
+remote ULTRIX host, or you can configure the 
+.PN elcsd 
+daemon to send local error packets to a remote system.  Do this by
+changing the entries in the 
+.PN elcsd.conf 
+file.  For further information, see 
+.MS elcsd.conf 5 . 
+The daemon uses an internet datagram socket to log information across
+systems.
+.PP
+Parameters related to 
+.PN elcsd ,
+such as the desired location for the errorlog file or files, as well
+as instructions for local and remote logging, can be specified in the
+error logging configuration file, 
+.PN /etc/elcsd.conf. 
+For further information, see 
+.MS elcsd.conf 5 .  
+.SH Restrictions
+You must have superuser privileges to invoke the 
+.PN elcsd 
+daemon.
+.SH Diagnostics 
+The 
+.PN elcsd 
+daemon logs general status and error messages to
+.PN /usr/adm/elcsdlog 
+in multiuser mode.  This file is purged whenever the
+daemon is restarted.
+.SH Files
+.PN /etc/elcsd.conf	
+.br
+.PN /usr/adm/elcsdlog
+.SH See Also
+elcsd.conf(5), eli(8), rc(8), uerf(8)
+.br
+.I "Guide to the Error Logger"

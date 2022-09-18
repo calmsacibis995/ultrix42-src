@@ -1,0 +1,223 @@
+/*        @(#)camac.lib_hc	4.1      7/2/90      */
+
+/* file: camac.lib
+ *
+ *	COPYRIGHT  (c)  DIGITAL  EQUIPMENT CORPORATION 1988,
+ *	1989.  ALL RIGHTS RESERVED.
+ *
+ *	THIS SOFTWARE IS FURNISHED UNDER A LICENSE AND MAY BE
+ *	USED AND COPIED ONLY IN ACCORDANCE  WITH THE TERMS OF
+ *	SUCH  LICENSE  AND  WITH  THE  INCLUSION OF THE ABOVE
+ *	COPYRIGHT  NOTICE.  THIS SOFTWARE OR ANY OTHER COPIES
+ *	THEREOF   MAY  NOT  BE  PROVIDED  OR  OTHERWISE  MADE
+ *	AVAILABLE  TO  ANY  OTHER  PERSON.  NO  TITLE  TO AND
+ *	OWNERSHIP  OF  THE  SOFTWARE  IS  HEREBY TRANSFERRED.
+ *
+ *	THE INFORMATION IN THIS SOFTWARE IS SUBJECT TO CHANGE
+ *	WITHOUT  NOTICE  AND SHOULD  NOT BE  CONSTRUED  AS A
+ *	COMMITMENT  BY  DIGITAL EQUIPMENT CORPORATION.
+ *
+ *	DIGITAL  ASSUMES  NO RESPONSIBILITY  FOR THE  USE  OR
+ *	RELIABILITY  OF ITS SOFTWARE ON EQUIPMENT THAT IS NOT
+ *	SUPPLIED BY DIGITAL.
+ *
+ */
+
+
+
+
+/*
+ *-----------------------------------------------------------
+ *
+ *   begin description
+ *
+ *   Filename:  camac.lib
+ *
+ *   This module contains the global parameterised macros.
+ *
+ *   end description
+ *
+ *-----------------------------------------------------------
+ */
+
+
+
+
+
+/*
+ *-----------------------------------------------------------
+ *
+ *  begin edit_history
+ *
+ *  28-JAN-1988 11:44  mhw
+ *      Original Version
+ *
+ *  15-FEB-1988 10:22  mhw
+ *      Added oprintf macro
+ *
+ *  17-FEB-1988 14:22  bf
+ *	Added device specific reference to l4font.hc, this
+ *	enables us to get font info.  File is now split into
+ *	sections, with one section per device, currently ln04
+ *	and translator.
+ *
+ *  18-FEB-1988 12:31 araj
+ *	Removed oprintf, macro is not  a solution, need conditional compile.
+ *	Macros can't take variable number of parameters, oprintf requires it
+ *
+ *  23-FEB-1988 23:48 ejs
+ *	Ending the tradition of numbers.  Also adding the new font interface.
+ *	And removed the MUL24 (putting it in l4clibrary.mace.
+ *
+ *  28-FEB-1988 07:20 bf
+ *	Added a charcode parameter to the call to font_get_raster_baseline().
+ *
+ *   2-MAR-1988 16:21 mhw
+ *	Change font_get_header to font_get_max
+ *
+ *  10-MAR-1988 13:17 araj
+ *	Added ABS macro
+ *
+ *  11-MAR-1988 17:24 araj
+ *	Removed dummy string processing macros
+ *
+ *  16-MAR-1988 10:51 mhs
+ *      Typecast macros that substitute for subroutine calls, 
+ *      providing an extra level of parentheses for context-free
+ *      compilation.
+ *
+ *  18-MAY-1988 16:04 mhw
+ *	Added call to font_get_mem for macro FNT_GET_MEM
+ *
+ *   2-JUN-1988 21:47 mhs
+ *	Remove stubs for pdl routines now that LN04 code exists.
+ *
+ *   3-JUN-1988 15:03 mhw
+ *	Remove one parameter from FNT_DISPOSE_FONT
+ *
+ *   4-JUN-1988 18:26 araj
+ *	Put Macros back in, the functions don't work on the other side, 
+ *	Before removing macros, need to make sure that the other side works
+ *	by first changing the macro to do a real call, in a local build, 
+ *	test debug it, then change the macro to do real call in MMS, 
+ *	and way later, when things are stabilized, can we think of removing the
+ *	 macro.
+ *
+ *   9-JUN-1988 14:10 mhw
+ *	Enable Font_dispose_of_font and font_get_mem for ln04 side
+ *
+ *  13-SEP-1988 14:18 mhw
+ *	Added severity levels for abort and warning macros to match xlator
+ *
+ *  end edit_history
+ *
+ *-----------------------------------------------------------
+ */
+
+
+
+
+/*  Non device-specific stuff */
+
+#define MIN(x,y) ( ( (x) < (y) ) ? (x) : (y) )
+
+#define MAX(x,y) ( ( (x) > (y) ) ? (x) : (y) )
+
+#define ABS(x) ( ( (x) > (0) ) ? (x) : ( -(x) ) )
+
+
+
+/* --------------   Debug Version ----------  */
+#ifdef DEBUG
+
+#define PDLI_CRM_GET (pdli_crm_get())
+#define PDLI_GET_PHYSICAL_GRID(a,b,c) (pdli_get_physical_grid(a,b,c))
+#define PDLI_GET_SIXEL_MACRO_GRID(a,b,c) (pdli_get_sixel_macro_grid(a,b,c))
+#define PROCESS_RESERVE_MEM(x,y) (process_reserve_mem(x,y))
+#define PROCESS_SET_SSIZE(x) (process_set_ssize(x))
+#define FNT_DELETE_FONT_FILES(x,y) (font_delete_font_files(x,y))
+#define FNT_DISPOSE_FONT(a,b,c,d) (font_dispose_of_font(a,b,c,d))
+#define FNT_PRNT_STATUS_SHEET /**/
+#define DEV_FONT_INIT(x) /**/
+#define FNT_GET_MEM(x) (font_get_mem(x))
+#define FNT_FREE_MEM(x) /**/
+#define ABORT_MACRO(x) (process_error(1,(x)))
+#define WARNING_MACRO(x) (process_error(0,(x)))
+#define FNT_PAIRED_CHAR_SET(x) ("B")
+#define FNT_BLOB /**/
+#define FNT_NRCS_CHAR(x,y) ((UBYTE)(x)[(y)])
+#define FNT_NRCS_FONT(x,y) ((FONT_NUMBER)(x)[(y)])
+
+#define ANALYZE_FONT_FILE(x,y) (analyze_font_file (x,y))
+#define FNT_ABOVE_BASELINE(f) ((FONT_METRIC)(-840))
+#define FNT_BELOW_BASELINE(f) ((FONT_METRIC)(312))
+#define FNT_RASTER_BASELINE(f,c) ((FONT_METRIC)(840))
+#define FNT_SUPERSCRIPT_HEIGHT(f) ((FONT_METRIC)(-576))
+#define FNT_SUBSCRIPT_HEIGHT(f) ((FONT_METRIC)(572))
+#define FNT_HEIGHT(f) ((FONT_METRIC)(1152))
+#define FNT_AVERAGE_WIDTH(f) ((FONT_METRIC)(720))  /* temporary  macro for average width */
+#define FNT_WIDTH(f,c) ((FONT_METRIC)(720))
+#define FNT_LEFT_BEARING(f,c) ((FONT_METRIC)(0))
+#define FNT_RIGHT_BEARING(f,c) ((FONT_METRIC)(0))
+#define FNT_MIN(f) ((FONT_METRIC)(432))
+#define FNT_MAX(f) ((FONT_METRIC)(1440))
+
+#define FNT_ATTRIBUTES_FLAGS(x) (0)
+
+
+#define FONT_DISPOSE_OF_FONT(a,b,c,d) (font_dispose_of_font(a,b,c,d))
+#define FONT_SELECT(a,b,c,d) (font_select(a,b,c,d))
+#define FONT_GET_FIRST_SGR(a) (font_get_first_sgr(a))
+#define FONT_GET_NEXT_SGR(a) (font_get_next_sgr(a))
+#define FONT_GET_FIRST_NRCS(a) (font_get_first_nrcs(a))
+#define FONT_GET_NEXT_NRCS(a) (font_get_next_nrcs(a))
+
+
+
+/* --------------   device Version ----------  */
+
+#else
+
+#define PDLI_CRM_GET (pdli_crm_get())
+#define PDLI_GET_PHYSICAL_GRID(a,b,c) (pdli_get_physical_grid(a,b,c))
+#define PDLI_GET_SIXEL_MACRO_GRID(a,b,c) (pdli_get_sixel_macro_grid(a,b,c))
+#define PROCESS_RESERVE_MEM(x,y) (process_reserve_mem(x,y))
+#define PROCESS_SET_SSIZE(x) (process_set_ssize(x))
+#define FNT_DELETE_FONT_FILES(x,y) (font_delete_font_files(x,y))
+#define FNT_DISPOSE_FONT(a,b,c,d) (font_dispose_of_font(a,b,c,d))
+#define FNT_PRNT_STATUS_SHEET (process_font_status_sheet())
+#define DEV_FONT_INIT(x) /**/
+#define FNT_GET_MEM(x) (font_get_mem(x))
+#define FNT_FREE_MEM(x) /**/
+#define ABORT_MACRO(x) (process_error(1,(x)))
+#define WARNING_MACRO(x) (process_error(0,(x)))
+#define FNT_PAIRED_CHAR_SET(x) ("B")
+#define FNT_BLOB /**/
+#define FNT_NRCS_CHAR(x,y) ((UBYTE)(x)[(y)])
+#define FNT_NRCS_FONT(x,y) ((FONT_NUMBER)(x)[(y)])
+
+#define ANALYZE_FONT_FILE(x,y) (analyze_font_file (x,y))
+#define FNT_ABOVE_BASELINE(f) (font_get_above_baseline(f))
+#define FNT_BELOW_BASELINE(f) (font_get_below_baseline(f))
+#define FNT_RASTER_BASELINE(f,c) (font_get_raster_baseline(f,c))
+#define FNT_SUPERSCRIPT_HEIGHT(f) (font_get_superscript_height(f))
+#define FNT_SUBSCRIPT_HEIGHT(f) (font_get_subscript_height(f))
+#define FNT_HEIGHT(f) (font_get_height(f))
+#define FNT_AVERAGE_WIDTH(f) (font_get_average_width(f))
+#define FNT_WIDTH(f,c) (font_get_width(f,c))
+#define FNT_LEFT_BEARING(f,c) (font_get_left_bearing(f,c))
+#define FNT_RIGHT_BEARING(f,c) (font_get_right_bearing(f,c))
+#define FNT_MIN(f) (font_get_min(f))
+#define FNT_MAX(f) (font_get_max(f))
+
+#define FNT_ATTRIBUTES_FLAGS(x) (0)
+
+#define FONT_DISPOSE_OF_FONT(a,b,c,d) (font_dispose_of_font(a,b,c,d))
+#define FONT_SELECT(a,b,c,d) (font_select(a,b,c,d))
+#define FONT_GET_FIRST_SGR(a) (font_get_first_sgr(a))
+#define FONT_GET_NEXT_SGR(a) (font_get_next_sgr(a))
+#define FONT_GET_FIRST_NRCS(a) (font_get_first_nrcs(a))
+#define FONT_GET_NEXT_NRCS(a) (font_get_next_nrcs(a))
+
+#endif	    /* end else device for if device */
+

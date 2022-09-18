@@ -1,0 +1,136 @@
+.\" SCCSID: @(#)mt.1	3.2	5/11/88
+.TH mt 1
+.SH Name
+mt \- magnetic tape manipulating program
+.SH Syntax
+.B mt
+[\fB\-f\fI tapename\fR\|] \fIcommand\fR [\|\fIcount\fR\|]
+.SH Description
+.NXR "mt program"
+.NXR "magnetic tape" "manipulating"
+The
+.PN mt
+command
+permits the operation of a magnetic tape drive.
+.SH Options
+The \fB\-f\fR flag 
+option uses the specified tape device (next argument) in
+place of either that tape device defined by your TAPE
+environment variable (.login or .profile) or /dev/nrmt0h.
+.PP
+Some operations
+may be performed multiple times by specifying
+.IR count .
+By default,
+.PN mt
+performs the requested operation once.
+.PP
+The \fIcommand\fR argument defines the operation to be performed.
+Only as many characters as are required to uniquely identify
+a command need be specified.  
+.PP
+The following is a list of commands:
+.NXR "mt program" "command list"
+.IP \fBbsf\fR 20
+.NXR "bsf command (mt)"
+Backspace \fIcount\fR files.
+.IP \fBbsr\fR
+.NXR "bsr command (mt)"
+Backspace \fIcount\fR records.
+.IP \fBcache\fR
+.NXR "cache command (mt)"
+Allows 
+.PN mt
+to use the cache buffer on a tape drive that has the cache
+buffer feature.
+.IP \fBclhrdsf\fR
+.NXR "clhrdsf command (mt)"
+Clear hardware/software problem.  Works with 
+tape drives which use the TMSCP tape controller interface
+.MS tms 4 .
+This command is restricted to root access only.
+.IP \fBclserex\fR
+.NXR "clserex command (mt)"
+Clear serious exception.  Works with 
+tape drives which use the TMSCP tape controller interface
+.MS tms 4 .
+.IP \fBclsub\fR
+.NXR "clsub command (mt)"
+Clear subsystem.  Works with tape drives which use the TMSCP tape
+controller interface
+.MS tms 4 .
+This command is restricted to root access only.
+.IP "\fBeof, weof\fR"
+.NXR "eof command (mt)"
+.NXR "weof command (mt)"
+Write \fIcount\fR end-of-file marks at the current position on
+the tape.
+.IP \fBeotdis\fR
+.NXR "eotdis command (mt)"
+Disable end-of-tape detection.  When the end of tape
+is reached, the tape will run off the reel.  Only the superuser 
+can issue this command.  The command remains in effect 
+for the device until end-of-tape detection is enabled
+with the \fBeoten\fR command.
+.IP \fBeoten\fR
+.NXR "eoten command (mt)"
+Enable end-of-tape detection.  When the end-of-tape
+markers are reached, the tape is halted on the reel,
+between the two end-of-tape markers.
+Only the superuser can issue this command.  The command remains
+in effect for the device until end-of-tape detection is disabled
+with the \fBeotdis\fR command.
+This is the default mode after a system boot.
+.IP \fBfsf\fR
+.NXR "fsf command (mt)"
+Forward-space \fIcount\fR files.
+.IP \fBfsr\fR
+.NXR "fsr command (mt)"
+Forward-space \fIcount\fR records.
+.IP \fBnocache\fR
+.NXR "nocache command (mt)"
+Disables the use of the cache buffer for any 
+tape drive that has the cache buffer feature.
+.IP "\fBoffline, rewoffl\fR"
+.NXR "offline command (mt)"
+.NXR "rewolffl command (mt)"
+Rewind the tape and place the tape unit off-line.
+.IP \fBretension\fR
+.NXR "retension command (mt)"
+Retensions the tape.  Retension means moving the tape one complete
+pass between EOT and BOT.
+.IP \fBrewind\fR
+.NXR "rewind command (mt)"
+Rewind the tape.
+.IP \fBstatus\fR
+.NXR "status command (mt)"
+Print status information about the tape unit.
+.SH Examples
+.NXR(e) "mt program" 
+This example shows how to rewind the tape 
+.PN rmt0l :
+.EX
+mt \-f /dev/rmt0l rewind
+.EE
+This example shows how to backspace the tape nmt1h 
+three files:
+.EX
+mt \-f /dev/nrmt1h bsf 3
+.EE
+This example shows how to write two end-of-file marks at the
+current position on tape nmt6h:
+.EX
+mt \-f /dev/nrmt6h eof 2
+.EE
+.SH Return Values
+In shell scripts,
+.PN mt
+returns a 0 exit status when the operation(s) were successful,
+1 if the command was unrecognized, and 2 if an operation failed.
+.SH Files
+.IP "/dev/rmt?h or /dev/rmt?l" 1i
+Raw magnetic tape interface with rewind when closed
+.IP "/dev/nmt?h or /dev/nmt?l" 1i
+Raw magnetic tape interface with no rewind when closed
+.SH See Also
+dd(1), tar(1), ioctl(2), mtio(4), tms(4), environ(7)

@@ -1,0 +1,2144 @@
+/TRN$XLATE_DICT 330 dict def
+TRN$XLATE_DICT begin
+/dm0 {pop} decbind def
+/dm1 {pop} decbind def
+/dm1 {pop} decbind def
+/dm2 {pop} decbind def
+/dm3 {pop} decbind def
+/dm4 {pop} decbind def
+/dm5 {pop} decbind def
+/dm6 {pop} decbind def
+/BK {0 setgray} decbind def
+/C {.01 .01 scale} decbind def
+/D {show} decbind def
+/F {scale} decbind def
+/FD {findfont} decbind def
+/K {stroke} decbind def
+/L {lineto} decbind def
+/M {moveto} decbind def
+/PG {showpage} decbind def
+/PSL {90 rotate 1 -1 scale} decbind def
+/R {restore} decbind def
+/S {save} decbind def
+/SF {setfont} decbind def
+/T {translate} decbind def
+/W {setlinewidth} decbind def
+/WH {1 setgray} decbind def
+/finddefpapertray {
+/defpapertray
+statusdict /papertray
+known {statusdict begin papertray end} {0} ifelse def
+} decbind def
+statusdict /papertray known
+{
+/resdefpapertray
+{
+statusdict /setpapertray
+known {statusdict begin defpapertray setpapertray end} if
+} decbind def
+}
+{
+/resdefpapertray {} decbind def
+}
+ifelse
+statusdict /product get (PrintServer 40) eq
+{
+statusdict begin
+/papertray
+{ 15 getdevprop
+1 add
+}
+def
+end
+}if
+/cvc
+{
+( )
+dup
+0
+4 -1 roll
+put
+}decbind def
+/CopyFontDict 2 dict def
+/CopyFont
+{
+CopyFontDict begin
+/oldfont exch def
+/newfont oldfont maxlength dict def
+oldfont
+{
+1 index
+/FID ne
+2 index
+/UniqueID ne
+and
+{newfont 3 1 roll put
+}
+{pop
+pop
+}
+ifelse
+}forall
+newfont
+end
+}decbind def
+/BDict 3 dict def
+/B
+{
+BDict begin
+exch
+/fdict
+exch
+def
+/newwidth
+exch
+fdict /FontMatrix get 0 get div
+def
+fdict CopyFont
+dup /CharWidth newwidth put
+end
+}decbind def
+/McsEncoding 256 array def
+0 1 255 {McsEncoding exch /.notdef put} for
+McsEncoding 29 /questionreverse put
+32 1 127 {McsEncoding exch dup StandardEncoding exch get put} for
+McsEncoding
+dup 144 /dotlessi put
+dup 145 /grave put
+dup 146 /acute put
+dup 147 /circumflex put
+dup 148 /tilde put
+dup 149 /macron put
+dup 150 /breve put
+dup 151 /dotaccent put
+dup 152 /dieresis put
+dup 154 /ring put
+dup 155 /cedilla put
+dup 157 /hungarumlaut put
+dup 158 /ogonek put
+dup 159 /caron put
+pop
+McsEncoding
+dup 161 /exclamdown put
+dup 162 /cent put
+dup 163 /sterling put
+dup 164 /Yacute put
+dup 165 /yen put
+dup 166 /brokenbar put
+dup 167 /section put
+dup 168 /currency put
+dup 169 /copyright put
+dup 170 /ordfeminine put
+dup 171 /guillemotleft put
+dup 172 /logicalnot put
+dup 173 /hyphen put
+dup 174 /registered put
+dup 175 /divide put
+dup 176 /degree put
+dup 177 /plusminus put
+dup 178 /twosuper put
+dup 179 /threesuper put
+dup 180 /yacute put
+dup 181 /mu put
+dup 182 /paragraph put
+dup 183 /periodcentered put
+dup 184 /multiply put
+dup 185 /onesuper put
+dup 186 /ordmasculine put
+dup 187 /guillemotright put
+dup 188 /onequarter put
+dup 189 /onehalf put
+dup 190 /threequarters put
+dup 191 /questiondown put
+dup 192 /Agrave put
+dup 193 /Aacute put
+dup 194 /Acircumflex put
+dup 195 /Atilde put
+dup 196 /Adieresis put
+dup 197 /Aring put
+dup 198 /AE put
+dup 199 /Ccedilla put
+dup 200 /Egrave put
+dup 201 /Eacute put
+dup 202 /Ecircumflex put
+dup 203 /Edieresis put
+dup 204 /Igrave put
+dup 205 /Iacute put
+dup 206 /Icircumflex put
+dup 207 /Idieresis put
+dup 208 /Eth put
+dup 209 /Ntilde put
+dup 210 /Ograve put
+dup 211 /Oacute put
+dup 212 /Ocircumflex put
+dup 213 /Otilde put
+dup 214 /Odieresis put
+dup 215 /OE put
+dup 216 /Oslash put
+dup 217 /Ugrave put
+dup 218 /Uacute put
+dup 219 /Ucircumflex put
+dup 220 /Udieresis put
+dup 221 /Ydieresis put
+dup 222 /Thorn put
+dup 223 /germandbls put
+dup 224 /agrave put
+dup 225 /aacute put
+dup 226 /acircumflex put
+dup 227 /atilde put
+dup 228 /adieresis put
+dup 229 /aring put
+dup 230 /ae put
+dup 231 /ccedilla put
+dup 232 /egrave put
+dup 233 /eacute put
+dup 234 /ecircumflex put
+dup 235 /edieresis put
+dup 236 /igrave put
+dup 237 /iacute put
+dup 238 /icircumflex put
+dup 239 /idieresis put
+dup 240 /eth put
+dup 241 /ntilde put
+dup 242 /ograve put
+dup 243 /oacute put
+dup 244 /ocircumflex put
+dup 245 /otilde put
+dup 246 /odieresis put
+dup 247 /oe put
+dup 248 /oslash put
+dup 249 /ugrave put
+dup 250 /uacute put
+dup 251 /ucircumflex put
+dup 252 /udieresis put
+dup 253 /ydieresis put
+dup 254 /thorn put
+pop
+/TcsEncoding 256 array def
+0 1 255 {TcsEncoding exch /.notdef put} for
+TcsEncoding 29 /questionreverse put
+32 1 94 {TcsEncoding exch dup StandardEncoding exch get put} for
+TcsEncoding
+dup 95 /blank put
+dup 96 /diamond put
+dup 97 /blob put
+dup 98 /HT put
+dup 99 /FF put
+dup 100 /CR put
+dup 101 /LF put
+dup 102 /degree put
+dup 103 /plusminus put
+dup 104 /NL put
+dup 105 /VT put
+dup 106 /crnlr put
+dup 107 /crnur put
+dup 108 /crnul put
+dup 109 /crnll put
+dup 110 /cross put
+dup 111 /scan1 put
+dup 112 /scan3 put
+dup 113 /scan5 put
+dup 114 /scan7 put
+dup 115 /scan9 put
+dup 116 /tl put
+dup 117 /tr put
+dup 118 /tb put
+dup 119 /tt put
+dup 120 /vertical put
+dup 121 /lessequal put
+dup 122 /greaterequal put
+dup 123 /pi put
+dup 124 /notequal put
+dup 125 /sterling put
+dup 126 /periodcentered put
+pop
+TcsEncoding
+dup 161 /radicalleft put
+dup 162 /radicallefttp put
+dup 163 /horizontalext put
+dup 164 /integraltp put
+dup 165 /integralbt put
+dup 166 /verticalext put
+dup 167 /bracketlefttp put
+dup 168 /bracketleftbt put
+dup 169 /bracketrighttp put
+dup 170 /bracketrightbt put
+dup 171 /bracelefttp put
+dup 172 /braceleftbt put
+dup 173 /bracerighttp put
+dup 174 /bracerightbt put
+dup 175 /braceleftmid put
+dup 176 /bracerightmid put
+dup 177 /sumtpleft put
+dup 178 /sumbtleft put
+dup 179 /sumtpvert put
+dup 180 /sumbtvert put
+dup 181 /sumtpright put
+dup 182 /sumbtright put
+dup 183 /sumrightmid put
+dup 184 /questionreverse put
+dup 185 /questionreverse put
+dup 186 /questionreverse put
+dup 187 /questionreverse put
+dup 188 /lessequal put
+dup 189 /notequal put
+dup 190 /greaterequal put
+dup 191 /integral put
+dup 192 /therefore put
+dup 193 /proportional put
+dup 194 /infinity put
+dup 195 /divide put
+dup 196 /Delta put
+dup 197 /gradient put
+dup 198 /Phi put
+dup 199 /Gamma put
+dup 200 /similar put
+dup 201 /approxequal put
+dup 202 /Theta put
+dup 203 /multiply put
+dup 204 /Lambda put
+dup 205 /arrowdblboth put
+dup 206 /arrowdblright put
+dup 207 /equivalence put
+dup 208 /Pi put
+dup 209 /Psi put
+dup 210 /questionreverse put
+dup 211 /Sigma put
+dup 212 /questionreverse put
+dup 213 /questionreverse put
+dup 214 /radical put
+dup 215 /Omega put
+dup 216 /Xi put
+dup 217 /Upsilon1 put
+dup 218 /propersubset put
+dup 219 /propersuperset put
+dup 220 /intersection put
+dup 221 /union put
+dup 222 /logicaland put
+dup 223 /logicalor put
+dup 224 /logicalnot put
+dup 225 /alpha put
+dup 226 /beta put
+dup 227 /chi put
+dup 228 /delta put
+dup 229 /epsilon put
+dup 230 /phi put
+dup 231 /gamma put
+dup 232 /eta put
+dup 233 /iota put
+dup 234 /theta put
+dup 235 /kappa put
+dup 236 /lambda put
+dup 237 /questionreverse put
+dup 238 /nu put
+dup 239 /partialdiff put
+dup 240 /pi put
+dup 241 /psi put
+dup 242 /rho put
+dup 243 /sigma put
+dup 244 /tau put
+dup 245 /questionreverse put
+dup 246 /florin put
+dup 247 /omega put
+dup 248 /xi put
+dup 249 /upsilon put
+dup 250 /zeta put
+dup 251 /arrowleft put
+dup 252 /arrowup put
+dup 253 /arrowright put
+dup 254 /arrowdown put
+pop
+/McsDecoding McsEncoding length dict def
+McsDecoding begin
+0 1 McsEncoding length 1 sub
+{
+dup
+McsEncoding exch get
+exch def
+}for
+end
+/SymbolDecoding 49 dict def
+SymbolDecoding begin
+/alpha 97 def
+/approxequal 187 def
+/beta 98 def
+/chi 99 def
+/Delta 68 def
+/delta 100 def
+/epsilon 101 def
+/equivalence 186 def
+/eta 104 def
+/florin 166 def
+/Gamma 71 def
+/gamma 103 def
+/gradient 209 def
+/infinity 165 def
+/integral 242 def
+/intersection 199 def
+/iota 105 def
+/kappa 107 def
+/Lambda 76 def
+/lambda 108 def
+/logicaland 217 def
+/logicalor 218 def
+/nu 110 def
+/Omega 87 def
+/omega 119 def
+/partialdiff 182 def
+/Phi 70 def
+/phi 102 def
+/Pi 80 def
+/propersubset 204 def
+/propersuperset 201 def
+/proportional 181 def
+/Psi 89 def
+/psi 121 def
+/radical 214 def
+/rho 114 def
+/Sigma 83 def
+/sigma 115 def
+/similar 126 def
+/tau 116 def
+/therefore 92 def
+/Theta 81 def
+/theta 113 def
+/union 200 def
+/upsilon 117 def
+/Upsilon1 161 def
+/Xi 88 def
+/xi 120 def
+/zeta 122 def
+end
+/CourierMcs
+/Courier FD CopyFont
+dup /Encoding McsEncoding put
+definefont pop
+/superscript
+{
+/CourierMcs FD SF
+.6 .6 F
+.1 .33 M
+D
+}decbind def
+/fraction
+{
+.2 .075 M
+.525 .5 L
+K
+/CourierMcs FD SF
+.55 .55 F
+-.05 .4 M D
+.6 -.05 M D
+}decbind def
+/tm
+{
+.3 .3 .275 0 360 arc K
+/CourierMcs FD SF
+.6 .6 F
+.2 .2 M D
+}def
+/diphthong
+{
+{/CourierMcs FD [.6667 0 .1786 1 0 0] makefont SF}
+{/CourierMcs FD [.6667 0 0 1 0 0] makefont SF}
+ifelse
+0 0 M D
+/CourierMcs FD [.6667 0 0 1 0 0] makefont SF
+.2762 0 M
+D
+}decbind def
+/ctrl
+{
+/CourierMcs FD SF
+.8333 .8333 F
+0 .3 M
+D
+.1371 -.3 M
+D
+}decbind def
+/cdef
+{
+/Courier FD /CharStrings get
+2 index known
+{pop pop}
+{decbind def}
+ifelse
+}decbind def
+/CharStrings 83 dict def
+CharStrings begin
+/crnlr
+{0 .25 M
+.3 .25 L
+.3 .75 L
+K
+}decbind def
+/crnur
+{0 .25 M
+.3 .25 L
+.3 -.25 L
+K
+}decbind def
+/crnul
+{.6 .25 M
+.3 .25 L
+.3 -.25 L
+K
+}decbind def
+/crnll
+{.6 .25 M
+.3 .25 L
+.3 .75 L
+K
+}decbind def
+/cross
+{0 .25 M
+.6 .25 L
+.3 .75 M
+.3 -.25 L
+K
+}decbind def
+/scan9
+{0 -.15 M
+.6 -.15 L
+K
+}decbind def
+/scan7
+{0 .05 M
+.6 .05 L
+K
+}decbind def
+/scan5
+{0 .25 M
+.6 .25 L
+K
+}decbind def
+/scan3
+{0 .45 M
+.6 .45 L
+K
+}decbind def
+/scan1
+{0 .65 M
+.6 .65 L
+K
+}decbind def
+/tl
+{.3 .75 M
+.3 -.25 L
+.6 .25 M
+.3 .25 L
+K
+}decbind def
+/tr
+{.3 .75 M
+.3 -.25 L
+0 .25 M
+.3 .25 L
+K
+}decbind def
+/tb
+{0 .25 M
+.6 .25 L
+.3 .75 M
+.3 .25 L
+K
+}decbind def
+/tt
+{0 .25 M
+.6 .25 L
+.3 -.25 M
+.3 .25 L
+K
+}decbind def
+/vertical
+{.3 .75 M
+.3 -.25 L
+K
+}decbind def
+/notequal
+{.125 0 M
+.475 .55 L
+K
+/CourierMcs FD SF
+0 0 M (=) D
+}decbind def
+/lessequal
+{.1 0 M
+.55 0 L
+K
+/CourierMcs FD SF
+1 .8 F
+0 .1 M (<) D
+}decbind def
+/greaterequal
+{.1 0 M
+.55 0 L
+K
+/CourierMcs FD SF
+1 .8 F
+0 .1 M (>) D
+}decbind def
+/pi
+{.1 .45 M
+.5 .45 L
+.4 .45 M
+.4 0 L
+.2 .45 M
+.2 0 .1 0 .1 arcto pop pop pop pop
+K
+}decbind def
+/radicalleft
+{.3 .75 M
+.3 -.25 L
+0 .25 L
+K
+}decbind def
+/radicallefttp
+{.6 .25 M
+.3 .25 L
+.3 -.25 L
+K
+}decbind def
+/horizontalext
+{0 .25 M
+.6 .25 L
+K
+}decbind def
+/integraltp
+{.3 -.25 M
+.3 .75 .45 .75 .25 arcto pop pop pop pop
+K
+.53 .67 .1 0 360 arc
+fill
+}decbind def
+/integralbt
+{.3 .75 M
+.3 -.25 .15 -.25 .25 arcto pop pop pop pop
+K
+.08 -.17 .1 0 360 arc
+fill
+}decbind def
+/verticalext
+{.3 .75 M
+.3 -.25 L
+K
+}decbind def
+/bracketlefttp
+{.6 .75 M
+.3 .75 L
+.3 -.25 L
+K
+}decbind def
+/bracketleftbt
+{.3 .75 M
+.3 -.25 L
+.6 -.25 L
+K
+}decbind def
+/bracketrighttp
+{0 .75 M
+.3 .75 L
+.3 -.25 L
+K
+}decbind def
+/bracketrightbt
+{.3 .75 M
+.3 -.25 L
+0 -.25 L
+K
+}decbind def
+/bracelefttp
+{.3 -.25 M
+.3 .75 .6 .75 .5 arcto pop pop pop pop
+K
+}decbind def
+/braceleftbt
+{.3 .75 M
+.3 -.25 .6 -.25 .5 arcto pop pop pop pop
+K
+}decbind def
+/bracerighttp
+{.3 -.25 M
+.3 .75 0 .75 .5 arcto pop pop pop pop
+K
+}decbind def
+/bracerightbt
+{.3 .75 M
+.3 -.25 0 -.25 .5 arcto pop pop pop pop
+K
+}decbind def
+/braceleftmid
+{.3 .75 M
+.3 .25 .15 .25 .15 arcto pop pop pop pop
+.3 -.25 M
+.3 .25 .15 .25 .15 arcto pop pop pop pop
+K
+}decbind def
+/bracerightmid
+{.3 .75 M
+.3 .25 .45 .25 .15 arcto pop pop pop pop
+.3 -.25 M
+.3 .25 .45 .25 .15 arcto pop pop pop pop
+K
+}decbind def
+/sumtpleft
+{.6 .25 M
+.3 .25 L
+.6 -.25 L
+K
+}decbind def
+/sumbtleft
+{.6 .25 M
+.3 .25 L
+.6 .75 L
+K
+}decbind def
+/sumtpvert
+{0 .75 M
+.6 -.25 L
+K
+}decbind def
+/sumbtvert
+{0 -.25 M
+.6 .75 L
+K
+}decbind def
+/sumtpright
+{0 .25 M
+.6 .25 L
+.6 -.25 L
+K
+}decbind def
+/sumbtright
+{0 .25 M
+.6 .25 L
+.6 .75 L
+K
+}decbind def
+/sumrightmid
+{0 .75 M
+.3 .25 L
+0 -.25 L
+K
+}decbind def
+/arrowdblboth
+{.1 .1 M
+.5 .1 L
+.1 .25 M
+.5 .25 L
+.175 .325 M
+0 .175 L
+.175 .025 L
+.425 .325 M
+.6 .175 L
+.425 .025 L
+K
+}decbind def
+/arrowdblright
+{.1 .1 M
+.5 .1 L
+.1 .25 M
+.5 .25 L
+.425 .325 M
+.6 .175 L
+.425 .025 L
+K
+}decbind def
+/arrowleft
+{0 .25 M
+.6 .25 L
+.15 .4 M
+0 .25 L
+.15 .1 L
+K
+}decbind def
+/arrowup
+{.3 .5 M
+.3 0 L
+.15 .35 M
+.3 .5 L
+.45 .35 L
+K
+}decbind def
+/arrowright
+{0 .25 M
+.6 .25 L
+.45 .4 M
+.6 .25 L
+.45 .1 L
+K
+}decbind def
+/arrowdown
+{.3 .5 M
+.3 0 L
+.15 .15 M
+.3 0 L
+.45 .15 L
+K
+}decbind def
+/blank { } decbind def
+/diamond
+{.3 -.15 M
+.1 .25 L
+.3 .65 L
+.5 .25 L
+.3 -.15 L
+fill
+}decbind def
+/blob
+{0 -.25 T
+CharWidth 1 F
+6 10
+false
+[6 0 0 10 0 0]
+{<A8 54>}
+imagemask
+}decbind def
+/questionreverse
+{/CourierMcs FD SF
+.6 0 M
+-1 1 F
+(?) D
+}decbind def
+/HT {(T) (H) ctrl} decbind def
+/FF {(F) (F) ctrl} decbind def
+/CR {(R) (C) ctrl} decbind def
+/LF {(F) (L) ctrl} decbind def
+/NL {(L) (N) ctrl} decbind def
+/VT {(T) (V) ctrl} decbind def
+/logicalnot
+{.05 .375 M
+.5 .375 L
+.5 .15 L
+K
+}cdef
+/multiply
+{.1 0 M
+.5 .4 L
+.1 .4 M
+.5 0 L
+K
+}cdef
+/divide
+{/CourierMcs FD SF
+0 0 M (-) D
+McsDecoding /periodcentered get cvc
+0 .15 M dup D
+0 -.2 M D
+}cdef
+/plusminus
+{.1 0 M
+.55 0 L
+.1 .3 M
+.55 .3 L
+.325 .5 M
+.325 .1 L
+K
+}cdef
+/degree
+{.3 .4 .1 0 360 arc K
+}cdef
+/mu
+{/CourierMcs FD SF
+0 0 M (u) D
+.15 .05 M
+.15 -.15 L
+K
+}cdef
+/onesuper {(1) superscript} cdef
+/twosuper {(2) superscript} cdef
+/threesuper {(3) superscript} cdef
+/onehalf {(2) (1) fraction} cdef
+/onequarter {(4) (1) fraction} cdef
+/threequarters {(4) (3) fraction} cdef
+/brokenbar
+{.3 .6 M
+.3 .3 L
+.3 .2 M
+.3 -.1 L
+K
+}cdef
+/copyright {(C) tm} cdef
+/registered {(R) tm} cdef
+/Yacute
+{/CourierMcs FD SF
+0 0 M (Y) D
+McsDecoding /acute get cvc
+-.05 .1 M D
+}cdef
+/yacute
+{/CourierMcs FD SF
+0 0 M (y) D
+McsDecoding /acute get cvc
+-.05 -.05 M D
+}cdef
+/OE
+{.25 .275 .255 90 270 arc K
+/CourierMcs FD SF
+.6667 1 F
+.285 0 M (E) D
+} cdef
+/AE {(E) (A) true diphthong} cdef
+/oe {(e) (o) false diphthong} cdef
+/ae {(e) (a) false diphthong} cdef
+/Eth
+{/CourierMcs FD SF
+0 0 M (D) D
+.05 .3 M
+.275 .3 L
+K
+}cdef
+/eth
+{.51 .2 M
+.3 .65 .1 .55 .25 arcto pop pop pop pop
+.125 .425 M
+.475 .575 L
+K
+/CourierMcs FD SF
+1 .85 F
+0 0 M (o) D
+}cdef
+/Thorn
+{.15 .5 M
+.15 0 L
+.025 .5 M
+.275 .5 L
+.025 0 M
+.275 0 L
+.15 .375 M
+.5 .375 .5 .225 .175 arcto pop pop pop pop
+.15 .15 M
+.5 .15 .5 .225 .175 arcto pop pop pop pop
+K
+}cdef
+/thorn
+{.15 .55 M
+.15 -.15 L
+.025 .55 M
+.15 .55 L
+.025 -.15 M
+.275 -.15 L
+.55 .2 M .35 .2 .2 0 360 arc
+K
+}cdef
+end
+/BuildCharDict 3 dict def
+/BuildChar
+{
+BuildCharDict begin
+/char exch def
+/fontdict exch def
+/charname fontdict /Encoding get char get def
+fontdict begin
+CharWidth 0
+FontBBox aload pop
+setcachedevice
+CharStrings charname known
+{.05 W
+CharStrings charname get
+exec
+}
+{McsDecoding charname known
+{/CourierMcs FD SF
+McsDecoding charname get
+}
+{/Symbol FD SF
+.8 .8 F
+SymbolDecoding charname get
+}
+ifelse
+cvc
+0 0 M D
+}
+ifelse
+end
+end
+}decbind def
+/BBox [0 -.25 .6 .75] def
+/TRN$ANSI_FONT_DICT_0 17 dict def
+TRN$ANSI_FONT_DICT_0 begin
+/FontName (/TRN$ANSI_FONT_0) def
+/FontType 3 def
+/FontBBox BBox def
+/BuildChar /BuildChar load def
+/Encoding McsEncoding def
+/CharWidth .6 def
+/FontMatrix [1200 0 0 -1200 0 0] def
+/UnderlineThickness 72 def
+/UnderlinePosition 240 def
+/OverlineThickness 72 def
+/OverlinePosition -912 def
+/StrikethroughThickness 72 def
+/StrikethroughPosition -264 def
+/UniqueID 3658490 def
+/FullName (TRN$ANSI_FONT_0) readonly def
+end
+/TRN$ANSI_FONT_0 TRN$ANSI_FONT_DICT_0 definefont pop
+/TRN$ANSI_BOX_0
+{ /TRN$ANSI_FONT_0 findfont
+setfont } def
+/TRN$ANSI_FONT_DICT_1 17 dict def
+TRN$ANSI_FONT_DICT_1 begin
+/FontName (/TRN$ANSI_FONT_1) def
+/FontType 3 def
+/FontBBox BBox def
+/BuildChar /BuildChar load def
+/Encoding McsEncoding def
+/CharWidth .6 def
+/FontMatrix [1160 0 0 -1200 0 0] def
+/UnderlineThickness 72 def
+/UnderlinePosition 240 def
+/OverlineThickness 72 def
+/OverlinePosition -912 def
+/StrikethroughThickness 72 def
+/StrikethroughPosition -264 def
+/UniqueID 3658491 def
+/FullName (TRN$ANSI_FONT_1) readonly def
+end
+/TRN$ANSI_FONT_1 TRN$ANSI_FONT_DICT_1 definefont pop
+/TRN$ANSI_BOX_1
+{ /TRN$ANSI_FONT_1 findfont
+setfont } def
+/TRN$ANSI_FONT_DICT_2 17 dict def
+TRN$ANSI_FONT_DICT_2 begin
+/FontName (/TRN$ANSI_FONT_2) def
+/FontType 3 def
+/FontBBox BBox def
+/BuildChar /BuildChar load def
+/Encoding McsEncoding def
+/CharWidth .6 def
+/FontMatrix [1000 0 0 -1200 0 0] def
+/UnderlineThickness 72 def
+/UnderlinePosition 240 def
+/OverlineThickness 72 def
+/OverlinePosition -912 def
+/StrikethroughThickness 72 def
+/StrikethroughPosition -264 def
+/UniqueID 3658492 def
+/FullName (TRN$ANSI_FONT_2) readonly def
+end
+/TRN$ANSI_FONT_2 TRN$ANSI_FONT_DICT_2 definefont pop
+/TRN$ANSI_BOX_2
+{ /TRN$ANSI_FONT_2 findfont
+setfont } def
+/TRN$ANSI_FONT_DICT_3 17 dict def
+TRN$ANSI_FONT_DICT_3 begin
+/FontName (/TRN$ANSI_FONT_3) def
+/FontType 3 def
+/FontBBox BBox def
+/BuildChar /BuildChar load def
+/Encoding McsEncoding def
+/CharWidth .6 def
+/FontMatrix [880 0 0 -880 0 0] def
+/UnderlineThickness 52.8 def
+/UnderlinePosition 176 def
+/OverlineThickness 52.8 def
+/OverlinePosition -668.8 def
+/StrikethroughThickness 52.8 def
+/StrikethroughPosition -193.6 def
+/UniqueID 3658493 def
+/FullName (TRN$ANSI_FONT_3) readonly def
+end
+/TRN$ANSI_FONT_3 TRN$ANSI_FONT_DICT_3 definefont pop
+/TRN$ANSI_BOX_3
+{ /TRN$ANSI_FONT_3 findfont
+setfont } def
+/TRN$ANSI_FONT_DICT_4 17 dict def
+TRN$ANSI_FONT_DICT_4 begin
+/FontName (/TRN$ANSI_FONT_4) def
+/FontType 3 def
+/FontBBox BBox def
+/BuildChar /BuildChar load def
+/Encoding TcsEncoding def
+/CharWidth .6 def
+/FontMatrix [1200 0 0 -1200 0 0] def
+/UnderlineThickness 72 def
+/UnderlinePosition 240 def
+/OverlineThickness 72 def
+/OverlinePosition -912 def
+/StrikethroughThickness 72 def
+/StrikethroughPosition -264 def
+/UniqueID 3658494 def
+/FullName (TRN$ANSI_FONT_4) readonly def
+end
+/TRN$ANSI_FONT_4 TRN$ANSI_FONT_DICT_4 definefont pop
+/TRN$ANSI_BOX_4
+{ /TRN$ANSI_FONT_4 findfont
+setfont } def
+/TRN$ANSI_FONT_DICT_5 17 dict def
+TRN$ANSI_FONT_DICT_5 begin
+/FontName (/TRN$ANSI_FONT_5) def
+/FontType 3 def
+/FontBBox BBox def
+/BuildChar /BuildChar load def
+/Encoding TcsEncoding def
+/CharWidth .6 def
+/FontMatrix [1160 0 0 -1200 0 0] def
+/UnderlineThickness 72 def
+/UnderlinePosition 240 def
+/OverlineThickness 72 def
+/OverlinePosition -912 def
+/StrikethroughThickness 72 def
+/StrikethroughPosition -264 def
+/UniqueID 3658495 def
+/FullName (TRN$ANSI_FONT_5) readonly def
+end
+/TRN$ANSI_FONT_5 TRN$ANSI_FONT_DICT_5 definefont pop
+/TRN$ANSI_BOX_5
+{ /TRN$ANSI_FONT_5 findfont
+setfont } def
+/TRN$ANSI_FONT_DICT_6 17 dict def
+TRN$ANSI_FONT_DICT_6 begin
+/FontName (/TRN$ANSI_FONT_6) def
+/FontType 3 def
+/FontBBox BBox def
+/BuildChar /BuildChar load def
+/Encoding TcsEncoding def
+/CharWidth .6 def
+/FontMatrix [1000 0 0 -1200 0 0] def
+/UnderlineThickness 72 def
+/UnderlinePosition 240 def
+/OverlineThickness 72 def
+/OverlinePosition -912 def
+/StrikethroughThickness 72 def
+/StrikethroughPosition -264 def
+/UniqueID 3658496 def
+/FullName (TRN$ANSI_FONT_6) readonly def
+end
+/TRN$ANSI_FONT_6 TRN$ANSI_FONT_DICT_6 definefont pop
+/TRN$ANSI_BOX_6
+{ /TRN$ANSI_FONT_6 findfont
+setfont } def
+/TRN$ANSI_FONT_DICT_7 17 dict def
+TRN$ANSI_FONT_DICT_7 begin
+/FontName (/TRN$ANSI_FONT_7) def
+/FontType 3 def
+/FontBBox BBox def
+/BuildChar /BuildChar load def
+/Encoding TcsEncoding def
+/CharWidth .6 def
+/FontMatrix [880 0 0 -880 0 0] def
+/UnderlineThickness 52.8 def
+/UnderlinePosition 176 def
+/OverlineThickness 52.8 def
+/OverlinePosition -668.8 def
+/StrikethroughThickness 52.8 def
+/StrikethroughPosition -193.6 def
+/UniqueID 3658497 def
+/FullName (TRN$ANSI_FONT_7) readonly def
+end
+/TRN$ANSI_FONT_7 TRN$ANSI_FONT_DICT_7 definefont pop
+/TRN$ANSI_BOX_7
+{ /TRN$ANSI_FONT_7 findfont
+setfont } def
+/generate_sixelfont {
+15 dict begin
+/FontName /TRN$ANSI_sixelfont_0 def
+/UniqueID sixel_font_unid def
+/FontInfo 10 dict dup
+begin
+/version (2.0, 15 June 1988) readonly def
+/FullName (TRN$ANSI_sixelfont_0) readonly def
+/Notice
+(Copyright 1988, Digital Equipment Corporation.)
+readonly def
+end
+readonly def
+/FontBBox [  0   0   longest_sf_run 6 div   1  ] def
+/FontMatrix [ 1 0 0 1 0 0 ] def
+/FontType 3 def
+/Encoding [
+32 { /.notdef } repeat
+sixel_encoding_low31
+/1x0
+/1x1  /1x2  /1x3  /1x4  /1x5  /1x6  /1x7  /1x8
+/1x9  /1x10 /1x11 /1x12 /1x13 /1x14 /1x15 /1x16
+/1x17 /1x18 /1x19 /1x20 /1x21 /1x22 /1x23 /1x24
+/1x25 /1x26 /1x27 /1x28 /1x29 /1x30 /1x31 /1x32
+/1x33 /1x34 /1x35 /1x36 /1x37 /1x38 /1x39 /1x40
+/1x41 /1x42 /1x43 /1x44 /1x45 /1x46 /1x47 /1x48
+/1x49 /1x50 /1x51 /1x52 /1x53 /1x54 /1x55 /1x56
+/1x57 /1x58 /1x59 /1x60 /1x61 /1x62 /1x63
+counttomark 256 exch sub { /.notdef } repeat
+] def
+/im-matrix matrix def
+/BCDict 5 dict def
+/BuildChar {
+exch begin
+BCDict begin
+Encoding exch get
+(.notdef) cvs
+(x) search
+{   token pop
+/rep exch def pop
+pop
+token pop
+/six exch def pop
+}
+{
+pop
+/rep 0 def
+}
+ifelse
+rep 6 div  0
+0 0 rep 6 div 1
+setcachedevice
+rep 0 gt
+{   6 1 true
+0  -6 rep div  6  0  0  1  im-matrix astore
+{	( ) dup 0 six 2 bitshift put }
+imagemask
+}
+if
+end end
+} def
+FontName currentdict
+end
+definefont pop
+} decbind def
+/DllEncoding 256 array def
+0 1 255 {DllEncoding exch /a128 put} for
+DllEncoding
+dup 29 /a128 put
+dup 157 /a128 put
+pop
+DllEncoding
+dup 32 /a32 put
+dup 33 /a33 put
+dup 34 /a34 put
+dup 35 /a35 put
+dup 36 /a36 put
+dup 37 /a37 put
+dup 38 /a38 put
+dup 39 /a39 put
+dup 40 /a40 put
+dup 41 /a41 put
+dup 42 /a42 put
+dup 43 /a43 put
+dup 44 /a44 put
+dup 45 /a45 put
+dup 46 /a46 put
+dup 47 /a47 put
+dup 48 /a48 put
+dup 49 /a49 put
+dup 50 /a50 put
+dup 51 /a51 put
+dup 52 /a52 put
+dup 53 /a53 put
+dup 54 /a54 put
+dup 55 /a55 put
+dup 56 /a56 put
+dup 57 /a57 put
+dup 58 /a58 put
+dup 59 /a59 put
+dup 60 /a60 put
+dup 61 /a61 put
+dup 62 /a62 put
+dup 63 /a63 put
+dup 64 /a64 put
+dup 65 /a65 put
+dup 66 /a66 put
+dup 67 /a67 put
+dup 68 /a68 put
+dup 69 /a69 put
+dup 70 /a70 put
+dup 71 /a71 put
+dup 72 /a72 put
+dup 73 /a73 put
+dup 74 /a74 put
+dup 75 /a75 put
+dup 76 /a76 put
+dup 77 /a77 put
+dup 78 /a78 put
+dup 79 /a79 put
+dup 80 /a80 put
+dup 81 /a81 put
+dup 82 /a82 put
+dup 83 /a83 put
+dup 84 /a84 put
+dup 85 /a85 put
+dup 86 /a86 put
+dup 87 /a87 put
+dup 88 /a88 put
+dup 89 /a89 put
+dup 90 /a90 put
+dup 91 /a91 put
+dup 92 /a92 put
+dup 93 /a93 put
+dup 94 /a94 put
+dup 95 /a95 put
+dup 96 /a96 put
+dup 97 /a97 put
+dup 98 /a98 put
+dup 99 /a99 put
+dup 100 /a100 put
+dup 101 /a101 put
+dup 102 /a102 put
+dup 103 /a103 put
+dup 104 /a104 put
+dup 105 /a105 put
+dup 106 /a106 put
+dup 107 /a107 put
+dup 108 /a108 put
+dup 109 /a109 put
+dup 110 /a110 put
+dup 111 /a111 put
+dup 112 /a112 put
+dup 113 /a113 put
+dup 114 /a114 put
+dup 115 /a115 put
+dup 116 /a116 put
+dup 117 /a117 put
+dup 118 /a118 put
+dup 119 /a119 put
+dup 120 /a120 put
+dup 121 /a121 put
+dup 122 /a122 put
+dup 123 /a123 put
+dup 124 /a124 put
+dup 125 /a125 put
+dup 126 /a126 put
+dup 127 /a127 put
+pop
+DllEncoding
+dup 160 /a160 put
+dup 161 /a161 put
+dup 162 /a162 put
+dup 163 /a163 put
+dup 164 /a164 put
+dup 165 /a165 put
+dup 166 /a166 put
+dup 167 /a167 put
+dup 168 /a168 put
+dup 169 /a169 put
+dup 170 /a170 put
+dup 171 /a171 put
+dup 172 /a172 put
+dup 173 /a173 put
+dup 174 /a174 put
+dup 175 /a175 put
+dup 176 /a176 put
+dup 177 /a177 put
+dup 178 /a178 put
+dup 179 /a179 put
+dup 180 /a180 put
+dup 181 /a181 put
+dup 182 /a182 put
+dup 183 /a183 put
+dup 184 /a184 put
+dup 185 /a185 put
+dup 186 /a186 put
+dup 187 /a187 put
+dup 188 /a188 put
+dup 189 /a189 put
+dup 190 /a190 put
+dup 191 /a191 put
+dup 192 /a192 put
+dup 193 /a193 put
+dup 194 /a194 put
+dup 195 /a195 put
+dup 196 /a196 put
+dup 197 /a197 put
+dup 198 /a198 put
+dup 199 /a199 put
+dup 200 /a200 put
+dup 201 /a201 put
+dup 202 /a202 put
+dup 203 /a203 put
+dup 204 /a204 put
+dup 205 /a205 put
+dup 206 /a206 put
+dup 207 /a207 put
+dup 208 /a208 put
+dup 209 /a209 put
+dup 210 /a210 put
+dup 211 /a211 put
+dup 212 /a212 put
+dup 213 /a213 put
+dup 214 /a214 put
+dup 215 /a215 put
+dup 216 /a216 put
+dup 217 /a217 put
+dup 218 /a218 put
+dup 219 /a219 put
+dup 220 /a220 put
+dup 221 /a221 put
+dup 222 /a222 put
+dup 223 /a223 put
+dup 224 /a224 put
+dup 225 /a225 put
+dup 226 /a226 put
+dup 227 /a227 put
+dup 228 /a228 put
+dup 229 /a229 put
+dup 230 /a230 put
+dup 231 /a231 put
+dup 232 /a232 put
+dup 233 /a233 put
+dup 234 /a234 put
+dup 235 /a235 put
+dup 236 /a236 put
+dup 237 /a237 put
+dup 238 /a238 put
+dup 239 /a239 put
+dup 240 /a240 put
+dup 241 /a241 put
+dup 242 /a242 put
+dup 243 /a243 put
+dup 244 /a244 put
+dup 245 /a245 put
+dup 246 /a246 put
+dup 247 /a247 put
+dup 248 /a248 put
+dup 249 /a249 put
+dup 250 /a250 put
+dup 251 /a251 put
+dup 252 /a252 put
+dup 253 /a253 put
+dup 254 /a254 put
+dup 255 /a255 put
+pop
+/DllBuildCharDict 6 dict def
+/DllBuildChar
+{
+DllBuildCharDict begin
+/char exch def
+/fontdict exch def
+/charname fontdict /Encoding get char get def
+/charinfo fontdict /CharStrings get charname get def
+/charbbox charinfo 1 4 getinterval def
+fontdict /CharWidth known
+{fontdict /CharWidth get 0}
+{charinfo 0 get 0}
+ifelse
+charbbox aload pop
+setcachedevice
+charinfo 5 get charinfo 6 get true
+fontdict /imagemaskmatrix get
+dup 4 charinfo 7 get put
+dup 5 charinfo 8 get put
+charinfo 9 1 getinterval cvx
+imagemask
+end
+}decbind def
+/SavedX 0 def
+/SavedY 0 def
+/SavedString () def
+/ShowInit
+{currentpoint
+/SavedY exch def
+/SavedX exch def
+}decbind def
+/lineDict 2 dict def
+/line
+{
+lineDict begin
+/OffsetY exch def
+/lineThickness exch def
+gsave
+currentpoint
+newpath
+OffsetY add
+M
+SavedX SavedY
+OffsetY add
+L
+lineThickness W K
+grestore
+end
+}decbind def
+/bold
+{
+dup /SavedString exch def
+400 currentfont /FontMatrix get 3 get mul -12000 div 0 rmoveto
+D
+SavedX SavedY M
+800 currentfont /FontMatrix get 3 get mul -12000 div 0 rmoveto
+SavedString D
+SavedX SavedY M
+SavedString D
+}decbind def
+/UL
+{
+currentfont /UnderlinePosition get add
+currentfont /UnderlineThickness get
+exch 1 index 2 div add
+line
+}decbind def
+/DUL
+{
+currentfont /UnderlinePosition get add
+dup
+currentfont /UnderlineThickness get
+exch 1 index 2 div add
+line
+currentfont /UnderlineThickness get
+exch 1 index 2 div add
+currentfont /UnderlineThickness get
+dup
+add add
+line
+}decbind def
+/OL
+{
+currentfont /OverlinePosition get add
+currentfont /OverlineThickness get
+exch 1 index 2 div add
+line
+}decbind def
+/strike
+{currentfont /StrikethroughThickness get
+currentfont /StrikethroughPosition get
+1 index 2 div add
+line
+}decbind def
+/italic
+{currentfont [1 0 -.2679 1 0 0] makefont SF
+}decbind def
+/D1
+{
+ShowInit
+italic
+D
+}decbind def
+/D2
+{
+ShowInit
+bold
+}decbind def
+/D3
+{
+ShowInit
+italic
+bold
+}decbind def
+/D4
+{
+exch
+ShowInit
+D
+UL
+}decbind def
+/D5
+{
+exch
+ShowInit
+italic
+D
+UL
+}decbind def
+/D6
+{
+exch
+ShowInit
+bold
+UL
+}decbind def
+/D7
+{
+exch
+ShowInit
+italic
+bold
+UL
+}decbind def
+/D8
+{
+exch
+ShowInit
+D
+OL
+}decbind def
+/D9
+{
+exch
+ShowInit
+italic
+D
+OL
+}decbind def
+/D10
+{
+exch
+ShowInit
+bold
+OL
+}decbind def
+/D11
+{
+exch
+ShowInit
+italic
+bold
+OL
+}decbind def
+/D12
+{
+exch
+ShowInit
+D
+dup
+UL
+OL
+}decbind def
+/D13
+{
+exch
+ShowInit
+italic
+D
+dup
+UL
+OL
+}decbind def
+/D14
+{
+exch
+ShowInit
+bold
+dup
+UL
+OL
+}decbind def
+/D15
+{
+exch
+ShowInit
+italic
+bold
+dup
+UL
+OL
+}decbind def
+/D16
+{
+ShowInit
+D
+strike
+}decbind def
+/D17
+{
+ShowInit
+italic
+D
+strike
+}decbind def
+/D18
+{
+ShowInit
+bold
+strike
+}decbind def
+/D19
+{
+ShowInit
+italic
+bold
+strike
+}decbind def
+/D20
+{
+exch
+ShowInit
+D
+UL
+strike
+}decbind def
+/D21
+{
+exch
+ShowInit
+italic
+D
+UL
+strike
+}decbind def
+/D22
+{
+exch
+ShowInit
+bold
+UL
+strike
+}decbind def
+/D23
+{
+exch
+ShowInit
+italic
+bold
+UL
+strike
+}decbind def
+/D24
+{
+exch
+ShowInit
+D
+strike
+OL
+}decbind def
+/D25
+{
+exch
+ShowInit
+italic
+D
+strike
+OL
+}decbind def
+/D26
+{
+exch
+ShowInit
+bold
+strike
+OL
+}decbind def
+/D27
+{
+exch
+ShowInit
+italic
+bold
+strike
+OL
+}decbind def
+/D28
+{
+exch
+ShowInit
+D
+dup
+UL
+strike
+OL
+}decbind def
+/D29
+{
+exch
+ShowInit
+italic
+D
+dup
+UL
+strike
+OL
+}decbind def
+/D30
+{
+exch
+ShowInit
+bold
+dup
+UL
+strike
+OL
+}decbind def
+/D31
+{
+exch
+ShowInit
+italic
+bold
+dup
+UL
+strike
+OL
+}decbind def
+/D32
+{
+exch
+ShowInit
+D
+DUL
+}decbind def
+/D33
+{
+exch
+ShowInit
+italic
+D
+DUL
+}decbind def
+/D34
+{
+exch
+ShowInit
+bold
+DUL
+}decbind def
+/D35
+{
+exch
+ShowInit
+italic
+bold
+DUL
+}decbind def
+/D36
+{
+exch
+ShowInit
+D
+DUL
+}decbind def
+/D37
+{
+exch
+ShowInit
+italic
+D
+DUL
+}decbind def
+/D38
+{
+exch
+ShowInit
+bold
+DUL
+}decbind def
+/D39
+{
+exch
+ShowInit
+italic
+bold
+DUL
+}decbind def
+/D40
+{
+exch
+ShowInit
+D
+dup
+OL
+DUL
+}decbind def
+/D41
+{
+exch
+ShowInit
+italic
+D
+dup
+OL
+DUL
+}decbind def
+/D42
+{
+exch
+ShowInit
+bold
+dup
+OL
+DUL
+}decbind def
+/D43
+{
+exch
+ShowInit
+italic
+bold
+dup
+OL
+DUL
+}decbind def
+/D44
+{
+exch
+ShowInit
+D
+dup
+OL
+DUL
+}decbind def
+/D45
+{
+exch
+ShowInit
+italic
+D
+dup
+OL
+DUL
+}decbind def
+/D46
+{
+exch
+ShowInit
+bold
+dup
+OL
+DUL
+}decbind def
+/D47
+{
+exch
+ShowInit
+italic
+bold
+dup
+OL
+DUL
+}decbind def
+/D48
+{
+exch
+ShowInit
+D
+DUL
+strike
+}decbind def
+/D49
+{
+exch
+ShowInit
+italic
+D
+DUL
+strike
+}decbind def
+/D50
+{
+exch
+ShowInit
+bold
+DUL
+strike
+}decbind def
+/D51
+{
+exch
+ShowInit
+italic
+bold
+DUL
+strike
+}decbind def
+/D52
+{
+exch
+ShowInit
+D
+DUL
+strike
+}decbind def
+/D53
+{
+exch
+ShowInit
+italic
+D
+DUL
+strike
+}decbind def
+/D54
+{
+exch
+ShowInit
+bold
+DUL
+strike
+}decbind def
+/D55
+{
+exch
+ShowInit
+italic
+bold
+DUL
+strike
+}decbind def
+/D56
+{
+exch
+ShowInit
+D
+dup
+OL
+DUL
+strike
+}decbind def
+/D57
+{
+exch
+ShowInit
+italic
+D
+dup
+OL
+DUL
+strike
+}decbind def
+/D58
+{
+exch
+ShowInit
+bold
+dup
+OL
+DUL
+strike
+}decbind def
+/D59
+{
+exch
+ShowInit
+italic
+bold
+dup
+OL
+DUL
+strike
+}decbind def
+/D60
+{
+exch
+ShowInit
+D
+dup
+OL
+DUL
+strike
+}decbind def
+/D61
+{
+exch
+ShowInit
+italic
+D
+dup
+OL
+DUL
+strike
+}decbind def
+/D62
+{
+exch
+ShowInit
+bold
+dup
+OL
+DUL
+strike
+}decbind def
+/D63
+{
+exch
+ShowInit
+italic
+bold
+dup
+OL
+DUL
+strike
+}decbind def
+/TRN$VSHOW_UL
+{
+exch
+ShowInit
+0 rmoveto
+UL
+}decbind def
+/TRN$VSHOW_OL
+{
+exch
+ShowInit
+0 rmoveto
+OL
+}decbind def
+/TRN$VSHOW_DUL
+{
+exch
+ShowInit
+0 rmoveto
+DUL
+}decbind def
+/TRN$VSHOW_STRIKE
+{
+pop
+ShowInit
+0 rmoveto
+strike
+}decbind def
+/TRN$VSHOW_UL_STRIKE
+{
+exch
+ShowInit
+0 rmoveto
+UL
+strike
+}decbind def
+/TRN$VSHOW_OL_STRIKE
+{
+exch
+ShowInit
+0 rmoveto
+OL
+strike
+}decbind def
+/TRN$VSHOW_DUL_STRIKE
+{
+exch
+ShowInit
+0 rmoveto
+DUL
+strike
+}decbind def
+/TRN$VSHOW_OL_DUL
+{
+exch
+ShowInit
+0 rmoveto
+dup
+OL
+DUL
+}decbind def
+/TRN$VSHOW_OL_UL
+{
+exch
+ShowInit
+0 rmoveto
+dup
+OL
+UL
+}decbind def
+/TRN$VSHOW_DUL_STRIKE_OL
+{
+exch
+ShowInit
+0 rmoveto
+dup
+OL
+DUL
+strike
+}decbind def
+/TRN$VSHOW_UL_STRIKE_OL
+{
+exch
+ShowInit
+0 rmoveto
+dup
+OL
+UL
+strike
+}decbind def
+/scanrow 6 def
+/mscanrow 6 def
+/H
+{bitwidth scanrow false [bitwidth 0 0 mscanrow 0 scanrow]
+{currentfile picstr
+readhexstring pop
+}
+imagemask
+}decbind def
+/I
+{bitwidth scanrow false [bitwidth 0 0 mscanrow 0 scanrow]
+{currentfile picstr
+readstring pop
+}
+imagemask
+}decbind def
+/version (V3.1-57) def
+end

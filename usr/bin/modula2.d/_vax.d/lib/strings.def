@@ -1,0 +1,29 @@
+(*#@(#)strings.def	4.1	Ultrix	7/17/90 *)
+(* $Header: strings.def,v 1.5 84/05/27 13:04:40 powell Exp $ *)
+DEFINITION MODULE strings;
+
+(* string module:  make strings easier to deal with *)
+(* note: someday these operations will be builtin and inline *)
+
+(* this module generally expects to work with null-terminated strings *)
+(*  and ignores characters after the first null *)
+
+EXPORT QUALIFIED Compare, Assign, Append;
+
+PROCEDURE Compare (a, op, b : ARRAY OF CHAR) : BOOLEAN;
+	(* a and b are the null-terminated operands to compare *)
+	(* op is "=", "#", "<>", "<", ">", "<=", or ">=" *)
+	(* assertion fails if bad op *)
+
+PROCEDURE Assign (VAR toString : ARRAY OF CHAR; fromString : ARRAY OF CHAR);
+	(* copies fromString to toString, stops at null or end of fromString *)
+	(* adds a null at the end of toString if there is room *)
+	(* gets a subscript error if toString cannot contain fromString value *)
+
+PROCEDURE Append (VAR toString : ARRAY OF CHAR; fromString : ARRAY OF CHAR);
+	(* appends fromString to toString starting at first null in toString *)
+	(* stops at null or end of fromString *)
+	(* adds a null at the end of toString if there is room *)
+	(* gets a subscript error if toString cannot contain appended value *)
+
+END strings.

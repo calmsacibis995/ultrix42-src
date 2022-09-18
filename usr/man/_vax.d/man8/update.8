@@ -1,0 +1,29 @@
+.\" SCCSID: @(#)update.8	8.2	12/3/90
+.TH update 8 
+.SH Name
+update \- periodically update the super block
+.SH Syntax
+.B /etc/update 
+[ \fIseconds\fR ]
+.SH Description
+The
+.PN update
+program executes
+the 
+.MS sync 2
+primitive every 30 seconds.
+This insures that the file system
+is fairly up to date in case of a crash.
+This command should not be executed directly.
+Rather, it should be executed out of the
+initialization shell command file.
+.SH Options
+.IP \fIseconds\fR 12
+Changes the sync period from the default of 30 seconds to a
+period between 10 and 600 seconds. The \fIseconds\fR argument is a whole
+number between 10 and 600. 
+.NXR "update program"
+.NXAM "sync system call" "update program"
+.NXR "superblock" "updating"
+.SH See Also
+sync(1), sync(2), init(8), rc(8), 

@@ -1,0 +1,135 @@
+.TH ris 8
+.SH Name
+ris \- remote installation services utility
+.SH Syntax
+.B /etc/ris
+.SH Description
+.NXR "ris program (RIS)"
+The 
+.PN ris 
+utility performs remote installation services 
+which install system software to a client machine through the
+TCP/IP local network.  The client machine can be a VAX or a 
+RISC machine.  
+.PP
+The server on which the remote installation services area
+is located can be either a VAX or a RISC machine.
+.PP
+The remote installation services utility uses the 
+directory 
+.PN /usr/var/adm/ris 
+as a base.
+When you install the first product to 
+.PN /usr/var/adm/ris, 
+the 
+.PN ris
+utility creates a remote installation services area.
+The area is called either 
+.PN ris0.mips 
+or 
+.PN ris0.vax. 
+.PP
+The area contains one or more ULTRIX software products.
+Each product contains the subsets of the kits that can be
+installed to clients on a network.  Clients registered for
+an area install software over the network to their 
+processor.  
+.PP
+The 
+.PN ris
+utility performs the following functions:
+.TP 20
+a -  Add client 
+.TP
+r -  Remove client 
+.TP
+s -  Show products in remote installation environments
+.TP
+m -  Modify client
+.TP
+i -  Install software 
+.PP
+You must use the 
+.PN ris
+utility interactively to set up a remote installation services area.
+After you have set up a remote installation services area
+on the server, you can use the 
+.PN ris
+utility either interactively or from the command line to manage clients.  
+.PP
+The 
+.PN /usr/var/adm/ris 
+directory also holds a subdirectory,
+.PN /usr/var/adm/ris/clients .
+This directory contains a database file, 
+.PN risdb, 
+that you can use to manage multiple clients. 
+.SH Examples
+The example that follows invokes the
+.PN ris
+utility interactively:
+.EX
+# \f(CB/etc/ris\f(CW
+.EE
+.PP
+A menu appears from which you can select options to perform
+.PN ris
+functions.
+.PP
+The examples that follow manage the client 
+.PN bergal
+using the command line.
+.PP
+.PP
+The syntax of the command to add a
+client follows:
+.EX
+/etc/ris \-a <clientname> \-h <Ethernet_address> \-p path,product[,product]
+.EE
+.PP
+The following command adds client
+.PN bergal
+and allows that client to install a product over
+the network:
+.EX
+# \f(CB/etc/ris \-a bergal \-h 08\-00\-2B\-03\-05\-8B \-p ris0.mips,product_1\f(CW
+.EE
+.PP
+The syntax of the command to modify a
+client follows:
+.EX
+/etc/ris \-a <clientname> [\-h <Ethernet_address>] [\-p <path,product,product>]
+.EE
+.PP
+The following command modifies client
+.PN bergal
+and allows that client to install a product over
+the network:
+.EX
+# \f(CB/etc/ris \-m bergal \-p ris0.mips,product_2\f(CW
+.EE
+.PP
+.PP
+The syntax of the command to remove a
+client follows:
+.EX
+/etc/ris \-r <clientname>
+.EE
+.PP
+The following command removes client
+.PN bergal:
+.EX
+# \f(CB/etc/ris \-r bergal\f(CW
+.EE
+.SH Files
+.PN /usr/var/adm/ris 
+.PP
+.PN /usr/var/adm/ris/clients
+.PP
+.PN /usr/var/adm/ris/clients/risdb
+.SH See Also
+setld(8)
+.br
+.I "Guide to the Remote Installation Services"
+.br
+.I "Guide to Server Setup"

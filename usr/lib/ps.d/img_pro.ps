@@ -1,0 +1,257 @@
+%
+% Begin fixed stuff @(#)improlog.ps	1.1 ULTRIX 4/23/86
+%
+%
+% Input output tray
+%
+/tray-control
+{
+currentdict /tray known
+	{
+	statusdict /setpapertray known
+		{
+		tray statusdict begin setpapertray end
+		} if
+	} if
+currentdict /out known
+	{
+	statusdict /setoutputtray known
+		{
+		out statusdict begin setoutputtray end
+		} if
+	} if
+} def
+%
+% Flag for User parameter
+%
+/w-specified currentdict /width  known def
+/h-specified currentdict /height known def
+/x-specified currentdict /x-pos  known def
+/y-specified currentdict /y-pos  known def
+%
+% Get Paper information
+%
+/paper-control
+{
+gsave initclip newpath clippath pathbbox grestore
+/ury exdef /urx exdef /lly exdef /llx exdef
+statusdict /papersize known
+	{
+	statusdict begin papersize end pop
+	(               ) cvs
+	dup (lettertray) eq
+		{
+			/paperwidth 8.5 inch def
+			/paperheight 11 inch def
+		} if
+	dup (legaltray) eq
+		{
+			/paperwidth 8.5 inch def
+			/paperheight 14 inch def
+		} if
+	dup (11x17tray) eq
+		{
+			/paperwidth 11 inch def
+			/paperheight 17 inch def
+		} if
+	dup (a3tray) eq
+		{
+			/paperwidth 11.7 inch def
+			/paperheight 16.5 inch def
+		} if
+	dup (a4tray) eq
+		{
+			/paperwidth 8.3 inch def
+			/paperheight 11.7 inch def
+		} if
+	dup (a5tray) eq
+		{
+			/paperwidth 5.8 inch def
+			/paperheight 8.3 inch def
+		} if
+	dup (b4tray) eq
+		{
+			/paperwidth 10.1 inch def
+			/paperheight 14.3 inch def
+		} if
+	(b5tray) eq
+		{
+			/paperwidth 7.2 inch def
+			/paperheight 10.1 inch def
+		} if
+	}
+	{
+	/paperwidth urx llx add def /paperheight ury lly add def
+	} ifelse
+%
+% Calc default margin
+%	I think that if imaginable region is not full page
+%	left and right , top and bottom have same margine.
+%
+llx 0 eq					% Imaginable region=full page
+	{					% Am I LPS40 ?
+	/hm 0.25 inch def
+	}
+	{
+	llx 0.25 inch lt			% atleast 0.25 inch
+		{
+		/hm 0.25 inch def
+		}
+		{
+		/hm llx def
+		} ifelse
+	} ifelse
+lly 0 eq					% Imaginable region=full page
+	{					% Small paper on LPS40 ?
+	/vm 0.25 inch def
+	}
+	{
+	lly 0.25 inch lt
+		{
+		/vm 0.25 inch def
+		}
+		{
+		/vm lly def
+		} ifelse
+	} ifelse
+/imwidth  paperwidth  hm 2 mul sub def		% define maximum image size
+/imheight paperheight vm 2 mul sub def
+%
+% if lasdscape
+%
+orientation landscape eq
+	{
+	vm hm urx ury llx lly imwidth imheight paperwidth paperheight
+	/paperwidth  exdef
+	/paperheight exdef
+	/imwidth     exdef
+	/imheight    exdef
+	/llx         exdef
+	/lly         exdef
+	/urx         exdef
+	/ury         exdef
+	/vm          exdef
+	/hm          exdef
+	} if
+} def
+%
+% Calc size
+%
+/calc-size
+{
+/aspect pixperline nscans div def		% Aspect ratio of image
+w-specified					% If something specified ?
+	{					% (Article II)
+	h-specified
+		{
+		x-specified
+			{
+			y-specified not
+				{
+				/y-pos vm def	% Everything /wo -y
+				} if
+			}
+			{
+			y-specified
+				{
+				/x-pos hm def	% Everything /wo -x
+				}
+				{
+				/x-pos hm def	% -w and -h
+				/y-pos vm def
+				} ifelse
+			} ifelse
+		}
+		{
+		/height width aspect div def
+		x-specified
+			{
+			y-specified not
+				{
+				/y-pos vm def	% -w and -x
+				} if
+			}
+			{
+			/x-pos paperwidth width sub 2 div def
+			y-specified not
+				{		% -w only
+				/y-pos vm def
+				} if
+			} ifelse
+		} ifelse
+	}
+	{					% -w not specified
+	h-specified
+		{
+		/width height aspect mul def
+		x-specified
+			{
+			y-specified not
+				{
+				/y-pos vm def	% -x and -h
+				} if
+			}
+			{
+			/x-pos paperwidth width sub 2 div def
+			y-specified not
+				{		% -h
+				/y-pos vm def
+				} if
+			} ifelse
+		}
+		{				% -w -h not
+		x-specified
+			{
+			/width paperwidth x-pos hm add sub def
+			/height width aspect div def
+			y-specified not
+				{		% -x
+				/y-pos vm def
+				} if
+			paperheight y-pos height add sub vm lt
+				{	% not fit on paper ?
+				/height paperheight y-pos vm add sub def
+				/width height aspect mul def
+				} if
+			}
+			{
+			/x-pos hm def
+			/width imwidth def
+			/height width aspect div def
+			y-specified not
+				{		% Nothing
+				/y-pos vm def
+				} if
+			paperheight y-pos height add sub vm lt
+				{	% not fit on paper ?
+				/height paperheight y-pos vm add sub def
+				/width height aspect mul def
+				/x-pos paperwidth width sub 2 div def
+				} if
+			} ifelse
+		} ifelse
+	} ifelse
+%
+% At this point we know everything
+%
+} def
+%
+% image
+%
+/binimage % define the binimage procedure...
+{
+gsave
+initgraphics
+orientation landscape eq { -90 rotate paperwidth neg 0 translate } if
+x-pos paperheight height y-pos add sub translate
+width height scale %% scale physical output size of image
+% Image
+pixperline nscans numbits [pixperline 0 0 negscans 0 nscans] 
+{currentfile pic readfunc pop} image
+grestore showpage
+} def
+%%EndProlog
+tray-control
+paper-control
+calc-size
+binimage

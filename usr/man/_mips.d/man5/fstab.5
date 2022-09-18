@@ -1,0 +1,140 @@
+.\" SCCSID: @(#)fstab.5	8.1	9/11/90
+.TH fstab 5 
+.SH Name
+fstab \- file containing static information about known file systems
+.SH Description
+.NXR "fstab file" "format"
+.NXR "file system" "getting information"
+.NXAM "quotacheck command" "fstab file"
+.NXAM "swapon command" "fstab file"
+.NXAM "dump command" "fstab file"
+.NXAM "fsck command" "fstab file"
+.NXAM "mount command (general)" "fstab file"
+.NXR "fstab file" "mounting file systems"
+The 
+.PN /etc/fstab
+file contains descriptive information about the known file
+systems.
+By convention, 
+.PN /etc/fstab
+is created and maintained as a read-only
+file by the system administrator.
+Each file system is described by its own line within 
+.PN /etc/fstab .
+The order of these lines and the file systems they represent
+is important because
+.PN fsck
+and
+.PN mount 
+sequentially process 
+.PN /etc/fstab
+in the performance of their tasks.
+.PP
+The format of each file system description in 
+.PN /etc/fstab
+is as follows:
+.EX
+spec:file:type:freq:passno:name:options
+.EE
+The meanings of these fields are:
+.IP spec 10
+The block special file name of the device on which the file 
+system is located.  It can also be a network name for 
+.PN nfs ,
+such as 
+.PN /@erie 
+or 
+.PN /@suez .
+.IP file
+The pathname of the directory on which the file system is mounted.
+.IP type
+How the file system is mounted.  The ways in which a file
+system can be mounted are:
+.br 
+rw - mount the file system read-write
+.br
+ro - mount the file system read only 
+.br
+rq - mount the file system read-write with quotas
+.br
+sw - make the special file part of the swap space
+.br
+xx - ignore the entry
+.IP freq
+The frequency (in days) with which the
+.PN dump
+command dumps the rw, ro, and rq file systems.
+.IP passno
+The order in which the
+.PN fsck
+command checks the rw, ro, and rq file systems
+at reboot time.
+.IP name
+The name of the file system type.
+File systems can have the following
+types:
+ufs -- ULTRIX file system and
+nfs -- SUN Network file system.
+.IP options
+The options field.  This field contains an arbitrary string
+meaningful only when mounting file systems with the specified
+file system type name, such as NFS.
+The specific options are described in the
+.PN mount
+reference pages.
+.PP
+Special actions occur for file systems of type sw and rq at
+system boot time.
+File systems of type sw are made part of the swap space by the
+.MS swapon 8
+command and
+disk quotas are automatically processed by the 
+.MS quotacheck 8
+command and then enabled by the 
+.MS quotaon 8
+command for rq file
+systems. 
+.SH Examples
+.NXR(e) "fstab file"
+Here is a sample
+.PN fstab
+file:
+.EX 0
+/dev/ra0a:/:rw:1:1:ufs::
+/dev/ra1g:/usr:rw:1:2:ufs::
+/@bigvax:/bigvax:rw:0:0:nfs::
+/usr/uws2.0@bigvax:/usr/uws2.0:rw:0:0:nfs:soft,bg,nosuid:
+/usr/dec@bigvax:/usr/dec:rw:0:0:nfs:bg,soft,nosuid:
+/usr/pro/xyz@vax:/usr/pro/xyz:rw:0:0:nfs:bg,soft,intr,nosuid:
+.EE
+The last three entries in the
+.PN fstab
+sample shown use NFS options as described in the
+.MS mount 8nfs
+reference page.
+.SH Restrictions
+.NXR "fstab file" "restricted"
+The passno field of the root file system should be specified 
+as 1.  Other file systems should have larger values.  File 
+systems on the same device should have distinct passno fields.
+File systems on different devices may have the identical passno
+fields to allow them to be simultaneously checked.
+.PP
+All field delimiters (:) must exist within each file system description;
+only the options field may not be present.  However,
+only the fields spec and type are meaningful to sw file systems and
+only the type field is meaningful to xx file systems.
+.PP
+The file system description within 
+.PN /etc/fstab
+should be parsed
+only through use of the
+.PN getfsent
+routines.
+.SH Files
+.TP 15
+.PN /etc/fstab
+File system information file
+.SH See Also
+getfsent(3x), dump(8), fsck(8), mount(8), mount(8nfs), mount(8ufs)
+quotacheck(8), quotaon(8), swapon(8)

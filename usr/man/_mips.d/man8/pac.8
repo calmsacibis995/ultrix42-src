@@ -1,0 +1,69 @@
+.\" SCCSID: @(#)pac.8	8.1	9/11/90
+.TH pac 8
+.SH Name
+pac \- printer/plotter accounting information
+.SH Syntax
+.B /etc/pac
+[
+.B \-Pprinter
+] [
+.B \-pprice
+] [
+.B \-s
+] [
+.B \-r
+] [
+.B \-c
+] [ 
+.I name ... 
+]
+.SH Description
+.NXR "pac command"
+.NXR "printer" "getting paper consumption statistics"
+.NXR "plotter" "getting paper consumption statistics"
+The
+.PN pac
+command
+reads the printer/plotter accounting files, accumulating the number
+of pages (the usual case) or feet (for raster devices)
+of paper consumed by each user, and printing out
+how much each user consumed in pages or feet and dollars.
+If any
+.I names
+are specified, statistics are only printed for those users;
+usually, statistics are printed for every user who has used any paper.
+.SH Options
+.TP 10
+.B \-P
+Causes accounting to be done for the named printer.
+Normally, accounting is done for the default printer (site dependent) or
+the value of the environment variable
+.B PRINTER
+is used.
+.TP 
+.B \-p
+Causes the value
+.I price
+to be used for the cost in dollars instead of the default value of 0.02.
+.TP 
+.B \-c
+Causes the output to be sorted by cost; usually the
+output is sorted alphabetically by name.
+.TP
+.B \-r
+Reverses the sorting order.
+.TP
+.B \-s
+Causes the accounting information to be summarized on the
+summary accounting file; this summarization is necessary since on a
+busy system, the accounting file can grow by several lines per day.
+.SH Restrictions
+The relationship between the computed price and the actual price is
+unknown.
+.SH Files
+.TP 17
+.PN /usr/adm/?acct
+Raw accounting files
+.TP
+.PN /usr/adm/?_sum
+Summary accounting files

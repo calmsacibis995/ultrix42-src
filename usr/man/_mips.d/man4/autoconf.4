@@ -1,0 +1,55 @@
+.\" SCCSID: @(#)autoconf.4	3.1	11/24/87
+.TH autoconf 4 RISC
+.SH Name
+autoconf \- diagnostics from the autoconfiguration code
+.SH Description
+.NXR "autoconf keyword"
+.NXR "configuration file (syslog)"
+When ULTRIX bootstraps, it probes the machine it is running
+on and locates controllers, drives, and other devices, printing out
+what it finds on the console.  This procedure is driven by a system
+configuration table, which is processed by
+.MS config 8
+and compiled into each kernel.
+.SH Diagnostics
+.B cpu%d ( version %f, implementation %d )
+.br
+A cpu is present.
+.PP
+.B fpu%d ( version %f, implementation %d )
+.br
+An fpu is present.
+.PP
+.B pm%d  at ibus%d 
+.br
+A monochrome or color graphics device is present.
+.PP
+.B cfb%d at ibus%d 
+.br
+A color graphic device is present.
+.PP
+.B dc%d at ibus%d 
+.br
+A serial line controller is present.
+.PP
+.B sii%d  at ibus%d 
+.br
+An SCSI sii controller is present.
+.PP
+.B asc%d at ibus%d 
+.br 
+An SCSI asc controller is present.
+.PP
+.B rz%d at sii%d/asc%d slave %d ( RZ%d )
+.br
+An SCSI disk device is present.
+.PP
+.B tz%d at sii%d/asc%d slave %d ( TK%d )
+.br
+An SCSI tape device is present.
+.PP
+.B ln%d at ibus%d
+.br
+An Ethernet interface is present.
+.SH See Also
+intro(4), config(8)

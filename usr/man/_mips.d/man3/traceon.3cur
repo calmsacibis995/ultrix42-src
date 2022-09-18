@@ -1,0 +1,18 @@
+.TH traceon 3cur 
+.SH Name
+traceon, traceoff \- enable or disable debug trace output
+.SH Syntax
+.B
+traceon()
+.br
+.PP
+.B
+traceoff()
+.SH Description
+.NXR "traceon subroutine"
+These functions turn the debugging
+trace output on and off when you use the 
+debug version of the 
+.PN curses
+library
+.PN /usr/lib/libdcursesX.a. 

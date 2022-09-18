@@ -1,0 +1,1578 @@
+%token SEOS 1
+%token SCOMMENT 2
+%token SLABEL 3
+%token SUNKNOWN 4
+%token SHOLLERITH 5
+%token SSTRING 6
+%token SICON 7
+%token SRCON 8
+%token SDCON 9
+%token SBITCON 10
+%token SOCTCON 11
+%token SHEXCON 12
+%token STRUE 13
+%token SFALSE 14
+%token SNAME 15
+%token SNAMEEQ 16
+%token SFIELD 17
+%token SSCALE 18
+%token SINCLUDE 19
+%token SLET 20
+%token SASSIGN 21
+%token SAUTOMATIC 22
+%token SBACKSPACE 23
+%token SBLOCK 24
+%token SCALL 25
+%token SCHARACTER 26
+%token SCLOSE 27
+%token SCOMMON 28
+%token SCOMPLEX 29
+%token SCONTINUE 30
+%token SDATA 31
+%token SDCOMPLEX 32
+%token SDIMENSION 33
+%token SDO 34
+%token SDOUBLE 35
+%token SELSE 36
+%token SELSEIF 37
+%token SEND 38
+%token SENDFILE 39
+%token SENDIF 40
+%token SENTRY 41
+%token SEQUIV 42
+%token SEXTERNAL 43
+%token SFORMAT 44
+%token SFUNCTION 45
+%token SGOTO 46
+%token SASGOTO 47
+%token SCOMPGOTO 48
+%token SARITHIF 49
+%token SLOGIF 50
+%token SIMPLICIT 51
+%token SINQUIRE 52
+%token SINTEGER 53
+%token SINTRINSIC 54
+%token SLOGICAL 55
+%token SNAMELIST 56
+%token SOPEN 57
+%token SPARAM 58
+%token SPAUSE 59
+%token SPRINT 60
+%token SPROGRAM 61
+%token SPUNCH 62
+%token SREAD 63
+%token SREAL 64
+%token SRETURN 65
+%token SREWIND 66
+%token SSAVE 67
+%token SSTATIC 68
+%token SSTOP 69
+%token SSUBROUTINE 70
+%token STHEN 71
+%token STO 72
+%token SUNDEFINED 73
+%token SWRITE 74
+%token SLPAR 75
+%token SRPAR 76
+%token SEQUALS 77
+%token SCOLON 78
+%token SCOMMA 79
+%token SCURRENCY 80
+%token SPLUS 81
+%token SMINUS 82
+%token SSTAR 83
+%token SSLASH 84
+%token SPOWER 85
+%token SCONCAT 86
+%token SAND 87
+%token SOR 88
+%token SNEQV 89
+%token SEQV 90
+%token SNOT 91
+%token SEQ 92
+%token SLT 93
+%token SGT 94
+%token SLE 95
+%token SGE 96
+%token SNE 97
+%{ 
+#ifndef lint
+static	char	*sccsid = "@(#)gram.head	4.1	(ULTRIX)	7/17/90";
+#endif lint
+%} 
+/************************************************************************
+ *									*
+ *			Copyright (c) 1984 by				*
+ *		Digital Equipment Corporation, Maynard, MA		*
+ *			All rights reserved.				*
+ *									*
+ *   This software is furnished under a license and may be used and	*
+ *   copied  only  in accordance with the terms of such license and	*
+ *   with the  inclusion  of  the  above  copyright  notice.   This	*
+ *   software  or  any  other copies thereof may not be provided or	*
+ *   otherwise made available to any other person.  No title to and	*
+ *   ownership of the software is hereby transferred.			*
+ *									*
+ *   This software is  derived  from  software  received  from  the	*
+ *   University    of   California,   Berkeley,   and   from   Bell	*
+ *   Laboratories.  Use, duplication, or disclosure is  subject  to	*
+ *   restrictions  under  license  agreements  with  University  of	*
+ *   California and with AT&T.						*
+ *									*
+ *   The information in this software is subject to change  without	*
+ *   notice  and should not be construed as a commitment by Digital	*
+ *   Equipment Corporation.						*
+ *									*
+ *   Digital assumes no responsibility for the use  or  reliability	*
+ *   of its software on equipment which is not supplied by Digital.	*
+ *									*
+ ************************************************************************/
+/*	@(#)gram.head	4.4 (Berkeley) 7/26/84	*/
+/*
+ * gram.head
+ *
+ * First part of the f77 grammar, f77 compiler pass 1.
+ *
+ * University of Utah CS Dept modification history:
+ *
+ * $Log:	gram.head,v $
+ * Revision 3.2  84/11/06  17:40:52  donn
+ * Fixed bug with redundant labels causing errors when they appear on (e.g.)
+ * PROGRAM statements.
+ * 
+ * Revision 3.1  84/10/13  00:22:16  donn
+ * Merged Jerry Berkman's version into mine.
+ * 
+ * Revision 2.2  84/08/04  21:13:02  donn
+ * Moved some code out of gram.head into gram.exec in accordance with
+ * Jerry Berkman's fixes to make ASSIGNs work right.
+ * 
+ * Revision 2.1  84/07/19  12:03:20  donn
+ * Changed comment headers for UofU.
+ * 
+ * Revision 1.2  84/03/23  22:43:06  donn
+ * The subroutine argument temporary fixes from Bob Corbett didn't take into
+ * account the fact that the code generator collects all the assignments to
+ * temporaries at the start of a statement -- hence the temporaries need to
+ * be initialized once per statement instead of once per call.
+ * 
+ */
+
+%{
+#	include "defs.h"
+#	include "data.h"
+
+#ifdef SDB
+#	include <a.out.h>
+
+#	ifndef N_SO
+#		include <stab.h>
+#	endif
+#endif
+
+static int equivlisterr;
+static int do_name_err;
+static int nstars;
+static int ndim;
+static int vartype;
+static ftnint varleng;
+static struct { expptr lb, ub; } dims[MAXDIM+1];
+static struct Labelblock *labarray[MAXLABLIST];
+static int lastwasbranch = NO;
+static int thiswasbranch = NO;
+extern ftnint yystno;
+extern flag intonly;
+
+ftnint convci();
+double convcd();
+expptr mklogcon(), mkaddcon(), mkrealcon(), mkstrcon(), mkbitcon();
+expptr mkcxcon();
+struct Listblock *mklist();
+struct Listblock *mklist();
+struct Impldoblock *mkiodo();
+struct Extsym *comblock();
+
+%}
+
+/* Specify precedences and associativities. */
+
+%union	{
+	int ival;
+	char *charpval;
+	chainp chval;
+	tagptr tagval;
+	expptr expval;
+	struct Labelblock *labval;
+	struct Nameblock *namval;
+	struct Eqvchain *eqvval;
+	struct Extsym *extval;
+	union  Vexpr *vexpval;
+	struct ValList *drvals;
+	struct Vlist *dvals;
+	union  Delt *deltp;
+	struct Rpair *rpairp;
+	struct Elist *elistp;
+	}
+
+%left SCOMMA
+%nonassoc SCOLON
+%right SEQUALS
+%left SEQV SNEQV
+%left SOR
+%left SAND
+%left SNOT
+%nonassoc SLT SGT SLE SGE SEQ SNE
+%left SCONCAT
+%left SPLUS SMINUS
+%left SSTAR SSLASH
+%right SPOWER
+
+%start program
+%type <labval> thislabel label assignlabel
+%type <tagval> other inelt
+%type <ival> lengspec type typespec typename dcl letter addop relop stop nameeq
+%type <charpval> filename
+%type <chval> namelistlist funarglist funargs dospec
+%type <chval> callarglist arglist args exprlist inlist outlist out2 substring
+%type <namval> name arg call var entryname progname
+%type <expval> lhs expr uexpr opt_expr fexpr unpar_fexpr
+%type <expval> ubound callarg complex_const simple_const 
+%type <extval> common comblock
+%type <eqvval> equivlist
+%type <expval> datavalue real_const unsignedreal bit_const
+%type <vexpval> unsignedint int_const
+%type <vexpval> dataname
+%type <vexpval> iconprimary iconfactor iconterm iconexpr opticonexpr
+%type <drvals>	datarval datarvals
+%type <dvals>	iconexprlist datasubs
+%type <deltp>	dataelt dataimplieddo datalval
+%type <rpairp>	datarange
+%type <elistp>	dlist datalvals
+
+%%
+
+program:
+	| program stat SEOS
+	;
+
+stat:	  thislabel  entry
+		{ lastwasbranch = NO; }
+	| thislabel  spec
+	| thislabel  exec
+		{ if($1 && ($1->labelno==dorange))
+			enddo($1->labelno);
+		  if(lastwasbranch && thislabel==NULL)
+			warn("statement cannot be reached");
+		  lastwasbranch = thiswasbranch;
+		  thiswasbranch = NO;
+		  if($1)
+			{
+			if($1->labtype == LABFORMAT)
+				err("label already that of a format");
+			else
+				$1->labtype = LABEXEC;
+			}
+		  if(!optimflag)
+			{
+			argtemplist = hookup(argtemplist, activearglist);
+			activearglist = CHNULL;
+			}
+		}
+	| thislabel SINCLUDE filename
+		{ doinclude( $3 ); }
+	| thislabel  SEND  end_spec
+		{ lastwasbranch = NO;  endproc(); }
+	| thislabel SUNKNOWN
+		{ execerr("unclassifiable statement", CNULL);  flline(); };
+	| error
+		{ flline();  needkwd = NO;  inioctl = NO; 
+		  yyerrok; yyclearin; }
+	;
+
+thislabel:  SLABEL
+		{
+#ifdef SDB
+		if( sdbflag )
+			{
+			linenostab(lineno);
+			}
+#endif
+
+		if(yystno != 0)
+			{
+			$$ = thislabel =  mklabel(yystno);
+			if(thislabel->labdefined)
+				execerr("label %s already defined",
+					convic(thislabel->stateno) );
+			else	{
+				if(thislabel->blklevel!=0 && thislabel->blklevel<blklevel
+				    && thislabel->labtype!=LABFORMAT)
+					warn1("there is a branch to label %s from outside block",
+					      convic( (ftnint) (thislabel->stateno) ) );
+				thislabel->blklevel = blklevel;
+				thislabel->labdefined = YES;
+				}
+			}
+		else    $$ = thislabel = NULL;
+		}
+	;
+
+entry:	  SPROGRAM new_proc progname
+		   {startproc($3, CLMAIN); }
+	| SBLOCK new_proc progname
+		{ if($3) NO66("named BLOCKDATA");
+		  startproc($3, CLBLOCK); }
+	| SSUBROUTINE new_proc entryname arglist
+		{ entrypt(CLPROC, TYSUBR, (ftnint) 0,  $3, $4); }
+	| SFUNCTION new_proc entryname arglist
+		{ entrypt(CLPROC, TYUNKNOWN, (ftnint) 0, $3, $4); }
+	| type SFUNCTION new_proc entryname arglist
+		{ entrypt(CLPROC, $1, varleng, $4, $5); }
+	| SENTRY entryname arglist
+		{ if(parstate==OUTSIDE || procclass==CLMAIN
+			|| procclass==CLBLOCK)
+				execerr("misplaced entry statement", CNULL);
+			entrypt(CLENTRY, 0, (ftnint) 0, $2, $3);
+		}
+	;
+
+new_proc:
+		{ newproc(); }
+	;
+
+entryname:  name
+	;
+
+name:	  SNAME
+		{ $$ = mkname(toklen, token); }
+	;
+
+progname:		{ $$ = NULL; }
+	| entryname
+	;
+
+arglist:
+		{ $$ = 0; }
+	| SLPAR SRPAR
+		{ NO66(" () argument list");
+		  $$ = 0; }
+	| SLPAR args SRPAR
+		{$$ = $2; }
+	;
+
+args:	  arg
+		{ $$ = ($1 ? mkchain($1,CHNULL) : CHNULL ); }
+	| args SCOMMA arg
+		{ if($3) $1 = $$ = hookup($1, mkchain($3,CHNULL)); }
+	;
+
+arg:	  name
+		{ if(($1->vstg!=STGUNKNOWN && $1->vstg!=STGARG)
+				|| ($1->vclass == CLPARAM) ) {
+			dclerr("name declared as argument after use", $1);
+			$$ = NULL;
+		  } else
+			$1->vstg = STGARG;
+		}
+	| SSTAR
+		{ NO66("altenate return argument");
+		  $$ = 0;  substars = YES; }
+	;
+
+
+
+filename:   SHOLLERITH
+		{
+		char *s;
+		s = copyn(toklen+1, token);
+		s[toklen] = '\0';
+		$$ = s;
+		}
+	;
+/*
+*	@(#)gram.dcl	1.3	(ULTRIX)	1/15/86
+*/
+
+/************************************************************************
+ *									*
+ *			Copyright (c) 1986 by				*
+ *		Digital Equipment Corporation, Maynard, MA		*
+ *			All rights reserved.				*
+ *									*
+ *   This software is furnished under a license and may be used and	*
+ *   copied  only  in accordance with the terms of such license and	*
+ *   with the  inclusion  of  the  above  copyright  notice.   This	*
+ *   software  or  any  other copies thereof may not be provided or	*
+ *   otherwise made available to any other person.  No title to and	*
+ *   ownership of the software is hereby transferred.			*
+ *									*
+ *   This software is  derived  from  software  received  from  the	*
+ *   University    of   California,   Berkeley,   and   from   Bell	*
+ *   Laboratories.  Use, duplication, or disclosure is  subject  to	*
+ *   restrictions  under  license  agreements  with  University  of	*
+ *   California and with AT&T.						*
+ *									*
+ *   The information in this software is subject to change  without	*
+ *   notice  and should not be construed as a commitment by Digital	*
+ *   Equipment Corporation.						*
+ *									*
+ *   Digital assumes no responsibility for the use  or  reliability	*
+ *   of its software on equipment which is not supplied by Digital.	*
+ *									*
+ ************************************************************************/
+
+/************************************************************************
+*
+*			Modification History
+*
+*	David Metsky		14-Jan-86
+*
+* 001	Replaced old version with BSD 4.3 version as part of upgrade.
+*
+*	Based on:	gram.dcl	5.2		8/29/85
+*
+*************************************************************************/
+
+/*
+ * Grammar for declarations, f77 compiler, 4.2 BSD.
+ *
+ * University of Utah CS Dept modification history:
+ *
+ * $Log:	gram.dcl,v $
+ * Revision 5.4  85/08/20  23:37:33  donn
+ * Fix from Jerry Berkman to prevent length problems with -r8.
+ * 
+ * Revision 5.3  85/08/15  20:16:29  donn
+ * SAVE statements are not executable...
+ * 
+ * Revision 5.2  85/08/10  04:24:56  donn
+ * Jerry Berkman's changes to handle the -r8/double precision flag.
+ * 
+ * Revision 5.1  85/08/10  03:47:18  donn
+ * 4.3 alpha
+ * 
+ * Revision 3.2  84/11/12  18:36:26  donn
+ * A side effect of removing the ability of labels to define the start of
+ * a program is that format statements have to do the job now...
+ * 
+ * Revision 3.1  84/10/13  00:26:54  donn
+ * Installed Jerry Berkman's version; added comment header.
+ * 
+ */
+
+spec:	  dcl
+	| common
+	| external
+	| intrinsic
+	| equivalence
+	| implicit
+	| data
+	| namelist
+	| SSAVE in_dcl
+		{ NO66("SAVE statement");
+		  saveall = YES; }
+	| SSAVE in_dcl savelist
+		{ NO66("SAVE statement"); }
+	| SFORMAT
+		{
+		if (parstate == OUTSIDE)
+			{
+			newproc();
+			startproc(PNULL, CLMAIN);
+			parstate = INSIDE;
+			}
+		if (parstate < INDCL)
+			parstate = INDCL;
+		fmtstmt(thislabel);
+		setfmt(thislabel);
+		}
+	| SPARAM in_dcl SLPAR paramlist SRPAR
+		{ NO66("PARAMETER statement"); }
+	;
+
+dcl:	  type opt_comma name in_dcl dims lengspec
+		{ settype($3, $1, $6);
+		  if(ndim>0) setbound($3,ndim,dims);
+		}
+	| dcl SCOMMA name dims lengspec
+		{ settype($3, $1, $5);
+		  if(ndim>0) setbound($3,ndim,dims);
+		}
+	;
+
+type:	  typespec lengspec
+		{ varleng = $2; }
+	;
+
+typespec:  typename
+		{ varleng = ($1<0 || $1==TYLONG ? 0 : typesize[$1]);
+		  vartype = $1;
+		}
+	;
+
+typename:    SINTEGER	{ $$ = TYLONG; }
+	| SREAL		{ $$ = dblflag ? TYDREAL : TYREAL; }
+	| SCOMPLEX	{ $$ = dblflag ? TYDCOMPLEX : TYCOMPLEX; }
+	| SDOUBLE	{ $$ = TYDREAL; }
+	| SDCOMPLEX	{ NOEXT("DOUBLE COMPLEX statement"); $$ = TYDCOMPLEX; }
+	| SLOGICAL	{ $$ = TYLOGICAL; }
+	| SCHARACTER	{ NO66("CHARACTER statement"); $$ = TYCHAR; }
+	| SUNDEFINED	{ $$ = TYUNKNOWN; }
+	| SDIMENSION	{ $$ = TYUNKNOWN; }
+	| SAUTOMATIC	{ NOEXT("AUTOMATIC statement"); $$ = - STGAUTO; }
+	| SSTATIC	{ NOEXT("STATIC statement"); $$ = - STGBSS; }
+	;
+
+lengspec:
+		{ $$ = varleng; }
+	| SSTAR intonlyon expr intonlyoff
+		{
+		expptr p;
+		int typlen;
+		
+		p = $3;
+		NO66("length specification *n");
+		if( ! ISICON(p) || p->constblock.const.ci<0 )
+			{
+			$$ = 0;
+			dclerr("- length must be a positive integer value",
+				PNULL);
+			}
+		else if( dblflag )
+			{
+			typlen = p->constblock.const.ci;
+			if( vartype == TYDREAL && typlen == 4 ) $$ = 8;
+			else if( vartype == TYDCOMPLEX && typlen == 8 ) $$ = 16;
+			else $$ = typlen;
+			}
+		else
+			$$ = p->constblock.const.ci;
+		}
+	| SSTAR intonlyon SLPAR SSTAR SRPAR intonlyoff
+		{ NO66("length specification *(*)"); $$ = -1; }
+	;
+
+common:	  SCOMMON in_dcl var
+		{ incomm( $$ = comblock(0, CNULL) , $3 ); }
+	| SCOMMON in_dcl comblock var
+		{ $$ = $3;  incomm($3, $4); }
+	| common opt_comma comblock opt_comma var
+		{ $$ = $3;  incomm($3, $5); }
+	| common SCOMMA var
+		{ incomm($1, $3); }
+	;
+
+comblock:  SCONCAT
+		{ $$ = comblock(0, CNULL); }
+	| SSLASH SNAME SSLASH
+		{ $$ = comblock(toklen, token); }
+	;
+
+external: SEXTERNAL in_dcl name
+		{ setext($3); }
+	| external SCOMMA name
+		{ setext($3); }
+	;
+
+intrinsic:  SINTRINSIC in_dcl name
+		{ NO66("INTRINSIC statement"); setintr($3); }
+	| intrinsic SCOMMA name
+		{ setintr($3); }
+	;
+
+equivalence:  SEQUIV in_dcl equivset
+	| equivalence SCOMMA equivset
+	;
+
+equivset:  SLPAR equivlist SRPAR
+		{
+		struct Equivblock *p;
+		if(nequiv >= maxequiv)
+			many("equivalences", 'q');
+		if( !equivlisterr ) {
+		   p  =  & eqvclass[nequiv++];
+		   p->eqvinit = NO;
+		   p->eqvbottom = 0;
+		   p->eqvtop = 0;
+		   p->equivs = $2;
+		   p->init = NO;
+		   p->initoffset = 0;
+		   }
+		}
+	;
+
+equivlist:  lhs
+		{ $$=ALLOC(Eqvchain);
+		  equivlisterr = 0;
+		  if( $1->tag == TCONST ) {
+			equivlisterr = 1;
+			dclerr( "- constant in equivalence", NULL );
+		  }
+		  $$->eqvitem.eqvlhs = (struct Primblock *)$1;
+		}
+	| equivlist SCOMMA lhs
+		{ $$=ALLOC(Eqvchain);
+		  if( $3->tag == TCONST ) {
+			equivlisterr = 1;
+			dclerr( "constant in equivalence", NULL );
+		  }
+		  $$->eqvitem.eqvlhs = (struct Primblock *) $3;
+		  $$->eqvnextp = $1;
+		}
+	;
+
+
+savelist: saveitem
+	| savelist SCOMMA saveitem
+	;
+
+saveitem: name
+		{ int k;
+		  $1->vsave = YES;
+		  k = $1->vstg;
+		if( ! ONEOF(k, M(STGUNKNOWN)|M(STGBSS)|M(STGINIT)) 
+				|| ($1->vclass == CLPARAM) )
+			dclerr("can only save static variables", $1);
+		}
+	| comblock
+		{ $1->extsave = 1; }
+	;
+
+paramlist:  paramitem
+	| paramlist SCOMMA paramitem
+	;
+
+paramitem:  name SEQUALS expr
+		{ paramset( $1, $3 ); }
+	;
+
+var:	  name dims
+		{ if(ndim>0) setbound($1, ndim, dims); }
+	;
+
+
+dims:
+		{ ndim = 0; }
+	| SLPAR dimlist SRPAR
+	;
+
+dimlist:   { ndim = 0; }   dim
+	| dimlist SCOMMA dim
+	;
+
+dim:	  ubound
+		{ if(ndim == maxdim)
+			err("too many dimensions");
+		  else if(ndim < maxdim)
+			{ dims[ndim].lb = 0;
+			  dims[ndim].ub = $1;
+			}
+		  ++ndim;
+		}
+	| expr SCOLON ubound
+		{ if(ndim == maxdim)
+			err("too many dimensions");
+		  else if(ndim < maxdim)
+			{ dims[ndim].lb = $1;
+			  dims[ndim].ub = $3;
+			}
+		  ++ndim;
+		}
+	;
+
+ubound:	  SSTAR
+		{ $$ = 0; }
+	| expr
+	;
+
+labellist: label
+		{ nstars = 1; labarray[0] = $1; }
+	| labellist SCOMMA label
+		{ if(nstars < MAXLABLIST)  labarray[nstars++] = $3; }
+	;
+
+label:	  SICON
+		{ $$ = execlab( convci(toklen, token) ); }
+	;
+
+implicit:  SIMPLICIT in_dcl implist
+		{ NO66("IMPLICIT statement"); }
+	| implicit SCOMMA implist
+	;
+
+implist:  imptype SLPAR letgroups SRPAR
+	;
+
+imptype:   { needkwd = 1; } type
+		{ vartype = $2; }
+	;
+
+letgroups: letgroup
+	| letgroups SCOMMA letgroup
+	;
+
+letgroup:  letter
+		{ setimpl(vartype, varleng, $1, $1); }
+	| letter SMINUS letter
+		{ setimpl(vartype, varleng, $1, $3); }
+	;
+
+letter:  SNAME
+		{ if(toklen!=1 || token[0]<'a' || token[0]>'z')
+			{
+			dclerr("implicit item must be single letter", PNULL);
+			$$ = 0;
+			}
+		  else $$ = token[0];
+		}
+	;
+
+namelist:	SNAMELIST
+	| namelist namelistentry
+	;
+
+namelistentry:  SSLASH name SSLASH namelistlist
+		{
+		if($2->vclass == CLUNKNOWN)
+			{
+			$2->vclass = CLNAMELIST;
+			$2->vtype = TYINT;
+			$2->vstg = STGINIT;
+			$2->varxptr.namelist = $4;
+			$2->vardesc.varno = ++lastvarno;
+			}
+		else dclerr("cannot be a namelist name", $2);
+		}
+	;
+
+namelistlist:  name
+		{ $$ = mkchain($1, CHNULL); }
+	| namelistlist SCOMMA name
+		{ $$ = hookup($1, mkchain($3, CHNULL)); }
+	;
+
+in_dcl:
+		{ switch(parstate)	
+			{
+			case OUTSIDE:	newproc();
+					startproc(PNULL, CLMAIN);
+			case INSIDE:	parstate = INDCL;
+			case INDCL:	break;
+
+			default:
+				dclerr("declaration among executables", PNULL);
+			}
+		}
+	;
+
+data:	data1
+	{
+	  if (overlapflag == YES)
+	    warn("overlapping initializations");
+	}
+
+data1:	SDATA in_data datapair
+    |	data1 opt_comma datapair
+    ;
+
+in_data:
+		{ if(parstate == OUTSIDE)
+			{
+			newproc();
+			startproc(PNULL, CLMAIN);
+			}
+		  if(parstate < INDATA)
+			{
+			enddcl();
+			parstate = INDATA;
+			}
+		  overlapflag = NO;
+		}
+	;
+
+datapair:	datalvals SSLASH datarvals SSLASH
+			{ savedata($1, $3); }
+	;
+
+datalvals:	datalval
+		{ $$ = preplval(NULL, $1); }
+	 |	datalvals SCOMMA datalval
+		{ $$ = preplval($1, $3); }
+	 ;
+
+datarvals:	datarval
+	 |	datarvals SCOMMA datarval
+			{
+			  $3->next = $1;
+			  $$ = $3;
+			}
+	 ;
+
+datalval:	dataname
+			{ $$ = mkdlval($1, NULL, NULL); }
+	|	dataname datasubs
+			{ $$ = mkdlval($1, $2, NULL); }
+	|	dataname datarange
+			{ $$ = mkdlval($1, NULL, $2); }
+	|	dataname datasubs datarange
+			{ $$ = mkdlval($1, $2, $3); }
+	|	dataimplieddo
+	;
+
+dataname:	SNAME { $$ = mkdname(toklen, token); }
+	;
+
+datasubs:	SLPAR iconexprlist SRPAR
+			{ $$ = revvlist($2); }
+	;
+
+datarange:	SLPAR opticonexpr SCOLON opticonexpr SRPAR
+			{ $$ = mkdrange($2, $4); }
+	 ;
+
+iconexprlist:	iconexpr
+			{
+			  $$ = prepvexpr(NULL, $1);
+			}
+	    |	iconexprlist SCOMMA iconexpr
+			{
+			  $$ = prepvexpr($1, $3);
+			}
+	    ;
+
+opticonexpr:			{ $$ = NULL; }
+	   |	iconexpr	{ $$ = $1; }
+	   ;
+
+dataimplieddo:	SLPAR dlist SCOMMA dataname SEQUALS iconexprlist SRPAR
+		{ $$ = mkdatado($2, $4, $6); }
+	     ;
+
+dlist:	dataelt
+	{ $$ = preplval(NULL, $1); }
+     |	dlist SCOMMA dataelt
+	{ $$ = preplval($1, $3); }
+     ;
+
+dataelt:	dataname datasubs
+		{ $$ = mkdlval($1, $2, NULL); }
+       |	dataname datarange
+		{ $$ = mkdlval($1, NULL, $2); }
+       |	dataname datasubs datarange
+		{ $$ = mkdlval($1, $2, $3); }
+       |	dataimplieddo
+       ;
+
+datarval:	datavalue
+			{
+			  static dvalue one = { DVALUE, NORMAL, 1 };
+
+			  $$ = mkdrval(&one, $1);
+			}
+	|	dataname SSTAR datavalue
+			{
+			  $$ = mkdrval($1, $3);
+			  frvexpr($1);
+			}
+	|	unsignedint SSTAR datavalue
+			{
+			  $$ = mkdrval($1, $3);
+			  frvexpr($1);
+			}
+	;
+
+datavalue:	dataname
+			{
+			  $$ = evparam($1);
+			  free((char *) $1);
+			}
+	 |	int_const
+			{
+			  $$ = ivaltoicon($1);
+			  frvexpr($1);
+			}
+
+	 |	real_const
+	 |	complex_const
+	 |	STRUE		{ $$ = mklogcon(1); }
+	 |	SFALSE		{ $$ = mklogcon(0); }
+	 |	SHOLLERITH	{ $$ = mkstrcon(toklen, token); }
+	 |	SSTRING		{ $$ = mkstrcon(toklen, token); }
+	 |	bit_const
+	 ;
+
+int_const:	unsignedint
+	 |	SPLUS unsignedint
+			{ $$ = $2; }
+	 |	SMINUS unsignedint
+			{
+			  $$ = negival($2);
+			  frvexpr($2);
+			}
+				
+	 ;
+
+unsignedint:	SICON { $$ = evicon(toklen, token); }
+	   ;
+
+real_const:	unsignedreal
+	  |	SPLUS unsignedreal
+			{ $$ = $2; }
+	  |	SMINUS unsignedreal
+			{
+			  consnegop($2);
+			  $$ = $2;
+			}
+	  ;
+
+unsignedreal:	SRCON { $$ = mkrealcon(TYREAL, convcd(toklen, token)); }
+	    |	SDCON { $$ = mkrealcon(TYDREAL, convcd(toklen, token)); }
+	    ;
+
+bit_const:	SHEXCON { $$ = mkbitcon(4, toklen, token); }
+	 |	SOCTCON { $$ = mkbitcon(3, toklen, token); }
+	 |	SBITCON { $$ = mkbitcon(1, toklen, token); }
+	 ;
+
+iconexpr:	iconterm
+	|	SPLUS iconterm
+			{ $$ = $2; }
+	|	SMINUS iconterm
+			{ $$ = mkdexpr(OPNEG, NULL, $2); }
+	|	iconexpr SPLUS iconterm
+			{ $$ = mkdexpr(OPPLUS, $1, $3); }
+	|	iconexpr SMINUS iconterm
+			{ $$ = mkdexpr(OPMINUS, $1, $3); }
+	;
+
+iconterm:	iconfactor
+	|	iconterm SSTAR iconfactor
+			{ $$ = mkdexpr(OPSTAR, $1, $3); }
+	|	iconterm SSLASH iconfactor
+			{ $$ = mkdexpr(OPSLASH, $1, $3); }
+	;
+
+iconfactor:	iconprimary
+	  |	iconprimary SPOWER iconfactor
+			{ $$ = mkdexpr(OPPOWER, $1, $3); }
+	  ;
+
+iconprimary:	SICON
+			{ $$ = evicon(toklen, token); }
+	   |	dataname
+	   |	SLPAR iconexpr SRPAR
+			{ $$ = $2; }
+	   ;
+/*
+*	@(#)gram.expr	1.3	(ULTRIX)	1/15/86
+*/
+
+/************************************************************************
+ *									*
+ *			Copyright (c) 1986 by				*
+ *		Digital Equipment Corporation, Maynard, MA		*
+ *			All rights reserved.				*
+ *									*
+ *   This software is furnished under a license and may be used and	*
+ *   copied  only  in accordance with the terms of such license and	*
+ *   with the  inclusion  of  the  above  copyright  notice.   This	*
+ *   software  or  any  other copies thereof may not be provided or	*
+ *   otherwise made available to any other person.  No title to and	*
+ *   ownership of the software is hereby transferred.			*
+ *									*
+ *   This software is  derived  from  software  received  from  the	*
+ *   University    of   California,   Berkeley,   and   from   Bell	*
+ *   Laboratories.  Use, duplication, or disclosure is  subject  to	*
+ *   restrictions  under  license  agreements  with  University  of	*
+ *   California and with AT&T.						*
+ *									*
+ *   The information in this software is subject to change  without	*
+ *   notice  and should not be construed as a commitment by Digital	*
+ *   Equipment Corporation.						*
+ *									*
+ *   Digital assumes no responsibility for the use  or  reliability	*
+ *   of its software on equipment which is not supplied by Digital.	*
+ *									*
+ ************************************************************************/
+
+/************************************************************************
+*
+*			Modification History
+*
+*	David Metsky		14-Jan-86
+*
+* 001	Replaced old version with BSD 4.3 version as part of upgrade.
+*
+*	Based on:	gram.expr	5.1		6/7/85
+*
+*************************************************************************/
+
+/*
+ * gram.expr
+ *
+ * Grammar for expressions, f77 compiler pass 1, 4.2 BSD.
+ *
+ * University of Utah CS Dept modification history:
+ *
+ * $Log:	gram.expr,v $
+ * Revision 3.2  85/02/15  19:08:53  donn
+ * Put OPPAREN operators in trees when not optimizing as well as when
+ * optimizing -- this allows '(1)' to produce a writable temporary instead
+ * of a read-only constant when passed as an argument to a subroutine.
+ * 
+ * Revision 3.1  84/10/13  00:42:08  donn
+ * Installed Jerry Berkman's version with cosmetic changes.
+ * 
+ * Revision 1.2  84/08/04  21:27:05  donn
+ * Added Jerry Berkman's fix to stop complaints about parentheses in
+ * declarations.
+ * 
+ */
+
+funarglist:
+		{ $$ = 0; }
+	| funargs
+	;
+
+funargs:  expr
+		{ $$ = mkchain($1, CHNULL); }
+	| funargs SCOMMA expr
+		{ $$ = hookup($1, mkchain($3,CHNULL) ); }
+	;
+
+
+expr:	  uexpr
+	| SLPAR expr SRPAR
+		{ if (parstate != INDCL)
+			$$ = mkexpr(OPPAREN, $2, ENULL);
+		  else $$ = $2;
+		}
+	| complex_const
+	;
+
+uexpr:	  lhs
+	| simple_const
+	| expr addop expr   %prec SPLUS
+		{ $$ = mkexpr($2, $1, $3); }
+	| expr SSTAR expr
+		{ $$ = mkexpr(OPSTAR, $1, $3); }
+	| expr SSLASH expr
+		{ $$ = mkexpr(OPSLASH, $1, $3); }
+	| expr SPOWER expr
+		{ $$ = mkexpr(OPPOWER, $1, $3); }
+	| addop expr  %prec SSTAR
+		{ if($1 == OPMINUS)
+			$$ = mkexpr(OPNEG, $2, ENULL);
+		  else 	$$ = $2;
+		}
+	| expr relop expr  %prec SEQ
+		{ $$ = mkexpr($2, $1, $3); }
+	| expr SEQV expr
+		{ NO66(".EQV. operator");
+		  $$ = mkexpr(OPEQV, $1,$3); }
+	| expr SNEQV expr
+		{ NO66(".NEQV. operator");
+		  $$ = mkexpr(OPNEQV, $1, $3); }
+	| expr SOR expr
+		{ $$ = mkexpr(OPOR, $1, $3); }
+	| expr SAND expr
+		{ $$ = mkexpr(OPAND, $1, $3); }
+	| SNOT expr
+		{ $$ = mkexpr(OPNOT, $2, ENULL); }
+	| expr SCONCAT expr
+		{ NO66("concatenation operator //");
+		  $$ = mkexpr(OPCONCAT, $1, $3); }
+	;
+
+addop:	  SPLUS		{ $$ = OPPLUS; }
+	| SMINUS	{ $$ = OPMINUS; }
+	;
+
+relop:	  SEQ	{ $$ = OPEQ; }
+	| SGT	{ $$ = OPGT; }
+	| SLT	{ $$ = OPLT; }
+	| SGE	{ $$ = OPGE; }
+	| SLE	{ $$ = OPLE; }
+	| SNE	{ $$ = OPNE; }
+	;
+
+lhs:	 name
+		{ $$ = mkprim($1, PNULL, CHNULL); }
+	| name substring
+		{ NO66("substring operator :");
+		  if( $1->vclass != CLPARAM ) {
+		  	$$ = mkprim($1, PNULL, $2);
+		  } else {
+			errstr("substring of parameter %s",
+				varstr(VL,$1->varname) );
+			YYERROR ;
+		  }
+		}
+	| name SLPAR funarglist SRPAR
+		{ if( $1->vclass != CLPARAM ) {
+		  	$$ = mkprim($1, mklist($3), CHNULL);
+		  } else {
+			errstr("can not subscript parameter %s",
+				varstr(VL,$1->varname) );
+			YYERROR ;
+		  }
+		}
+	| name SLPAR funarglist SRPAR substring
+		{ if( $1->vclass != CLPARAM ) {
+		  	NO66("substring operator :");
+		  	$$ = mkprim($1, mklist($3), $5);
+		  } else {
+			errstr("can not subscript parameter %s",
+				varstr(VL,$1->varname) );
+			YYERROR ;
+		  }
+		}
+	;
+
+substring:  SLPAR opt_expr SCOLON opt_expr SRPAR
+		{ $$ = mkchain($2, mkchain($4,CHNULL)); }
+	;
+
+opt_expr:
+		{ $$ = 0; }
+	| expr
+	;
+
+
+simple_const:   STRUE	{ $$ = mklogcon(1); }
+	| SFALSE	{ $$ = mklogcon(0); }
+	| SHOLLERITH  { $$ = mkstrcon(toklen, token); }
+	| SICON	= { $$ = mkintcon( convci(toklen, token) ); }
+	| SRCON	= { $$ = mkrealcon(TYREAL, convcd(toklen, token)); }
+	| SDCON	= { $$ = mkrealcon(TYDREAL, convcd(toklen, token)); }
+	;
+
+complex_const:  SLPAR uexpr SCOMMA uexpr SRPAR
+		{ $$ = mkcxcon($2,$4); }
+	;
+
+
+fexpr:	  unpar_fexpr
+	| SLPAR fexpr SRPAR
+		{ if (optimflag && parstate != INDCL)
+			$$ = mkexpr(OPPAREN, $2, ENULL);
+		  else $$ = $2;
+		}
+	;
+
+unpar_fexpr:	  lhs
+	| simple_const
+	| fexpr addop fexpr   %prec SPLUS
+		{ $$ = mkexpr($2, $1, $3); }
+	| fexpr SSTAR fexpr
+		{ $$ = mkexpr(OPSTAR, $1, $3); }
+	| fexpr SSLASH fexpr
+		{ $$ = mkexpr(OPSLASH, $1, $3); }
+	| fexpr SPOWER fexpr
+		{ $$ = mkexpr(OPPOWER, $1, $3); }
+	| addop fexpr  %prec SSTAR
+		{ if($1 == OPMINUS)
+			$$ = mkexpr(OPNEG, $2, ENULL);
+		  else	$$ = $2;
+		}
+	| fexpr SCONCAT fexpr
+		{ NO66("concatenation operator //");
+		  $$ = mkexpr(OPCONCAT, $1, $3); }
+	;
+ /* "@(#)gram.exec	4.1	(ULTRIX)	7/17/90" */ 
+/************************************************************************
+ *									*
+ *			Copyright (c) 1984 by				*
+ *		Digital Equipment Corporation, Maynard, MA		*
+ *			All rights reserved.				*
+ *									*
+ *   This software is furnished under a license and may be used and	*
+ *   copied  only  in accordance with the terms of such license and	*
+ *   with the  inclusion  of  the  above  copyright  notice.   This	*
+ *   software  or  any  other copies thereof may not be provided or	*
+ *   otherwise made available to any other person.  No title to and	*
+ *   ownership of the software is hereby transferred.			*
+ *									*
+ *   This software is  derived  from  software  received  from  the	*
+ *   University    of   California,   Berkeley,   and   from   Bell	*
+ *   Laboratories.  Use, duplication, or disclosure is  subject  to	*
+ *   restrictions  under  license  agreements  with  University  of	*
+ *   California and with AT&T.						*
+ *									*
+ *   The information in this software is subject to change  without	*
+ *   notice  and should not be construed as a commitment by Digital	*
+ *   Equipment Corporation.						*
+ *									*
+ *   Digital assumes no responsibility for the use  or  reliability	*
+ *   of its software on equipment which is not supplied by Digital.	*
+ *									*
+ ************************************************************************/
+/*	@(#)gram.exec	4.3 (Berkeley) 8/7/84	*/
+/*
+ * gram.exec
+ *
+ * Grammar for executable statements, f77 compiler pass 1, 4.2 BSD.
+ *
+ * University of Utah CS Dept modification history:
+ *
+ * $Log:	gram.exec,v $
+ * Revision 3.1  84/10/13  00:36:41  donn
+ * Installed Jerry Berkman's version; preserved comment header.
+ * 
+ * Revision 1.3  84/08/06  18:38:43  donn
+ * Fixed a bug in Jerry Berkman's label fixes which caused the same label to
+ * be generated twice for some types of logical IF statements.
+ * 
+ * Revision 1.2  84/08/04  21:09:57  donn
+ * Added fixes from Jerry Berkman to allow proper ASSIGNS from format
+ * statement numbers.
+ * 
+ */
+
+exec:	  iffable
+	| SDO end_spec intonlyon label intonlyoff opt_comma dospec
+		{
+		if( !do_name_err ) {
+		   if($4->labdefined)
+			execerr("no backward DO loops", CNULL);
+		   $4->blklevel = blklevel+1;
+		   exdo($4->labelno, $7);
+		   }
+		}
+	| logif iffable
+		{ exendif();  thiswasbranch = NO; }
+	| logif STHEN
+	| SELSEIF end_spec SLPAR expr SRPAR STHEN
+		{ exelif($4); lastwasbranch = NO; }
+	| SELSE end_spec
+		{ exelse(); lastwasbranch = NO; }
+	| SENDIF end_spec
+		{ exendif(); lastwasbranch = NO; }
+	;
+
+logif:	  SLOGIF end_spec SLPAR expr SRPAR
+		{ exif($4); }
+	;
+
+dospec:	  name SEQUALS exprlist
+		{ if( $1->vclass != CLPARAM ) {
+			$$ = mkchain($1, $3);
+			do_name_err = 0;
+		  } else {
+			err("symbolic constant not allowed as DO variable");
+		 	do_name_err = 1;
+		  }
+		}
+	;
+
+iffable:  let lhs SEQUALS expr
+		{ exequals($2, $4); }
+	| SASSIGN end_spec assignlabel STO name
+		{ if( $5->vclass != CLPARAM ) {
+			exassign($5, $3);
+		  } else {
+			err("can only assign to a variable");
+		  }
+		}
+	| SCONTINUE end_spec
+	| goto
+	| io
+		{ inioctl = NO; }
+	| SARITHIF end_spec SLPAR expr SRPAR label SCOMMA label SCOMMA label
+		{ exarif($4, $6, $8, $10);  thiswasbranch = YES; }
+	| call
+		{ excall($1, PNULL, 0, labarray); }
+	| call SLPAR SRPAR
+		{ excall($1, PNULL, 0, labarray); }
+	| call SLPAR callarglist SRPAR
+		{ if(nstars < MAXLABLIST)
+			excall($1, mklist($3), nstars, labarray);
+		  else
+			err("too many alternate returns");
+		}
+	| SRETURN end_spec opt_expr
+		{ exreturn($3);  thiswasbranch = YES; }
+	| stop end_spec opt_expr
+		{ exstop($1, $3);  thiswasbranch = $1; }
+	;
+
+assignlabel:   SICON
+		{ $$ = mklabel( convci(toklen, token) ); }
+	;
+
+let:	  SLET
+		{ if(parstate == OUTSIDE)
+			{
+			newproc();
+			startproc(PNULL, CLMAIN);
+			}
+		  if( yystno != 0 && thislabel->labtype != LABFORMAT)
+			if (optimflag)
+				optbuff (SKLABEL, 0, thislabel->labelno, 1);
+			else
+				putlabel(thislabel->labelno);
+		}
+	;
+
+goto:	  SGOTO end_spec label
+		{ exgoto($3);  thiswasbranch = YES; }
+	| SASGOTO end_spec name
+		{ if( $3->vclass != CLPARAM ) {
+			exasgoto($3);  thiswasbranch = YES;
+		  } else {
+			err("must go to label or assigned variable");
+		  }
+		}
+	| SASGOTO end_spec name opt_comma SLPAR labellist SRPAR
+		{ if( $3->vclass != CLPARAM ) {
+			exasgoto($3);  thiswasbranch = YES;
+		  } else {
+			err("must go to label or assigned variable");
+		  }
+		}
+	| SCOMPGOTO end_spec SLPAR labellist SRPAR opt_comma expr
+		{ if(nstars < MAXLABLIST)
+			if (optimflag)
+			    optbuff (SKCMGOTO, fixtype($7), nstars, labarray);
+			else
+			    putcmgo (fixtype($7), nstars, labarray);
+		  else
+			err("computed GOTO list too long");
+		}
+	;
+
+opt_comma:
+	| SCOMMA
+	;
+
+call:	  SCALL end_spec name
+		{ nstars = 0; $$ = $3; }
+	;
+
+callarglist:  callarg
+		{ $$ = ($1 ? mkchain($1,CHNULL) : CHNULL); }
+	| callarglist SCOMMA callarg
+		{ if($3)
+			if($1) $$ = hookup($1, mkchain($3,CHNULL));
+			else $$ = mkchain($3,CHNULL);
+		  else
+			$$ = $1;
+		}
+	;
+
+callarg:  expr
+	| SSTAR label
+		{ if(nstars<MAXLABLIST) labarray[nstars++] = $2; $$ = 0; }
+	;
+
+stop:	  SPAUSE
+		{ $$ = 0; }
+	| SSTOP
+		{ $$ = 1; }
+	;
+
+exprlist:  expr
+		{ $$ = mkchain($1, CHNULL); }
+	| exprlist SCOMMA expr
+		{ $$ = hookup($1, mkchain($3,CHNULL) ); }
+	;
+
+end_spec:
+		{ if(parstate == OUTSIDE)
+			{
+			newproc();
+			startproc(PNULL, CLMAIN);
+			}
+		  if(parstate < INDATA) enddcl();
+		  if( yystno != 0 && thislabel->labtype != LABFORMAT)
+			if (optimflag)
+				optbuff (SKLABEL, 0, thislabel->labelno, 1);
+			else
+				putlabel(thislabel->labelno);
+		  yystno = 0;
+		}
+	;
+
+intonlyon:
+		{ intonly = YES; }
+	;
+
+intonlyoff:
+		{ intonly = NO; }
+	;
+  /*  Input/Output Statements */
+
+io:	  io1
+		{ endio(); }
+	;
+
+io1:	  iofmove ioctl
+	| iofmove unpar_fexpr
+		{ ioclause(IOSUNIT, $2); endioctl(); }
+	| iofmove SSTAR
+		{ ioclause(IOSUNIT, PNULL); endioctl(); }
+	| iofmove SPOWER
+		{ ioclause(IOSUNIT, IOSTDERR); endioctl(); }
+	| iofctl ioctl
+	| read ioctl
+		{ doio(PNULL); }
+	| read infmt
+		{ doio(PNULL); }
+	| read ioctl inlist
+		{ doio($3); }
+	| read infmt SCOMMA inlist
+		{ doio($4); }
+	| read ioctl SCOMMA inlist
+		{ doio($4); }
+	| write ioctl
+		{ doio(PNULL); }
+	| write ioctl outlist
+		{ doio($3); }
+	| print
+		{ doio(PNULL); }
+	| print SCOMMA outlist
+		{ doio($3); }
+	;
+
+iofmove:   fmkwd end_spec in_ioctl
+	;
+
+fmkwd:	  SBACKSPACE
+		{ iostmt = IOBACKSPACE; }
+	| SREWIND
+		{ iostmt = IOREWIND; }
+	| SENDFILE
+		{ iostmt = IOENDFILE; }
+	;
+
+iofctl:  ctlkwd end_spec in_ioctl
+	;
+
+ctlkwd:	  SINQUIRE
+		{ iostmt = IOINQUIRE; }
+	| SOPEN
+		{ iostmt = IOOPEN; }
+	| SCLOSE
+		{ iostmt = IOCLOSE; }
+	;
+
+infmt:	  unpar_fexpr
+		{
+		ioclause(IOSUNIT, PNULL);
+		ioclause(IOSFMT, $1);
+		endioctl();
+		}
+	| SSTAR
+		{
+		ioclause(IOSUNIT, PNULL);
+		ioclause(IOSFMT, PNULL);
+		endioctl();
+		}
+	;
+
+ioctl:	  SLPAR fexpr SRPAR
+		{ if($2->headblock.vtype == TYCHAR)
+			{
+			ioclause(IOSUNIT, PNULL);
+			ioclause(IOSFMT, $2);
+			}
+		  else
+			ioclause(IOSUNIT, $2);
+		  endioctl();
+		}
+	| SLPAR ctllist SRPAR
+		{ endioctl(); }
+	;
+
+ctllist:  ioclause
+	| ctllist SCOMMA ioclause
+	;
+
+ioclause:  fexpr
+		{ ioclause(IOSPOSITIONAL, $1); }
+	| SSTAR
+		{ ioclause(IOSPOSITIONAL, PNULL); }
+	| SPOWER
+		{ ioclause(IOSPOSITIONAL, IOSTDERR); }
+	| nameeq expr
+		{ ioclause($1, $2); }
+	| nameeq SSTAR
+		{ ioclause($1, PNULL); }
+	| nameeq SPOWER
+		{ ioclause($1, IOSTDERR); }
+	;
+
+nameeq:  SNAMEEQ
+		{ $$ = iocname(); }
+	;
+
+read:	  SREAD end_spec in_ioctl
+		{ iostmt = IOREAD; }
+	;
+
+write:	  SWRITE end_spec in_ioctl
+		{ iostmt = IOWRITE; }
+	;
+
+print:	  SPRINT end_spec fexpr in_ioctl
+		{
+		iostmt = IOWRITE;
+		ioclause(IOSUNIT, PNULL);
+		ioclause(IOSFMT, $3);
+		endioctl();
+		}
+	| SPRINT end_spec SSTAR in_ioctl
+		{
+		iostmt = IOWRITE;
+		ioclause(IOSUNIT, PNULL);
+		ioclause(IOSFMT, PNULL);
+		endioctl();
+		}
+	;
+
+inlist:	  inelt
+		{ $$ = mkchain($1, CHNULL); }
+	| inlist SCOMMA inelt
+		{ $$ = hookup($1, mkchain($3, CHNULL)); }
+	;
+
+inelt:	  lhs
+		{ $$ = (tagptr) $1; }
+	| SLPAR inlist SCOMMA dospec SRPAR
+		{ $$ = (tagptr) mkiodo($4,$2); }
+	;
+
+outlist:  uexpr
+		{ $$ = mkchain($1, CHNULL); }
+	| other
+		{ $$ = mkchain($1, CHNULL); }
+	| out2
+	;
+
+out2:	  uexpr SCOMMA uexpr
+		{ $$ = mkchain($1, mkchain($3, CHNULL) ); }
+	| uexpr SCOMMA other
+		{ $$ = mkchain($1, mkchain($3, CHNULL) ); }
+	| other SCOMMA uexpr
+		{ $$ = mkchain($1, mkchain($3, CHNULL) ); }
+	| other SCOMMA other
+		{ $$ = mkchain($1, mkchain($3, CHNULL) ); }
+	| out2  SCOMMA uexpr
+		{ $$ = hookup($1, mkchain($3, CHNULL) ); }
+	| out2  SCOMMA other
+		{ $$ = hookup($1, mkchain($3, CHNULL) ); }
+	;
+
+other:	  complex_const
+		{ $$ = (tagptr) $1; }
+	| SLPAR uexpr SCOMMA dospec SRPAR
+		{ $$ = (tagptr) mkiodo($4, mkchain($2, CHNULL) ); }
+	| SLPAR other SCOMMA dospec SRPAR
+		{ $$ = (tagptr) mkiodo($4, mkchain($2, CHNULL) ); }
+	| SLPAR out2  SCOMMA dospec SRPAR
+		{ $$ = (tagptr) mkiodo($4, $2); }
+	;
+
+in_ioctl:
+		{ startioctl(); }
+	;

@@ -1,0 +1,126 @@
+#
+# @(#)SAS.net	4.1	ULTRIX	7/2/90
+# STANDALONE ULTRIX for Network Installation
+#
+machine		vax
+cpu		"VAX3600"
+cpu		"VAX420"
+cpu		"MVAX"
+cpu		"VAX60"
+ident		SAS
+timezone	5 dst
+maxusers	1
+maxuprc		10
+physmem		4
+processors	1
+scs_sysid	32
+options		UFS
+options		EMULFLT
+options		INET
+
+config		vmunix		root on md0a 
+
+#all the adapters and adapter-like items
+adapter		uba0	at nexus?
+adapter		msi0	at nexus?
+adapter		ibus0	at nexus?
+adapter		ibus1	at nexus?
+adapter		ibus2	at nexus?
+adapter		ibus3	at nexus?
+adapter		ibus4	at nexus?
+adapter		ibus5	at nexus?
+adapter		ibus7	at nexus?
+
+#all the controllers and controller-like items
+controller	uda0	at uba0
+controller	dssc0	at msi0		msinode 0
+controller	dssc1	at msi0		msinode 1
+controller	dssc2	at msi0		msinode 2
+controller	dssc3	at msi0		msinode 3
+controller	klesiu0 at uba0
+controller	uq0	at uda0		csr 0172150 vector uqintr
+controller	uq1	at klesiu0	csr 0174500 vector uqintr
+controller	sdc0	at uba0		csr 0x200c0000 vector sdintr
+controller	stc0	at uba0		csr 0x200c0080 vector stintr
+controller	zs0	at uba0		csr 0172520 vector tsintr
+controller	scsi0	at uba0		csr 0x200c0080	vector szintr  
+controller	scsi1	at uba0		csr 0x200c0180	vector szintr  
+controller	sii0	at ibus?	vector sii_intr
+
+#all the disks
+disk		ra0	at mscp		drive 0
+disk		ra1	at mscp		drive 1
+disk		ra2	at mscp		drive 2
+disk		ra3	at mscp		drive 3
+disk		rd0	at sdc0		drive 0
+disk		rd1	at sdc0		drive 1
+disk		rx2	at sdc0		drive 2
+disk		rz0	at scsi0	drive 0
+disk		rz1	at scsi0	drive 1
+disk		rz2	at scsi0	drive 2
+disk		rz3	at scsi0	drive 3
+disk		rz4	at scsi0	drive 4
+disk		rz5	at scsi0	drive 5
+disk		rz6	at scsi0	drive 6
+disk		rz7	at scsi0	drive 7
+disk		rz8	at scsi1	drive 0
+disk		rz9	at scsi1	drive 1
+disk		rz10	at scsi1	drive 2
+disk		rz11	at scsi1	drive 3
+disk		rz12	at scsi1	drive 4
+disk		rz13	at scsi1	drive 5
+disk		rz14	at scsi1	drive 6
+disk		rz15	at scsi1	drive 7
+disk		rz0	at sii0		drive 0
+disk		rz1	at sii0		drive 1
+disk		rz2	at sii0		drive 2
+disk		rz3	at sii0		drive 3
+disk		rz4	at sii0		drive 4
+disk		rz5	at sii0		drive 5
+disk		rz6	at sii0		drive 6
+disk		rz7	at sii0		drive 7
+
+#all the tapes
+tape		tms0	at mscp		drive 0
+tape		st0	at stc0		drive 0
+tape		ts0	at zs0		drive 0
+tape		tz0	at scsi0	drive 0
+tape		tz1	at scsi0	drive 1
+tape		tz2	at scsi0	drive 2
+tape		tz3	at scsi0	drive 3
+tape		tz4	at scsi0	drive 4
+tape		tz5	at scsi0	drive 5
+tape		tz6	at scsi0	drive 6
+tape		tz7	at scsi0	drive 7
+tape		tz8	at scsi1	drive 0
+tape		tz9	at scsi1	drive 1
+tape		tz10	at scsi1	drive 2
+tape		tz11	at scsi1	drive 3
+tape		tz12	at scsi1	drive 4
+tape		tz13	at scsi1	drive 5
+tape		tz14	at scsi1	drive 6
+tape		tz15	at scsi1	drive 7
+
+#all the workstations
+device		qv0	at uba0		csr 0177200 flags 0x0f vector qvkint qvvint
+device		qd0	at uba0		csr 0177400 flags 0x0f vector qddint qdaint qdiint
+device		sm0	at uba0		csr 0x200f0000 flags 0x0f vector smvint
+device		sg0	at uba0		csr 0x3c000000 flags 0x0f vector sgaint sgfint
+device		fg0	at ibus?	flags 0x0f vector fgvint
+
+#all the networks
+device		qe0	at uba0		csr 0174440 vector qeintr
+device		ln0	at ibus?	vector lnintr
+
+#all the terminals
+device		ss0	at uba0		csr 0x200a0000 flags 0x0f vector ssrint ssxint
+device		fc0	at ibus?	flags 0x0f vector fcxrint
+
+#all the pseudo items
+pseudo-device	ufs
+pseudo-device	pty
+pseudo-device	imp
+pseudo-device	inet
+pseudo-device	loop
+pseudo-device	ether
+pseudo-device	md 2048

@@ -1,0 +1,44 @@
+.TH cbreak 3cur 
+.SH Name
+cbreak, nocbreak \- set/clear cbreak mode
+.SH Syntax
+.B
+int cbreak(\|)
+.PP
+.B
+int nocbreak(\|)
+.SH Description
+.NXR "cbreak subroutine"
+.NXR "nocbreak subroutine"
+The routine 
+.PN cbreak 
+puts the terminal into CBREAK mode.
+In this mode, characters typed by the user are immediately available to the
+program and erase/kill character processing is not performed.
+Interrupt and flow control characters are unaffected by this mode.
+.PP
+The routine 
+.PN nocbreak
+disables CBREAK.
+In this case 
+the terminal
+driver will buffer input
+until a newline or carriage return is typed. 
+.PP
+The initial settings that determine whether or not a terminal is
+in CBREAK mode are dependent on the terminal driver implementation.
+As a result of this, 
+it is not possible to determine if a terminal
+is in 
+CBREAK 
+mode, as it is an inherited characteristic.
+It is necessary to call
+.PN cbreak 
+to ensure that the terminal is set to the correct mode for the 
+application.
+.SH Return Values
+The
+.PN cbreak
+and 
+.PN nobreak
+functions return OK on success and ERR on error.

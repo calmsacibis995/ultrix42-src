@@ -1,0 +1,20 @@
+.TH draino 3cur 
+.SH Name
+draino \- wait for output to drain
+.SH Syntax
+.B
+draino(ms)
+.br
+.B
+int ms;
+.SH Description
+.NXR "draino subroutine"
+This function waits until there is only
+.PN ms
+milliseconds worth of output left
+in the output queue.
+The restrictions on the number of milliseconds delay
+are determined by
+.MS napms 3cur .
+.SH See Also
+napms(3cur)

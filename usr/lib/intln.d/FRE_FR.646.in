@@ -1,0 +1,64 @@
+/*
+ * @(#)FRE_FR.646.in	4.1
+ *
+ * This is the International UNIX data base for
+ *
+ * 	FRENCH		ISO646
+ *
+ */
+
+CODESET FRE_FR.646 :
+#include "ISO646.inc"
+
+/*
+ * Giving name and property to the country spesific codes 2/3, 2/4, 4/0, 5/11, 
+ * 5/12, 5/13, 5/14, 6/0, 7/11, 7/12, 7/13 and 7/14
+ */
+pound = 2/3	: CURENCY, PUNCT;	
+dollar = '$'	: CURENCY, PUNCT;
+grave_a = 4/0	: LOWER;
+degree = 5/11	: MISCEL, PUNCT;
+cedil_c = 5/12  : LOWER;
+section = 5/13	: MISCEL, PUNCT;
+circ = '^'	: MISCEL, PUNCT;
+grav_acc = '`'	: MISCEL, PUNCT;
+acute_e = 7/11	: LOWER;
+grave_u = 7/12	: LOWER;
+grave_e = 7/13	: LOWER;
+diaresis = 7/14	: MISCEL, PUNCT;
+END.
+
+COLLATION:
+	/*
+	 * dictionary ordering of characters.
+	 */
+	PRIMARY: nul - space;
+	PRIMARY: dot;
+	PRIMARY: a, grave_a, A;
+	PRIMARY: b, B; PRIMARY: c, cedil_c, C; 	    
+	PRIMARY: d, D; PRIMARY: e, acute_e, grave_e, E; 
+	PRIMARY: f, F; PRIMARY: g, G; PRIMARY: h, H; PRIMARY: i, I; 
+	PRIMARY: j, J; PRIMARY: k, K; PRIMARY: l, L; PRIMARY: m, M; 
+	PRIMARY: n, N; PRIMARY: o, O;
+	PRIMARY: p, P; PRIMARY: q, Q; PRIMARY: r, R;
+	PRIMARY: s, S; PRIMARY: t, T; PRIMARY: u, grave_u, U;
+	PRIMARY: v, V; PRIMARY: w, W; PRIMARY: x, X; PRIMARY: y, Y;
+	PRIMARY: z, Z;
+	PRIMARY: REST;
+END.
+
+#include "FRE.strtab"
+
+#include "tolower.cnv"
+
+CONVERSION toupper:
+	DEFAULT -> SAME;
+	a - z	-> A - Z;
+
+	grave_a -> A;
+	cedil_c -> C;
+	acute_e -> E;
+	grave_e -> E;
+	grave_u -> U;
+END.
+

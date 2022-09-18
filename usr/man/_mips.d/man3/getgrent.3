@@ -1,0 +1,149 @@
+.\" SCCSID: @(#)getgrent.3	8.2	1/28/91
+.\"
+.TH getgrent 3 
+.SH Name
+getgrent, getgrgid, getgrnam, setgrent, endgrent \- get group entry
+.SH Syntax
+.nf
+.B #include <grp.h>
+.PP
+.B struct group *getgrent()
+.PP
+.B struct group *getgrgid(\fIgid\fP)
+.B gid_t \fIgid\fP;
+.PP
+.B struct group *getgrnam(\fIname\fP)
+.B char *\fIname\fP;
+.PP
+.B void setgrent()
+.PP
+.B void endgrent()
+.fi
+.SH Description
+.NXR "getgrent subroutine"
+.NXR "getgrgid subroutine"
+.NXR "getgrnam subroutine"
+.NXR "setgrent subroutine"
+.NXR "endgrent subroutine"
+.NXR "group file (general)" "getting entry"
+The
+.PN getgrent ,
+.PN getgrgid
+and
+.PN getgrnam
+subroutines each return pointers
+to an object
+with the following structure
+containing the broken-out
+fields of a line in the group database:
+.EX
+
+struct  group { /* see getgrent(3) */
+        char    *gr_name;
+        char    *gr_passwd;
+        int     gr_gid;
+        char    **gr_mem;
+};
+
+struct group *getgrent(), *getgrgid(), *getgrnam();
+
+.EE
+.PP
+The members of this structure are:
+.TP \w'gr_passwd'u+2n
+gr_name
+The name of the group.
+.br
+.ns
+.TP \w'gr_passwd'u+2n
+gr_passwd
+The encrypted password of the group.
+.br
+.ns
+.TP \w'gr_passwd'u+2n
+gr_gid
+The numerical group-ID.
+.br
+.ns
+.TP \w'gr_passwd'u+2n
+gr_mem
+Null-terminated vector
+of pointers to the individual
+member names.
+.PP
+A call to
+.PN setgrent
+has the effect of rewinding
+the group file
+to allow
+repeated searches.
+The
+.PN endgrent
+may be called to
+close the group database
+when processing is complete.
+.PP
+The
+.PN getgrent
+subroutine simply reads the next
+line while
+.PN getgrgid
+and
+.PN getgrnam
+search until a matching
+.I gid
+or
+.I name
+is found
+(or until EOF is encountered).
+The
+.PN getgrent
+subroutine keeps a pointer in the database, allowing
+successive calls to be used 
+to search the entire file.
+.PP
+A call to 
+.PN setgrent
+must be made before a 
+.PN while
+loop using 
+.PN getgrent
+in order to perform initialization and an
+.PN endgrent
+must be used after the loop.  Both
+.PN getgrgid
+and 
+.PN getgrnam
+make calls to 
+.PN setgrent 
+and 
+.PN endgrent .
+.SH Restrictions
+.NXR "getgrent subroutine" "restrictions"
+All information
+is contained in a static area
+so it must be copied if it is
+to be saved.
+.PP
+If YP is running, 
+.PN getgrent
+does not return the entries in any particular order.
+See the 
+.I Guide to the Yellow Pages Service 
+for setup information.
+.PP
+The group database may also be distributed via the BIND/Hesiod
+naming service.  See the
+.I Guide to the BIND/Hesiod Service
+for more information.
+.SH Return Values
+A null pointer
+(0) is returned on EOF or error.
+.SH Files
+.PN /etc/group
+.SH See Also
+group(5), svc.conf(5)
+.br
+.I Guide to the BIND/Hesiod Service
+.br
+.I Guide to the Yellow Pages Service

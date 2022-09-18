@@ -1,0 +1,32 @@
+.TH scroll 3cur 
+.SH Name
+scroll \- scroll window
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int scroll(win)
+.br
+.B
+WINDOW \(**win;
+.SH Description
+.NXR "scroll subroutine"
+The window is scrolled up one line.
+This involves moving the lines in the window data structure.
+.PP
+You would not normally use this routine 
+as the terminal scrolls automatically if 
+.PN scrollok 
+is enabled.
+A typical case where 
+.PN scroll
+might be used is with a screen editor.
+.SH Return Values
+The
+.PN scroll
+function returns OK on success and ERR on error.
+.SH See Also
+scrollok(3cur)

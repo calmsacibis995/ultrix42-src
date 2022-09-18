@@ -1,0 +1,149 @@
+.\" SCCSID: @(#)getnetent.3n	8.2	1/29/91
+.TH getnetent 3n
+.SH Name
+getnetent, getnetbyaddr, getnetbyname, setnetent, endnetent \- get networks
+entry
+.SH Syntax
+.nf
+.B #include <netdb.h>
+.PP
+.B struct netent *getnetent()
+.PP
+.B struct netent *getnetbyname(\fIname\fP)
+.B char *\fIname\fP;
+.PP
+.B struct netent *getnetbyaddr(\fInet\fP, \fItype\fP)
+.B long \fInet\fP; int \fItype\fP;
+.PP
+.B void setnetent(\fIstayopen\fP)
+.B int \fIstayopen\fP;
+.PP
+.B void endnetent()
+.fi
+.SH Description
+.NXR "getnetent subroutine"
+.NXR "getnetbyaddr subroutine"
+.NXR "getnetbyname subroutine"
+.NXR "setnetent subroutine"
+.NXR "endnetent subroutine"
+.NXR "networks file" "getting entry"
+The
+.PN getnetent ,
+.PN getnetbyname ,
+and
+.PN getnetbyaddr
+subroutines
+each return a pointer to an object with the
+following structure
+containing the broken-out
+fields of a line in the 
+.PN networks 
+database.
+.EX
+struct	netent {
+	char	*n_name;	/* official name of net */
+	char	**n_aliases;	/* alias list */
+	int	n_addrtype;	/* net number type */
+	long	n_net;		/* net number */
+};
+.EE
+.PP
+The members of this structure are:
+.TP \w'n_addrtype'u+2n
+n_name
+The official name of the network.
+.TP \w'n_addrtype'u+2n
+n_aliases
+A zero terminated list of alternate names for the network.
+.TP \w'n_addrtype'u+2n
+n_addrtype
+The type of the network number returned: AF_INET.
+.TP \w'n_addrtype'u+2n
+n_net
+The network number.  Network numbers are returned in machine byte
+order.
+.PP
+If the
+.I stayopen
+flag on a 
+.PN setnetent
+subroutine is NULL, the
+.PN networks
+database is opened.  Otherwise the
+.PN setnetent
+has the effect of rewinding the 
+.PN networks 
+database.
+The
+.PN endnetent
+may be called to
+close the 
+.PN networks 
+database when processing is complete.
+.PP
+The
+.PN getnetent
+subroutine simply reads the next
+line while
+.PN getnetbyname
+and
+.PN getnetbyaddr
+search until a matching
+.I name
+or
+.I net
+number is found
+(or until EOF is encountered).  The \fItype\fP must be AF_INET.
+The
+.PN getnetent
+subroutine keeps a pointer in the database, allowing
+successive calls to be used 
+to search the entire file.
+.PP
+A call to
+.PN setnetent
+must be made before a
+.PN while
+loop using
+.PN getnetent
+in order to perform initialization and an
+.PN endnetent
+must be used after the loop.  Both
+.PN getnetbyname
+and
+.PN getnetbyaddr
+make calls to
+.PN setnetent
+and
+.PN endnetent .
+.SH Restrictions
+.NXR "getnetent subroutine" "restrictions"
+All information
+is contained in a static area
+so it must be copied if it is
+to be saved.  Only Internet network
+numbers are currently understood.
+.PP
+If YP is running, 
+.PN getnetent
+does not return the entries in any particular order.
+See the 
+.I Guide to the Yellow Pages Service
+for setup information.
+.PP
+The networks database may also be distributed via the BIND/Hesiod
+naming service.  See the
+.I Guide to the BIND/Hesiod Service
+for more information.
+.SH Return Values
+Null pointer
+(0) returned on EOF or error.
+.SH Files
+.PN /etc/networks
+.SH See Also
+networks(5), svc.conf(5)
+.br
+.I Guide to the BIND/Hesiod Service
+.br
+.I Guide to the Yellow Pages Service
+ 

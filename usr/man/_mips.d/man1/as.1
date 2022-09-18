@@ -1,0 +1,361 @@
+.TH as 1 RISC
+.SH Name
+as \- RISC assembler
+.SH Syntax
+.B as
+[ option ] ... 
+.I file
+.SH Description
+.NXR "as command (RISC)"
+The assembler,
+.B as ,
+produces RISC object code in RISC extended 
+.B coff
+format (the default) and binary assembly language. The 
+.B as
+assembler does not run the loader.  It accepts the argument
+.I file
+which is a symbolic assembly language source program.  When assembled,
+it produces an object file.
+.PP
+The assembler,
+.B as,
+always defines the C preprocessor macros
+.BR mips ,
+.BR host_mips ,
+.B unix
+and
+.B LANGUAGE_ASSEMBLY
+to the C macro preprocessor.
+It also defines
+.B SYSTYPE_BSD
+by default, but this changes if the
+.BI \-systype " name"
+option is specified (see the OPTIONS section).
+.SH Options
+The following options are available with 
+.B as.
+In addition, these options can be used with 
+.MS cc 1 .
+.TP 15
+.B \-g0
+Do not produce symbol table information for symbolic
+debugging.  This is the default.
+.TP 15
+.B \-g1
+Produce additional symbol table information for accurate
+but limited symbolic debugging of partially optimized code.
+.TP 15
+.BR \-g " or " \-g2
+Produce additional symbol table information
+for full symbolic debugging and do not perform optimizations that
+limit full symbolic debugging.
+.TP 15
+.B \-g3
+Produce additional symbol table information for full
+symbolic debugging for fully optimized code.  This option makes the
+debugger inaccurate.
+.TP 15
+.B \-w
+Suppress warning messages.
+.TP 15
+.B \-P
+Run only the C macro preprocessor and place the result in a file.  If the
+source file has a suffix, change the suffix to .i.  If the source file does
+not have a suffix, an .i is added to the source file name.  The .i file
+does not contain number lines (#). This sets the 
+.B \-cpp
+option.
+.TP 15
+.B \-E
+Run only the C macro preprocessor on the file and send the result to the
+standard output.
+This sets the  
+.B \-cpp
+option.
+.TP 15
+.BI \-o " output"
+Name the final output file
+.IR output .
+If this option is used, the a.out file is not affected.
+.TP 15
+.BI \-D name=def
+.br
+.ns
+.TP 15
+.BI \-D \*Sname
+Define the
+.I name
+to the C macro preprocessor,
+as if by #define. If definition is not given, the name is defined as 1.
+.TP 15
+.BI \-U \*Sname
+Remove any initial definition of
+.IR name .
+.TP 15
+.BI \-I \*Sdir
+Search for #include files
+whose names do not begin with slash (/)
+in the directory of the
+.I file
+argument, then in directories specified in 
+.B \-I
+options,
+and finally in the standard directory
+.RB ( /usr/include ).
+.TP 15
+.B \-I
+Do not search for #include files in the standard
+directory
+.RB ( /usr/include ).
+.TP 15
+.BI \-G " num"
+Specify the maximum size, in bytes, of a data item that is to be accessed from
+the global pointer.  The 
+.I num
+argument is interpreted as a decimal number.  If
+.I num
+is zero, data is not accessed from the global pointer.  The default
+value for
+.I num
+is 8 bytes.
+.TP 15
+.B \-v
+Print the passes as they execute with their arguments, input files, and 
+output files.
+Also prints resource usage in the C-shell
+.I time
+format.
+.TP 15
+.B \-V
+Print the version of the driver and the versions of all passes.  This is 
+performed with the
+.MS what 1
+command.
+.TP 15
+.B \-cpp
+Run the C macro preprocessor on assembly source files before compiling.
+This is the default for
+.MS as 1 .
+.TP 15
+.B \-nocpp
+Do not run the C macro preprocessor on assembly source files before compiling.
+.PP
+Either object file target byte ordering can be produced by
+.B as.
+The default target byte ordering matches the machine where the assembler is
+running.  The options
+.B \-EB
+and
+.B \-EL
+specify the target byte ordering (big-endian and little-endian,
+respectively).
+The assembler also defines a C preprocessor macro for the
+target byte ordering.  These C preprocessor macros are
+.B MIPSEB
+and
+.B MIPSEL
+for big-endian and little-endian byte ordering respectively.
+.TP 15
+.B \-EB
+Produce object files targeted for big-endian byte ordering.  The C preprocessor
+macro
+.B MIPSEB
+is defined by the assembler.
+.TP 15
+.B \-EL
+Produce object files targeted for little-endian byte ordering.  The
+C preprocessor macro
+.B MIPSEL
+is defined by the assembler.
+.PP
+The following option can only be used with the 
+.B as
+command:
+.PP
+.TP 15
+.B \-m
+Apply the M4 preprocessor to the source file before assembling it.
+.PP
+The following option is primarily used to provide UNIX compilation
+environments other than the native compilation environment.
+.TP 15
+.BI \-systype " name"
+Use the named compilation environment
+.I name.
+See
+.MS compilation 7
+for the compilation environments that are supported and their
+.IR name s.
+This has the effect of changing the standard directory for #include
+files.
+The new items are located in their usual paths but with
+.RI / name
+prepended to their paths.
+Also a preprocessor macro of the form
+.BI SYSTYPE_ NAME
+(with
+.I name
+capitalized) is defined in place of the default
+.B SYSTYPE_BSD.
+.PP
+The options described below primarily aid compiler
+development and are not generally used:
+.TP 15
+.BI \-H c
+Halt compiling after the pass specified by the character
+.IR c ,
+producing an intermediate file for the next pass.  The
+.I c
+can be
+.B [ a ].
+It selects the assembler pass in the same way as the
+.B \-t
+option.
+If this option is used, the symbol table file produced and used by the passes
+is the last component of the source file with the suffix changed to .T, or
+a .T is added if the source file has no suffix. This file is not removed.
+.TP 15
+.B \-K
+Build and use intermediate file names with the last component of the
+source file's  name replacing its suffix with the conventional suffix for the
+type of file (for example, .G file for binary assembly language).
+If the source file has no suffix the conventional suffix is added to the source
+file name.
+These intermediate files are never removed
+even when a pass encounters a fatal error.
+.TP 15
+.BI \-W c[c...],arg1[,arg2...]
+Pass the argument[s]
+.I argi
+to the compiler pass[es]
+.I c[c..].
+The
+.I c's
+are one of
+.B [ pab ].
+The c's selects the compiler pass in the same way as the
+.B \-t
+option.
+.PP
+The options
+.BR \-t [ hpab ],
+.BI \-h path,
+and
+.BI \-B string
+select a name to use for a particular pass.
+These arguments are processed from left to right so their order is significant.
+When the
+.B \-B
+option is encountered, the selection of names takes place using the last
+.B \-h
+and
+.B \-t
+options.  Therefore, the
+.B \-B
+option is always required when using
+.B \-h
+or
+.BR \-t .
+Sets of these options can be used to select any combination of names.
+.PP
+.TP 15
+.BR \-t [ hpab ]
+Select the names.  The names selected are those designated by the characters
+following the
+.B \-t
+option according to the following table:
+.br
+.ta \w'include    \ \ 'u
+\fBName     Character\fP
+.br
+include	h  (see note below)
+.br
+cpp	p
+.br
+as0	a
+.br
+as1	b
+.sp +.5
+If the character h is in the
+.B \-t
+argument then a directory is added to the list of directories to be used in 
+searching for #include files.  This directory name has the form
+.SM COMP_TARGET_ROOT\fR/usr/include\fIstring\fR .
+This directory is to contain the include files for the
+.I string
+release of the compiler.  The standard directory is still searched.
+.TP 15
+.BI \-h \*Spath
+Use
+.I path
+rather than the directory where the name is normally found.
+.TP 15
+.BI \-B \*Sstring
+Append
+.I string
+to all names specified by the
+.B \-t
+option.  If 
+.B \-t
+option has not been processed before the
+.B \-B,
+the
+.B \-t
+option is assumed to be ``hpab''.  This list designates all
+names.
+.PP
+Invoking the assembler with a name of the form
+.BI as string
+has the same effect as using a
+.BI \-B string
+option on the command line.
+.PP
+If the environment variable
+.SM COMP_HOST_ROOT
+is set, the value is used as the root
+directory for all pass names rather than the default slash (/).
+If the environment variable
+.SM COMP_TARGET_ROOT
+is set, the value is used as the root
+directory for the includes rather than the default slash (/).
+.PP
+If the environment variable
+.SM ROOTDIR
+is set, the value is used as the root
+directory for all names rather than the default
+.B /usr/.
+This also affects the standard directory for #include files, /usr/include .
+.PP
+If the environment variable
+.SM TMPDIR
+is set, the value is used as the directory to place any temporary files
+rather than the default
+.BR /tmp/ .
+.PP
+Other arguments are ignored.
+.SH Files
+.TP 15
+file.o
+object file
+.TP 15
+a.out
+assembler output
+.TP 15
+/tmp/ctm?
+temporary
+.TP 15
+/usr/lib/cpp
+C macro preprocessor
+.TP 15
+/usr/lib/as0
+symbolic to binary assembly language translator
+.TP 15
+/usr/lib/as1
+binary assembly language assembler and reorganizer
+.TP 15
+/usr/include
+standard directory for #include files
+.SH See Also
+cc(1), as(1), what(1)
+	

@@ -1,0 +1,56 @@
+.\" SCCSID: @(#)profil.2	8.3	1/28/91
+.TH profil 2
+.SH Name
+profil \- execution time profile
+.SH Syntax
+.nf
+.B void profil(buff, bufsiz, offset, scale)
+.B char *buff;
+.B int bufsiz, offset, scale;
+.fi
+.SH Description
+.NXR "profil system call"
+.NXR "execution time" "profiling"
+The
+.I buff
+points to an area of core whose length (in bytes) is given by
+.IR bufsiz .
+After this call, the user's program counter (pc)
+is examined each clock tick (on RISC machines, 4 milliseconds; on VAX
+machines, 10 milliseconds);
+.I offset
+is subtracted from the pc, and the result is multiplied by
+.IR scale .
+If the resulting number corresponds to a word
+inside
+.I buff,
+that word is incremented.
+.PP
+The scale is interpreted as an unsigned,
+fixed-point fraction with binary point at the
+left: 0x10000 gives a 1-1 mapping of program counter's to words
+in
+.I buff;
+0x8000 maps each pair of instruction words
+together.
+0x2 maps all instructions onto the beginning of
+.I buff,
+producing a non-interrupting core clock.
+.PP
+Profiling is turned off by giving a
+.I scale
+of 0 or 1.
+It is rendered
+ineffective by giving a
+.I bufsiz
+of 0.
+Profiling is turned off when an
+.I execve
+is executed, but remains on in both child and parent 
+after a
+.IR fork .
+Profiling is turned off if an update in
+.I buff
+would cause a memory fault.
+.SH See Also
+gprof(1) (for VAX only), setitimer(2), monitor(3)

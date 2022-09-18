@@ -1,0 +1,99 @@
+*
+* 	@(#)sc	4.1	(ULTRIX)	7/17/90
+*
+*	Error messages for sccs front end program
+*
+-1
+"user ... does not exist"
+This message is generated when the attempted to retrieve the user's name 
+from the environment fails.
+-2
+"project ... has no source"
+This message is generated when the SccsDir is extracted from the environment,
+but it contains no source.  See your Source Code Administator for help.
+-3
+"unknown option ..."
+This message is generated when  an invalid option is given to sccs front end
+program.
+-4
+"unknown command ..."
+This message is generated when the SCCS command that is passed to the sccs
+front end processor is not recognized.  This may be caused by a typo.  It also
+may be caused by a different naming convention between the sccs front end
+processor and traditional sccs.  See An Introduction to the Source Code Control
+System by Eric Allman for further information.
+-5
+"-r flag needed for fix command"
+This message is generated when the fix command is requested through the sccs
+front end processor and the leaf delta to be fixed is not indicated.
+-6
+"cannot exec ..."
+This message is generated when the a requested program cannot be executed for
+some reason.  See your Ultrix Adminstrator for help.
+-7
+"oper ..."
+This message is generated when the requested command cannot be mapped to a
+known action.  See your Ultrix Administrator for help.
+-8
+"cannot fork"
+This message is generated when a "fork" call is attempted and fails.  See your
+Ultrix Administrator for help.
+-10
+"Sccs: no mem"
+This message is generated when a malloc call has been attempted and fails.  See
+your Ultrix Administrator for help.
+-11
+"too many args"
+This message is generated when too many arguments are passed into the sccs
+front end processor.
+-12
+"cannot open ..."
+This message is generated when the sccs front end processor attempts to open a
+file or directory and fails.
+-13
+"bad file name ..."
+This message is generated when the sccs front end processor attempts to perform
+an operation on a file that it doesn't recognize.  One reason this message is 
+generated, is when an unedit request is made on a directory, which is currently 
+illegal.
+-14
+"... not being edited"
+This message is generated when an unedit command is requested on a file that is
+currently not being edit.
+-15
+"cannot create ..."
+This message is generated when a the sccs front end processor attempts to
+create a file for administrative purposes, and cannot.
+-16
+"cannot reopen ..."
+This message is generated when a the sccs front end processor attempts to
+reopen a file for administrative purposes, and cannot.
+-18
+"can not unlink ..."
+This message is generated when the sccs front end processor cannot remove a
+file.
+-19
+"... not being edited by you"
+This message is generated when the operation requested cannot be completed
+because you are not the user editing the file.
+-20
+"pipe failed"
+This message is generated when a pipe call fails.
+-21
+"magic failed"
+This message is generated when a diff has been requested and the child process
+that has been generated to perform the diff fails for one of a number of
+reasons.
+-22
+"Filename(s) too long: ..."
+This message is generated when a filename is longer than expected.
+-23
+"setting stdout w/o forking"
+This message is generated when stdout is being piped with out forking the
+command.
+-24
+"Can not delete ..."
+This message is generated when the sccs front end processor and/or the user do
+not have sufficient privilege to delete a file.  This may mean that the file is
+not in the assumed state (i.e., if an unedit is performed, and the file is not
+out for edit, the "g" file is not writable by anyone).

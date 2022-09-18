@@ -1,0 +1,78 @@
+.\" SCCSID: @(#)regex.3	8.1	9/11/90
+.TH regex 3
+.SH Name
+re_comp, re_exec \- regular expression handler
+.SH Syntax
+.B char *re_comp(s)
+.br
+.B char *s;
+.PP
+.B re_exec(s)
+.br
+.B char *s;
+.SH Description
+The
+.NXR "regex keyword"
+.NXR "re_comp subroutine"
+.NXR "re_exec subroutine"
+.NXR "regular expression handler"
+.PN re_comp
+subroutine
+compiles a string into an internal form suitable for pattern matching. 
+The
+.PN re_exec 
+subroutine
+checks the argument string against the last string passed to
+.PN re_comp .
+.PP
+The
+.PN re_comp
+subroutine
+returns 0 if the string
+.I s
+was compiled successfully; otherwise a string containing an
+error message is returned. If 
+.PN re_comp
+is passed 0 or a null string, it returns without changing the currently
+compiled regular expression.
+.PP
+The
+.PN re_exec
+subroutine returns 1 if the string
+.I s
+matches the last compiled regular expression, 0 if the string
+.I s
+failed to match the last compiled
+regular expression, and \-1 if the compiled
+regular expression was invalid (indicating an internal error).
+.PP
+The strings passed to both
+.PN re_comp
+and
+.PN re_exec
+may have trailing or embedded newline characters; 
+they are terminated by nulls.
+The regular expressions recognized
+are described in the manual entry for 
+.MS ed 1 ,
+given the above difference.
+.SH Diagnostics
+The
+.PN re_exec
+subroutine returns \-1 for an internal error.
+.PP
+The
+.PN re_comp
+subroutine
+returns one of the following strings if an error occurs:
+.PP
+.nf
+.B "No previous regular expression"
+.B "Regular expression too long"
+.B "unmatched \e("
+.B "missing ]"
+.B "too many \e(\e) pairs"
+.B "unmatched \e)"
+.fi
+.SH See Also
+ed(1), ex(1), egrep(1), fgrep(1), grep(1)

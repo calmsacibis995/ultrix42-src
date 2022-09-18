@@ -1,0 +1,138 @@
+.\" SCCSID: @(#)pi.1	8.1	9/11/90
+.TH pi 1 VAX
+.SH Name
+pi \- Pascal interpreter code translator
+.SH Syntax
+.B pi
+[\|\fIoptions\fR\|] [\fB\-i\fI name...\fR] \fIname.p\fR
+.SH Description
+.NXR "pi code translator"
+.NXR "Pascal program" "interpreting"
+.NXS "Pascal interpreter code translator" "pi code translator"
+.NXA "pi code translator" "px command"
+.NXA "pi code translator" "pix command"
+The
+.PN pi
+command translates the program in the file name.p
+leaving interpreter code in the file
+.I obj
+in the current directory.
+The interpreter code can be executed using
+.PN px .
+The
+.PN pix
+command performs the functions of
+.PN pi
+and
+.PN px
+for `load and go' Pascal.
+.SH Options
+.NXR "pi code translator" "flags"
+The following flags are interpreted by 
+.PN pi .
+The associated options can also
+be controlled in comments within the program
+as described in the
+"Berkeley Pascal User's Manual" in the
+\fISupplementary Documents, Volume 2: Programmer\fP.
+.IP \fB\-b\fR 5
+Block buffers the file
+.I output.
+.IP \fB\-i\fR 
+Enables listing for
+specified procedures and functions and while processing 
+specified
+.PN include
+files.
+.IP \fB\-l\fR 
+Creates a program listing while translating source.
+.IP \fB\-n\fR 
+Begins each listed
+.PN include
+file on a new page with a banner line.
+.IP \fB\-p\fR 
+Suppresses control flow backtrace
+on error;
+suppresses statement limit counting.
+.IP \fB\-s\fR 
+Accepts standard Pascal only;
+non-standard constructs cause warning diagnostics.
+.IP \fB\-t\fR 
+Suppresses runtime tests of subrange variables and treat; treats 
+.PN assert
+statements as comments.
+.IP \fB\-u\fR 
+Runs in card image mode;
+only the first 72 characters of input lines are used.
+.IP \fB\-w\fR 
+Suppresses all  warning diagnostics.
+.IP \fB\-z\fR 
+Enables execution profiling with
+.PN pxp
+by generating statement counters, and arranging for the
+creation of the profile data file
+.I pmon.out
+when the resulting object is executed.
+.dt
+.SH Restrictions
+.NXR "pi code translator" "restricted"
+The keyword
+.B packed
+is recognized but has no effect.
+.PP
+When
+.B include
+files are present,
+diagnostics relating to the last procedure in one file may appear after the
+beginning of the listing of the next.
+.SH Diagnostics
+.NXR "pi code translator" "diagnostics"
+For a basic explanation type:
+.EX
+pi
+.EE
+.PP
+In the diagnostic output of the translator,
+lines containing syntax errors are listed with a flag indicating the
+point of error.
+Diagnostic messages indicate the action which the recovery mechanism
+took in order to be able to continue parsing.
+Some diagnostics indicate only that the input is `malformed.'
+This occurs if the recovery can find no simple correction to make the input
+syntactically valid.
+.PP
+Semantic error diagnostics indicate a line in the source text near the
+point of error.
+Some errors evoke more than one diagnostic to help pinpoint the error;
+the follow-up messages begin with an ellipsis `...'.
+.PP
+.ne 8
+The first character of each error message indicates its class:
+.PP
+.ta 1ic 2.i
+	E	Fatal error; no code is generated.
+.br
+	e	Non-fatal error.
+.br
+	w	Warning \- a potential problem.
+.br
+	s	Non-standard Pascal construct warning.
+.PP
+If a severe error occurs which inhibits further processing,
+the translator gives a diagnostic and then `QUIT'.
+.SH Files
+file.p				input file
+.br
+file.i				include file(s)
+.br
+/usr/lib/pi3.*strings		text of the error messages
+.br
+.nf
+/usr/lib/how_pi*		basic usage explanation
+.fi
+obj				interpreter code output
+.SH See Also
+pix(1), px(1), pxp(1), pxref(1)
+.br
+"Berkeley Pascal User's Manual",
+\fISupplementary Documents, Volume 2: Programmer\fP

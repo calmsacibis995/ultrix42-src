@@ -1,0 +1,150 @@
+.TH lb_lookup_interface 3ncs
+.SH Name
+lb_lookup_interface \- look up information about an interface in the
+Global Location Broker database
+.SH Syntax
+#include <idl/c/lb.h>
+
+void lb_$lookup_interface(\fIobj_interface, lookup_handle, max_num_results,\fP
+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\fInum_results, results, status\fP)
+.nf
+uuid_$t *\fIobj_interface\fP;
+lb_$lookup_handle_t *\fIlookup_handle\fP;
+unsigned long \fImax_num_results\fP;
+unsigned long * \fInum_results\fP;     
+lb_$entry_t \fIresults\fB[ ]\fP;
+status_$t *\fIstatus\fB\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/lb.ins.pas'\fR
+.\"
+.\"\fBprocedure lb_$lookup_interface(\fR
+.\"	\fBin \fIobj_interface\fB: uuid_$t;\fR
+.\"	\fBin out \fIlookup_handle\fB: lb_$lookup_handle_t;\fR
+.\"	\fBin \fImax_num_results\fB: unsigned32;\fR
+.\"	\fBout \fInum_results\fB: unsigned32;\fR
+.\"	\fBout \fIresults\fB: array [1..*] of lb_$entry_t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIobj_interface\fR
+The UUID of the 
+interface being looked up.
+.TP 20
+\fIlookup_handle\fR
+A location in the database.
+.if t .sp .5
+On input, the \fIlookup_handle\fR
+indicates the location in the database where the search begins.
+An input value of \fBlb_$default_lookup_handle\fR
+specifies that the search will start at the beginning of the database.  
+.if t .sp .5
+On return, the \fIlookup_handle\fR indicates the next unsearched 
+part of the database (that is, the point at which the next search 
+should begin).
+A return value of \fBlb_$default_lookup_handle\fR
+indicates that the search reached the end of the database;
+any other return value
+indicates that the search found at most \fImax_num_results\fR matching entries 
+before it reached the end of the database.
+.TP 20
+\fImax_num_results\fR
+The maximum number of entries that can be returned by a single routine.
+This should be the number of elements in the \fIresults\fR array.
+.TP 20
+\fInum_results\fR
+The number of entries that were returned in the \fIresults\fR array.
+.TP 20
+\fIresults\fR
+An array that contains the matching GLB database entries,
+up to the number specified by the \fImax_num_results\fR parameter.
+If the array contains any entries for servers on the local network,
+those entries appear first.
+.TP 20
+\fIstatus\fR
+The completion status.
+.SH Description
+The 
+.PN lb_$lookup_interface
+routine returns GLB database entries 
+whose 
+.I obj_interface
+fields match the specified interface. 
+It returns information about objects that can be accessed through that
+interface.
+.NXR "lb_lookup_object"
+.PP
+The 
+.PN lb_$lookup_interface
+routine cannot return more than 
+.I max_num_results
+matching entries at a time.
+The 
+.I lookup_handle
+parameter enables you to find all matching entries by doing
+sequential lookups. 
+.PP
+If you use a sequence of lookup routines to find entries in the database, 
+it is possible that the returned results will skip or duplicate entries.
+This is because
+the Location Broker does not prevent modification of the database between lookups,
+and such modification can change the locations of entries
+relative to a 
+.I lookup_handle
+value.
+.PP
+It is also possible that the results of a single lookup routine
+will skip or duplicate entries.
+This can occur if the size of the results exceeds 
+the size of an RPC packet (64K bytes).
+.SH Examples
+The following statement looks up information in the GLB database
+about a matrix multiplication interface:
+.EX
+lb_$lookup_interface (&matrix_id, &lookup_handle, max_results, 
+                        &num_results, &matrix_results, &st);
+.EE
+.SH Diagnostics 
+This section lists status codes for errors returned by this 
+.PN lb_$
+routine.
+.TP 20
+\fBlb_$database_invalid\fR
+The format of the Location Broker database is out of date.
+The database may have been created by an old version of the Location Broker; 
+in this case, delete the out-of-date database and reregister any entries
+that it contained.
+The LLB or GLB that was accessed may be running out-of-date software;
+in this case, update all Location Brokers to the current software version.
+.TP 20
+\fBlb_$database_busy\fR
+The Location Broker database is currently in use in an incompatible manner.
+.TP 20
+\fBlb_$not_registered\fR
+The Location Broker does not have any entries that match
+the criteria specified in the lookup or unregister routine.
+The requested object, type, interface, or combination thereof
+is not registered in the specified database.  If you are using
+an 
+.PN lb_$lookup_object_local
+or 
+.PN lb_$lookup_range
+routine specifying an LLB, check that you have specified the correct LLB.
+.TP 20
+\fBlb_$cant_access\fR
+The Location Broker cannot access the database.
+Among the possible reasons:
+.IP 
+1. The database does not exist.
+.IP
+2. The database exists, but the Location Broker cannot access it.
+.TP 20
+\fBlb_$server_unavailable\fR
+The Location Broker Client Agent cannot reach the requested GLB or LLB.
+A communications failure occurred or the broker was not running.
+.SH Files
+.PN /usr/include/idl/c/glb.h
+.SH See Also
+intro(3ncs), lb_lookup_object(3ncs), lb_lookup_range(3ncs), lb_lookup_type(3ncs)

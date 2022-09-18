@@ -1,0 +1,105 @@
+.\" SCCSID: @(#)netx.8	8.2	12/3/90
+.TH netx 8 
+.SH Name
+netx \- TCP/IP net exerciser
+.SH Syntax
+.B /usr/field/netx
+[
+.B \-h
+.B ] [
+.BI \-t n
+B ] [
+.BI \-p m
+.B ]  
+.I nodename
+.SH Description
+.NXB "netx exerciser"
+.NXB "TCP network" "testing"
+.NXB "IP network" "testing"
+The 
+.PN netx 
+exerciser sets up a stream socket connection to the
+.MS miscd 8c
+server in the TCP/IP internet domain. With connection
+made, the exerciser writes random data to the 
+.PN miscd 
+server; the
+server loops the data back to 
+.PN netx ,
+and the data is read and
+verified against the data written out. 
+.PP
+The 
+.PN netx 
+exerciser runs
+in conjunction with the
+.MS miscd 8c
+server. 
+.PP
+The 
+.PN netx 
+exerciser by default
+will use the port number of the echo service in the 
+.PN /etc/services
+file. Make sure that the TCP echo service is enabled in the 
+.PN /etc/inetd.conf 
+file (no `#' in front of the service). The exerciser
+will run until
+.CT C
+or kill \-15 \fIpid\fR is sent
+to the process.
+The
+.I nodename
+is the remote or local system host name running the
+.MS miscd 8c
+server.
+.SH Options
+.NXR "netx exerciser" "options"
+The \f(CWnetx\fR options are:
+.IP \fB\-h\fR 1i
+Print the help message for the 
+.PN netx 
+command.
+.IP \fB\-t\fIn\fR
+Run time in minutes (\fIn\fR).
+The default is to run until the process
+receives
+.CT C
+or kill \-15 \fIpid\fR.
+.IP \fB\-p\fIm\fR
+Specify port number to use in internet domain (\fIm\fR < 32768).
+Note that this option is not used with the 
+.MS miscd 8c
+server, so you should never have to use this option.
+.SH Restrictions 
+.NXR "netx exerciser" "restricted"
+If there is a need to run a system exerciser over an NFS link or on a diskless
+system, there are some restrictions.  For exercisers that need to write into a file
+system, such as 
+.MS fsx 8 ,
+the target file system must be writable by root.  Also the directory, in which any
+of the exercisers are executed, must be writable by root because temporary
+files are written into the current directory.  These latter restrictions are
+sometimes difficult to overcome because often NFS file systems are mounted in a
+way that prevents root from writing into them.  Some of the restrictions may be
+overcome by copying the exerciser to another directory and then executing it.  
+.SH Examples
+.NXR(e) "TCP network" "testing"
+.NXR(e) "IP network" "testing"
+The following example exercises the TCP/IP network from the local
+host to node \fBkeel\fR until a
+.CT C
+or kill \-15 \fIpid\fR is received:
+.EX
+% /usr/field/netx keel
+.EE
+The following example exercises the TCP/IP network from the local
+host to node \fBphoton\fR for 180 minutes in the background:
+.EX
+% /usr/field/netx \-t180 photon &
+.EE
+.SH See Also
+.I "Guide to System Exercisers"
+.NXE "netx exerciser"
+.NXE "TCP network" "testing"
+.NXE "IP network" "testing"

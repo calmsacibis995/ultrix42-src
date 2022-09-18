@@ -1,0 +1,110 @@
+.TH getstr 3cur 
+.SH Name
+getstr, mvgetstr, mvwgetstr, wgetstr \- read string
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B
+int getstr(str)
+.br
+.B
+char \(**str;
+.PP
+.B
+int wgetstr(win, str)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+char \(**str;
+.PP
+.B
+int mvgetstr(y, x, str)
+.br
+.B
+int y, x;
+.br
+.B
+char \(**str;
+.PP
+.B
+int mvwgetstr(win, y, x, str)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int y, x;
+.br
+.B
+char \(**str;
+.SH Description
+.NXR "getstr macro"
+.NXR "mvgetstr macro"
+.NXR "mvwgetstr macro"
+.NXR "wgetstr subroutine"
+The
+.PN getstr
+routine
+reads characters 
+from the terminal associated with the default window and stores them in a
+buffer until a carriage return or newline is received from
+.PN stdscr .
+The routine
+.PN getch 
+B
+is called by 
+.PN getstr 
+to read each character.
+.PP
+The routine
+.PN wgetstr
+reads characters 
+from the terminal associated with the specified window.
+The characters are read from the current cursor position
+until a newline or carriage return is received.
+.PP
+The routine
+.PN mvgetstr
+reads characters 
+from the terminal associated with the default window.
+The characters are read from the specified cursor position
+until a newline or carriage return is received.
+.PP
+The routine
+.PN mvwgetstr
+reads characters 
+from the terminal associated with the specified window.
+The characters are read from the specified cursor position
+until a newline or carriage return is received.
+.PP
+The following information applies to all the routines.
+.PP
+The resulting string is placed in the area 
+pointed to by the character pointer 
+.PN str .
+The user's erase and kill characters are interpreted.
+The area used to hold the string is
+assumed to be large enough to handle it, as 
+.PN getstr
+does not check for buffer overflow.
+If the area is not large enough, the result will be unpredictable.
+.PP
+The routines 
+.PN getstr, 
+.PN mvgetstr
+and 
+.PN mvwgetstr
+are macros.
+.SH Return Values
+The 
+.PN getstr ,
+.PN mvgetstr ,
+.PN mvwgetstr
+and
+.PN wgetstr
+functions return OK on success and ERR on error.
+.SH See Also
+getch(3cur)

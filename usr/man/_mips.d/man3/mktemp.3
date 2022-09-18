@@ -1,0 +1,29 @@
+.\" SCCSID: @(#)mktemp.3	8.1	9/11/90
+.TH mktemp 3 
+.SH Name
+mktemp \- make a unique file name
+.SH Syntax
+.nf
+.B char *mktemp(template)
+.B char *template;
+.fi
+.SH Description
+.NXR "mktemp subroutine"
+.NXR "file name" "making unique"
+The
+.PN mktemp
+subroutine replaces
+.I template
+by a unique file name, and returns the
+address of the template.
+The template should look like a file name with six trailing
+X's, which will be replaced with the
+current process ID and a unique letter.
+.PP
+Note: The use of 
+.PN mktemp 
+is not recommended for new applications.  See 
+.MS tmpnam 3
+for less error-prone alternatives.
+.SH See Also
+getpid(2), tmpfile(3), tmpnam(3)

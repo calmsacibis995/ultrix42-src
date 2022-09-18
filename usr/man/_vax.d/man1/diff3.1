@@ -1,0 +1,117 @@
+.\" SCCSID: @(#)diff3.1	8.1	9/11/90
+.TH diff3 1 
+.SH Name
+diff3 \- 3-way differential file comparison
+.SH Syntax
+.B diff3
+[\fB\-ex3\fR] \fIfile1 file2 file3\fR
+.SH Description
+.NXR "diff3 command"
+.NXR "file" "comparing"
+The
+.PN diff3
+command
+compares three versions of a file,
+and publishes the ranges of text that disagree,
+flagged with the following codes:
+.RS 3
+.TP 12
+====
+all three files differ
+.TP 12
+====1
+.IR file1 " is different"
+.TP 12
+====2
+.IR file2 " is different"
+.TP 12
+====3
+.IR file3 " is different"
+.RE
+.PP
+The type of change needed to convert a given range
+of a given file to some other is
+indicated in one of these ways:
+.RS 3
+.TP 12
+.IB f " : " n1 " a"
+Text is to be appended after line number
+.I n1
+in file
+.I f,
+where
+.I f
+= 1, 2, or 3.
+.TP 12
+.IB f " : " n1 " , " n2 " c"
+Text is to be
+changed in the range line
+.I n1
+to line
+.IR n2 .
+If 
+.I n1
+=
+.I n2,
+the range may be abbreviated to
+.IR n1 .
+.RE
+.PP
+The original contents of the range follows immediately
+after a
+.B c
+indication.
+When the contents of two
+files are identical, the contents of the lower-numbered
+file is suppressed.
+.SH Options
+.IP \fB\-3\fR 5 
+Produces an 
+.PN ed
+editor script containing the changes between file1 and file2
+that are to be incorporated into file3. 
+.IP \fB\-e\fR 12
+Produces an 
+.PN ed
+editor script containing the changes between file2 and file3 
+that are to be incorporated into file1.
+.IP \fB\-x\fR 12
+Produces an
+.PN ed
+editor script containing the changes among all three files.
+.SH Examples
+Under the
+.B \-e
+option,
+.PN diff3
+publishes a script for the editor
+.PN ed
+that incorporates into
+.I file1
+all changes between
+.I file2
+and
+.I file3 
+\-
+that is, the changes that would normally be flagged ==== and ====3.
+Option
+.B \-x
+(\fB\-3\fR)
+produces a script to incorporate
+only changes flagged ==== (====3).
+The following command applies the resulting script to
+`file1':
+.EX
+(cat script; echo \'1,$p\') \(bv ed \- file1
+.EE
+.SH Restrictions
+.NXR "diff3 command" "restricted"
+Text lines that consist of a single `.' 
+defeat
+.B \-e.
+.SH Files
+/tmp/d3?????
+.br
+/usr/lib/diff3
+.SH See Also
+cmp(1), comm(1), diff(1), dffmk(1), join(1), sccsdiff(1), uniq(1)

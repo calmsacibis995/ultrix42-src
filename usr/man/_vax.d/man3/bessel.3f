@@ -1,0 +1,65 @@
+.\" SCCSID: @(#)bessel.3f	8.1	9/11/90
+.TH bessel 3f VAX "" Unsupported
+.SH Name
+bessel functions \- of two kinds for integer orders
+.SH Syntax
+.B function besj0 (x)
+.sp 1
+.B function besj1 (x)
+.sp 1
+.B function besjn (n, x)
+.sp 1
+.B function besy0 (x)
+.sp 1
+.B function besy1 (x)
+.sp 1
+.B function besyn (n, x)
+.sp 1
+.B double precision function dbesj0 (x)
+.br
+.B double precision x
+.sp 1
+.B double precision function dbesj1 (x)
+.br
+.B double precision x
+.sp 1
+.B double precision function dbesjn (n, x)
+.br
+.B double precision x
+.sp 1
+.B double precision function dbesy0 (x)
+.br
+.B double precision x
+.sp 1
+.B double precision function dbesy1 (x)
+.br
+.B double precision x
+.sp 1
+.B double precision function dbesyn (n, x)
+.br
+.B double precision x
+.SH Description
+.NXR "bessel keyword (FORTRAN)"
+.NXR "besj0 subroutine (FORTRAN)"
+.NXR "besj1 subroutine (FORTRAN)"
+.NXR "besjn subroutine (FORTRAN)"
+.NXR "besy0 subroutine (FORTRAN)"
+.NXR "besy1 subroutine (FORTRAN)"
+.NXR "besyn subroutine (FORTRAN)"
+.NXR "dbesj0 subroutine (FORTRAN)"
+.NXR "dbesj1 subroutine (FORTRAN)"
+.NXR "dbesjn subroutine (FORTRAN)"
+.NXR "dbesy0 subroutine (FORTRAN)"
+.NXR "dbesy1 subroutine (FORTRAN)"
+.NXR "dbesyn subroutine (FORTRAN)"
+.NXR "Bessel functions (FORTRAN)
+These functions calculate Bessel functions of the first and second kinds
+for real arguments and integer orders.
+.SH Diagnostics
+Negative arguments cause \fIbesy0, besy1,\fR and \fIbesyn\fR to return a huge
+negative value. The system error code will be set to EDOM (33).
+.SH Files
+.ie \nM /usr/ucb/lib/libF77.a
+.el /usr/lib/libF77.a
+.SH See Also
+bessel(3m), perror(3f)

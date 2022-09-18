@@ -1,0 +1,47 @@
+.TH idlok 3cur 
+.SH Name
+idlok \- enable use of insert/delete line
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int idlok(win, bf)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+bool bf;
+.SH Description
+.NXR "idlok subroutine"
+If enabled 
+.PN (bf
+is 
+.PN TRUE),
+.PN curses
+uses the insert/delete line hardware of terminals
+if it is available.  
+If disabled,
+.PN curses
+will not use this feature.  
+This option should be enabled only if the
+application needs insert/delete line; for example, for a screen
+editor.  
+It is disabled by default as insert/delete line
+can be visually annoying when used in 
+some applications.
+.PP
+If insert/delete line cannot be used,
+.PN curses
+will redraw the changed portions of all lines.
+.NT
+The terminal hardware insert/delete character feature
+is always used if available.
+.NE
+.SH Return Values
+The
+.PN idlok
+function returns OK on success and ERR on error.

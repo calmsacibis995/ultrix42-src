@@ -1,0 +1,169 @@
+.\"	@(#)pfm_cleanup.3ncs	8.3 of 3/29/91
+.TH pfm_cleanup 3ncs
+.SH Name
+pfm_cleanup \- establish a clean-up handler
+.SH Syntax
+.nf
+#include <idl/c/base.h>
+#include <idl/c/pfm.h>
+
+status_$t pfm_$cleanup(\fIcleanup_record\fP)
+pfm_$cleanup_rec *\fIcleanup_record;\fR
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/sys/ins/base.ins.pas';\fR
+.\"\fB%include '/sys/ins/ppfm.ins.pas';\fR
+.\"
+.\"\fBfunction pfm_$cleanup(\fR
+.\"	\fBout \fIcleanup_record\fB: pfm_$cleanup_rec): status_$t;\fR
+.\".DE
+.ig
+.SH Synopsis (fortran)
+.nf
+\fB%include '/sys/ins/base.ins.ftn'\fR
+\fB%include '/sys/ins/pfm.ins.ftn'\fR
+
+	 \fBinteger*4 \fIstatus\fB, \fIcleanup_record\fB(16)\fR
+
+	 \fIstatus \fB= pfm_$cleanup(\fIcleanup_record\fB)\fR
+.fi
+..
+.SH Arguments
+.TP 20
+\fIcleanup_record\fR
+A record of the context
+when
+.PN pfm_$cleanup
+is called.
+A program should treat this as an opaque data structure
+and not try to alter or copy its contents.
+It is needed by 
+.PN pfm_$rls_cleanup
+and 
+.PN pfm_$reset_cleanup
+to restore the context
+of the calling process
+at the clean-up handler entry point.
+.SH Description
+The 
+.PN pfm_$cleanup
+.NXR "Fault Management" "pfm_cleanup"
+routine establishes a clean-up handler
+that is executed when a fault occurs.
+A clean-up handler is a piece of code
+executed before a program exits
+when a signal is received by the process.
+The clean-up handler begins
+where 
+.PN pfm_$cleanup
+is called;
+the 
+.PN pfm_$cleanup
+routine registers
+an entry point with the system
+where program execution resumes when a fault occurs.
+When a fault occurs,
+execution resumes after the most recent
+call to 
+.PN pfm_$cleanup .
+.PP
+There can be more than one clean-up handler in a program.
+Multiple clean-up handlers are executed consecutively
+on a last-in/first-out basis,
+starting with the most recently established handler
+and ending with the first clean-up handler.
+The system provides a default clean-up handler
+established at program invocation.
+The default clean-up handler is always called last,
+just before a program exits,
+and releases any system resources still held,
+before returning control
+to the process that invoked the program.
+.SH Diagnostics 
+.PP
+When called to establish a clean-up handler,
+.PN pfm_$cleanup
+returns the status 
+.B pfm_$cleanup_set
+to indicate the clean-up handler
+was successfully established.
+When the clean-up handler is entered
+in response to a fault signal,
+.PN pfm_$cleanup
+effectively returns the value of the fault that triggered the handler.
+.PP
+This section lists status codes for errors returned by this 
+.PN pfm_$
+routine in 
+.PN status.all. 
+.TP 20
+\fBpfm_$bad_rls_order\fR
+Attempted to release a clean-up handler out of order.
+.TP 20
+\fBpfm_$cleanup_not_found\fR
+There is no pending clean-up handler.
+.TP 20
+\fBpfm_$cleanup_set\fR
+A clean-up handler was established successfully.
+.TP 20
+\fBpfm_$cleanup_set_signaledl\fR
+Attempted to use 
+.B pfm_$cleanup_set
+as a signal.
+.TP 20
+\fBpfm_$invalid_cleanup_rec\fR
+Passed an invalid clean-up record to a routine.
+.TP 20
+\fBpfm_$no_space\fR
+Cannot allocate storage for a clean-up handler.
+.NT
+Clean-up handler code runs with asynchronous faults inhibited.
+When 
+.PN pfm_$cleanup
+returns something other than 
+.B pfm_$cleanup_set
+indicating that a fault has occurred,
+there are four possible ways to leave the clean-up code:
+.RS
+.IP \(bu
+The program can call
+.PN pfm_$signal
+to start the next clean-up handler
+with a different fault signal. 
+.IP \(bu 
+The program can call 
+.PN pgm_$exit
+to start the next clean-up handler with the same fault signal. 
+.IP \(bu
+The program can continue with the code following the clean-up handler.
+It should generally call 
+.PN pfm_$enable
+to reenable asynchronous faults.  Execution continues from the end of
+the clean-up handler code; it does not resume where the fault signal was
+received.
+.IP \(bu
+The program can reestablish the handler by calling 
+.PN pfm_$reset_cleanup
+before proceeding.
+.RE
+.NE
+.SH Files
+.PN /usr/include/idl/c/base.h
+.br
+.PN /usr/include/idl/base.idl
+.br
+.PN /usr/include/idl/c/pfm.h
+.SH See Also
+intro(3ncs), pfm_signal(3ncs)
+.\".DM "\
+.\"path syscalls/pfm/pfm_$cleanup\
+.\"type referen\
+.\"book syscalls\
+.\"chapter pfm\
+.\"section pfm_$cleanup\
+.\""
+.\".DD "\
+.\"establish(ed)(s)(ing) clean-up cleanup clean(ed)(s)(ing) up handler(s) fault(s) handle(ed)(s)(ing)\
+.\"pfm pfm_$\
+.\""

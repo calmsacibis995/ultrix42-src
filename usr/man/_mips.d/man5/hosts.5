@@ -1,0 +1,58 @@
+.\" SCCSID: @(#)hosts.5	8.1	9/11/90
+.TH hosts 5 
+.SH Name
+hosts \- host name file
+.SH Description
+.NXR "hosts file" "format"
+.NXR "host name" "DARPA Internet and"
+The
+.PN hosts
+file is an ASCII file that contains information about
+the known hosts on the DARPA Internet.
+For each host a single line should be present
+with the following information:
+.PP
+Internet address
+.br
+Official host name
+.br
+Aliases
+.PP
+Each
+.PN host
+name is separated from the next by a new line.
+Items are separated by any number of blanks or
+tab characters.  A number sign (#) indicates the beginning of
+a comment; characters up to the end of the line are
+not interpreted by routines that search the file.
+This file is normally created from the official host
+data base maintained at the Network Information Control
+Center (NIC), though local changes may be required
+to bring it up to date regarding unofficial aliases
+or unknown hosts.
+.PP
+Host addresses are specified in the conventional
+dot (.) notation using the inet_addr routine
+from the Internet address manipulation library,
+.MS inet 3n .
+Host names can contain any printable
+character other than a field delimiter, newline,
+or comment character.
+.PP
+The 
+.PN hosts
+database may be distributed in a network by a naming service,
+such as Yellow Pages or BIND/Hesiod.  See the 
+.I Guide to the Yellow Pages Service
+or the 
+.I Guide to the BIND/Hesiod Service
+for setup information.
+.SH Files
+.PN /etc/hosts
+.SH See Also
+gethostent(3n)
+.br
+.I Guide to the BIND/Hesiod Service
+.br
+.I Guide to the Yellow Pages Service
+ 

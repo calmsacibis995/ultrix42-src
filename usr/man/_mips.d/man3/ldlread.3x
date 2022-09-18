@@ -1,0 +1,105 @@
+.TH ldlread 3x RISC
+.SH Name
+ldlread, ldlinit, ldlitem \- manipulate line number entries of a common object file function
+.SH Syntax
+.nf
+.B #include <stdio.h>
+.ie '\*p'' \{\
+.B #include <filehdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h>
+\}
+.el \{\
+.B #include "\s-1INCDIR\s+1\/filehdr.h"
+.B #include "\s-1INCDIR\s+1\/syms.h"
+.B #include "\s-1INCDIR\s+1\/ldfcn.h"
+\}
+.ft R
+.PP
+.BR "int ldlread (" "ldptr, fcnindx, linenum, linent" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR long " fcnindx" ;
+.BR "unsigned short" " linenum" ;
+.BR "\s-1LINER\s+1" " linent" ;
+.PP
+.BR "int ldlinit (" "ldptr, fcnindx" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR long " fcnindx" ;
+.PP
+.BR "int ldlitem (" "ldptr, linenum, linent" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR "unsigned short" " linenum" ;
+.BR "\s-1LINER\s+1" " linent" ;
+.fi
+.DT
+.SH Description
+The 
+.PN ldlread
+function searches the line number entries of the common object file currently
+associated with 
+.IR ldptr .
+The 
+.PN ldlread
+function begins its search with the line number entry for the beginning 
+of a function and confines its search to the line numbers associated with 
+a single function. The function is identified by
+.IR fcnindx ,
+which is the index of its local symbols entry in the object file symbol table.
+The
+.PN ldlread
+function reads the entry with the smallest line number equal to or greater
+than
+.I linenum
+into
+.IR linent .
+.PP
+The
+.PN dlinit
+and 
+.PN ldlitem
+functions provide the same behavior as 
+.PN ldlread .
+After an initial call to
+.PN ldlread
+or
+.PN ldlinit ,
+.PN ldlitem
+can be used to retrieve a series of line number entries associated with a
+single function.
+The 
+.PN ldlinit
+function 
+simply finds the line number entries for the function identified by
+.I fcnindx.
+The 
+.PN ldlitem
+function finds and reads the entry with the smallest line number equal to 
+or greater than
+.I linenum
+into
+.IR linent .
+.PP
+The functions
+.PN ldlread ,
+.PN ldlinit ,
+and
+.PN ldlitem
+each return either success or failure.  The
+.PN ldlread 
+function fails if one of the following occurs:
+.IP \(bu 5
+If line number entries do not exist in the object file.
+.IP \(bu 5
+If \fIfcnindx\fR does not index a function entry in the symbol table.
+.IP \(bu 5
+If it does not find a line number equal to or greater than \fIlinenum\fR.
+.PP
+The 
+.PN ldlitem
+fails if it does not find a line number equal to or greater than
+\fIlinenum\fR.
+.SH See Also
+ldclose(3x),
+ldopen(3x),
+ldtbindex(3x),
+ldfcn(5)

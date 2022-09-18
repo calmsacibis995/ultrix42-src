@@ -1,0 +1,93 @@
+.\" SCCSID: @(#)pathconf.3	2.3	8/10/87
+.TH pathconf 3
+.SH Name
+pathconf, fpathconf \- get configurable pathname variables (POSIX)
+.SH Syntax
+.nf
+.B #include <unistd.h>
+.PP
+.B long pathconf(\fIpath, name\fP)
+.B char *\fIpath\fP;
+.B int \fIname\fP;
+.PP
+.B long fpathconf(\fIfildes, name\fP)
+.B int \fIfildes, name\fP;
+.fi
+.SH Description
+The
+.MS pathconf 3
+and
+.MS fpathconf 3
+functions provide a method for the application to determine the current
+value of a configurable limit or option that is associated with a file or
+directory.
+.NXR "pathconf subroutine"
+.NXR "fpathconf subroutine"
+.PP
+For
+.MS pathconf 3 ,
+the
+.IR path
+argument points to the pathname of a file or directory. For
+.MS fpathconf 3 ,
+the
+.IR fildes
+argument is an open file descriptor.
+.PP
+The 
+.IR name
+argument represents the variable to be queried relative to that file or
+directory. The following table
+lists the variables which may be queried and the corresponding
+value for the
+.IR name
+argument. The values for the
+.IR name
+argument are defined in the <unistd.h> header file.
+.EX
+Variable                    name Value
+
+LINK_MAX                    _PC_LINK_MAX
+MAX_CANON                   _PC_MAX_CANON
+MAX_INPUT                   _PC_MAX_INPUT
+NAME_MAX                    _PC_NAME_MAX
+PATH_MAX                    _PC_PATH_MAX
+PIPE_BUF                    _PC_PIPE_BUF
+_POSIX_CHOWN_RESTRICTED     _PC_CHOWN_RESTRICTED
+_POSIX_NO_TRUNC             _PC_NO_TRUNC
+_POSIX_VDISABLE             _PC_VDISABLE
+.EE
+.SH Return Values
+Upon successful completion, the
+.MS pathconf 3
+and
+.MS fpathconf 3
+functions return the current variable value for the file or directory.
+.PP
+If 
+.IR name
+is an invalid value,
+.MS pathconf 3
+and
+.MS fpathconf 3
+return \-1 and 
+.I errno
+is set to indicate the reason. If the variable corresponding to
+.IR name
+is not defined on the system,
+.MS pathconf 3
+and
+.MS fpathconf 3
+return \-1 without changing the value of
+.I errno.
+.SH Diagnostics
+The
+.MS pathconf 3
+and
+.MS fpathconf 3
+functions fail if the following occurs:
+.TP 15
+[EINVAL]
+The value of the \fIname\fP argument is invalid.
+.SH See Also
+<unistd.h>

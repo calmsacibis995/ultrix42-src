@@ -1,0 +1,44 @@
+.\" SCCSID: @(#)initgroups.3x	8.1	9/11/90
+.TH initgroups 3x
+.SH Name
+initgroups \- initialize group access list
+.SH Syntax
+.B initgroups(name, basegid)
+.br
+.B char *name;
+.br
+.B int basegid;
+.SH Description
+.NXR "initgroups subroutine"
+.NXR "group access list" "initializing"
+The
+.PN initgroups
+subroutine
+reads through the group file and sets up,
+using the 
+.MS setgroups 2
+call, the group access list for the user
+specified in
+.IR name .
+The
+.I basegid
+is automatically included in the groups list.
+Typically this value is given as
+the group number from the password file.
+.SH Restrictions
+The
+.PN initgroups
+subroutine uses the routines based on 
+.MS getgrent 3 .
+If the invoking program uses any of these routines,
+the group structure will
+be overwritten in the call to
+.PN initgroups .
+.SH Return Values
+The
+.PN initgroups
+returns \-1 if it was not invoked by the superuser.
+.SH Files
+/etc/group
+.SH See Also
+setgroups(2)

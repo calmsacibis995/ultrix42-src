@@ -1,0 +1,121 @@
+.TH strftime 3
+.SH Name
+strftime \- convert time and date to string
+.SH Syntax
+.B #include <time.h>
+.PP
+.B int strftime (\fIs, maxsize, format, tm\fP)
+.br
+.B char *\fIs\fP;
+.br
+.B size_t \fImaxsize\fP;   
+.br
+.B char *\fIformat\fP;
+.br
+.B struct tm *\fItm\fP;
+.SH Description
+.NXR "strftime subroutine"
+.PP
+The
+.PN strftime
+function places characters in the array pointed to by \fIs\fR.
+No more than \fImaxsize\fR characters are placed into the array.
+The
+.PN format
+string controls this process.
+This string consists of zero or more directives and ordinary characters.
+A directive consists of a
+.PN %
+character followed by a character that determines the behavior of the 
+directive.  All ordinary characters are copied unchanged into the array, 
+including the terminating null character.
+.PP
+Each directive is replaced by the appropriate characters as shown in the 
+following table. The characters are determined by the program's locale 
+category
+.PN LC_TIME
+and the values contained in the structure pointed to by \fItm\fP.
+.PP
+.TS
+tab(@);
+lp-1v-1fHB lp-1v-1fHB
+lp-1v-1 lp-1v-1.
+.sp 6p
+_
+.sp 6p
+Directive@Replaced by
+.sp 6p
+_
+.sp 6p
+%a@Locale's abbreviated weekday name
+%A@Locale's full weekday name
+%b@Locale's abbreviated month name
+%B@Locale's full month name
+%c@Locale's date and time representation
+%d@Day of month as a decimal number (01\-31)
+%D@Date (%m/%d/%y)
+%h@Locale's abbreviated month name
+%H@Hour as a decimal number (00\-23)
+%I@Hour as a decimal number (01\-12)
+%j@Day of year (001\-366)
+%m@Number of month (01\-12)
+%M@Minute number (00\-59)
+%n@Newline character
+%p@Locale's equivalent to AM or PM
+%r@Time in AM/PM notation
+%S@Second number (00\-59)
+%t@Tab character
+%T@Time (%H/%M/%S)
+%U@Week number (00\-53), Sunday as first day of week
+%w@Weekday number (0[Sunday]\-6)
+%W@Week number (00\-53), Monday as first day of week
+%x@Locale's date representation
+%X@Locale's time representation
+%y@Year without century (00\-99)
+%Y@Year with century
+%Z@Timezone name, no characters if no timezone
+%%@%
+.sp 6p
+_
+.TE
+.PP
+If a directive is used that is not contained in the table, 
+the results are undefined.
+.SS International Environment
+.IP LC_TIME 15
+Contains the user's requirements for language, territory, and codeset for
+the time format. 
+.PN LC_TIME 
+affects the behavior of the time functions in
+.PN strftime .
+If
+.PN LC_TIME
+is not defined in the current environment, 
+.PN LANG
+provides the necessary default.
+.IP LANG 15
+If this environment is set and valid, 
+.PN strftime
+uses the international language database named in the definition to determine
+the time formatting rules. If
+.PN LC_TIME 
+is defined, its definition supercedes the definition of 
+.PN LANG .
+.SH Return Values
+If the total number of resulting characters, including the terminal null 
+character, is not more than \fImaxsize\fR, the
+.PN strftime
+function returns the total of resultant characters placed into the 
+array pointed to by \fIs\fR, not including the terminating null character.
+In all other cases zero is returned and the contents of the array are 
+indeterminate.
+.PP
+As the
+.PN timezone
+name is not contained in the \fItm\fR structure the value returned 
+by \fI%Z\fR is determined by the
+.PN timezone
+function, see
+.PN ctime .
+.SH See Also
+ctime(3), setlocale(3)

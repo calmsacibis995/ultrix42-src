@@ -1,0 +1,75 @@
+.\" SCCSID: @(#)gamma.3m	6.3	8/30/89
+.\"
+.TH gamma 3m RISC
+.ds nn \fINaN\fR
+.SH Name
+gamma, lgamma, signgam \- log gamma function
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double gamma(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double lgamma(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.fi
+.B extern int
+.PN signgam;
+.SH Description
+The
+.PN gamma
+.NXR "gamma subroutine"
+.NXR "gamma function"
+function returns ln \||\|\(*G(\||\|\fIx\fR\||\|)\||\|.
+The sign of \(*G(\||\|\fIx\fR\||\|) is returned in the external integer
+.PN signgam .
+The following C program might be used to calculate \(*G:
+.PP
+.EX
+y = gamma(\fIx\fP);
+if (y > 88.0)
+	error();
+y = exp(y);
+if(signgam)
+	y = \-y;
+.EE
+.PP
+The
+.PN lgamma
+function is another name for the
+.PN gamma
+function.
+.SH Return Values
+The
+.PN gamma
+and
+.PN lgamma
+functions return \*(nn when
+.I x
+is \*(nn or when it
+is an integer value less than or equal to zero.  On overflow
+.PN gamma
+and
+.PN lgamma
+functions return HUGE_VAL.
+.SH Environment
+When your program is compiled using the 
+System V environment for nonpositive integer
+values, HUGE is returned, and 
+.I errno
+is set to EDOM.  
+A message indicating DOMAIN error is 
+printed on the standard error output.
+.PP
+If the correct value would overflow, 
+.PN gamma
+returns HUGE and sets
+.I errno
+to ERANGE.
+.PP
+These error-handling procedures may be changed with the function
+.MS matherr 3m .
+.SH See Also
+matherr(3m)

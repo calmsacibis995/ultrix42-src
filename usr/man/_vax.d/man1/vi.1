@@ -1,0 +1,305 @@
+.\" SCCSID: @(#)vi.1	8.1	9/11/90
+.TH vi 1
+.SH Name
+vi \- screen editor
+.SH Syntax 
+.B vi
+[
+.B \-t
+.I tag
+] [
+.BI + command
+] [
+.B \-l
+] [
+.B \-r
+] [
+.BI \-w n
+] [
+.B \-x
+]
+.I name...
+.SH Description
+.NX R "encryption" "vi screen editor"  
+.NX R "editors" "vi (screen)"  
+.NX R "vi (screen) editor"  
+The
+.PN vi
+(visual) editor is a display-oriented text editor based on
+.MS ex 1 .
+The
+.PN ex
+command and the
+.PN vi
+command run the same code.  You can access the command mode of
+.PN ex
+from within
+.PN vi .
+.PP
+The following is a list of some of the 
+.PN vi 
+commands.  See the
+\fIvi Beginner's Reference Card\fP
+and 
+"An Introduction to Display Editing with vi" in the
+\fISupplementary Documents, Volume 1: General User\fP
+for more details on using
+.PN vi .
+.PP
+.B Screen Control Commands
+.RS 5
+.IP <CTRL/L> 13 
+Reprints current screen.
+.IP <CTRL/Y> 
+Exposes one more line at top of screen.
+.IP <CTRL/E> 
+Exposes one more line at bottom of screen.
+.RE
+.PP
+.B Paging Commands
+.RS 5
+.IP <CTRL/F> 13
+Pages forward one screen.
+.IP <CTRL/B>
+Pages back one screen.
+.IP <CTRL/D>
+Pages down half screen.
+.IP <CTRL/U>
+Pages up half screen.
+.RE
+.PP
+.B Cursor Positioning Commands
+.RS 5
+.IP j 13
+Moves cursor down one line, same column.
+.IP k
+Moves cursor up one line, same column.
+.IP h
+Moves cursor back one character.
+.IP l
+Moves cursor forward one character.
+.IP <RETURN>
+Moves cursor to beginning of next line.
+.IP 0
+Moves cursor to beginning of current line.
+.IP $
+Moves cursor to end of current line.
+.IP <SPACE>
+Moves cursor forward one character.
+.TP 13
+.IB n G
+Moves cursor to beginning of line
+.I n.
+Default is last line  of file.
+.TP
+.BI / pattern
+Moves cursor forward to next occurrence of
+.I pattern.
+.TP
+.BI ? pattern
+Moves cursor backward to next occurrence of 
+.I pattern.
+.IP n
+Repeats last / or ? pattern search.
+.RE
+.PP
+.B Text Insertion Commands
+.RS 5
+.IP a 13
+Appends text after cursor. Terminated by <ESC>.
+.IP A
+Appends text at the end of the line. Terminated by <ESC>.
+.IP i
+Inserts text before cursor. Terminated by <ESC>.
+.IP I
+Inserts text at the beginning of the line. Terminated by <ESC>.
+.IP o
+Opens new line below the current line for text insertion. 
+Terminated by <ESC>.
+.IP O
+Opens new line above the current line for text insertion. 
+Terminated by <ESC>.
+.IP <DELETE>
+Overwrites last character during text insertion.
+.IP <ESC> 
+Stops text insertion. 
+.RE
+.PP
+.B Text Deletion Commands
+.RS 5
+.IP dw 13 
+Deletes current word.
+.IP x
+Deletes current character.
+.IP dd
+Deletes current line.
+.IP "D, d$"
+Deletes from cursor to end of line. 
+.IP P
+Puts back text from the previous delete.
+.RE
+.PP
+.B Text Change Commands
+.RS 5
+.IP cw 13
+Changes characters of current word until stopped with escape key.
+.IP c$
+Changes text up to the end of the line.
+.IP "C, c$"
+Changes remaining text on current line until stopped by
+pressing the escape key. 
+.IP ~
+Changes case of current character.
+.IP xp
+Transposes current and following characters.  
+.IP J
+Joins current line with next line.
+.TP 13
+.BI r x
+Replaces current character with
+.I x.
+.RE
+.PP
+.B Buffer Usage Commands
+.RS 5
+.TP 13
+.IB "[a\-z]n yy
+Yanks
+.I n
+lines to the
+.I [a\-z]
+buffer.  Default is current line.
+.TP
+.IB "[a\-z]n p
+Puts
+.I n
+yanked text lines from the
+.I a\-z
+buffer, after the cursor.
+.RE
+.PP
+.B Exiting vi
+.RS 5
+.IP ZZ 13
+Exits 
+.PN vi 
+and saves changes
+.IP :wq
+Writes changes to current file and quits edit session.
+.IP :q
+Quits edit session (no changes made).
+.RE
+.PP
+The
+.PN view
+command uses all of 
+the same edit or commands 
+as
+.PN vi .
+However,
+.PN view
+does not allow you to write the file. See
+.MS view 1 .
+.SH Options
+.TP 10
+.BI \-t \ tag
+Specifies a list of 
+.I tag
+files.  The
+.I tag
+files are preceded by a backslash (\e)
+and are separated by spaces.  The 
+.I tag
+option should always be the first entry.
+.TP
+.BI + command
+Tells the editor to begin by executing the specified 
+.I command.
+A useful example would be
+.RI +/ pattern
+to search for a 
+.I pattern.
+.IP \-l
+Sets the 
+showmatch and lisp options for editing LISP code.
+.TP
+.BI \-r \ name
+Retrieves the last saved version of the 
+.IR name 'd
+file in the event of an editor or system crash.  If no file is
+specified, a list of saved files is produced.
+.TP
+.BI \-w n
+Sets the default window size to
+.I n.
+This option is useful for starting in a small window on dialups.
+.NT
+The 
+.B \-x
+option is available only if the Encryption 
+layered product is installed.
+.NE
+.IP \-x 10
+Causes  
+.PN vi
+to prompt for a 
+.I key.
+The 
+.I key
+is used to encrypt and decrypt the contents of the file. If the file 
+contents have been encrypted with one 
+.IR key ,
+you must use the same 
+.I key 
+to decrypt the file.
+.SH Restrictions 
+Software tabs using
+.B ^T
+work only immediately after the
+.I autoindent.
+.PP
+Left and right shifts on intelligent terminals do not make use of
+insert and delete character operations in the terminal.
+.PP
+The
+.I wrapmargin
+option sometimes works incorrectly because it
+looks at output columns when blanks are typed.
+If a long word passes through the margin and onto
+the next line without a 
+break, then the line is not broken.
+.PP
+Insert/delete within a line can be slow
+if tabs are present on intelligent
+terminals, since the terminals need help in doing this correctly.
+.PP
+Saving text on deletes in the named buffers is somewhat inefficient.
+.PP
+The
+.I source
+command does not work when executed as
+.BR :source ;
+there is no way to use the
+.BR :append ,
+.BR :change ,
+and
+.BR :insert
+commands, since it is not possible to give on a
+.BR :global
+you must
+.B Q
+to
+.PN ex
+command mode, execute them, and then reenter the screen editor with
+.PN vi
+or
+.PN open .
+.SH See Also
+ed(1), ex(1), view(1)
+.br
+\fIThe Little Gray Book: An ULTRIX Primer\fP
+.br
+\fIThe Big Gray Book: The Next Step with ULTRIX\fP
+.br
+"An Introduction to Display Editing with Vi",
+\fISupplementary Documents, Volume 1: General User\fP

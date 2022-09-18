@@ -1,0 +1,131 @@
+.\" SCCSID: @(#)send.2	8.1	9/11/90
+.TH send 2
+.SH Name
+send, sendto, sendmsg \- send a message from a socket
+.SH Syntax
+.nf
+.ft B
+#include <sys/types.h>
+#include <sys/socket.h>
+.PP
+.ft B
+cc = send(s, msg, len, flags)
+int cc, s;
+char *msg;
+int len, flags;
+.PP
+.ft B
+cc = sendto(s, msg, len, flags, to, tolen)
+int cc, s;
+char *msg;
+int len, flags;
+struct sockaddr *to;
+int tolen;
+.PP
+.ft B
+cc = sendmsg(s, msg, flags)
+int cc, s;
+struct msghdr msg[];
+int flags;
+.fi
+.SH Description
+.NXR "send system call"
+.NXR "sendto system call"
+.NXR "sendmsg system call"
+.NXA "send system call" "recv system call"
+.NXR "socket" "sending message from"
+The
+.PN send ,
+.PN sendto ,
+and
+.PN sendmsg
+system calls
+are used to transmit a message to another socket.
+The
+.PN send
+system call
+may be used only when the socket is in a 
+.I connected
+state, while the 
+.PN sendto
+and
+.PN sendmsg
+system calls
+may be used at any time.
+.PP
+The address of the target is given by
+.IR to ,
+with 
+.I tolen
+specifying its size.
+The length of the message is given by
+.IR len .
+If the message is too long to pass atomically through the
+underlying protocol, the error EMSGSIZE is returned, and
+the message is not transmitted.  If the address specified
+in the argument is a broadcast address, the SO_BROADCAST
+option must be set for broadcasting to succeed.
+.PP
+No indication of failure to deliver is implicit in a
+.PN send .
+Return values of \-1 indicate some locally detected errors.
+.PP
+If no messages space is available at the socket to hold
+the message to be transmitted, 
+.PN send
+normally blocks, unless the socket has been placed in
+nonblocking I/O mode.
+The 
+.MS select 2
+call can be used to determine when it is possible to
+send more data.
+.PP
+The
+.I flags
+parameter can be set to MSG_OOB to send out-of-band
+data on sockets that support this features (for example, SOCK_STREAM).
+.PP
+See 
+.MS recv 2
+for a description of the
+.I msghdr
+structure.
+.PP
+The call returns the number of characters sent, or \-1
+if an error occurred.
+.SH Diagnostics
+.NXR "send system call" "diagnostics"
+.TP 20
+[EBADF]
+An invalid descriptor was specified.
+.TP 20
+[EDESTADDRREQ]
+A required address was omitted from an operation on a socket.
+.TP 20
+[EFAULT]
+An invalid user space address was specified for a parameter.
+.TP 20
+[EINVAL]
+An invalid argument length for the message was specified.
+.TP 20
+[EINTR]
+The send was interrupted by delivery of a signal.
+.TP 20
+[ENOTCONN]
+The socket is not connected.
+.TP 20
+[ENOTSOCK]
+The argument \fIs\fP is not a socket.
+.TP 20
+[EMSGSIZE]
+The socket requires that messages be sent atomically,
+and the size of the message to be sent made this impossible.
+.TP 20
+[EPIPE]
+A write on a pipe or socket for which there is no process to read the data.
+.TP 20
+[EWOULDBLOCK]
+The socket is marked nonblocking, and the requested operation
+would block.
+.SH See Also
+recv(2), getsockopt(2), socket(2)

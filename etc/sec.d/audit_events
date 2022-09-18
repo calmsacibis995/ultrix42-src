@@ -1,0 +1,144 @@
+! Audited system calls:
+exit                  succeed      
+fork                  succeed  fail
+open                  succeed  fail
+close                 succeed      
+creat                 succeed  fail
+link                  succeed  fail
+unlink                succeed  fail
+execv                 succeed  fail
+chdir                 succeed  fail
+mknod                 succeed  fail
+chmod                 succeed  fail
+chown                 succeed  fail
+old stat              succeed  fail
+mount                 succeed  fail
+umount                succeed  fail
+old setuid            succeed  fail
+old stime             succeed  fail
+ptrace                succeed  fail
+old utime             succeed  fail
+access                succeed  fail
+kill                  succeed  fail
+stat                  succeed  fail
+old setpgrp           succeed  fail
+lstat                 succeed  fail
+dup                   succeed      
+old setgid            succeed  fail
+acct                  succeed  fail
+ioctl                 succeed  fail
+reboot                succeed  fail
+symlink               succeed  fail
+execve                succeed  fail
+chroot                succeed  fail
+old vfork             succeed  fail
+mmap                  succeed  fail
+munmap                succeed  fail
+vhangup               succeed  fail
+setgroups             succeed  fail
+setpgrp               succeed  fail
+sethostname           succeed  fail
+dup2                  succeed      
+fcntl                 succeed      
+connect               succeed  fail
+accept                succeed  fail
+bind                  succeed  fail
+recvmsg               succeed  fail
+sendmsg               succeed  fail
+settimeofday          succeed  fail
+fchown                succeed  fail
+fchmod                succeed  fail
+setreuid              succeed  fail
+setregid              succeed  fail
+rename                succeed  fail
+truncate              succeed  fail
+sendto                succeed  fail
+shutdown              succeed      
+mkdir                 succeed  fail
+rmdir                 succeed  fail
+utimes                succeed  fail
+sethostid             succeed  fail
+killpg                succeed  fail
+msgctl                succeed  fail
+msgget                succeed  fail
+msgrcv                succeed  fail
+msgsnd                succeed  fail
+semctl                succeed  fail
+semget                succeed  fail
+shmsys                succeed  fail
+exportfs              succeed  fail
+setdomainname         succeed  fail
+audcntl               succeed  fail
+setsysinfo            succeed  fail
+shmget                succeed  fail
+shmdt                 succeed  fail
+shmctl                succeed  fail
+shmat                 succeed  fail
+
+! Audited trusted events:
+audit_suspend         succeed  fail
+audit_log_change      succeed  fail
+audit_shutdown        succeed  fail
+audit_log_creat       succeed  fail
+audit_xmit_fail       succeed  fail
+audit_reboot          succeed  fail
+audit_log_overwrite   succeed  fail
+audit_daemon_exit     succeed  fail
+audgen8               succeed  fail
+audit_setup           succeed  fail
+login                 succeed  fail
+auth_event            succeed  fail
+audit_start           succeed  fail
+
+XServerStartup        
+XServerShutdown       
+XServerDac            
+XClientStartup        
+XClientShutdown       
+XClientIPC            
+XObjectCreate         
+XObjectRename         
+XObjectDestroy        
+XObjectDac            
+XObjectRead           
+XObjectWrite          
+
+#537                    
+#538                    
+#539                    
+#540                    
+#541                    
+#542                    
+#543                    
+#544                    
+#545                    
+#546                    
+#547                    
+#548                    
+#549                    
+#550                    
+#551                    
+#552                    
+#553                    
+#554                    
+#555                    
+#556                    
+#557                    
+#558                    
+#559                    
+#560                    
+#561                    
+#562                    
+#563                    
+#564                    
+#565                    
+#566                    
+#567                    
+#568                    
+#569                    
+#570                    
+#571                    
+#572                    
+#573                    
+#574                    
+#575                    

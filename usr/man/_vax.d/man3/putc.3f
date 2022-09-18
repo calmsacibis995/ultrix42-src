@@ -1,0 +1,33 @@
+.\" SCCSID: @(#)putc.3f	8.1	9/11/90
+.TH putc 3f VAX "" Unsupported
+.SH Name
+putc, fputc \- write a character to a FORTRAN logical unit
+.SH Syntax
+.B integer function putc (char)
+.br
+.B character char
+.sp 1
+.B integer function fputc (lunit, char)
+.br
+.B character char
+.SH Description
+.NXR "putc subroutine (FORTRAN)"
+.NXR "fputc subroutine (FORTRAN)"
+.NXR "FORTRAN logical unit" "writing character to"
+These functions write a character
+to the file associated with a FORTRAN logical
+unit bypassing normal FORTRAN I/O.
+The
+.PN putc
+routine writes to logical unit 6, normally connected 
+to the control terminal output.
+.PP
+The value of each function will be zero unless some error occurred;
+a system error code otherwise. 
+For further information, see 
+.MS perror 3f .
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+intro(2), perror(3f), putc(3s)

@@ -1,0 +1,52 @@
+SCCS/s.lat_scl1.c:
+
+D 4.1.1.9 88/06/27 14:58:49 wong 28 26	00034/00009/00942
+MRs:
+COMMENTS:
+Set service rating to 1 if no terminal available for the service.
+
+
+D 3.2.1.1 88/05/04 12:39:55 wong 27 13	00030/00004/00792
+MRs:
+COMMENTS:
+v2.3 release
+
+
+D 4.1.1.8 88/04/12 11:20:58 wong 26 25	00011/00006/00940
+MRs:
+COMMENTS:
+Added transparency mode for data_b in sdatab_class1() to disable
+flow control in DECserver.
+
+
+D 4.1.1.7 88/03/15 18:27:57 wong 25 24	00007/00011/00939
+MRs:
+COMMENTS:
+Destination filed is saved if defined.
+
+
+D 4.1.1.6 88/03/01 15:15:41 wong 24 23	00008/00000/00942
+MRs:
+COMMENTS:
+changed to use cflag for speed
+
+
+D 4.1.1.5 88/02/29 14:49:07 wong 23 21	00021/00015/00921
+MRs:
+COMMENTS:
+V2.4 LAT with updates
+
+
+D 6.2 88/02/04 14:48:09 tim 22 17	00000/00000/00801
+MRs:
+COMMENTS:
+Included V2.4 delta 4.1.1.1
+
+
+D 4.1.1.4 88/02/03 15:32:58 tim 21 20	00008/00002/00928
+MRs:
+COMMENTS:
+ *      Tim Burke - 2/3/88                                              *
+ *              Use terminal speeds as specified by the termio data     *
+ *              structures.  Changed as follows:                        *
+ *              old: tp->t_ispeed, tp->t_ospeed                         *

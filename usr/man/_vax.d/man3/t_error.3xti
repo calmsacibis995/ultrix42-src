@@ -1,0 +1,86 @@
+.TH t_error 3xti
+.SH Name
+t_error \- produces error message 
+.SH Syntax 
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_error(\fIerrmsg\fB)
+.br
+.B char \fI*errmsg\fB;
+.br
+.B extern char \fI*t_errlist[]\fB;
+.br
+.B extern int \fIt_nerr\fB;
+.SH Arguments
+.IP \fIerrmsg\fR 10
+Is a user-supplied error message that gives context to the error.
+.SH Description
+The 
+.PN t_error()
+function produces a message on the standard error
+output that describes the last error encountered during a call to a
+transport function. 
+.NXR "t_error system function"
+.NXR "error messages" "transport function"
+.PP
+The 
+.PN t_error()
+function prints the user-supplied error message
+followed by a colon and a standard error message for the current error
+defined in \fBt_errno\fR. If \fBt_errno\fR is [TSYSERR],
+.PN t_error()
+also prints a standard message for the current value
+contained in \fBerrno\fR. 
+.PP
+To simplify variant formatting of messages, the array of message strings
+\fBt_errlist\fR is provided: \fBt_errno\fR can be used as an index in
+this table to get the message string without the newline. The
+\fIt_nerr\fR is the largest message number provided for in the
+\fIt_errlist\fR table. 
+.PP
+The \fBt_errno\fR variable is set only when an error occurs and is not
+cleared on successful calls.
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 4p
+Parameters@Before Call@After Call
+.sp 4p
+_
+.sp 6p
+errmsg@x@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Examples
+If a 
+.PN t_connect() 
+function fails on transport endpoint \fIfd2\fR
+because a bad address was given, the following call may follow
+the failure:
+.EX
+t_error ("t_connect failed on fd"):
+.EE
+.PP
+The diagnostic message to be printed would look like:
+.EX
+t_connect failed on fd2: Incorrect transport address format
+.EE
+where "Incorrect transport address format" identifies the specific error
+that occurred, and "t_connect failed on fd2" tells the user
+which function failed on which transport endpoint.
+.SH Return Values
+Upon successful completion, a value of 0 is returned. On failure, a
+value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to the following:
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the current implementation of XTI. 

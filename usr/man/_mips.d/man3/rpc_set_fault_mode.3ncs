@@ -1,0 +1,60 @@
+.TH rpc_set_fault_mode 3ncs
+.SH Name
+rpc_set_fault_mode \- set the fault-handling mode for a server (server only)
+.SH Syntax
+.nf
+#include <idl/c/rpc.h>
+
+unsigned long rpc_$set_fault_mode(\fIstate\fP)
+unsigned long \fIstate\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBfunction rpc_$set_fault_mode(\fR
+.\"	\fBin \fIon\fB: unsigned32): unsigned32;\fR
+.\".DE
+.SH Arguments
+.TP
+\fIstate\fR
+If `true' (not zero), the server exits when a fault occurs.  If `false' (zero),
+the server reflects faults back to the client.
+.SH Description
+The 
+.PN rpc_$set_fault_mode
+function controls the handling of faults that occur in user server 
+routines.
+.NXR "Interface to the Remote Procedure Call" "rpc_set_fault_mode"
+.PP
+In the default mode,
+the server reflects faults back to the client and continues processing.
+Calling 
+.PN rpc_$set_fault_mode
+with value other than zero for \fIstate\fR
+sets the fault-handling mode so that
+the server sends an 
+.B rpc_$comm_failure
+fault back to the client and exits.
+Calling 
+.PN rpc_$set_fault_mode
+with \fIstate\fR equal to zero
+resets the fault-handling mode to the default.
+.PP
+This function returns the previous state of the fault-handling mode.
+.SH Diagnostics
+This section lists status codes for errors returned by this
+.PN rpc_$
+routine.
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs)

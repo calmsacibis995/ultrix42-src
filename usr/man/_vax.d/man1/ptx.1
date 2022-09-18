@@ -1,0 +1,98 @@
+.\" SCCSID: @(#)ptx.1	8.1	9/11/90
+.\" Last modified by MJT on 24-Apr-85  2247
+.\"
+.TH ptx 1
+.SH Name
+ptx \- create permuted index
+.SH Syntax
+.B ptx
+[\|\fIoption...\fR\|] [\|\fIinput\fR\|[\fIoutput\fR\|]\|]
+.SH Description
+.NXR "ptx command"
+.NXR "index command"
+The
+.PN ptx
+command generates a permuted index to file
+.I input
+on file
+.I output
+(standard input and output default).
+It has three phases: the first does the permutation, generating
+one line for each keyword in an input line.
+The keyword is rotated to the front.
+The permuted file is then
+sorted.
+Finally, the sorted lines are rotated so the keyword
+comes at the middle of the page.
+The
+.PN ptx
+command produces output in the form:
+.br
+.IP
+\&.xx "tail" "before keyword" "keyword and after" "head"
+.PP
+where .xx may be an
+.PN nroff
+or
+.PN troff
+macro
+for user-defined formatting.
+The
+.I before keyword
+and
+.I keyword and after
+fields incorporate as much of the line as fits
+around the keyword when it is printed at the middle of the page.
+The
+.PN tail
+and
+.PN head
+commands,
+at least one of which is an empty string "",
+are wrapped-around pieces small enough to fit
+in the unused space at the opposite end of the line.
+When original text must be discarded, `/' marks the spot.
+.SH Options
+.NXR "ptx command" "options"
+The following options can be applied:
+.IP "\fB\-\|b\fI break\fR" 20
+Use the characters in the 
+.I break
+file as separators.
+In any case, tab, new line,
+and space characters are always used as break characters.
+.IP \fB\-f\fR 20
+Folds upper and lower case letters for sorting.
+.IP "\fB\-\|g\fI n\fR" 20
+Uses specified number as interfield gap.  
+The default gap is 3 characters.
+.IP "\fB\-\|i\fI ignore\fR" 20
+Do not use as keywords any words given in the
+.I
+ignore
+file.
+If the \fB\-i\fR and \fB\-o\fR options are missing, use /usr/lib/eign
+as the 
+.I ignore
+file.
+.IP "\fB\-\|o\fI only\fR" 20
+Use words listed only in the \fIonly\fR file.
+.IP \fB\-r\fR 20
+Uses leading nonblanks as reference identifiers.  
+Attach that identifier as a 5th field on each output line.
+.IP \fB\-t\fR 20
+Prepares the output for the phototypesetter.  
+The default line length is 100 characters.
+.IP "\fB\-\|w\fI n\fR" 20
+Use the next argument,
+.I n,
+as the width of the output line.
+The default line length is 72 characters.
+.SH Restrictions
+.NXR "ptx command" "restricted"
+Line length counts do not account for overstriking or
+proportional spacing.
+.SH Files
+/usr/bin/sort
+.br
+/usr/lib/eign

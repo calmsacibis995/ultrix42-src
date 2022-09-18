@@ -1,0 +1,35 @@
+.\" SCCSID: @(#)asinh.3m	8.1	9/11/90
+.TH asinh 3m VAX
+.SH Name
+asinh, acosh, atanh \- inverse hyperbolic functions
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double asinh(x)
+.B double x;
+.PP
+.B double acosh(x)
+.B double x;
+.PP
+.B double atanh(x)
+.B double x;
+.fi
+.SH Description
+.NXR "asinh subroutine"
+.NXR "acosh subroutine"
+.NXR "atanh subroutine"
+.NXR "hyperbolic function" "inverse"
+These functions compute the designated inverse hyperbolic functions for real
+arguments.
+.SH Return Values
+The function
+.PN acosh
+returns 0.0 if the argument is less than 1.
+.PP
+The function
+.PN atanh 
+returns the HUGE value if the argument has absolute
+value greater than or equal to 1.
+.SH See Also
+exp(3m), intro(3m)

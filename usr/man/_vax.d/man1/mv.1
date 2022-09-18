@@ -1,0 +1,71 @@
+.\" SCCSID: @(#)mv.1	8.1	9/11/90
+.TH mv 1
+.SH Name
+mv \- move or rename files
+.SH Syntax
+.B mv
+[\fB\-i\fR] [\fB\-f\fR\|] [\fB\-\fR] \fIfile1 file2\fR
+.PP
+.B mv
+[\fB\-i\fR] [\fB\-f\fR\|] [\fB\-\fR] \fIfile... directory\fR
+.SH Description
+.NXR "mv command" 
+.NXR "file" "moving"
+.NXR "file" "renaming"
+The
+.PN mv
+command
+moves (changes the name of)
+.I file1
+to
+.IR file2 .
+.PP
+If
+.I file2
+already exists, it is removed before
+.I file1
+is moved. 
+When you are using 
+.PN mv
+from a terminal, and you do not have write permission on 
+.IR file2 ,
+the 
+.PN mv
+command prompts for confirmation before overwriting the file.
+For further information, see 
+.MS chmod 2 .
+.PP
+In the second form, one or more
+.I files
+(plain files or directories) are moved to the
+.I directory
+with their original file-names.
+.PP
+The
+.PN mv
+command refuses to move a file onto itself.
+.SH Options
+.IP \fB\-\fR 5
+Interprets all following arguments as file names to allow file names starting with
+a minus.  
+.IP \fB\-f\fR 
+Force. This option overrides any mode restrictions or the
+\-i switch.
+.IP \fB\-i\fR 
+Interactive mode. Whenever a move is to supercede an
+existing file, the user is prompted by the name of the file
+followed by a question mark. If he answers with a line starting
+with 'y', the move continues. Any other reply prevents the move from
+occurring.
+.SH Restrictions
+If
+.I file1
+and
+.I file2
+lie on different file systems,
+.PN mv
+must copy the file and delete the original.
+In this case the owner name becomes that of the copying process and any
+linking relationship with other files is lost.
+.SH See Also
+cp(1), ln(1)

@@ -1,0 +1,990 @@
+#!/bin/sh
+# 
+# @(#)install.3	4.7	(ULTRIX)	2/14/91
+#
+# install.3: for installation only
+#		see .profile
+#-------------------------------------------------------------------
+#
+# 006 - Jan 1991 - Jon Wallace
+#	Added code and new environment variable for grey-scale monitor
+#	question.
+#
+# 005 - Jan 1991 - Jon Wallace
+#	Added code to test whether customized kernel move is successful
+#	or not, and to echo warning messages if it is not.
+#
+# 004 - Aug 31, 1990 - Jon Wallace
+#	Put in fix to remove embedded spaces when doing a read
+#
+# 003 - July 5, 1990 - ccb
+#	MUP support, keyed on MUPSUPPORT flag
+#
+# 002 - Aug 16, 1988 - Jon Wallace
+#	Modified script for CDROM support 
+#
+# 001 - Jan 26, 1988 - Tung-Ning Cherng
+#	Allowed using the existing partition of system disk for V2.4
+#
+# 000 - July,16 1987 - Tungning Cherng created
+#	It was a part of install.2 before.
+# 	
+
+PATH=.:/install.tmp:/bin:/etc:/usr/bin:/usr/ucb:/usr/etc
+HOME=/
+export PATH HOME
+MUPSUPPORT=1		# give this a value to turn on in-line MUP support
+LL="
+"
+MSG1="
+The installation software successfully installed the mandatory software
+subsets. However, it failed to install other parts of the supported
+software subsets. You can continue with the installation and install
+the other supported software subsets at a later time using the setld
+utility or, you can request that the installation software again try
+to install these supported software subsets.
+
+Select one of the following options:
+
+	1) Continue with the installation
+	2) Try to re-install supported software subsets
+
+Enter your choice [1]: "
+ 
+MSG2="
+The installation software failed to install the unsupported software
+subsets but will continue to proceed with the next task. You can install
+the unsupported software subsets at a later time, using the setld utility."
+
+ERMSG1="
+This error causes the installation procedure to stop.  One possible
+cause for the error is a corrupt system disk. You may want to replace
+or use another system disk, and begin the installation again. If this
+error message appears a second time, contact a DIGITAL representative."
+
+trap '
+while :
+do	
+	echo -n "
+Do you want to stop the installation? (y/n) []:"
+	read ans 
+	ans=`echo $ans`
+	case $ans in
+	[yY]*)
+		echo "
+Begin your installation again by following the instructions in your
+installation guide."
+		exit 1
+		;;
+	[nN]* )
+		break 
+		;;
+	* )
+		continue
+		;;
+	esac
+done ' 1 2 3
+
+
+#
+# read the root device from the file .minidevice
+# To know media_D media_d media_u 
+#	and  root_D root_d root_u .
+#
+if test -s "/.minidevice" 
+then
+	set `cat .minidevice`
+	root_D=$1; root_d=$2; root_u=$3; root_p=a
+	media_D=$4; media_d=$5; media_u=$6 media_p=$7
+	(cd /dev; MAKEDEV $root_d$root_u >/dev/null )
+else
+	echo "
+The installation procedure failed to recognize the distribution
+device and the system disk you are using. $ERMSG1"
+	exit 1
+fi
+
+set xxx `dd if=/.advflag 2>/dev/null`
+ADVFLAG=$2
+DEF_PT=$3
+MACHTYPE=$4
+export ADVFLAG DEF_PT MACHTYPE
+CPUTYPE=`sizer -c`
+case $MACHTYPE in
+vax )
+	KERNELPATH="/sys/VAX"
+        CONFIGPATH="/sys/conf/vax"
+	DISK_MEDIA_DIR="VAX/BASE"
+        ;;
+
+mips)
+	KERNELPATH="/sys/MIPS"
+        CONFIGPATH="/sys/conf/mips"
+	DISK_MEDIA_DIR="RISC/BASE"
+        ;;
+esac
+
+case $remoteflag in
+y )
+	
+    	realsysname=`/bin/hostname`
+    	sysname=`echo ${realsysname} | dd conv=ucase 2>/dev/null`
+	media_D=REMOTE
+	;;
+* )
+	set xxx `cat /tmp/realsysname` # from the doconfig -n
+	realsysname=$2; sysname=$3
+	cd /install.tmp
+	;;
+esac
+
+while : true
+do
+	case $DEF_PT in
+	1 )
+		case $root_D in
+        	RA82 | RA90 )
+                	usr_p=d
+                	;;
+   		*)
+                	usr_p=g
+                	;;
+        	esac 
+		;;
+	esac
+	ans=y
+	case $ADVFLAG in
+	1)	
+	    case $DEF_PT in
+	    0 )
+		ans=n
+		;;
+	    1 )
+		# assign the default area and do the alignment of table.
+		chpt -q /dev/r$root_d${root_u}c > /tmp/ptable
+		awk '{if ($1 == "partition") printf \
+"%-10s%10s %10s %10s    %-12s  default\n",$1,$2,$3,$4,$5}' /tmp/ptable > /tmp/ptmp
+		awk '{if ($1 == "a") printf \
+"%5s     %10s %10s %10s    %-12s  root\n",$1,$2,$3,$4,$5}' /tmp/ptable >> /tmp/ptmp
+		awk '{if ($1 == "b") printf \
+"%5s     %10s %10s %10s    %-12s  swap, dump\n",$1,$2,$3,$4,$5}' /tmp/ptable >> /tmp/ptmp
+		case $usr_p in
+                d )
+			awk '{if ($1 == "d") printf \
+"%5s     %10s %10s %10s    %-12s  /usr\n",$1,$2,$3,$4,$5}' /tmp/ptable >> /tmp/ptmp
+			;;
+		g )
+			awk '{if ($1 == "g") printf \
+"%5s     %10s %10s %10s    %-12s  /usr \n",$1,$2,$3,$4,$5}' /tmp/ptable >> /tmp/ptmp
+			;;
+		esac
+
+		echo "
+
+*** FILE SYSTEM DEFAULT OPTION ***
+
+The following table shows the default file system layout on $root_D, $root_d${root_u}:
+"
+		dd if=/tmp/ptmp 2>/dev/null
+		echo -n "
+If you choose the defaults, the var area will be allocated to /usr/var.  
+
+Do you want to choose the default file system layout? (y/n): "
+		read ans
+		ans=`echo $ans`
+		;;
+	    esac
+	    ;;
+	esac
+
+	case $ans in
+	y )
+		usr_d=$root_d; usr_u=$root_u	
+		umount /dev/$usr_d$usr_u$usr_p  > /dev/null 2>&1
+		echo "
+Making the new file system for /usr on /dev/r$usr_d$usr_u$usr_p $root_D"
+		echo "
+Making the new file system for /usr on /dev/r$usr_d$usr_u$usr_p $root_D" 2>&1 >> /FILESYS.log
+		newfs /dev/r$usr_d$usr_u$usr_p $root_D 2>&1 >> /FILESYS.log 
+		case $? in
+		0 )	;;
+		* )
+			echo "
+The newfs command failed to construct the /usr file system on
+partition $usr_p of the system disk, $usr_d$usr_u. 
+${LL}$ERMSG1"
+			exit 1
+			;;
+		esac
+		mount /dev/$usr_d$usr_u$usr_p /usr
+		case $? in
+		0 )	;;
+		* )
+			echo "
+The mount command failed to mount the /usr file system on partition
+$usr_p of the system disk, $usr_d$usr_u.  $ERMSG1"
+			exit 1
+			;;
+		esac
+		mkdir /usr/var
+		chmod 755 /usr/var
+		ln -s /usr/var /var
+		swap1_d=$root_d
+		swap1_u=$root_u
+		swap1_p=b
+		dump_d=$root_d
+		dump_u=$root_u
+		dump_p=b
+		;;
+
+    	n )
+		. ask_filesys
+		;;
+    	* )
+		continue
+		;;
+    	esac
+	break
+done
+
+#
+# Start to retore the /usr file system
+#
+echo "/dev/${root_d}${root_u}a:/:rw:1:1:ufs::" > /etc/fstab
+echo "/dev/${usr_d}${usr_u}${usr_p}:/usr:rw:1:2:ufs::" >> /etc/fstab
+case "${var_d}${var_u}${var_p}" in
+"${usr_d}${usr_u}${usr_p}" | "" )
+	;;
+*)
+	echo "/dev/${var_d}${var_u}${var_p}:/var:rw:1:4:ufs::" >> /etc/fstab
+	;;
+esac
+
+case "${swap2_p}" in
+"" )	;;
+* )
+	echo "/dev/${swap2_d}${swap2_u}${swap2_p}::sw:0:0:ufs::" >> /etc/fstab
+	;;
+esac
+chmod 644 /etc/fstab
+
+WS=`sizer -wt`
+case $WS in
+0 )
+	echo "
+This distribution media includes subsets for ULTRIX Worksystem
+Software (UWS).  A UWS license (on a workstation) or a UWS Server
+License (on a timesharing machine or server) is required to install
+these subsets.
+"
+	while :
+	do
+		echo -n "Do you want to install ULTRIX Worksystem Software? y/n []: "
+		read WS_BITS
+		WS_BITS=`echo $WS_BITS`
+		case $WS_BITS in
+		Y | y )
+			WS_BITS="Y"
+			break
+			;;
+		N | n )
+			break
+			;;
+		* )
+			echo "You must answer 'y' or 'n'."
+			;;
+		esac
+	done
+	;;
+* )
+	WS_BITS="Y"
+	while :
+	do
+		echo -n "
+
+Select one of the options below that describes the type of display
+being used:
+
+	1) Black and White
+	2) Color
+	3) Gray Scale
+
+Enter your choice: "
+		read ans
+		ans=`echo $ans`
+		case $ans in
+		1 | 2 )
+			ISL_ISGRAY=0
+			break
+			;;
+		3 )
+			ISL_ISGRAY=1
+			break
+			;;
+		* )
+			;;
+		esac
+	done
+	;;
+esac
+export WS_BITS ISL_ISGRAY
+
+case $ADVFLAG in
+0 )
+	echo "${LL}Installing mandatory software subsets."
+	if test "$WS_BITS" = "Y" 
+	then
+		ADVFLAG=2
+		export ADVFLAG
+	fi
+	;;
+1)
+	echo "${LL}*** SUPPORTED SOFTWARE INSTALLATION ***"
+	if test "$WS_BITS" = "Y" 
+	then
+		ADVFLAG=3
+		export ADVFLAG
+	fi
+	;;
+esac
+
+cd /
+N=1
+while test $N -le 3
+do
+	case $N in
+	1 )	;;
+	2 )
+		echo "
+*** Attempting again to install the supported software subsets. *** "
+		;;
+	3 )
+		echo " 
+The installation software failed to install the supported software
+subsets.  This causes the installation procedure to stop. Contact your
+DIGITAL representative."
+		exit 1 	;;
+	esac
+	N=`expr $N + 1`
+
+	case $media_D in
+    	REMOTE )
+		for i in `cat /etc/hosts` 
+		do
+			SERVER=$i
+		done	
+		setld -l $SERVER:	
+		case $? in
+		0 )	
+			echo "
+The installation procedure has successfully installed the software 
+subsets."
+			break
+			;;
+		1 )
+			echo "
+The installation procedure was unable to install the supported software
+subsets." 
+			continue
+			;;
+		* )
+			echo -n "$MSG1"
+			read ans
+			ans=`echo $ans`
+			case $ans in
+			2 )
+				N=2
+				continue ;;
+			"" | * )
+				break 
+				;;
+			esac
+			;;
+		esac
+		;;
+
+    	RA60 | CDROM )
+		(cd /dev; MAKEDEV ${media_d}${media_u} >/dev/null )
+		DRIVE=/dev/$media_d$media_u$media_p
+
+		if test "$media_D" = "RA60"
+		then
+			echo "
+The installation procedure checks your distribution media,
+${media_d}${media_u}, to ensure that it is not corrupt."
+			fsck /dev/r${media_d}${media_u}${media_p}
+			case $? in
+			0 )	;;
+			* )
+				echo "
+The fsck command failed to perform a file consistency check on partition
+${media_p} of the distribution media, ${media_d}${media_u}. Thus, the installation software
+was unable to load the supported software subsets."
+				exit 1
+				;;
+			esac
+		fi
+		mount  -r /dev/${media_d}${media_u}${media_p} /mnt
+		case $? in
+		0 ) 	;;
+		* )
+			echo "
+The mount command failed to mount partition ${media_p} of the distribution
+media, ${media_d}${media_u}. Thus, the installation software was unable
+to load the supported software subsets. "
+			exit 1
+			;;
+		esac
+		setld -l /mnt/$DISK_MEDIA_DIR
+		case $? in
+		0 )	
+			echo "
+The installation software has successfully installed the software 
+subsets."
+			if [ "$MUPSUPPORT" ]
+			then
+				install.mup DISK /mnt/${DISK_MEDIA_DIR}_UPGRADE $DRIVE && break
+				exit 1
+			else
+				umount /dev/${media_d}${media_u}${media_p}
+				break
+			fi
+			;;
+		1 )
+			umount /dev/${media_d}${media_u}${media_p}
+			echo "
+The installation software was unable to install the supported software
+subsets." 
+			continue
+			;;
+		* )
+			echo -n "$MSG1"
+			read ans
+			ans=`echo $ans`
+			case $ans in
+			2 )
+				N=2
+				umount /dev/${media_d}${media_u}${media_p}
+				continue
+				;;
+			"" | * )
+				if [ "$MUPSUPPORT" ]
+				then
+					install.mup DISK /mnt/${DISK_MEDIA_DIR}_UPGRADE $DRIVE && break
+					exit 1
+				else
+					umount $DRIVE
+					break 
+				fi
+				;;
+			esac
+			;;
+		esac
+		;;
+
+    	* )	# tape.
+		(cd /dev; rm -f *rmt*; MAKEDEV ${media_d}${media_u} >/dev/null )
+		setld -l /dev/nrmt0h
+		case $? in
+		0 )	
+		echo "
+The installation software has successfully installed the software
+subsets. You can now remove the tape containing the software subsets
+from the device."
+			[ "$MUPSUPPORT" ] &&
+			{
+				install.mup TAPE /dev/nrmt0h || exit 1
+			}
+			break ;;
+		1 )
+			echo "
+The installation software was unable to install the supported software
+subsets." 
+			continue
+			;;
+		* )
+			echo -n "$MSG1"
+			read ans
+			ans=`echo $ans`
+			case $ans in
+			2 )
+				N=2
+				continue ;;
+			"" | * )
+				[ "$MUPSUPPORT" ] &&
+				{
+					install.mup TAPE /dev/nrmt0h || exit 1
+				}
+				break 
+				;;
+			esac
+			;;
+		esac
+		;;
+	esac
+done
+
+case $CPUTYPE in
+DS* | MVAX_I | MVAX_II | VAX3600 | VAX420 | VAX3400 | VAX60 | VAXSTAR)
+	ed /usr/lib/crontab <<xxEOFxx  1>/dev/null
+		/#BIGVAX/d
+		.,/#END/d
+		/#MICROVAX/d
+		.,/#END/s/^#//g
+		d
+		w
+		q
+xxEOFxx
+	ed /etc/rc <<xxEOFxx  1>/dev/null
+		/#MICROVAX/d
+		.,/#END/s/^#//g
+		d
+		w
+		q
+xxEOFxx
+	;;
+* )
+	ed /usr/lib/crontab <<xxEOFxx   1>/dev/null
+		/#BIGVAX/d
+		/#END/d
+		/#MICROVAX/d
+		.,/#END/d
+		w
+		q
+xxEOFxx
+	ed /etc/rc <<xxEOFxx   1>/dev/null
+		/#MICROVAX/d
+		.,/#END/s/^#//g
+		d
+		w
+		q
+xxEOFxx
+	;;
+esac
+
+case $remoteflag in
+y )
+	IFCONF=`grep broadcast /netstart`
+	ed /etc/rc.local <<xxEOFxx  1>/dev/null
+		/broadcast/s@.*@$IFCONF@
+		w
+		q
+xxEOFxx
+	;;
+n )
+# Setup network for local loopback. Netsetup will rearrange this when run.
+	ed  /etc/hosts <<xxxEOFxxx 1>/dev/null 
+	/localhost/s/\$/ $realsysname/p
+	w
+	q
+xxxEOFxxx
+	;;
+esac
+
+echo "dumps on $dump_d$dump_u$dump_p" > /install.tmp/.config
+case "$swap2_p" in
+"" )
+	echo "swap on $swap1_d$swap1_u$swap1_p"  >> /install.tmp/.config
+	;;
+* )
+	echo "swap on $swap1_d$swap1_u$swap1_p and $swap2_d$swap2_u$swap2_p"  >> /install.tmp/.config
+       	;;
+esac
+
+case $MACHTYPE in
+vax)
+	echo "
+options         EMULFLT " >> /install.tmp/.config
+	;;
+esac
+
+case $ADVFLAG in
+0 | 2 )
+	echo "
+options		QUOTA
+options		INET
+options		NFS
+options		RPC
+options		LAT
+options		DLI
+options		UFS
+options		DECNET
+options		NETMAN
+options		SYS_TRACE
+pseudo-device 	pty
+pseudo-device	loop
+pseudo-device	ether
+pseudo-device	inet
+pseudo-device	nfs
+pseudo-device	rpc
+pseudo-device	lat
+pseudo-device	lta
+pseudo-device	ufs
+pseudo-device	decnet
+pseudo-device	netman
+pseudo-device	sys_trace
+pseudo-device	dli " >> /install.tmp/.config
+	;;
+
+1 | 3 )
+	echo "
+options		QUOTA
+options		INET
+options		NFS
+options		RPC
+options		DLI
+options		UFS
+options		NETMAN
+pseudo-device	nfs
+pseudo-device	rpc
+pseudo-device	dli	
+pseudo-device 	pty
+pseudo-device	loop
+pseudo-device	ether 
+pseudo-device	ufs 
+pseudo-device	netman
+pseudo-device	inet " >> /install.tmp/.config
+	while :
+	do
+		echo  " 
+*** CONFIGURATION FILE KERNEL OPTION SELECTION *** "
+		echo -n "
+    Selection   Kernel Option 
+---------------------------------------------------------------
+	1	Local Area Transport (LAT)
+	2	Bisynchronous Communication protocol (VAX only)
+	3	Computer Interconnect (CI) network
+	4	Diagnostic/Utilities Protocol (DUP)
+	5	ISO9660 File System Support (CDFS)
+	6	Ethernet Packet Filter
+	7	Enhanced Security Features
+	8	DECnet
+	9	All of the above
+       10	None of the above
+----------------------------------------------------------------
+
+Enter the selection number for each kernel option you want.
+For example, 1 3 :  "
+		read ans
+		ans=`echo $ans`
+		case $ans in
+		"" )
+			echo "
+You pressed the RETURN key without choosing one or more options. You
+must choose one or more options from the menu."
+			continue
+			;;
+		10 )
+			echo "
+You chose not to specify any options from the menu. Thus, the installation 
+software will not add any of these options to your configuration file. "
+			;;
+		* )	
+		    	case $ans in
+		    	9 )
+				ans="1 2 3 4 5 6 7 8"
+				;;
+		    	esac
+		    	echo "
+You specified the following kernel options: ${LL}"
+		    	for i in $ans
+		    	do
+			case $i in
+			1 ) echo "	Local Area Transport (LAT)"
+				;;
+			2 )
+				case $MACHTYPE in
+				vax)
+					echo "	Bisynchronous Communication protocol"
+					;;
+				esac
+				;;
+			3 ) echo "	Computer Interconnect (CI) network"
+				;;
+			4 ) echo "	Diagnostic/Utilities Protocol (DUP)"
+				;;
+			5 ) echo "	ISO9660 File System Support (CDFS)"
+				;;
+			6 ) echo "	Ethernet Packet Filter"
+				;;
+			7 ) echo "	Enhanced Security Features"
+				;;
+			8 ) echo "	DECnet"
+				;;
+			* )
+				echo "
+You specified $i, which is an invalid response. Study the options provided 
+in the following menu and enter a valid response.  ${LL}"
+				continue 2
+				;;
+				esac
+		    	done
+		    	;;
+		esac
+		echo -n "
+Is this correct? (y/n) [n]: "
+		read resp
+		resp=`echo $resp`
+		case $resp in
+		[yY]* )
+			break
+			;;
+		esac
+	done
+	case $ans in
+	10 )	;;
+	* )
+		for i in $ans
+		do
+			case $i in
+			1 )
+				echo "
+options		LAT
+pseudo-device	lat
+pseudo-device	lta" >> /install.tmp/.config	
+				;;
+			2 )
+				case $MACHTYPE in
+				vax )
+					echo "
+options		BSC
+pseudo-device	bsc" >> /install.tmp/.config	
+					;;
+				esac
+				;;
+			3 )
+				echo "
+pseudo-device	scsnet" >> /install.tmp/.config
+				;;
+			4 )
+				echo "
+pseudo-device	msdup" >> /install.tmp/.config
+				;;
+			5 )
+				echo "
+options		CDFS
+pseudo-device	cdfs" >> /install.tmp/.config
+				;;
+			6 )
+				echo "
+options		PACKETFILTER
+pseudo-device	packetfilter" >> /install.tmp/.config
+				;;
+			7 )
+				echo "
+options		AUDIT
+options		SYS_TPATH
+pseudo-device   sys_tpath
+pseudo-device	audit" >> /install.tmp/.config
+				;;
+			8 )
+				echo "
+options		DECNET
+pseudo-device	decnet" >> /install.tmp/.config
+				;;
+			esac
+		done
+		;;
+	esac
+	;;
+esac
+
+rm -f /.minidevice  /.advflag /restoresymtable /netstart > /dev/null 
+sync
+sync
+
+set xxx `cat /tmp/timezone` #came from doconfig -t
+shift; timezone=$*
+
+doconfig -i $realsysname $timezone 
+
+[ ! -f $KERNELPATH/$sysname/vmunix ] &&
+{
+	echo "
+ERROR: Cannot find $KERNELPATH/$sysname/vmunix !!!
+Cannot continue with installation."
+	exit 1
+}
+
+VMERROR=0
+if [ -f /vmunix ]
+then
+	mv /vmunix /genvmunix
+	case $? in
+	0 ) ;;
+	* )
+		VMERROR=1
+		VMMESS="
+ERROR: An error occured while moving the generic kernel to /genvmunix!"
+		;;
+	esac
+else
+	echo "
+WARNING: Could not find generic kernel!"
+fi
+
+
+mv $KERNELPATH/$sysname/vmunix /vmunix
+case $? in
+0 ) ;;
+* )
+	VMERROR=1
+	VMMESS="
+ERROR: Cannot move $KERNELPATH/$sysname/vmunix to /vmunix !!!
+An error occured while moving the $sysname customized kernel to /vmunix."
+	;;
+esac
+
+
+case $VMERROR in
+1 )
+	(echo "$VMMESS
+The system will boot using the generic kernel, after which it is recommended
+that the system administrator manually copy the generic kernel to /genvmunix
+using the following command:
+
+	mv /vmunix /genvmunix
+
+and then move the system customized kernel to /vmunix using the following
+command:
+
+	mv $KERNELPATH/$sysname/vmunix /vmunix
+
+	" 2>&1) | tee /tmp/notice
+	;;
+esac
+
+mv /FILESYS.log /usr/adm/install.FS.log
+cp /dev/MAKEDEV.log /usr/adm/install.DEV.log
+(echo "
+*** SOFTWARE INSTALLATION PROCEDURE COMPLETE ***
+
+The following files were created during the installation procedure:
+
+/vmunix                         - customized kernel
+/genvmunix                      - generic kernel
+/usr/adm/install.log            - installation log file
+/usr/adm/install.FS.log         - file systems log file
+/usr/adm/install.DEV.log        - special device log file
+" 2>&1) | tee /tmp/notice
+
+cat /tmp/notice >> /etc/motd
+
+sync
+
+case $CPUTYPE in
+DS* )
+	> /tmp/reboot
+	;;
+MVAX_I | MVAX_II | VAX3600 )
+	case $root_u in
+	0 )
+		> /tmp/reboot
+		;;
+	* )
+		dd if=/tmp/showboot 2>/dev/null
+		;;
+	esac
+	;;
+
+VAX780 | VAX730 | VAX8600 | VAX750 | VAX8200 )
+	echo "
+*** CONSOLE MEDIA UPDATE ***
+"
+	sh /usr/etc/mkconsole /genvmunix
+	case $? in 
+	0 )
+		case ${CPUTYPE} in
+		VAX750 ) 	# connect to HSCCI
+			while :
+			do
+				echo "
+Set the front switch labeled "BOOT DEVICE", to the postion which 
+boots your cassette. "
+				echo -n "
+Press the RETURN key when ready to reboot. "
+				read ans
+				ans=`echo $ans`
+				case $ans in
+				"" )
+					> /tmp/reboot
+					break
+					;;
+				esac
+			done
+			;;
+		VAX8200 )
+			echo "
+Wait for the message indicating that the processor can be halted.
+You halt the processor by entering
+	^P	(CTRL/P, to display the console mode prompt.)
+
+Enter the following command at the console mode prompt to boot the 
+default system disk.
+
+	>>> b csa1
+"
+			;;
+		VAX730 )
+			while :
+			do
+				echo -n "
+Press the RETURN key when you are ready. "
+				read ans
+				ans=`echo $ans`
+				case $ans in
+				"" ) break ;;
+				esac
+			done
+			;;
+		esac
+		> /tmp/reboot
+		;;
+	2 )	# local disk
+		case ${CPUTYPE} in
+		VAX750 )
+			case $root_u in
+			0 )
+	    			while :
+	    			do
+					echo "
+Set the front switch labeled "BOOT DEVICE", to the postion which 
+boots your system disk. "
+					echo -n "
+Press the RETURN key when ready to reboot. "
+					read ans
+					ans=`echo $ans`
+					case $ans in
+					"" )
+						> /tmp/reboot
+						break
+						;;
+					esac
+	    			done
+	    			;;
+			* )
+				dd if=/tmp/showboot 2>/dev/null
+				;;
+			esac
+			;;
+		* )
+			dd if=/tmp/showboot 2>/dev/null
+			;;
+		esac
+		;;
+	esac
+	;;
+
+VAX6200 | VAX6400 | VAX3400)
+	sh /usr/etc/mkconsole /genvmunix
+	echo "
+Wait until the installation software halts the processor. "
+	;;
+
+* )     # VAX420 VAX8800
+	dd if=/tmp/showboot 2>/dev/null
+	;;
+esac
+
+exit 0
+

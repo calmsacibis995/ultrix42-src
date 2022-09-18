@@ -1,0 +1,26 @@
+% LPS$$SETOUTPUTTRAY device control library module.
+% Version V1.0
+%
+% Copyright ) 1986 by DEC, Maynard, Mass.  All rights reserved.
+
+% This module can be in one of two dictionary contexts depending on how
+% it is used:
+% For the user's file, it will be in lps$lpsdict, as set up in LPS$$LOADDICT.PS
+% For the job log and trailer, it will be in a standard PostScript environment,
+% i.e. userdict.
+%
+% This module expects the output tray name to be on the stack.
+
+    /lps$output-tray exch def	% Store tray name.
+
+% Table for Output_tray
+%
+    /output-tray-dict 3 dict def
+    statusdict begin			% To insure finding `setoutputtray'.
+      output-tray-dict begin
+        /face_up  {2 setoutputtray} bind def
+        /side     {1 setoutputtray} bind def
+        /top      {3 setoutputtray} bind def
+	lps$output-tray load exec
+        end
+      end

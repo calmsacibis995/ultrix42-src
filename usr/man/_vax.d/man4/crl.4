@@ -1,0 +1,47 @@
+.\" SCCSID: @(#)crl.4	8.1	9/11/90
+.\" SCCSID: @(#)crl.4	8.1	9/11/90
+.TH crl 4 VAX
+.SH Name
+crl \- RL02 console interface
+.SH Description
+.NXR "crl keyword"
+.NXR "RL02 console interface"
+.NXA "console interface" "RL02 console interface"
+This is a simple interface to the RL02 disk unit, which is 
+part of the console subsystem for the VAX 8600 (8650).
+Access is given to the entire
+RL02 consisting of 512 cylinders of two tracks of 20 sectors of 256 bytes.
+The RL02 sectors are accessed as logical 512-byte disk blocks.
+.PP
+All I/O is raw; the seek addresses in raw transfers should be a multiple
+of 512 and a multiple of 512 bytes should be transferred, as in other
+``raw''  disk interfaces.
+.SH Restrictions
+Only one ``open'' is allowed to the console RL02 device
+at any given time.
+.PP
+If a write is given with a count not a multiple of 512 bytes, the
+trailing portion of the last logical block will be zeroed.
+.PP
+The primary purpose of this driver is to apply updates to the console
+system disk.  A ``block'' interface is not provided.
+.SH Diagnostics
+.B "crl: hard error sn%d crlcs=0x%b, crlds=0x%b"
+.br
+The console subsystem has reported a hard error while performing the
+requested I/O.	The 
+.PN crlcs 
+contains standard RLV211 control and status
+information and 
+.PN clrds
+contains standard drive status information.
+Bit expansion in ASCII is also provided.
+.PP
+.B "crl: hndshk error"
+.br
+An error in communications between the console subsystem software and
+the ULTRIX operating system has occurred.
+.SH Files
+.PN /dev/crl
+.SH See Also
+MAKEDEV(8)

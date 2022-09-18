@@ -1,0 +1,991 @@
+.TH intro 3ncs
+.SH Name
+intro \- introduction to the Network Computing System's (NCS) library
+routines  
+.SH Description
+This section describes the NCS library routines. 
+.NT
+The Title, Name, and See Also sections of the NCS reference pages do not
+contain the dollar ($) sign in the command names and library routines.
+The actual NCS commands and library routines do contain the
+dollar ($) sign. 
+.NXR "NCS commands and library routines"
+.NE
+The NCS commands and library routines are as follows:
+.IP \(bu 5 
+Error Text Database Operations 
+.PN (error_$)
+.IP \(bu 5
+Interface to the Location Broker 
+.PN (lb_$)
+.IP \(bu 5
+Fault Management 
+.PN (pfm_$)
+.IP \(bu 5
+Program Management 
+.PN (pgm_$)
+.IP \(bu 5
+Interface to the Remote Procedure Call Runtime Library
+.PN (rpc_$)
+.IP \(bu 5
+Remote Remote Procedure Call Interface 
+.PN (rrpc_$)
+.IP \(bu 5
+Operations on Socket Addresses 
+.PN (socket_$)
+.IP \(bu 5
+Operations on Universal Unique Identifiers 
+.PN (uuid_$)
+.SS Error Text Database Operations 
+The error text database operations use the
+.PN error_$c_get_text
+and
+.PN error_$c_text
+library routines to convert status codes into textual error messages.  The
+runtime library reports operational problems back to the application
+following a call by setting the `all' field of the
+.B status_$t
+structure.  A value of
+.B status_$ok
+indicates that no errors were detected.  Any other value implies that a
+problem occurred.  The
+.B status_$t
+structure and the
+.PN error_$
+routines can be used to display a textual representation of the error
+condition.
+.PP
+.B Data Types
+.br
+This section describes the data types used in 
+.PN error_$
+routines.
+.PP
+The 
+.PN error_$
+routines take as input a status code in \fBstatus_$t\fR format.
+.TP
+\fBstatus_$t\fR
+A status code.
+Most of the NCS routines supply their completion status in this format.
+The \fBstatus_$t\fR type is defined as a structure containing a long integer:
+.EX
+struct status_$t {
+   long all;
+}
+.EE
+However, the routines can also use \fBstatus_$t\fR as a set of bit fields.
+To access the fields in a returned status code,
+you can assign the value of the status code
+to a union defined as follows:
+.br
+.ne 3
+.EX
+typedef union {
+ struct {
+     unsigned fail : 1,
+           subsys : 7,
+           modc : 8;
+     short    code;
+ } s;
+ long all;
+} status_u;\fR
+.EE
+.RS
+.TP
+\fBall\fR
+All 32 bits in the status code.
+If \fBall\fR is equal to \fBstatus_$ok\fR,
+the routine that supplied the status was successful.
+.TP
+\fBfail\fR
+If this bit is set,
+the error was not within the scope of the module invoked,
+but occurred within a lower-level module.
+.TP
+\fBsubsys\fR
+This indicates the subsystem that encountered the error.
+.TP
+\fBmodc\fR
+This indicates the module that encountered the error.
+.TP
+\fBcode\fR
+This is a signed number that identifies the
+type of error that occurred.
+.RE
+.SS Interface To The Location Broker 
+The 
+.PN lb_$
+library routines implement the programmatic interface
+to the Location Broker Client Agent.\" actually to the LBCA
+The file 
+.PN /usr/include/idl/c/glb.h
+defines this interface.
+.PP
+.B External Variables
+.br
+This section describes the external variable used in 
+.PN lb_$
+routines.
+.TP 20
+\fBuuid_$nil\fR
+An external \fBuuid_$t\fR variable
+that is preassigned the value of the nil UUID.
+Do not change the value of this variable.
+.PP
+.B Constants
+.br
+This section describes constants used in 
+.PN lb_$
+routines.
+.TP 20
+\fBlb_$default_lookup_handle\fR\" 0
+Used as an input in Location Broker lookup routines.
+Specifies that a lookup
+is to start searching at the beginning of the database.
+.TP 20
+\fBlb_$server_flag_local\fR\" 1
+Used in the \fBflags\fR field of an \fBlb_$entry_t\fR variable.
+Specifies that an entry
+is to be registered only in the Local Location Broker (LLB) database.
+See the description of \fBlb_$server_flag_t\fR in the Data Types
+section.
+.TP 20
+\fBstatus_$ok\fR
+A constant used to check status.
+If a completion status
+is equal to \fBstatus_$ok\fR,
+then the routine that supplied it was successful.
+.PP
+.B Data Types
+.br
+This section describes data types used in 
+.PN lb_$
+routines.
+.TP 20
+\fBlb_$entry_t\fR
+An identifier for
+an object,
+a type,
+an interface,
+and the socket address used to access a server exporting the interface to the object.
+The \fBlb_$entry_t\fR type is defined as follows:
+.br
+.ne 3
+.EX
+typedef struct lb_$entry_t lb_$entry_t;
+struct lb_$entry_t {
+    uuid_$t object;
+    uuid_$t obj_type;
+    uuid_$t obj_interface;
+    lb_$server_flag_t flags;
+    ndr_$char annotation[64];
+    ndr_$ulong_int saddr_len;
+    socket_$addr_t saddr;
+};
+.EE
+.RS
+.TP 20
+\fBobject\fR
+A \fBuuid_$t\fR.
+The UUID for the object.
+Can be \fBuuid_$nil\fR if no object is associated.
+.TP 20
+\fBobj_type\fR
+A \fBuuid_$t\fR.
+The UUID for the type of the object.
+Can be \fBuuid_$nil\fR if no type is associated.
+.TP 20
+\fBobj_interface\fR
+A \fBuuid_$t\fR.
+The UUID for the interface.
+Can be \fBuuid_$nil\fR if no interface is associated.
+.TP 20
+\fBflags\fR
+An \fBlb_$server_flag_t\fR.
+Must be 0 or \fBlb_$server_flag_local\fR.
+A value of 0 specifies that the entry is to be registered
+in both the Local Location Broker (LLB) and global Location Broker (GLB) databases.
+A value of \fBlb_$server_flag_local\fR specifies registration
+only in the LLB database.
+.TP 20
+\fBannotation\fR
+A 64-character array.
+User-defined textual annotation.
+.TP 20
+\fBsaddr_len\fR
+A 32-bit integer.
+The length of the \fBsaddr\fR field.
+.TP 20
+\fBsaddr\fR
+A \fBsocket_$addr_t\fR.
+The socket address of the server.
+.RE
+.TP 20
+\fBlb_$lookup_handle_t\fR
+A 32-bit integer used to specify the location in the database
+at which a Location Broker lookup operation will start.
+.TP 20
+\fBlb_$server_flag_t\fR
+A 32-bit integer used to specify the Location Broker databases
+in which an entry is to be registered.
+A value of 0 specifies registration
+in both the Local Location Broker (LLB) and Global Location Broker (GLB) databases.
+A value of \fBlb_$server_flag_local\fR specifies registration
+only in the LLB database.
+.TP 20
+\fBsocket_$addr_t\fR
+A socket address record that uniquely identifies a socket.
+.\".if t the \fBsocket_$intro\fR section of Chapter \n(sO
+.\".if n \fBsocket_$intro\fR
+.TP 20
+\fBstatus_$t\fR
+A status code.  Most of the NCS routines supply a completion code in
+this format.  The \fBstatus_$t\fR type is defined as a structure
+containing a long integer:
+.br
+.ne 3
+.EX
+struct status_$t {
+    long all;
+    }
+.EE
+However, the system calls can also use \fBstatus_$t\fR as a set of bit fields.
+To access the fields in a returned status code,
+you can assign the value of the status code
+to a union defined as follows:
+.EX
+typedef union {
+    struct {
+        unsigned fail : 1,
+                 subsys : 7,
+                 modc : 8;
+        short    code;
+    } s;
+    long all;
+} status_u;
+.EE
+.RS
+.TP 20
+\fBall\fR
+All 32 bits in the status code.
+If \fBall\fR is equal to \fBstatus_$ok\fR,
+the system call that supplied the status was successful.
+.TP 20
+\fBfail\fR
+If this bit is set,
+the error was not within the scope of the module invoked,
+but occurred within a lower-level module.
+.TP 20
+\fBsubsys\fR
+This indicates the subsystem that encountered the error.
+.TP 20
+\fBmodc\fR
+This indicates the module that encountered the error.
+.TP 20
+\fBcode\fR
+This is a signed number that identifies the
+type of error that occurred.
+.RE
+.TP 20
+\fBuuid_$t\fR
+A 128-bit value that uniquely identifies
+an object, type, or interface for all time.
+.\".if t the \fBuuid_$intro\fR section of Chapter \n(uU
+.\".if n \fBuuid_$intro\fR
+.PP
+.B Example
+.br
+The following statement looks up information in the GLB database
+about a matrix multiplication interface:
+.EX
+lb_$lookup_interface (&matrix_id, &lookup_handle, max_results, 
+    &num_results, &matrix_results, &st);
+.EE
+.SS Fault Management 
+The 
+.PN pfm_$
+routines allow programs to manage signals, faults, and exceptions
+by establishing clean-up handlers.
+.PP
+A clean-up handler is a piece of code that ensures a program terminates
+gracefully when it receives a fatal error.  A clean-up handler begins with a 
+.PN pfm_$cleanup
+call, and usually ends with a call to 
+.PN pfm_$signal
+or 
+.PN pgm_$exit ,
+though it can also simply continue back into the program after the clean-up
+code.
+.PP
+A clean-up handler is not entered until all fault handlers established
+for a fault have returned.
+If there is more than one established clean-up handler for a program,
+the most recently established clean-up handler is entered first,
+followed by the next most recently established clean-up handler,
+and so on to the first established clean-up handler if necessary.
+.PP
+There is a default clean-up handler invoked
+after all user-defined handlers have completed.
+It releases any resources still held by the program,
+before returning control to the process that invoked it.
+.PP
+.B Constants
+.br
+.TP 20
+.I pfm_$init_signal_handlers
+A constant used as the 
+.I flags
+parameter to 
+.PN pfm_$init ,
+causing C signals to be intercepted and converted to PFM
+signals.
+.PP
+.B Data Types
+.br
+This section describes the data typed used in pfm_$ routines.
+.TP 20
+\fBpfm_$cleanup_rec\fR
+A record type for passing process context
+among clean-up handler routines.  It is an opaque data type.
+.TP 20
+\fBstatus_$t\fR
+A status code.  Most of the NCS routines supply a completion code in
+this format.  The \fBstatus_$t\fR type is defined as a structure
+containing a long integer:
+.EX
+struct status_$t {
+    long all;
+    }
+.EE
+However, the system calls can also use \fBstatus_$t\fR as a set of bit fields.
+To access the fields in a returned status code,
+you can assign the value of the status code
+to a union defined as follows:
+.EX
+typedef union {
+    struct {
+        unsigned fail : 1,
+                 subsys : 7,
+                 modc : 8;
+        short    code;
+    } s;
+    long all;
+} status_u;
+.EE
+.RS
+.TP 20
+\fBall\fR
+All 32 bits in the status code.
+If \fBall\fR is equal to \fBstatus_$ok\fR,
+the system call that supplied the status was successful.
+.TP 20
+\fBfail\fR
+If this bit is set,
+the error was not within the scope of the module invoked,
+but occurred within a lower-level module.
+.TP 20
+\fBsubsys\fR
+This indicates the subsystem that encountered the error.
+.br
+.ne 3
+.TP 20
+\fBmodc\fR
+This indicates the module that encountered the error.
+.TP 20
+\fBcode\fR
+This is a signed number that identifies the
+type of error that occurred.
+.RE
+.SS Program Management 
+The NCS software products contain a portable version of the
+.PN pgm_$exit
+routine.  The include file for the PFM interface
+(see the Syntax section of the 
+.MS pfm 3ncs
+reference pages) contains a declaration for this routine.
+.SS Interface To The Remote Procedure Call Runtime Library
+The 
+.PN rpc_$
+library routines implement the NCS Remote Procedure Call (RPC) mechanism. 
+.PP
+The 
+.PN rpc_
+interface is defined by the file
+.PN /usr/include/idl/rpc.idl .
+.PP
+Most of the 
+.PN rpc_$
+routines can be used only by clients or only by servers.
+This aspect of their usage is specified at the beginning of each routine
+description, in the Name section.
+.PP
+.B External Variables
+.br
+This section describes the external variable used in
+\fBrpc_$\fR routines.
+.TP 20
+\fBuuid_$nil\fR
+An external \fBuuid_$t\fR variable that is
+preassigned the value of the nil UUID.
+Do not change the value of this variable.
+.PP
+.B Constants
+.br
+This section describes constants used in \fBrpc_$\fR routines.
+.TP 20
+\fBrpc_$mod\fR
+A module code indicating the RPC module.  
+.TP 20
+\fBstatus_$ok\fR
+A constant used to check status.
+If a completion status
+is equal to \fBstatus_$ok\fR,
+then the routine that supplied it was successful.
+See the description of the \fBstatus_$t\fR type.
+.TP 20
+\fBrpc_$unbound_port\fR\" 0
+A port number indicating
+to the RPC runtime library that no port is specified.
+Identical to \fBsocket_$unspec_port\fR.
+.PP
+The following 16-bit-integer constants are used
+to specify the communications protocol address families in \fBsocket_$addr_t\fR structures.
+Note that several of the \fBrpc_$\fR and \fBsocket_$\fR calls
+use the 32-bit-integer equivalents of these values.
+.ig
+Note that the \fBrpc_$use_family\fR and \fBrpc_$use_family_wk\fR calls
+use the 32-bit-integer equivalents of these values.
+..
+.RS
+.TP 20
+\fBsocket_$unspec\fR\" 0
+Address family is unspecified. 
+.TP 20
+\fBsocket_$internet\fR\" 2
+Internet Protocols (IP).
+.RE
+.PP
+.B Data Types
+.br
+This section describes data types used in \fBrpc_$\fR routines.
+.TP 20
+\fBhandle_t\fR
+An RPC handle.
+.TP 20
+\fBrpc_$epv_t\fR
+An entry point vector (EPV).
+An array of \fBrpc_$server_stub_t\fR,
+pointers to server stub procedures.
+.TP 20
+\fBrpc_$generic_epv_t\fR
+An entry point vector (EPV).
+An array of \fBrpc_$generic_server_stub_t\fR,
+pointers to generic server stub procedures.
+.TP 20
+\fBrpc_$if_spec_t\fR
+An RPC interface specifier.
+This opaque data type contains information about an interface, including
+its UUID,
+the current version number,
+any well-known ports used by servers that export the interface,
+and the number of operations in the interface. 
+.TP 20
+\fBrpc_$mgr_epv_t\fR
+An entry point vector (EPV).
+An array of pointers to manager procedures.
+.TP 20
+\fBrpc_$shut_check_fn_t\fR
+A pointer to a function.
+If a server supplies this function pointer to \fBrpc_$allow_remote_shutdown\fR,
+the function will be called when a remote shutdown request arrives,
+and if the function returns true, the shutdown is allowed.
+The following C definition for \fBrpc_$shut_check_fn_t\fR
+illustrates the prototype for this function:
+.EX
+typedef boolean (*rpc_$shut_check_fn_t) (
+    handle_t h,
+    status_$t *st)
+.EE
+The handle argument can be used to determine information about the remote caller.
+.TP 20
+\fBsocket_$addr_t\fR
+A socket address record that uniquely identifies a socket.
+.\".if t the \fBsocket_$intro\fR section of Chapter \n(sO
+.\".if n \fBsocket_$intro\fR
+.TP 20
+\fBstatus_$t\fR
+A status code.
+Most of the NCS system calls supply their completion status in this format.
+The \fBstatus_$t\fR type is defined as a structure containing a long integer:
+.EX
+struct status_$t {
+    long all;
+    }
+.EE
+However, the system calls can also use \fBstatus_$t\fR as a set of bit fields.
+To access the fields in a returned status code,
+you can assign the value of the status code
+to a union defined as follows:
+.EX
+typedef union {
+    struct {
+        unsigned fail : 1,
+                 subsys : 7,
+                 modc : 8;
+        short    code;
+    } s;
+    long all;
+} status_u;
+.EE
+.RS
+.TP 20
+\fBall\fR
+All 32 bits in the status code.
+If \fBall\fR is equal to \fBstatus_$ok\fR,
+the system call that supplied the status was successful.
+.TP 20
+\fBfail\fR
+If this bit is set,
+the error was not within the scope of the module invoked,
+but occurred within a lower-level module.
+.TP 20
+\fBsubsys\fR
+This indicates the subsystem that encountered the error.
+.br
+.ne 3
+.TP 20
+\fBmodc\fR
+This indicates the module that encountered the error.
+.TP 20
+\fBcode\fR
+This is a signed number that identifies the
+type of error that occurred.
+.RE
+.TP 20
+\fBuuid_$t\fR
+A 128-bit value that uniquely identifies
+an object, type, or interface for all time.
+.\".if t the \fBuuid_$intro\fR section of Chapter \n(uU
+.\".if n \fBuuid_$intro\fR
+.PP
+The following statement allocates a handle that identifies the Acme 
+company's payroll database object:
+.EX
+h = rpc_$alloc_handle (&acme_pay_id, socket_$internet, &st);
+.EE
+.SS Remote Remote Procedure Call Interface 
+The 
+.PN rrpc_$
+library routines enable a client to request information about a server or
+to shut down a server.
+.PP
+The
+.PN rrpc_
+interface is defined by the file
+.PN /usr/include/idl/rrpc.idl .
+.PP
+.B Constants
+.br
+This section describes constants used in \fBrrpc_$\fR calls.
+.PP
+The \fBrrpc_$sv\fR constants are indices for elements in
+an \fBrrpc_$stat_vec_t\fR array.
+Each element is a 32-bit integer representing a statistic about a server.
+The following list describes the statistic indexed by each \fBrrpc_$sv\fR constant:
+.RS
+.TP 20
+\fBrrpc_$sv_calls_in\fR
+The number of calls processed by the server.
+.TP 20
+\fBrrpc_$sv_rcvd\fR
+The number of packets received by the server.
+.TP 20
+\fBrrpc_$sv_sent\fR
+The number of packets sent by the server.
+.TP 20
+\fBrrpc_$sv_calls_out\fR
+The number of calls made by the server.
+.TP 20
+\fBrrpc_$sv_frag_resends\fR
+The number of fragments sent by the server that duplicated previous sends.
+.TP 20
+\fBrrpc_$sv_dup_frags_rcvd\fR
+The number of duplicate fragments received by the server.
+.RE
+.TP 20
+\fBstatus_$ok\fR
+A constant used to check status.
+If a completion status
+is equal to \fBstatus_$ok\fR,
+then the system call that supplied it was successful.
+.PP
+.B Data Types
+.br
+This section describes data types used in \fBrpc_$\fR routines.
+.TP 20
+\fBhandle_t\fR
+An RPC handle.
+.TP 20
+\fBrrpc_$interface_vec_t\fR
+An array of \fBrpc_$if_spec_t\fR,
+RPC interface specifiers.
+.TP 20
+\fBrrpc_$stat_vec_t\fR
+An array of 32-bit integers, indexed by
+.B rrpc_$sv
+constants, representing statistics about a server. 
+.TP 20
+\fBrpc_$if_spec_t
+An RPC interface specifier.  An opaque data type containing information
+about an interface, including the UUID, the version number, the number
+of operations in the interface, and any well-known ports used by servers
+that export the interface, and any well-known ports used by servers that
+export the interface.  Applications may need to access two members of
+\fBrpc_$if_spec_t\fP:
+.RS
+.TP 7
+\fBid\fP
+A \fBuuid_$t\fP indicating the interface UUID.
+.TP 7 
+\fBvers\fP
+An unsigned 32-bit integer indicating the interface version.
+.RE
+.SS Operations on Socket Addresses 
+The 
+.PN socket_$
+library routines manipulate socket addresses.
+Unlike the routines that operating systems such as BSD UNIX provide,
+the 
+.PN socket_$
+routines operate on addresses of any protocol family.
+.PP
+The file 
+.PN /usr/include/idl/socket.idl
+defines the
+.PN socket_
+interface.
+.PP
+.B Constants
+.br
+This section describes constants used in \fBsocket_$\fR routines.
+.PP
+The \fBsocket_$eq\fR constants
+are flags indicating the fields to be compared in a \fBsocket_$equal\fR call.
+.RS
+.TP 20
+\fBsocket_$eq_hostid\fR
+Indicates that the host IDs are to be compared.
+.TP 20
+\fBsocket_$eq_netaddr\fR
+Indicates that the network addresses are to be compared.
+.TP 20
+\fBsocket_$eq_port\fR
+Indicates that the port numbers are to be compared.
+.TP 20
+\fBsocket_$eq_network\fR
+Indicates that the network IDs are to be compared.
+.RE
+.TP 20
+\fBsocket_$unspec_port\fR\" 0
+A port number indicating
+to the RPC runtime library that no port is specified.
+.PP
+The following 16-bit-integer constants are
+values for the \fBsocket_$addr_family_t\fR type,
+used to specify the address family in a \fBsocket_$addr_t\fR structure.
+Note that several of the \fBrpc_$\fR and \fBsocket_$\fR routines
+use the 32-bit-integer equivalents of these values.
+.RS
+.TP 20
+\fBsocket_$unspec\fR\" 0
+Address family is unspecified. 
+.TP 20
+\fBsocket_$internet\fR\" 2
+Internet Protocols (IP).
+.RE
+.TP 20
+\fBstatus_$ok\fR
+A constant used to check status.
+If a completion status
+is equal to \fBstatus_$ok\fR,
+then the system call that supplied it was successful.
+.PP
+.B Data Types
+.br
+This section describes data types used in \fBsocket_$\fR routines.
+.TP 20
+\fBsocket_$addr_family_t\fR
+An enumerated type for specifying an address family.
+The Constants
+section lists values for this type.
+.ig
+	.RS
+	.TP 20
+	\fBsocket_$unspec\fR
+	Unspecified protocol.
+	.TP 20
+	\fBsocket_$unix\fR
+	Local to host (UNIX pipes, portals).
+	.TP 20
+	\fBsocket_$internet\fR
+	Internetwork protocols (TCP, UDP).
+	.TP 20
+	\fBsocket_$implink\fR
+	ARPANET Interface Message Processor (IMP) addresses.
+	.TP 20
+	\fBsocket_$pup\fR
+	XEROX P.A.R.C. Universal Packet (PUP) protocols (BSP).
+	.TP 20
+	\fBsocket_$chaos\fR
+	Massachusetts Institute of Technology (MIT) CHAOS protocols.
+	.TP 20
+	\fBsocket_$ns\fR
+	XEROX Network Systems (XNS) protocols.
+	.TP 20
+	\fBsocket_$nbs\fR
+	National Bureau of Standards (NBS) protocols.
+	.TP 20
+	\fBsocket_$ecma\fR
+	European Computer Manufacturers Association (ECMA).
+	.TP 20
+	\fBsocket_$datakit\fR
+	Datakit protocols.
+	.TP 20
+	\fBsocket_$ccitt\fR
+	International Telegraph and Telephone Consultative Committee
+        (CCITT) protocols (X.25, ...).
+	.TP 20
+	\fBsocket_$sna\fR
+	IBM Systems Network Architecture (SNA) protocols.
+	.TP 20
+	\fBsocket_$unspec2\fR
+	Unspecified protocol.
+	.TP 20
+	\fBsocket_$dds\fR
+	Apollo Domain/Message (MSG) protocol.
+	.RE
+..
+.TP 20
+\fBsocket_$addr_list_t\fR
+An array of socket addresses in \fBsocket_$addr_t\fR format.
+.br
+.ne 3
+.TP 20
+\fBsocket_$addr_t\fR
+A structure that uniquely identifies a socket address.
+This structure consists of
+a \fBsocket_$addr_family_t\fR specifying an address family
+and 14 bytes specifying a socket address.
+.TP 20
+\fBsocket_$host_id_t\fR
+A structure that uniquely identifies a host.
+This structure consists of
+a \fBsocket_$addr_family_t\fR specifying an address family
+and 12 bytes specifying a host.
+.TP 20
+\fBsocket_$len_list_t\fR
+An array of unsigned 32-bit integers,
+the lengths of socket addresses in a \fBsocket_$addr_list_t\fR.
+.TP 20
+\fBsocket_$local_sockaddr_t\fR
+An array of 50 characters,
+used to store a socket address in a format native to the local host.
+.TP 20
+\fBsocket_$net_addr_t\fR
+A structure that uniquely identifies a network address.
+This structure consists of
+a \fBsocket_$addr_family_t\fR specifying an address family
+and 12 bytes specifying a network address.
+It contains both a host ID and a network ID.
+.TP 20
+\fBsocket_$string_t\fR
+An array of 100 characters,
+used to store the string representation of an address family or a socket address.
+.if t .sp .5
+The string representation of an address family is a textual name
+such as \fBdds\fR, \fBip\fR, or \fBunspec\fR.
+.if t .sp .5
+The string representation of a socket address has the format
+\fIfamily\fB:\fIhost\fB\|[\|\fIport\fB\|]\|\fR, where
+\fIfamily\fR is the textual name of an address family,
+\fIhost\fR is either
+a textual host name
+or a numeric host ID preceded by a \fB#\fR,
+and \fIport\fR is a port number.
+.TP 20
+\fBstatus_$t\fR
+A status code.
+Most of the NCS system calls supply their completion status in this format.
+The \fBstatus_$t\fR type is defined as a structure containing a long integer:
+.EX
+struct status_$t {
+    long all;
+    }
+.EE
+However, the system calls can also use \fBstatus_$t\fR as a set of bit fields.
+To access the fields in a returned status code,
+you can assign the value of the status code
+to a union defined as follows:
+.EX
+typedef union {
+    struct {
+        unsigned fail : 1,
+                 subsys : 7,
+                 modc : 8;
+        short    code;
+    } s;
+    long all;
+} status_u;
+.EE
+.RS
+.TP 20
+\fBall\fR
+All 32 bits in the status code.
+If \fBall\fR is equal to \fBstatus_$ok\fR,
+the system call that supplied the status was successful.
+.br
+.ne 3
+.TP 20
+\fBfail\fR
+If this bit is set,
+the error was not within the scope of the module invoked,
+but occurred within a lower-level module.
+.TP 20
+\fBsubsys\fR
+This indicates the subsystem that encountered the error.
+.br
+.ne 3
+.TP 20
+\fBmodc\fR
+This indicates the module that encountered the error.
+.TP 20
+\fBcode\fR
+This is a signed number that identifies the
+type of error that occurred.
+.RE
+.SS Operations On Universal Unique Identifiers 
+The 
+.PN uuid_$
+library routines operate on UUIDs (Universal Unique Identifiers).
+.PP
+The 
+.PN uuid_
+interface is defined by the file
+.PN /usr/include/idl/uuid.idl .
+.PP
+.B External Variables
+.br
+This section describes external variables used in \fBuuid_$\fR routines.
+.TP
+\fBuuid_$nil\fR
+An external \fBuuid_$t\fR variable
+that is preassigned the value of the nil UUID.
+Do not change the value of this variable.
+.PP
+.B Data Types
+.br
+This section describes data types used in \fBuuid_$\fR routines.
+.TP
+\fBstatus_$t\fR
+A status code.  Most of the NCS system calls supply their completion
+status in this format.  The \fBstatus_$t\fR type is defined as a
+structure containing a long integer:
+.EX
+struct status_$t {
+    long all;
+    }
+.EE
+However, the system calls can also use \fBstatus_$t\fR as a set of bit fields.
+To access the fields in a returned status code,
+you can assign the value of the status code
+to a union defined as follows:
+.EX
+typedef union {
+    struct {
+        unsigned fail : 1,
+                 subsys : 7,
+                 modc : 8;
+        short    code;
+    } s;
+    long all;
+} status_u;
+.EE
+.RS
+.TP 20
+\fBall\fR
+All 32 bits in the status code.
+If \fBall\fR is equal to \fBstatus_$ok\fR,
+the system call that supplied the status was successful.
+.TP 20
+\fBfail\fR
+If this bit is set,
+the error was not within the scope of the module invoked,
+but occurred within a lower-level module.
+.TP 20
+\fBsubsys\fR
+This indicates the subsystem that encountered the error.
+.TP 20
+\fBmodc\fR
+This indicates the module that encountered the error.
+.TP 20
+\fBcode\fR
+This is a signed number that identifies the
+type of error that occurred.
+.RE
+.TP
+\fBuuid_$string_t\fR
+A string of 37 characters (including a null terminator)
+that is an ASCII representation of a UUID.
+The format is
+\fIcccccccccccc\fB\|.\|\fIff\fB\|.\|\fIh1\fB\|.\|\fIh2\fB\|.\|\fIh3\fB\|.\|\fIh4\fB\|.\|\fIh5\fB\|.\|\fIh6\fB\|.\|\fIh7\fR,
+where
+\fIcccccccccccc\fR is the timestamp,
+\fIff\fR is the address family,
+and
+\fIh1\fR ... \fIh7\fR are the 7 bytes of host identifier.
+Each character in these fields is a hexadecimal digit.
+.TP
+\fBuuid_$t\fR
+A 128-bit value that uniquely identifies
+an object, type, or interface for all time.
+The \fBuuid_$t\fR type is defined as follows:
+.EX
+typedef struct uuid_$t {
+    unsigned long time_high;
+    unsigned short time_low;
+    unsigned short reserved;
+    unsigned char family;
+    unsigned char (host)[7];
+} uuid_$t;
+.EE
+.RS
+.TP
+\fBtime_high\fR
+The high 32 bits of a 48-bit unsigned time value
+which is the number of 4-microsecond intervals
+that have passed between 1 January 1980 00:00 GMT and the time of UUID creation.
+.TP
+\fBtime_low\fR
+The low 16 bits of the 48-bit time value.
+.TP
+\fBreserved\fR
+16 bits of reserved space.
+.TP
+\fBfamily\fR
+8 bits identifying an address family.\" corresponds to field of socket_$addr_t?
+.TP
+\fBhost\fR
+7 bytes identifying the host on which the UUID was created.
+The format of this field depends on the address family.
+.RE
+.PP
+.B Example
+.br
+The following routine returns as 
+.PN foo_uuid
+the UUID corresponding to the character-string representation in 
+.PN foo_uuid_rep:
+.EX
+uuid_$decode (foo_uuid_rep, &foo_uuid, &status);
+.EE

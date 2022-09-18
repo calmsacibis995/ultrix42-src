@@ -1,0 +1,157 @@
+.\" SCCSID: @(#)edauth.8	6.2	8/30/89
+.TH edauth 8
+.SH Name
+edauth \- edit user auth entry
+.SH Syntax
+.B edauth
+.IR username
+.SH Description
+.NXR "edauth editor"
+.NXR "auth entry" "editing"
+.NXA "adduser command" "edauth editor"
+The
+.PN edauth
+command is an authorization editor.
+.PN edauth
+creates a temporary file 
+with an ASCII representation of the current
+.PN auth 
+database entry for the user specified by
+.I username
+and then invokes
+an editor on the file.  You can then modify the user's 
+.PN auth 
+fields.
+Upon leaving the editor,
+.PN edauth
+reads the temporary file and modifies the binary
+database to reflect the changes made.
+If there are errors in the temporary file
+.PN edauth
+will allow the user to resume editing the file to fix them.
+.PP
+The editor invoked is 
+.MS ed 1 ,
+unless the environment variable EDITOR specifies otherwise.
+Here is an example of the temporary file produced by 
+.PN edauth :
+.EX
+uid = 268
+password = MXP3BnKLEWW960BEJc9DbHb6
+passlifemin = 1 hour
+passlifemax = 60 days
+passmod = 12/20/89 - 10:24:38
+authmask = login,change_password,enter_password
+fail_count = 0
+audit_id = 268
+audit_control = or
+audit_syscalls = creat,unlink
+audit_tevents = login:0:1
+.EE
+Each field of the 
+.PN auth 
+entry is represented as a keyword followed by an equals
+sign.  The value part of the field may be an integer,
+a string, a time specification,
+a date, or a comma-separated list of value keywords.  The effect of
+the field is described in
+.MS auth 5 .
+.PP
+The
+.PN uid ,
+.PN fail_count ,
+and
+.PN audit_id
+fields expect integer values.
+.PP
+The
+.PN password
+field is a string containing the encrypted password.  One way of disabling an
+account is to set this to a non-empty string less than 24 characters in
+length such as `nologin'.
+.PP
+The
+.PN passlifemin
+and
+.PN passlifemax
+fields specify the password expiration information. They may contain
+an integer specifying seconds, or a combination of scaled values.
+The units recognized for scaling are
+.PN seconds ,
+.PN minutes ,
+.PN hours ,
+and
+.PN days .
+Only the first letter of the unit need be supplied.  A
+.PN passlifemax
+of one day, one hour and five minutes could be specified as any of:
+.EX
+passlifemax = 1 day 1 hour 5 minutes
+passlifemax = 25 h 5 m
+passlifemax = 90300 seconds
+passlifemax = 90300
+.EE
+in addition to other combinations.
+.PP
+The
+.PN passmod
+field is a date.
+It is specified in the same format as the default output of the ULTRIX
+.PN date(1)
+command.  The time portion is optional and defaults to the
+beginning of the day.
+.PP
+The
+.PN authmask ,
+.PN audit_syscalls ,
+and
+.PN audit_tevents
+fields expect a comma-separated list of value tokens. For
+.PN authmask
+this is zero or more of
+.PN login ,
+.PN change_password ,
+and
+.PN enter_password .
+For the audit information this corresponds to the name of the audit event.
+See the
+.PN auditmask(8)
+manpage for more information on audit events.
+.PP
+The
+.PN audit_control
+field may be one of
+.PN or ,
+.PN and ,
+or
+.PN off .
+See the
+.PN audcntl(2)
+manpage for more information on the affect of these values.
+.SH Restrictions
+Only the superuser can edit 
+.PN auth 
+entries.
+.PP
+Changing the 
+.PN auth 
+entry will not affect
+the uid and audit information of existing login sessions.
+.PP
+If the uid field of the entry is changed the mapping to the
+.PN /etc/passwd
+file will be affected.  
+Changes to the passwd file will probably be necessary.
+.SH Diagnostics
+Various messages about incorrect input. All are self-explanatory.
+.SH Files
+.TP 15
+.PN /etc/auth.[dir,pag]
+Contains all authorization information
+.TP
+.PN /etc/passwd
+Maps usernames to UIDs
+.SH See Also
+audcntl(2), auth(5), auditmask(8), getauth(8), vipw(8)
+.br
+.I "Security Guide for Administrators"

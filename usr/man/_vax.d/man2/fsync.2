@@ -1,0 +1,91 @@
+.\" SCCSID: @(#)fsync.2	8.2	9/12/90
+.TH fsync 2
+.SH Name
+fsync \- synchronize a file's in-core state with that on disk
+.SH Syntax
+fsync(\fIfd\fP)
+.br
+int \fIfd\fP;
+.SH Description
+.NXR "fsync system call"
+.NXR "file" "synchronizing buffers with disk"
+The
+.PN fsync
+system call causes all modified data and attributes of 
+.I fd
+to be moved to a permanent storage device.
+This results in all in-core modified copies
+of buffers for the associated file to be written to a disk.
+.PP
+The
+.PN fsync
+call should be used by programs that require a file to be
+in a known state, for example, in building a simple transaction
+facility.
+.SH Return Values
+A 0 value is returned on success.  A \-1 value indicates
+an error.
+.SH Diagnostics
+The 
+.PN fsync
+call fails under the following conditions:
+.TP 15
+[EBADF]
+The 
+.I fd
+argument is not a valid descriptor.
+.TP
+[EINVAL]
+The
+.I fd
+argument refers to a socket.
+.TP
+[EIO]
+An I/O error occurred while reading from or writing to the file
+system. 
+.TP
+[EINTR]
+The
+.PN fsync()
+function was interrupted by a signal.
+.PP
+If an error occurs on an
+asynchronous write over NFS, the error cannot always 
+be returned from a
+.PN write
+system call.  The error code is returned on
+.PN close
+or
+.PN fsync .
+The following are NFS-only error messages:
+.TP 15
+[EACCESS]
+The requested address is protected, and the current user
+has inadequate permission to access it. 
+.TP 15
+[ENOSPC]
+There is no free space remaining on the file system containing
+the file.
+.TP 15
+[EDQUOT]
+The user's quota of disk blocks on the file system containing
+the file has been exhausted.
+.TP 15
+[EROFS]
+The file is on a read-only file system.
+.TP 15
+[ESTALE]
+The
+.I fd
+argument is invalid because the file referred
+to by that file handle no longer exists or has been revoked. 
+.TP
+[ETIMEDOUT]
+A write operation failed
+because the server
+did not properly respond after a period
+of time that is dependent on the
+.MS mount 8nfs
+options.
+.SH See Also
+sync(1), close(2), sync(2), write(2), update(8)

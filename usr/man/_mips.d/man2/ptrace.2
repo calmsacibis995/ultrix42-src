@@ -1,0 +1,280 @@
+.TH ptrace 2 RISC
+.SH Name
+ptrace \- process trace
+.SH Syntax
+.nf
+.ft B
+#include <signal.h>
+#include <sys/ptrace.h>
+.PP
+.ft B
+ptrace(request, pid, addr, data)
+int request, pid, *addr, data;
+.fi
+.SH Description
+The system call
+.PN ptrace
+provides a means by which a process
+can control the execution of another process,
+and examine and change its core image.
+Its primary use is for the implementation of breakpoint debugging.
+There are four arguments whose interpretation
+depends on a
+.I request
+argument.
+Generally,
+.I pid
+is the process ID of the traced process.
+A process being traced
+behaves normally until it encounters some signal,
+whether internally generated,
+like \*(lqillegal instruction,\*(rq or externally
+generated, like \*(lqinterrupt.\*(rq
+For more information, see
+.MS sigvec 2 .
+.PP
+Upon encountering a signal, the traced process enters a stopped state
+and its tracing process is notified by means of 
+.PN wait .
+If the traced process stops with a SIGTRAP, the process might have been
+stopped for a number of reasons.
+Two status words addressable as registers
+in the traced process's uarea qualify SIGTRAPs:
+TRAPCAUSE, which contains the cause of the trap, and TRAPINFO, which
+contains extra information concerning the trap.
+.PP
+When the traced process is in the stopped state,
+its core image can be examined and modified
+using
+.PN ptrace .
+If desired, another
+.PN ptrace
+request can then cause the traced process either to terminate
+or to continue, possibly ignoring the signal.
+.PP
+The value of the
+.I request
+argument determines the precise
+action of the call:
+.TP 4
+0
+This request is the only one that can be used by a child process.
+The child process can declare that it is to be traced by its parent.
+All other arguments are ignored.
+Unexpected results occur
+if the parent process does not expect to trace the child process.
+.TP 4
+1,2
+The
+word in the traced process's address space
+at
+.I addr
+is returned.
+If I and D space are separated (for example, historically
+on a PDP-11), request 1 indicates I space,
+request 2 indicates D space.  The
+.I addr
+must be 4-byte aligned.
+The traced process must be stopped.
+The input
+.I data
+is ignored.
+.TP 4
+3
+The word
+of the system's per-process data area corresponding to
+.I addr
+is returned.
+The
+.I addr
+is a constant defined in ptrace.h.
+This space contains the registers and other information about
+the process;
+the constants correspond to fields in the
+.I user
+structure in the system.
+.TP 4
+4,5
+The
+given
+.I data
+is written at the word in the process's address space corresponding to
+.I addr,
+which must be 4-byte aligned.
+The old value at the address is returned.
+If I and D space are separated, request 4 indicates I space, 
+request 5 indicates D space.
+Attempts to write in pure procedure
+fail if another process is executing the same file.
+.TP 4
+6
+The process's system data is written,
+as it is read with request 3.
+Only a few locations can be written in this way:
+the general registers,
+the floating point status and registers,
+and certain bits of the processor status word.
+The old value at the address is returned.
+.TP 4
+7
+The
+.I data
+argument is taken as a signal number
+and the traced process's execution continues
+at location
+.I addr
+as if it had incurred that signal.
+Normally, the signal number is 0 to indicate that the signal 
+causing the stop should be ignored. The signal number might be the value 
+fetched out of the
+process's image, which identifies the signal that caused
+the stop.
+If
+.I addr
+is (int *)1, execution continues from where it stopped.
+.TP 4
+8
+The traced process terminates.
+.TP 4
+9
+Execution continues as in request 7;
+however, as soon as possible after execution of at least one instruction,
+execution stops again.
+The signal number from the stop is
+SIGTRAP.
+TRAPCAUSE contains CAUSESINGLE.
+This is part of the mechanism for implementing breakpoints.
+.TP 4
+20
+This is the same as zero, except it is executed by the tracing process
+and the pid field is nonzero.  The process with that pid stops
+and becomes a traced process. On a signal, the traced process returns control 
+to the tracing process, rather than the parent.  The tracing process must have the same uid
+as the traced process.
+.TP 4
+21,22
+Returns MAXREG general or MAXFREG floating registers, respectively.  Their
+values are copied to the locations starting at the address in the
+tracing process specified by the
+.I addr
+argument.
+.TP 4
+24,25
+Same as 20 and 21, but writes the registers instead of reading them.
+.TP 4
+26
+Specifies a watchpoint in the data or stack segment of the traced
+process.  If any byte address starting at the
+.I addr
+argument and continuing for the number of bytes specified by the
+.I data
+argument is accessed in an instruction, the traced process stops
+execution with a SIGTRAP.  TRAPCAUSE contains CAUSEWATCH, and
+TRAPINFO contains the address causing the trap.  This ptrace
+returns a watchpoint identifier (wid).  MAXWIDS specifies the
+maximum number of watchpoints for each process.
+.TP 4
+27
+The data argument specifies a wid to delete.
+.TP 4
+28
+Turns off the tracing for the traced process with the specified pid.
+.TP 4
+29
+Returns an open file descriptor for the file attached to 
+.I pid.
+This request is useful in accessing the symbol table of a process
+created with the
+.PN execve 
+call. 
+.PP
+As indicated,
+these calls
+(except for request 0 and 20)
+can be used only when the subject process has stopped.
+The 
+.I wait
+call is used to determine
+when a process stops;
+in such a case, the \*(lqtermination\*(rq status
+returned by
+.I wait
+has the value 0177. This value indicates that the process has stopped, rather
+than terminated.  
+If multiple processes are being traced, 
+.PN wait 
+can be called multiple times,
+and it returns the status for the next stopped or terminated
+child or traced process.
+.PP
+To forestall possible fraud,
+.PN ptrace
+inhibits the set-user-id and set-group-id facilities
+on subsequent
+.MS exec 2
+calls.
+If a traced process calls
+.PN execve ,
+it stops before executing the first instruction of the new image
+showing signal SIGTRAP. 
+In this case, TRAPCAUSE 
+contains CAUSEEXEC and TRAPINFO does not contain anything interesting.
+If a traced process calls
+.PN execve
+again, the same thing occurs.
+.PP
+If a traced process forks, both parent and child are traced.
+Breakpoints from the parent are not copied into the child.
+At the time of the fork, the
+child is stopped with a SIGTRAP. The tracing process can then terminate
+the trace if desired.
+TRAPCAUSE 
+contains CAUSEFORK and TRAPINFO contains the pid of its parent.
+.PP
+.SH Restrictions
+On an ULTRIX system, the 
+.PN ptrace
+system call succeeds only if the user owns the binary being traced
+or if the user is root. 
+.PP
+The request 0 call should be able to specify
+signals that are to be treated normally and not cause a stop.
+In this way, for example,
+programs with simulated floating point, which
+use \*(lqillegal instruction\*(rq signals at a very high rate,
+can be efficiently debugged.
+.PP
+The error indication, \-1, is a legitimate function value; when an error
+occurs, 
+the errno variable is set to explain the condition that caused the
+error.
+.PP  
+It should be possible to stop a process on occurrence of a system
+call;
+in this way, a completely controlled environment could
+be provided.
+.SH Return Values
+A 0 value is returned if the call succeeds.  If the call fails,
+a \-1 is returned, and the global variable \fIerrno\fP is
+set to indicate the error.
+.SH Diagnostics
+The
+.PN ptrace
+call fails under the following conditions:
+.TP 15
+[EIO]
+The request code is invalid.
+.TP 15
+[ESRCH]
+The specified process does not exist.
+.TP 15
+[EIO]          
+The given signal number is invalid.
+.TP 15
+[EIO]
+The specified address is out of bounds.
+.TP 15
+[EPERM]
+The specified process cannot be traced.
+.SH See Also
+dbx(1), wait(2), sigvec(2)

@@ -1,0 +1,21 @@
+# @(#)help	4.1  (ULTRIX)  7/2/90
+				Help
+                                ====
+The commands available are:
+
+EXTRACT	   -   Extract the highlighted string into the message file and
+	       replace it with a call to the catalogue access function.
+
+DUPLICATE  -   If this string has already appeared in the file this option will
+	       simply replace it with a call to access the original string.
+
+IGNORE	   -   Ignore this and subsequent occurences of the string in this run.
+
+PASS	   -   Pass by this occurence of the string.
+
+ADD	   -   As IGNORE, but adds it to the ignore file so it will be 
+	       ignored on subsequent runs of this program.
+
+COMMENT    -   Allows text to be put in the message file, useful for gencat(1).
+
+QUIT	   -   Stop this run, asks for confirmation.

@@ -1,0 +1,66 @@
+.\" SCCSID: @(#)trigger.8	8.1	9/11/90
+.TH trigger 8 
+.SH Name
+trigger \- trigger a target node to request a down-line load
+.SH Syntax 
+.B /etc/trigger 
+.I node
+[ 
+.I options
+]
+.SH Description
+.NXR "trigger command"
+.NXR "node" "triggering down-line load request"
+The 
+.PN trigger 
+command triggers the bootstrap mechanism of a target node, 
+causing the target to request a down-line load.  Once a target
+node is triggered, it loads itself in whatever manner its primary
+loader is programmed to operate.
+The target node could request a down-line
+load from the host that just triggered it or from another adjacent 
+node, or the target node could load itself
+from its own mass storage device. 
+.PP
+The 
+.I node 
+argument is the name or address of the target node.  A node name
+consists of from one to six alphanumeric characters.
+For single networks, a node address consists of a 
+decimal integer (1-1023).  For multiple networks, a
+node address consist of two decimal integers (n.n), 
+where the first indicates the network number (1-63), 
+and the second indicates the node address (1-1023).
+.PP
+The 
+.PN trigger 
+command requires the identification of the service circuit over
+which the load is performed, the Ethernet 
+hardware address of the target node, and the service password needed 
+to gain access to the target.  This information is included in 
+the nodes database entry for the target node.
+A node entry is defined with the 
+.PN addnode 
+command.  For further information, see 
+.MS addnode 8 .
+Alternatively, you can choose not to include a 
+target node's service password
+in the nodes database for security reasons.
+You must therefore specify this 
+value in the command line by using the 
+.B \-p 
+option.  
+.SH Options
+.IP \-p   
+Uses the specified service and password (next arguments) 
+in accessing the target node.
+.SH Examples
+.NXR(e) "node" "triggering down-line load request"
+This command triggers node Bangor to issue a down-line load request:
+.EX
+# /etc/trigger bangor <RET>
+.EE
+.SH See Also
+mop_mom(8), addnode(8), load(8), remnode(8), getnode(8), ccr(8) 
+.br
+.I Guide to Local Area Transport Servers

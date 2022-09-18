@@ -1,0 +1,46 @@
+.\" SCCSID: @(#)sinh.3m	6.2	8/30/89
+.TH sinh 3m VAX
+.SH Name
+sinh, cosh, tanh \- hyperbolic functions
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double sinh(\fIx\fP)
+.PP
+.B double cosh(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double tanh(\fIx\fP)
+.B double \fIx\fP;
+.fi
+.SH Description
+These functions compute the designated hyperbolic 
+functions for real arguments.
+.SH Return Values
+The
+.PN sinh
+and
+.PN cosh
+functions return HUGE_VAL and set
+.I errno
+to ERANGE when the correct value would overflow.
+.SH Environment
+When your program is compiled using the System V environment,
+.PN sinh
+and 
+.PN cosh
+.NXR "sinh subroutine (math)"
+.NXR "cosh subroutine (math)"
+.NXR "tanh subroutine (math)"
+.NXR "hyperbolic function"
+return HUGE (and
+.PN sinh
+may return HUGE or negative
+.I x
+) when the correct value would overflow and set 
+.I errno
+to ERANGE.
+.PP
+These error-handling procedures may be changed with the function
+.MS matherr 3m .

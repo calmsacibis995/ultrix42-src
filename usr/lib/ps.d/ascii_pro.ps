@@ -1,0 +1,185 @@
+%!PS-Adobe-1.0
+%%Title: ascii_pro.ps
+%%DocumentFonts: Courier Courier-Oblique Courier-Bold Courier-BoldOblique
+%%Creator: Jeff Schriesheim (based on ascii.ps by Roy Lomicka)
+%%CreationDate: March 3, 1986
+%%EditDate: March 3. 1986
+%%EditReason: Provide function definitons for ascii->PostScript translator
+%%EndComments
+
+/page-setup {
+  initmatrix rotate translate
+  initclip clippath pathbbox newpath
+  /upper-y exch def
+  /right-x exch def
+  /lower-y exch def
+  /left-x  exch def
+} def
+
+/portrait {
+  0 inch 0 inch 0 degree page-setup /top-y 11 inch def
+} def
+/landscape {
+  -11 inch 0 inch -90 degree page-setup /top-y 8.5 inch def
+} def
+
+/findsizefont {
+  findfont dup setfont (M) stringwidth pop 3 -1 roll exch div scalefont
+} def
+
+/setnormfont	  {findsizefont /normfont	exch def} def
+/setboldfont	  {findsizefont /boldfont	exch def} def
+/setbolditalfont  {findsizefont /bolditalfont	exch def} def
+/setitalfont	  {findsizefont /italfont	exch def} def
+
+/bold-fname	/Courier-Bold		def
+/norm-fname	/Courier		def
+/ital-fname	/Courier-Oblique	def
+/boldital-fname	/Courier-BoldOblique	def
+
+/font-setup {
+  dup boldital-fname	setbolditalfont
+  dup bold-fname	setboldfont
+  dup ital-fname	setitalfont
+      norm-fname	setnormfont
+} def
+
+/set-normfont	  {dup /norm-fname exch def spsize exch setnormfont} def
+/set-boldfont	  {dup /bold-fname exch def spsize exch setboldfont} def
+/set-bolditalfont {dup /boldital-fname exch def spsize exch setbolditalfont} def
+/set-italfont	  {dup /ital-fname exch def spsize exch setitalfont} def
+
+/boldital	{bolditalfont	setfont} def
+/ital		{italfont	setfont} def
+/bold		{boldfont	setfont} def
+/norm		{normfont	setfont} def
+
+%
+% functions for defining parameters:
+%
+{72 mul}				/inch			exch def
+{}					/point			exch def
+{2.54 72 div mul}			/cm			exch def
+{25.4 72 div mul}			/mm			exch def
+{}					/degree			exch def
+{100 div mul}				/percent		exch def
+
+/top-margin {
+  /tmar exch
+  top-y upper-y sub
+  dup 2 index lt
+    % top margin OK - use it
+    { pop def }
+    % top margin too small - use larger value
+    { exch pop def }
+  ifelse
+} def
+
+/bottom-margin {
+  /bmar exch
+  lower-y
+  dup 2 index lt
+    % bottom margin OK - use it
+    { pop def }
+    % bottom margin too small - use larger value
+    { exch pop def }
+  ifelse
+} def
+
+/left-margin {
+  /lmar exch
+  left-x
+  dup 2 index lt
+    % left margin OK - use it
+    { pop def }
+    % left margin too small - use larger value
+    { exch pop def }
+  ifelse
+} def
+
+/space-size		{dup /spsize exch def font-setup}	def
+/linefeed-size		{/lfsize exch def}			def
+/characters-per-inch	{1 exch div inch space-size}		def
+/lines-per-inch		{1 exch div inch linefeed-size}		def
+/characters-per-cm	{1 exch div cm space-size}		def
+/lines-per-cm		{1 exch div cm /lfsize exch def}	def
+/characters-per-mm	{1 exch div mm space-size}		def
+/lines-per-mm		{1 exch div mm /lfsize exch def}	def
+
+/init-y { top-y lfsize .8 mul sub tmar sub } def
+/init-x { lmar } def
+
+/do-soj {
+  % (start-of-job) move to intitial page location
+  init-x init-y moveto
+  save
+} def
+
+/do-eoj {
+  % (end-of-job) flush last page if not at init position:
+  currentpoint exch init-x gt exch init-y lt or
+    { do-f }
+  if
+  restore
+} def
+
+/do-f {
+  % do ff only if not at current definition of init point
+  currentpoint exch init-x gt exch init-y lt or
+    { showpage restore save
+      init-x init-y moveto
+    }
+  if
+} def
+
+/do-r {
+  currentpoint exch pop % current y
+  lmar			% new x (left margin)
+  exch moveto
+} def
+
+/do-b {
+  currentpoint exch	% save current y
+  lmar exch		% left margin
+  spsize sub		% backspace
+  dup 2 index ge
+    % new position is OK - use it
+    { exch pop }
+    % new position is not OK - use left margin
+    { pop }
+  ifelse
+  exch moveto
+} def
+
+/do-n {
+  do-r 			% do a CR with every LF
+  currentpoint lfsize sub moveto
+  currentpoint exch pop % new y
+  bmar			% bottom margin
+  le			% new y .le. bottom margin
+    { do-f }
+  if
+} def
+
+/do-t {
+  currentpoint pop lmar sub	% current distance from left margin
+  spsize div round cvi		% current offset in columns
+  8 mod neg 8 add		% spaces needed
+    {
+      ( ) show
+    }
+  repeat
+} def
+
+%
+% initial values of parameters
+%
+portrait
+.25 inch top-margin
+.25 inch bottom-margin
+.25 inch left-margin
+10 characters-per-inch
+6 lines-per-inch
+bold
+
+%%EndProlog

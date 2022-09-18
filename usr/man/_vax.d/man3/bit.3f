@@ -1,0 +1,65 @@
+.\" SCCSID: @(#)bit.3f	8.1	9/11/90
+.TH bit 3f VAX "" Unsupported
+.SH Name
+bit, and, or, xor, not, rshift, lshift \- bitwise functions
+.SH Syntax
+.B (intrinsic) function and (word1, word2)
+.sp 1
+.B (intrinsic) function or (word1, word2)
+.sp 1
+.B (intrinsic) function xor (word1, word2)
+.sp 1
+.B (intrinsic) function not (word)
+.sp 1
+.B (intrinsic) function rshift (word, nbits)
+.sp 1
+.B (intrinsic) function lshift (word, nbits)
+.SH Description
+.NXR "bit keyword"
+.NXR "bitwise function"
+.NXR "and bitwise function (FORTRAN)"
+.NXR "or bitwise function (FORTRAN)"
+.NXR "xor bitwise function (FORTRAN)"
+.NXR "not bitwise function (FORTRAN)"
+.NXR "rshift bitwise function (FORTRAN)"
+.NXR "lshift bitwise function (FORTRAN)"
+These bitwise functions are built into the compiler and return
+the data type of their argument(s).
+It is recommended that their arguments be
+.I integer
+values.
+Inappropriate manipulation of
+.I real
+objects may cause unexpected results.
+.PP
+The bitwise combinatorial functions return the
+bitwise ``and'' (
+.PN and
+),
+``or'' (
+.PN or
+), or ``exclusive or'' (
+.PN xor
+) of two operands.
+The
+.PN not
+returns the bitwise complement of its operand.
+.PP
+The
+.PN lshift ,
+or
+.PN rshift
+with a negative
+.IR nbits ,
+is a logical left shift with no end around carry.
+The
+.PN rshift ,
+or
+.PN lshift
+with a negative
+.IR nbits ,
+is an arithmetic right shift with sign extension.
+No test is made for a reasonable value of
+.I nbits.
+.SH Files
+These functions are generated in-line by the f77 compiler.

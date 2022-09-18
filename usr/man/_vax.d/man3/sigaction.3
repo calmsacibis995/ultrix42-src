@@ -1,0 +1,78 @@
+.\" SCCSID: @(#)sigaction.3	2.3	6/8/87
+.TH sigaction 3 
+.ie t .ds d \(dg
+.el .ds d \z'|+'
+.ie t .ds b \(bu
+.el .ds b @
+.SH Name
+sigaction \- software signal facilities (POSIX)
+.SH Syntax
+.nf
+.B #include <signal.h>
+.PP
+.B struct sigaction {
+.B	void	 (*sa_handler)();
+.B	sigset_t sa_mask;
+.B	int	 sa_flags;
+.B };
+.PP
+.B int sigaction(sig, vec, ovec)
+.B int sig;
+.B struct sigaction *vec, *ovec;
+.fi
+.SH Description
+.NXB "sigaction system call"
+.NXB "signal handler" "assigning"
+The sigaction call is the POSIX equivalent to the
+.MS sigvec 2
+system call. This call behaves as described on the
+.MS sigvec 2
+reference page with the following modifications:
+.IP \(bu 5
+The
+signal mask
+is manipulated using the 
+.MS sigsetops 3
+functions.
+.IP \(bu 5
+A process can suppress the generation of the SIGCHLD when a child stops by
+setting the SA_NOCLDSTOP bit in 
+.IR sa_flags .
+.IP \(bu 5
+The SV_INTERRUPT flag is always set by the system when using
+.MS sigaction 3 
+in POSIX mode. The flag is set so that interrupted system calls will
+fail with the EINTR error instead of getting restarted.
+.SH Return Values
+A 0 return value indicated that the call succeeded.  A \-1 return value
+indicates an error occurred and
+.I errno
+is set to indicated the reason.
+.SH Diagnostics
+.NXR "sigaction system call" "diagnostics"
+The
+.PN sigaction
+system call
+fails and a new signal handler is not installed if one
+of the following occurs:
+.TP 15
+[EFAULT]
+Either
+.I vec
+or 
+.I ovec
+points to memory which is not a valid part of the process
+address space.
+.TP 15
+[EINVAL]
+.I Sig
+is not a valid signal number.
+.TP 15
+[EINVAL]
+An attempt is made to ignore or supply a handler for SIGKILL
+or SIGSTOP.
+.SH See Also
+sigvec(2), sigsetops(3), sigprocmask(3),
+sigsuspend(3), sigpending(2), setjmp(3), siginterrupt(3), tty(4)
+.NXE "sigaction system call"
+.NXE "signal handler" "assigning"

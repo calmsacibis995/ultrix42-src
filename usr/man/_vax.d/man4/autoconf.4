@@ -1,0 +1,132 @@
+.\" SCCSID: @(#)autoconf.4	3.1	11/24/87
+.TH autoconf 4 VAX
+.SH Name
+autoconf \- diagnostics from the autoconfiguration code
+.SH Description
+.NXR "autoconf keyword"
+.NXB "configuration file (syslog)"
+When ULTRIX bootstraps, it probes the machine it is running
+on and locates controllers, drives, and other devices, printing out
+what it finds on the console.  This procedure is driven by a system
+configuration table, which is processed by
+.MS config 8
+and compiled into each kernel.
+.PP
+Devices in NEXUS slots are normally noted, thus memory controllers,
+UNIBUS, MASSBUS, and VAXBI adapters will be seen.  Devices that are not 
+supported and that are found in NEXUS slots are noted also.
+.PP
+VAXBI devices are located by a deterministic procedure,
+because VAXBI space can be probed completely.  Existing devices are noted
+on the console if they are not configured, or if they are
+unsupported devices.
+.PP
+MASSBUS devices are located by a deterministic procedure, because
+MASSBUS space is completely probeable.  If devices exist that
+are not configured, they will be silently ignored; if devices exist of
+unsupported type they will be noted.
+.PP
+UNIBUS devices are located by probing to see if their control-status
+registers respond.  If not, they are silently ignored.  If the control
+status register responds but the device cannot be made to interrupt,
+a diagnostic warning will be printed on the console and the device
+will not be available to the system. 
+.PP
+.SH Diagnostics
+.NXB "configuration file (syslog)" "diagnostics"
+.IP "\fBNo configure routine for cpu type %d\fR" 5
+An attempt was made
+to boot ULTRIX on a CPU type that it does not (or at least this compiled 
+version of ULTRIX does not) understand.
+.IP "\fBmba%d at address 0x%x\fR"
+A MASSBUS adapter was found at
+address 0x%x.  ULTRIX will call it mba%d.
+.IP "\fB%d mba's not configured\fR"
+More MASSBUS adapters were found on
+the machine than were declared in the machine configuration; the excess
+MASSBUS adapters will not be accessible.
+.IP "\fBuba%d at address 0x%x\fR"
+A UNIBUS adapter was found at
+address 0x%d.  ULTRIX will call it uba%d.
+.IP "\fBdr32 unsupported at address 0x%d\fR"
+A DR32 interface was found at 
+address 0x%d, for which ULTRIX does not have a driver.
+.IP "\fBmcr%d at address 0x%x\fR"
+A memory controller was found at
+address 0x%d.  ULTRIX will call it mcr%d.
+.IP "\fB5 mcr's unsupported at address 0x%d\fR"
+ULTRIX supports only four memory controllers per CPU.
+.IP "\fBmpm unsupported at address 0x%x\fR"
+Multiport memory is 
+unsupported in the sense that ULTRIX does not know how to poll it for 
+ECC errors.
+.IP "\fB%s%d at mba%d drive %d\fR"
+A tape formatter or a disk was found
+on the MASSBUS; for disks %s%d will look like ``hp0'', 
+for tape formatters like ``ht1''.  
+The drive number comes from the unit plug on the drive
+or in the TM formatter (\fBnot\fR on the tape drive; see below).
+.IP "\fB%s%d at %s%d slave %d\fR (for MASSBUS devices)"
+A tape slave was found on the tape formatter 
+at the indicated drive number (on the front of the tape drive).
+ULTRIX will call the device, for example, \fBtu0\fR.
+For example, ``tu0 at ht0 slave 0'',
+where \fBtu0\fR is the name for the tape device and \fBht0\fR is the 
+name for the formatter.  
+.IP "\fB%s%d at %s%d slave %d\fR (for UNIBUS and VAXBI devices)"
+Which would look like ``ra0 at uq0 slave 0'',
+where \fBra0\fR is the name of a disk drive and \fBuq0\fR is the name
+of the port protocol.
+.IP "\fB%s%d at uba%d csr %o vec %o ipl %x\fR"
+The device %s%d, e.g. dz0
+was found on uba%d at control-status register address %o and with
+device vector %o.  The device interrupted at priority level %x.
+.IP "\fB%s%d at uba%d csr %o zero vector\fR"
+The device did not present
+a valid interrupt vector, rather presented 0 (a passive release condition)
+to the adapter.
+.IP "\fB%s%d at uba%d csr %o didn't interrupt\fR"
+The device did not interrupt, possibly because it is broken, 
+hung, or not the kind of device it is advertised to be.
+.IP "\fB%s%d at %s%d csr %o vec %o ipl %x\fR (for UNIBUS and VAXBI controllers)"
+The port %s%d, for example, uq0
+was found on controller %s%d at control status register address %o 
+and with controller interrupt vector %o.  
+The controller interrupted at priority level %x.
+.IP "\fB%s%d at %s%d csr %o zero vector\fR (for UNIBUS and VAXBI controllers)"
+The port did not present
+a valid interrupt vector, rather presented 0 (a passive release condition)
+to the adapter.
+.IP "\fB%s%d at %s%d csr %o didn't interrupt\fR (for UNIBUS and
+VAXBI controllers)"
+The port did not interrupt, possibly because 
+it is broken, hung, or not the kind of port it is advertised to be.
+.IP "\fBnbia%d at address %x\fR"
+An nbia adapter was found at a NEXUS.
+.IP "\fBvaxbi%d at address %x\fR"
+A VAXBI number was found starting at
+address %x.
+.IP "\fB%s%d at vaxbi%d node %d\fR
+The device, controller, or adapter
+%s%d was found on vaxbi%d at node%d.
+.IP "\fBvaxbi%x node%d, unsupported device type 0x%x\fR"
+On a vaxbi%x at
+node%d there is a device with type number 0x%x that is
+unsupported by this release of ULTRIX.
+.IP "\fB%s at vaxbi%d node%d option not configured!\fR"
+A supported VAXBI
+device %s, found at vaxbi%d node%d was not configured into the
+system.  The device %s will not be seen by the system.  To use
+device %s, configure the system with the device included in the
+configuration file.
+.IP "\fB%s at vaxbi%d node%d failed to initialize!\fR"
+The device did not
+initialize, possibly because it was broken.
+\fBci%d - local port %d is initialized, ram/eeprom = %d/%d.\fR  The ci adapter whose local port
+number is %d initialized successfully.  The ram/eeprom revision level is %d%d.
+.IP "\fBhsc%d at ci%d (mscp) node #\fR"
+The ci%d (mscp) node number is the physical ci node number of hsc%d.
+.NXE "configuration file (syslog)" "diagnostics"
+.SH See Also
+intro(4), config(8)
+.NXE "configuration file (syslog)"

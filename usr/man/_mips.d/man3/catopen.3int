@@ -1,0 +1,84 @@
+.TH catopen 3int
+.SH Name
+catopen, catclose \- open/close a message catalog
+.SH Syntax
+.B #include <nl_types.h>
+.PP
+.B nl_catd catopen (\fIname\fP, \fIoflag\fP)
+.br
+.B char *name;
+.br
+.B int oflag;
+.PP
+.B int catclose (\fIcatd\fP)
+.br
+.B nl_catd catd;
+.SH Description
+.NXR "catopen subroutine"
+.NXR "catclose subroutine"
+The function
+.PN catopen
+opens a message catalog and returns a catalog descriptor.
+The parameter
+.I name
+specifies the name of the message catalog to be opened.
+If
+.I name
+contains a slash (/), then
+.I name
+specifies a pathname for the message catalog.
+Otherwise, the environment variable
+.PN NLSPATH
+is used with
+.I name
+substituted for
+.I %N. 
+For more information, see
+.MS environ 5int 
+in the 
+.I ULTRIX Reference Pages. 
+If
+.PN NLSPATH
+does not exist in the environment, or if a message catalog cannot be opened 
+in any of the paths specified by
+.PN NLSPATH ,
+the current directory is used.
+.PP
+The
+.I oflag
+is reserved for future use and must be set to zero (0).
+The results of setting this field to any other value are undefined.
+.PP
+The function
+.PN catclose
+closes the message catalog identified by
+.PN catd .
+.SH Restrictions
+Using
+.PN catopen
+causes another file descriptor to be allocated by the calling process 
+for the duration of the
+.PN catopen
+call.
+.SH Return Values
+If successful,
+.PN catopen
+returns a message catalog descriptor for use on subsequent calls to
+.PN catgetmsg ,
+.PN catgets
+and
+.PN catclose .
+If unsuccessful,
+.PN catopen
+returns (\c
+.PN nl_catd\c
+)-1.
+.PP
+The
+.PN catclose
+function returns 0 if successful, otherwise \-1.
+.SH See Also
+intro(3int), setlocale(3), catgetmsg(3int), catgets(3int), environ(5int), 
+nl_types(5int)
+.br
+.I Guide to Developing International Software

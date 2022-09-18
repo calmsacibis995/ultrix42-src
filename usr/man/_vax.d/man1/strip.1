@@ -1,0 +1,35 @@
+.TH strip 1
+.SH Name
+strip \- remove symbols and relocation bits
+.SH Syntax
+.B strip
+\fIname\fR ...
+.SH Description
+.NXR "strip command"
+.NXR "symbol table" "removing"
+.NXR "relocation bits" "removing"
+The 
+.PN strip
+command removes the symbol table 
+and relocation bits ordinarily attached 
+to the output of the assembler and loader. This can help create space 
+after a program has been debugged.
+.PP
+The 
+.PN strip
+command and the 
+.MS ld 1
+command with the 
+.B \-s
+option
+are equivalent.
+.SH Restrictions
+The 
+.PN strip
+program will not strip files with unresolved relocation information.
+.SH Files
+.TP 12
+.PN /tmp/stm?
+temporary file
+.SH See Also
+ld(1)

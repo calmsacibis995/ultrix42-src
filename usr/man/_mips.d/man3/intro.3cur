@@ -1,0 +1,642 @@
+.TH intro 3cur
+.SH Name
+intro \- introduction to the X/Open Curses Package, 
+which optimizes terminal screen handling and updating 
+.SH Syntax
+.B #include <cursesX.h>
+.br
+.B cc
+[ 
+.I options
+]
+.I files
+.B \-lcursesX
+[ 
+.I libraries 
+]
+.SH Description
+.NXR "intro(3cur) keyword"
+.NXR "curses package"
+.NXR "cursor" "optimizing movement"
+.NXR "curses library"
+.NXR "curses package" "main routines"
+.NXR "screen" "updating"
+.NXR "window" "defined"
+.NXR "terminal" "updating screen"
+.PP
+The
+.PN curses 
+(cursor optimization) package is the X/Open set of library routines 
+used for writing 
+screen-management programs.
+Cursor optimization minimizes the amount the cursor has to be moved
+around the screen in order to update it.
+Screen-management programs are used for tasks such as moving the cursor, 
+printing a menu, dividing a terminal
+screen into windows or drawing a display on a screen for data entry and
+retrieval.
+.PP
+The 
+.PN curses 
+package is split into three parts: screen updating,
+screen updating with user input, and
+cursor motion optimization.
+Screen-updating routines are used when parts of the screen need to be
+changed but the overall image remains the same.
+The cursor motion part of the package can be used separately for tasks such
+as defining how the cursor moves in response to tabs and newline characters
+.PP
+The
+.PN curses
+routines do not write directly to the terminal screen (the physical screen):
+instead, they write to a
+window,
+a two-dimensional array of characters which 
+represents all or part of
+the terminal screen. 
+A window can be as big as the terminal screen or any smaller size down to
+a single character.
+.PP
+The 
+.PN <cursesX.h> 
+header file supplies two default 
+windows,  
+.PN stdscr
+(standard screen) and
+.PN curscr
+(current screen) for all programs using
+.PN curses
+routines.
+The
+.PN stdscr 
+window is the size of the current terminal screen. 
+The
+.PN curscr
+window is not normally accessed directly by the screen-management program;
+changes are made to the appropriate window and then
+the
+.PN refresh 
+routine is called.
+The screen program keeps track of what is on the physical screen
+and what is on
+.PN stdscr .
+When 
+.PN refresh 
+is called,
+it compares the two screen images and then sends a stream
+of characters to the terminal to make the physical screen look like
+.PN stdscr .
+.PP
+The header file
+.PN <cursesX.h>
+defines
+.PN stdscr
+to be of the type
+.PN WINDOW* . 
+This is a pointer to a C structure
+which includes the starting position of the window on the screen and the window
+size.
+.PP
+Some 
+.PN curses
+routines are designed to work with a 
+.PN pad .
+A pad is a type of window whose size is not restricted by the
+size of the screen. 
+Use a pad when you only need part of a window on the 
+screen at any one time, 
+for example when running a spreadsheet application.
+.PP
+Other windows can be created with
+.PN newwin 
+and used instead of
+.PN stdscr
+for maintaining several different screen images, for example,
+one window can control input/output and
+another can display error messages.
+The routine 
+.PN subwin 
+creates subwindows within windows.
+When windows overlap, the contents of the current screen show the most
+recently refreshed window.
+.PP
+Among the most basic routines are
+.PN move 
+and
+.PN addch .
+These routines are used to move the cursor around
+and to add characters to the default window,
+.PN stdscr. 
+.PP
+All
+.PN curses
+data is manipulated using the routines provided by the 
+.PN curses
+library.
+You should not use routines or system calls from other libraries in a 
+.PN curses 
+program as they may cause undesirable results when you run the program.
+.PP
+.B Using Curses
+.PP    
+The 
+.PN curses 
+library has three types of routines; 
+Main 
+routines, TERMINFO routines 
+and TERMCAP compatibility routines
+.PP
+The 
+.PN terminfo
+routines are a group of routines within the
+.PN curses
+library which 
+provide a database containing descriptions of many terminals that
+can be used with
+.PN curses
+programs.
+The termcap compatibility routines are provided as
+a conversion aid for programs using termcap.
+.PP
+Most screen handling can be achieved using the 
+Main
+routines.  
+The 
+following hints should help you make the most of the screen-handling 
+routines.
+.PP
+The 
+.PN <cursesX.h>
+header file must always be included whenever
+.PN curses
+functions are used in a program. Note that the header file includes
+.PN <sgtty.h>
+to enable the terminal to use the features provided by ULTRIX.
+All the manual definitions assume that
+.PN <cursesX.h>
+has been included in the code.
+.PP
+The header file defines global variables and data structures, and 
+defines several
+of the routines as macros.
+The integer variables 
+.PN LINES
+and 
+.PN COLS
+are defined
+so that when a 
+.PN curses 
+program is run on a particular terminal, 
+.PN initscr 
+assigns
+the vertical and horizontal dimensions
+of the terminal screen to these variables.
+.PP
+A
+.PN curses 
+program must start by calling the routine
+.PN initscr 
+to allocate memory space for the windows.
+It should only be called once in a program,
+as it can overflow
+core memory if it is called repeatedly.
+The routine 
+.PN endwin 
+is used to exit from the screen-handling routines.
+.PP
+Most interactive screen-oriented programs need character-at-a-time
+input without echoing.
+To achieve this, you should call:
+.EX
+nonl();
+cbreak();
+noecho();
+.EE
+immediately after calling 
+.PN initscr .
+All 
+.PN curses
+routines that move the cursor, move it relative to the home 
+position in the
+upper left corner of the screen. The 
+.PN (LINES ,
+.PN COLS )
+coordinate at this position is (1,1). 
+Note that the vertical coordinate
+.PN y
+is given first and the horizontal coordinate
+.PN x
+is given second.
+The \-1 in the example program takes the home position into account
+to place the cursor on the centre line of the terminal screen.
+The example program displays 
+.B MIDSCREEN
+in the centre of the screen.
+Use
+the
+.PN refresh 
+routine after changing a screen to make the terminal screen look like
+.PN stdscr .
+.PP
+.B
+Example Program
+.R
+.EX 0
+#include <cursesX.h>
+main ()
+{
+.EE
+.EX
+initscr();     /*initialize terminal settings, data
+		 ** structures and variables*/
+move(LINES/2 \-1, COLS/2 \-4);
+addstr("MID");
+refresh();     /* send output to update terminal 
+                **  screen */
+addstr("SCREEN");
+refresh();     /* send more output to terminal 
+                **  screen */
+endwin();      /*restore all terminal settings */
+.EE
+.EX 0
+}
+.EE
+.SH Main Routines
+.PP
+Routines listed here can be called when using 
+the 
+.PN curses
+library.
+Routines that are preceded by a 
+.B w
+affect a specified window,
+those preceded by a 
+.B p
+affect a specified pad.
+All other routines affect the default window 
+.PN stdscr .
+Windows are specified by a numeric argument, for example: 
+.PN winch
+(\fIwin\fR)
+where
+.I win 
+is the specified window.
+.PP
+.ds w \fIwin\fR
+.ds s \fHstdscr\fR
+.TS
+tab (#);
+l l.
+
+addch(ch)#T{
+Add a character to \*s (like \fHputchar\fP wraps to next
+line at end of line)
+T}
+addstr(str)#Call addch with each character in \fIstr\fP
+attroff(attrs)#Turn off named attributes
+attron(attrs)#Turn on named attributes
+attrset(attrs)#Set current attributes to \fIattrs\fP
+baudrate(\|)#Display current terminal speed
+beep(\|)#Sound beep on terminal
+box(win, vert, hor)#Draw a box around edges of \*w,
+#\fIvert\fP and \fIhor\fP are characters to use for vertical
+#and horizontal edges of box
+clear(\|)#Clear \*s
+clearok(win, bf)#Clear screen before next redraw of \*w
+clrtobot(\|)#Clear to bottom of \*s
+clrtoeol(\|)#Clear to end of line on \*s
+cbreak(\|)#Set cbreak mode
+delay_output(ms)#Insert \fIms\fP millisecond pause in output
+delch(\|)#Delete a character
+deleteln(\|)#Delete a line
+delwin(win)#Delete \*w
+doupdate(\|)#Update screen from all wnoutrefresh
+echo(\|)#Set echo mode
+endwin(\|)#End window modes
+erase(\|)#Erase \*s
+erasechar(\|)#Return user's erase character
+fixterm(\|)#Restore tty to in ``curses'' state
+flash(\|)#Flash screen or beep
+flushinp(\|)#Throw away any typeahead
+getch(\|)#Get a character from tty
+getstr(str)#Get a string through \*s
+gettmode(\|)#Establish current tty modes
+getyx(win, y, x)#Get (y, x) coordinates
+has_ic(\|)#True if terminal can do insert character
+has_il(\|)#True if terminal can do insert line
+idlok(win, bf)#Use terminal's insert/delete line if bf != 0
+inch(\|)#Get character at current (y, x) coordinates
+initscr(\|)#Initialize screens
+insch(c)#Insert a character
+insertln(\|)#Insert a line
+intrflush(win, bf)#Interrupt flush output if bf is TRUE
+keypad(win, bf)#Enable keypad input
+killchar(\|)#Return current user's kill character
+leaveok(win, flag)#Leave cursor anywhere after refresh if
+#flag!=0 for \*w. Otherwise cursor must be left
+#at current position
+longname(\|)#Return verbose name of terminal
+meta(win, flag)#Allow meta characters on input if flag != 0
+move(y, x)#Move to (y, x) on \*s
+.TE
+.PP
+.B
+NOTE:
+The following routines prefixed with 
+.B mv 
+require 
+.PN y
+and 
+.PN x
+coordinates to move to, before performing the same functions as the
+standard routines. As an example, 
+.PN mvaddch
+performs the same function as
+.PN addch, but 
+.PN y
+and
+.PN x
+coordinates must be supplied first. 
+The routines prefixed with
+.B mvw 
+also require a window or pad argument.
+.PP
+.TS \-H
+tab (#);
+l l.
+
+mvaddch(y, x, ch)#
+mvaddstr(y, x, str)#
+mvcur(oldrow, oldcol, newrow,#low level cursor motion
+newcol)#
+mvdelch(y, x)#
+mvgetch(y, x)#
+mvgetstr(y, x)#
+mvinch(y, x)#
+mvinsch(y, x, c)#
+mvprintw(y, x, fmt, args)
+mvscanw(y, x, fmt, args)
+mvwaddch(win, y, x, ch)
+mvwaddstr(win, y, x, str)
+mvwdelch(win, y, x)
+mvwgetch(win, y, x)
+mvwgetstr(win, y, x)
+mvwin(win, by, bx)
+mvwinch(win, y, x)
+mvwinsch(win, y, x, c)
+mvwprintw(win, y, x, fmt, args)
+mvwscanw(win, y, x, fmt, args)
+newpad(nlines, ncols)#Create a new pad with given dimensions
+newterm(type, fd)#T{
+Set up new terminal of given type to output 
+on fd
+T}
+newwin(lines, cols,#Create a new window
+begin_y, begin_x)#
+nl(\|)#Set newline mapping
+nocbreak(\|)#Unset cbreak mode
+nodelay(win, bf)#Enable nodelay input mode through \fHgetch\fP
+noecho(\|)#Unset echo mode
+nonl(\|)#Unset newline mapping
+noraw(\|)#Unset raw mode
+overlay(win1, win2)#Overlay win1 on win2
+overwrite(win1, win2)#Overwrite win1 on top of win2
+pnoutrefresh(pad, pminrow,#Like \fHprefresh\fP but with no output
+pmincol, sminrow, smincol,#until \fHdoupdate\fP called
+smaxrow, smaxcol)#
+prefresh(pad, pminrow,#T{
+Refresh from pad starting with given upper
+T}
+pmincol, sminrow, smincol,#left corner of pad with output to
+smaxrow, smaxcol)#given portion of screen
+printw(fmt, arg1, arg2, ...)#\fHprintf\fP on \*s
+raw(\|)#Set raw mode
+refresh(\|)#Make current screen look like \*s
+resetterm(\|)#Set tty modes to ``out of curses'' state
+resetty(\|)#Reset tty flags to stored value
+saveterm(\|)#T{
+Save current modes as ``in curses'' state
+T}
+savetty(\|)#Store current tty flags
+scanw(fmt, arg1, arg2, ...)#\fHscanf\fP through \*s
+scroll(win)#Scroll \*w one line
+scrollok(win, flag)#Allow terminal to scroll if flag != 0
+set_term(new)#Switch between different terminals
+setscrreg(t, b)#T{
+Set user scrolling region to lines t through b
+T}
+setupterm(term, filenum, errret)#Low level terminal setup
+standend(\|)#Clear standout mode attribute
+standout(\|)#Set standout mode attribute
+subwin(win, lines, cols,#Create a subwindow
+begin_y, begin_x)#
+touchwin(win)#\*(lqchange\*(rq all of \*w
+traceoff(\|)#Turn off debugging trace output
+traceon(\|)#Turn on debugging trace output
+typeahead(fd)#T{
+Use file descriptor fd to check typeahead
+T}
+unctrl(ch)#Produce printable version of \fIch\fP
+waddch(win, ch)#Add character to \*w
+waddstr(win, str)#Add string to \*w
+wattroff(win, attrs)#Turn off attrs in \*w
+wattron(win, attrs)#Turn on attrs in \*w
+wattrset(win, attrs)#Set attrs in \*w to attrs
+wclear(win)#Clear \*w
+wclrtobot(win)#Clear to bottom of \*w
+wclrtoeol(win)#Clear to end of line on \*w
+wdelch(win, c)#Delete char from \*w
+wdeleteln(win)#Delete line from \*w
+werase(win)#Erase \*w
+wgetch(win)#Get a character through \*w
+wgetstr(win, str)#Get a string through \*w
+winch(win)#Get character at current (y, x) in \*w
+winsch(win, c)#Insert char into \*w
+winsertln(win)#Insert line into \*w
+wmove(win, y, x)#Set current (y, x) coordinates on \*w
+wnoutrefresh(win)#Refresh but no screen output
+wprintw(win, fmt,#\fHprintf\fP on \*w
+arg1, arg2, ...)#
+wrefresh(win)#Make screen look like \*w
+wscanw(win, fmt,#\fHscanf\fP through \*w
+arg1, arg2, ...)#
+wsetscrreg(win, t, b)#Set scrolling region of \*w
+wstandend(win)#Clear standout attribute in \*w
+wstandout(win)#Set standout attribute in \*w
+
+.TE
+.PP
+.B Caution
+.PP    
+The plotting library
+.MS plot 3x
+and the 
+.MS curses 3cur
+library both use the names 
+.PN erase(\|)
+and 
+.PN move(\|).
+The 
+.PN curses
+versions are macros.
+If you need both libraries, put the
+.MS plot 3x
+code in a different source file to the
+.MS curses 3cur
+code, and/or 
+.PN #undef 
+.PN move(\|) 
+and 
+.PN erase(\|) 
+in the
+.MS plot 3x
+code.
+.SH TERMINFO Level Routines
+.PP
+If the environment variable \s-1TERMINFO\s+1 is defined, any program
+using 
+.PN curses 
+will check for a local terminal definition before
+checking in the standard libraries.
+For example, if the standard place is 
+.PN /usr/lib/terminfo, and \s-1TERM\s+1 is
+set to \fBvt100\fP, the compiled file will normally be found in
+.PN /usr/lib/terminfo/v/vt100 .  
+The \fBv\fP is copied from the first letter
+of vt100 to avoid creating huge directories.
+However, if \s-1TERMINFO\s+1 is set to
+.PN /usr/mark/myterms, 
+.PN curses
+will first check
+.PN /usr/mark/myterms/v/vt100,
+and if that fails,
+will then check
+.PN /usr/lib/terminfo/v/vt100.
+This is useful for developing experimental definitions or
+when there is no write permission for
+.PN /usr/lib/terminfo .
+.PP
+These routines should be called by programs that need to deal directly
+with the 
+.PN terminfo
+database, but as this is
+a low level interface, it is not recommended.
+.PP
+Initially, the routine
+.PN setupterm 
+should be called.
+This will define the set of terminal-dependent variables defined in
+.MS terminfo 5 .
+The include files 
+.PN <cursesX.h> 
+and 
+.PN <term.h>
+should be included to get the definitions
+for these strings, numbers, and flags.
+Parameterized strings should be passed through
+.PN tparm 
+to instantiate them.
+All terminfo strings (including the output of 
+.PN tparm ) 
+should be printed with
+.PN tputs 
+or
+.PN putp .
+Before exiting,
+.PN resetterm 
+should be called to restore the tty modes.
+.PP
+Programs which want shell escapes or 
+.CT Z
+suspending can call
+.PN resetterm
+before the shell is called and
+.PN fixterm
+after returning from the shell.
+.DS
+.TS
+tab(#);
+l l.
+
+fixterm(\|)#Restore tty modes for terminfo use
+#(called by setupterm)
+resetterm(\|)#Reset tty modes to state before program entry
+setupterm(term, fd, rc)#Read in database.  Terminal type is the
+#character string term, all output is to \s-1ULTRIX\s+1
+#System file descriptor fd.  A status value is
+#returned in the integer pointed to by rc: 1
+#is normal.  The simplest call would be
+#setupterm(0, 1, 0) which uses all defaults
+tparm(str, p1, p2, ..., p9)#Instantiate string str with parms p\di\u
+.sp
+tputs(str, affcnt, putc)#Apply padding info to string str
+#affcnt is the number of lines affected,
+#or 1 if not applicable.  Putc is a
+#putchar-like function to which the characters
+#are passed, one at a time
+putp(str)#A function that calls tputs
+#(str, 1, putchar)
+vidputs(attrs, putc)#Output the string to put terminal in video
+#attribute mode attrs, which is any 
+#combination of the attributes listed below
+#Chars are passed to putchar-like
+#function putc\fR
+vidattr(attrs)#Like vidputs but outputs through
+#putchar
+.TE
+.DE
+.SH Termcap Compatibility Routines
+.PP
+The following routines were included as a conversion aid for
+programs that use termcap.
+Their parameters are the same as for termcap.
+They are emulated using the 
+.PN terminfo
+database.
+.PP
+DO NOT use these routines in new programs.
+.PP
+.TS
+tab (#);
+l l.
+tgetent(bp, name)#Look up termcap entry for name
+tgetflag(id)#Get boolean entry for id
+tgetnum(id)#Get numeric entry for id
+tgetstr(id, area)#Get string entry for id
+tgoto(cap, col, row)#Apply parms to given cap
+tputs(cap, affcnt, fn)#Apply padding to cap calling fn as putchar
+.TE
+.PP
+As an aid to compatibility, 
+the object module
+.PN termcap.o
+has been provided in 
+.PN /usr/lib/termcap.o .
+This module should be linked into an application
+before resolving against the 
+.PN curses
+library.
+If your application contains references such as 
+.PN UP
+then recompile using
+.EX 0
+cc [\fIoptions\fP] \fIfiles\fP /usr/lib/termcap.o \-lcursesX [\fIlibs\fP]
+.EE
+.SH Errors
+No errors are defined for the 
+.PN curses
+functions.
+.SH Return Values
+For most 
+.PN curses
+routines, the 
+.PN OK
+value is returned if a routine is properly completed 
+and the
+.PN ERR
+value is returned if some error occurs.
+.SH See Also
+tic(1), ioctl(2), getenv(3), printf(3s), putchar(3s), scanf(3s), plot(3x),
+termcap(5), terminfo(5) 
+.br
+\fIGuide to X/Open curses Screen Handling\fP

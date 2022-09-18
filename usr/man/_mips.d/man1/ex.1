@@ -1,0 +1,156 @@
+.TH ex 1
+.SH Name
+ex, edit \- text editor
+.SH Syntax
+.B ex
+[
+.B \-
+] [
+.B \-v
+] [
+.B \-x
+] [
+.B \-t 
+tag
+] [
+.B \-r
+] [
+\fB\+\fIcommand\fR
+] [
+.B \-l
+]
+\fIname\fR...
+.br
+.B edit
+[
+ex options
+]
+.SH Description
+.NXR "editors" "ex"
+.NXR "editors" "edit"
+.NXR "encryption" "ex editor"
+.NXR "ex editor"
+The
+.PN ex
+editor is the root of a family of editors:
+.PN edit ,
+.PN ex
+and
+.PN vi .
+The
+.PN ex
+editor is a superset of
+.PN ed ,
+with the most notable extension being a display-editing facility.
+Display-based editing is the focus of
+.PN vi .
+.PP
+The 
+.I name 
+argument indicates the files to be edited.
+.SH Options
+.IP \- 5
+Suppresses all interactive-user feedback.
+This option is useful in processing editor scripts in command
+files.
+.IP \-v
+Equivalent to using 
+.PN vi
+rather than 
+.PN ex .
+.IP \-t
+Equivalent to an initial 
+.I tag 
+command, that is,
+editing the file containing the
+.I tag
+and positioning the editor at its definition.
+.IP \-r
+Used to recover after an editor or system crash.
+It recovers by retrieving the last saved version of the named
+.I file.
+If no
+.I file
+is specified, it displays a list of saved files.
+.IP \-R
+Sets the read-only option at the start.
+.IP +\fIcommand\fR
+Indicates that the editor should begin
+by executing the specified command.  If the command
+is omitted, it defaults to 
+.B $, 
+positioning the editor at the last line of the first file, initially.
+Other useful commands here are scanning patterns of the form
+.B +/\fIpattern\fR
+or line numbers.
+.IP \-l
+Sets up for LISP.
+That is, it sets the
+.I showmatch 
+and 
+.I lisp
+options.
+.NT
+The 
+.B \-x
+option is available only if the Encryption 
+layered product is installed.
+.NE
+.IP \-x 5
+Causes 
+.PN ex
+to prompt for a key. The key is used to encrypt and 
+decrypt the contents of the file. If the file contents 
+have been encrypted with one key, you must 
+use the same key to decrypt them.
+.SH Restrictions
+The
+.PN undo
+command causes all marks to be lost on lines changed and then restored
+if the marked lines were changed.
+.PP
+The
+.PN undo
+command does not clear the buffer modified condition.
+.PP
+The
+.I z
+command prints a number of logical rather than physical lines.
+More than a screenful of output may result if long lines are present.
+.PP
+File input/output errors do not print a 
+name if the command line minus sign (\fB\-\fR)
+option is used.
+.PP
+There is no easy way to do a single scan ignoring case.
+.PP
+The editor does not warn you if you place text 
+in named buffers and do not use it
+before exiting the editor.
+.PP
+Null characters are discarded from input files, 
+and cannot appear in output
+files.
+.SH Files
+.DT
+/usr/lib/ex?.?recover		recover command
+.br
+/usr/lib/ex?.?preserve		preserve command
+.br
+/etc/termcap			terminal capabilities 
+.br
+~/.exrc				editor startup file
+.br
+/tmp/Ex\fInnnnn\fR			editor temporary
+.br
+/tmp/Rx\fInnnnn\fR			named buffer temporary
+.br
+/usr/preserve			preservation directory
+.SH See Also
+awk(1), ed(1), grep(1), sed(1), vi(1), termcap(5), environ(7)
+.br
+"Edit: A Tutorial"
+and the 
+"Ex Reference Manual" in the
+.br
+\fISupplementary Documents, Volume 1: General User\fP

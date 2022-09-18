@@ -1,0 +1,316 @@
+.\" SCCSID: @(#)fsck.8	2.2	5/12/87
+.TH fsck 8
+.SH Name
+fsck \- check and repair file system 
+.SH Syntax
+.B /etc/fsck
+[
+.B \-p
+.B \-P
+]
+[
+\fIfilesystem\fR ...
+]
+.br
+.B /etc/fsck
+[
+.B \-b
+\fIblock\fR
+] [
+.B \-y
+] [
+.B \-n
+] [
+\fIfilesystem\fR
+] ...
+.SH Description
+.NXB "fsck command"
+.NXB "file system" "checking consistency"
+.NXB "file system" "repairing interactively"
+.NXAM "fs file" "fsck command"
+The
+.PN fsck
+command checks and corrects either a standard set of file systems or the
+specified file systems for consistency.
+This command is normally used
+in the script
+.PN /etc/rc
+during automatic reboot.
+In this case,
+.PN fsck
+reads the
+.PN /etc/fstab 
+file to determine which UFS file systems to check.
+It uses the 
+.PN fstab 
+information to inspect groups of disks in parallel,
+taking advantage of I/O overlap to check the file systems
+as quickly as possible.
+.PP
+The 
+.PN fsck
+command makes a number of passes to check the file systems
+for consistency.
+Usually,
+the root file system is checked on pass 1,
+other root file systems such as partition
+.PN a
+are checked on pass 2,
+and other small file systems are checked on separate passes.
+For example, the
+.PN d
+file systems are usually checked
+on pass 3 and the
+.PN e
+file systems are usually checked on pass 4.
+The large user file systems are usually checked on the final pass.
+A pass number of 0 in
+.PN /etc/fstab 
+causes a disk to not be checked.
+Similarly,
+partitions that are not shown to be mounted with
+.PN rw
+or
+.PN ro
+are not checked.
+.PP
+The
+.PN \-p
+option should be used to check file systems.
+The generic file system interface,
+.PN gfs ,
+causes
+.PN fsck
+to realize when a file system
+is unmounted cleanly and thus prevents
+.PN fsck
+from doing the check.
+File systems are unmounted cleanly only when an error-free shutdown 
+has been performed or the file system was unmounted.
+However, a timeout factor is used by
+.PN fsck
+to determine if
+.PN fsck
+should be run regardless of the value of the clean byte.
+The timeout factor is initially set to 20 and is decremented 
+when any one of three events occur:
+.RS
+.IP \- 3
+A file system is mounted,
+.IP \-
+10,000 updates have occurred 
+.IP \-
+A file system was updated and 
+.PN fsck
+occurred more than 60 days prior
+.RE
+.PP
+When the timeout factor reaches 0, 
+.PN fsck
+will automatically check it.
+This factor can be changed with 
+.PN tunefs .
+If the
+.PN \-P
+option is used, the parallel consistency checks
+are performed like the
+.PN \-p
+option regardless of how the file system was unmounted.
+.PP
+If an attempt is made to check a mounted file system using the block
+device,
+.PN fsck
+will report
+.I filesystem:
+.PN "NO WRITE ACCESS"
+and will check the filesystem as if the 
+.PN \-n
+option is selected.
+.PP
+The system ensures that only a restricted class of file system
+inconsistencies can occur unless hardware or software failures
+intervene.
+The inconsistencies are limited to:
+.IP 
+Unreferenced inodes
+.IP 
+Link counts in inodes are too large
+.IP 
+Missing blocks in the free list
+.IP 
+Blocks in the free list are also in files
+.IP 
+Counts in the superblock are wrong
+.PP
+These are the only inconsistencies that 
+.PN fsck
+corrects with either the
+.PN \-p
+or 
+.PN \-P
+option.
+If
+.PN fsck
+encounters other inconsistencies, it exits
+with an abnormal return status and an automatic reboot will then fail.
+For each corrected inconsistency one or more lines are printed
+identifying the file system on which the correction will take place
+and the nature of the correction.  
+If any inconsistencies occur,
+the message 
+.PN "**** FILE SYSTEM MODIFIED, VERIFYING"
+is printed and 
+.PN fsck
+runs again to verify that the appropriate
+changes were made.
+After correcting a file system,
+.PN fsck
+prints the number of files on that file system and the number of
+used and free blocks and also the percent of fragments vs blocks.
+When the fragmentation exceeds 5% it is recommended that the file
+system be dumped to tape, 
+.PN newfs ,
+and restored.
+Also,
+a clean byte is set for the checked file system.
+The root file system is checked regardless of whether the
+clean byte is set.
+.PP
+Without the
+.PN \-p
+or 
+.PN \-P
+options,
+.PN fsck
+audits and interactively repairs inconsistent conditions for 
+file systems.
+If the file system is inconsistent,
+the operator is prompted before each correction is attempted.
+It should be noted that a number of the corrective actions which are not
+fixable using the
+.PN \-p
+or 
+.PN \-P
+options will result in some loss of data.
+The amount and severity of data lost may be determined from
+the diagnostic output.
+The default action for each consistency correction
+is to wait for the operator to respond
+.PN yes
+or
+.PN no .
+If the operator does not have write permission,
+.PN fsck
+defaults to a 
+.PN \-n
+action.
+.PP
+If no file systems are given to 
+.PN fsck ,
+then a default list of file systems is read from
+the file
+.PN /etc/fstab .
+The
+.PN fsck
+command
+only checks file systems of type UFS.
+.PP
+.ne 10
+The 
+.PN fsck
+command checks for the following inconsistencies:
+.IP 
+Blocks claimed by more than one inode or the free list.
+.IP 
+Blocks claimed by an inode or the free list outside the range of
+the file system.
+.IP 
+Incorrect link counts.
+.IP 
+Size checks; directory size not of proper format.
+.IP 
+Bad inode format.
+.IP 
+Blocks not accounted for.
+.IP 
+Directory checks;
+file pointing to unallocated inode;
+inode number out of range.
+.IP 
+Superblock checks;
+more blocks for inodes than there are in the file system.
+.IP 
+Bad free block list format.
+.IP 
+Total free block or free inode count incorrect.
+.PP
+If
+.PN fsck
+detects allocated but unreferenced files and directories,
+it prompts you before placing them in the
+.PN lost+found
+directory.
+The only restriction is that the directory 
+.PN lost+found
+must exist in the root of the file system being checked and
+must have empty slots before
+.PN fsck
+is run.
+If necessary,
+the
+.PN lost+found
+directory can be enlarged by creating many files in the
+directory and then removing them.
+.PP
+General users can run
+.PN fsck
+on file systems with certain restrictions.
+The user must have execute permissions on the device and 
+general users cannot run
+.PN fsck
+on a mounted file system.
+.SH Options
+.NXR "fsck command" "options"
+.IP \fB\-b\fR
+Use the block specified immediately after the flag as
+the superblock for the file system.  Block 32 is always
+an alternate superblock.
+.IP \fB\-y\fR
+Assume a
+.PN yes
+response to all questions asked by 
+.PN fsck ;
+this should be used with caution as this allows
+.PN fsck
+to continue after essentially unlimited trouble has been encountered.
+.IP \fB\-n\fR
+Assume a
+.PN no
+response to all questions asked by 
+.PN fsck ;
+do not open the file system for writing.
+.IP \fB\-p\fR
+Check a file system that was not unmounted cleanly.
+.IP \fB\-P\fR
+Check a file system regardless of how it was unmounted.
+.SH Restrictions
+.NXR "fsck command" "restricted"
+Inode numbers for
+.PN \&.
+and
+.PN \&.\&.
+in each directory should be checked for validity.
+The
+.PN fsck
+command
+will not allow checking a raw device if the block device is mounted.
+.SH Files
+.TP 21
+.PN /etc/fstab
+Contains default list of file systems to check
+.SH See Also
+getmnt(2), fstab(5), ufs(5), crash(8v), mkfs(8), mklost+found(8),
+mount(8), mount(8ufs), newfs(8), reboot(8), tunefs(8)
+.NXE "fsck command"
+.NXE "file system" "checking consistency"
+.NXE "file system" "repairing interactively"

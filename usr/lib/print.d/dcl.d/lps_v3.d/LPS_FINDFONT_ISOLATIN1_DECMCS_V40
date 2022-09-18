@@ -1,0 +1,26 @@
+% Copyright, 1986, 1988, Digital Equipment Corp.
+save/LPS$findfontdict where exch pop
+% LPS$FINDFONT_ISOLATIN1_DECMCS_V40PLUS device control module
+% Copyright (C) 1986, 1988, Digital Equipment Corporation
+% All Rights Reserved
+/setpacking where{pop}{/setpacking{pop}def/currentpacking{false}def}ifelse
+currentpacking true setpacking/findfont{LPS$findfontdict begin dup
+FontDirectory exch known{FontDirectory exch get}{mark 1
+index(123456789012345678901234567890123456789)cvs/LPS$encodings
+where{/LPS$encodings get{3 1 roll(1234567890)cvs search{exit}{exch
+pop}ifelse}forall}if counttomark 1 ne{exch pop exch length 0 eq{3 -1 roll
+pop true}{pop pop pop false}ifelse}{pop pop false}ifelse{dup findfont dup
+length dict 3 -1 roll pop exch{1 index/FID ne 2 index/UniqueID ne and{2
+index 3 1 roll put}{pop pop}ifelse}forall/LPS$fallbacks where{pop
+dup/Encoding 4 -1 roll exec 256 array copy put dup/CharStrings known{0 1
+255{{1 index/Encoding get 1 index get 2 index/CharStrings get exch known
+not{1 index/Encoding get 1 index get 2 index/Encoding get 2 index
+LPS$fallbacks/others get put LPS$fallbacks{exch 2 index eq{3 index/Encoding
+get 3 index 3 -1 roll put exit}{pop}ifelse}forall pop}{exit}ifelse}loop
+pop}for}if}{dup/Encoding 4 -1 roll exec put}ifelse
+definefont}{findfont}ifelse}ifelse end}bind def/LPS$findfontdict 32 dict
+def LPS$findfontdict begin/findfont dup load def/LPS$encodings 6 dict def
+LPS$encodings
+begin/-ISOLatin1{ISOLatin1Encoding}def/-DECMCS{DECMCSEncoding}def/-DECTech{
+DECTechEncoding}def/-DECPub{DECPubEncoding}def end end
+setpacking{restore}if

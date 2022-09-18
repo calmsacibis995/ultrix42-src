@@ -1,0 +1,35 @@
+.\" SCCSID: @(#)reset.1	8.2	3/21/91
+.TH reset 1
+.SH Name
+reset \- reset terminal mode
+.SH Syntax
+.B reset
+.SH Description
+.NXR "reset command"
+.NXR "terminal" "resetting"
+.NXA "reset command" "tset command"
+The
+.PN reset
+command
+sets the terminal to cooked mode, turns off cbreak and raw modes,
+turns on nl, and restores special characters that are undefined
+to their default values.
+The
+.PN reset
+command also clears the LLITOUT bit in the local mode word.
+.PP
+This is most useful after a program dies leaving a terminal in a funny
+state; you have to type ``<LF>reset<LF>'' to get it to work then to the
+shell, as <CR> often doesn't work; often none of this will echo.
+.PP
+It is a good idea to follow
+.PN reset
+with 
+.MS tset 1 .
+.SH Restrictions
+Doesn't set tabs properly.  
+It can't interpret choices for interrupt
+and line kill characters, so it leaves these set to the local system
+standards.
+.SH See Also
+stty(1), tset(1)

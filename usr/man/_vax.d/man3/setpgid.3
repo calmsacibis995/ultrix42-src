@@ -1,0 +1,90 @@
+.\" SCCSID: @(#)setpgid.3	2.3	9/9/88
+.TH setpgid 3
+.SH Name
+setpgid \- set process group (POSIX)
+.SH Syntax
+.ft B
+.nf
+#include <sys/types.h>
+int
+setpgid(pid, pgrp)
+.br
+pid_t pid, pgrp;
+.fi
+.ft R
+.SH Description
+.NXR "setpgid function"
+.NXR "process group" "setting"
+The
+.PN setpgid
+function
+is used to either join an existing process group or create a new
+process group within the session of the calling process 
+(see 
+.MS setsid 2 ). 
+Upon successful completion, the process group ID of the process that
+has a process ID which matches
+.I pid
+is set to
+.IR pgrp .
+If
+.I pid
+is zero, then the call applies to the current process. In addition, if
+.I pgrp
+is zero, the process ID of the indicated process is used.
+.PP
+This function is available only in the POSIX environment.
+.SH Return Values
+The 
+.PN setpgid
+function
+returns 0 when the operation is successful.  If the request fails, \-1 
+is returned and the global variable
+.PN errno
+indicates the reason.
+.SH Diagnostics
+The
+.PN setpgid
+function
+fails and the process group is not altered if
+one of the following occurs:
+.TP 15
+[EACCES]
+The value of the 
+.I pid
+argument matches the process ID of a child process of the calling process 
+and the child process has successfully executed an
+.PN exec
+function.
+.TP 15
+[EINVAL]
+The value of the 
+.I pgrp
+argument is less than zero or is not a supported value.
+.TP 15
+[EPERM]
+The process indicated by the
+.I pid
+argument is a session leader.
+.sp
+The value of the
+.I pid
+argument matches the process ID of a child process of the calling process 
+and the child process is not in the same session as the calling process.
+.sp
+The value of the
+.I pgrp
+argument does not match the process ID of the process indicated by the
+.I pid
+argument and there is no process with a process group ID that matches the 
+value of the
+.I pgrp
+argument in the same session as the calling process.
+.TP 15
+[ESRCH]
+The value of the
+.I pid
+argument does not match the process ID of the calling process of a 
+child process of the calling process.
+.SH See Also
+getpgrp(2), setsid(2)

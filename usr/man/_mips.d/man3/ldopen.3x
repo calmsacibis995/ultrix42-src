@@ -1,0 +1,155 @@
+.TH ldopen 3x RISC
+.SH Name
+ldopen, ldaopen, ldreadst \- open a common object file for reading
+.SH Syntax
+.nf
+.ta \w'\s-1LDFILE\s+1\ \ \ 'u
+.B #include <stdio.h>
+.B #include <filehdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h> 
+.PP
+.BR "\s-1LDFILE\s+1 \(**ldopen (" "filename, ldptr" )
+.BR "char \(**" filename ;
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.PP
+.BR "\s-1LDFILE\s+1 \(**ldaopen (" "filename, oldptr" )
+.BR "char \(**" filename ;
+.BR "\s-1LDFILE\s+1 \(**" oldptr ;
+.PP
+.BR "\s-1ldreadst\s+1 (" "ldptr, flags")
+.BR "\s-1LDFILE\s+1 \(**" ldptr;
+.BR "\s-1int" flags;
+.fi
+.DT
+.SH Description
+The 
+.PN ldopen
+and
+.PN ldclose
+functions provide uniform access to simple object files and
+to object files that are members of archive files.
+An archive
+of common object files can be processed as if it is a series of
+simple common object files.
+.PP
+If 
+.I ldptr
+has the value null, 
+.PN ldopen
+opens
+.IR filename ,
+allocates and initializes the
+.B \s-1LDFILE\s+1
+structure, and returns a pointer to
+the structure to the calling program.
+.PP
+If
+.I ldptr
+is valid and
+.BI \s-1TYPE\s+1( ldptr )
+is the archive magic number,
+.PN ldopen
+reinitializes the
+.BR \s-1LDFILE\s+1 " structure"
+for the next archive member of
+.IR filename .
+.PP
+The 
+.PN ldopen
+and
+.PN ldclose
+functions work in concert.  The
+.PN ldclose
+function returns failure only when only when
+.BI \s-1TYPE\s+1( ldptr )
+is the archive magic number and there is another file in the archive
+to be processed.
+Only then should
+.PN ldopen
+be called with the current value of
+.IR ldptr .
+In all other cases, but especially when a new
+.I filename
+is opened,
+.PN ldopen
+should be called with a null
+.I ldptr
+argument.
+.PP
+The following is a prototype for the use of 
+.PN ldopen
+and
+.ldclose:
+.EX
+/* for each filename to be processed*/
+.PP
+ldptr = \s-1NULL\s+1;
+do
+	if ( (ldptr = ldopen(filename, ldptr)) != \s-1NULL\s+1 )
+
+	{
+		/* check magic number */
+		/* process the file */
+	}
+} while (ldclose(ldptr) == \s-1FAILURE\s+1 );
+.EE
+.PP
+If the value of
+.I oldptr
+is not
+.BR \s-1NULL\s+1\*S ,
+.PN ldaopen
+opens
+.I filename
+anew and allocates and initializes a new
+.B \s-1LDFILE\s+1
+structure, copying the
+fields from
+.IR oldptr .
+The 
+.PN ldaopen
+function returns a pointer to the new
+.BR \s-1LDFILE\s+1 " structure."
+This new pointer is independent of the old pointer,
+.IR oldptr .
+The two pointers can be used concurrently to read separate parts of
+the object file.
+For example,
+one pointer can be used to step sequentially through the relocation 
+information while the other is used to read indexed symbol table entries.
+.PP
+The
+.PN ldopen
+and
+.PN ldaopen
+functions open
+.I filename
+for reading.
+If
+.I filename
+cannot be opened or if memory for the
+.B \s-1LDFILE\s+1
+structure cannot be allocated,
+both functions return
+.SM \fBNULL\fR.
+A successful open does not ensure that the given file is a common object
+file or an archived object file.
+\}
+.PP
+The 
+.PN ldopen
+function causes the symbol table header and file descriptor 
+table to be read.
+Further access, using 
+.I ldptr,
+causes other appropriate sections of the symbol table to be read 
+(for example, if you call 
+.PN ldtbread, 
+the symbols or externals are read).  To force sections for each symbol table in
+memory, call 
+.PN ldreadst 
+with \fIST_P*\fR constants or'ed together 
+from \fIst_support.h\fR.
+.SH See Also
+fopen(3s), ldclose(3x), ldfcn(5)

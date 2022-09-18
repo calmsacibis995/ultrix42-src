@@ -1,0 +1,168 @@
+.TH snmpext 3n
+.SH Name
+snmpextregister, snmpextgetreq, snmpextrespond, snmpexterror \- 
+library routines available for building the 
+Extended ULTRIX SNMP Agent (Extended Agent)
+.SH Syntax
+.nf
+.B #include <protocols/snmp.h>
+.B #include <protocols/snmperrs.h>
+
+struct objident {
+.ta .5i 1.5i 3i
+	short	ncmp;	/* number of components */
+	unsigned long	cmp[SNMPMXID];	/* components */
+};
+
+struct snmpareg {
+	short	oidtype;	/* object id type */
+	objident	oid;	/* object id/*
+};
+
+struct snmparspdat {
+	short	type;	/* response data type */
+	short	octets;	/* number of octets in response data */
+	char	*rspdat;	/* response data */
+};
+
+.B snmpextregister(\fIreg, community\fP)
+.B struct snmpareg *\fIreg\fP;
+.B char *\fIcommunity\fP;
+
+.B snmpextgetreq(\fIreqoid, reqinst\fP)
+.B objident *\fIreqoid\fP;
+.B objident *\fIreqinst\fP;
+
+.B snmpextrespond(\fIreqoid, rspinst, rspdat\fP)
+.B objident *\fIreqoid\fP;
+.B objident *\fIrspinst\fP;
+.B struct snmparspdat *\fIrspdat\fP;
+
+.B snmpexterror(\fIerror\fP)
+.B long \fIerror\fP;
+.fi
+.SH Description
+.PP
+The following library routines are available 
+for building the Extended Agent:
+.IP snmpextregister 5
+.NXR "snmpext" "library routines"
+Used to register the Extended Agent's Management Information Base
+(MIB) to the ULTRIX SNMP Agent (Agent).  The
+.I reg
+parameter is provided by the caller with the object identifiers to be
+registered. The 
+.I community
+parameter is provided by the caller with the community name
+(a null-terminated string).
+.IP
+.ne 3
+This library routine waits for a registration confirmation from
+the Agent.  The process is blocked until the confirmation arrives.
+When the confirmation arrives, the routine returns the status of the
+registration.
+.IP
+The program issues this call before any other Extended SNMP
+Library calls.  It does this because the
+.PN snmpextregister
+library routine creates a UNIX
+domain socket to the Agent on behalf of the caller.
+.PP
+.IP snmpextgetreq 5
+Used to receive a request for a MIB variable from
+the Agent.  If there is no outstanding request from the Agent, the process
+is blocked until a request arrives from the Agent.
+.IP
+When the Extended Agent receives a request from the Agent, the
+.I reqoid
+parameter contains the object identifier for the requested variable.
+The
+.I reqinst
+parameter contains the object instance identifier for the requested
+variable.  If the request does not contains an object instance, the
+.I reqinst->ncmp
+record contains a zero.
+.PP
+.IP snmpextrespond 5
+Used to return the requested variable to the Agent.  The
+.I reqoid
+parameter is the object identifier from the
+.PN snmpextgetreq
+library call. The
+.I rspinst
+parameter is the object instance associated with the
+returning variable.  If there is no object instance associated with
+the returning variable, a null parameter must be supplied.  The
+.I rspdat
+parameter is the returning variable.
+.IP
+Note that the Agent maintains a configurable timer
+for outstanding requests to the Extended Agent.
+Therefore, the Extended Agent must be 
+able to respond within the Agent's timeout interval in
+order to prevent 
+a premature timeout in the Agent.
+.IP
+See the 
+.PN /etc/snmpd.conf
+file for your system's default timeout value.
+.IP snmpexterror 5
+Used to return an error to the Agent.  The
+.I error
+parameter is the error code to be returned to the Agent.
+The error code is one of the following:
+.IP
+NOERR\(emsuccessful SNMP
+.I get-next-request end-of-table.  
+This
+happens when the requested instance does not exist.
+.IP
+NOSUCH\(emUnknown requested object identifier.
+.IP
+GENERRS\(emGeneric error.
+.IP
+BADVAL\(emBad variable value.
+.SH Restrictions
+For the 
+.PN snmpextregister
+routine, the object identifier must have the prefix
+1.3.6.1 to be registered.  If it does not, the registration is
+rejected.
+.SH Return Values
+If an error occurs, a negative value is returned.
+.\"
+.SH Diagnostics
+.TP 15
+[BADVERSION]
+Bad or obsolete protocol version
+.TP 15
+[BINDERR]
+Failed to bind the socket
+.TP 15 
+[GENSUC] 
+MIB successfully registered
+.TP 15
+[NOSOCK]
+Socket does not exist
+.TP 15
+[NOSVC] 
+MIB registration was rejected
+.TP 15
+[PKTLENERR]
+Maximum size message exceeded or community name is too large
+.TP 15
+[RCV_ERR]
+Reception failed
+.TP 15
+[SND_ERR]
+Transmission failed
+.SH Files
+.TP 20
+.PN /etc/snmpd.conf
+SNMP configuration file
+.SH See Also
+.\" Other ULTRIX documents
+.\" Italize the names of books as follows
+snmpd.conf(5n), snmpd(8n), snmpsetup(8n)
+.br
+.I Guide to Network Programming

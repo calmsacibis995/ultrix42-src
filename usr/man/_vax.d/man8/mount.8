@@ -1,0 +1,147 @@
+.\" SCCSID: @(#)mount.8	7.1	4/26/90
+.TH mount 8
+.SH Name
+mount, umount \- mount or unmount file systems
+.SH Syntax
+\fB/etc/mount\fR [ \fIoptions\fR ] [ \fIdevice\fR ] [ \fIdirectory\fR ]
+.PP
+\fB/etc/umount\fR [ \fIoptions\fR ] [ \fIdevice\fR ] [ \fIdirectory\fR ]
+.SH Description
+.NXR "mount command (general)"
+.NXR "umount command (general)"
+.NXA "mount command (general)" "mount command (NFS)"
+.NXA "mount command (general)" "ufs_mount command"
+.NXAM "mount command (general)" "fstab file"
+.NXR "file system" "mounting"
+.NXA "file system" "NFS file system"
+.NXA "file system" "UFS file system"
+This is a general description of the 
+.PN mount 
+command.
+Additional 
+.PN mount 
+descriptions are provided to 
+define the 
+.PN mount
+syntax and options for the NFS and UFS file systems.
+.PP
+Each invocation of the
+.PN mount
+command announces to the system that a file system
+is present on the device \fIdevice\fR.
+The file system may be local or remote.
+File \fIdirectory\fR
+must exist as a directory file.
+It becomes the name of the newly mounted file system root.
+.PP
+If invoked without arguments,
+.PN mount
+prints the list of mounted file systems.
+.PP
+Physically write-protected disks and magnetic tape file
+systems must be mounted read-only
+or an error will occur at mount time.
+.PP
+General users can only mount file systems with certain restrictions.
+For example, the user,
+other than the superuser,
+performing the mount must own the directory \fIdirectory\fR.
+Furthermore, no users other than the superuser can execute
+.PN setuid
+or
+.PN setgid
+programs on the mounted file systems.
+In addition, users other than the superuser cannot access block or special
+character devices such as
+.PN rra0g
+on the mounted file systems.
+.PP
+The 
+.PN umount
+command announces to the system that the removable
+file system previously mounted on the specified directory
+is to be removed.
+Only the person who mounted a particular file system or the
+superuser can unmount the file system again.
+.SH Options
+.TP 12
+.B \-a
+Reads the file
+.PN /etc/fstab
+and mounts, or unmounts, all file systems listed there.
+.TP 12
+.B \-f
+Fast unmount.
+The
+.PN \-f
+option has no meaning for local file systems and directories.
+However,
+for remote file system types (such as NFS), the
+.PN \-f
+option causes the client to unmount the remotely mounted file systems
+and directories without notifying the server.
+This can avoid the delay of waiting for acknowledgment
+from a server that is down.
+.TP 12
+\fB\-o\fR \fIoptions\fR
+Specifies
+a string that is passed to the kernel and used by
+the specific file system's mount routine in the kernel.
+For specific options,
+refer to the file system-specific 
+.PN mount 
+description, such as 
+.MS mount 8nfs .
+.TP 12
+.B \-r
+Indicates that the file system
+is to be mounted read only. To share a disk, each host must mount 
+the file system with the 
+.B \-r
+option. 
+.TP 12
+\fB\-t\fR \fItype\fR
+Specifies the type of file system is being mounted.
+When used with the 
+.PN \-a
+option, the
+.PN \-t
+option mounts all file systems of the given type found in
+the
+.PN /etc/fstab
+file.
+For specific file system types,
+refer to the file system-specific
+.PN mount
+description,
+such as 
+.MS mount 8nfs .
+.TP 12
+.B \-v
+Tells what did or did not happen.
+(Verbose flag)
+.PP
+The options for
+.PN umount
+are:
+.TP 12
+.B \-a
+Unmounts all mounted file systems.
+It may be necessary to execute
+.PN umount
+.PN \-a
+twice to 
+accomplish unmounting of all mounted file systems.
+.TP 12
+.B \-v
+Tells what did or did not happen.
+(Verbose flag)
+.SH Restrictions
+.NXR "mount command (general)" "restricted"
+Mounting corrupted file systems will crash the system.
+.SH Files
+.TP 15
+.PN /etc/fstab
+File systems information table
+.SH See Also
+getmnt(2), mount(2), fstab(5), fsck(8), mount(8nfs), mount(8ufs)

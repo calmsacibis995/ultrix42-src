@@ -1,0 +1,79 @@
+# @(#)rc.local	4.2	(ULTRIX)	1/25/91
+/bin/hostname myname
+#/etc/ifconfig HDWR `/bin/hostname` broadcast NETNUM.0 netmask 255.0
+/etc/ifconfig lo0 localhost
+#/etc/bscconfig dup0 bsc 1
+#/etc/bscconfig dpv0 bsc 1
+echo -n 'check quotas: '					>/dev/console
+	/etc/quotacheck -a
+echo 'done.'							>/dev/console
+/etc/quotaon -a
+	
+rm -f /tmp/t1 /tmp/t2
+/usr/ucb/strings /vmunix | grep '(Rev' >/tmp/t1
+if test -s /tmp/t1
+then
+	cp /tmp/t1 /tmp/t2
+	ed - /tmp/t2 >/dev/null <<%
+	1s/Sys/\\
+.
+	2d
+	w
+	q
+%
+	VERS=`cat /tmp/t2`
+	ed - /etc/gettytab >/dev/null <<%
+	/default:/
+	/^ULTRIX/
+.c
+$VERS\\
+.
+	w
+	q
+%
+	if test -f /usr/etc/uwsvers
+	then
+		echo `/usr/etc/uwsvers -q` >>/tmp/t1
+	fi
+	grep -v '(Rev' /etc/motd >>/tmp/t1
+	cp /tmp/t1 /etc/motd
+	rm -f /tmp/t1
+fi
+sync
+# to save error log buffer only, use savecore -e 
+if [ "$DISKLESS" ]
+then
+	/etc/savecore -f /var/adm/crash/vmcore /var/adm/crash 	>/dev/console
+else
+	/etc/savecore /var/adm/crash				>/dev/console
+fi
+#
+# Check and save snapshot files if they are valid (VAX 8600/8650 only)
+#
+#[ -f /etc/snapcopy ] && {
+#	/etc/snapcopy /usr/adm/snap				>/dev/console
+#}
+#[ -f /etc/routed ] && {
+#	/etc/routed & echo 'routed'				>/dev/console
+#}
+echo -n 'local daemons:'					>/dev/console
+[ -f /etc/syslog ] && {
+	/etc/syslog & echo -n ' syslog'				>/dev/console
+}
+
+[ -f /usr/lib/sendmail ] && {
+	(cd /usr/spool/mqueue; rm -f lf*)
+	/usr/lib/sendmail -bd -q1h -om& echo -n ' sendmail'	>/dev/console
+}
+# Restore PSEUDO terminal lines to root ownership and 666 permissions.
+# System Administrators may want to customize this for their own needs.
+/etc/chown root /dev/tty[p-u]*; /bin/chmod 666 /dev/tty[p-u]*
+echo '.'							>/dev/console
+#
+# Removing Opser remnant files
+#
+echo 'Removing remnant Opser files' > /dev/console
+rm -f /etc/opseractive
+rm -f /etc/remoteopser
+rm -f /etc/sdnologin
+

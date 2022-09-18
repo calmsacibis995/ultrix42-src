@@ -1,0 +1,97 @@
+.\" SCCSID: @(#)nsquery.1	8.1	9/11/90
+.\" Written by liza sanford-crane  (2/29/88)
+.\" Updated for v4.0 by nolan ring (6/27/89)
+.\" Updated to include editorial comments by jeff mandell (10/31/89)
+.\"  (the list of files included here also appears in nslookup (1)
+.\"   resolver (3), resolver (5), and named - the descriptions of the
+.\"   files must be changed in those ref pages to be like this) 
+.\" Re-edited after meeting with Dave S. re: format (jm 11/8/89)
+.TH nsquery 1
+.SH Name
+nsquery \- name server query command
+.SH Syntax
+.B /usr/ucb/nsquery
+[
+.B lookup
+]
+[
+.I host
+]
+[
+.I server
+]
+.SH Description
+.NXR "nsquery command"
+The
+.PN nsquery
+command provides an interface to obtain host
+name and address information.
+.PP
+If you specify \fIhost\fR, the 
+.PN nsquery
+command obtains information about the specified host. If no host is
+specified, the
+.PN nsquery
+command obtains information about the local host system.
+.PP
+If you specify \fIserver\fR, the
+.PN nsquery
+command queries the BIND server that you specify. If you do not specify
+a server, the 
+.PN nsquery
+command queries the default BIND server.
+.SH Options    
+.IP lookup 8 
+Retrieves the host name, Internet Protocol (IP) address, and aliases
+of the specified host.
+If no host or server is specified,
+the
+.PN nsquery
+command obtains information about the local system
+from the default BIND server.
+.IP 
+If you do specify the 
+.B lookup
+option, the 
+.PN nsquery
+command obtains the information about the BIND server and host
+specified (or their defaults).
+If the system from which you issue the
+.PN nsquery
+command is a BIND server,
+and you do not specify the
+.B lookup
+option,
+information about only that server is retrieved.
+.SH Files
+./" the list of files below is also mentioned in these ref pages:
+./" nslookup(1), resolver(3), resolver(5), and named - the descriptions
+./" of these files must be changed in those ref pages       (JM 10/31)
+.TP 20
+.PN /var/dss/namedb
+Directory containing BIND server data file 
+.TP 20
+.PN /var/dss/namedb/named.boot	
+BIND server boot file
+.TP 20
+.PN /var/dss/namedb/hosts.db
+Host database file containing name to address mapping for BIND primary
+server 
+.TP 20
+.PN /var/dss/namedb/hosts.rev
+Host database file containing address to name mapping for BIND primary
+server 
+.TP 20
+.PN /var/dss/namedb/named.local	
+Local host database file containing address to name mapping for BIND
+server 
+.TP 20
+.PN /var/dss/namedb/named.ca	
+BIND server cache file
+.TP 20
+.PN /etc/resolv.conf	
+BIND data file
+.SH See Also
+nslookup(1), resolver(3), resolver(5), named(8)
+.br
+\fIGuide to the BIND/Hesiod Service\fP

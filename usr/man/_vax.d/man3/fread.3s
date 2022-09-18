@@ -1,0 +1,66 @@
+.\" SCCSID: @(#)fread.3s	8.1	9/11/90
+.TH fread 3s
+.SH Name
+fread, fwrite \- buffered binary input/output
+.SH Syntax
+.B #include <stdio.h>
+.nf
+
+.B size_t fread\^(\fIptr, size, nitems, stream\fP)
+.B void *\fIptr\fP;
+.B size_t \fIsize\fP, \fInitems\fP;
+.B FILE *\fIstream\fP;
+
+.B size_t fwrite\^(\fIptr, size, nitems, stream\fP)
+.B void *\fIptr\fP; 
+.B size_t \fIsize, nitems\fP; 
+.B FILE *\fIstream\fP;
+.fi
+.SH Description
+.NXR "fread subroutine"
+.NXR "fwrite subroutine"
+.NXR "stream" "reading"
+.NXR "stream" "appending"
+The
+.PN fread
+function reads into a block beginning at
+.IR ptr ,
+.I nitems
+of data of the size \fIsize\fP (usually sizeof 
+.IR *ptr )
+from the named input
+.IR stream .
+It returns the number of items actually read.
+.PP
+If
+.I stream
+is
+.B stdin
+and the standard output is line buffered, then any partial output line
+will be flushed before any call to
+.MS read 2
+to satisfy the
+.PN fread .
+.PP
+The
+.PN fwrite
+function appends, at most,
+.I nitems
+of data of the size \fIsize\fP (usually sizeof
+.IR *ptr )
+beginning at
+.I ptr
+to the named output
+.IR stream .
+It returns the number of items actually written.
+.SH Return Values
+The
+.PN fread
+and
+.PN fwrite
+functions return
+0
+upon end of file or error.
+.SH See Also
+read(2), write(2), fopen(3s), getc(3s), gets(3s),
+printf(3s), putc(3s), puts(3s), scanf(3s)

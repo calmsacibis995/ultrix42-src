@@ -1,0 +1,618 @@
+.TH crash 8
+.SH Name
+crash \- examine system images
+.SH Syntax
+.B /usr/bin/crash
+[ \fIsystem\fR ] [ \fInamelist\fR ]
+.SH Description
+.NXR "crash utility"
+The
+.PN crash
+utility is an interactive program that lets you examine the 
+core image of the operating system.  This utility has 
+facilities for interpreting
+and formatting the various control structures
+in the system and certain miscellaneous
+functions that are useful when perusing a dump.
+.PP
+The arguments to the
+.PN crash
+utility are the file name where the
+.I system
+image
+can be found and
+a
+.I namelist
+file to be used
+for symbol values.
+.PP
+The default values are
+.PN /dev/mem
+and
+.PN /vmunix ;
+hence, the
+.PN crash
+utility specified without arguments can be used to examine an
+active system.
+If a
+.I system
+image file is given,
+it is assumed to be a system core dump and
+the default process is set to be that of the
+process running at the time
+of the crash.
+This is determined by a value
+stored in a fixed location
+by the dump mechanism.
+.SS Commands
+Use the following input to the 
+.PN crash 
+utility:
+.PP
+.B command 
+[ \fIoptions\fR ] [ \fIstructures\fR ]
+.PP
+If used, 
+.I options
+modify the format of the printout.
+If a specific structure element is not specified,
+all valid entries are used.  For example,
+.B "proc 12 15 3"
+prints only process table slots
+12, 15, and 3,
+but
+.B proc
+prints the entire process table
+in standard format.
+.PP
+In general, those commands that perform 
+\s-1I\s+1/\s-1O\s+1
+with addresses assume
+hexadecimal on 32-bit
+machines and octal on 16-bit machines.
+.PP
+The commands include the following:
+.TP
+\fBuser\fR [ \fIprocess table entry\fR ] [ *\fIproc address\fR ] [ #\fIpid\fR ]
+Aliases:
+.PN uarea ,
+.PN u_area ,
+.PN u .
+.br
+Prints the user structure of the named process
+as determined by the information contained in the process table entry.
+If an entry number is not given, the information from the last 
+executing process is printed.
+Swapped processes produce an error message since their uareas are swapped.
+.TP 
+\fBufile\fR [ \fIprocess table entry\fR ] [ *\fIproc address\fR ] [ #\fIpid\fR ]
+Prints the open file table for the given process.
+.TP 
+\fBtrace\fR  [ \- ] [ \fIprocess table entry\fR ] [ *\fIproc address\fR ] [ #\fIpid\fR ]
+Aliases:
+.PN t .
+.br
+Generates a kernel stack trace of a process.
+The process is either a process slot number, an address of process slot, or
+the running process.
+If the process is not running, the trace begins at the 
+.PN pcb .
+If an entry number is not given, the information from the last executing process
+will be printed.  It is not possible to trace the executing process on a
+running system.
+Using the \- flag allows the registers and variables for each stack frame
+to be dumped.
+.TP 
+\fBstack\fP [ \fIprocess table entry\fR ] [ *\fIproc address\fR ] [ #\fIpid\fR ]
+Aliases :
+.PN s ,
+.PN stk .
+.br
+Generates a kernel stack dump of a process.  This is an unformatted display
+of the kernel stack.  
+.TP
+\fBproc\fP [ \fB\-r\fP] [ \fIprocess table entry\fR ] [ *\fIproc address\fR ] [ #\fIpid\fR ]
+Aliases:
+.PN p .
+.br
+Formats the process table.
+The
+.B \-r
+option causes only runnable processes to be printed.
+.TP
+\fBproclock\fP [ \fB\-r\fP] [ \fIprocess table entry\fR ] [ *\fIproc address\fR ] [ #\fIpid\fR ] 
+Shows the SMP sleep locks held by a non-running process.  Same optional
+arguments as \fBproc\fP.
+.TP
+\fBpcb\fP [ \fIprocess table entry\fR ] [ *\fIproc address\fR ] [ #\fIpid\fR ]
+Prints the process control block of the current process.
+The process control block is a part of the user area
+(\s-1VAX\s+1\&en only).
+If no entry number is given, the information from the last executing process
+will be printed.
+.TP
+\fBps\fP [ \fIprocess table entry\fR ] [ *\fIproc address\fR ] [ #\fIpid\fR ]
+Prints the process slots, process id's, and process names for all
+processes.
+.TP
+\fBpcb\fP [ \fIprocess table entry\fR ] [ *\fIproc address\fR ] [ #\fIpid\fR ]
+Prints the process control block for the given process.
+.TP
+\fBppte\fP [ \fIprocess table entry\fR ] [ *\fIproc address\fR ] [ #\fIpid\fR ]
+Prints the pte's associated with the given process.
+.TP
+\fBspt\fP
+Dumps the system page table.
+.TP 
+\fBcmap\fP <\fIpage frame number\fR>
+Prints the memory freelist or the cmap for the given PFN.
+.TP
+\fBcmap\fP \-i \fIindex\fR
+Prints the core map for the given coremap index.
+.TP
+\fBcmap\fP \-h \fIindex\fR
+Prints the core maps for the given hash starting at index.
+.TP
+\fBcmap\fP \-b \fIblock\fR
+Prints the core maps hashed on the given block.
+.TP
+\fBcmap\fP \-a \fIat\fR
+Prints the core map at the given address.
+.TP
+\fBgnode\fP [ \fB\-\fP ] [ \fIgnode table entries\fR ] [ *\fIgnode address\fR ]
+Aliases:
+.PN gno ,
+.PN g .
+.br
+Formats the gnode table.
+.TP
+\fBgnode\fP \-maj <\fImajor number\fR>
+Formats all gnodes with the given major number.
+.TP
+\fBgnode\fP \-min <\fIminor number\fR>
+Formats all gnodes with the given minor number.
+.TP
+\fBgnode\fP \-fs <\fImount slot number\fR>
+Formats all gnodes for a given file system slot.
+.TP
+\fBgnode\fP \-gno <\fIgnode number\fR>
+Formats all gnodes with the given gnode number.
+.TP
+\fBgnode\fP \-uid <\fIuser id\fR>
+Formats all gnodes owned by the given uid.
+.TP
+\fBgnode\fP \-gid <\fIgroup id\fR>
+Formats all gnodes owned by the given gid.
+.TP
+\fBgnode\fP \-lmod <\fIfile permissions\fR>
+Formats all gnodes with the given protection.  The command \fBgnode \-lmod 777\fP finds all gnodes that allow read/write/execute permission to every one.
+.TP
+\fBgnode\fP \-hmod <\fIfile type\fR>
+Formats all gnodes with the given file type.  \fBgnode \-hmod 2\fP 
+find all gnodes that are character special files.
+.TP
+\fBgnode\fP \-amod <\fIfile modesfR>
+Formats all gnodes that match the given modes exactly.  The command
+\fBgnode \-amod 20777\fP finds all gnodes for character devices that
+allow read/write/execute permission to every one.
+.TP
+\fBgnode\fP \-all
+Displays a more extensive list of the gnodes contents.
+.TP
+\fBgnode\fP \-lock
+Shows the SMP lock contained in the gnode.
+.TP
+\fBgfree\fP
+Prints the list of all inactive gnodes.
+.TP
+\fBblock\fP [ \fB\-\fP ] [ \fIgnode table entries\fR ] [ *\fIgnode address \fR]
+Prints the gnode data block addresses.
+.TP
+\fBrnode\fP [ \fIgnode table entries\fR ] [ *\fIgnode address\fR ]
+Alias:
+.PN v .
+.br
+Prints the associated rnode values for gnodes that are remote (via NFS).
+.TP
+\fBfile\fP [ \fIfile table entries\fR ] [ *\fIfile address\fR ]
+Alias:
+.PN f .
+.br
+Formats the file table.
+.TP
+\fBcred\fP \fIaddress\fR
+Prints the credentials at the given address.
+.TP
+\fBcrred\fP \fIaddress\fR
+Verifies the references of a credential at the given address.
+.TP
+\fBcrcheck\fP
+Verifies all references to all credentials.
+.TP
+\fBmount\fP [ \-s ] [ \fImount table entries\fR ] [ *\fImount address\fR ]
+Aliases:
+.PN mnt ,
+.PN m .
+.br
+Formats the mount table.  The 
+.PN \-s 
+option gives a abbreviated format.
+.TP
+\fBfsdata\fP [ \fImount table entries\fR ] [ *\fImount address\fR ]
+Alias:
+.PN df .
+.br
+Prints the fsdata structure associated with a mount entry.
+.TP
+\fBmntinfo\fP [ \fImount table entries\fR ] [ *\fImount address\fR ]
+Alias:
+.PN mi .
+.br
+Prints the mntinfo data structure associate with an NFS file system.
+.TP
+\fBbuf\fP [ \- ] [ \fIbuffer headers\fR ] [ *\fIbuffer header address\fR ]
+Aliases:
+.PN hdr ,
+.PN bufhdr .
+.br
+Formats the system buffer headers.  By using the \- option, 
+all buffer headers (including ones marked invalid) are printed.
+.TP
+\fBbufgp\fP [ \fIgnode slots\fR ] [ *\fIgnode address\fR ] 
+Alias:
+.PN cache .
+.br
+Prints the buffer headers associated with the given gnode.
+.TP
+\fBbuflock\fP
+Prints the buffer headers on the locked list.
+.TP
+\fBbuflru\fP
+Prints the buffer headers on the lru list.
+.TP
+\fBbufage\fP
+Prints the buffer headers on the aged list.
+.TP
+\fBbufempty\fP
+Prints the buffer headers on the empty list.
+.TP
+\fBbuffer\fP [ \fIformat\fR ] [ \fIlist of buffers\fR ]
+Alias:
+.PN b .
+.br
+Prints the data in a system buffer
+according to
+.IR format .
+If
+.I format
+is omitted, the previous
+.I format
+is used.
+Valid formats include
+.PN decimal ,
+.PN octal ,
+.PN hex ,
+.PN character ,
+.PN byte ,
+.PN directory ,
+.PN gnode ,
+and
+.PN write .
+The last creates a file
+in the current directory (see the Files section)
+containing the buffer data.
+.TP
+\fBtext\fP [ \fItext table entries\fR ] [ *\fItext address\fR ]
+Aliases:
+.PN txt ,
+.PN x .
+.br
+Formats the text table.
+.TP
+\fBftext\fP
+Alias:
+.PN freet .
+.br
+Prints the list of free texts.
+.TP
+.B callout
+Aliases:
+.PN calls ,
+.PN call ,
+.PN c ,
+.PN timeout ,
+.PN time ,
+.PN tout .
+.br
+Prints all entries in the callout table.
+.TP
+\fBarp\fP [ \- ] [ \fIaddress\fR ]
+Prints the arp table.  The \- option prints the entire table.
+.TP
+\fBsocket\fP [ \fIfile slot\fR ] [ *\fIfile address\fR ]
+Prints the socket structure associated with the given file slot.
+.TP
+\fBtty\fP [ \- ] [ \fIprocess slot\fR ] [ *\fIproc address\fR ] [ #\fIpid\fR ]
+Alias:
+.PN term .
+.br
+Prints the terminal structure attached to a process.  The \- option allows
+for the raw, cannonical, and output clists.
+.TP
+\fBtty \fR\-clist
+Includes clists in display of the tty struct.
+.TP
+\fBtty \fR-addr \fIaddress\fR
+Prints the contents of a tty structure at the
+specified address.
+.TP
+\fBmap\fP [ \fImap names\fR ]
+Formats the named system map structures.
+.TP
+\fBnm\fP [ \fIsymbols\fR ]
+Prints the symbol value and type as found in the
+.I namelist
+file.
+.TP
+\fBts\fP [ \fItext addresses\fR ]
+Finds the closest text symbols to the given addresses.
+.TP
+\fBds\fP [ \fIdata addresses\fR ]
+Finds the closest data symbols to the given addresses.
+.TP
+\fBod\fP [ \fIsymbol name or address\fR ] [ \fIcount\fR ] [ \fIformat\fR ]
+Aliases:
+.PN dump ,
+.PN rd .
+.br
+Dumps
+.I count\^
+data values
+starting at the symbol value or address given
+according to
+.IR format .
+Allowable formats are
+.PN octal ,
+.PN longoct ,
+.PN decimal ,
+.PN longdec ,
+.PN character ,
+.PN hex ,
+or
+.PN byte .
+.TP
+\fBdis\fP \fIaddress\fR [ \fIaddress\fR ]
+Disassembles starting at the first address and continuing until the second
+address.  These addresses may be symbolic (that is, syscall+33).  
+.TP
+\fBstat\fP 
+Prints useful statistics pertaining to the buffer cache, dnlc, namei translation
+cache, and others.
+.TP
+\fBdupreq\fP 
+Displays the contents of the duplicate request cache.  This is useful in finding out the recent history of NFS requests made to the server.  
+.TP
+\fBmbuf\fP \fIaddress\fR
+Displays the 
+.PN mbuf 
+chain starting at the given address.
+.TP
+\fBinpcb\fP \-udp \-tcp
+Displays the 
+.PN inpcb 
+chain of the corresponding protocol, or both TCP and UDP
+if no protocol is specified.
+.TP
+\fBclient\fP 
+Displays the client table, which contains client handles used to 
+initiate rpc requests.
+.TP
+\fBsync\fP 
+Resynchronizes the proc, mount, gnode, buffer, file and other internal tables
+up to the current state of 
+.PN /dev/kmem .  
+This command is useful for looking at changing values
+in runing kernels. However, you should not use it when looking at
+.PN vmcore
+files.  
+.TP
+\fBsvcxprt\fP  \fIaddress\fR
+Prints the svcxprt structure located at address.
+.TP
+\fBscs
+Traverses data structures in the System Communications Services (SCS)
+tree and displays the contents of the data structures.
+.TP
+\fBscs \fR-cb \fIaddress\fR
+Displays the contents of an SCS connection block data structure at the
+specified address.
+.TP
+\fBscs \fR-cib \fIaddress\fR
+Displays the contents of an SCS connection information block data 
+structure at the specified address.
+.TP
+\fBscs \fR-pb \fIaddress\fR
+Displays the contents of an SCS path block data structure at the
+specified address.
+.TP
+\fBscs \fR-pib \fIaddress\fR
+Displays the contents of an SCS path information block data structure 
+at the specified address.
+.TP
+\fBscs \fR-sb \fIaddress\fR
+Displays the contents of an SCS system block data structure at the
+specified address.
+.TP
+\fBscs \fR-sib \fIaddress\fR
+Displays the contents of an SCS system information block data structure
+at the specified address.
+.TP
+\fBscsi
+Prints SCSI controller information.
+.TP
+\fBscsi \fR-target
+Prints SCSI target information.
+.TP
+\fBscsi \fR-devtab
+Prints SCSI devtab information.
+.TP
+\fBscsi \fR-trans
+Prints SCSI transfer information.
+.TP
+\fBscsi \fR-cmd
+Prints SCSI message or command data.
+.TP
+\fBscsi \fR-bbr
+Prints SCSI Bad Block Replacement data.
+.TP
+\fBscsi \fR-error
+Prints SCSI error information.
+.TP
+\fBscsi \fR-sii
+Prints SCSI SII information.
+.TP
+\fBscsi \fR-dct
+Prints SCSI DCT statistics.
+.TP
+\fBscsi \fR-spin
+Prints SCSI SPIN statistics.
+.TP
+\fBscsi \fR-all
+Prints all SCSIBUS information.
+.TP
+\fBlock\fP  [-all] \fIaddress\fR
+Prints the SMP lock structure located at address.  The \f(CWall\fP flag
+displays all global SMP locks.
+.TP
+\fBmscp
+Traverses both the mscp disk and tape subsystems, and
+prints the data structures for class blocks,
+connection blocks, unit blocks, and active request
+blocks.
+.TP
+\fBmscp \fR-disk
+Traverses the mscp disk subsystem and prints the 
+data structures for the mscp class block, mscp
+connection blocks, mscp unit blocks, and active
+request blocks.
+.TP
+\fBmscp \fR-tape
+Traverses the tmscp tape subsystem and prints the 
+data structures for the tmscp class block, tmscp
+connection blocks, tmscp unit blocks, and active
+request blocks.
+.TP
+\fBmscp \fR-config
+Traverses both the mscp disk and tape subsystems, and
+display the system configuration.  This is done by
+printing summary information from the class,
+connection, and unit blocks.
+.TP
+\fBmscp \fR-connb \fIaddress\fR
+Prints the contents of an mscp connection block
+at the specified address.
+.TP
+\fBmscp \fR-classb \fIaddress\fR
+Prints the contents of an mscp class block
+at the specified address.
+.TP
+\fBmscp \fR-unitb \fIaddress\fR
+Prints the contents of an mscp unitb block
+at the specified address.
+.TP
+\fBmscp \fR-reqb \fIaddress\fR
+Prints the contents of an mscp request block
+at the specified address.
+.TP
+\fBmscp \fR-dtable
+Displays all the elements of the mscp disk unit table.
+Unused elements of the array will be specified as NULL.
+.TP
+\fBmscp \fR-ttable
+Displays all the elements of the tmscp tape unit table.
+Unused elements of the array will be specified as NULL.
+.TP
+.B !
+Escapes to the shell.
+.TP
+\fB#\fP[ \fIhistory\fR ]
+Repeats the last command.  If a number is given (that is, \fB#5\fP), that
+command number is re-executed.
+.TP
+\fB#h\fP
+Alias:
+.PN history ,
+.br
+Shows the history list.
+.TP
+.B q
+Exits from
+.PN crash .
+.TP
+.B ?
+Prints a synopsis of commands.
+.SS Aliases
+There are built-in aliases for many of the
+.I formats
+as well as those listed for the commands.
+Some of them are:
+.PD 0
+.RS
+.TP 12
+byte
+b.
+.TP
+character
+char, c.
+.TP
+decimal
+dec, e.
+.TP
+directory
+direct, dir, d.
+.TP
+hexadecimal
+hexadec, hex, h, x.
+.TP
+gnode
+gno ,
+g.
+.TP
+longdec
+ld, \s-1D\s+1.
+.TP
+longoct
+lo, \s-1O\s+1.
+.TP
+octal
+oct, o.
+.TP
+write
+w.
+.RE
+.PD
+.SH Restrictions
+Many of the flags are abbreviated making them difficult
+to interpret.  A source listing of the system header files
+would be helpful when using the
+.PN crash
+utility.
+.PP
+Examing the stack of the current process on a
+running system and procs running at the time of a crash
+does not work.
+.SH Files
+.TP 22
+.PN /usr/include/sys/\(**.h
+Header files for table and structure info
+.TP
+.PN /dev/mem
+Default system image file
+.TP
+.PN /vmunix
+Default namelist file
+.TP
+.PN buf.#
+Files created containing buffer data
+.SH See Also
+mount(8), nm(1), ps(1), sh(1), stty(1), pstat(8)

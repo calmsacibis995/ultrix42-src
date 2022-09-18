@@ -1,0 +1,77 @@
+.\" SCCSID: @(#)file.1  3.1   1/13/8
+.TH file 1
+.SH Name
+file \- determine file type
+.SH Syntax
+.B file
+[
+.B \-c
+] [
+.B \-f
+ffile] [
+.B \-m
+mfile]
+\fIfilename\fR ...
+.SH Description
+.NXR "file command (general)"
+.NXR "file" "determining extension"
+The
+.PN file
+command performs a series of tests on each 
+.I filename
+argument
+in an attempt to classify it.
+If an argument appears to be ASCII, the
+.PN file
+command
+examines the first 1024 bytes
+and tries to guess its language.
+.PP
+For character special files, part of this classification is information
+about which devices the system shows as active.
+In particular, device-specific information such as controller type
+and unit, device type and unit, and status (offline, write locked,
+density, errors)
+is returned. The general categories currently implemented are disk, tape,
+and terminal devices. The supported terminal devices include
+Local Area Terminals (LAT)
+but not Local Area Network (LAN) pseudo-terminals.
+.PP
+The
+.PN file
+command
+uses the file
+.PN /usr/lib/file/magic
+to identify files that have some sort of
+.I magic
+.IR number .
+A
+.I magic number
+is any numeric or string constant that identifies the file
+containing the constant.
+Commentary at the beginning of
+.PN /usr/lib/file/magic
+explains its format.
+.SH Options
+.IP \-c 5
+Checks the magic file for format errors by printing the internal
+representation of the magic file.
+No file typing is done under
+.B \-c.
+.IP \-f
+Interprets the following argument to be a file containing the
+names of the files to be examined.
+.IP \-m
+Instructs
+.I file
+to use an alternate magic file.
+.SH Restrictions
+It often does a poor job of distinguishing
+C programs, shell scripts, English text, and ASCII text.
+.PP
+It does not recognize many programming languages, including Modula,
+Pascal, and Lisp.
+.SH Files
+/usr/lib/file/magic
+.SH See Also
+magic(5)

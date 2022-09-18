@@ -1,0 +1,545 @@
+# @(#)xbia.db	4.1   (ULTRIX)   1/3/91
+
+sseg
+id CDS
+name xbia_cds
+doc "specific registers for the xbia and xvib for vme"
+label "xbia specific registers"
+elements
+    vdcr vesr vfadr vicr vvor vevr dtype xbe xfadr0 arear aesr aimr aivintr adg1 
+
+sitem
+name vdcr
+type REGISTER
+class COMPOSITE
+size 4
+label "VDCR"
+display nil
+doc "device config register"
+map 
+    field
+    class integer
+    size 8
+    doc "device type"
+    display hex
+    label "device type"
+    map nil
+    field
+    class integer
+    size 4 
+    doc "revision"
+    display decimal
+    label "revision"
+    map nil
+    field
+    class coded
+    size 2
+    doc "ipl level"
+    label nil
+    map
+ 	0 "IPL14"
+ 	1 "IPL15"
+ 	2 "IPL16"
+ 	3 "IPL17"
+    field
+    class coded
+    size 2
+    label nil
+    doc "serclk period select"
+    map
+	0 "32MHz"
+ 	1 "16MHz"
+	2 "8MHz"
+	3 "4MHz"
+    field
+    class coded
+    size 3
+    doc "transaction timeout period"
+    label "Transaction timeout: "
+    map
+	0 "timeouts disabled"
+	1 "xxx mS"
+	2 "yyy mS"
+	3 "zzz mS"
+	4 "aaa uS"
+	5 "bbb uS"
+	6 "ccc uS"
+  	7 "ddd nS"
+    field
+    class coded
+    size 3
+    doc "arbitration timeout period"
+    label "Arbitration timeout: "
+    map
+	0 "timeouts disabled"
+	1 "xxx mS"
+	2 "yyy mS"
+	3 "zzz mS"
+	4 "aaa uS"
+	5 "bbb uS"
+	6 "ccc uS"
+  	7 "ddd nS"
+    field
+    class filler
+    size 1
+    doc "reset xvib"
+    label nil
+    map nil
+    field 
+    class filler
+    size 1
+    doc "clear sysclk"
+    label nil
+    map nil
+    field
+    class coded
+    size 2
+    doc "bus request level select"
+    label nil
+    map
+	0 "Bus Request Level 0"
+	1 "Bus Request Level 1"
+	2 "Bus Request Level 2"
+	3 "Bus Request Level 3"
+    field 
+    class coded
+    size 2
+    doc "page size mode"
+    label nil
+    map
+	0 "4Kbyte page size"
+	1 "8Kbyte page size"
+   	2 "16Kbyte page size"
+	3 "Undefined"
+    field 
+    class coded
+    size 1
+    doc "vesr error summary"
+    label nil
+    map
+	1 "VESR ERROR SUMMARY" 
+    field
+    class coded 
+    size 2
+    doc "vme arbitration type select"
+    label nil
+    map
+	0 "Round robin arbitration (RRS)"
+	1 "Priority Arbitration (PRI)"
+	2 "Prioritized Round robin arbitration (PRS)"
+	3 "Single level arbitration (SGL)"
+    field 
+    class coded
+    size 1
+    doc "enable vme arbitration"
+    label nil
+    map
+	0 "XVIB installed in slot other than slot1"
+	1 "XVIB installed in slot1"
+
+sitem
+name vesr
+type REGISTER
+class COMPOSITE
+size 4
+label "VESR"
+display nil
+doc "error summary register"
+map 
+    field
+    class coded
+    size 4
+    doc "brn interrupt sent"
+    display nil
+    label nil
+    map
+	1 "BR4 interrupt sent"
+	2 "BR5 interrupt sent"
+	4 "BR6 interrupt sent"
+	8 "BR7 interrupt sent"
+    field 
+    class coded
+    size 7
+    doc "irqn interrupt pending" 
+    display nil
+    label nil
+    map 
+	1 "IRQ1 asserted"
+	2 "IRQ2 asserted"
+	4 "irq3 asserted"
+  	8 "irq4 asserted"
+	16 "irq5 asserted"
+	32 "irq6 asserted"
+	64 "irq7 asserted"
+    field 
+    class integer
+    size 1
+    doc "write"
+    label "VME WRITE: "
+    display hex
+    map nil
+    field
+    class integer
+    size 1
+    doc "ds0"
+    label "VME DS0: "
+    display hex
+    map nil
+    field
+    class integer
+    size 1
+    doc "ds1"
+    label "VME DS1: "
+    display hex
+    map nil
+    field
+    class integer
+    size 6
+    doc "vme address modifiers 0-5"
+    label "VME AM0-AM5: "
+    display hex
+    map nil
+    field
+    class integer
+    size 2
+    doc "bus grant level during timeout"
+    label "Bus Grant level: "
+    display hex
+    map nil
+    field
+    class coded
+    size 1 
+    doc "vme arbitration timeout"
+    label nil
+    display nil
+    map
+	1 "Arbitration timeout"
+    field
+    class coded
+    size 1 
+    doc "vme transaction timeout"
+    label nil
+    display nil
+    map 
+	1 "vme transaction timeout"
+    field
+    class coded
+    size 1 
+    doc "ibus receive parity error"
+    label nil
+    display nil
+    map
+ 	1 "ibus receive parity error" 
+    field
+    class coded
+    size 1 
+    doc "ibus transmit pe"
+    label nil
+    display nil
+    map
+	1 "ibus transmit parity error" 
+    field
+    class coded
+    size 1 
+    doc "vme transmit pe"
+    label nil
+    display nil
+    map
+	1 "vme transmit parity error" 
+    field
+    class filler
+    size 1 
+    doc "rmw error/write one to clear"
+    label nil
+    display nil
+    map nil
+    field
+    class filler
+    size 1 
+    doc "rmw error II"
+    label nil
+    display nil
+    map nil
+    field
+    class coded
+    size 1 
+    doc "interlock error"
+    label nil
+    display nil
+    map 
+ 	1 "interlock error"
+    field
+    class integer
+    size 1 
+    doc "berr"
+    label "berr"
+    display hex
+    map nil
+    field
+    class coded
+    size 1 
+    doc "swap ram pe"
+    label nil
+    display nil
+    map 
+	1 "swap ram parity error"
+
+sitem
+name vicr
+type REGISTER
+class COMPOSITE
+size 4
+label "VICR"
+display nil
+doc "interrupt config register"
+map 
+    field
+    class coded
+    size 1
+    doc "irq1 iack select"
+    display nil
+    label "irq1 iak: "
+    map 
+	0 "roak"
+	1 "rora"
+    field
+    class coded
+    size 1
+    doc "irq2 iack select"
+    display nil
+    label "irq2 iak: "
+    map
+	0 "roak"
+	1 "rora"
+    field
+    class coded
+    size 3
+    doc "irq3 interupt priority level/iack select"
+    display nil
+    label "irq3 : "
+    map
+	0 "br4 ipl14 roak"
+	1 "br4 ipl14 rora"
+	2 "br5 ipl15 roak"
+	3 "br5 ipl15 rora"
+	4 "br6 ipl16 roak"
+	5 "br6 ipl16 rora"
+	6 "br7 ipl17 roak"
+	7 "br7 ipl17 rora"
+    field
+    class coded
+    size 3
+    doc "irq4 interupt priority level/iack select"
+    display nil
+    label "irq4 : "
+    map
+	0 "br4 ipl14 roak"
+	1 "br4 ipl14 rora"
+	2 "br5 ipl15 roak"
+	3 "br5 ipl15 rora"
+	4 "br6 ipl16 roak"
+	5 "br6 ipl16 rora"
+	6 "br7 ipl17 roak"
+	7 "br7 ipl17 rora"
+    field
+    class coded
+    size 3
+    doc "irq5 interupt priority level/iack select"
+    display nil
+    label "irq5 : "
+    map
+	0 "br4 ipl14 roak"
+	1 "br4 ipl14 rora"
+	2 "br5 ipl15 roak"
+	3 "br5 ipl15 rora"
+	4 "br6 ipl16 roak"
+	5 "br6 ipl16 rora"
+	6 "br7 ipl17 roak"
+	7 "br7 ipl17 rora"
+    field
+    class coded
+    size 3
+    doc "irq6 interupt priority level/iack select"
+    display nil
+    label "irq6 : "
+    map
+	0 "br4 ipl14 roak"
+	1 "br4 ipl14 rora"
+	2 "br5 ipl15 roak"
+	3 "br5 ipl15 rora"
+	4 "br6 ipl16 roak"
+	5 "br6 ipl16 rora"
+	6 "br7 ipl17 roak"
+	7 "br7 ipl17 rora"
+    field
+    class coded
+    size 3
+    doc "irq7 interupt priority level/iack select"
+    display nil
+    label "irq7 : "
+    map
+	0 "br4 ipl14 roak"
+	1 "br4 ipl14 rora"
+	2 "br5 ipl15 roak"
+	3 "br5 ipl15 rora"
+	4 "br6 ipl16 roak"
+	5 "br6 ipl16 rora"
+	6 "br7 ipl17 roak"
+	7 "br7 ipl17 rora"
+    field 
+    class coded
+    size 1
+    doc "enable rmw error interupt"
+    display nil
+    label nil
+    map
+	1 "enable rmw error interrupt"
+    field 
+    class coded
+    size 1
+    doc "enable rmwII error interupt"
+    display nil
+    label nil
+    map
+	1 "enable rmw ii error interrupt"
+    field 
+    class coded
+    size 1
+    doc "enable interlock error interupt"
+    display nil
+    label nil
+    map
+	1 "enable interlock error interrupt" 
+    field
+    class coded
+    size 1
+    doc "enable vme transaction timeouts"
+    label nil
+    display nil
+    map
+	1 "enable vme transaction timeouts"
+    field
+    class coded
+    size 1
+    doc "enable vme arbitration transaction timeouts"
+    label nil
+    display nil
+    map
+	1 "enable vme arbitration transaction timeouts"
+    field
+    class coded
+    size 1
+    doc "an interrupt on the ibus or vme was detected"
+    label nil
+    display nil
+    map
+	1 "enable vme/ibus parity error interrupt"
+    field
+    class coded
+    size 1
+    doc "enable byte swap ram pe interrupt"
+    label nil
+    display nil
+    map
+	1 "enable byte swap ram parity error interrupt"
+    field
+    class filler
+    size 1
+    doc "filler"
+    label nil
+    display nil
+    map nil
+    field
+    class integer
+    size 7
+    doc "vme interrupt request level mask"
+    label "vme irq mask="
+    display hex
+    map nil
+ 
+sitem
+name vvor
+type REGISTER
+class COMPOSITE
+size 4
+label "VVOR"
+display nil
+doc "vector offset register"
+map 
+    field
+    class integer
+    size 4
+    doc "cpu ibus mask field"
+    display hex
+    label "cpu ibus mask ="
+    map nil
+    field 
+    class coded
+    size 1
+    doc "disable vme"
+    display nil
+    label nil
+    map
+	1 "disable vme"
+    field 
+    class coded
+    size 1
+    doc "diagnostic mode"
+    display nil
+    label nil
+    map
+	1 "diagnostic mode"
+    field 
+    class coded
+    size 1
+    doc " test fail"
+    display nil
+    label nil
+    map
+	1 "test fail"
+    field
+    class filler
+    size 1
+    doc "filler"
+    display nil
+    label nil
+    map nil
+    field 
+    class integer
+    size 8 
+    doc "xvib interrupt vector offset"
+    label "xvib interrupt vector offset: "
+    display hex
+    map nil
+
+sitem
+name vevr
+type REGISTER
+class COMPOSITE
+size 4
+label "VEVR"
+display nil
+doc "error vector register"
+map 
+    field
+    class filler
+    size 2
+    doc "filler"
+    display nil
+    label nil
+    map nil
+    field 
+    class integer
+    size 14
+    doc "xvib interrupt vector"
+    label "xvib interrupt vector: "
+    display hex
+    map nil
+    field
+    class integer
+    size 16
+    doc "xvib interupt dest mask"
+    label "xvib interrupt dest mask: "
+    display hex
+    map nil
+

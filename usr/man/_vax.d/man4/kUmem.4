@@ -1,0 +1,29 @@
+.\" SCCSID: @(#)kUmem.4	8.1	9/11/90
+.\" SCCSID: @(#)kUmem.4	8.1	9/11/90
+.TH kUmem 4 VAX
+.SH Name
+kUmem \- UNIBUS/Q-bus virtual memory interface
+.SH Description
+.NXR "kUmem special character file"
+.NXR "UNIBUS virtual memory image"
+.NXR "Q-bus virtual memory image"
+The
+.PN kUmem
+character special file is an image of the UNIBUS/Q-bus
+virtual memory of the computer.
+It can be used, for example, to examine or patch virtual addresses mapped
+to UNIBUS physical space.
+.PP
+Byte addresses in
+.PN kUmem
+are interpreted as virtual memory addresses.
+References to nonexistent locations cause errors to be returned.
+.SH Restrictions
+The
+.PN kUmem
+memory file is accessed one byte
+at a time.
+.SH Files
+.PN /dev/kUmem
+.SH See Also
+MAKEDEV(8)

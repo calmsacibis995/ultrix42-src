@@ -1,0 +1,110 @@
+.\" SCCSID: @(#)fsx.8	8.1	9/11/90
+.TH fsx 8 
+.SH Name
+fsx \- file system exerciser
+.SH Syntax
+.B /usr/field/fsx
+[
+.B \-h
+] [
+.BI \-o file
+.B ] [
+.BI \-t n
+.B ] [
+.BI \-f path
+.B ] [
+.BI \-p m
+.B ] 
+.SH Description
+.NXR "fsx exerciser"
+.NXR "file system" "testing"
+The 
+.PN fsx 
+exerciser exercises a file system by spawning up to
+250 (the default is 20) processes that create, open, write, close,
+open, read, validate, close, and unlink a test file.  These test
+files are created in 
+.PN /usr/field 
+(the default) unless the \fB\-f\fIpath\fR
+option is used. The exerciser will run 
+until 
+.CT C
+or \fBkill \-15\fI pid\fR is sent to the
+process. 
+.PP
+A logfile is made in 
+.PN /usr/field 
+for you to examine 
+and then remove. If there are errors in the logfile, make
+sure you check the 
+.PN /usr/adm/syserr/syserr.<hostname> 
+file, because that is
+where the driver and kernel error messages are saved.
+.SH Options
+.NXR "fsx exerciser" "options"
+The 
+.PN fsx
+options are:
+.IP \fB\-h\fR
+Print the help messages for the 
+.PN fsx 
+command.
+.IP \fB\-o\fIfile\fR
+Save the output diagnostics in \fIfile\fR.
+.IP \fB\-t\fIn\fR
+Run time in minutes (\fIn\fR).  The default is to run
+until
+the process receives a
+.CT C
+or a \fBkill \-15 \fIpid\fR.
+.IP \fB\-p\fIm\fR
+Number (\fIm\fR) of 
+.PN fsx 
+processes to spawn. 
+The maximum is 250; the default is 20.
+.IP \fB\-f\fIpath\fR
+Path name of directory on file system 
+you wish to test.
+For example, 
+.PN /mnt 
+or 
+.PN /usr.  
+The default is 
+.PN /usr/field .
+.SH Examples
+.NXR "fsx exerciser" "examples"
+The following example runs 10
+.PN fsx
+processes on 
+.PN /mnt
+until the process receives a
+.CT C
+or \fBkill \-15 \fIpid\fR:
+.EX
+% /usr/field/fsx \-p10 \-f/mnt
+.EE
+The following example runs 20
+.PN fsx
+processes on 
+.PN /usr/field
+for 120 minutes in the background:
+.EX
+% /usr/field/fsx \-t120 &
+.EE
+.SH Restrictions
+.NXR "fsx exerciser" "restricted"
+If there is a need to run a system exerciser over an NFS link or on a diskless
+system there are some restrictions.  For exercisers that need to write into a file
+system, such as 
+.MS fsx 8 ,
+the target file system must be writable by root.  Also the directory, in which any
+of the exercisers are executed, must be writable by root because temporary
+files are written into the current directory.  These latter restrictions are
+sometimes difficult to overcome because often NFS file systems are mounted in a
+way that prevents root from writing into them.  Some of the restrictions may be
+overcome by copying the exerciser to another directory and then executing 
+it.  Avoid using the 
+.PN fsx 
+exerciser over an NFS or diskless file system.
+.SH See Also
+.I "Guide to System Exercisers"

@@ -1,0 +1,96 @@
+.TH auth 5 
+.SH Name
+auth \- auth database
+.SH Description
+.NXR "auth database"
+.NXR "auth database" "format"
+The 
+.PN auth 
+database
+is a repository of security-relevant information about each
+user of the system. This database contains the encrypted password
+associated with the user's account in addition to a list of
+assorted capabilities.
+The database is stored as an 
+.MS ndbm 3
+database
+in the files 
+.PN /etc/auth.pag 
+and 
+.PN /etc/auth.dir .
+Records are retrieved
+with the 
+.PN getauthuid
+library routine.  Access to the database
+is restricted to the superuser and members of the group 
+.PN authread .
+.PP
+Auth records may be converted to an ASCII representation whose format is:
+.EX
+1000:4KvidFYwovnwp3j8lll78dC1:1920129:3600:2678400:03:0:1000:0:00:00
+.EE
+The first field is the UID of the entry that is used as the key into
+the database. Then follows:
+.TP 15
+Encrypted Password
+This is the user's encrypted password. Whether this password or the one
+from the 
+.PN /etc/passwd 
+file is actually used is determined by the security
+level that the system is running at.
+.TP 15
+Password Modification Time
+This is the \fItime(2)\fP the password was last set.
+.TP 15
+Minimum Password Lifetime
+This is the minimum number of seconds which must elapse between
+setting passwords.
+.TP 15
+Maximum Password Lifetime
+This is the maximum period of time for which the password will be
+valid.
+.TP 15
+Account Mask
+These are capabilities pertaining to the account itself.  They are:
+.RS 18
+.PP
+1 A_ENABLE: this account is enabled.
+.br
+2 A_CHANGE_PASSWORD: The user can change his or her password.
+.br
+4 A_ENTER_PASSWORD: The user is not required to use machine-generated passwords.
+.RE
+.TP 15
+Login Failure Count
+This is the count of unsuccessful login attempts since the last
+successful login.
+.TP 15
+Audit ID
+Positive integer identifier used in generating audit records for
+the user.
+.TP 15
+Audit Control
+See the 
+.MS audcntl 2 
+reference page, SET_APROC_CNTL section for more
+information.
+.TP
+Audit Mask
+Determines which events will be audited for the user. See the
+.MS audcntl 2 
+and 
+.MS audit 4
+reference pages for more information.
+.SH Restrictions
+Only the superuser and members of the group
+.PN authread
+may read information from the auth database.  Only the superuser may
+modify the auth database.
+.SH Files
+.PN /etc/auth.[pag,dir]
+.br
+.PN /etc/passwd
+.br
+.PN /etc/svc.conf
+.SH See Also
+audcntl(2), getauthuid(3), getpwent(3), edauth(8)

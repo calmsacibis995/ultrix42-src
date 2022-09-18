@@ -1,0 +1,28 @@
+.\" SCCSID: @(#)chdir.3f	8.1	9/11/90
+.TH chdir 3f VAX "" Unsupported
+.SH Name
+chdir \- change default directory
+.SH Syntax
+.B integer function chdir (dirname)
+.br
+.B character*(*) dirname
+.SH Description
+.NXR "chdir subroutine (FORTRAN)"
+.NXR "directory" "changing default"
+The default directory for creating and locating files will be
+changed to
+.I dirname.
+.SH Restrictions
+Pathnames can be no longer than MAXPATHLEN as defined in
+<sys/param.h>.
+.PP
+Use of this function may cause
+.PN inquire
+by unit to fail.
+.SH Return Values
+Zero is returned if successful; an error code otherwise.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+cd(1), chdir(2), perror(3f)

@@ -1,0 +1,62 @@
+.\" SCCSID: @(#)write.1	8.1	9/11/90
+.TH write 1 
+.SH Name
+write \- write message to another user
+.SH Syntax
+.B write
+\fIuser\fR [\fI\|ttyname\fR\|]
+.SH Description
+.NXR "write command (general)"
+.NXR "message" "copying to another user"
+.NXA "write command (general)" "talk program"
+.NXA "write command (general)" "wall command"
+The
+.PN write
+command copies lines from your terminal to that of
+another user.  When first called, it sends the message
+.EX
+Message from yoursystem!yourname yourttyname...
+.EE
+.PP
+The recipient of the message should write back at this point.
+Communication continues until an end of file is
+read from the terminal or an interrupt is sent.
+At that point
+.PN write
+writes `EOT' on the other terminal and exits.
+.PP
+If you want to write to a user who is logged in more than once,
+the
+.I ttyname
+argument may be used to indicate the
+appropriate terminal name.
+.PP
+Permission to write may be denied or granted by use of the
+.I mesg
+command.
+At the outset writing is allowed.
+Certain commands, in particular
+.PN nroff
+and 
+.MS pr 1
+disallow messages in order to prevent messy output.
+.PP
+If the character `!' is found at the beginning of a line,
+.PN write
+calls the shell to execute the rest of the line as a command.
+.PP
+The following protocol is suggested for using
+.PN write:
+when you first write to another user, wait for him to
+write back before starting to send.
+Each party should end each message with a distinctive
+signal. The letter `o' is the convention for `over' which indicates 
+that the message is complete.
+The letters `oo' are the convention for `over and out' which is used
+when the conversation is about to be terminated.
+.SH Files
+/etc/utmp	to find user
+.br
+/bin/sh		to execute `!'
+.SH See Also
+mail(1), mesg(1), who(1)

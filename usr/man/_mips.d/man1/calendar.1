@@ -1,0 +1,63 @@
+.\" SCCSID: @(#)calendar.1	8.1	9/11/90
+.TH calendar 1 
+.SH Name
+calendar \- calendar reminder service
+.SH Syntax
+.B calendar
+[\|\-\|]
+.SH Description
+.NXR "calendar command"
+.NXR "reminder service" "creating a calendar"
+.NXA "calendar command" "leave command"
+The
+.PN calendar 
+command consults the file `calendar' in the current directory
+and prints out lines that contain today's or
+tomorrow's date.
+The 
+.PN calendar
+command recognizes most month-day dates, such as Dec. 7,
+december 7, 12/7, but it does not recognize dates formatted
+in the following ways:  7 December or 7/12.
+If you give the month as *
+with a date, such as, * 1, that day in any month will do.
+On weekends, specifying tomorrow extends through Monday.
+.PP
+When 
+an argument is present, the
+.PN calendar
+command searches through a user's
+calendar file in his login directory
+and sends him any positive results by
+.MS mail 1 .
+Normally this is done daily under control of
+.MS cron 8 .
+.PP
+The calendar file is first run through the C preprocessor,
+.PN /lib/cpp ,
+to include any other calendar files
+specified with the #include syntax.
+Included calendars are shared by all users, and are
+maintained and documented by the local administration.
+.SH Options
+.TP 5
+.B \-
+Functions for every user who has a calendar file in his login directory.
+.SH Restrictions
+.NXR "calendar command" "restricted"
+The
+.PN calendar's
+extended idea of tomorrow does not account for
+holidays.
+.SH Files
+calendar
+.br
+/usr/lib/calendar to figure out today's and tomorrow's dates
+.br
+/etc/passwd
+.br
+/tmp/cal*
+.br
+/lib/cpp, egrep, sed, mail as subprocesses
+.SH See Also
+at(1), cron(8), mail(1)

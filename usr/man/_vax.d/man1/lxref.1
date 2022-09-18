@@ -1,0 +1,68 @@
+.\" SCCSID: @(#)lxref.1	8.1	9/11/90
+.TH lxref 1 VAX "" Unsupported
+.SH Name
+lxref \- lisp cross reference program
+.SH Syntax
+.B lxref
+[
+.B \-N
+] \fIxref-file\fP ...
+[ 
+.B \-a 
+\fIsource-file\fP ... ]
+.SH Description
+The
+.PN lxref
+command reads cross reference file(s) written by the lisp compiler 
+.PN liszt
+and prints a cross reference listing on the standard output.
+.PN liszt
+will create a cross reference file during compilation when it is 
+given the
+.B \-x
+switch.
+Cross reference files usually end in `.x' and consequently
+.PN lxref
+will append a `.x' to the file names given if necessary.
+The first option to 
+.PN lxref
+is a decimal integer, N, which sets the 
+.I ignorelevel.
+If a function is called more than 
+.I ignorelevel 
+times, the cross reference listing will just print the number of calls 
+instead of listing each one of them.
+The default for
+.I ignorelevel 
+is 50.
+.PP
+The 
+.B \-a
+option causes 
+.PN lxref
+to put limited cross reference information in the sources named.
+.PN lxref
+will scan the source and when it comes across a definition of a function
+(that is a line beginning with `(def'
+it will precede that line with a list of the functions which call this 
+function, written as a comment preceded by 
+.B "`;.. '".
+All existing lines beginning with
+.B "`;.. '"
+will be removed from the file.
+If the source file contains a line beginning
+.B "`;.-'"
+then this will disable this annotation process from this point on until a 
+.B "`;.+'"
+is seen (however, lines beginning with 
+.B "`;.. '"
+will continue to be deleted).
+After the annotation is done, the original file named
+`foo.l'
+is renamed to
+`#.foo.l'
+and the new file with annotation is named 
+`foo.l'
+.SH See Also
+lisp(1),
+liszt(1)

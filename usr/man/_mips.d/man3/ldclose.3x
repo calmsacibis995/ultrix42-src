@@ -1,0 +1,81 @@
+.TH ldclose 3x RISC
+.SH Name
+ldclose, ldaclose \- close a common object file 
+.SH Syntax
+.ft B
+.nf
+.ta \w'\s-1LDFILE\s+1\ \ \ 'u
+.B #include <stdio.h>
+.ie '\*p'' \{\
+.B #include <filehdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h>
+\}
+.el \{\
+.ft B
+#include "INCDIR\/filehdr.h"
+#include "INCDIR\/syms.h"
+#include "INCDIR\/ldfcn.h"
+\}
+.PP
+.BR "int ldclose (" ldptr )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.PP
+.BR "int ldaclose (" ldptr )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.fi
+.ft R
+.DT
+.SH Description
+The
+.PN ldopen 
+and
+.PN ldclose
+functions provide uniform access to simple object files and
+object files that are members of archive files.
+An archive of common object files can be processed as if it is a series of
+simple common object files.
+.PP
+If
+.BI \s-1TYPE\s+1( ldptr )
+does not represent an archive file,
+.PN ldclose
+closes the file and frees the memory allocated to the
+.BR \s-1LDFILE\s+1 " structure"
+associated with
+.IR ldptr .
+If
+.BI \s-1TYPE\s+1( ldptr )
+is the magic number for an archive file and
+if archive has more files,
+.PN ldclose
+reinitializes
+.BI \s-1OFFSET\s+1( ldptr )
+to the file address of the next archive member
+and returns failure.  The
+.SM
+.B LDFILE
+structure is prepared for a later
+.MS ldopen 3x .
+In all other cases,
+.PN ldclose
+returns success.
+.PP
+The 
+.PN ldaclose
+function closes the file and frees the memory allocated to the
+.BR \s-1LDFILE\s+1 " structure"
+associated with 
+.I ldptr
+regardless of the value of 
+.BI \s-1TYPE\s+1 (ldptr).
+The 
+.PN ldaclose
+function always returns success.  This function is often used with 
+.PN ldaopen .
+.SH See Also
+fclose(3s),
+intro(3x)
+ldopen(3x),
+ldfcn(5),
+paths.h(4)

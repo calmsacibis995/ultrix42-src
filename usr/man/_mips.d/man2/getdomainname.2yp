@@ -1,0 +1,71 @@
+.\" SCCSID: @(#)getdomainname.2yp	8.1	9/11/90
+.TH getdomainname 2yp
+.SH Name
+getdomainname, setdomainname \- get or set name of current domain
+.SH Syntax
+.nf
+.ft B
+getdomainname(\fIname\fR, \fInamelen\fR)
+char *\fIname\fR;
+int \fInamelen\fR;
+.sp .5
+.ft B
+setdomainname(name, namelen)
+char *name;
+int namelen;
+.fi
+.SH Description
+.NXR "getdomainname system call"
+.NXR "setdomainname system call"
+.NXAM "getdomainname system call" "domainname command"
+.NXR "domain" "getting name"
+.NXR "domain" "setting name"
+.PP
+The 
+.PN getdomainname
+system call returns the domain name of the current processor,
+as set by
+.PN setdomainname .
+.PP
+The
+.PN setdomainname
+system call sets the domain of the host machine to be
+.I name,
+which has a length specified by
+.I namelen.
+This system call is restricted to the superuser
+and is normally used only
+when the system is bootstrapped.
+.PP
+The purpose of domains is to allow merging of two distinct networks
+that have common host names.  Each network can be
+distinguished by having a different domain name.  At the current time,
+only the Yellow Pages service makes use of domains.
+.PP
+The 
+.I name
+argument is the address where the name of the current domain is
+stored.
+.PP
+The 
+.I namelen
+argument specifies the size of the
+.I name
+array.  The returned name is null-terminated unless insufficient space
+is provided.
+.SH Restrictions
+Domain names are limited to 31 characters.
+.SH Return Values
+If the call succeeds, a value of 0 is returned.  If the call fails, 
+a value of \-1 is returned and an error code is placed in the global
+location, \fIerrno\fP.
+.SH Diagnostics
+.TP 15
+[EFAULT]
+The \fIname\fP parameter contains an invalid address.
+.TP 15
+[EPERM]
+The caller was not the superuser.  This error message only
+applies to the 
+.PN setdomainname
+system call.

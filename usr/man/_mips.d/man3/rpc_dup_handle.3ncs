@@ -1,0 +1,53 @@
+.TH rpc_dup_handle 3ncs
+.SH Name
+rpc_dup_handle \- make a copy of an RPC handle (client only)
+.SH Syntax
+.nf
+#include <idl/c/rpc.h>
+
+handle_t rpc_$dup_handle(\fIhandle, status\fP)
+handle_t \fIhandle\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH Synopsis (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBfunction rpc_$dup_handle(\fR
+.\"	\fBin \fIhandle\fB: handle_t;\fR
+.\"	\fBout \fIstatus\fB: status_$t): handle_t;\fR
+.\".DE
+.SH Arguments
+.TP
+\fIhandle\fR
+The RPC handle to be copied.
+.TP
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$dup_handle
+routine returns a copy of an existing RPC handle.
+Both handles can then be used in the client program
+for concurrent multiple accesses to a binding.
+Because all duplicates of a handle reference the same data,
+an 
+.PN rpc_$set_binding ,
+.PN rpc_$clear_binding ,
+or
+.PN rpc_$clear_server_binding
+routine made on any one duplicate affects all duplicates.
+However, an RPC handle is not freed until
+.PN rpc_$free_handle
+is called on all copies of the handle.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH "See Also"
+intro(3ncs), rpc_alloc_handle(3ncs), rpc_free_handle(3ncs)

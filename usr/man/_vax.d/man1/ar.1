@@ -1,0 +1,184 @@
+.\" SCCSID: @(#)ar.1	5.1	1/17/89
+.TH ar 1 VAX
+.SH Name
+ar \- archive and library maintainer
+.SH Syntax
+.B ar
+\-\fIkey\fR [\|\fIposname\fR\|] \fIafile name...\fR
+.SH Description
+.NXR "ar program"
+.NXAM "ar program" "ar file"
+.NXA "ar program" "nm command"
+.NXR "library file" "archive file"
+.NXR "archive file" "maintaining"
+The
+.PN ar
+command maintains groups of files
+combined into a single archive file.
+The 
+.PN ar 
+command is used to create and update library 
+files as they are used by the loader.
+.PP
+This version of
+.I ar
+uses a ASCII-format archive, which can be used by the various
+machines running \s-2UNIX\s0.
+Programs for dealing with older formats are also available.  For further
+information, see
+.MS arcv 8 .
+.PP
+The
+.I key
+is one character from the following set:
+\fBd\fR, \fBr\fR, \fBq\fR, \fBt\fR, \fBp\fR, \fBm\fR, \fBx\fR.
+The
+.I key
+character can be concatenated with
+one or more of the following optional characters:
+\fBv\fR, \fBu\fR, \fBa\fR, \fBi\fR, \fBb\fR, \fBc\fR, \fBl\fR,
+\fBo\fR.
+The
+.I afile
+is the archive file.
+The
+.I names
+are constituent files in the archive file.
+.SH Options
+The OPTIONS section is divided into two sections:  the first section
+lists the
+.I key
+characters and their meanings, and the second section lists
+the optional characters and their meanings.
+.PP
+For backward compatibility, the \fIkeys\fR work without the dash (\-).
+.NXR "ar program" "options"
+The definitions of the
+.I key
+characters are as follows:
+.IP d 
+Deletes the named files from the archive file.
+.IP m
+Moves the named files to the end of the archive.
+If a positioning character is present,
+then the
+.I posname
+argument must be present and,
+as in
+.B r,
+it will specify where the files are to be moved.
+.IP p
+Prints the named files in the archive.
+.IP q 
+Appends the named files to the end of the archive file.
+Optional positioning characters are invalid.
+The command does not check whether the added files
+are already in the archive.  The \fBq\fR option is used primarily
+to avoid quadratic behavior when you are creating a large
+archive piece-by-piece.
+.IP r 
+Replaces the named files in the archive file.
+If the optional character
+.B u
+is used with
+.B r,
+then only those files with last-modified dates later than
+the archive files are replaced.
+If an optional positioning character from the set
+\fBa\fR, \fBb\fR, or \fBi\fR
+is used, then the
+.I posname
+argument must be present
+and it specifies that new files should be placed
+after
+.RB ( a )
+or before
+.RB ( b
+or
+.BR i )
+.IR posname .
+Otherwise
+new files are placed at the end.
+.IP t
+Prints a table of contents of the archive file.
+If no names are given, all files in the archive are 
+included in the table of contents.
+If file names are specified, only those files are included in the
+table of contents.
+.IP x
+Extracts the named files.
+If no names are given, all files in the archive are
+extracted.
+However,
+.B x
+does not alter the archive file.  Normally the last-modified 
+date of each
+extracted file is the date when it is extracted. However, if
+.B o
+is used, the last-modified
+date is reset to the date recorded in the
+archive.
+.PP
+The following optional characters can be used in conjunction with
+the \fIkey\fR characters:
+.IP a 5 
+Tells the 
+.PN ar
+command that new files should be placed after
+.I posname.
+.IP b
+Tells the 
+.PN ar
+command that new files should be placed before
+.I posname.
+.IP c
+Suppresses the
+message that is normally produced when
+.I afile
+is created.
+.IP i
+Tells the 
+.PN ar
+command that new files should be placed before
+.I posname.
+.IP l 
+Places files in the local directory.
+If the l option is not used then the value of the environment
+symbol, TMPDIR, is used as the directory for temporary files.
+If TMPDIR is not defined or if the directory it references is
+not writable then /tmp is used.
+.IP o
+Resets the last-modified date to the date recorded in the archive.
+Normally the last-modified date is the date when the file was extracted.
+.IP u
+Replaces only those files with last-modified dates later than the
+archive files. 
+See the 
+.B r
+.I key 
+character.
+.IP v 
+Gives a file-by-file
+description of the making of a
+new archive file from the old archive and the constituent files.
+When used with the \fBt\fR option,
+it gives a long listing of all information about the files.
+When used with
+the \fBp\fR option,
+it precedes each file with a name.
+.SH Restrictions
+.NXR "ar program" "restricted"
+The 
+.PN ar
+command truncates the filenames to 15 characters.
+.PP
+If the same file is mentioned twice in an argument list,
+it may be put in the archive twice.
+.PP
+The last-modified date of a file is not altered by the
+.B o
+option if the user is not the owner of the extracted file or a super-user.
+.SH Files
+/tmp/v*	temporaries
+.SH See Also
+ld(1), lorder(1), ranlib(1), ar(5), arcv(8)

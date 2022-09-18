@@ -1,0 +1,60 @@
+.\" SCCSID: @(#)getuid.2	8.1	9/11/90
+.\" Last modified by BAM on 2-Aug-85  1000  
+.\"
+.TH getuid 2
+.SH Name
+getuid, geteuid \- get user identity
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.B #include <unistd.h>
+.PP
+.B uid = getuid()
+.B uid_t uid;
+.sp
+.B euid = geteuid()
+.B uid_t euid;
+.fi
+.SH Description
+.NXR "getuid system call"
+.NXR "geteuid system call"
+.NXR "real group ID" "getting"
+.NXR "effective group ID" "getting"
+.NXR "real user ID" "getting"
+.NXR "effective user ID" "getting"
+The
+.PN getuid
+system call returns the real user ID of the current process,
+.PN geteuid
+the effective user ID.
+.PP
+The real user ID identifies the person who is logged in.
+The effective user ID
+gives the process additional permissions during
+execution of \*(lqset-user-ID\*(rq mode processes, which use
+.PN getuid
+to determine the real-user-id of the process which
+invoked them.
+.SH Environment
+.SS System Five
+Differs from the System V definition in that
+the return values are of type
+.I int,
+instead of 
+.I unsigned short.
+.SS POSIX
+When your program is compiled in POSIX mode,
+the
+.PN getuid
+and
+.PN geteuid
+functions return a value of type 
+.I uid_t.
+The
+.PN getgid
+and
+.PN getegid
+functions return a value of type 
+.I gid_t.
+.SH See Also
+getgid(2), setreuid(2)

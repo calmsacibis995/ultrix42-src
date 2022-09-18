@@ -1,0 +1,98 @@
+.\" V4.0 source updated for V4.Titanium
+.\"
+.\" Updated on 26.10.90 by Karen Campbell, OSCR-Europe
+.\"
+.\" Submitted for FT 9-Nov-90.
+.\"
+.\" .\" Print this document on a PostScript printer using the command line
+.\"     tbl filename | ditroff \-Tps \-man | devps | lpr
+.\"
+.\" SCCSID: @(#)lprsetup.8	2.4	8/20/87
+.TH lprsetup 8 
+.SH Name
+lprsetup \- printer spooler set up program
+.SH Syntax
+.B /etc/lprsetup
+.SH Description
+.NXR "lprsetup command"
+.NXAM "printcap file" "lprsetup command"
+.NXR "line printer" "setting up""
+The
+.PN lprsetup
+command provides an interactive easy-to-use facility for
+administrating the line printers on your system.
+The 
+.PN lprsetup
+program contains on-line help and default answers to questions
+about adding, deleting, or changing the characteristics
+of any of the line printers on your system.
+Whenever a question is asked, the default selection is given in
+\[ \] .
+You can press Return in response to the question to accept
+the default, or enter an alternate value for the given parameter.
+.PP
+The program knows about all of the possible symbols
+in the 
+.PN /etc/printcap
+file.
+See 
+.MS printcap 5
+for a current list.
+After you have entered a printer specification, and have verified
+that it is correct,
+.PN lprsetup
+then creates the spooling directory, links the output filter,
+and creates an 
+.PN /etc/printcap
+entry for the new printer.
+.PP
+If the printer is connected to your system, you must specify the 
+printer device name which is in the 
+.B lp
+printcap entry.
+.PP
+If \fBlp\fR is set to
+.PN /dev/tty\c
+\fInn\fR
+you are prompted to choose between 
+.PN lat
+or
+.PN dev .
+If your printer is connected to a port on your system, choose the default
+setting,
+.PN dev .
+If you choose
+.PN dev
+you are prompted for the baud rate, \fBbr\fR.
+The default is the recommended baud rate for the printer.
+.PP
+If you want to set up your printer to a LAT line, choose the
+.PN lat
+option.
+At this point, 
+.PN lprsetup
+proceeds only if you have chosen a valid LAT device for \fBlp\fR.
+It assumes that the LAT device has been configured for host initiated
+connections using
+.PN lcp .
+If it has not, you must do this before the queue works.
+For information about how to set up a LAT line, see Chapter 3 of the
+\fIGuide to Ethernet Communications Servers\fP.
+.PP  
+If \fBlp\fR is set to another device, for example
+.PN /dev/lp0
+the 
+.PN lprsetup
+program assumes that you are setting up a printer with a parallel port, for
+example,
+.PN lg02 .
+It does not prompt you for device type information, and serial port 
+specific entries are not put into the 
+.PN /etc/printcap
+entry.
+.SH See Also
+printcap(5), lpc(8), MAKEDEV(8)
+.br
+\fIGuide to Ethernet Communications Servers\fP
+.br
+\fIGuide to System Environment Setup\fP

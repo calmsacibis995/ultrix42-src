@@ -1,0 +1,42 @@
+.\" SCCSID: @(#)byteorder.3n	8.2	11/5/90
+.TH byteorder 3n
+.SH Name
+htonl, htons, ntohl, ntohs \- convert values between host and network byte order
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.B #include <netinet/in.h>
+.PP
+.B netlong = htonl(hostlong);
+.B u_long netlong, hostlong;
+.PP
+.B netshort = htons(hostshort);
+.B u_short netshort, hostshort;
+.PP
+.B hostlong = ntohl(netlong);
+.B u_long hostlong, netlong;
+.PP
+.B hostshort = ntohs(netshort);
+.B u_short hostshort, netshort;
+.fi
+.SH Description
+.NXR "byteorder keyword"
+.NXR "htonl subroutine"
+.NXR "htons subroutine"
+.NXR "ntohl subroutine"
+.NXR "ntohs subroutine"
+These routines convert 16-bit and 32-bit quantities between network
+byte order and host byte order.  On some non-ULTRIX machines
+these routines are defined as null macros in the include file
+<netinet/in.h>.
+.PP
+These routines are most often used with Internet
+addresses and ports as returned by 
+.MS gethostent 3n
+and 
+.MS getservent 3n .
+.SH Restrictions
+Digital's systems handle bytes in the reverse of most 
+UNIX-based systems.
+.SH See Also
+gethostent(3n), getservent(3n)

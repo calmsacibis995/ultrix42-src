@@ -1,0 +1,244 @@
+data/lta_data.c		optional lta Notbinary
+data/gfs_data.c		standard
+net/dli/dli_bind.c	optional dli Binary
+net/dli/dli_close.c	optional dli Binary
+net/dli/dli_data.c	optional ether or fddi or dli Binary
+net/dli/dli_fetchbind.c	optional dli Binary
+net/dli/dli_getopt.c	optional dli Binary
+net/dli/dli_if.c	optional ether or fddi or dli Binary
+net/dli/dli_init.c	optional ether or fddi or dli Binary
+net/dli/dli_input.c	optional ether or fddi or dli Binary
+net/dli/dli_open.c	optional dli Binary
+net/dli/dli_output.c	optional dli Binary
+net/dli/dli_proto.c	optional ether or fddi or dli or osi Notbinary
+net/dli/dli_setopt.c	optional dli Binary
+net/dli/dli_timer.c	optional ether or fddi or dli Binary
+net/dli/dli_usrreq.c	optional dli Binary
+net/dli/dli_subr.c	optional ether or fddi or dli Binary
+fs/gfs/gfs_bio.c	standard Binary
+fs/gfs/gfs_descrip.c	standard Binary
+fs/gfs/gfs_dsort.c 	standard Binary
+fs/gfs/gfs_err.c	standard Binary
+fs/gfs/gfs_fio.c	standard Binary
+fs/gfs/gfs_gnode.c 	standard Binary
+fs/gfs/gfs_gnodeops.c	standard Binary
+fs/gfs/gfs_kernquota.c	standard Binary
+fs/gfs/gfs_mount.c 	standard Binary
+fs/gfs/gfs_namecache.c	standard Binary
+fs/gfs/gfs_namei.c 	standard Binary
+fs/gfs/gfs_quota.c	standard Binary
+fs/gfs/gfs_quotasubr.c	standard Binary
+fs/gfs/gfs_syscalls.c	standard Binary
+fs/gfs/gfs_sysquota.c	standard Binary
+fs/gfs/gfs_xxx.c	standard Binary
+net/lat/lat_data.c	optional lat Binary
+net/lat/lat_if.c	optional lat Binary
+net/lat/lat_mcast.c	optional lat Binary
+net/lat/lat_proto.c	optional lat Binary
+net/lat/lat_scl1.c	optional lat Binary
+net/lat/lat_slot.c	optional lat Binary
+net/lat/lat_subr.c	optional lat Binary
+net/lat/lat_timer.c	optional lat Binary
+net/lat/lat_usrreq.c	optional lat Binary
+net/lat/lat_vc.c	optional lat Binary
+net/lat/lta.c		optional lta Binary
+net/lat/lat_hic.c	optional lat Binary
+net/lat/ltt_usrreq.c	optional lat Binary
+net/lat/ltt_trace.c	optional lat Binary
+net/net/af.c		standard Binary
+net/net/conf_net.c	standard 
+net/net/if.c		standard Binary
+net/net/if_loop.c	optional loop Binary
+net/net/if_to_proto.c	standard Binary
+net/net/pfilt.c		optional packetfilter or ether or fddi Binary
+net/net/gw_screen.c	optional gwscreen Binary
+data/gw_screen_data.c	standard
+net/net/raw_cb.c	standard Binary
+net/net/raw_usrreq.c	standard Binary
+net/net/route.c		standard Binary
+net/net/net_common.c	standard Binary
+net/netdnet/decnet_dummy.c	optional decnet Notbinary
+net/netinet/if_ether.c	optional ether or fddi inet Binary
+net/netinet/in.c	optional inet Binary
+net/netinet/in_pcb.c	optional inet Binary
+net/netinet/in_proto.c	optional inet
+net/netinet/ip_icmp.c	optional inet Binary
+net/netinet/ip_if.c	optional inet Binary
+net/netinet/ip_input.c	optional inet Binary
+net/netinet/ip_output.c	optional inet Binary
+net/netinet/ip_screen.c	optional inet Binary
+net/netinet/raw_ip.c	optional inet Binary
+net/netinet/tcp_debug.c	optional inet Binary
+net/netinet/tcp_input.c	optional inet Binary
+net/netinet/tcp_output.c	optional inet Binary
+net/netinet/tcp_subr.c	optional inet Binary
+net/netinet/tcp_timer.c	optional inet Binary
+net/netinet/tcp_usrreq.c	optional inet Binary
+net/netinet/udp_usrreq.c	optional inet Binary
+net/netbsc/bsc_pcb.c	optional bsc Binary
+net/netbsc/bsc_proto.c	optional bsc 
+net/netbsc/bsc_states.c	optional bsc Binary
+net/netbsc/bsc_timer.c	optional bsc Binary
+net/netbsc/bsc_usrreq.c	optional bsc Binary
+net/netimp/if_imp.c	optional imp inet Binary
+net/netimp/if_imphost.c	optional imp inet Binary
+net/netimp/raw_imp.c	optional imp inet Binary
+fs/nfs/nfs_gfsops.c	optional nfs Binary
+fs/nfs/nfs_server.c	optional nfs Binary
+fs/nfs/nfs_subr.c	optional nfs Binary
+fs/nfs/nfs_vfsops.c	optional nfs Binary
+fs/nfs/nfs_vnodeops.c	optional nfs Binary
+fs/nfs/nfs_xdr.c	optional nfs Binary
+fs/nfs/vfs_dnlc.c	standard Binary
+fs/nfs/vnodeops_gfs.c	optional nfs Binary
+net/rpc/auth_kern.c	optional nfs Binary
+net/rpc/auth_none.c	optional nfs Binary
+net/rpc/authunix_prot.c	optional nfs Binary
+net/rpc/clnt_kudp.c	optional nfs Binary
+net/rpc/klm_lockmgr.c	optional nfs Binary
+net/rpc/klm_kprot.c	optional nfs Binary
+net/rpc/kudp_fastsend.c	optional nfs Binary
+net/rpc/pmap_kgetport.c	optional nfs Binary
+net/rpc/pmap_prot.c	optional nfs Binary
+net/rpc/rpc_prot.c	optional nfs Binary
+net/rpc/subr_kudp.c	optional nfs Binary
+net/rpc/svc.c		optional nfs Binary
+net/rpc/svc_auth.c	optional nfs Binary
+net/rpc/svc_auth_unix.c	optional nfs Binary
+net/rpc/svc_kudp.c	optional nfs Binary
+net/rpc/xdr.c		optional nfs Binary
+net/rpc/xdr_array.c	optional nfs Binary
+net/rpc/xdr_mbuf.c	optional nfs Binary
+net/rpc/xdr_mem.c	optional nfs Binary
+net/rpc/xdr_reference.c	optional nfs Binary
+net/rpcsvc/mountxdr.c	optional nfs Binary
+fs/specfs/fifo_gnodeops.c	standard Binary
+fs/specfs/spec_subr.c	standard Binary
+fs/specfs/spec_vnodeops.c	standard Binary
+data/kern_lock_data.c	standard
+sys/crashdump.c		standard Binary
+data/crash_data.c	standard Notbinary
+sys/init_main.c		standard Binary
+sys/init_sysent.c	standard Binary
+sys/kern_auditcalls.c	optional audit Binary
+sys/kern_audit.c	optional audit Binary
+sys/kern_auditlog.c	optional audit Binary
+data/audit_data.c	standard
+sys/kern_acct.c		standard Binary
+sys/kern_clock.c	standard Binary
+sys/kern_cpu.c		standard Binary
+sys/kern_errlog.c	standard Binary
+sys/kern_exec.c		standard Binary
+sys/kern_exit.c		standard Binary
+sys/kern_fork.c		standard Binary
+sys/kern_lmf.c		standard Binary
+sys/kern_lock.c		standard Binary
+sys/kern_mman.c		standard Binary
+sys/kern_psubr.c	standard Binary
+sys/kern_proc.c		standard Binary
+sys/kern_prot.c		standard Binary
+sys/kern_resource.c	standard Binary
+sys/kern_sig.c		standard Binary
+sys/kern_subr.c		standard Binary
+sys/kern_synch.c	standard Binary
+sys/kern_time.c		standard Binary
+sys/kern_utctime.c	standard Binary
+sys/kern_tpath.c	optional sys_tpath Binary
+data/kern_tpath_data.c	standard
+sys/kern_xxx.c		standard Binary
+sys/subr_mcount.c	optional profiling-routine Binary
+sys/subr_prf.c		standard Binary
+sys/subr_rmap.c		standard Binary
+sys/subr_xxx.c		standard Binary
+sys/syscalls.c		optional sys_trace Binary
+sys/sys_generic.c	standard Binary
+sys/sys_process.c	standard Binary
+sys/sys_socket.c	standard Binary
+sys/sys_sysinfo.c	standard Binary
+sys/sys_trace.c		optional sys_trace Binary
+sys/tty.c		standard Binary
+sys/tty_conf.c		standard Binary
+sys/tty_pty.c		optional pty Binary
+sys/tty_subr.c		standard Binary
+sys/tty_tb.c		optional tb Binary
+sys/tty_pcm.c		optional pcm Binary
+sys/tty_bk.c		optional bk Binary
+sys/tty_hc.c		optional hc Binary
+sys/tty_tty.c		standard Binary
+sys/uipc_domain.c	standard Binary
+sys/uipc_mbuf.c		standard Binary
+sys/uipc_msg.c		standard Binary
+sys/uipc_pipe.c		standard Binary
+sys/uipc_proto.c	standard Binary
+sys/uipc_sem.c		standard Binary
+sys/uipc_smem.c		standard Binary
+sys/uipc_socket.c	standard Binary
+sys/uipc_socket2.c	standard Binary
+sys/uipc_sysV.c		standard Binary
+sys/uipc_syscalls.c	standard Binary
+sys/uipc_usrreq.c	standard Binary
+vm/vm_drum.c		standard Binary
+vm/vm_kmalloc.c		standard Binary
+vm/vm_mem.c		standard Binary
+vm/vm_mon.c		standard Binary
+vm/vm_page.c		standard Binary
+vm/vm_proc.c		standard Binary
+vm/vm_swalloc.c		standard Binary
+vm/vm_sched.c		standard Binary
+vm/vm_smem.c		standard Binary
+vm/vm_subr.c		standard Binary
+vm/vm_sw.c		standard Binary
+vm/vm_swap.c		standard Binary
+vm/vm_swp.c		standard Binary
+vm/vm_text.c		standard Binary
+ws/ws_device.c		optional ws Binary
+fs/ufs/ufs_alloc.c 	optional ufs Binary
+fs/ufs/ufs_bmap.c	optional ufs Binary
+fs/ufs/ufs_flock.c 	standard Binary
+fs/ufs/ufs_gnode.c 	optional ufs Binary
+fs/ufs/ufs_gnodeops.c	optional ufs Binary
+fs/ufs/ufs_mount.c 	optional ufs Binary
+fs/ufs/ufs_namei.c 	optional ufs Binary
+fs/ufs/ufs_subr.c	optional ufs Binary
+fs/ufs/ufs_syscalls.c	optional ufs Binary
+fs/ufs/ufs_tables.c	optional ufs Binary
+fs/ufs/ufs_xxx.c	optional ufs Binary
+fs/cdfs/cdfs_bmap.c		optional cdfs Binary
+fs/cdfs/cdfs_gnode.c		optional cdfs Binary
+fs/cdfs/cdfs_gnodeops.c		optional cdfs Binary
+fs/cdfs/cdfs_mount.c		optional cdfs Binary
+fs/cdfs/cdfs_namei.c		optional cdfs Binary
+fs/cdfs/cdfs_subr.c		optional cdfs Binary
+fs/cdfs/cdfs_syscalls.c		optional cdfs Binary
+net/netdnet/decnet_if.c	optional decnet Binary
+net/netdnet/decnet_proto.c	optional decnet Binary
+net/netdnet/decnet_subr.c	optional decnet Binary
+net/netdnet/nsp_ack.c	optional decnet Binary
+net/netdnet/nsp_counters.c	optional decnet Binary
+net/netdnet/nsp_data.c	optional decnet Binary
+net/netdnet/nsp_input.c	optional decnet Binary
+net/netdnet/nsp_nm_count.c 	optional decnet Binary
+net/netdnet/nsp_nm_param.c	optional decnet Binary
+net/netdnet/nsp_output.c	optional decnet Binary
+net/netdnet/nsp_session.c	optional decnet Binary
+net/netdnet/nsp_subr.c	optional decnet Binary
+net/netdnet/nsp_timers.c	optional decnet Binary
+net/netdnet/nsp_trace.c	optional decnet Binary
+net/netdnet/nsp_usrreq.c	optional decnet Binary
+net/netdnet/rou_cache.c	optional decnet Binary
+net/netdnet/rou_control.c	optional decnet Binary
+net/netdnet/rou_data.c	optional decnet Binary
+net/netdnet/rou_init.c	optional decnet Binary
+net/netdnet/rou_input.c	optional decnet Binary
+net/netdnet/rou_nm_count.c	optional decnet Binary
+net/netdnet/rou_nm_param.c	optional decnet Binary
+net/netdnet/rou_output.c	optional decnet Binary
+net/netdnet/rou_subr.c	optional decnet Binary
+net/netdnet/rou_timers.c	optional decnet Binary
+net/netdnet/evl_krtns.c	optional decnet Binary
+net/netdnet/nml_usrreq.c	optional decnet Binary
+net/netdnet/nml_process_req.c	optional decnet Binary
+net/netdnet/nml_ifioctl.c	optional decnet Binary
+net/netdnet/nm_nm_param.c	optional decnet Binary
+net/netdnet/dnt_usrreq.c	optional decnet Binary
+data/pseudo_data.c		standard Notbinary

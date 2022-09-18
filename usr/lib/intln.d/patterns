@@ -1,0 +1,79 @@
+# @(#)patterns	4.1 (ULTRIX) 7/2/90
+
+# This is the header to insert at the beginning of the first new source file
+$SRCHEAD1
+\#include <nl_types.h>
+nl_catd _m_catd;
+\
+
+# The header to insert at the beginning of the rest of the new source files
+$SRCHEAD2
+\#include <nl_types.h>
+extern nl_catd _m_catd;
+\
+
+# This is the header to insert at the beginning of the messge catalogues
+
+$CATHEAD
+\$ /*
+\$  * X/OPEN message catalogue
+\$  */
+\
+\$quote "
+
+# This is how patterns that are matched will get rewritten.
+
+$REWRITE
+catgets(_m_catd, %s, %n, %t)
+
+# Following is a list of the sort of strings we are looking for.
+# The regular expression syntax is based on regexp(3).
+
+$MATCH
+
+# Match on strings containing an escaped "
+"[^\\]*\\"[^"]*"
+
+# Match on general strings
+"[^"]*"
+
+# Now reject some special C constructs.
+
+$REJECT
+# the empty string
+""
+
+# string with just one format descriptor
+"%."
+"%.\."
+
+# string with just line control in
+"\\."
+
+# string with just line control and one format descriptor in
+"%.\\."
+"\\.%."
+
+# ignore cpp include lines
+\#[	 ]*include[	 ]*".*"
+\#[	 ]*ident[	 ]*".*"
+
+# reject some common C functions and expressions with quoted strings
+[sS][cC][cC][sS][iI][dD]\[\][ 	]*=[ 	]*".*"
+open[ 	]*([^,]*,[^)]*)
+creat[ 	]*([^,]*,[^)]*)
+access[ 	]*([^,]*,[^)]*)
+chdir[ 	]*([^,]*,[^)]*)
+chmod[ 	]*([^,]*,[^)]*)
+chown[ 	]*([^,]*,[^)]*)
+
+# Reject any strings in single line comments
+/\*.*\*/
+
+# Print a warning for initialised strings.
+
+$ERROR initialised strings cannot be replaced
+char[^=]*=[ 	]*"[^"]*"
+char[^=]*=[ 	]*"[^\\]*\\"[^"]*"
+char[ 	]*\**[A-Za-z][A-Za-z0-9]*\[[^\]*\][ 	]*=[ 	 {]*"[^"]*"
+char[ 	]*\**[A-Za-z][A-Za-z0-9]*\[[^\]*\][ 	]*=[ 	 {]*"[^\\]*\\"[^"]*"

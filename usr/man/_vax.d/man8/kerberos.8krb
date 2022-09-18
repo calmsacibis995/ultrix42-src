@@ -1,0 +1,216 @@
+.TH kerberos 8krb
+.SH Name
+kerberos \- the kerberos daemon
+.SH Syntax
+.B /usr/etc/kerberos
+[
+.B \-p \fIpause_seconds\fP
+] [
+.B \-a \fImax_age\fP
+]
+.br
+[
+.B \-l \fIlog_file\fP
+] [
+.B \-r \fIrealm\fP
+] [
+.B \-s
+] [
+.B \-n
+] [
+.B \-m
+]
+.SH Description
+.NXR "Kerberos routines" "kerberos 8"
+The 
+.PN kerberos
+daemon is used by a Kerberos principal, X, to assist
+it in authenticating its identity to another Kerberos principal Y.
+In the ULTRIX environment, X would typically be an application
+running on one machine while Y would be an application running on
+another machine.  Because X and Y run on separate machines, the
+authentication of X by Y and Y by X is not an easy task.  If they
+ran on a single machine, A, the authentication of X could be performed
+easily by Y.  All Y need do is ask A for the user ID of
+X.  Since Y trusts the local machine, if the user ID of X is the user ID 
+Y expects, then X must be X.
+.PP
+If Y were to authenticate X
+when X runs on a different machine, B, using the same user ID 
+method, then Y would be forced to trust the machine B to provide
+a correct answer.  The security of this method breaks down as
+soon as any one machine that Y is willing to trust is subverted
+by a hostile user.  In addition, it breaks as soon as any machines
+that cannot be trusted by Y are allowed on the physical network to
+which A and B are connected.  Hostile users that have control
+over these rogue machines can force them to produce messages that
+look as though they come from machine B.
+.PP
+The 
+.PN kerberos
+daemon serves as a single point of trust in a local
+area network (LAN).  The authentication of X to
+Y depends upon the trust that both X and Y have in the 
+.PN kerberos
+daemon.
+X trusts the
+.PN kerberos
+daemon to give Y only enough information to
+authenticate itself as Y to X, and Y trusts 
+.PN kerberos
+to give X only
+enough information to authenticate itself as X to Y.  Y no
+longer needs to trust B to authenticate X.
+.PP
+If X were to authenticate itself to Y, X 
+would first communicate with the
+.PN kerberos
+daemon in order to obtain a ticket that would allow it 
+to authenticate to Y.  The ticket can be defined as the data that
+X needs to authenticate itself to Y.  X passes the ticket to 
+Y, along with other information, to authenticate itself to
+Y.  Y then has the ability to send a message back to X in order
+to authenticate its identity to X.
+.PP
+There is one 
+.PN kerberos
+master daemon per LAN.  The difference between
+a Kerberos master daemon and a Kerberos slave daemon is apparent in the
+way in which the Kerberos database on the machines on which they run is
+updated.  The Kerberos database stores information about Kerberos
+principals.  It stores, for instance, the Data Encryption Standard (DES)
+encryption key
+that is associated with each principal.
+.PP
+There is only one 
+Kerberos database per LAN, to which updates to individual principal entries
+should be performed.
+This is the Kerberos master database.  The 
+.PN kerberos
+daemon that runs
+on the machine which stores the Kerberos master database is the
+.PN kerberos
+master daemon.  All the other Kerberos databases in the LAN
+are periodically updated by 
+.MS kprop 8krb
+and
+.MS kpropd 8krb ,
+based upon 
+the data stored in the Kerberos master database.  The
+machines that store this type of database run 
+.PN kerberos
+slave
+daemons.
+.PP
+A \fBrealm\fP is the common name given to a group of principals.  All
+principals stored in one Kerberos database belong to a single realm,
+and an individual
+.PN kerberos
+daemon uses only one
+Kerberos database.
+So, a 
+.PN kerberos
+daemon only allows
+one principal in the realm to authenticate another principal in the
+realm.  Inter-realm authentication is not supported in the ULTRIX
+version of Kerberos.
+.SH Options
+.TP 7
+.B \-p
+Allows the user to select the number of seconds that the 
+.PN kerberos
+daemon will pause, \fIpause_seconds\fP, after it has
+encountered an unrecoverable error, and before it exits.  This
+time interval must be between five minutes (300), and one hour (3600).
+If neither this option nor the \fB-s\fP option is used, the
+.PN kerberos
+daemon will pause forever before exiting.
+.TP 7
+.B \-a
+Allows the user to specify the age in seconds, \fImax_age\fP, above
+which the Kerberos database should be considered too
+old for a Kerberos slave server to use.  The 
+.PN kerberos
+daemon determines the age of the Kerberos database by
+comparing the last
+modification time of the 
+.PN /var/dss/kerberos/dbase/principal.ok
+file with the current time.  The 
+.PN principal.ok
+file is modified
+every time the database is changed.  Since a Kerberos slave
+server receives its database in whole from the Kerberos master,
+this option specifies the maximum amount of time allowed
+between database transfers.  The time value must be between one
+hour (3600) and three days (259200).  If neither this option
+nor the \fB-s\fP option is used, the maximum age of the database
+is infinite.
+.TP 7
+.B \-l
+Allows the user to select a different file, \fIlog_file\fP, into
+which the
+.PN kerberos
+daemon will place Kerberos log messages.
+If neither this option nor the \fB-s\fP option is used, the \fIlog_file\fP
+value is set to
+.PN /var/dss/kerberos/log/kerberos.log .
+.TP 7
+.B \-r
+Allows the user to change the name of the realm, \fIrealm\fP, for
+which the 
+.PN kerberos
+daemon will serve information.  If no
+realm name is specified with the \fB-r\fP option, the 
+.PN kerberos
+daemon will server the realm of which the local host is
+a member.
+.TP 7
+.B \-s
+Allows the user to tell the 
+.PN kerberos
+daemon to use the
+default values for \fIpause_seconds\fP, \fImax_age\fP, and \fIlog_file\fP
+of a slave server.  If \fImax_age\fP has
+not been set with the \fB-a\fP option, the \fImax_age\fP
+value is set to the slave server default of one day (86400).
+If the \fIpause_seconds\fP value has not been set with the \fB-p\fP
+option, the \fIpause_seconds\fP value is set to the slave
+server default of 5 minutes (300).  If the \fIlog_file\fP value
+has not been set with the \fB-l\fP option, the \fIlog_file\fP value
+is set to the slave server default,
+.PN /var/dss/kerberos/log/kerberos_slave.log .
+Use of the \fB-s\fP
+option is equivalent to using the following list of options
+with the 
+.PN kerberos
+daemon:
+.EX
+\-a 86400 \-p 300 \-l /var/dss/kerberos/log/kerberos_slave.log
+.EE
+.TP 7
+.B \-n
+Allows the user to tell the 
+.PN kerberos
+daemon that the
+maximum age of the Kerberos database should be infinite.
+This option is only useful if the \fB-s\fP option has been
+selected by the user, but the maximum age of the
+database should not be equal to the slave default (300),
+but should be infinite.  This option also overrides the \fB-a\fP
+option.
+.TP 7
+.B \-m
+Allows the user to run the 
+.PN kerberos
+daemon in manual mode.
+This implies that the master key of the Kerberos database
+will be input from 
+.PN stdin .
+If this option is not used,
+the master key of the Kerberos database is read from the data
+file
+.PN kstash(8krb) 
+placed in the system.
+.SH See Also
+kdb_init(8krb), kdb_util(8krb), kdb_edit(8krb), kdb_destroy(8krb),
+kerberos(3krb), kprop(8krb) kpropd(8krb)

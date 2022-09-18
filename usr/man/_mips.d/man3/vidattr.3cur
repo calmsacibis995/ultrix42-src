@@ -1,0 +1,33 @@
+.TH vidattr 3cur 
+.SH Name
+vidattr, vidputs \- output a string that sets terminal display 
+.SH Syntax
+.B
+vidattr(attrs)
+.br
+.B
+vidputs(attrs, putc)
+.SH Description
+.NXR "vidattr subroutine"
+.NXR "vidputs subroutine"
+The
+.PN vidattr
+routine
+outputs a string that sets the video attributes
+.PN attrs
+for the terminal.
+The characters in the string are passed one at a time
+to the routine
+.PN putchar .
+.PP
+The 
+.PN vidputs
+routine is similar, except that the string characters
+are passed to the routine 
+.PN putc .
+Video attributes are described in
+.I "The Guide to X/Open Curses Screen-Handling"
+.SH See Also
+putchar(3s)
+.br
+.I "Guide to X/Open Curses Screen-Handling"

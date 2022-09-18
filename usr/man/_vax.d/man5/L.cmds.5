@@ -1,0 +1,81 @@
+.\" SCCSID: @(#)L.cmds.5	8.1	9/11/90
+.TH L.cmds 5
+.SH Name
+L.cmds \- allowable remote execution commands
+.SH Syntax
+.B /usr/lib/uucp/L.cmds
+.SH Description
+.NXR "L.cmds file"
+.NXR "remote system" "executing commands"
+.NXAM "uux program" "L.cmds file"
+The
+.PN uucp
+utility uses the
+.PN L.cmds
+file to determine which commands can be executed by 
+remote systems with the
+.MS uux 1c
+command.
+The
+.PN uucp
+utility first looks in the 
+.PN USERFILE 
+file to find the execution level defined there for
+the remote system.  Then,
+.PN uucp
+looks in the
+.PN L.cmds
+file.  The remote system can execute any command
+whose execution level as defined
+in 
+.PN L.cmds
+is less than or equal to the execution level for the system
+as defined in
+.PN USERFILE .
+The format of the 
+.PN L.cmds
+file is:
+.IP "" 1i
+\fIcommand \fRX\fI#\fR
+.IP \fIcommand\fR .7i
+An ULTRIX system command or application program.
+.IP X\fI#\fR .7i
+The execution level associated with
+.IR command .
+The number \fI#\fR can range from 0 through 9.  If the
+X field is omitted, then 9 is the default.  If X is
+specified but \fI#\fR is omitted, then 0 is the default,
+enabling any system to use this command.
+.PP
+You can also specify a line in the 
+.PN L.cmds
+file to define the paths used to search for
+commands:
+.IP "" 1i
+PATH=\fIpath1\fR:\fIpath2\fR:...
+.IP \fIpath1\fR .7i
+The first directory examined for commands.
+.IP \fIpath2\fR .7i
+The second directory examined for commands.
+.nf
+.br
+     .
+     .
+     .
+.SH Examples
+This example allows remote systems defined in the
+local system's 
+.PN USERFILE
+with an execution level of 1 or higher
+to execute the commands rmail and rnews.  Only remote systems
+with an execution level of 9 would be able to execute 
+.PN uux .
+.EX 
+rmail X1
+rnews X1
+uux X9
+.EE
+.SH See Also
+USERFILE(5), uux(1c)
+.br
+.I "Guide to the uucp Utility"

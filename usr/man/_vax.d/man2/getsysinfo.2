@@ -1,0 +1,137 @@
+.\" SCCSID: @(#)getsysinfo.2	2.3	5/19/87
+.TH getsysinfo 2
+.SH Name
+getsysinfo \- get system information
+.SH Syntax
+.nf
+#include <sys/types.h>
+#include <sys/sysinfo.h>
+.PP
+getsysinfo(\fIop, buffer, nbytes, start, arg\fP)
+unsigned	\fIop\fP;
+char		*\fIbuffer\fP;
+unsigned	 \fInbytes\fP;	
+int 		*\fIstart\fP;
+char		 *\fIarg\fP;	
+.fi
+.SH Description
+.NXR "getsysinfo system call"
+The
+.PN getsysinfo
+system call retrieves information from the system.
+.PP
+The
+.I op
+argument specifies the operation to be performed.  
+Values for 
+.I op
+are defined in the <sys/sysinfo.h> header file. 
+.PP
+Possible 
+.I op
+values are as follows:
+.IP "GSI_BOOTDEV" 0.3i
+Return the BOOTDEV string, which is used for the installation.
+.IP "GSI_NETBLK" 0.3i
+Return the entire NETBLK structure, which is used for the network
+installation.
+.IP "GSI_PROG_ENV" 0.3i
+Return the compatibility mode of the process.  Possible values are
+A_BSD, A_POSIX, A_SYSTEM_FIVE as defined in <sys/exec.h>.
+.IP "GSI_MAX_UPROCS"
+Return the maximum number of processes allowed per user id.
+.IP "GSI_TTYP"
+Return the major and minor numbers of the controlling terminal.
+.IP "GSI_UACSYS (RISC only)"
+Return current value of flag that determines whether or not to
+print "unaligned access fixup" message on a system-wide basis.
+.IP "GSI_UACPARNT (RISC only)"
+Return current value of flag in parent process's structure for
+printing unaligned access messages.
+.IP "GSI_UACPROC (RISC only)"
+Return current value of flag in process's structure for printing of
+unaligned access messages.
+.IP "GSI_MMAP_ALIGNMENT (RISC only)"
+Return the minimum alignment required for an address specified with the
+.PN MAP_FIXED
+option in the
+.PN mmap(2)
+system call.
+.PP
+The
+.I nbytes
+argument defines the size of
+.IR buffer 
+into which the system information is returned.
+.PP
+The
+.I start
+argument is the current logical location within the internal system
+table referenced by the op, and it must be initially set to
+.PN 0 .
+The 
+.I start
+argument is updated to reflect the current logical
+location within the system table,
+allowing successive executions of
+.PN getsysinfo
+to retrieve information about all the system structures specified by op.
+.PP
+The 
+.I start
+argument is set to 0 when all system information requested by
+.I op
+has been retrieved.
+.PP
+The optional
+.I arg
+argument may be used by certain 
+.I op's 
+for additional information.
+When 
+.I arg 
+is not required, it should be set to NULL.
+.PP
+When information about multiple 
+system structures is returned,
+it is stored within consecutive 
+.I buffer
+locations. 
+The information for each system structure is 
+dependent upon
+.I op.
+.EE
+.SH Return Values
+.PP
+Upon successful completion, a value indicating the number of
+requested items
+stored in
+.I buffer
+is returned.
+If the information requested by 
+.I op
+is not available,
+.I getsysinfo
+returns a zero.
+Otherwise, \-1 is returned, and the global variable,
+.PN errno ,
+is set to indicate the error.
+.SH Diagnostics
+.TP 15
+[EFAULT]
+Either
+.I buffer,
+.I start,
+or
+.I arg
+causes an illegal address to be referenced.
+.TP 15
+[EINVAL]
+The 
+.I op
+argument is invalid.
+.TP 15
+[EPERM]
+Permission is denied for the operation requested
+.SH See Also
+setsysinfo(2)

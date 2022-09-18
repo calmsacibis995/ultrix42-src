@@ -1,0 +1,193 @@
+.\" SCCSID: @(#)syslog.8	8.1	9/11/90
+.TH syslog 8
+.\"	@(#)syslog.8	4.2		7/28/83
+.SH Name
+syslog \- log systems messages
+.SH Syntax
+/etc/syslog [
+.BI \-m N
+] [
+.BI \-f name
+] [
+.B \-d
+]
+.SH Description
+.NXR "syslog command"
+.NXR "system" "logging message"
+.NXAM "syslog subroutine" "syslog command"
+The
+.PN syslog
+command reads a datagram socket
+and logs each line it reads into a set of files
+described by the configuration file
+.PN /etc/syslog.conf .
+The
+.PN syslog
+command configures when it starts up
+and whenever it receives a hangup signal.
+.PP
+Each message is one line.
+A message can contain a priority code,
+marked by a digit in angle braces
+at the beginning of the line.
+Priorities are defined in
+< syslog.h >,
+as follows:
+.NXR "syslog command" "priority code list"
+.IP LOG_ALERT \w'LOG_WARNING'u+2n
+This priority should essentially never
+be used.  It applies only to messages that
+are so important that every user should be
+aware of them, for example, a serious hardware failure.
+.IP LOG_SALERT
+Messages of this priority should be
+issued only when immediate attention is needed
+by a qualified system person, for example, when some
+valuable system resource disappears.  These messages are
+sent to a list of system people.
+.IP LOG_EMERG
+Emergency messages are not sent to users,
+but represent major conditions.  An example
+might be hard disk failures.  These could be
+logged in a separate file so that critical
+conditions could be easily scanned.
+.IP LOG_ERR
+These messages represent error conditions, such as soft
+disk failures, etc.
+.IP LOG_CRIT
+Such messages contain critical information,
+but which can not be classed as errors, for example,
+`su' attempts.
+Messages of this priority and higher
+are typically logged on the system console.
+.IP LOG_WARNING
+These messages are issued when an abnormal condition has been
+detected, but recovery can take place.
+.IP LOG_NOTICE
+These messages fall into the class of
+``important information''; this class is informational
+but important enough that you don't want to throw
+it away casually.
+Messages without any priority assigned to them
+are typically mapped into this priority.
+.IP LOG_INFO
+These are information level messages.  These messages
+could be thrown away without problems, but should
+be included if you want to keep a close watch on
+your system.
+.IP LOG_DEBUG
+These messages may be useful to log certain debugging
+information.  Normally this information is thrown away.
+.PP
+It is expected that the kernel will not log anything below
+LOG_ERR priority.
+.PP
+The configuration file is in two sections
+separated by a blank line.
+The first section defines files that
+.PN syslog
+will log into.
+Each line contains
+a single digit which defines the lowest priority
+(highest numbered priority)
+that this file will receive,
+an optional asterisk
+which guarantees that something gets output
+at least every 20 minutes,
+and a pathname.
+The second part of the file
+contains a list of users that will be
+informed on SALERT level messages.
+For example, the following logs all messages of priority 5 or higher
+onto the system console,
+including timing marks every 20 minutes:
+.NXR "configuration file (syslog)" "format"
+.EX
+5*/dev/console
+8/usr/spool/adm/syslog
+3/usr/adm/critical
+
+eric
+kridle
+kalash
+
+.EE
+This example logs all messages of priority 8 or higher
+into the file 
+.PN /usr/spool/adm/syslog;
+and all messages of priority 3 or higher
+into 
+.PN /usr/adm/critical .
+The users ``eric'', ``kridle'', and ``kalash''
+will be informed on any subalert messages.
+.PP
+The flags are:
+.NXR "syslog command" "options"
+.TP 0.5i
+.B \-m
+Set the mark interval to
+.I N
+(default 20 minutes).
+.TP
+.B \-f
+Specify an alternate configuration file.
+.TP
+.B \-d
+Turn on debugging (if compiled in).
+.PP
+To bring
+.PN syslog
+down,
+it should be sent a terminate signal.
+It logs that it is going down
+and then waits approximately 30 seconds
+for any additional messages to come in.
+.PP
+There are some special messages that cause control functions.
+``<*>N'' sets the default message priority to
+.I N.
+``<$>'' causes
+.PN syslog
+to reconfigure
+(equivalent to a hangup signal).
+This can be used in a shell file run automatically
+early in the morning to truncate the log.
+.PP
+The
+.PN syslog
+command creates the file 
+.PN /etc/syslog.pid
+if possible containing a single line with its process ID.
+This can be used to kill or reconfigure
+.PN syslog .
+.\".PP
+.\"The
+.\".PN syslog
+.\"command
+.\"can also be compiled to use
+.\".MS mpx 2
+.\"files instead of datagrams
+.\"if you are running V7.
+.\"In this case it creates and reads the file
+.\".PN /dev/log.
+.SH Restrictions
+.NXR "syslog command" "restricted"
+LOG_ALERT and LOG_SUBALERT messages
+should only be allowed to privileged programs.
+.PP
+Actually,
+.PN syslog
+can not deal with kernel error messages
+in the current implementation.
+.SH Files
+.TP 17
+.PN /etc/syslog.conf 
+Configuration file
+.TP
+.PN /etc/syslog.pid 
+Process id
+.\".TP
+.\".PN /dev/log 
+.\"Under V7, the mpx file
+.SH See\ Also
+syslog(3)

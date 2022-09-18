@@ -1,0 +1,31 @@
+.\" SCCSID: @(#)ik.4	8.1	9/11/90
+.TH ik 4 VAX "" Unsupported
+.SH Name
+ik \- Ikonas frame buffer, graphics device interface
+.SH Syntax
+.B "device ik0 at uba? csr 0172460 vector ikintr"
+.SH Description
+The
+.PN ik
+program provides an interface to an Ikonas frame buffer graphics device.
+Each minor device is a different frame buffer interface board.
+When the device is opened, its interface registers are mapped,
+by virtual memory, into the user processes address space.
+This allows the user process very high bandwidth to the frame buffer
+with no system call overhead.
+.PP
+Bytes written or read from the device are DMA'd from or to the interface.
+The frame buffer XY address, its addressing mode, etc. must be set up by the
+user process before calling write or read.
+.PP
+Other communication with the driver is by ioctls.
+The IK_GETADDR ioctl returns the virtual address where the user process can
+find the interface registers.
+The IK_WAITINT ioctl suspends the user process until the ikonas device
+has interrupted (for whatever reason \(em the user process has to set
+the interrupt enables).
+.SH Restrictions
+An invalid access (for example, longword) to a mapped interface register
+can cause the system to crash with a machine check.
+.SH Files
+.PN /dev/ik

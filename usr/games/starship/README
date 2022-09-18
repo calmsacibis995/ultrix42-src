@@ -1,0 +1,7 @@
+
+It is possible for the "starship" shared memory segment to be left in
+memory when there are no more players in the "starship" game.
+This can happen if someone stops a "starship" process and kills it.
+
+The command "rmstar" is provided for this purpose.  It will remove the
+"starship" shared memory segment.

@@ -1,0 +1,180 @@
+.TH screen 2
+.SH Name
+screen \- gateway packet screening facility
+.SH Syntax
+.nf
+#include <sys/types.h>
+#include <net/gw_screen.h>
+int mode;
+struct screen_data sdata;
+struct screen_stats sstats;
+.PP
+ioctl(s, SIOCSCREENON, (caddr_t)&\fImode\fP);
+ioctl(s, SIOCSCREEN, (caddr_t)&\fIsdata\fP);
+ioctl(s, SIOCSCREENSTATS, (caddr_t)&\fIsstats\fP);
+.fi
+.SH Arguments
+The interface to the
+gateway screen facility is a set of ioctl
+requests.  All these requests are meant to be used on a file descriptor
+created by the
+.MS socket 2
+system call.
+.IP "SIOCSCREENON" 10
+The
+.I mode
+parameter, passed by reference,
+can be 
+.PN SCREENMODE_OFF ,
+.PN SCREENMODE_ON ,
+or
+.PN SCREENMODE_NOCHANGE .
+Upon completion of the system call, the
+.I mode
+parameter contains the previous value of the screen mode.
+Unprivileged users may only use the
+.PN SCREENMODE_NOCHANGE
+request.
+.IP "SIOCSCREEN" 
+This is the most important request and is described below.
+Only the super-user may make this request.
+.IP "SIOCSCREENSTATS" 
+Returns, by reference using the
+.I sstats
+parameter, statistics in this structure:
+.EX 0
+struct screen_stats {
+	u_long	ss_packets;	/* total packets screened */
+	u_long	ss_nobuffer;	/* dropped, buffer was full */
+	u_long	ss_accept;	/* total accepted */
+	u_long	ss_reject;	/* total rejected */
+	u_long	ss_badsync;	/* dropped, user was out of sync */
+	u_long	ss_stale;	/* dropped, too old */
+};
+.EE
+.SH Description
+.NXR "gateway screening"
+.NXR "gateway screen facility"
+.NXR "network packets" "and the gateway screen facility"
+.NXR "screen system call"
+The gateway screen
+facility allows a user-level process to decide which network packets should be
+forwarded by the kernel (when the system is acting as a gateway).
+When the screen mode is set to ``off,'' all packets are forwarded normally;
+when the screen mode is set to ``on,'' all packets that would be forwarded
+must be approved through the use of this facility.
+.SS Use of SIOCSCREEN
+The
+.PN SIOCSCREEN
+request is used in the main loop of
+the user-level daemon.  Each time it is called, it returns
+(by reference using the
+.I sdata
+parameter)
+a
+.PN screen_data
+structure
+containing a prefix of a packet (normally containing the
+packet headers) and some additional information:
+.EX 0
+struct screen_data_hdr {
+	short	sdh_count;	/* length of entire record */
+	short	sdh_dlen;	/* bytes of packet header */
+	u_long	sdh_xid;	/* transaction ID */
+	struct timeval	sdh_arrival;	/* time packet arrived */
+	short	sdh_family;	/* address family */
+	int	sdh_action;	/* disposition for packet */
+
+#define	SCREEN_ACCEPT	0x0001	/* Accept this packet */
+#define	SCREEN_DROP	0x0000	/* Do not accept this packet */
+#define	SCREEN_NOTIFY	0x0002	/* Notify sender of failure */
+#define	SCREEN_NONOTIFY	0x0000	/* Do not notify sender */
+};
+
+struct screen_data {
+	struct screen_data_hdr sd_hdr;
+	char sd_data[SCREEN_DATALEN];	/* sd_dlen bytes of packet header */
+};
+
+#define	sd_count	sd_hdr.sdh_count
+#define	sd_dlen		sd_hdr.sdh_dlen
+#define	sd_xid		sd_hdr.sdh_xid
+#define	sd_action	sd_hdr.sdh_action
+#define	sd_arrival	sd_hdr.sdh_arrival
+#define	sd_family	sd_hdr.sdh_family
+.EE
+The
+.I sd_family
+field indicates the protocol family (for example,
+.PN AF_INET )
+under which the packet is being handled; there is no
+protocol-specific code in the kernel implementation of the
+gateway screen.  Either the
+.I sd_family
+field should be initialized to a specific family before the
+request is invoked (indicating that the user process is willing
+to handle requests for this family only), or it should be set to
+.PN AF_UNSPEC
+(indicating that the user process is willing to handle all protocols).
+.PP
+The user-level
+process examines the packet headers and decides whether or not the
+packet should be forwarded.  It communicates this decision to the
+kernel by filling in the
+.I sd_action
+field in the
+.PN screen_data
+structure with either
+.PN SCREEN_ACCEPT ,
+.PN SCREEN_DROP ,
+or
+.PN SCREEN_DROP 
+bit-wise ORed with
+.PN SCREEN_NOTIFY ;
+the last choice causes the gateway to drop the packet but send
+an error packet to the source host (if this is supported in the
+protocol family).
+The process then passes that structure back to the kernel in another
+invocation of the
+.PN SIOCSCREEN
+request.  That
+.I ioctl
+call then blocks until a new packet is available, at which point the
+cycle repeats.
+.PP
+Note that two actions are being carried out
+through one system call, and that each cycle starts mid-way through
+a system call.  Thus, the first time a daemon uses this
+.I ioctl
+request, it has to pass in a no-op decision to complete the first
+(half) cycle.
+The kernel matches incoming decisions with pending packets by
+comparing both the transaction id
+.RI ( sd_xid )
+field, and the user's process id (so one process cannot provide
+decisions on packets presented to a different process).
+Decisions must be supplied in first-in, first-out order; decisions
+supplied in the wrong order may result in packets being dropped.
+.SH Return Values
+If an error has occurred, a value of \-1 is returned and
+.PN errno
+is set to indicate the error.
+.SH Diagnostics
+In addition to those error codes described for
+.MS ioctl 2 ,
+the
+.PN SIOCSCREEN
+request can also return:
+.TP 20
+[ENOPROTOOPT]
+If the screen mode is set to
+.PN  SCREENMODE_OFF ,
+the
+.PN SIOCSCREEN
+request is meaningless.
+.TP
+[EPERM]
+If an operation reserved for the superuser is attempted by
+a non-superuser.
+.SH See Also
+screenmode(8), screend(8), screenstat(8), ioctl(2)

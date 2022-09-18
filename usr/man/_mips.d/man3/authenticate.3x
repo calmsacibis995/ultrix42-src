@@ -1,0 +1,172 @@
+.\" SCCSID: @(#)authenticate.3x	?.?	11/1/89
+.\"
+.TH authenticate_user 3x 
+.SH Name
+authenticate_user \- authenticate user
+.SH Syntax
+#include <pwd.h>
+.br
+#include <auth.h>	/* For error codes */
+.PP
+int authenticate_user(\fIuser\fP, \fIpassword\fP, \fIline\fP)
+.br
+struct passwd *\fIuser\fP;
+.br
+char *\fIpassword\fP;
+.br
+char *\fIline\fP;
+.SH Arguments
+.TP 8
+\fIuser\fP
+The UID.
+.TP 8
+\fIpassword\fP
+The password for the UID.
+.TP 8
+\fIline\fP
+The name of the login line as it is listed in 
+.PN /etc/ttys .
+.SH Description
+.NXR "authenticate_user routine"
+.NXR "password file (general)" "authenticating user"
+The
+.PN authenticate_user
+routine
+authenticates a username/UID against a supplied password and returns
+a nonnegative integer on success.
+The value returned is the number of failed login authentication attempts since
+the last 
+successful login authentication (or zero if this feature is not enabled).
+This routine is found in the 
+.PN libauth.a 
+library and loaded using the 
+.B -lauth
+option.
+.PP
+At all security levels higher than 
+.B BSD,
+the login fail count in the auth database
+is incremented if authentication
+fails, and cleared if it succeeds.
+In addition, 
+the account must be marked
+enabled for logins as defined by the Account Mask value for A_LOGIN.
+See
+.MS auth 5
+for information about the Account Mask values.
+.PP
+If a non-NULL value is supplied for the
+.PN line
+argument
+.I and
+the argument is not the empty string,
+the function also verifies that the specified user is allowed
+access through that line. In particular, accounts with UID equal to zero
+will only return success if the specified line is marked
+.B secure
+in the
+.PN /etc/ttys
+file.
+.SH Restrictions
+.NXR "authenticate_user subroutine" "restricted"
+The process
+must have read access to the auth database to 
+authenticate users in a secure environment.
+.PP
+The process must have read/write access to the auth database to 
+update the authentication fail count.
+.PP
+If auth information is being served through BIND, the process is
+required to obtain a Kerberos ticket for that service before
+invoking this function.
+.SH Example
+.EX
+extern int errno;
+struct passwd *pwd;
+int status;
+
+pwd = getpwnam("root");
+status = authenticate_user(pwd, "rootpass", "/dev/console");
+if(status < 0)
+	if(errno == EPERM)
+		puts("Login failed");
+	else
+		perror("authenticate_user");
+else
+	if(status > 0)
+		printf("%d failed attempts\\n", status);
+.EE
+.SH Return Values
+When successful, the routine returns the number 
+of failed login authentication attempts since last successful
+login authentication.
+.PP
+When an error occurs, 
+.PN errno
+is set and a negative error code is returned. The error code returned
+may be the same as
+.PN errno
+or it may be an extended error code defined in
+.PN auth.h .
+.SH Diagnostics
+On error return
+.PN errno
+may be set to one of the following values:
+.sp
+.TP 18
+[EPERM]
+Either the password is incorrect, the password is expired, the specified line
+needs to be secure and is not, or the account is disabled and a login
+authentication is required.
+.TP 18
+[EINVAL]
+No authentication information for user.
+.TP 18
+[ENOSYS]
+Security subsystem not configured correctly.
+.TP 18
+[EACCES]
+Process does not have read access to the necessary information.
+.PP
+On error return the return value may be the same as
+.PN errno
+or, if errno is
+[EPERM],
+it may be one of the following additional values defined in
+.PN auth.h :
+.sp
+.TP 18
+[A_EBADPASS]
+The supplied password was incorrect.
+.TP 18
+[A_ESOFTEXP]
+The accounts password has expired recently.
+.TP 18
+[A_EHARDEXP]
+The accounts password expired quite some time ago.
+.TP 18
+[A_ENOLOGIN]
+The account is not enabled.
+.TP 18
+[A_EOPENLINE]
+The account requires a secure line and the specified line was not marked
+that way in
+.PN /etc/ttys .
+.SH Files
+.PN /etc/auth.dir
+.br
+.PN /etc/auth.pag
+.br
+.PN /etc/svc.conf
+.br
+.PN /etc/ttys
+.SH Environment
+If the system is operating in the
+BSD
+security level,
+the password expiration, login fail count, and
+account disabling features
+are not available (and therefore are not used
+in authentication computations).
+.SH See Also
+getauthuid(3), getpwent(3), auth(5), passwd(5yp), ttys(5)

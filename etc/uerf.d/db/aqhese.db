@@ -1,0 +1,609 @@
+# @(#)aqhese.db	4.2   (ULTRIX)   12/20/90
+
+sseg
+id cds
+name aqhe_cds
+label 'main memory rds'
+elements
+	aqhese_time_stamp
+	aqhese_err_adr aqhese_err_adr_ext aqhese_err_adr_phys aqhese_err_adr_long
+	aqhese_err_adr_quad aqhese_err_adr_mpam aqhese_err_adr_rowcol
+	aqhese_err_adr_row aqhese_err_adr_col
+	aqhese_ecc_synd aqhese_internal_3
+	aqhese_log_errcnt
+	aqhese_cur_errcnt aqhese_cnt_threshld aqhese_valid_cnt aqhese_buff_sts
+	aqhese_size_threshld aqhese_init_threshld aqhese_filter_factor
+	aqhese_inhibit_per aqhese_defect_threshld aqhese_maint_threshld
+	aqhese_defect_list_sz
+
+
+sseg
+id cds
+name aqse_cds
+label 'main memory crd'
+elements
+	aqhese_time_stamp
+	aqhese_err_adr aqhese_err_adr_ext aqhese_err_adr_phys aqhese_err_adr_long
+	aqhese_err_adr_quad aqhese_err_adr_mpam aqhese_err_adr_rowcol
+	aqhese_err_adr_row aqhese_err_adr_col
+	aqhese_ecc_synd aqhese_internal_3
+	aqhese_log_errcnt
+	aqhese_cur_errcnt aqhese_cnt_threshld aqhese_valid_cnt aqhese_buff_sts
+	aqhese_size_threshld aqhese_init_threshld aqhese_filter_factor
+	aqhese_inhibit_per aqhese_defect_threshld aqhese_maint_threshld
+	aqhese_defect_list_sz
+
+sseg
+id cds
+name aqspuhe_cds
+label 'spu memory rds'
+elements
+	mck9000spu_smc0 mck9000spu_smc1 mck9000spu_smc2 mck9000spu_smc3
+
+sseg
+id cds
+name aqspuse_cds
+label 'spu memory crd'
+elements
+	aqspuse_nentries
+
+sseg
+id ads
+name aqspuse_ads
+label 'spu memory crd'
+elements
+	mck9000spu_smc0 mck9000spu_smc1 mck9000spu_smc2 mck9000spu_smc3
+
+sitem
+name aqspuse_nentries
+class integer
+type long
+size 1
+display decimal
+label 'NUM. OF ENTRIES'
+
+sitem
+name aqhese_time_stamp
+size 1
+class time
+type vms_time
+display date_time
+label 'TIME OF 1ST ERR'
+
+sitem
+name aqhese_err_adr
+label 'ERROR ADDRESS'
+class integer
+size 1
+type long
+display hex
+
+sitem
+name aqhese_err_adr_ext
+class composite
+type register
+display hex
+size 1
+map
+	field
+label 'ADR EXTENSION ='
+class integer
+size 16
+display hex
+
+sitem
+name aqhese_err_adr_phys
+class composite
+type register
+display hex
+size 1
+map
+	field
+label 'PHYSICAL ADR ='
+class integer
+size 32
+display hex
+
+sitem
+name aqhese_err_adr_long
+class composite
+type register
+display hex
+size 1
+map
+	field
+label 'LONGWORD ='
+class integer
+size 16
+display hex
+
+sitem
+name aqhese_err_adr_quad
+class composite
+type register
+display hex
+size 1
+map
+	field
+label 'QUADWORD ='
+class integer
+size 16
+display hex
+
+sitem
+name aqhese_err_adr_mpam
+class composite
+type register
+display hex
+size 1
+map
+	field
+label 'MPAM ADR ='
+class integer
+size 16
+display hex
+
+sitem
+name aqhese_err_adr_rowcol
+class composite
+type register
+display hex
+size 1
+map
+	field
+label 'ROW/COL ADR ='
+class integer
+size 16
+display hex
+
+sitem
+name aqhese_err_adr_row
+class composite
+type register
+display hex
+size 1
+map
+	field
+label 'ROW ADR ='
+class integer
+size 32
+display hex
+
+sitem
+name aqhese_err_adr_col
+class composite
+type register
+display hex
+size 1
+map
+	field
+label 'COL ADR ='
+class integer
+size 32
+display hex
+
+
+sitem
+name aqhese_ecc_synd
+label 'STATUS AND SYND'
+class composite
+size 1
+type register
+display nil
+map
+	field
+size 7
+class coded
+map
+	0 "NO ERRORS"
+	1 "CHECK 0"
+	2 "CHECK 1"
+	3 "DBE"
+	4 "CHECK 2"
+	5 "DBE"
+	6 "DBE"
+	7 "MBE"
+	8 "CHECK 3"
+	9 "DBE"
+	10 "DBE"
+	11 "DATA 0"
+	12 "DBE"
+	13 "DATA 1"
+	14 "DATA 2"
+	15 "DBE"
+	16 "CHECK 4"
+	17 "DBE"
+	18 "DBE"
+	19 "DATA 3"
+	20 "DBE"
+	21 "DATA 4"
+	22 "DATA 5"
+	23 "DBE"
+	24 "DBE"
+	25 "DATA 6"
+	26 "DATA 7"
+	27 "DBE"
+	28 "DATA 8"
+	29 "DBE"
+	30 "DBE"
+	31 "MBE"
+	32 "CHECK 5"
+	33 "DBE"
+	34 "DBE"
+	35 "DATA 9"
+	36 "DBE"
+	37 "DATA 10"
+	38 "DATA 11"
+	39 "DBE"
+	40 "DBE"
+	41 "DATA 12"
+	42 "DATA 13"
+	43 "DBE"
+	44 "DATA 14"
+	45 "DBE"
+	46 "DBE"
+	47 "MBE"
+	48 "DBE"
+	49 "DATA 15"
+	50 "DATA 16"
+	51 "DBE"
+	52 "DATA 17"
+	53 "DBE"
+	54 "DBE"
+	55 "MBE"
+	56 "DATA 18"
+	57 "DBE"
+	58 "DBE"
+	59 "MBE"
+	60 "DBE"
+	61 "MBE"
+	62 "MBE"
+	63 "DBE"
+	64 "CHECK 6"
+	65 "DBE"
+	66 "DBE"
+	67 "DATA 19"
+	68 "DBE"
+	69 "DATA 20"
+	70 "DATA 21"
+	71 "DBE"
+	72 "DBE"
+	73 "DATA 22"
+	74 "DATA 23"
+	75 "DBE"
+	76 "DATA 24"
+	77 "DBE"
+	78 "DBE"
+	79 "MBE"
+	80 "DBE"
+	81 "DATA 25"
+	82 "DATA 26"
+	83 "DBE"
+	84 "DATA 27"
+	85 "DBE"
+	86 "DBE"
+	87 "MBE"
+	88 "DATA 28"
+	89 "DBE"
+	90 "DBE"
+	91 "MBE"
+	92 "DBE"
+	93 "MBE"
+	94 "MBE"
+	95 "DBE"
+	96 "DBE"
+	97 "DATA 29"
+	98 "DATA 30"
+	99 "DBE"
+	100 "DATA 31"
+	101 "DBE"
+	102 "DBE"
+	103 "MBE"
+	104 "ADDR PE"
+	105 "DBE"
+	106 "DBE"
+	107 "MBE"
+	108 "DBE"
+	109 "MBE"
+	110 "MBE"
+	111 "DBE"
+	112 "MBE"
+	113 "DBE"
+	114 "DBE"
+	115 "MBE"
+	116 "DBE"
+	117 "MBE"
+	118 "MBE"
+	119 "DBE"
+	120 "DBE"
+	121 "MBE"
+	122 "MBE"
+	123 "DBE"
+	124 "MBE"
+	125 "DBE"
+	126 "DBE"
+	127 "MBE"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "MDP LO WORD WRITE PE"
+	field
+size 1
+class coded
+map
+	1 "MDP HI WORD WRITE PE"
+	field
+size 5
+class filler
+	field
+size 1
+class coded
+map
+	0 "NO ERROR EVENT"
+	1 "ERROR EVENT"
+	field
+size 1
+class coded
+map
+	1 "BIST DETECTED ERROR"
+	field
+size 1
+class coded
+map
+	1 "SIMULATED ERROR"
+	field
+size 2
+class filler
+	field
+size 3
+class coded
+map
+	0 "EMPTY ENTRY"
+	1 "IDLE ENTRY"
+	2 "ACTIVE ENTRY"
+	3 "COUNT THRESHOLD REACHED"
+	4 "ADDED ON DEFECT LIST"
+	5 "MBE DBE REPORT"
+	6 "UNUSED"
+	7 "UNUSED"
+	field
+size 6
+class filler
+	field
+size 1
+class coded
+map
+	0 "BANK=0"
+	1 "BANK=1"
+	field
+size 1
+class coded
+map
+	0 "SEGMENT=0"
+	1 "SEGMENT=1"
+	field
+size 1
+class coded
+map
+	0 "MMU=0"
+	1 "MMU=1"
+
+sitem
+name aqhese_log_errcnt
+label 'LOGGED ERR CNT'
+class integer
+size 1
+type long
+display hex
+
+sitem
+name aqhese_cur_errcnt
+label 'CURR ERR CNT'
+class integer
+size 1
+type long
+display hex
+
+sitem
+name aqhese_cnt_threshld
+label 'ERR CNT THRESH'
+class integer
+size 1
+type long
+display hex
+
+sitem
+name aqhese_valid_cnt
+label 'ACTIVE CRD CNT'
+class integer
+size 1
+type long
+display decimal
+
+sitem
+name aqhese_buff_sts
+label 'BUFFER STS'
+class composite
+size 1
+type register
+display nil
+map
+	field
+size 1
+class coded
+map
+	1 'BUFFER FULL'
+	field
+size 1
+class coded
+map
+	1 'BUFFER FLUSH CMD'
+	field
+size 1
+class coded
+map
+	1 'MAINTENANCE LIMIT'
+	field
+size 1
+class coded
+map
+	1 'PARAMETER CHANGE'
+	field
+size 1
+class coded
+map
+	1 'PURGE CMD'
+	field
+size 1
+class coded
+map
+	1 'REPORTING SUSPENDED'
+	field
+size 1
+class coded
+map
+	1 'TIMED FLUSH PURGE'
+	field
+size 1
+class coded
+map
+	1 'ACTIVE FM'
+	field
+size 1
+class coded
+map
+	1 'DBE CAUSED FLUSH'
+	field
+size 12
+class filler
+	field
+size 1
+class coded
+map
+	1 'FLUSH COMPLETE'
+	field
+size 2
+class filler
+	field
+size 1
+class coded
+map
+	1 'PURGE COMPLETE'
+	field
+size 1
+class coded
+map
+	1 'REPORTING RESUMED'
+	field
+size 1
+class coded
+map
+	1 'TIMED FLUSH PURGE COMPLETE'
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 'MFM SHUTDOWN'
+	field
+size 1
+class coded
+map
+	1 'MFM STARTUP'
+	field
+size 1
+class coded
+map
+	1 'INFORMATION REPORT'
+	field
+size 1
+class coded
+map
+	1 'ERROR REPORT'
+
+sitem
+name aqhese_size_threshld
+label 'BUF SIZE THRESH'
+class integer
+size 1
+type long
+display decimal
+
+sitem
+name aqhese_init_threshld
+label 'INIT THRESHOLD'
+class integer
+size 1
+type long
+display decimal
+
+sitem
+name aqhese_filter_factor
+label 'FILTER FACTOR'
+class integer
+size 1
+type long
+display decimal
+
+sitem
+name aqhese_inhibit_per
+label 'INHIBIT PERIOD'
+class integer
+size 1
+type long
+display decimal
+
+sitem
+name aqhese_defect_threshld
+label 'DEFECT THRESH'
+class integer
+size 1
+type long
+display decimal
+
+sitem
+name aqhese_maint_threshld
+label 'MAINT THRESHOLD'
+class integer
+size 1
+type long
+display decimal
+
+sitem
+name aqhese_defect_list_sz
+label 'D/LST SZ THRESH'
+class integer
+size 1
+type long
+display decimal
+
+# an internal register used by uerf
+# Does not describe any register in uerf error packets
+sitem
+name aqhese_internal_3
+class composite
+size 1
+display hex
+type register
+map
+	field
+size 1
+class coded
+map
+	1 "SBE ERROR DETECTED"
+	field
+size 1
+class coded
+map
+	1 "DBE ERROR DETECTED"
+	field
+size 1
+class coded
+map
+	1 "ERROR FORCED DURING MEM WRITE"

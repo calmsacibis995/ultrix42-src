@@ -1,0 +1,511 @@
+.TH comp 1mh
+.SH Name
+comp \- compose a message
+.SH Syntax
+.B comp 
+[
+.I msg
+] [
+.I +folder
+] [
+.I options
+]
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.\" .SH Arguments
+.\" .IP
+.\" If you do not supply a \fImsg\fR or \fI+folder\fR argument,
+.\" .PN comp
+.\" creates a new draft in your draft folder, or in the
+.\" .PN draft
+.\" file if you do not have a draft folder set up.
+.\"
+.\"
+.\" .IP \fImsg\fR 10
+.\" The message that 
+.\" .PN comp 
+.\" uses as the basis of the new draft.
+.\" If you do not have a draft folder set up,
+.\" .PN comp
+.\" takes the named message from your current folder.
+.\" If you do have a draft folder set up, 
+.\" .PN comp 
+.\" takes the message from your draft folder.
+.\" The mail system asks you what you want to do with the existing message.
+.\"
+.\"
+.\" .IP \fI+folder\fR 10
+.\" The folder from which 
+.\" .PN comp 
+.\" takes the new draft message.
+.\" The
+.\" .PN comp
+.\" command will take the current message from the named folder
+.\" as the basis of the new draft.
+.\" The mail system asks you what you want to do with the existing message.
+.\" You cannot supply both \fImsg\fR and \fI+folder\fR arguments.
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "comp command"
+.NXR "creating messages"
+Use
+.PN comp
+to create a new message for mailing.  
+When you run 
+.PN comp ,
+it provides a message template for you to fill in 
+and invokes an editor so that you can complete the message.
+.\"
+.\" ***Info from old Arguments section follows
+.PP
+The 
+.PN comp
+command normally creates the new message in your draft folder,
+if you have one set up, or in the 
+.PN draft 
+file if you do not have a draft folder set up.
+If you wish to use an existing message as the basis of your new
+draft message, you can use the 
+.I msg
+or 
+.I +folder
+arguments.
+The
+.I +folder 
+argument takes the current message in the named folder
+as the basis of the new draft message.
+The 
+.I msg 
+argument takes the named message from your draft folder, 
+or if you do not have a draft folder set up, from your current folder.
+In both cases, the mail system asks you 
+what you want to do with the existing message.
+You cannot use the 
+.I msg
+and 
+.I +folder
+arguments together.
+.\"
+.\" ***End of info from old Arguments section
+.\"
+.PP
+A mail message consists of a mail header and the body of the message.  
+The mail header contains all the information that
+determines who is going to receive the mail message.
+.\"
+.\" and what transport system it is carried over (X.400 or SMTP).
+.\"
+It can also give the recipients some information about the sender.  
+The body of the message is the actual text of the message 
+that you want to send.  
+The header is separated from the body of the text 
+by a blank line or by a line of dashes.  
+The header must be separated from the body of the message in this way 
+for the message to be identified properly when it is
+sent; see 
+.MS send 1mh .
+.PP
+The standard message header looks like this:
+.EX
+To:
+cc:
+Subject:
+.\" X-mts:
+--------
+.EE
+.PP
+You can specify an alternative mail header by setting up a file called
+.PN components 
+in your Mail directory.  
+This is used instead of the default mail header by
+.PN comp .
+.PP
+If you do not have a draft folder set up, 
+.PN comp 
+creates your new draft in a file called 
+.PN draft
+in your Mail directory.
+This file must be empty before you can create a new draft,
+which means that you can only store one draft at a time.
+If it is not empty, the mail system will ask you 
+what you want to do with the existing contents.
+The options are:
+.TP 10
+\f(CWquit\fR
+Aborts
+.PN comp ,
+leaving the draft intact.
+.TP 10
+\f(CWreplace\fR
+Replaces the existing draft with the appropriate message form.
+.TP 10
+\f(CWuse\fR
+Allows you to edit the existing draft.
+.TP 10
+\f(CWlist\fR
+Displays the draft message.
+.TP 10
+\f(CWrefile\fR
+Refiles the existing draft message in the specified folder,
+and provides a new message form for you to complete.
+.PP
+If you want to have more than one draft at a time, 
+you can set up a draft folder in your 
+.PN \&.mh_profile .
+This allows you to keep as many unsent drafts as space allows,
+and still create new messages as you wish.
+To do this, make sure that the following line is in your
+.PN \&.mh_profile :
+.EX
+Draft-folder: +drafts
+.EE
+For more information on how to do this, see 
+.MS mh_profile 5mh .
+.PP
+If you set up a draft folder, 
+all draft messages are created in that folder.
+If you decide not to send the draft, by typing
+\f(CWquit\fR at the \f(CWWhat now?\fR prompt,
+the message is stored in the draft folder.
+You can then re-edit the message, or send it at a later date,
+by using the 
+.B \-use
+option to 
+.PN comp .
+.\"
+.\" ***COMMENTED OUT
+.ig
+.PP
+You can specify whether you wish to send the
+message to X.400 or non-X.400 users by entering a
+value in the \f(CWX-mts:\fR field of the header.
+There are two valid entries:
+\f(CWx400\fR for messages to be sent to X.400 users;
+\f(CWsmtp\fR for messages to non-X.400 users.
+These entries are case-insensitive.
+You cannot send a single message to both X.400
+and non-X.400 users; you must choose one or the other.
+If you do not make an entry in the \f(CWX-mts:\fR field, 
+or if you make an invalid entry,
+the default is to assume non-X.400 transport.
+If you do enter a valid value in the \f(CWX-mts:\fR field, 
+this will override any option you specify later by using the
+.B \-mts
+.I mtsname
+option with
+.PN send
+or
+.PN whom .
+If you wish to override the entry in the \f(CWX-mts:\fR field, 
+you must edit the draft message to remove or change it.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-draftfolder \fI+folder\fP" 10
+.PD 0
+.IP \-nodraftfolder 10
+.PD
+Specifies the folder in which the draft message is created.
+If you do not send the draft, it is stored in this folder.
+.IP
+This option is usually set up in your 
+.PN \&.mh_profile .
+See
+.MS mh_profile 5mh 
+for more information.
+If you have this option set up, you can
+override it by using the 
+.B \-nodraftfolder
+option.
+.\"
+.\"
+.IP \-draftmessage\ \fIfile\fP
+Specifies the name of a file in which a draft message is created.
+If no absolute pathname is given, this file 
+is assumed to be in your Mail directory.
+If the file already exists, the mail system will ask you 
+what you want to do with its contents
+before the draft message is created.
+.IP
+If the named file does not contain a message header, the 
+.B \-draftmessage
+option does not create one.
+If you want to create a message in an empty file, use the 
+.B \-file
+option.
+You cannot use 
+.B \-draftmessage
+to specify a file name with the 
+.B \-draftfolder
+option.
+.\"
+.\"
+.IP \-editor\ \fIeditor-name\fP
+Specifies the editor used to create the draft message.
+The default editor is
+.PN prompter ;
+see
+.MS prompter 1mh .
+You can specify any approved ULTRIX editor as an alternative.
+.IP
+If you regularly use the same editor, you can specify it 
+in the \f(CWEditor:\fR
+line of your 
+.PN \&.mh_profile .  
+The following entry sets up
+.PN vi 
+as the editor you use to compose mail messages:
+.EX
+Editor: /usr/ucb/vi
+.EE
+.\"
+.\"
+.IP \-file\ \fIfilename\fP
+Uses the named file to create the draft message in.
+If no absolute pathname is given, 
+the file is assumed to be in your Mail directory.
+If the file already exists, the mail system will ask you
+what you want to do with its contents before the draft is created.
+.IP
+Unlike the 
+.B \-draftmessage
+option, this option creates a message header for a new draft.
+This means that you can create a draft in an empty file
+and send it successfully.
+.\"
+.\"
+.IP \-form\ \fIform-file\fP
+Specifies an alternative mail header for your draft.
+The named \fIform-file\fP contains a message header, which 
+.PN comp
+uses when it creates the draft message.
+If no absolute pathname is given, it is assumed that the 
+file is in your Mail directory.
+.IP
+If you do not specify the
+.B \-form
+option, 
+.PN comp
+takes the message header from the 
+.PN components
+file in your Mail directory, or, if this does not exist, 
+it uses the system default header.
+.IP
+You cannot use the
+.B \-form
+option with either a 
+.I +folder
+or a 
+.I msgs
+argument.
+.\"
+.\"
+.IP \-help
+Prints a list of the valid options for this command.
+.\"
+.\"
+.IP \-noedit
+Creates a draft without invoking an editor.
+You are placed immediately at the 
+\f(CWWhat now?\fP prompt, without being given the
+opportunity to edit the draft at all.
+This option is only useful if you are sending an existing
+draft using the
+.B \-use 
+option to 
+.PN comp .
+Otherwise it will produce a draft with no addresses and no content.
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.ig
+.IP \-template\ [\fIeditorname\fB]
+Helps you to construct correct X.400 addresses in message headers.
+For each appropriate field, the
+.PN template
+program first asks whether you want to create
+an address in that field;
+if you do, it will prompt you for the individual
+attributes of an X.400 address.
+When you have completed all the addresses for your message,
+exit from
+.B \-template
+utility, and the addresses are entered in the correct fields of
+your draft message.
+You can then continue to create the message in the usual way.
+.IP
+You can specify your own choice of editor to fill in
+the template by using the
+.B \-template
+.I editorname
+option.
+This can be different from the editor you use for the
+body of the mail message.
+The default editor for
+.B \-template
+is
+.PN prompter .
+If you regularly use the same editor for the template
+you can specify it in the
+\f(CWTemplate\-Editor:\fR
+line of your
+.PN \&.mh_profile .
+See
+.MS template 1
+for more information.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.IP \-use 10
+.PD 0
+.IP \-nouse 10
+.PD
+Uses an existing draft as the new draft message.
+If you have saved a previous unsent draft in
+a drafts folder or in the
+.PN draft
+file, you can edit and send it using the
+.B \-use
+option.
+The previous draft is displayed on your screen and
+the editor is invoked to allow you to edit the draft.
+When you exit from the editor, you receive the
+\f(CWWhat now?\fP prompt in the usual way. 
+.IP
+If you have a draft folder set up, or specify one with the 
+.B \-draftfolder
+option, 
+the mail system will use the current draft in that folder as
+the new draft message.
+If you do not have a draft folder, it will use the contents of the 
+.PN draft
+file.
+If you do not want to use the current message in a folder,
+you can supply a message number.
+You can also use a message in a file by giving the file name
+using the
+.B \-file
+or the
+.B \-draftmessage 
+options.
+.IP
+If you want to send an existing draft without editing it
+further, you can supply the
+.B \-use
+option in conjunction with the
+.B \-noedit
+option.
+This will place you at the \f(CWWhat now?\fP prompt
+without invoking an editor.
+.\"
+.\"
+.IP \-whatnowproc\ \fIprogram\fP
+.PD 0
+.IP \-nowhatnowproc
+.PD 
+Specifies an alternative 
+.PN whatnow
+program.
+Normally,
+.PN comp
+invokes the default
+.PN whatnow
+program.
+See 
+.MS whatnow 1mh
+for a discussion of available options.  
+You can specify your own alternative 
+to the default program using the 
+.B \-whatnowproc 
+.I program
+option.
+If you do specify your own program, you should not call it 
+.PN whatnow .
+.IP
+You can suppress the 
+.PN whatnow 
+program entirely by using the 
+.B \-nowhatnowproc
+option.
+However, as the program normally starts the initial edit, the
+.B \-nowhatnowproc
+option will prevent you from editing the message.
+.\"
+.\"
+.PP
+The defaults for 
+.PN comp
+are:
+.IP
+.I +foldername
+defaults to the current folder
+.br
+.I msg
+defaults to the current message
+.br
+.B \-nodraftfolder
+.br
+.B \-nouse
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:\fR+To determine your Mail directory
+Draft-Folder\fR:+To find the default draft folder
+Editor:\fR+To override the default editor
+.\"
+.\" Template-Editor:+To override the default editor for the template
+.\"
+Msg-Protect\fR:+To set mode when creating a new message (draft)
+fileproc:\fR+Program to refile the message
+whatnowproc:\fR+Program to ask the \*(lqWhat now?\*(rq questions
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN /usr/lib/mh/components
+The default system template for draft messages.
+.TP
+.PN <mh\-dir>/components
+The user-supplied alternative to the default draft template.
+.TP
+.PN $HOME/\&.mh_profile
+Your user profile.
+.TP
+.PN <mh\-dir>/draft
+The draft file.
+.\" .TP 
+.\" .PN /usr/bin/mh/template
+.\" The template program.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+dist(1mh), forw(1mh), prompter(1mh), repl(1mh), send(1mh), 
+.\" template(1),
+whatnow(1mh), mh_profile(5mh)

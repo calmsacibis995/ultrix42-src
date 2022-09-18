@@ -1,0 +1,252 @@
+.TH named 8
+.SH Name
+named \- Internet name domain server daemon
+.SH Syntax
+.B /usr/etc/named
+[
+.B \-d
+.I level#
+] [
+.B \-p
+.I port#
+] [
+.B \-b
+.I bootfile
+][
+.B \-n
+][
+.B \-a
+.I type.version
+]
+.SH Description
+.NXR "name" "daemon"
+The
+.PN named
+daemon is the Internet domain name server for the BIND/Hesiod service.
+Without any arguments,
+.PN named
+reads the default boot file
+.PN /etc/named.boot
+and any initial data from the BIND/Hesiod data base files.
+.PN Named 
+then listens for queries.
+.PP
+The boot file specifies where the BIND/Hesiod server is to get
+its initial data.  See the Example section.
+.PP
+The master data files consist of entries of the following form:
+.EX
+$include \fIfile\fR
+$origin \fIdomain\fR
+\fIdomain ttl addr-class entry-type resource-record-data\fR
+.EE
+The
+.PN include
+entry is useful for separating data into separate files.
+The
+.PN origin
+entry is useful for placing more than one domain in a data file.
+It can also be used to set the reverse network number origin.
+The fields are:
+.IP file 13
+This is the name of the file to be included.
+.IP domain 
+This is the domain name.
+.\" A period (.) signifies the root domain.
+An at sign (@) signifies the current origin.
+A name refers to the standard domain name.
+If the domain name does not end with a period,
+the current origin is appended to the domain.
+A domain name ending with a period is the complete BIND domain name
+(fully qualified) and thus does not get an extension appended to it.
+.IP ttl
+This field is an optional integer specifying the time to live.
+If no time to live is specified,
+the default is obtained from the SOA entry.
+.IP addr-class
+This field is the object class type.
+There are three classes:
+.RS
+.IP IN 11
+Objects connected to the DARPA Internet
+.IP HS 11
+Hesiod naming service data
+.IP ANY 11
+All classes
+.RE
+.IP entry-type
+The most common entries for this field are listed
+below.  The
+.PN resource-record-data
+field, however, must correspond with the entry type:
+.RS
+.IP A 11
+Host address
+.IP CNAME
+Canonical name for an alias
+.IP HINFO
+Host information
+.IP MX
+Mail exchanger
+.IP NS
+Authoritative name server
+.IP PTR
+Domain name pointer
+.IP SOA
+Start of a zone of authority
+.IP TXT
+Hesiod text
+.IP WKS
+Well-known service description
+.RE
+.PP
+The following signals have the specified effect when sent to the
+server
+.PN named
+process using the
+.PN kill
+command:
+.IP SIGXFSZ 13
+Causes the server to reload only the databases that have changed.
+.IP SIGHUP 13
+Causes the server to read 
+.PN named.boot 
+and reload database.
+.IP SIGINT
+Dumps the current data base and cache to
+.PN /var/tmp/named_dump.db .
+.IP SIGIOT
+Dumps
+.PN named
+statistics to
+.PN /var/tmp/named.stats .
+.IP SIGUSR1
+Turns on debugging.
+Each time the SIGUSR1 signal is issued,
+the debug level increments by one.
+Debugging information is dumped to 
+.PN /var/tmp/named.run .
+.IP SIGUSR2
+Turns off debugging.
+.SH Options
+.IP "\fB\-b \fIbootfile\fR" 13
+Names of the boot file.
+If no boot file is specified,
+the default is
+.PN /etc/named.boot .
+.IP "\fB\-d \fIlevel#\fR"
+Prints debugging information.
+A number after the 
+\fB\-d\fR 
+option determines the level of messages printed.
+It is a good idea to run the
+.PN named
+daemon with the \-d option in the background.
+.IP "\fB\-p \fIport#\fR"
+Specifies the port number.
+The default is the standard port number listed in the
+.PN /etc/services
+file.
+.IP "\fB\-n\fR"
+Runs 
+.PN named
+in network safe mode.  All HS class queries sent over the
+network are authenticated.  Non-authenticated queries for
+HS information from hosts other than local host are not 
+answered.  Non-authenticated requests for zone transfers are 
+ignored.
+.IP "\fB\-a \fItype.version\fR"
+Specifies the default authentication type.  When authenticated 
+queries are formed, 
+.PN named
+needs to know what type of authentication to use.  The 
+.I type
+parameter specifies the form of authentication.  The
+.I version
+parameter specifies the version of the 
+.I type
+to use.  The supported forms of authentication are:
+.RS
+.IP type 10
+Kerberos
+.IP version 
+One
+.RE
+.SH Examples
+The following is an example of a boot file:
+.EX 0
+.nf
+;
+;     boot file for name server
+;
+; type     domain                 source file or host
+;
+primary    cities.us              hosts.db
+;
+primary    2.10.in-addr.arpa      hosts.rev
+;
+primary    0.0.127.in-addr.arpa   named.local
+;
+secondary  cc.cities.us           10.2.0.78 128.32.0.10
+;
+; load the cache data last
+cache       .                     named.ca	
+.fi
+.EE
+Entries beginning with a semicolon are comment lines.
+In this example,
+the first line that is not a comment specifies that this system is
+the primary authoritative BIND server for the
+domain
+.PN cities.us .
+This line also specifies that the file
+.PN hosts.db
+contains authoritative data for the
+.PN cities.us
+domain.
+Domain names in the file
+.PN hosts.db
+are relative to the origin,
+such as
+.PN cities.us 
+in the preceding example.
+.PP
+The second and third non-comment entries (beginning with
+.PN primary )
+show the
+.PN in-addr.arpa
+domain in reverse order.
+This allows address to name mapping.
+.PP
+The fourth non-comment line specifies that all authoritative data under
+.PN cc.cities.us
+is to be transferred from the primary master server at IP address
+.PN 10.2.0.78
+to the secondary server.
+If the transfer fails, the secondary server will then try the
+master server at address
+.PN 128.32.0.10.
+There can be up to 10 IP addresses listed.
+.PP
+The cache entry specifies that the data in
+.PN named.ca
+is to be placed in the cache.
+This would include well known data such as the locations
+of root domain servers.
+.SH Files
+.TP 20
+.PN /var/dss/namedb/named.boot 
+Name server configuration boot file
+.TP 
+.PN /etc/named.pid
+Process ID number
+.TP
+.PN /var/tmp/named.run
+Debug output
+.TP
+.PN /var/tmp/named_dump.db
+Dump of the BIND server's cache
+.SH See Also
+kill(1), signal(3c), resolver(3), hesiod.conf(5), resolv.conf(5)
+.br
+.I Guide to the BIND/Hesiod Service

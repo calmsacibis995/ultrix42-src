@@ -1,0 +1,18 @@
+.\" SCCSID: @(#)trman.1	8.1	9/11/90
+.TH trman 1 "" "" Unsupported
+.SH Name
+trman \- translate version 6 manual macros to version 7 macros
+.SH Syntax
+.B trman
+[ \fIfile\fP  ]
+.SH Description
+The
+.PN trman
+command reads the input \fIfile\fP, 
+which should be nroff/troff input and attempts
+to translate the version 6 manual sections therein to version 7 format.
+It is largely successful, but seems to have trouble
+with indented paragraphs and complicated font control.
+You should expect to have to fix up long sections by hand somewhat.
+.SH See Also
+man(7)

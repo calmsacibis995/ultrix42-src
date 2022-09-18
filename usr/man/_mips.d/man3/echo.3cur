@@ -1,0 +1,31 @@
+.TH echo 3cur 
+.SH Name
+echo, noecho \- enable/disable terminal echo
+.SH Syntax
+.B
+int echo(\|)
+.PP
+.B
+int noecho(\|)
+.SH Description
+.NXR "echo subroutine"
+.NXR "noecho subroutine"
+The
+.PN echo 
+routine enables echoing of characters typed by the user.
+The
+.PN noecho 
+routine disables echoing of characters typed by the user.
+.PP
+Initially, input characters are echoed.
+Subsequent calls to 
+.PN echo
+and 
+.PN noecho 
+do not flush typeahead.
+.SH Return Values
+The
+.PN echo
+and
+.PN noecho
+functions return OK on success and ERR on error.

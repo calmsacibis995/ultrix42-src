@@ -1,0 +1,139 @@
+./" last edited by Kent Jackson 2/28/90
+.TH passwd 1
+.SH Name
+passwd \- create or change password
+.SH Syntax
+.B passwd [\fB\-aefs\fP]
+[\|\fIname\fR\|]
+.SH Description
+.NX R "passwd command"
+.NX R "passwd command" "See also yppasswd command"
+.NX R "password" "creating"
+.NX R "password" "changing"
+The
+.PN passwd
+command lets you or the superuser change your password. 
+When you enter the 
+.PN passwd
+command, the program prompts you for the old password and then for the
+new password.  Next, the program asks you for the new password again, to
+verify that you have typed it correctly.  Note that the passwords are not
+displayed on the screen.
+.PP
+Your new password must meet the length requirements specified by the
+superuser.  To review these requirements, refer to the
+.PN /etc/svc.conf
+file. (This is a read-only file.)
+.PP
+If your system is running with increased security, you may have to 
+choose a password from a list of randomly generated passwords, or you
+may need 
+authorization to change your password.  At higher security levels,
+you may be prohibited from changing your password until its minimum
+lifetime has expired, as specified in the Authorization
+Database. 
+.PP
+If you are running the BIND/Hesiod service, your password will be 
+updated automatically on the server.
+.SH Options
+.TP 5
+.B \-a
+Supply a list of randomly generated passwords.  (See the
+Examples section.)
+.TP 
+.B \-e
+Use an extended protocol when communicating with a prompter 
+program.  As a result, the standard input and output (used by 
+.PN login)
+is sent to
+this program.
+.TP
+.B \-f
+Change the finger information, not the password. The finger
+program provides information about current ULTRIX users, such as login
+and terminal name, idle time and office location.  
+.TP
+.B \-s
+Change the login shell of the password file, not the password entry. 
+.SH Restrictions
+If you use a hardcopy terminal, you must destroy all print outs of
+valid passwords.
+.SH Examples
+The following example illustrates the 
+.B \-a 
+option, which displays a list of randomly generated passwords and their
+suggested pronunciation with hyphens.  The hyphens delineate the
+syllables of the passwords:
+.br
+.ne 5 
+.EX 5
+passwd \-a abcd
+Changing password for abcd
+
+Here are some suggested passwords:
+
+ryegd           ryeg-di
+aswurku         a-swurk-u
+ryedok          ryed-ok
+teleccs         tel-ec-cos
+wahislas        wa-hi-slas
+
+Enter new password:
+.EE
+.SH Diagnostics
+.TP 5
+.B "Password must be at least 6 characters long, password unchanged"
+Your password does not meet the minimum
+length requirement specified in 
+.PN /etc/svc.conf .
+.TP 5
+.B "Warning: Only the first 8 characters of the password are significant"
+Your password exceeds the maximum length requirement specified in
+.PN /etc/svc.conf .
+.TP
+.B "Permission denied" 
+You do not have the privilege to change your password. The minimum
+lifetime has not expired.
+.TP
+.B "Password is not different enough, unchanged"
+Your new password must be different from your old password.
+.TP
+.B "Password must be different than logname, and not resemble previous password"
+Your new password must be different from your login name.
+.TP
+.B "Verification failed, password unchanged"
+You misspelled the verification of your new password. 
+.SH Files
+.TP 20 
+.PN /etc/passwd
+Password file
+.TP
+.PN /etc/auth.dir
+Authorization data base directory
+.TP
+.PN /etc/auth.pag
+Authorization data base page
+.TP
+.PN /etc/svc.conf
+Data base service selection and security configuration file
+.NT
+Only the superuser and members of the group
+.PN authread
+can access the 
+.PN /etc/auth.dir
+and
+.PN /etc/auth.pag
+files.
+.NE
+.SH See Also
+chfn(1), chsh(1), finger(1), login(1), shexp(1), yppasswd(1yp), passwd(5yp), 
+edauth(8), vipw(8)
+.br 
+\fIGuide to System Environment Setup\fP
+.br
+\fISecurity Guide for Users\fP
+.br
+\fISecurity Guide for Administrators\fP
+.br
+"Password Security: A Case History",
+\fISupplementary Documents, Volume 3: System Manager\fP

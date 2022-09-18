@@ -1,0 +1,94 @@
+.\" SCCSID: @(#)rlogin.1c	8.1	9/11/90
+.TH rlogin 1c
+.SH Name
+rlogin \- remote login
+.SH Syntax
+.B rlogin 
+\fIrhost\fR [\fB\-e\fR\fI\|c\fR\|] [\-8] [\-\fBL\fR] [\fB\-l\fI username\fR\|]
+.br
+.I rhost
+[\fB\-e\fR\fI\|c\fR\|] [\-8] [\-\fBL\fR] [\fB\-l\fI username\fR\|]
+.SH Description
+.NXR "rlogin command"
+.NXA "rlogin command" "dgate command"
+.NXA "rlogin command" "tip command"
+.NXA "rlogin command (general)" "rlogin command"
+.NXR "logging in" "to remote system"
+The
+.PN rlogin
+command connects your terminal on the current local host system,
+.I lhost,
+to the remote host system,
+.I rhost.
+.PP
+Each host has a file 
+.PN /etc/hosts.equiv
+which contains a list of 
+.I rhosts
+with which it shares account names.
+The host names must be the standard names as described in
+.MS rsh 1c .
+When you use the
+.PN rlogin
+command to login as the same user on an equivalent host, you do not need
+to specify a password.
+.PP
+You can also have a private equivalence list in a file \&.rhosts
+in your login directory.  Each line in this file should contain the 
+.I rhost
+name and a \fIusername\fP separated by a space, giving additional cases
+where logins without passwords are permitted.
+If the originating user is not equivalent to the remote user, then
+the remote system prompts for a login and password as in
+.MS login 1 .
+.PP
+To avoid security problems, the \&.rhosts file must be owned by
+either the remote user or root and it may not be a symbolic link.
+.PP
+Your remote terminal type is the same as your local
+terminal type, which is specified by your environment TERM variable.
+Except for delays, all echoing takes place at the remote site so
+the rlogin is transparent.  Flow control by 
+.CT S 
+and \<CTRL/Q\>, and flushing of input and output on interrupts
+are handled properly.
+The optional argument \-8 allows an eight-bit input data path at all times.
+Otherwise, parity bits are stripped except when the remote site's stop
+and start characters are other than 
+.CT S 
+and 
+\<CTRL/Q\>.
+A tilde followed by a dot (~.) on a separate line disconnects
+from the remote host, where the tilde (~)
+is the escape character.  Similarly, a tilde followed by
+\<CTRL/Z\> (~ \<CTRL/Z\>), where
+.CT Z
+is the suspend character, suspends the rlogin session.
+.PP
+Substitution of the delayed-suspend character, which is normally 
+\<CTRL/Y\>,
+for the 
+suspend character suspends the send portion of the rlogin, but allows output
+from the remote system.
+A different escape character may
+be specified by the
+.B \-e
+option.
+There is no space separating this option flag and the argument
+character.
+.SH Options
+.IP \fB\-8\fR 20
+Allows an 8-bit input data path at all times.
+.IP \fB\-e\fIc\fR 20 
+Uses the specified character as the 
+.PN rlogin 
+escape character.  If not
+specified, uses a tilde (~).
+.IP "\fB\-l\fI username\fR" 20
+Logs you in as the specified user, not as your user login name.
+.IP \fB\-L\fR 20
+Runs session in litout mode.
+.SH Files
+/usr/hosts/*		for \fIrhost\fP version of the command
+.SH See Also
+rsh(1c)

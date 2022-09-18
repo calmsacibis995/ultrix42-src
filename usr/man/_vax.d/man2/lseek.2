@@ -1,0 +1,105 @@
+.\" SCCSID: @(#)lseek.2	2.1	3/10/87
+.TH lseek 2
+.SH Name
+lseek, tell \- move read or write pointer
+.SH Syntax
+.nf
+#include <sys/types.h>
+#include <unistd.h>
+.PP
+pos = lseek(\fId, offset, whence\fP)
+.br
+off_t pos;
+.br
+int \fId, whence\fP;
+.br
+off_t \fIoffset\fP;
+.PP
+pos = tell(\fId\fP)
+.br
+off_t pos;
+.br
+int \fId\fP;
+.fi
+.SH Description
+.NXR "lseek system call"
+.NXR "tell system call"
+.NXR "file pointer" "moving"
+The system call
+.PN lseek
+moves the file pointer associated with a
+file or device open for reading or writing.  
+.PP
+The descriptor 
+.I d
+refers to a file or device open for reading or writing.
+The
+.PN lseek
+system call sets the file pointer of
+.I d
+as follows:
+.IP \(bu 5
+If
+.I whence
+is SEEK_SET, the pointer is set to
+.I offset
+bytes.
+.IP \(bu 5
+If
+.I whence
+is SEEK_CUR the pointer is set to its current location plus
+.IR offset .
+.IP \(bu 5
+If
+.I whence
+is SEEK_END, the pointer is set to the size of the
+file plus
+.IR offset .
+.PP
+Seeking beyond the end of a file and then writing to the file 
+creates a gap or hole that does not occupy physical space
+and reads as zeros.
+.PP
+The 
+.PN tell
+system call returns the offset of the current byte relative to the
+beginning of the file associated with the file descriptor.
+.SH Environment
+.SS System Five
+If you compile a program in the System Five environment,
+an invalid 
+.I whence 
+argument causes SIGSYS to be sent.  This complies with
+the behavior described in the System V Interface 
+Definition (SVID), Issue 1.
+.SH Return Values
+Upon successful completion, a long integer
+(the current file pointer value) is returned.  This pointer
+is measured in bytes from the beginning of the file, where
+the first byte is byte 0.  (Note that some devices are incapable
+of seeking.  The value of the pointer associated with such
+a device is undefined.)
+If a value of \-1 is returned, \fIerrno\fP is set to indicate
+the error.
+.SH Diagnostics
+The
+.PN lseek
+system call fails and the file pointer remains unchanged under the
+following conditions:
+.TP 15
+[EBADF] 
+The
+.I fildes 
+is not an open file descriptor.  
+.TP 15
+[EINVAL]
+The
+.I whence
+is not a proper value.
+.TP 15
+[ESPIPE]
+The
+.I fildes
+is associated with a pipe or a socket.
+.SH See Also
+dup(2), open(2)

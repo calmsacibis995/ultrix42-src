@@ -1,0 +1,170 @@
+.\" SCCSID: @(#)rshd.8c	8.1	9/11/90
+.TH rshd 8c
+.SH Name
+rshd \- remote shell server
+.SH Syntax
+.B /etc/rshd
+.SH Description
+.NXR "rshd server"
+.NXS "remote shell server" "rshd server"
+.NXAM "rcmd subroutine" "rshd server"
+.NXAM "rsh program" "rshd server"
+The
+.PN rshd
+command is the server for the 
+.MS rcmd 3x 
+routine and, consequently, for the
+.MS rsh 1c 
+program.  The server provides remote execution facilities
+with authentication based on privileged port numbers.
+.PP
+The
+.PN rshd
+is invoked by 
+.MS inetd 8c
+when it receives a connection on
+the port indicated in
+the cmd service specification.
+When a service request is received, the following protocol
+is initiated:
+.NXR "rshd server" "protocol"
+.IP 1)
+The server checks the client's source port.
+If the port is not in the range 0-1023, the server
+aborts the connection.
+.IP 2)
+The server reads characters from the socket up
+to a null (`\e0') byte.  The resultant string is
+interpreted as an ASCII number, base 10.
+.IP 3)
+If the number received in step 1 is non-zero,
+it is interpreted as the port number of a secondary
+stream to be used for the 
+.BR stderr .
+A second connection is then created to the specified
+port on the client's machine.  The source port of this
+second connection is also in the range 0-1023.
+.IP 4)
+The server checks the client's source address.
+If the address is associated with a host for which no
+corresponding entry exists in the host name data base
+the server aborts the connection.
+For further information, see
+.MS hosts 5 ,
+.IP 5)
+A null terminated user name of at most 16 characters
+is retrieved on the initial socket.  This user name
+is interpreted as a user identity to use on the
+.BR server 's
+machine.
+.IP 6)
+A null terminated user name of at most 16 characters
+is retrieved on the initial socket.  This user name
+is interpreted as the user identity on the
+.BR client 's
+machine.
+.IP 7)
+A null terminated command passed to a
+shell is retrieved on the initial socket.  The length of
+the command is limited by the upper bound on the size of
+the system's argument list.  
+.IP 8)
+The
+.PN rshd
+command validates the user according to the following steps.
+.NXR "rshd server" "validating users"
+The remote user name is looked up in the password file
+and a
+.PN chdir
+is performed to the user's home directory.  If either
+the lookup or 
+.PN chdir
+fail, the connection is terminated.
+If the user is not the superuser, (user id 0), the file
+.PN /etc/hosts.equiv 
+or 
+.PN /etc/hosts.lpd 
+is consulted for a list of hosts
+considered equivalent.
+If the client's host name is in this file, the
+authentication is considered successful.  If the lookup
+fails, or the user is the superuser, the file 
+.PN .rhosts ,
+in the home directory of the remote user, is checked for
+the machine name and identity of the user on the client's
+machine.  If the lookup fails, the connection is terminated.
+.IP 9)
+A null byte is returned on the connection associated
+with the
+.B stderr 
+and the command line is passed to the normal login
+shell of the user.  The
+shell inherits the network connections established
+by
+.PN rshd .
+.SH Diagnostics
+.NXR "rshd server" "diagnostics"
+All diagnostic messages are returned on the connection
+associated with the
+.BR stderr ,
+after which any network connections are closed.
+An error is indicated by a leading byte with a value of
+1 (0 is returned in step 9 above upon successful completion
+of all the steps prior to the command execution).
+.PP
+.B "locuser too long"
+.br
+The name of the user on the client's machine is
+longer than 16 characters.
+.PP
+.B "remuser too long"
+.br
+The name of the user on the remote machine is
+longer than 16 characters.
+.PP
+.B "command too long"
+.br
+The command line passed exceeds the size of the argument
+list (as configured into the system).
+.PP
+.B "Hostname for your address unknown."
+.br
+No entry in the host name database existed for
+the client's machine.
+.PP
+.B "Login incorrect."
+.br
+No password file entry for the user name existed.
+.PP
+.B "No remote directory."
+.br
+The 
+.PN chdir
+command to the home directory failed.
+.PP
+.B "Permission denied."
+.br
+The authentication procedure described above failed.
+.PP
+.B "Can't make pipe."
+.br
+The pipe needed for the 
+.BR stderr 
+was not created.
+.PP
+.B "Try again."
+.br
+A
+.I fork
+by the server failed.
+.PP
+.B "/bin/sh: ..."
+.br
+The user's login shell could not be started.
+.SH Restrictions
+.NXR "rshd server" "restricted"
+The authentication procedure used here assumes the integrity
+of each client machine and the connecting medium.  This is
+insecure, but is useful in an open environment.
+.SH See Also
+rsh(1c), rcmd(3x), services(5), inetd(8c)

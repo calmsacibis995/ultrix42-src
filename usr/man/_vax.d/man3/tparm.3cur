@@ -1,0 +1,15 @@
+.TH tparm 3cur 
+.SH Name
+tparm \- instantiate a string 
+.SH Syntax
+.B
+char *tparm(str, p1, p2, ... )
+.SH Description
+.NXR "tparm subroutine"
+This function 
+instantiates the string
+.PN str
+with the parameters p1, p2, ... .
+A pointer is returned which points to the result of 
+.PN str
+with the parameters applied.

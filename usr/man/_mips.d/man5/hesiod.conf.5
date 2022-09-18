@@ -1,0 +1,52 @@
+./" This manpage is new for FT2 of V4.0
+./" source material provided by sue yeghiayan
+./" edited and formatted by jeff mandell (11/7/89)
+.TH hesiod.conf 5 
+.SH Name
+hesiod.conf \- Hesiod configuration file 
+.SH Description 
+The Hesiod configuration file,
+.PN /etc/hesiod.conf, 
+contains
+.NXR "Hesiod configuration file"
+information read by the Hesiod routines the first time they
+are invoked by a process.  The Hesiod file consists of ASCII
+text.
+.PP
+The 
+.PN /etc/hesiod.conf 
+file is required if your system is running
+BIND/Hesiod.  This file must contain both the left-hand side and
+right-hand side of a Hesiod query.
+.PP
+The 
+.PN /etc/hesiod.conf 
+file includes the two following entry formats:  
+.TP 10
+.PN rhs
+This line specifies the right-hand side of a Hesiod
+query.  It consists of the BIND domain name preceded by a
+dot (.).
+.TP 10
+.PN lhs
+This entry is not currently being used but exists for
+compatibility purposes.
+.PP  
+This file is created by 
+.MS bindsetup 8 .
+.SH Examples
+The following is an example
+.PN hesiod.conf
+file in the 
+.PN dec.com
+BIND domain.
+.EX
+rhs=.dec.com
+lhs=
+.EE
+.SH Files
+.PN /etc/hesiod.conf
+.SH See Also
+hesiod(3), bindsetup(8)
+.br
+.I Guide to the BIND/Hesiod Service

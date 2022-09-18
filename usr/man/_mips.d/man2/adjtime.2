@@ -1,0 +1,91 @@
+.\" SCCSID: @(#)adjtime.2	8.2	4/3/91
+.TH adjtime 2
+.SH Name
+adjtime \- correct the time to allow synchronization of the system clock
+.SH Syntax
+.B #include <sys/time.h>
+.PP
+.B adjtime(delta, olddelta)
+.br
+.B struct timeval *delta; 
+.br
+.B struct timeval *olddelta;
+.SH Description
+.NXR "adjtime system call"
+.NXA "gettimeofday system call" "adjtime system call"
+.NXR "clock" "synchronizing"
+The
+.PN adjtime
+system call
+changes the system time, as returned by
+.PN gettimeofday ,
+moving it backward or forward 
+by the number of microseconds corresponding to the timeval
+\fIdelta\fP.
+.PP
+The time is maintained by incrementing it with a machine-dependent tick
+every clock interrupt.
+If \fIdelta\fP is negative, the clock is
+slowed down by incrementing it in smaller ticks until
+the correction is made.
+If \fIdelta\fP is positive, a larger tick
+is used.
+Thus, the time is always
+a monotonically increasing function.
+A time correction from an earlier call to 
+.PN adjtime
+may not be finished when 
+.PN adjtime
+is called again.
+If \fIolddelta\fP is nonzero,
+then the structure pointed to will contain, upon return, the
+number of microseconds still to be corrected
+from the earlier call.
+.PP
+This call can be used in time servers that synchronize the clocks
+of computers in a local area network.
+Such time servers would slow down the clocks of some machines
+and speed up the clocks of others 
+to bring them to the average network time.
+.PP
+The 
+.PN adjtime
+call is restricted to the superuser.
+.SH Note
+Time is incremented 
+in 3906-microsecond (us) ticks on RISC and 10000 us ticks on VAX.
+When
+.PN adjtime
+is called with a delta less than 1 second, time is incremented
+according to the following table until the time is corrected:
+.PP
+.TS
+tab(@);
+l l l l.
+_
+.sp 4p
+@\fBDefault\fP@\fBFast\fP@\fBSlow\fP
+\fBSystem\fP@\fBIncrement\fP@\fBIncrement\fP@\fBIncrement\fP
+.sp 4p
+_
+.sp 4p
+RISC@3906 us@3921 us@3891 us
+.sp 4p
+VAX@10000 us@10001 us@9999 us
+.sp 4p
+_
+.TE
+.SH Return Values
+A return value of 0 indicates that the call succeeded.
+A return value of \-1 indicates that an error occurred, and in this
+case an error code is stored in the global variable \fIerrno\fP.
+.SH Diagnostics
+The following error codes may be set in \fIerrno\fP:
+.TP 15
+[EFAULT]
+An argument points outside the process's allocated address space.
+.TP 15
+[EPERM]
+The process's effective user ID is not that of the super-user.
+.SH See Also
+date(1), gettimeofday(2)

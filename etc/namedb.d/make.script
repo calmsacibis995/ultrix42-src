@@ -1,0 +1,141 @@
+# @(#)make.script	4.1	(ULTRIX)	7/2/90
+#
+#
+# Modification History:
+#
+# 28-Feb-90	sue
+#	Added depend lines at end to continue make if a data file is
+#	missing.
+#
+# 31-Jan-90	sue
+#	Cleaned up the makefile.  Don't use time files.  Push after
+#	all databases have been made.
+#
+# 16-Aug-89	sue
+#	Explicitly state the location of the *.time files to
+#	be the BIND directory /var/dss/namedb/src.
+#
+# 12-Jun-89	logcher
+#	Created Makefile to make Hesiod files from etc files.
+#
+
+AWK =/bin/awk
+TOUCH=/usr/bin/touch
+ECHO=/bin/echo
+
+NAMEDSRCDIR=/var/dss/namedb/src
+NAMEDBINDIR=/var/dss/namedb/bin
+NOPUSH=""
+RESTART=restart_named -v
+MAKE_AL=make_aliases -v
+MAKE_AU=make_auth -v
+MAKE_GR=make_group -v
+MAKE_HO=make_hosts -v
+MAKE_NE=make_networks -v
+MAKE_PA=make_passwd -v
+MAKE_PR=make_protocols -v
+MAKE_RP=make_rpc -v
+MAKE_SE=make_services -v
+
+
+
+all: aliases.db auth.db group.db hosts.db networks.db passwd.db protocols.db rpc.db services.db push
+
+push:
+	-@if [ ! $(NOPUSH) ]; then \
+		$(NAMEDBINDIR)/$(RESTART); \
+		$(ECHO) "pushed"; \
+	else \
+		: ; \
+	fi
+	
+aliases.db: $(NAMEDSRCDIR)/aliases
+	-@if [ -f $(NAMEDSRCDIR)/aliases ]; then \
+		$(NAMEDBINDIR)/$(MAKE_AL); \
+		$(ECHO) "updated aliases"; \
+	else \
+		$(ECHO) "couldn't find $(NAMEDSRCDIR)/aliases"; \
+	fi
+
+auth.db: $(NAMEDSRCDIR)/auth
+	-@if [ -f $(NAMEDSRCDIR)/auth ]; then \
+		$(NAMEDBINDIR)/$(MAKE_AU); \
+		$(ECHO) "updated auth"; \
+	else \
+		$(ECHO) "couldn't find $(NAMEDSRCDIR)/auth"; \
+	fi
+
+group.db: $(NAMEDSRCDIR)/group
+	-@if [ -f $(NAMEDSRCDIR)/group ]; then \
+		$(NAMEDBINDIR)/$(MAKE_GR); \
+		$(ECHO) "updated group"; \
+	else \
+		$(ECHO) "couldn't find $(NAMEDSRCDIR)/group"; \
+	fi
+
+hosts.db: $(NAMEDSRCDIR)/hosts
+	-@if [ -f $(NAMEDSRCDIR)/hosts ]; then \
+		$(NAMEDBINDIR)/$(MAKE_HO); \
+		$(ECHO) "updated hosts"; \
+	else \
+		$(ECHO) "couldn't find $(NAMEDSRCDIR)/hosts"; \
+	fi
+
+networks.db: $(NAMEDSRCDIR)/networks
+	-@if [ -f $(NAMEDSRCDIR)/networks ]; then \
+		$(NAMEDBINDIR)/$(MAKE_NE); \
+		$(ECHO) "updated networks"; \
+	else \
+		$(ECHO) "couldn't find $(NAMEDSRCDIR)/networks"; \
+	fi
+
+passwd.db: $(NAMEDSRCDIR)/passwd
+	-@if [ -f $(NAMEDSRCDIR)/passwd ]; then \
+		$(NAMEDBINDIR)/$(MAKE_PA); \
+		$(ECHO) "updated passwd"; \
+	else \
+		$(ECHO) "couldn't find $(NAMEDSRCDIR)/passwd"; \
+	fi
+
+protocols.db: $(NAMEDSRCDIR)/protocols
+	-@if [ -f $(NAMEDSRCDIR)/protocols ]; then \
+		$(NAMEDBINDIR)/$(MAKE_PR); \
+		$(ECHO) "updated protocols"; \
+	else \
+		$(ECHO) "couldn't find $(NAMEDSRCDIR)/protocols"; \
+	fi
+
+services.db: $(NAMEDSRCDIR)/services
+	-@if [ -f $(NAMEDSRCDIR)/services ]; then \
+		$(NAMEDBINDIR)/$(MAKE_SE); \
+		$(ECHO) "updated services"; \
+	else \
+		$(ECHO) "couldn't find $(NAMEDSRCDIR)/services"; \
+	fi
+
+rpc.db: $(NAMEDSRCDIR)/rpc
+	-@if [ -f $(NAMEDSRCDIR)/rpc ]; then \
+		$(NAMEDBINDIR)/$(MAKE_RP); \
+		$(ECHO) "updated rpc"; \
+	else \
+		$(ECHO) "couldn't find $(NAMEDSRCDIR)/rpc"; \
+	fi
+
+aliases:	aliases.db push
+auth:		auth.db push
+group:		group.db push
+hosts:		hosts.db push
+networks:	networks.db push
+passwd:		passwd.db push
+protocols:	protocols.db push
+rpc:		rpc.db push
+services:	services.db push
+$(NAMEDSRCDIR)/aliases:
+$(NAMEDSRCDIR)/auth:
+$(NAMEDSRCDIR)/group:
+$(NAMEDSRCDIR)/hosts:
+$(NAMEDSRCDIR)/networks:
+$(NAMEDSRCDIR)/passwd:
+$(NAMEDSRCDIR)/protocols:
+$(NAMEDSRCDIR)/rpc:
+$(NAMEDSRCDIR)/services:

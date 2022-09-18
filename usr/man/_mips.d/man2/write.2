@@ -1,0 +1,264 @@
+.\" SCCSID: @(#)write.2	2.1	3/10/87
+.TH write 2
+.SH Name
+write, writev \- write on a file
+.SH Syntax
+.nf
+.B write (\fIfd, buf, nbytes\fP)
+.B int \fIfd\fP;
+.B char *\fIbuf\fP;
+.B int \fInbytes\fP;
+.PP
+.B #include <sys/types.h>
+.B #include <sys/uio.h>
+.PP
+.B writev (\fIfd, iov, ioveclen\fP)
+.B int \fIfd\fP;
+.B struct \fIiovec *iov\fP;
+.B int \fIioveclen\fP;
+.fi
+.SH Arguments
+.TP 12
+.I fd
+Descriptor returned by a
+.PN creat ,
+.PN open ,
+.PN dup ,
+.PN fcntl ,
+.PN pipe , 
+or
+.PN socket
+system call.
+.TP
+.I buf
+Points to the buffer containing the data to be
+written.
+.TP
+.I nbytes
+Positive integer defining the number of bytes to
+be written from the buffer.
+.TP
+.I iov
+Points to a data structure of type
+.PN iovec ,
+which defines the starting location of the set of vectors
+forming the array and the length of each individual
+vector in the array to be written.
+.sp
+This structure is defined in 
+.PN <sys/uio.h>
+as follows:
+.EX
+struct iovec {
+
+       caddr_t   iov_base ;
+       int       iov_len ;
+} ;
+.EE
+The
+.PN caddr_t
+data type is defined in 
+.PN <sys/types.h> 
+and is the recommended way to define an address
+for a character value.  In any case, the
+address
+.PN iov_base
+is the starting address of the set of vectors.
+The integer value
+.PN iov_len
+is the length of each individual vector, in bytes.
+.TP 12
+.I ioveclen
+Defines the number of vectors
+in the array of data to be written.  Note that the numbering
+of the vectors begins with 0 and proceeds through \fIioveclen\fR \-1.
+.SH Description
+.NXR "write system call"
+.NXR "socket" "writing"
+.NXR "writev system call"
+.NXA "write system call" "read system call"
+.NXA "write system call" "send system call"
+The
+.PN write
+system call attempts to write a buffer of
+data to a file.  The
+.PN writev
+system call attempts to write an array of buffers of data to a file.
+.PP
+When a file is opened to a device capable of seeking (such as a disk or tape),
+the write starts at the position given by the file pointer associated 
+with the file descriptor,
+.IR fd .
+This file pointer is the offset, in bytes, from the beginning
+of the file where the write is to begin.
+When the file is first opened, the file pointer is set at 0.
+It can be modified by the 
+.PN read (2) ,
+.PN lseek (2) ,
+and
+.PN write
+system calls.
+When the 
+.PN write
+call returns, the file pointer is incremented by the number of
+bytes actually written.
+.PP
+When the file is opened to a device
+not capable of seeking (such as sockets, pipes, or terminals), 
+the write starts at the current position. 
+The value of the pointer associated with such an object is
+undefined.
+.PP
+By default,
+.PN write
+does asynchronous writes.  That is, after the data is written to a
+buffer cache, control returns to the program.  The actual write to
+a device takes place after control returns.
+However, if you use an 
+.PN open 
+or
+.PN fcntl
+call to open a file for synchronous writes, control does not
+return to the program until after the buffer cache has been written
+to the device.
+.PP
+If a program is using 
+.PN write
+to a remote file over NFS, and
+an asynchronous write error occurs, then all subsequent 
+.PN write
+requests will return \-1 and errno will be set to the asynchronous
+error code. Also, a subsequent 
+.MS fsync 2 
+or 
+.MS close 2 
+will
+likewise fail. The return code from 
+.MS close 2 
+should be inspected
+by any program that can 
+.PN write
+over NFS.
+.PP
+Write requests to a pipe (or FIFO) are handled the same as a regular file,
+with the following exceptions:
+.IP \(bu 5
+A file offset is not associated with a pipe. Therefore, each 
+.PN write
+request appends to the end of the pipe.
+.IP \(bu 5
+Write requests less than or equivalent to {PIPE_BUF} bytes are not
+interleaved with data from other processes doing writes on the same 
+pipe.  Write requests greater than {PIPE_BUF} bytes can interleave
+on arbitrary boundaries with writes by other processes.
+.IP \(bu 5
+If the O_NDELAY and O_NONBLOCK flags are clear, a write
+can cause the process to block, but, under normal completion, it returns
+nbytes.
+.IP \(bu 5
+If the O_NDELAY or O_NONBLOCK flag is set, the
+.PN write
+function does not block the process.  Write requests less than or
+equal to {PIPE_BUF} bytes either succeed and return nbytes or \-1,
+and errno is set to [EWOULDBLOCK].  Write requests that exceed
+{PIPE_BUF} bytes can return complete success, partial write, or no success,
+and errno is to [EWOULDBLOCK].
+.SH Environment
+.NXR "write system call" "System V and"
+.SS SYSTEM V
+When your program is compiled using the System V environment,
+and the file was opened with the O_NDELAY flag set, a
+.PN write
+to a full pipe (or FIFO) returns a zero (0), rather than an
+error, as for the ULTRIX non-System V environment.
+.PP
+Differs from the System V definition in that the value
+.I nbytes
+is 
+.IR int ,
+rather than 
+.IR unsigned .
+.SS
+When your program is compiled using POSIX environment, EAGAIN is returned 
+in errno, in place of EWOULDBLOCK.
+.SH Return Values
+Upon successful completion, the number of bytes actually
+written is returned.  Otherwise, a \-1 is returned, and
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+.NXR "write system call" "diagnostics"
+The
+.PN write
+system call
+fails and the file pointer will remain unchanged, if any
+of the following is true:
+.TP 15
+[EACCESS]
+The file does not permit writing. NFS only.
+.TP 15
+[EBADF]
+The \fIfd\fR argument is not a valid descriptor open for writing.
+.TP 15
+[EPIPE]
+An attempt was made to write to a pipe that is not open
+for reading by any process.
+.TP 15
+[EPIPE]
+An attempt was made to write to a socket of type SOCK_STREAM
+that is not connected to a peer socket.
+.TP 15
+[EFBIG]
+An attempt was made to write a file that exceeds the process's
+file size limit, set by
+.PN ulimit (2) ,
+or the maximum file size (approximately 2 Gigabytes).
+.TP 15
+[EFAULT]
+Part of the array pointed to by \fIiov\fP or 
+data to be written to the file
+points outside the process's allocated address space.
+.TP 15
+[EWOULDBLOCK]
+The O_NDELAY or O_NONBLOCK flag is set for the file descriptor and the process
+would be delayed in the write operation.
+.TP 15
+[ENOSPC]
+There is no free space remaining on the file system containing
+the file.
+.TP 15
+[EDQUOT]
+The user's quota of disk blocks on the file system containing
+the file has been exhausted.
+.TP 15
+[EIO]
+An I/O error occurred while reading from or writing to the file
+system.
+.TP
+[EINTR]
+The write operation was interrupted, no data was transferred.
+.TP 15
+[EINVAL]
+The
+.I nbytes 
+argument is negative.
+.TP 15
+[EROFS]
+The file is on a read-only file system. NFS only.
+.TP 15
+[ESTALE]
+The
+.I fd
+argument is invalid because the file referred
+to by that file handle no longer exists or has been revoked. NFS only.
+.TP
+[ETIMEDOUT]
+A write operation failed
+because the server
+did not properly respond after a period
+of time that is dependent on the 
+.MS mount 8nfs
+options. NFS only.
+.SH See Also
+close(2), creat(2), dup(2), fcntl(2), fsync(2), lseek(2), 
+open(2), pipe(2), socket(2)

@@ -1,0 +1,134 @@
+.TH stio 3 RISC
+.SH Name
+st_readbinary, st_readst, st_writebinary, st_writest \- routines that provide a binary read/write interface to the MIPS symbol table
+.SH Syntax
+.nf
+.B #include <syms.h>
+.PP
+.ft B
+long st_readbinary (filename, how)
+char *filename;
+char how;
+.PP
+.ft B
+long st_readst (fn, how, filebase, pchdr, flags)
+long fn;
+char how;
+long filebase;
+pCHDRR pchdr;
+long flags;
+.PP
+.ft B
+void st_writebinary (filename, flags)
+char *filename;
+long flags;
+.PP
+.ft B
+void st_writest (fn, flags)
+long fn;
+long flags;
+.PP
+.fi
+.ft R
+.br
+.SH Description
+.PP
+The CHDRR structure (see 
+.B cmplrs/stsupport.h 
+and the 
+.MS stcu 3 ).
+represents a symbol table in memory.  A new CHDRR can be created by reading 
+a symbol table in from disk. The
+.I st_readbinary
+and
+.I st_readst
+routines read a symbol table in from disk.
+.PP
+The routine
+.I st_readbinary\fR
+takes the file name of the symbol table and assumes the symbol table header
+.I (HDRR
+in 
+.B sym.h
+occurs at the beginning of the file. The
+.I st_readst
+assumes that its file number references a file positioned at the 
+beginning of the symbol table header and that the
+.I filebase
+parameter specifies where the object or symbol table file is based (for
+example,
+non-zero for archives).
+.PP
+The second parameter to the read routines can be r for read only or a 
+for appending to the symbol table. Existing local symbol, line,
+procedure, auxiliary, optimization, and local string tables 
+cannot be appended. If they
+didn't exist on disk, they can be created. This restriction stems from the
+allocation algorithm for those symbol table sections when read in from disk
+and follows the standard pattern for building the symbol table.
+.PP
+The symbol table can be read incrementally.  If 
+.I pchdr is zero, 
+.I st_readst 
+assumes that a symbol table has not been read yet; therefore,
+it reads in the symbol table header and file descriptors.  The 
+.I flags
+argument is a bit mask that defines what other tables should be read.  
+The
+.I t_p* 
+constants for each table, defined in stsupport.h, can be ORed.  If 
+\fIflags\fR equals -1, all tables are read.  If 
+.I pchdr 
+is set,
+the tables specified by 
+.I flags 
+are added to the tables that have already been read.  The
+.I pchdr's value can be taken from 
+.I st_current_pchdr.  See 
+.MS stcu 3.
+.PP
+Line number entries are encoded on disk; the read routines expand them
+to longs.  
+.PP
+If the version stamp is out of date, a warning message is issued to stderr.
+If the magic number in the HDRR is incorrect, 
+.I st_error 
+is called. All other errors cause the read routines to read non-zero; 
+otherwise, a zero is returned.
+.PP
+The routines
+.I st_writebinary
+and
+.I st_writest
+are symmetric to the read routines, excluding the 
+.I how 
+and 
+.I pchdr
+parameters. The 
+.I flags 
+parameter is a bit mask that defines what table should 
+be written.  The
+.I st_p* 
+constants for each table, defined in
+.I stsupport.h,
+can be ORed. If 
+.I flags
+equals -1, all tables are written.
+.PP
+The write routines write sections of the table in the approved
+order, as specified in the link editor 
+.MS ld 1 
+specification.
+.PP
+Line numbers are compressed on disk.  
+.PP
+The write routines start all sections of the symbol
+table on four-byte boundaries.
+.PP
+If the write routines encounter an error, 
+.I st_error 
+is called. After writing the symbol table, further access to the table 
+by other routines is undefined.
+.SH See Also
+stcu(3), stfe(3), stfd(3), sym.h(5), sterror(5)
+stsupport.h(5)

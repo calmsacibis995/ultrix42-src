@@ -1,0 +1,58 @@
+.\" SCCSID: @(#)inet.4f	8.1	9/11/90
+.TH inet 4f 
+.SH Name
+inet \- Internet protocol family
+.SH Syntax
+.B #include <sys/types.h>
+.br
+.B #include <netinet/in.h>
+.SH Description
+.NXR "inet keyword"
+.NXR "Internet protocol family"
+.NXA "Internet protocol family" "IP transport protocol"
+.NXA "Internet protocol family" "ICMP error and control message protocol"
+.NXS "Transmission Control Protocol" "tcp protocol"
+.NXA "UDP" "Internet protocol family"
+.NXS "User Datagram Protocol" "UDP"
+The Internet protocol family is a collection of protocols
+that is layered on the Internet Protocol
+(IP) transport layer and that uses the Internet address format.
+The Internet family provides protocol support for the
+SOCK_STREAM, SOCK_DGRAM, and SOCK_RAW socket types.  The
+SOCK_RAW interface provides access to the IP protocol.
+.SH Addressing
+.NXR "Internet address"
+Internet addresses are 4-byte quantities, stored in
+network standard format.
+The include file
+.PN <\&netinet/in.h\&>
+defines this address
+as a discriminated union.
+.PP
+Sockets bound to the Internet protocol family use
+the following addressing structure:
+.NXR "Internet protocol family" "socket addressing structure"
+.EX
+struct sockaddr_in {
+	short	sin_family;
+	u_short	sin_port;
+	struct	in_addr sin_addr;
+	char	sin_zero[8];
+};
+.EE
+Sockets may be created with the address INADDR_ANY
+to effect ``wildcard'' matching on incoming messages. 
+.SH Protocols
+.NXR "Internet protocol family" "contents"
+The Internet protocol family comprises
+the IP transport protocol, Internet Control
+Message Protocol (ICMP), Transmission Control
+Protocol (TCP), and User Datagram Protocol (UDP).
+TCP is used to support the SOCK_STREAM
+abstraction, while UDP is used to support the SOCK_DGRAM
+abstraction.  A raw interface to IP and ICMP is available
+by creating an Internet socket of type SOCK_RAW.
+.\"The ICMP message protocol is directly accessible.
+.SH See Also
+tcp(4p), udp(4p), ip(4p)
+.\"SOCK_RAW is not supported by Digital Equipment Corporation

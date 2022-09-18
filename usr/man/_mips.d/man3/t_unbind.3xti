@@ -1,0 +1,62 @@
+.TH t_unbind 3xti
+.SH Name
+t_unbind \- disable a transport endpoint. 
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_unbind(\fIfd\fB)
+.br
+.B int \fIfd\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the transport endpoint that the 
+.PN t_unbind() 
+function disables.
+.SH Description
+The 
+.PN t_unbind() 
+function disables the transport endpoint specified by
+\fIfd\fR that was previously bound by 
+.PN t_bind(). 
+On completion of this call, no further data or events destined for this transport
+endpoint are accepted by the transport provider.
+.NXR "t_unbind system call"
+.NXR "transport endpoint" "disabling"
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, a value of 0 is returned. Otherwise, a
+value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20 
+[TOUTSTATE]
+The function was issued in the wrong sequence.
+.TP 20
+[TLOOK]
+An asynchronous event has occurred on the transport endpoint.
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+t_bind(3xti)

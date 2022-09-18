@@ -1,0 +1,35 @@
+.\" SCCSID: @(#)chmod.3f	8.1	9/11/90
+.TH chmod 3f VAX "" Unsupported
+.SH Name
+chmod \- change mode of a file
+.SH Syntax
+.B integer function chmod (name, mode)
+.br
+.B character*(*) name, mode
+.SH Description
+.NXR "chmod subroutine (FORTRAN)"
+.NXR "file" "changing mode"
+This function changes the filesystem
+.I mode
+of file
+.IR name .
+The
+.I mode
+can be any specification recognized by
+.MS chmod 1 .
+The
+.I name
+must be a single pathname.
+.PP
+The normal returned value is 0.
+Any other value will be a system error number.
+.SH Restrictions
+Pathnames can be no longer than MAXPATHLEN as defined in
+<sys/param.h>.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.br
+/bin/chmod		exec'ed to change the mode.
+.SH See Also
+chmod(1)

@@ -1,0 +1,147 @@
+.\" SCCSID: @(#)chmod.2	2.6	8/18/87
+.TH chmod 2
+.SH Name
+chmod, fchmod \- change mode of file
+.SH Syntax
+.nf
+#include <sys/types.h>
+#include <sys/stat.h>
+.PP
+chmod(\fIpath, mode\fP)
+char *\fIpath\fP;
+mode_t\ \fImode\fP;
+.PP
+fchmod(\fIfd, mode\fP)
+int fd;
+mode_t\ \fImode\fP;
+.fi
+.SH Description
+.NXR "chmod system call"
+.NXR "fchmod system call"
+.NXR "file" "changing mode"
+.NXR "file" "setting protection"
+The file whose name
+is provided by \fIpath\fP
+or referenced by the descriptor
+.I fd
+has its mode changed to
+.IR mode .
+Modes are constructed by
+ORing
+combinations of the following:
+.IP "S_ISUID" 12
+\- 04000  set user ID on execution
+.IP "S_ISGID"
+\- 02000  set group ID on execution
+.IP "S_ISVTX"
+\- 01000  save text image after execution
+.IP "S_IRUSR"
+\- 00400  read by owner
+.IP "S_IWUSR"
+\- 00200  write by owner
+.IP "S_IXUSR"
+\- 00100  execute (search on directory) by owner
+.IP "S_IRWXG"
+\- 00070  read, write, execute (search) by group
+.IP "S_IRWXO"
+\- 00007  read, write, execute (search) by others
+.PP
+If an executable file is set up for sharing (the default),
+the mode S_ISVTX prevents the system from
+abandoning the swap-space image of the program-text portion
+of the file when its last user
+terminates.
+The ability to set this bit is restricted to the superuser.
+.PP
+If the mode S_ISVTX (sticky bit) is set on a directory, an unprivileged
+user cannot delete or the rename files of other users in that directory.
+For more information on the sticky bit, see 
+.MS sticky 8 .
+.PP
+Only the owner of a file or the superuser can change the mode.
+.PP
+Writing a file or changing the owner of a file
+clears the set-user-id and set-group-id bits of that file. Turning off
+these bits when a file is written or its owner changed protects the
+file from
+remaining set-user-id or set-group-id after being modified. If a file,
+specifically a program, 
+remained set-user-id or set-group-id after being modified, that file
+could allow unauthorized access to other files or accounts. 
+.SH Environment
+.SS System Five
+ELOOP is a possible error condition.
+.SH Return Values
+Upon successful completion, a value of 0 is returned.
+Otherwise, a value of \-1 is returned, and
+.PN errno
+is set to indicate the error.
+.SH Diagnostics
+The
+.PN chmod
+system call fails and the file mode remains unchanged under the
+following conditions:
+.TP 15
+[EACCES]
+Search permission is denied on a component of the path prefix.
+.TP 15
+[EFAULT]
+The
+.I path
+argument points outside the process's allocated address space.
+.TP 15
+[EIO]
+An I/O error occurred while reading from or writing to
+the file system.
+.TP 15
+[ELOOP]
+Too many symbolic links were encountered in translating the pathname.
+.TP 15
+[ENAMETOOLONG]
+A pathname component exceeds 255 characters, or
+an entire pathname exceeds 1023 characters.
+.TP 15
+[ENOENT]
+The named file does not exist.
+.TP 15
+[ENOTDIR]
+A component of the path prefix is not a directory.
+.TP 15
+[EPERM]
+The effective user ID does not match the owner of the file and
+the effective user ID is not the superuser.
+.TP 15
+[EROFS]
+The named file resides on a read-only file system.
+.TP 15
+[ESTALE]
+The file handle given in the argument is invalid.  Either the file referred
+to by that file handle no longer exists or it has been revoked.
+.PP  
+The 
+.PN fchmod
+system call
+fails under the following conditions: 
+.TP 15
+[EBADF]
+The descriptor is not valid.
+.TP 15
+[EINVAL]
+The
+.I fd
+refers to a socket, not to a file.
+.TP 15
+[EIO]
+An I/O error occurred while reading from or writing to
+the file system.
+.TP 15
+[EROFS]
+The file resides on a read-only file system.
+.TP 15
+[ETIMEDOUT]
+A connect request or remote file operation failed
+because the connected party
+did not respond after a period
+of time determined by the communications protocol.
+.SH See Also
+open(2), chown(2)

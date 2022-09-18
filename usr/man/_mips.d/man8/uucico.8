@@ -1,0 +1,100 @@
+.TH uucico 8
+.SH Name
+uucico \- uucp file transfer daemon
+.SH Syntax
+.B /usr/lib/uucp/uucico
+[
+.B \-f
+]
+[
+.B \-r1
+]
+[
+.B \-s
+.I system
+]
+[
+.B \-x#
+]
+[
+.B \-X#
+]
+.SH Description
+.NXR "uucico daemon"
+.NXR "network file transfers"
+.NXR "file transfers" "uucico"
+The 
+.PN uucico
+program is the daemon associated with the 
+.PN uucp
+utility. The 
+.PN uucico
+daemon is automatically run when
+.PN uucp
+requests are made or when polling occurs as specified in
+.PN /etc/crontab .
+It performs the actual file transfer over the network. The 
+.PN uucico
+program first calls up the destination system and login.
+After a successful login, a handshake takes place between the destination
+.PN uucico
+daemon process and the local daemon. The handshake determines 
+if each daemon has
+permission to use the other's local resources. Both daemons then select the
+protocol that will be used to send and receive raw data.
+.PP
+The local daemon searches the spool directories for job requests, builds
+a list of files to transfer, then begins transmitting files. The file
+transfer protocol ensures that each file is transmitted only once and
+also notifies the user if a file cannot be transferred. After the 
+.PN uucico
+program transfers all the files, the destination site transfers files
+back to the local system. When both systems have completed their file
+transfers, the connection through the network is terminated.
+.PP
+The output of
+.PN uucico
+follows the progress of the conversation. Debugging output from the slave
+.PN uucico
+is placed in the file
+.PN AUDIT ,
+in the spool directory at the remote site. The output is 
+less meaningful than the
+.PN LOGFILE ,
+unless the source code is available to help interpret the messages.
+.SH Options
+.IP \-f 6
+Forces
+.PN uucico
+to start a conversation with a specified system, regardless of any
+previous connection status as provided by the 
+.PN STST .
+files (system status).
+.IP \-r1 
+Puts 
+.PN uucico
+into the master role. The slave mode is the default.
+.IP "\fB-s\fR \fIsystem\fP"
+Designates the system to be contacted.
+.IP \-x#
+Sets the debugging level. The number sign (#)
+can have a value of 0 to 9. The higher the number, the more debugging
+output. No packet level debugging is printed.
+.IP \-X#
+Sets packet level debugging output. The number sign (#)
+can have a value of 0 to 9. The higher the number, the more packet level
+debugging output.
+.SH Files
+.PN /usr/spool/uucp
+.br
+.PN /usr/spool/uucp/STST .
+.br
+.PN /usr/spool/uucp/LOGFILE
+.br
+.PN /usr/spool/uucp/AUDIT
+.br
+.PN /usr/lib/uucp/uucp.*
+.SH See Also
+uucp(1c), uux(1c)
+.br
+.I "Guide to the uucp Utility"

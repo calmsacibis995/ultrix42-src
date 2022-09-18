@@ -1,0 +1,111 @@
+.\" SCCSID: @(#)roffbib.1	8.1	9/11/90
+.\" SCCSID: @(#)roffbib.1	8.1	9/11/90
+.TH roffbib 1
+.SH Name
+roffbib \- run off bibliographic database
+.SH Syntax
+.B roffbib
+[\|\fIoptions\fR\|] [\|\fIfile...\fR\|]
+.SH Description
+.NXR "roffbib text processor"
+.NXA "nroff text processor" "roffbib text processor"
+.NXR "bibliography" "formatting"
+The
+.PN roffbib
+command prints out all records in a bibliographic database,
+in bibliography format rather than as footnotes or endnotes.
+Generally it is used in conjunction with
+.PN sortbib :
+.PP
+.EX
+sortbib  database | roffbib
+.EE
+.SH Options
+The
+.PN roffbib
+command accepts most of the options understood by
+nroff(1). 
+.IP \fB\-T\fIterm\fR 12
+Uses specified name as terminal type for which output is prepared.  
+.IP \fB\-x\fR 
+Suppresses the printing of abstracts.  
+.PP
+If abstracts or comments are entered following the %X field key,
+.PN roffbib
+formats them into paragraphs for an annotated bibliography.
+Several %X fields may be given if several
+annotation paragraphs are desired.
+.IP \fB\-e\fR 
+Formats text with equally spaced words, justified lines, and full resolution.  
+.IP \fB\-h\fR 
+Uses tabs in horizontal spacing to speed 
+output and reduce output character count. 
+Tab characters are assumed to be every 8 nominal character widths.
+.IP \fB\-n\fR 
+Uses specified number (\fB\-n\fIN\fR) as first page to be printed.  
+.IP \fB\-o\fR 
+Uses specified list (\fB\-o\fIlist\fR) as only pages to be printed.  
+A range 
+.I N\-M
+means pages 
+.I N
+through
+.I M.
+An initial 
+.I \-N 
+means from the beginning to page
+.I N.
+A final 
+.I N\-
+means from
+.I N
+to the end.
+.IP \fB\-s\fR 
+Stops after specified number of pages (\fB\-s\fIn\fR).  
+.IP "\fB\-\|m\fI mac\fR" 
+Specifies a user-defined set of macros with space between \fB\-m\fR 
+and the macro file name.  
+This set of macros replaces the ones
+defined in /usr/lib/tmac/tmac.bib.
+.IP \fB\-V\fR 
+Sends output to the Versatec. 
+.IP \fB\-Q\fR 
+Queues output for the phototypesetter.
+.IP \fB\-r\fIaN\fR 
+Sets named register \fIa\fR to specified value \fIN\fR.
+.PP
+Four command-line registers control formatting style
+of the bibliography, much like the number registers of
+ms(7).
+The command-line argument
+.BR \-r N1
+numbers
+the references starting at one (1).
+The flag
+.BR \-r V2
+double spaces the bibliography,
+while
+.BR \-r V1
+double spaces references
+but single spaces annotation paragraphs.
+The line length can be changed from the default 6.5 inches
+to 6 inches with the
+.BR \-r L6i
+argument,
+and the page offset can be set from the default of 0
+to one inch by specifying
+.BR \-r O1i
+(capital O, not zero).
+Note: with the
+.B \-V
+and
+.B \-Q
+flags
+the default page offset is already one inch.
+.SH Files
+.ta \w'/usr/lib/tmac/tmac.bib\0\0'u
+.nf
+/usr/lib/tmac/tmac.bib	file of macros used by \fInroff/troff\fP
+.fi
+.SH See Also
+addbib(1), indxbib(1), lookbib(1), refer(1), sortbib(1)

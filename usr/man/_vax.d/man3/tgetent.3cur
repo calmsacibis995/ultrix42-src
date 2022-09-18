@@ -1,0 +1,57 @@
+.TH tgetent 3cur 
+.SH Name
+tgetent, tgetnum, tgoto, tgetstr, tgetflag \- emulate termcap for old programs
+.SH Syntax
+.B
+int
+.B
+tgetent(bp, name)
+.br
+.B
+char *bp, *name;
+.PP
+.B
+int
+.B
+tgetflag(id)
+.br
+.B
+char *id;
+.PP
+.B
+tgetnum(id)
+.br
+.B
+char *id;
+.PP
+.B
+tgetstr(id, area)
+.br
+.B
+char *id, *area;
+.PP
+.B
+tgoto(cap, col, row)
+.br
+.B
+char *cap;
+.br
+.B
+int col, row;
+.SH Description
+.NXR "tgetent subroutine"
+.NXR "tgetflag subroutine"
+.NXR "tgetnum subroutine"
+.NXR "tgetstr subroutine"
+.NXR "tgoto subroutine"
+All these functions are included for compatibility
+with application programs that used the old
+.PN termcap
+database.
+.PP
+.B
+Do not 
+.R
+use these functions in new 
+.PN curses 
+application programs.

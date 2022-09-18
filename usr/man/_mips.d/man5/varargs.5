@@ -1,0 +1,130 @@
+.TH varargs 5 RISC
+.SH Name
+varargs \- handle variable argument list
+.SH Syntax
+.B #include <varargs.h>
+.PP
+.B va_alist
+.PP
+.B va_dcl
+.PP
+.B void va_start(pvar)
+.br
+.B va_list pvar;
+.PP
+.B \fItype\fB va_arg(pvar, \fItype\fB)
+.br
+.B va_list pvar;
+.PP
+.B void va_end(pvar)
+.br
+.B va_list pvar;
+.SH Description
+This set of macros allows portable procedures that accept variable
+argument lists to be written.
+Routines that have variable argument lists, such as
+.MS printf 3s ,
+but that do not use 
+.PN varargs
+are inherently nonportable, as different
+machines use different argument-passing conventions.
+.PP
+.TP 10
+.B va_alist
+Is used as the parameter list in a function header.
+.TP 10
+.B va_dcl
+Is a declaration for 
+.IR va_alist .
+A semicolon should not follow
+.IR va_dcl .
+.TP 10
+.B va_list
+Is a type defined for the variable
+used to traverse the list.
+.TP 10
+.B va_start
+Is called to initialize
+.I pvar
+to the beginning of the list.
+.TP 10
+.B va_arg
+Returns the next argument in the list
+pointed to by
+.IR pvar .
+.I Type
+Is the type the argument is expected to be.
+Different types can be mixed, but it is up
+to the routine to know what type of argument is
+expected. This information cannot be determined at run time.
+.TP 10
+.B va_end
+is used to clean up.
+.PP
+Multiple traversals, each bracketed by
+.I va_start
+\&...
+.IR va_end ,
+are possible.
+.PP
+The calling routine must specify how many arguments
+there are, because it is not always possible to determine this from the
+stack frame.  For example,
+.PN execl
+is passed a zero pointer to signal the end of the list.  The
+.PN printf
+routine can tell how many arguments there are by the format.
+.PP
+It is nonportable to specify a second argument of
+.IR char ,
+.IR short ,
+or
+.IR float
+to 
+.IR va_arg ,
+because arguments seen by the called function are not
+.IR char ,
+.IR short ,
+or
+.IR float .
+C converts 
+.I char
+and 
+.I short
+arguments to 
+.I int
+and
+converts
+.I float
+arguments to
+.IR double 
+before passing them to a function.
+.SH Examples
+The following example presents an implementation of 
+.MS execl 2 :
+.PP
+.nf
+	#include <varargs.h>
+	#define MAXARGS	100
+
+	/\(**	execl is called by
+			execl(file, arg1, arg2, ..., (char \(**)0);
+	\(**/
+	execl(va_alist)
+	va_dcl
+	{
+		va_list ap;
+		char \(**file;
+		char \(**args[MAXARGS];
+		int argno = 0;
+
+		va_start(ap);
+		file = va_arg(ap, char \(**);
+		while ((args[argno++] = va_arg(ap, char \(**)) != (char \(**)0)
+			;
+		va_end(ap);
+		return execv(file, args);
+	}
+.fi
+.SH See Also
+exec(2), printf(3s), vprintf(3s)

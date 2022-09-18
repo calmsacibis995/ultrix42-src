@@ -1,0 +1,86 @@
+.TH rpc_inq_object 3ncs
+.SH Name
+rpc_inq_object \- return the object UUID represented by an RPC
+handle (client or server)
+.SH Syntax
+.nf
+#include <idl/c/rpc.h>
+
+void rpc_$inq_object(\fIhandle, object, status\fP)
+handle_t \fIhandle\fP;
+uuid_$t *\fIobject\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rpc_$inq_object(\fR
+.\"	\fBin \fIhandle\fB: handle_t;\fR
+.\"	\fBout \fIobject\fB: uuid_$t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIhandle\fR
+An RPC handle.
+.TP 20
+\fIobject\fR
+The UUID of the object identified by \fIhandle\fR.
+.TP 20
+\fIstatus\fR
+The completion status.
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rpc_$inq_object
+routine enables a client or server to determine
+the particular object that a handle represents.
+.NXR "Interface to the Remote Procedure Call" "rpc_inq_object"
+.PP
+If a server exports an interface through which clients can access several objects,
+it can use 
+.PN rpc_$inq_object
+to determine the object requested in a call.
+This routine requires an RPC handle as input,
+so the server can make the call only if the interface uses explicit handles 
+(that is, if each operation in the interface has a handle parameter).
+If the interface uses an implicit handle,
+the handle identifier is not passed to the server.
+.SH Examples
+A database server that manages multiple databases must determine
+the particular database to be accessed whenever it receives a remote procedure call.
+Each manager routine makes the following call;
+the routine then uses the returned UUID to identify the database to be
+accessed:
+.EX
+rpc_$inq_object (handle, &db_uuid, &status);
+.EE
+.SH Diagnostics
+This section lists status codes for errors returned by this 
+.PN rpc_$
+routine in
+.PN status\&.all .
+.TP 20
+\fBrpc_$unk_if\fR
+The requested interface is not known.
+It is not registered in the server,
+the version number of the registered interface is
+different from the version number specified in the request,
+or the UUID in the request does not match the UUID of the registered interface.
+.TP 20
+\fBrpc_$not_in_call\fR
+An internal error.
+.TP 20
+\fBrpc_$proto_error\fR
+An internal protocol error.
+.SH Files
+.PN /usr/include/idl/c/rpc.h
+.br
+.PN /usr/include/idl/rpc.idl
+.SH See Also
+intro(3ncs)

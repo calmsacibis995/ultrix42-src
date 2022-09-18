@@ -1,0 +1,78 @@
+.\" SCCSID: @(#)uname.2	8.1	9/11/90
+.TH uname 2
+.SH Name
+uname \- get name of current system
+.SH Syntax
+.nf
+.ft B
+#include <limits.h> 
+.br
+#include <sys/utsname.h>
+.PP
+.ft B
+int uname (name)
+struct utsname *name;
+.fi
+.SH Description
+.NXR "uname system call"
+.NXR "system" "getting name"
+.NXR "system" "getting version number"
+.NXR "system" "identifying machine type"
+The
+.PN uname
+system call stores information identifying the current 
+system in the structure pointed to by
+.IR name .
+.PP
+The 
+.PN uname
+system call uses the structure
+defined in 
+.PN <sys/utsname.h> 
+whose members are:
+.PP
+.RS
+char	sysname[SYS_NMLN];
+.br
+char	nodename[SYS_NMLN];
+.br
+char	release[SYS_NMLN];
+.br
+char	version[SYS_NMLN];
+.br
+char	machine[SYS_NMLN];
+.RE
+.PP
+The constant SYS_NMLN is defined in 
+.PN <limits.h> .
+.PP
+The
+.PN uname
+system call returns
+a null-terminated character string naming the current ULTRIX
+system in the character array,
+.IR sysname .
+Similarly,
+.I nodename
+contains the name that the system
+is known by on a communications network.  The
+.I release
+and
+.I version
+further identify the operating system.  The
+.I machine
+contains a standard name that identifies the hardware that the
+ULTRIX system is running on.
+.SH Return Values
+Upon successful completion, a nonnegative
+value is returned.  Otherwise, \-1 is returned, and
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+.TP 15
+[EFAULT]
+The
+.PN uname
+system call fails if
+.I name
+points to an invalid address.

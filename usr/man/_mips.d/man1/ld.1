@@ -1,0 +1,565 @@
+.TH ld 1 RISC
+.SH Name
+ld, uld \- RISC link editor and ucode link editor
+.SH Syntax
+.BR ld [ 
+.I options
+] [
+.I filename filename ...
+]
+.br
+.BR uld [
+.I options
+] [
+.I filename filename ...
+]
+.SH Description
+The 
+.PN ld
+invokes the RISC link editor, which links RISC extended
+.I coff
+object files.  The archive format understood by
+.PN ld
+is the one created by the archiver
+.PN ar .
+.PP
+The
+.PN ld
+editor combines several
+object files into one, performs relocation, resolves external
+symbols, and supports symbol table information for symbolic debugging.
+In the simplest case, you specify the names of several object files as
+arguments to the
+.PN ld
+command.
+The 
+.PN ld
+command combines them, producing an object module that you can execute
+or
+use as input to a subsequent
+.PN ld
+command.
+(In the latter case, you must specify the
+.B \-r
+option 
+to preserve the relocation entries.) 
+The command writes its output to a file named
+.PN a.out .
+By default, this file is executable if no errors occurred during the load.
+.PP
+The
+.PN ld
+command concatenates object files in the order in which you specify them.
+The entry point of the output is the
+beginning of the text segment (unless you specify the \fB\-e\fP option).
+.PP
+The
+.PN uld
+command combines several ucode object files and libraries into one ucode
+object file. The command hides external symbols for better optimizations by
+subsequent compiler passes.  The
+.PN uld
+command uses the symbol tables of
+.I coff
+object files loaded with ucode object files to determine what
+external symbols not to hide. You can specify that the
+.PN uld
+command not hide external symbols by creating a file that describes those
+symbols.  
+.PP
+The link editors
+.PN ld
+and
+.PN uld
+accept object files targeted for either Big Endian or Little Endian byte 
+ordering with their headers and
+symbolic tables in any byte ordering.  However 
+.PN ld
+and
+.PN uld
+are faster if the headers and symbolic tables have the byte ordering of the
+machine that they are running on.  The default byte ordering of the headers
+and symbolic tables is the target byte ordering of the output object file.
+For nonrelocatable object files, the default byte ordering of the headers
+and symbolic tables cannot be changed.
+.PP
+If you specify that you want to link a library, the
+.PN ld
+and 
+.PN uld
+commands search the library exactly once
+at the point it is encountered in the argument list.
+The library (archive) symbol table (see
+.MS ar 1 )
+is a hash table that
+.PN ld
+and
+.PN uld 
+search to resolve external references. 
+The commands load only those routines that define unresolved external
+references. 
+The order of the routines in the library is
+unimportant.
+.PP
+By default, the
+.PN ld
+and 
+.PN uld
+commands search for libraries in the
+.PN /lib , 
+.PN /usr/lib, 
+and 
+.PN /usr/local/lib 
+directories.  
+In some cases, the target byte ordering of the object files
+.PN ld
+or 
+.PN uld
+is loading is the opposite of the byte ordering of the machine on which
+the link editor is executing. When this case occurs, the link editor
+changes the default directories it searches for libraries. If the object
+file's byte ordering is Big Endian and the machine's byte ordering is
+Little Endian (Digital products), the link editor searches the
+.PN /libeb ,
+.PN /usr/libeb ,
+and
+.PN /usr/local/libeb
+directories, by default. Conversely, if the object file's byte ordering
+is Little Endian and the machine's byte ordering is Big Endian, the
+editor searches the
+.PN /libel ,
+.PN /usr/libel ,
+and
+.PN /usr/local/libel
+directories, by default.
+.PP
+The following symbols are reserved; do not define them:
+etext, edata, end, _ftext, _fdata, _fbss, _gp,
+\_procedure_table,
+\_procedure_table_size, and
+\_procedure_string_table.
+These loader defined symbols, if referred to, have their values set as
+described in 
+.MS end 3 .
+.SH Options
+You can use the following options on both the
+.PN ld
+and
+.PN uld 
+command lines.
+If you specify an option that the command does not use, the command
+ignores that option.
+.PP
+You can specify the options described in this section on the
+.PN cc
+command line. To do so, prepend a 
+.B k
+to the option. When you prepend a 
+.B k ,
+the
+.PN cc
+command ignores the option and passes it to the link editor. The link
+editor ignores the prepended
+.B k
+and processes the option normally. Therefore, the 
+.B \-kA
+option has the same effect as specifying
+.B \-A .
+.TP 15
+.BI \-A " file"
+Link to allow incremental loading.  The link editor performs the link
+process so that the 
+resulting object can be read into an already executing program.
+.IP
+The 
+.I file
+argument
+is the name of an object file. The link editor defines additional symbols using
+the symbol table in that file. This argument must appear on the command
+line before any other object file.
+.IP
+During an incremental load, the link editor loads only newly linked material 
+into the text and
+data portions of 
+.BR a.out .
+However, the new symbol table reflects
+every symbol defined before and after the incremental load.
+.IP
+You can use the 
+.B \-T
+option to cause the link editor to assume
+that the
+newly linked segment starts at the specified address,
+which must be a correct multiple for the resulting object type.
+The default resulting object type is an OMAGIC file. The default
+starting address of the text is the value of the end symbol rounded to
+SCNROUND as defined in the include file
+.PN <scnhdr.h>.
+By default, when the newly linked segment is read into an already executing program
+the initial value of the break must also be rounded.
+.IP
+All objects except the argument to the
+.B \-A
+option must be compiled with the
+.BI \-G " 0"
+option. Using the 
+.B \-A
+option sets 
+.BI \-G " 0"
+for linking.
+.IP
+For jump instructions to operate correctly, the beginning and ending
+points of the instruction 
+must be in the same 256 megabyte segment. Thus, it is invalid to use the
+default address of a ZMAGIC file as the base file and allow the newly linked text to
+start at the value of the end symbol.
+.IP
+To solve this problem,
+use the
+.B \-D
+option when you create the base file.  Using this option ensures that
+the text and data will be in the same 256 megabyte segment.
+Alternatively, use the
+.B \-N
+option, which places the data section immediately following the text
+section.
+.TP 15
+.BI \-B " num"
+Set the bss segment origin.  The argument
+.I num
+is a hexadecimal address.
+You can use this option only if the final object is an OMAGIC file.
+.TP 15
+.BI \-B string
+Append
+.I string
+to the library name created for the
+.BI \-l x
+or
+.BI \-kl x
+options. When searching for a library, the link editor first appends
+.I string
+to the library name. If the link editor cannot find a library of that
+name, it searches for the library name without 
+.I string.
+.TP 15
+.B \-b
+Do not merge the symbolic information entries for the same file into one entry
+for that file.  Use this option when the symbolic information
+from the same file appears differently in any of the objects to be linked.  This
+situation can occur when object files are compiled, by means of conditional 
+compilation, with an apparently different version of an include file.
+.TP 15
+.B \-bestGnum
+Calculate the best number to use as an argument to the
+.B \-G 
+option. Use this option when you are 
+compiling and linking the files that will produce the objects you want
+to link with
+.BR \-G .
+Using too large a number with the
+.B \-G 
+option may cause the 
+global pointer data area to overflow; using too small a number may
+reduce your program's execution speed.
+.TP 15
+.B \-count 
+.ns
+.TP 15
+.B \-countall
+.ns
+.TP 15
+.B \-nocount 
+Count (or do not count) the specified objects as able to be recompiled when
+calculating the best number to use as an argument to the
+.B \-G
+option.
+By default, the
+.B \-bestGnum
+option assumes you can recompile everything with the 
+.B \-G 
+option. If you cannot recompile certain object files or libraries
+(because, for example, you have no sources for them), use these
+options to tell the link editor to take this into account in calculating
+the best number for the
+.B \-G
+option.
+.IP
+The
+.B \-nocount
+option specifies that object files appearing after it on the command line
+cannot be recompiled.
+The
+.B \-count
+option specifies that object files appearing after it on the command line can be
+recompiled. You can alternate the use of
+.B \-nocount
+and
+.B \-count.
+The 
+.B \-countall
+option specifies that all object files appearing after it on the command
+line can be recompiled.
+This option overrides any 
+.B \-nocount
+options that appear after it on the command line.
+.TP 15
+.BI \-D " num"
+Set the data segment origin.  The argument
+.I num
+is a hexadecimal address.  See Restrictions for information
+on valid values for the hexadecimal address.
+.TP 15
+.B \-d
+Force definition of common storage and define loader defined symbols even if
+.B \-r 
+is present.
+.TP 15
+.B \-EB
+Produce the output object file with Big Endian byte ordered headers and symbolic
+information tables.
+.TP 15
+.B \-EL
+Produce the output object file with Little Endian byte ordered headers and
+symbolic information tables.
+.TP 15
+.BI \-e " epsym"
+Set the default entry point address for the output file to be that of the
+symbol
+.IR epsym.
+.TP 15
+.B \-F 
+Load the process on
+demand from the resulting executable file (413 format)
+rather than preloading it as a ZMAGIC file.
+This behavior is the default. (This option is identical to the 
+.B \-z 
+option.)
+.TP 15
+.BI \-f fill
+Set the fill pattern for ``holes'' within an output section.  The argument
+.I fill
+is a 4-byte hexadecimal constant.
+.TP 15
+.BI \-G "num"
+Assume the decimal number \fInum\fR specifies the largest size in bytes
+of a 
+.I \&.comm
+item or literal that is to be allocated in the small bss section for
+reference off the global pointer. The default largest size is 8 bytes.
+.TP 15
+.B \-g 
+.ns
+.TP
+.B \-g[123]
+Disable the
+.B -jmpopt
+option. The 
+.B -g0
+option is accepted, but it has no effect.
+.TP 15
+.B \-jmpopt 
+.ns
+.TP 15
+.B \-nojmpopt
+Fill or do not fill the delay slots of jump instructions with the 
+target of the
+jump and adjust the jump offset to jump past that instruction.  This feature
+always is
+disabled for debugging (when the
+.BR "\-g1, \-g2" " or" " \-g"
+flag is present).  When this option
+is enabled it requires that all of the loaded program's text be in memory and
+could cause the loader to run out of memory.  The default is 
+.B \-nojmpopt.
+.TP 15 
+.BI \-kl x
+Search a ucode object library
+.BI lib x \&.b,
+where
+.I x
+is a string.  
+Because the link editor searches the library when it encounters the library
+name,
+the placement of the
+.B \-kl
+option is significant.
+.TP 15
+.B \-L
+Ignore the 
+.BI lib x \&.a
+or
+.BI lib x \&.b
+default directories when searching for libraries.
+This option is useful when you never
+want the link editor to search the default directories and want it to
+only search the directories you specify with the
+.BI -L dir
+option.
+.TP 15
+.BI \-L dir
+Search \fIdir\fR before searching the default directories
+.BI lib x \&.a
+or
+.BI lib x \&.b
+.
+This option is effective only if it precedes the
+.B \-l
+option.
+.TP 15 
+.BI \-l x
+Search a library
+.BI lib x \&.a,
+where
+.I x
+is a string.
+Because the link editor searches the library when it encounters the library
+name,
+the placement of the
+.B \-l
+option is significant.
+.TP 15
+.BR \-M
+Produce a primitive load map, listing the names of the files that are
+loaded. This option displays a map that resembles a UNIX 4.3BSD map.
+(See also the
+.B \-m
+option.)
+.TP 15
+.BR \-m
+Display a map or listing of the input/output sections on standard
+output. This option displays a map that resembles a UNIX System V map.
+(See also the
+.B \-M
+option.)
+.TP 15
+.B \-N
+Assign the 0407 magic number to the output file, making it an OMAGIC
+file. In an OMAGIC file, 
+the data section immediately follows the text section. The text
+section can be read or written, but it is not shareable for users executing the OMAGIC
+file.
+.TP 15 
+.B  \-n
+Assign 0419 magic number to the output file, making it an NMAGIC file. When
+users execute the NMAGIC file, the 
+text section of the executable is read-only and shared among
+all users executing that file.
+This option moves the data section up to the first
+possible page-size
+byte boundary following the end of the text.
+.TP 15
+.BI \-o " outfile"
+Produce an output object file by the name
+.I outfile.
+The name of the default object file is
+.BR a.out .
+.TP 15
+.BI \-p " file"
+Preserve (do not hide) the symbol names listed in
+.I file
+when loading ucode object files.  You must separate the symbol names in the file with blanks, tabs, or newline characters.
+.TP 15 
+.B \-r
+Retain relocation entries in the output file.
+Relocation entries must be saved if the output file is to become an input
+file in a subsequent
+.PN ld
+run.
+This option also prevents final definitions from being given to common symbols
+and suppresses the undefined symbol diagnostics.
+.TP 15
+.B \-S
+Set silent mode and suppress nonfatal errors.
+.TP 15 
+.B \-s
+Strip the symbolic information from the output object file.
+.TP 15
+.BI \-T " num"
+Set the text segment origin.  The argument
+.I num
+is a hexadecimal address.  See Restrictions for information
+on valid values for the hexadecimal address.
+.TP 15 
+.BI \-u " symname"
+Enter
+.I symname
+as an undefined symbol in the symbol table.  This option is useful
+for loading linked material entirely from a library because initially the symbol
+table is empty. An unresolved reference is needed
+to force the loading of the first routine.
+.TP 15
+.B \-V
+Display a message giving information about the version of
+.PN ld
+being used.
+.TP 15
+.BI \-VS " num"
+Use
+.I num
+as the decimal version stamp to identify the 
+.PN a.out 
+file that is produced.  The
+version stamp is stored in the optional and symbolic headers.
+.TP 15
+.B \-v
+Set verbose mode, which causes the link editor to display the name of each file as it is processed.
+.TP 15 
+.B  \-x
+Do not preserve local
+(nonglobal) symbols in the output symbol table; enter
+only external and static symbols.
+This option saves space in the output file.
+.TP 15
+.BI \-y sym
+Display the name of each file in which the specified symbol
+appears, the symbol's data type,
+and whether the file defines or references
+the symbol.
+You can specify a number of
+.B \-y
+options to trace many symbols.
+.TP 15
+.B \-z 
+Load the process on
+demand from the resulting executable file (413 format)
+rather than preloading it as a ZMAGIC file.
+This behavior is the default. (This option is identical to the 
+.B \-F 
+option.)
+.SH Restrictions
+The text and data segments must not overlap and all addresses must
+be less than 0x80000000.
+The stack starts below 0x80000000 and grows
+through lower addresses, so leave space for it.
+.PP
+For ZMAGIC and NMAGIC files, the default text segment address is 0x00400000
+and the default data segment address is 0x10000000.
+For OMAGIC files, the default text segment address is 0x10000000 with the data
+segment following the text segment.
+The default for all types of files is that the bss segment follows the data
+segment.
+.PP
+If you use the
+.B \-B
+option when you link an OMAGIC file, the origin you specify for the bss
+segment must follow the data segment. If the bss segment does not
+follow the data segment, the OMAGIC file will not run.
+.PP
+The segments must be on 4 megabyte boundaries.  Objects linked at 
+addresses other than the default will not run.
+.SH Files
+.TP 30
+.PN /usr/local/lib/lib*.a
+Library file
+.TP 30
+.PN /lib/lib*.a
+Library file
+.TP 30
+.PN /usr/lib/lib*.a
+Library file
+.TP 30
+.PN a.out
+Output file
+.SH See Also
+cc(1), as(1), ar(1), end(3)

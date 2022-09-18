@@ -1,0 +1,56 @@
+.TH uuid_decode 3ncs
+.SH Name
+uuid_decode \- convert a character-string representation of a UUID into a
+UUID structure
+.SH Syntax
+#include <idl/c/uuid.h>
+
+void uuid_$decode(\fIs, uuid, status\fP)
+.nf
+uuid_$string_t \fIs\fP;
+uuid_$t *\fIuuid\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/uuid.ins.pas'\fR
+.\"
+.\"\fBprocedure uuid_$decode(\fR
+.\"	\fBin \fIs\fB: uuid_$string_t;\fR
+.\"	\fBout \fIuuid\fB: uuid_$t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 
+\fIs\fR
+The character-string representation of a UUID.
+.TP
+\fIuuid\fR
+The UUID that corresponds to \fIs\fR.
+.TP 
+\fIstatus\fR
+The completion status. If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful. 
+.SH Description
+The 
+.PN uuid_$decode
+routine returns the UUID corresponding to 
+a valid character-string representation of a UUID.
+.NXR "Operations on Universal Unique Identifiers" "uuid_decode"
+.SH Examples
+The following routine returns as 
+.B foo_uuid
+the UUID corresponding to the character-string representation in 
+.B foo_uuid_rep:
+.EX
+uuid_$decode (foo_uuid_rep, &foo_uuid, &status);
+.EE
+.SH Files
+.PN /usr/include/idl/uuid.idl
+.br
+.PN /usr/include/idl/c/uuid.h
+.SH See Also
+intro(3ncs), uuid_encode(3ncs)

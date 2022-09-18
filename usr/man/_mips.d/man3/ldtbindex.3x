@@ -1,0 +1,56 @@
+.TH ldtbindex 3x RISC
+.SH Name
+ldtbindex \- compute the index of a symbol table entry of a common object file
+.SH Syntax
+.nf
+.ta \w'LDFILE\ \ \ 'u
+.B #include <stdio.h>
+.B #include <filehdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h> 
+.ft R
+.PP
+.BR "long ldtbindex (" ldptr )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.fi
+.DT
+.ft R
+.SH Description
+The
+.PN ldtbindex
+returns the
+.RB ( long )
+index of the symbol table entry
+at the current position
+of the common object file
+associated with
+.IR ldptr .
+.PP
+The index returned by
+.PN ldtbindex
+can be used in later calls to 
+.MS ldtbread 3x .
+.PN ldtbindex
+returns the index of the symbol table entry that begins at the current
+position of the object file; therefore,
+if
+.PN ldtbindex
+is called immediately after a particular symbol table entry has been
+read,
+it returns the the index of the next entry.
+.PP
+If 
+there are no symbols in the object file
+or if the object file is not positioned at the beginning of a symbol
+table entry,
+.PN ldtbindex
+fails and returns BADINDEX (\-1).
+.PP
+Note that the first symbol in the symbol table has an index of
+.IR zero .
+.SH See Also
+ldclose(3x),
+ldopen(3x),
+ldtbread(3x),
+ldtbseek(3x),
+ldfcn(5)

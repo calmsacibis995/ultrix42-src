@@ -1,0 +1,394 @@
+/*        @(#)xlc_ps.vc	4.1      7/2/90      */
+/* file:   xlc_ps.def - Variable declarations needed by postscript code generator
+ * edit:	gh	25-MAR-1986 17:15:44 - File creation
+ *		mgb	28-APR-1986 11:34:00 - Added new postscript commands
+ *						and cleaned up some that 
+ *						already exited.
+ *		gh	 7-MAY-1986 08:45:02 - Changed preamble mscan value
+ *			 			from -6 to 6
+ *		gh	 12-MAY-1986 10:35:53 Added font preamble stuff
+ *		gh	 20-JUN-1986 13:11:06 TEMPORARY:  Added comment char 
+ *			 			to str_spacing string, changed 
+ *						str_courierfind 
+ *		mgb	 25-JUN-1986 14:00:00 Added ps strings for vchar. This
+ *						to set grey to black or white.
+ *		araj	 27-JUN-1986 21:17:51 added a scale at the beginning 
+ *						and end of the strings changing 
+ *						orientation from Portrait to Landscape 
+ *						& vice versa, as scale and rotate 
+ *						are not commutative, the original scale 
+ *						does must be undone to allow the rotate 
+ *						to operate, then redone to bring back 
+ *						the right system.
+ *		araj	 2-JUL-1986 14:53:09 	Added str_end to 
+ *						close dictionary upon EOF
+ *
+ *		araj	 3-JUL-1986 13:11:37 	Modified 
+ *						STR_COURIER_FIND to handle Mark's new 
+ *						font definition
+ *
+ *		araj	 26-JUL-1986 12:02:15 	Added special 
+ *						strings for fast 
+ *						path
+ *
+ *		araj	 26-JUL-1986 15:48:10 	Remove 
+ *						STR_PS_FONT
+ *
+ *		araj	 27-JUL-1986 11:51:50	Added a few NL 
+ *						here and there 
+ *						to get rid of record too long
+ *
+ *		mgb	 20-AUG-1986 11:21:42   changed str_port_land and
+ *						str_land_port to include sheet
+ *						length.
+ *		laf	 27-AUG-1986 15:55:24   Took the ")" out of all the
+ *						strings in close_show_str 
+ *						[16].
+ *		mgb	 4-SEP-1986 16:01:42    Added str_font_struct for dll.
+ *
+ *		nv	 19-SEP-1986 13:17:12	Added str_define_font for dll.
+ *		nv	 24-SEP-1986 15:17:29	Added, for dll:
+ *						   str_start_font,
+ *						   str_fontmatrix,
+ *						   str_imagemaskmatrix,
+ *						   str_start_bitmaps,
+ *						   str_blob_ref,
+ *						   str_finish_bitmap,
+ *						   str_ul_thickness,
+ *						   str_ul_position,
+ *						   str_strikethru_thickness, and
+ *						   str_strikethru_position.
+ *		nv	 25-SEP-1986 10:12:08 Removed the leading space in 
+ *			'str_new_line' and surrounded 'E' in str_end with '\n'.
+ *		mgb	 26-SEP-1986 18:01:32 move imagepic from preamble.h to
+ *			here.
+ *
+ *		araj	 26-SEP-1986 19:10:34 Also moved the VM traces that 
+ *			surround the last 2 saves
+ *		nv	 8-OCT-1986 13:15:55 Added 'type_of_error_condition'.
+ *		mhs	 14-OCT-1986 12:59:27 Change "E" abbreviation 
+ *			back to "end" in order to minimise chances of a 
+ *			crash on VM traces.
+ *		mhs	 16-OCT-1986 12:31:44 Remove redundant and 
+ *			outdated preamble and fonts.
+ *		mgb	 13-JAN-1987 15:14:19 adding a convert option to
+ *			hex or binary so created 2 strings 
+ *			str_imagepic_hex_def and str_imagepic_bin_def for
+ *			this purpose.
+ *
+ *		araj	 3-APR-1987 16:17:17 Add support for setpapertray.
+ *
+ *		mgb	 15-JUL-1987 13:34:25 took out error messages for 
+ *			maketest and put them in a new file xlv_debug.c 
+ *			and moved error handler there also.
+ *			Also, took out str_preamble [] stub since preamble
+ *			will be put into a seperate file done by cp.c.
+ *
+ *              kws	 22-FEB-1988 14:13:24 Changed how the LN03 builtin
+ *			fonts TRN$ANSI_FONT0-TRN$ANSI_FONT7 are created
+ *			and accessed.  UniqueID side effect.
+ *
+ *		tep	26 May 1988 09:50 - added str_sixelfontfind
+ *				for sixelfont support
+ *			6 June 1988 16:55 - added str_open_proc, str_close_proc
+ *
+ *		mgb	17-JUN-1988 14:19 - Changed TRN$ANSI_FONT_# to 
+ *			TRN$ANSI_BOX_# and TRN$ANSI_FONTDLL_# to
+ *			TRN$ANSI_FONT_# 
+ *
+ *		kws	 18-AUG-1988 12:23:43 Move str_decbind, 
+ *			str_decbind_null from cp.c to here.
+ *
+ *		kws	 19-AUG-1988 14:45:15 Add str_setpacking &
+ *			str_setcachelimit.  These were previously
+ *			done in preamble.h
+ *
+ *		kws	 28-SEP-1988 15:58:27 Change naming conventions
+ *			for defining fonts.
+ *
+ *		araj	12-OCT-1988 10:28
+ *			Added new close show strings for new attributes
+ *			Removed close_show_restore strings as they were unused
+ *
+ *		araj	14-OCT-1988 13:31
+ *			Add overline thickness and position to downloaded info
+ *		araj	 9-NOV-1988 17:40
+ *			Add str_finddefpapertray & str_resdefpapertray
+ */ 
+
+
+/************************************************************************
+ *                                                                      *
+ *      COPYRIGHT  (c)  DIGITAL  EQUIPMENT CORPORATION 1985,            *
+ *            1986.   ALL RIGHTS RESERVED.                              *
+ *                                                                      *
+ *      THIS SOFTWARE IS FURNISHED UNDER A LICENSE AND MAY BE           *
+ *      USED AND COPIED ONLY IN ACCORDANCE  WITH THE TERMS OF           *
+ *      SUCH  LICENSE  AND  WITH  THE  INCLUSION OF THE ABOVE           *
+ *      COPYRIGHT  NOTICE.  THIS SOFTWARE OR ANY OTHER COPIES           *
+ *      THEREOF   MAY  NOT  BE  PROVIDED  OR  OTHERWISE  MADE           *
+ *      AVAILABLE  TO  ANY  OTHER  PERSON.  NO  TITLE  TO AND           *
+ *      OWNERSHIP  OF  THE  SOFTWARE  IS  HEREBY TRANSFERRED.           *
+ *                                                                      *
+ *      THE INFORMATION IN THIS SOFTWARE IS SUBJECT TO CHANGE           *
+ *      WITHOUT  NOTICE  AND SHOULD  NOT BE  CONSTRUED  AS A            *
+ *      COMMITMENT  BY  DIGITAL EQUIPMENT CORPORATION.                  *
+ *                                                                      *
+ *      DIGITAL  ASSUMES  NO RESPONSIBILITY  FOR THE  USE  OR           *
+ *      RELIABILITY  OF ITS SOFTWARE ON EQUIPMENT THAT IS NOT           *
+ *      SUPPLIED BY DIGITAL.                                            *
+ ************************************************************************/
+
+
+
+/************************************************************************
+ *
+ * This module defins the global variables and string constants needed
+ * by the postscript code generator routines.
+ *
+ * WARNING:  If any strings are defined below that will be output within
+ * a currently open 'show' (as part of a string going to Postscript),
+ * then the following characters must be translated in the defined string
+ * as follows:
+ *	(  must be translated to \050
+ *	)  must be translated to \051
+ *	\  must be translated to \\
+ ************************************************************************/
+
+
+/*----------------------------------------------------------------------*
+ *	CODE GENERATOR VARIABLES:					*
+ *----------------------------------------------------------------------*/
+
+/*%
+ *% Create the down-line loaded font dictionary (TRN$ANSI_FONT_DICT_8-32):
+ *%
+ */
+
+CONST	GLOBAL BYTE
+    str_font_struct [] = {"\
+currentdict /TRN$ANSI_FONT_DICT_%d known not \n\
+{ 15 dict /TRN$ANSI_FONT_DICT_%d 1 index def begin \n\
+  /FontType 3 def \n\
+  /Encoding DllEncoding def \n\
+  /CharStrings 193 dict def \n\
+  /BuildChar /DllBuildChar load def \n\
+end } if\n"};
+
+/* String constants: */
+CONST	GLOBAL BYTE
+    str_next_line [] = {"\n"},
+    str_save [] = {"S "},		/* {"save "}, */
+    str_show [] = {") D\n"},		/* {") show\n"}, */
+    str_end [] = {"\nend\n"},		/* {"\nend\n"}, */
+
+    str_float_scale [] = {" F "},	/* {" scale\n"}, */
+    str_new_scale [] = {"%d %d scale "}, 
+    str_scale [] = {"C "},		/* {".01 .01 scale\n"}, */
+    str_trns_on [] = {"1800 -77400 T\n"}, /* {"1800 -77400 translate\n"}, */
+    str_courierfind [] = 
+    	{"TRN$ANSI_BOX_%d \n"},		/* {"/TRN$ANSI_BOX_%d \n"}, */
+    str_sixelfontfind [] =		/* {"<sxlfntnm> findfont setfont \n"} */
+	{ "/TRN$ANSI_sixelfont_0 FD SF\n" },
+    str_showpage [] = {"\nPG\n"},	/* {"\nshowpage\n"}, */
+
+    str_restore [] = {"R "},		/* {"restore\n"}, */
+    str_spacing [] = 
+	{"/TRN$ANSI_SPACED_DICT_%d TRN$ANSI_FONT_DICT_%d %d B def\n"}, 
+	/* {"%d spacing\n"}, */
+    str_lineto [] = {"%d %d L "},	/* {"%d %d lineto\n"}, */
+    str_newpath [] = {"newpath\n"},
+    str_closepath [] = {"closepath\n"},
+    str_stroke [] = {"K\n"},		/* {"stroke\n"}, */
+    str_copy_font [] = {"\n%% COPY FONT *** TBD ***\n"}, /* ***  TBD !!! *** */
+    str_moveto [] = {"%d %d M "},	/* {"%d %d moveto\n"}, */
+    str_restore_moveto [] = {"R %d %d M "},	/* {"%d %d moveto\n"}, */
+    str_translate [] = {"%d %d T\n"},	/* {"%d %d translate\n"}, */
+    str_rotate [] = {"%d rotate "},
+    str_setlinewidth [] = {"%d W "},	/* {"%d setlinewidth\n"}, */
+    str_setpapertray [] = 
+    {"statusdict /setpapertray known {statusdict begin %d setpapertray end} if "},
+    str_finddefpapertray [] = {"\nfinddefpapertray\n"},
+    str_resdefpapertray [] = {"\nresdefpapertray\n"},
+    str_open_show [] = {"\n("},
+    str_open_proc [] = {"{\n"},		/* open procedure */
+    str_close_proc [] = {" } decbind def\n"},	/* close procedure */
+    str_decbind [] = {"/decbind {bind} def\n"}, /* bind to operators */
+    str_decbind_null [] = {"/decbind {} def\n"}, /* don't bind to operators */
+    str_setpacking [] = 
+    {"statusdict /setpacking known {statusdict begin true setpacking end} if\n"},
+    str_setcachelimit [] = {"12500 setcachelimit\n"}, 
+    str_exec_newsheet[] = 
+    {"statusdict /newsheet known {statusdict begin newsheet end} if "},
+
+    /* aug27 */
+    *close_show_str[64] = {
+                           " D\n",	/* ") show\n", */
+                           " D1\n",	/* ") show_italic\n", */
+                           " D2\n",	/* ") show_bold\n", */
+                           " D3\n",	/* ") show_bold_italic\n", */
+                           " D4\n",	/* ") show_ul\n", */
+                           " D5\n",	/* ") show_ul_italic\n", */
+                           " D6\n",	/* ") show_ul_bold\n", */
+                           " D7\n",	/* ") show_ul_bold_italic\n", */
+                           " D8\n",	/* ") show_overline\n", */
+                           " D9\n",	/* ") show_overline_italic\n", */
+                           " D10\n",	/* ") show_overline_bold\n", */
+                           " D11\n",	/* ") show_overline_bold_italic\n", */
+                           " D12\n",	/* ") show_overline_ul\n", */
+                           " D13\n",	/* ") show_overline_ul_italic\n", */
+                           " D14\n",	/* ") show_overline_ul_bold\n", */
+                           " D15\n",	/* ") show_overline_ul_bold_italic\n" */
+                           " D16\n",	/* ") show_strike", */
+                           " D17\n",	/* ") show_strike_italic\n", */
+                           " D18\n",	/* ") show_strike_bold\n", */
+                           " D19\n",	/* ") show_strike_bold_italic\n", */
+                           " D20\n",	/* ") show_strike_ul\n", */
+                           " D21\n",	/* ") show_strike_ul_italic\n", */
+                           " D22\n",	/* ") show_strike_ul_bold\n", */
+                           " D23\n",	/* ") show_strike_ul_bold_italic\n", */
+                           " D24\n",	/* ") show_strike_overline\n", */
+                           " D25\n",	/* ") show_strike_overline_italic\n", */
+                           " D26\n",	/* ") show_strike_overline_bold\n", */
+                           " D27\n",	/* ") show_strike_overline_bold_italic\n", */
+                           " D28\n",	/* ") show_strike_overline_ul\n", */
+                           " D29\n",	/* ") show_strike_overline_ul_italic\n", */
+                           " D30\n",	/* ") show_strike_overline_ul_bold\n", */
+                           " D31\n",	/* ") show_strike_overline_ul_bold_italic\n" */
+                           " D32\n",	/* ") show_dul\n", */
+                           " D33\n",	/* ") show_dul_italic\n", */
+                           " D34\n",	/* ") show_dul_bold\n", */
+                           " D35\n",	/* ") show_dul_bold_italic\n", */
+                           " D36\n",	/* ") show_dul_ul\n", */
+                           " D37\n",	/* ") show_dul_ul_italic\n", */
+                           " D38\n",	/* ") show_dul_ul_bold\n", */
+                           " D39\n",	/* ") show_dul_ul_bold_italic\n", */
+                           " D40\n",	/* ") show_dul_overline\n", */
+                           " D41\n",	/* ") show_dul_overline_italic\n", */
+                           " D42\n",	/* ") show_dul_overline_bold\n", */
+                           " D43\n",	/* ") show_dul_overline_bold_italic\n", */
+                           " D44\n",	/* ") show_dul_overline_ul\n", */
+                           " D45\n",	/* ") show_dul_overline_ul_italic\n", */
+                           " D46\n",	/* ") show_dul_overline_ul_bold\n", */
+                           " D47\n",	/* ") show_dul_overline_ul_bold_italic\n" */
+                           " D48\n",	/* ") show_dul_strike\n", */
+                           " D49\n",	/* ") show_dul_strike_italic\n", */
+                           " D50\n",	/* ") show_dul_strike_bold\n", */
+                           " D51\n",	/* ") show_dul_strike_bold_italic\n", */
+                           " D52\n",	/* ") show_dul_strike_ul\n", */
+                           " D53\n",	/* ") show_dul_strike_ul_italic\n", */
+                           " D54\n",	/* ") show_dul_strike_ul_bold\n", */
+                           " D55\n",	/* ") show_dul_strike_ul_bold_italic\n", */
+                           " D56\n",	/* ") show_dul_strike_overline\n", */
+                           " D57\n",	/* ") show_dul_strike_overline_italic\n", */
+                           " D58\n",	/* ") show_dul_strike_overline_bold\n", */
+                           " D59\n",	/* ") show_dul_strike_overline_bold_italic\n", */
+                           " D60\n",	/* ") show_dul_strike_overline_ul\n", */
+                           " D61\n",	/* ") show_dul_strike_overline_ul_italic\n", */
+                           " D62\n",	/* ") show_dul_strike_overline_ul_bold\n", */
+                           " D63\n"	/* ") show_dul_strike_overline_ul_bold_italic\n" */
+    },
+    /* end aug27 */
+
+
+	str_save_open_show [] = {"S \n("},
+
+
+    str_preamble_show [] = {""},
+
+     str_preamble_vchar [] = {"\
+/vshow_ul { pop } def\n\
+/vshow_strike { pop } def\n\
+/vshow_ul_strike { pop } def\n"},
+
+     str_preamble_fonts [] = {"\
+/copy_font { pop pop } def\n\
+/set_spacing { pop } def\n\
+/load_font { } def\n"};	/* <<< This needs functionality !!!!!! */
+
+/*******************************************
+ * Postscript Strings For Defining Fonts    *
+ *******************************************/
+
+CONST  BYTE
+	str_define_spaced_font [] = 
+    	    {"\n/TRN$ANSI_FONT_%d TRN$ANSI_SPACED_DICT_%d definefont pop " },
+	str_define_dll_font [] = 
+    	    {"\n/TRN$ANSI_FONT_%d TRN$ANSI_FONT_DICT_%d definefont pop " },
+    	str_set_box [] =
+            {"/TRN$ANSI_BOX_%d {/TRN$ANSI_FONT_%d FD SF} def\n"},
+	str_start_font [] = {"TRN$ANSI_FONT_DICT_%d  begin\n"},
+	str_fontmatrix [] = {"/FontMatrix [%d 0 0 -%d 0 0] def\n"},
+	str_imagemaskmatrix [] = {"\n/imagemaskmatrix [%d 0 0 %d 0 0] def\n"},
+	str_start_bitmaps [] = {"\nCharStrings begin"},
+	str_blob_ref [] = {"\n/a%d a128 def\n"},
+	str_char_replace [] = {"\n/a%d a%d def\n"},
+	str_finish_bitmap [] = {" > ] def \n"},
+	str_ul_thickness [] = {"\n/UnderlineThickness %d def"},
+	str_ul_position [] = {"\n/UnderlinePosition %d def"},
+	str_ol_thickness [] = {"\n/OverlineThickness %d def"},
+	str_ol_position [] = {"\n/OverlinePosition %d def"},
+	str_strikethru_thickness [] = {"\n/StrikethroughThickness %d def"},
+	str_strikethru_position [] = {"\n/StrikethroughPosition %d def"};
+
+
+
+/*******************************************
+ * Postscript String Definitions For Vchar *
+ *******************************************/
+
+CONST  BYTE
+	str_white [] = {"WH "},		/* {"1 setgray\n"}, */
+	str_black [] = {"BK "},		/* {"0 setgray\n"}, */
+	str_line_ul [] = {"%d %d TRN$VSHOW_UL\n"},
+	str_line_ol [] = {"%d %d TRN$VSHOW_OL\n"},
+	str_line_dul [] = {"%d %d TRN$VSHOW_DUL\n"},
+	str_line_st [] = {"%d %d TRN$VSHOW_STRIKE\n"},
+
+	str_line_stul [] = {"%d %d TRN$VSHOW_UL_STRIKE\n"},
+	str_line_stol [] = {"%d %d TRN$VSHOW_OL_STRIKE\n"},
+	str_line_stdul [] = {"%d %d TRN$VSHOW_DUL_STRIKE\n"},
+
+
+	str_line_ulol []  = {"%d %d TRN$VSHOW_OL_UL\n"},
+	str_line_dulol [] = {"%d %d TRN$VSHOW_OL_DUL\n"},
+
+	str_line_stulol [] = {"%d %d TRN$VSHOW_UL_STRIKE_OL\n"},
+	str_line_stdulol [] = {"%d %d TRN$VSHOW_DUL_STRIKE_OL\n"};
+
+
+/*************************************************
+ * Postscript String Definitions For Orientation *
+ *************************************************/
+
+CONST  BYTE
+	str_ps_port [] = {"1 -1 F 0 -%d T\n"},	/* {"1 -1 scale\n0 -%d translate\n"}, */
+	str_ps_land [] = {"PSL "},		/* {"90 rotate\n1 -1 scale\n"}, */
+	str_port_land [] = {" %d %d T 1 -1 F 90 rotate 1 -1 F\n"},
+	str_land_port [] = {" -1 1 F -90 rotate -1 1 F 0 -%d T\n"};
+
+
+CONST  BYTE str_sixel_new_line [] = {"0 -1 T\n"};
+
+/*--------------------------------------------------------*/
+
+CONST  BYTE str_sixel_data_bin [] = {"I\n"};	/* {"imagepic\n"}; */
+CONST  BYTE str_sixel_data_hex [] = {"H\n"};	/* {"imagepic\n"}; */
+
+/*--------------------------------------------------------*/
+
+CONST  BYTE str_sixel_data_info_change [] = {"\
+\
+/picstr %d string def /bitwidth %d def\n"};
+
+/*=================================*/
+/*= 6 scan rows of data goes here =*/
+/*=================================*/
+
+
+/*********************************************
+ * include the preamble here on compile time *
+ *********************************************/
+
+#include "preamble.tmp"
+

@@ -1,0 +1,96 @@
+.\" SCCSID: @(#)ne.4	3.1	11/24/87
+.TH ne 4 
+.SH Name
+ne \- Second Generation Ethernet Chip Interface
+.SH Syntax
+.nf
+\fBdevice ne0 at ibus? vector neintr\fR
+.\"\fBdevice ne0 at vba0 csr 0x200e0000 vector neintr\fR
+.fi
+.\".PP
+.\"The second line is used for busless small VAX processors.  Other
+.\"processors would use the first line. 
+.SH Description
+.NXR "ne interface" "Ethernet interface"
+.NXR "Lance Ethernet interface"
+The
+.PN ne 
+interface provides access to a 10 Mb/s Ethernet network through
+the Digital's Second Generation Ethernet Chip (SGEC) based controller.
+.PP
+The host's Internet address is specified at boot time with
+an SIOCSIFADDR ioctl.
+The
+.PN ne 
+interface employs the address resolution protocol described in
+.MS arp 4p
+to map dynamically between Internet and Ethernet addresses on the local
+network.
+.PP
+The 
+.PN ne 
+driver normally tries to use a trailer encapsulation
+to minimize copying data on input and output.  This can be
+disabled for an interface by setting the IFF_NOTRAILERS
+flag with an SIOCSIFFLAGS ioctl.
+Trailers are only used for packets destined for Internet hosts.
+.PP
+The SIOCSPHYSADDR ioctl can be used to change 
+the physical address of the adapter and the
+SIOCRPHYSADDR ioctl can
+be used to read its physical address.
+.PP
+The SIOCADDMULTI and SIOCDELMULTI ioctls can be used to add or delete
+multicast addresses.  
+The 
+.PN SGEC 
+recognizes a maximum of 16 multicast addresses.
+.PP
+The SIOCRDCTRS and SIOCRDZCTRS ioctls can be used to read or 
+read and clear the Ethernet driver counters.
+The argument to these two ioctls is a pointer to a counter
+structure, 
+.PN ctrreq, 
+found in 
+.PN <net/if.h> .
+.PP
+The SIOCENABLBACK and SIOCDISABLBACK ioctls can be used to enable
+and disable the interface loopback mode respectively.
+.SH Diagnostics
+The diagnostic error messages contain relevant information provided
+by the 
+.PN ne 
+driver. For example,
+.PP
+.B "ne%d: self test failed <reason lists>
+.br
+Adapter did not pass the power-up self-test during autoconfiguration
+time.
+.PP
+.B "ne%d: write CSR0 failed 
+.br
+The 
+.PN ne 
+driver was unable to set the initial value for the adapter.
+.PP
+.B "ne%d: couldn't allocate ......
+.br
+The 
+.PN ne 
+driver was unable to allocate memory for the internal data
+structures.
+.B "ne%d: can't handle af%d"
+.br
+The interface was handed
+a message with addresses formated in an unsuitable address
+family, and the packet was dropped.
+.PP
+.B "ne%d: memory error (MERR)"
+.br
+A host memory problem or a memory parity error has occurred.
+.PP
+.B "ne%d: SIOCADDMULTI fail, multicast list full"
+.br
+Too many multicast requests have been made. 
+.SH See Also
+arp(4p), inet(4f), intro(4n)

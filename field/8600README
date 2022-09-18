@@ -1,0 +1,80 @@
+
+snapcopy  - This program will request snapshot file status from the frontend.
+	    Any valid snapshot files will then be copied from the frontend
+	    and placed in the specified directory in the Ultrix-32 file
+	    system. The snapshot files on the frontend will then be
+	    invalidated. This program can be manually invoked or run from the
+	    /etc/rc.local file (site specific startup commands). The program
+	    can be run anytime, single or multiuser mode.
+
+	    The snapshot file(s) that are copied to the Ultrix-32 file system 
+	    will be given the name(s):
+
+			hr:min:sec-snap1.dat
+
+				 or
+
+			hr:min:sec-snap2.dat
+
+
+	    The /etc/rc.local file has the correct entry to envoke the
+	    'snapcopy' program when the system boots to multiuser mode.
+	    NOTE that this entry in the /etc/rc.local file is commented
+	    out and will NOT work until the comment characters ( # ) are
+	    removed. Ask the system manager to do this.
+
+	    There may be time when you want to manually envoke the snapcopy 
+	    program, for example if the system is only to be booted to
+	    single user mode. To invoke the program manually you must have 
+	    root (superuser) privalages and the /usr file-system must be
+	    mounted. Type the command:
+
+			/etc/snapcopy directory
+
+	    Where 'directory' is the full path name to the directory where 
+	    you want the snapshot files to be copied to, for example
+
+			/etc/snapcopy /usr/field
+
+	    Will copy any valid snapshot files to the /usr/field directory.
+
+showsnap - This program is a limited functionality version of the VSR
+	    program that runs under VMS. This program will provide a bit
+	    to text translation of the snapshot files. Translation of the
+	    visability points is not supported in this version. The program
+	    can be run at any time, single or multiuser mode.
+
+	    You may install the program where ever you wish, it may be 
+	    handy to have it where you will be copying the snapshot files
+	    to. To use it, you must redirect the input to be one of the 
+	    files created by the 'snapcopy' program, for example:
+
+
+	    Assume you have left the 'showsnap' program in /usr/field 
+	    and the snapshot files are being copied into /usr/adm/snap
+	    you use the following command:
+
+		showsnap < /usr/adm/snap/01:28:34-snap1.dat
+
+	    You may also redirect the output to a file:
+
+		showsnap < /usr/adm/snap/13:43:01-snap2.dat >file-name
+
+	    To then get a line printer copy of the file you would use:
+
+		lpr file-name
+
+	    You may also 'pipe' the output directly to the printer:
+
+		snowsnap < /usr/adm/snap/13:43:01-snap2.dat | lpr
+
+	    If you are using a video terminal it may be more convienent
+	    to use 'more' to keep the data from scrolling off the screen:
+
+		showsnap < /usr/adm/snap/01:28:34-snap1.dat | more
+
+				or
+
+		showsnap < /usr/adm/snap/13:43:01-snap2.dat >file-name
+		more file-name
+

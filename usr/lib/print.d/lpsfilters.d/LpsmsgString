@@ -1,0 +1,76 @@
+#! /bin/sh
+#
+# Shell script to convert the "simple Unix format" version of VMS
+# error message file into a C program that can be compiled.
+#
+# Usage:
+#	LpsmsgConvert < (VMSfile)lpsmsg.msg > messages.txt
+#	LpsmsgString   < messages.txt > lpsmsg_string.h
+#
+# Ajay Kachrani June 21, 1988  Updated from IP server to be used by
+#                              DECnet/Ultrix lpscomm filter
+#
+cat << XXXXXX 1>&1
+/*
+ *  lpsmsg_string.h   Define LAPS error code --> message mapping
+ *  
+ *  Produced By: LpsmsgConvert/$0 utility 
+ *
+ *        Ajay Kachrani, `date`
+ *
+ */
+/*
+ * bit mask for stripping VMS severity code from error codes
+ */
+#define SEVERITY_BITS 7
+/*
+ * severity codes
+ * *NOTE* values must match ordering of severity strings
+ */
+#define SUCCESS	0
+#define INFO	1
+#define WARN	2
+#define ERROR	3
+#define	FATAL	4
+/*
+ * severity strings
+ */
+char *severity_strings[] =
+{
+     "", "", "warning: ", "error: ", "error: "
+};
+
+struct laps_msg {
+        short severity;
+	unsigned long code;
+	short FAOcount;
+	char *text;
+};
+XXXXXX
+
+sed 's/!UL/%u/g' $* | sed 's/!AS/%s/g' $* | # change !UL to %u and !AS to %s
+awk '
+$1 == "lines" && $3 == "chars" {printf "int VMSmcount = %d;\n", $2;
+	print "struct laps_msg laps_msgs[] = {";
+        print "/*";
+        print " * generic messages - used by various components of the print server";
+        print " */";
+	next}
+ 	{
+	 tab1 = 1+index($0,"	");
+	 tab2 = tab1 + index(substr($0,tab1),"	");
+	 tab3 = tab2 + index(substr($0,tab2),"	");
+	 tab4 = tab3 + index(substr($0,tab3),"	");
+         Equals = index($0, "LPS$_USERDATA");
+         if (Equals > 0)
+	     printf "%s, %s, %d, \"userdata: %s\",\n",$1,$2,$4,substr($0,tab4);
+         else
+	     printf "%s, %s, %d, \"%s\",\n",$1,$2,$4,substr($0,tab4);
+	}
+ '
+cat << 'cat2'
+0, 0, 0, (char *) 0
+};
+cat2
+
+

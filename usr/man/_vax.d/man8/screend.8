@@ -1,0 +1,393 @@
+.TH screend 8
+.SH Name
+screend \- Internet (IP) gateway screening daemon
+.SH Syntax
+.B /usr/etc/screend
+[
+.B \-d
+] [
+.B \-c
+] [
+.B \-l
+] [
+.B \-f
+.I configfile
+] [
+.B \-L
+.I logfile
+] [
+.B \-s
+] [
+.B \-r
+]
+.SH Description
+.NXR "screend server daemon"
+.NXR "Internet gateway screening daemon"
+The
+.PN screend
+daemon is used in conjunction with the
+gateway screen facility 
+to decide which IP packets should be forwarded when the 
+system is acting as an IP gateway.  Only the super-user may run
+this program.  
+.PP
+Before using 
+.PN screend
+you must add the following line to your system configuration file:
+.EX
+pseudo-device      gwscreen
+.EE
+After editing the system configuration file you must rebuild
+the kernel, and reboot the system.  For information on
+rebuilding the kernel see the
+\fIGuide to Configuration File Maintenance\fP
+and the 
+.MS doconfig 8
+reference page.
+.PP
+When
+.PN screend
+is started, it reads the configuration file specified
+(\fIconfigfile\fR) and then processes packets according to the
+instructions in that file.
+.PP
+The kernel screening facility must be enabled using
+.MS screenmode 8 
+before
+.PN screend
+has any effect.
+(When screening is disabled, packets are forwarded by the kernel
+according to its usual procedures.)
+.PP
+It is possible to run more than one copy of
+.PN screend
+at a time, although it is not recommended.
+You might do this, however, when the configuration file is changed.
+Because the
+configuration file is read only at program startup, you must restart
+.PN screend
+when the file is changed.  To avoid any service interruption, you
+should start a new instance of
+.PN screend 
+before killing the old one.
+.SH Options
+.IP \-d 5
+Prints large amounts of debugging information.  This is not
+meant for normal use.
+.IP \-c
+Checks the syntax of the configuration file but does not actually
+process any packets.
+.IP \-l
+Turns on logging for all packets (normally, packets are logged only
+if requested in the configuration file).
+.IP "\-f \fIconfigfile\fP"
+Specifies the configuration file.  If not specified, the default,
+.PN /etc/screend.conf , 
+is used.
+.IP "\-L \fIlogfile\fP"
+Specifies that logging records should be appended to the given file.
+There is no default logging file.
+This may be specified simultaneously with 
+.PN \-s , 
+in which case each logging record is stored by both means.
+.IP \-s
+Specifies that logging records should be logged using
+.MS syslog 8 .
+.IP \-r
+Specifies that logging records should include the rule number
+of the configuration file rule responsible for the action logged.
+This is useful for debugging configuration file problems.
+See the section in this reference page on Rule Numbers.
+.SH Configuration File
+This is an informal guide to the grammar of the
+.PN screend
+configuration file.  It is intended for readers who
+are familiar with the basic concepts of the IP protocol family,
+including the distinction between the terms ``network'' and ``subnet.''
+.PP
+Lexical structure:
+.RS
+.IP Comments 
+Can either be C-style comments, delimited by
+/* and */
+or csh-style comments begun with a number sign (\&#) and 
+terminated by the end of a line.  Comments do not nest.
+.IP Case 
+Significant in reserved words (all are lower-case).
+This is actually a benefit, because if a host name happens
+to conflict with a reserved word, you can use the
+host name in upper-case.
+.IP "Host names"
+Must begin with a letter but may contain
+digits, minus signs (\-), 
+dots ( . ), and underscores (\&_ ).  
+The same is true of network,
+subnet, and netmask names.  Hosts can also be identified by 
+their IP address, in dotted quad notation (for example, ``128.45.40.15'').
+.IP Numbers 
+May be in decimal or in hex (0x0 notation).
+Octal notation is not allowed.  Decimal notation is the preferred method.
+.IP "Protocol names" 
+Specified as they are found in 
+.PN /etc/protocols .
+These can also be given as numbers.
+.IP "Port names" 
+For TCP or UDP, specified as they are in
+.PN /etc/services .
+These can also be given as numbers (host byte order).
+.IP "ICMP type codes" 
+Must be chosen from the following list, or given as
+numbers:
+.IP
+.\"	###################################################
+.\" Documentation writer: PLEASE do not change this back to a "tbl"
+.\" table, or it won't work with the online "man" command!
+.\"	###################################################
+.\".TS
+.ta +\w'addressmaskrequest  'u +\w'addressmaskreply  'u
+echo	echoreply	sourcequench
+redirect	unreachable	timeexceeded
+parameterproblem	timestamp	timestampreply
+informationrequest	informationreply	
+addressmaskrequest	addressmaskreply	
+.\".TE
+.IP "White space" 
+All white space is the same (including newlines).
+.RE
+.PP
+General syntax rules:
+.IP 
+The configuration file consists of specifications terminated by
+semicolons.
+.IP 
+There are three kinds of specifications:
+.RS
+.IP "default-action specification" 
+There should only be one of these (the last
+one is the one that counts); it specifies what action to take
+if no action specification matches a packet.
+.IP "subnet mask specifications" 
+Specifies the subnet mask used
+for a given network.
+.IP "action specifications" 
+Specifies a class of packets and
+the action to take when such a packet is received.
+.RE
+.IP
+Specifications can appear in any order, but the evaluation
+order of action specifications is the order in which
+they appear in the file.
+.PP
+In BNF, this is:
+.EX 0
+\fI<configuration-file>\fR ::= \
+{ \fI<specification>\fR | \fI<configuration-file>\fR \fI<specification>\fR }
+\fI<specification>\fR ::= \
+{ \fI<default-action>\fR | \fI<subnet-spec>\fR | \fI<action-spec>\fR }
+.EE
+.PP
+The syntax for a default-action specification is:
+.EX 0
+\fI<default-action>\fR ::= \
+\fBdefault\fR {\fBaccept\fR | \fBreject\fR} [\fBnotify\fR] [\fBlog\fR] \fB;\fR
+.EE
+Note that
+.PN "default accept notify;" 
+is not legal.
+If not specified, the default-action is 
+.PN reject .
+.PP
+The syntax for subnet mask specifications is:
+.EX 0
+\fI<subnet-spec>\fR ::= \
+\fBfor\fR \fI<network>\fR \fBnetmask is\fR \fI<maskval>\fR \fB;\fR
+.EE
+The \fI<network>\fR is either a network name or a dotted-quad address,
+such as ``36.0.0.0''.  The number ``36'' is 
+not a reasonable value.
+\fI<Maskval>\fR is either a name (treated as a hostname) or a dotted-quad
+address, such as ``255.255.255.0'' (bits are \fIon\fR for the network
+and subnet fields.)
+.PP
+The syntax for action specifications is:
+.EX 0
+\fI<action-spec>\fR ::= \
+\fBfrom\fR \fI<object>\fR \fBto\fR \fI<object>\fR \
+{\fBaccept\fR | \fBreject\fR} [\fBnotify\fR] [\fBlog\fR] \fB;\fR
+.EE
+Such a specification
+says that packets flowing this way between this pair of
+objects
+(defined below) should either be accepted or rejected.  If 
+.PN notify
+is specified, when a packet is rejected an ICMP error message is
+returned to the source.  If 
+.PN log 
+is specified, this packet and its disposition are logged.
+.PP
+Conceptually, for each packet the action specifications are
+searched in the order they appear in the configuration file, until
+one matches.  The specified action is then performed.  If no specification
+matches, the default action is performed.
+.PP
+To simplify the configuration file, the following syntax 
+may be used to indicate that the same action should be performed
+on packets flowing in either direction between the specified pair
+of objects:
+.EX 0
+\fI<action-spec>\fR ::= \
+\fBbetween\fR \fI<object>\fR \fBand\fR \fI<object>\fR \
+{\fBaccept\fR | \fBreject\fR} [\fBnotify\fR] [\fBlog\fR] \fB;\fR
+.EE
+Note that this has the 
+same effect as specifying the two unidirectional rules, with the
+forward direction listed first.
+.PP
+An object is a specification of the source or destination
+of a packet.
+The syntax for object specifications is 
+somewhat complex, since certain fields are optional:
+.EX 0
+\fI<object>\fR ::= \
+{ \fI<address-spec>\fR | \fI<port-spec>\fR | \
+\fI<address-spec>\fR \fI<port-spec>\fR }
+.EE
+If the \fI<address-spec>\fR is not given, any host will match.
+If the \fI<port-spec>\fR is not given, any protocol and port will match.
+.EX 0
+\fI<address-spec>\fR ::= \
+{ \fI<net-spec>\fR | \fI<subnet-spec>\fR | \fI<host-spec>\fR | \fBany\fR }
+
+\fI<net-spec>\fR ::= \
+{ \fBnet\fR \fI<name-or-addr>\fR | \fBnet\-not\fR \fI<name-or-addr>\fR }
+\fI<subnet-spec>\fR ::= \
+{ \fBsubnet\fR \fI<name-or-addr>\fR | \fBsubnet\-not\fR \fI<name-or-addr>\fR }
+\fI<host-spec>\fR ::= \
+{ \fBhost\fR \fI<name-or-addr>\fR | \fBhost\-not\fR \fI<name-or-addr>\fR }
+.EE
+The 
+.PN \-not 
+convention means that the object specification matches
+if the specified field does
+.I not
+have the specified
+value.  In the following example, packets not from
+nic.ddn.mil are dropped.
+.EX
+from host\-not nic.ddn.mil to host any reject;
+.EE
+The ``subnet'' and ``subnet\-not''
+forms match against the
+entire address under the subnet mask (for example, if the
+netmask for net 36 is ``255.255.0.0'', then ``subnet
+36.8.0.0'' matches a packet address of 36.8.0.1).
+.PP
+.EX 0		
+\fI<name-or-addr>\fR ::= \
+{ \fI<name>\fR | \fI<dotted-quad>\fR | \fBany\fR }
+
+\fI<port-spec>\fR ::= { \fBproto\fR \fI<proto-name-or-number>\fR
+.RS 
+| \fBicmp type\fR \fI<type-name-or-number>\fR \
+| \fBicmp type\-not\fR \fI<type-name-or-number>\fR
+| \fBtcp port\fR \fI<port-name-or-number>\fR \
+| \fBtcp port\-not\fR \fI<port-name-or-number>\fR
+| \fBudp port\fR \fI<port-name-or-number>\fR \
+| \fBudp port\-not\fR \fI<port-name-or-number>\fR }
+.RE
+
+\fI<proto-name-or-number>\fR ::= { \fI<name>\fR | \fI<number>\fR }
+\fI<type-name-or-number>\fR ::= \
+{ \fI<name>\fR | \fI<number>\fR | \fBany\fR |  \fBinfotype\fR }
+\fI<port-name-or-number>\fR ::= \
+{ \fI<name>\fR | \fI<number>\fR | \fBany\fR | \fBreserved\fR  | \fBxserver\fR }
+.EE
+``Reserved'' ports are those reserved by 4.2BSD Unix for
+privileged processes.
+``Xserver'' ports are those used by X11 window system servers.
+``Infotype'' ICMP packets are those that are
+purely informational: echo, timestamp, information, and addressmask
+requests, and the corresponding replies.
+.SH Restrictions
+IP gateways are allowed to
+fragment IP datagrams if they are too large to be forwarded in one piece.
+Only the first fragment of a datagram carries enough information
+to make certain kinds of accept/reject decisions.
+The 
+.PN screend
+daemon can only handle fragments if it sees the first fragment of a
+datagram before it sees any subsequent fragments.
+Also, only a limited rate of fragmented packet arrival can be
+accommodated by the program (fragmentation is, in general, a bad idea).
+Finally, if more than one instance of
+.PN screend
+is running, most likely this will result in significant loss of
+fragments.
+.PP
+The current implementation does not forward packets that contain
+IP header options.  This is because several of these options can
+be used to subvert checks based on the IP header destination address.
+.PP
+If a host 
+.I name 
+given in an object specification has more than
+one IP address associated with it,
+.PN screend
+does not understand that all these addresses should be checked.
+Only the first (primary) address of the host is used.  This may
+lead to erroneous operation in some cases (possibly including a
+security hole), so a warning is printed if the configuration file
+contains such names.  (Note that you probably will not see this warning
+if
+.PN screend
+is only started in 
+.PN /etc/rc .)
+.SH Examples
+This following is an example of the syntax; it is not intended to
+be used in an actual installation:
+.EX
+# Example configuration file
+default reject;
+
+for 36.0.0.0 netmask is 255.255.0.0;
+
+from subnet 36.8.0.0 to net milnet reject notify;
+from host nic.ddn.mil to host any accept;
+from host any to net arpanet tcp port telnet accept;
+from host any to host any icmp type redirect reject log;
+from host any to subnet 36.10.0.0 tcp port-not reserved reject;
+.EE
+.SH Rule Numbers
+If the 
+.PN \-r 
+option is given, log records contain a notation
+of the rule number responsible for the action being logged.
+A rule is a ``from ... to ...'' specification
+in the configuration file; rules are numbered in order starting with
+zero.
+Note that ``between ... and ...'' specifications expand to two
+``from ... to ... '' rules, each numbered individually.
+The default action, whether explicitly stated or not, is
+not numbered; it is referred to distinctively in the log.
+.SH Diagnostics
+During argument processing and configuration file parsing,
+various diagnostics may be issued.  During normal operation,
+only serious internal inconsistencies result in diagnostics.
+(See the Restrictions section about warning messages in some
+borderline cases.)
+Except in debug mode (
+.PN \-d ), 
+most diagnostics are logged using
+.MS syslog 8 .
+.PP
+Once an hour, a statistics report is made using
+.MS syslog 8
+that shows the number of packets processed since the program was
+started, the hit rate of an internal cache buffer, and the number
+of packets dropped because they arrived too rapidly.
+.SH Files
+.TP 25
+.PN /etc/screend.conf       
+default configuration file
+.SH See Also
+screen(2), screenmode(8), screenstat(8)

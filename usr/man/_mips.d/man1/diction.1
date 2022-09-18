@@ -1,0 +1,46 @@
+.\" SCCSID: @(#)diction.1	8.1	9/11/90
+.TH diction 1 
+.SH Name
+diction, explain \- print wordy sentences; thesaurus for diction
+.SH Syntax
+.B diction
+[\fB\-ml\fR] [\fB\-mm\fR] [\fB\-n\fR] [\fB\-f\fI pfile\fR] \fIfile...\fR
+.br
+.B explain
+.SH Description
+.NXR "diction program"
+.NXR "explain program"
+The
+.PN diction
+command
+finds all sentences in a document that contain phrases
+from a data base of bad or wordy diction.
+Each phrase is bracketed with [ ].
+Because
+.PN diction
+runs
+.PN deroff
+before looking at the text, formatting
+header files should be included as part of the input.
+.PP
+The
+.PN explain
+command
+is an interactive thesaurus for the phrases found by diction.
+.SH Options
+.IP \fB\-mm\fR 20
+Overrides default macro package
+\fB\-ms\fR.
+.IP \fB\-ml\fR 
+Causes 
+.B deroff
+to skip lists.  
+.IP \fB\-f\fIpfile\fR 
+Specifies pattern file in addition to default file.  Note that you can
+specify the \fB\-n\fR flag to suppress the default file.
+.SH Restrictions
+.NXR "diction program" "restricted"
+Use of non-standard formatting macros may cause
+incorrect sentence breaks.
+.SH See Also
+deroff(1)

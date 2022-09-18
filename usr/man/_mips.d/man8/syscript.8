@@ -1,0 +1,44 @@
+.\" SCCSID: @(#)syscript.8	8.1	9/11/90
+.TH syscript 8
+.SH Name
+syscript \- dialogue for running system exercisers
+.SH Syntax
+.B syscript
+.SH Description
+.NXR "syscript command"
+.NXA "syscript command" "cmx exerciser"
+.NXA "syscript command" "dskx exerciser"
+.NXA "syscript command" "fsx exerciser"
+.NXA "syscript command" "lpx exerciser"
+.NXA "syscript command" "memx exerciser"
+.NXA "syscript command" "mtx exerciser"
+.NXA "syscript command" "netx exerciser"
+.NXA "syscript command" "shmx exerciser"
+.NXR "system exerciser" "running"
+The
+.PN syscript
+command presents a dialogue that lets you run any of
+the following system exercisers:
+.IP cmx(8) 1i
+Tests the terminal communications system
+.IP dskx(8) 1i
+Tests the disk drives
+.IP fsx(8) 1i
+Tests the file systems
+.IP lpx(8) 1i
+Tests the line printers
+.IP memx(8) 1i
+Tests memory
+.IP mtx(8) 1i
+Tests the magnetic tape drives
+.IP netx(8) 1i
+Tests the TCP/IP network system
+.PP
+To execute the
+.PN syscript
+command, you must be logged in as the superuser, and
+your working directory must be the 
+.PN /usr/field
+directory.
+.SH See Also
+.I "Guide to System Exercisers"

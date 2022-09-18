@@ -1,0 +1,56 @@
+.\" SCCSID: @(#)term.7	8.2	10/29/90
+.TH term 7
+.SH Name
+term \- conventional names for terminals
+.SH Description
+.NXR "term command"
+Certain commands use these terminal names. They are maintained 
+as part of the shell environment. For further information, see
+.MS sh 1 , 
+and 
+.MS environ 7 .
+.NXR(t) "terminal" "conventional names"
+.PP
+.nf
+.ta \w'450\-12\-8  'u
+adm3a	Lear-Siegler ADM-3a
+2621	Hewlett-Packard HP262? series terminals
+hp	Hewlett-Packard HP264? series terminals
+c100	Human Designed Systems Concept 100
+h19	Heathkit H19
+mime	Microterm mime in enhanced ACT IV mode
+1620	Diablo 1620 (and others using HyType II)
+300	DASI/DTC/GSI 300 (and others using HyType I)
+33	Teletype Model 33
+37	Teletype Model 37
+43	Teletype Model 43
+735	Texas Instruments TI735 (and TI725)
+745	Texas Instruments TI745
+dumb	Terminals with no special features
+dialup	A terminal on a phone line with no known characteristics
+network	A terminal on a network connection with no known characteristics
+4014	Tektronix 4014
+vt52	Digital Equipment Corp. VT52
+vt100	Digital Equipment Corp. VT100
+vt200	Digital Equipment Corp. VT200 - used on VT220, VT240
+vt300	Digital Equipment Corp. VT300 - used on VT330, VT340
+xterm	xterm terminal emulator, X window system
+.fi
+.PP
+See 
+.PN /etc/termcap 
+for an up-to-date and locally correct list.
+See 
+.MS termcap 5 
+for more information on 
+.PN /etc/termcap .
+.PP
+Commands whose behavior may depend on the terminal, either consult TERM in
+the environment, or accept arguments of the form
+.PN \-Tterm ,
+where
+.I term
+is one of the names given above.
+.SH See Also
+clear(1), ex(1), more(1), nroff(1), plot(1g), sh(1), stty(1), tabs(1),
+tset(1), ul(1), termcap(3x), termcap(5), environ(7)

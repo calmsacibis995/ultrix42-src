@@ -1,0 +1,154 @@
+.TH addch 3cur
+.SH Name
+addch, waddch, mvaddch, mvwaddch \- add character to window
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int addch(ch)
+.br
+.B
+chtype ch;
+.PP
+.B
+int waddch(win, ch)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+chtype ch;
+.PP
+.B
+int mvaddch(y, x, ch)
+.br
+.B
+int y, x;
+.br
+.B
+chtype ch;
+.PP
+.B
+int mvwaddch(win, y, x, ch)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int y, x;
+.br
+.B
+chtype ch;
+.SH Description
+.NXR "addch macro"
+.NXR "waddch subroutine"
+.NXR "mvaddch macro"
+.NXR "mvwaddch macro"
+.NXA "addch macro" "putchar subroutine"
+The routine 
+.PN addch 
+inserts the character
+.PN ch
+into the default window at the current cursor position and
+the window cursor is advanced. 
+The character is of the type
+.PN chtype
+which is defined in the
+.PN <cursesX.h>
+header file, as containing both data and attributes.
+.PP
+The routine 
+.PN waddch 
+inserts the character
+.PN ch
+into the specified window at the current cursor position.
+The cursor position is advanced.
+.PP
+The routine 
+.PN mvaddch
+moves the cursor to the specified (y, x) position and  
+inserts the character
+.PN ch
+into the default window.
+The cursor position is advanced after the character has been inserted.
+.PP
+The routine 
+.PN mvwaddch 
+moves the cursor to the specified (y, x) position and  
+inserts the character
+.PN ch
+into the specified window.
+The cursor position is advanced after the character has been inserted.
+.PP
+All these routines are
+similar to 
+.PN putchar .
+The following information applies to all the routines.
+.PP
+If the cursor moves on to 
+the right margin, an automatic newline is performed.
+If 
+.PN scrollok 
+is enabled,
+and a character is added to the bottom right corner of the screen,
+the scrolling region will be scrolled up one line.
+If scrolling is not allowed, ERR will be returned.
+.PP
+If 
+.PN ch
+is a tab, newline, or backspace, the cursor will be moved appropriately
+within the window.
+If 
+.PN ch
+is a newline, 
+the 
+.PN clrtoeol 
+routine is called before the cursor is moved to the beginning 
+of the next line.
+If newline mapping is off, the cursor will be moved to the 
+next line, but the x coordinate will be unchanged.
+If 
+.PN ch
+is a tab the cursor is moved 
+to the next tab position within the window.
+If 
+.PN ch
+is another control character, it will be drawn in the ^X notation.
+Calling 
+the 
+.PN inch 
+routine after adding a control character 
+returns the representation of the control character,
+not the control character.
+.PP
+Video attributes can be combined with a character by or-ing
+them
+into the parameter.
+This will result in these attributes being set.
+The intent here is that text, including attributes, can be
+copied from one place to another using 
+.PN inch 
+and 
+.PN addch .
+For further information, see 
+.MS standout 3cur .
+.PP
+The 
+.PN addch, 
+.PN mvaddch, 
+and 
+.PN mvwaddch
+routines 
+are macros.
+.SH Return Values
+The
+.PN addch ,
+.PN waddch ,
+.PN mvaddch ,
+and
+.PN mvwaddch
+functions return OK on success and ERR on error.
+.SH See Also
+clrtoeol(3cur), inch(3cur), scrollok(3cur), standout(3cur), putchar(3s)

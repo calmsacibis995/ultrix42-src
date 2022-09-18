@@ -1,0 +1,147 @@
+.\" SCCSID: @(#)uux.1c	8.1	9/11/90
+.TH uux 1c
+.SH Name
+uux \- unix to unix command execution
+.SH Syntax
+.NXR "uux command"
+.B uux
+[\fB\-\fR] \fIcommand-string\fR
+.SH Description
+The
+.PN uux
+command gathers 0 or more files from various systems,
+executes a command on a specified system,
+and sends standard output to a file on a specified
+system.
+.PP
+The 
+.I command-string 
+is made up of one or more arguments that look like a shell command line,
+except that the command and file names
+may be prefixed by system-name!.
+A null system-name is interpreted as the local system.
+.PP
+File names may be one of the following:
+.IP \(bu 5
+A pathname 
+.IP \(bu 5
+A pathname preceded by
+.IR ~xxx,
+where
+.I xxx
+is a userid on the specified system
+and is replaced by that user's login directory
+.IP \(bu 5
+Any other syntax that is prefixed by the current directory.
+.PP
+For example, the following command line gets the f1 files from the usg 
+and pwba machines, executes a
+.PN diff
+command and puts the results in f1.diff in the local directory.
+.EX
+uux "!diff usg!/usr/dan/f1 pwba!/a4/dan/f1 > !f1.diff"
+.EE
+.PP
+When using special shell characters such as <>'!, you should either
+quote the entire 
+.I command-string,
+or you should quote the special characters as individual arguments.
+.PP
+The
+.PN uux
+command attempts to get all files to the execution system.  
+If both the file and command are located on different remote sites, 
+the file is first brought to the local system and 
+is then transferred to the execution system.
+.PP
+If you want to include files as arguments to a command, but you
+do not want those files to be processed by 
+.PN uux ,
+enclose the filename in parentheses.  For example:
+.EX
+uux a!uucp b!/usr/file (c!/usr/file)
+.EE
+The previous example sends a 
+.PN uucp
+command to system 
+.PN a.  
+The 
+.PN /usr/file
+is transferred from system 
+.PN b 
+to the local system, and then is passed to system 
+.PN a.  
+When 
+.PN /usr/file
+arrives at system 
+.PN a 
+the 
+.PN uucp
+command executes and sends 
+.PN /usr/file
+to system 
+.PN c .
+.PP
+If the request is not allowed on the remote system, the 
+.PN uux
+command
+notifies you.  This response is sent through remote mail
+from the remote machine.
+.SH Options
+.IP "\fB\\-c, \-l\fR" 0.3i 
+Do not copy local file to the spool directory for transfer
+to the remote machine.  This is the default.
+.IP "\fB\-g\fIgrade\fR" 0.3i
+Specifies the
+.I grade
+which is a single letter or number from 0 to 9, A to Z, or a to z.
+The highest grade is 0, the lowest grade is z.  The default is
+A.  Lower grades should be specified for high-volume jobs, such
+as news.
+.IP \fB\-n\fR 0.3i 
+Sends no notification to user.
+.IP "\fB\-p, -\fR" 0.3i
+Reads stdin.
+.IP \fB\-r\fR 0.3i
+Queues the job, but does not start the file transfer.
+.IP \fB\-x\fIdebug\fR 0.3i
+Produces debugging output on stdout.  The
+.I debug
+option is a number between 0 and 9.  Higher numbers provide more detailed
+information.  Debugging is permitted only for those users with read
+access to 
+.MS L.sys 5 .
+.IP \fB\-z\fR 0.3i
+Notify the user if the command fails.
+.SH Warning
+An installation may limit the list of
+commands executable on behalf of an incoming request from
+.PN uux .
+Typically, a restricted site permits little other than
+the receipt of mail through
+.PN uux .
+.SH Restrictions
+Only the first command of a shell pipeline may
+have a system-name!.
+All other commands are executed on the system of the first
+command.
+.PP
+The use of the shell metacharacter asterisk (*) shell metacharacter
+may not behave as you expect.
+The shell tokens (<<  >>) are not implemented.
+.PP
+You are not notified when execution on a remote machine is denied.
+Only commands listed in 
+.PN /usr/lib/uucp/L.cmds
+on the remote system are executed at the remote system.
+.SH Files
+.DT
+/usr/spool/uucp	spool directory
+.br
+/usr/lib/uucp/*	other data and programs
+.SH See Also
+uucp(1c)
+.br
+"Uucp Implementation Description"
+.I ULTRIX Supplementary Documents
+Vol. III: System Manager

@@ -1,0 +1,90 @@
+.\" SCCSID: @(#)ypsetup.8yp	8.2	11/9/90
+.\" Written by liza sanford-crane  (7/30/86)
+.\" Updated by same (2/29/88)
+.\"
+.TH ypsetup 8yp
+.SH Name
+ypsetup \- set up the yellow pages (YP) environment
+.SH Syntax
+.B /usr/etc/ypsetup
+.br
+.SH Description
+.NXR "ypsetup command"
+.NXR "yellow pages" "svcorder file and"
+.NXR "YP environment" "setting up"
+.PP
+A local area network must be set up on your system 
+before you can set up YP.
+You must know your system's default YP domain name and
+whether your system will be a master server, slave server, or 
+client.
+If your system is to be the master server for your YP domain,
+be sure no other master has been established and be sure the files
+to be distributed are in the directory
+.PN /var/yp/src .
+Note that the files to be distributed should be
+modified from the original
+.PN /etc
+files by removing the root entry in the
+.PN /etc/passwd 
+file.  
+.PP
+If your system is not to be the master server,
+be sure a master already exists for your YP domain.
+Once you know this information, run
+.PN ypsetup
+with the system in multiuser mode and answer its questions.
+.PP
+Once YP is installed on a machine, it cannot be used
+until the 
+.PN /etc/svc.conf
+file is modified to contain YP entries on the desired
+database lines.  The
+.PN ypsetup
+command reminds a user to run
+.PN /usr/etc/svcsetup
+or edit the 
+.PN /etc/svc.conf
+file manually.
+.SH Files
+.B "Files that Start the YP daemons"
+.TP 20
+.PN /etc/crontab
+Clock daemon database file
+.TP
+.PN /etc/rc.local
+Commands pertinent to a specific system
+.TP 
+.B "Default YP Map Files"
+.TP 
+.PN group	
+Group database
+.TP 
+.PN hosts	
+Host name database
+.TP 
+.PN mail.aliases	
+Sendmail alias database
+.TP 
+.PN netgroup
+Network group aliases
+.TP 
+.PN networks	
+Network name database
+.TP 
+.PN passwd	
+Password file
+.TP 
+.PN protocols	
+Protocol name database
+.TP 
+.PN rpc
+Rpc name database
+.TP 
+.PN services	
+Service name database
+.SH See Also
+domainname(1yp), ypwhich(1yp), svc.conf(5),
+svcsetup(8), yppasswdd(8yp), ypserv(8yp), ypxfr(8yp) 
+.br
+\fIGuide to the Yellow Pages Service\fP

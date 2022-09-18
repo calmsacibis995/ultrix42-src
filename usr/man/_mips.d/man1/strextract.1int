@@ -1,0 +1,199 @@
+.TH strextract 1int
+.SH Name
+strextract \- batch string extraction
+.SH Syntax
+.B strextract
+[
+.B \-p
+.I patternfile
+] [
+.B \-i
+.I ignorefile
+] [
+.B \-d
+] [
+.I source-program...
+]
+.SH Description
+.NXR "strextract utility"
+The 
+.PN strextract
+command extracts text strings from source programs. 
+This command also writes the string it extracts to a message text file. 
+The message text file contains the text for each message extracted 
+from your input source program. The 
+.PN strextract
+command names the file by appending .msg to the name of the input source program.
+.PP
+In the 
+.I source-program
+argument, you name one or more source programs
+from which you want messages extracted. The 
+.PN strextract
+command does not extract messages from source programs included using the
+.PN #include 
+directive. Therefore, you might want a source program and all the source
+programs it includes on a single 
+.PN strextract
+command line.
+.PP
+You can create a patterns file (as specified by 
+.I patternfile
+) to control how the 
+.PN strextract 
+command extracts text. The patterns file is divided into several sections,
+each of which is identified by a keyword. The keyword must start at the
+beginning of a new line, and its first character must be a dollar sign ($).
+Following the identifier, you specify a number of patterns. Each pattern
+begins on a new line and follows the regular expression syntax you use in
+the 
+.MS regex 3
+routine. For more information on the patterns file, see the
+.PN patterns
+(5int) reference page.
+.PP
+In addition to the patterns file, you can create a file that indicates
+strings that
+.PN extract
+ignores.  Each line in this ignore file contains a single string to be
+ignored that
+follows the syntax of the
+.MS regex 3
+routine.
+.PP
+When you invoke the
+.PN strextract
+command, it reads the patterns file and the file that contains strings
+it ignores.  You can specify a patterns file and an ignore file on the
+.PN strextract 
+command line.  Otherwise, the
+.PN strextract
+command matches all strings and uses the default patterns file.
+.PP
+If 
+.PN strextract
+finds strings which match the
+.PN ERROR
+directive in the pattern file, it reports the strings to standard 
+error (stderr.) but does not write the string to the message file.
+.PP
+After running
+.PN strextract ,
+you can edit the message text file to remove text strings which do not 
+need translating before running
+.PN strmerge .
+.PP
+It is  recommended that you use
+.PN extract
+command  as a visual front end to the
+.PN strextract
+command rather than running
+.PN strextract
+directly.
+.SH Options
+.IP \fB\-i\fR 5
+Ignore text strings specified in
+.I ignorefile.
+By default, the 
+.PN strextract
+command searches for 
+.I ignorefile 
+in the current working directory, your home directory, and 
+.PN /usr/lib/intln .
+.IP
+If you omit the 
+.PN \-i
+option, 
+.PN strextract
+recognizes all strings specified in the patterns file.
+.IP \fB\-p\fR 5
+Use \fIpatternfile\fR to match strings in the input source program. By default,
+the command searches for the pattern file in the current working directory,
+your home directory, and finally 
+.PN /usr/lib/intln .
+.IP
+If you omit the 
+.PN \-p
+option, the 
+.PN strextract
+command uses a default patterns file that is stored in 
+.PN /usr/lib/intln/patterns .
+.IP \fB\-d\fR 5
+Disables warnings of duplicate strings. If you omit the 
+.PN \-d 
+option, 
+.PN strextract
+prints warnings of duplicate strings in your source program.
+.SH Restrictions
+Given the default pattern file, you cannot cause 
+.PN strextract
+to ignore strings in comments that are longer than one line.
+.PP
+You can specify only one rewrite string for all classes of pattern matches.
+.PP
+The 
+.PN strextract 
+command does not extract strings from files include with 
+.PN #include 
+directive. You must run the 
+.PN strextract
+commands on these files separately.
+.EX 
+% strextract \-p c_patterns prog.c prog2.c
+% vi prog.msg
+% strmerge \-p c_patterns prog.c prog2.c
+% gencat prog.cat prog.msf prog2.msf
+% vi nl_prog.c
+% vi nl_prog2.c
+% cc nl_prog.c nl_prog2.c \-li
+.EE 
+.PP
+In this example, the
+.PN strextract 
+command uses the 
+.PN c_patterns 
+file to determine which strings to match. The input source programs are named
+.PN prog.c
+and
+.PN prog2.c .
+.PP
+If you need to remove any of the messages or extract one of the created strings, edit the 
+resulting message file, 
+.PN prog.msg .
+Under no conditions should you add to this file. Doing so could result in 
+unpredictable behavior.
+.PP
+You issue the 
+.PN strmerge
+command to replace the extracted strings with calls to the message catalog.
+In response to this command, 
+.PN strmerge ,
+creates the source message catalogs,
+.PN prog.msf
+and 
+.PN prog2.msf ,
+and the output source programs,
+.PN nl_prog.c
+and 
+.PN nl_prog2.c .
+.PP
+You must edit 
+.PN nl_prog.c
+and
+.PN nl_prog2.c
+to include the appropriate 
+.PN catopen
+and 
+.PN catclose
+function calls.
+.PP
+The 
+.PN gencat
+command creates a message catalog and the 
+.PN cc
+command creates an executable program.
+.SH See Also
+intro(3int), gencat(1int), extract(1int), strmerge(1int), regex(3),
+catopen(3int), patterns(5int)
+.br 
+\fIGuide to Developing International Software\fP

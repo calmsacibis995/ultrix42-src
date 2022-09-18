@@ -1,0 +1,26 @@
+.\" SCCSID: @(#)getpagesize.2	8.1	9/11/90
+.TH getpagesize 2
+.SH Name
+getpagesize \- get system page size
+.SH Syntax
+.nf
+.ft B
+pagesize = getpagesize()
+int pagesize;
+.ft R
+.fi
+.SH Description
+.NXR "getpagesize system call"
+.NXR "page size" "getting"
+The
+.PN getpagesize
+system call returns the number of bytes in a page.
+Page granularity is the granularity of many of the memory
+management calls.
+.PP
+The page size is a 
+.I system
+page size and may not be the same as the underlying
+hardware page size.
+.SH See Also
+pagesize(1), sbrk(2)

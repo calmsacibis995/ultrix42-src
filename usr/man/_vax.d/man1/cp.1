@@ -1,0 +1,81 @@
+.\" SCCSID: @(#)cp.1	8.1	9/11/90
+.TH cp 1
+.SH Name
+cp \- copy file data
+.SH Syntax
+.B cp
+[ \fB\-f\fR ] [ \fB\-i\fR ] [ \fB\-p\fR ] \fIfile1 file2\fR
+.PP
+.B cp
+[ \fB\-f\fR ] [ \fB\-i\fR ] [ \fB\-p\fR ] [ \fB\-r\fR ] \fIfile... directory\fR
+.PP
+.B cp
+[ \fB\-f\fR ] [ \fB\-i\fR ] [ \fB\-p\fR ] [ \fB\-r\fR ] \fIdirectory... directory\fR
+.SH Description
+.NXR "cp command"
+.NXR "file" "copying"
+.NXA "cp command" "dd command"
+.NXA "cp command" "mv command"
+The
+.PN cp
+command copies
+.I file1
+onto
+.IR file2 .
+The mode and owner of  
+.I file2
+are preserved if it already
+existed; the mode of 
+.I file1
+is used otherwise.  Note that the
+.PN cp
+command will not copy a file onto itself.
+.PP
+In the second form, one or more 
+.I files 
+are copied into the
+.I directory 
+with their original file names.
+.PP
+In the third form, one or more source
+.I directories
+are copied into the destination
+.I directory
+with their original file names.
+.SH Options
+.IP \-f 5
+Forces existing destination pathnames to be removed
+before copying, without prompting for confirmation.
+The
+.B \-i
+option is ignored if the
+.B \-f
+option is specified.
+.IP \-i 5
+Prompts user with the name of file
+whenever the copy will cause an old file to be
+overwritten. A yes answer will cause 
+.PN cp
+to continue. Any other answer will prevent it
+from overwriting the file.
+.IP \-p
+Preserves (duplicates) in the copies the modification
+time, access time, file mode, user ID, and group ID as allowed
+by the permissions of the source files, ignoring the present
+umask.
+.IP \-r
+Copies directories. Entire directory trees, including their 
+subtrees and the individual files they contain, are copied to 
+the specified destination directory. The directory, its subtrees, 
+and the individual files retain their original names. For example, 
+to copy the directory 
+.PN reports ,
+including all of its subtrees 
+and files, into the directory 
+.PN news, 
+enter the following command:
+.EX
+cp \-r reports news
+.EE
+.SH See Also
+cat(1), pr(1), mv(1)

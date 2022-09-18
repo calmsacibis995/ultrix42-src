@@ -1,0 +1,148 @@
+.\" SCCSID: @(#)shmop.2	8.1	9/11/90
+.TH shmop 2
+.SH Name
+shmop, shmat, shmdt \- shared memory operations
+.SH Syntax
+.ft B
+.nf
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+.PP
+.ft B
+char *shmat (shmid, shmaddr, shmflg)
+int shmid;
+char *shmaddr;
+int shmflg;
+.PP
+.ft B
+int shmdt (shmaddr)
+char *shmaddr;
+.fi
+.SH Description
+.NXR "shmop system call"
+.NXR "shmat system call"
+.NXR "shmdt system call"
+.NXA "shmat system call" "shmctl system call"
+.NXA "shmdt system call" "shmget system call"
+.NXR "shared memory" "operations"
+The
+.PN shmat
+system call attaches the shared memory segment
+associated with the shared memory identifier specified by 
+.I shmid
+to the data segment of the calling process.
+The segment is attached at the address
+specified by one of the following criteria:
+.PP
+If
+.I shmaddr 
+is equal to zero, the segment is attached
+at the first available address as
+selected by the system.
+.PP
+If
+.I shmaddr
+is not equal to zero and 
+.RI ( shmflg
+& SHM_RND )
+is true, the segment is attached
+at the address given by 
+.RI ( shmaddr \- 
+.RI ( shmaddr
+modulus
+SHMLBA )).
+.PP
+If
+.I shmaddr
+is not equal to zero and 
+.RI ( shmflg
+& SHM_RND )
+is false, the segment is attached
+at the address given by
+.I shmaddr.
+.PP
+The segment is attached for reading if 
+.RI ( shmflg
+& SHM_RDONLY )
+is true. Otherwise, it is
+attached for reading and writing. 
+.PP
+The
+.PN shmdt
+system call detaches from the calling process's
+data segment the shared memory segment
+located at the address specified by
+.I shmaddr.
+.SH Return Values
+Upon successful completion, the return values are as follows:
+.IP \(bu 4
+The
+.PN shmat
+system call
+returns the data segment start address
+of the attached shared memory segment.
+.IP \(bu
+The
+.PN shmdt
+system call returns a value of zero (0).
+.PP
+Otherwise, a value of \-1 is returned, and 
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+The
+.PN shmat
+system call
+fails and not attach the shared memory segment, if any of the
+following is true:
+.TP 15
+[EINVAL]
+The
+.I shmid 
+is not a valid shared memory identifier. 
+.TP 15
+[EACCES]
+Operation permission is denied to the calling process.  For further
+information, see 
+.MS errno 2 . 
+.TP 15
+[ENOMEM]
+The available data space is not large
+enough to accommodate the shared memory segment. 
+.TP 15
+[EINVAL]
+The
+.I shmaddr
+is not equal to zero, and the value of 
+.RI ( shmaddr \-
+.RI ( shmaddr
+modulus SHMLBA ))
+is an illegal address.
+.TP 15
+[EINVAL]
+The
+.I shmaddr
+is not equal to zero, 
+.RI ( shmflg
+& SHM_RND )
+is false, and the value of
+.I shmaddr
+is an illegal address. 
+.TP 15
+[EMFILE]
+The number of shared memory segments
+attached to the calling process would
+exceed the system imposed limit. 
+.PP
+The
+.PN shmdt
+fails and does not detach the shared memory segment if:
+.TP 15
+[EINVAL]
+The
+.I shmaddr
+is not the data segment start
+address of a shared memory segment. 
+.SH See Also
+execve(2), exit(2), fork(2), shmctl(2), shmget(2)

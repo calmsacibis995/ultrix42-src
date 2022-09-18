@@ -1,0 +1,213 @@
+.\" SCCSID: @(#)getmnt.2	2.3	5/19/87
+.TH getmnt 2
+.SH Name
+getmnt \- get information about mounted file systems
+.SH Syntax
+.B #include <sys/types.h>
+.br
+.B #include <sys/param.h>
+.br
+.B #include <sys/mount.h>
+.PP
+.B getmnt(\fIstart, buffer, nbytes, mode, path\fB)
+.br
+.B int \fI*start\fB;
+.br
+.B struct fs_data  \fI*buffer\fB;
+.br
+.B int	\fInbytes, mode\fB;	
+.br
+.B char	 \fI*path\fP;
+.SH Description
+.NXR "getmnt system call"
+.NXR "file system" "getting information on mounted"
+The
+.PN getmnt
+system call retrieves information about mounted file systems.
+.PP
+The
+.I mode
+argument is one of the following:
+.PN STAT_ONE ,
+.PN NOSTAT_ONE ,
+.PN STAT_MANY ,
+or
+.PN NOSTAT_MANY .
+.PP
+If
+.I mode
+is
+.PN  STAT_ONE
+or
+.PN NOSTAT_ONE ,
+then
+.I path
+is the name of a single file system for which information is desired,
+.I start
+and
+.I nbytes
+are ignored,
+and
+.I buffer
+is assumed to be large enough to hold one
+.PN fs_data
+structure.
+.PP
+If
+.I mode
+is
+.PN STAT_MANY
+or
+.PN NOSTAT_MANY ,
+then
+.I path
+is ignored.
+The
+.I start
+argument is the current logical location within the internal system
+mount table and must be initially set to
+.PN 0 .
+The 
+.I start
+argument is updated to reflect the current logical
+location within the system mount table,
+allowing successive executions of
+.PN getmnt
+to retrieve information about all the mounted file systems.
+The
+.I nbytes
+argument defines the size of
+.IR buffer ,
+into which the file system information is returned.
+Buffer sizes must be a multiple of 
+.PN "sizeof(struct fs_data)"
+bytes.
+Larger buffer sizes allow information about multiple file systems
+to be returned.
+.PP
+If
+.I mode
+is
+.PN NOSTAT_ONE
+or
+.PN NOSTAT_MANY ,
+then dynamic
+.PN fs_data
+information (the number of free inodes and the number of free blocks)
+could be out of date,
+but these calls are guaranteed to return.
+The file system information in memory is not updated.
+.\" The 
+.\" .I start
+.\" argument is set to 0 when information about all file
+.\" systems has been retrieved.
+.PP
+If
+.I mode
+is
+.PN STAT_ONE
+or
+.PN STAT_MANY ,
+then the file system information in memory is updated.
+However,
+if the server of any file system for which information is being
+retrieved is down,
+then these calls will hang until the server responds.
+.PP
+When information about multiple file
+systems is returned,
+it is stored within consecutive 
+.I buffer
+locations. 
+The information for each file system is described by the structure
+.PN fs_data:
+.EX 0
+struct fs_data {
+	struct	fs_data_req	fd_req;	/* required data */
+	u_int	fd_spare[113];		/* spare */
+};	/* 2560 bytes */
+
+struct fs_data_req {    /* required part for all file systems */
+	u_int	flags;    /* how mounted */
+	u_int	mtsize;   /* max transfer size in bytes */
+	u_int	otsize;   /* optimal transfer size in bytes */
+	u_int	bsize;    /* fs block size in bytes for vm code */
+	u_int	fstype;   /* see ../h/fs_types.h  */
+	u_int	gtot;     /* total number of gnodes */
+	u_int	gfree;    /* # of free gnodes */
+	u_int	btot;     /* total number of 1K blocks */
+	u_int	bfree;    /* # of free 1K blocks */
+	u_int	bfreen;   /* user consumable 1K blocks */
+	u_int	pgthresh; /* min size in bytes before paging*/
+	int	uid;      /* uid that mounted me */
+	dev_t	dev;      /* major/minor of fs */
+	dev_t	pad;      /* alignment: dev_t is a short*/
+	char	devname[MAXPATHLEN + 4];  /* name of dev */
+	char	path[MAXPATHLEN + 4];     /* name of mount point */
+}
+.EE
+.SH Return Values
+.PP
+Upon successful completion, a value indicating the number of
+.PN fs_data
+structures stored in
+.I buffer
+is returned.
+If the file system is not mounted (\fImode\fR is
+.PN STAT_ONE
+or
+.PN NOSTAT_ONE )
+or there are no more file systems
+in the mount table (\fImode\fR is
+.PN STAT_MANY
+or
+.PN NOSTAT_MANY ),
+.PN 0
+is returned.
+Otherwise,
+.PN \-1
+is returned and the global variable
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+.TP 18
+[ENOTDIR]
+A component of the path prefix of
+.I path
+is not a directory.
+.TP
+[EINVAL]
+Invalid argument.
+.TP
+[ENAMETOOLONG]
+The length of a component of
+.I path
+exceeds 255 characters,
+or the length of
+.I path
+exceeds 1023 characters.
+.TP
+[ENOENT]
+The file referred to by
+.I path
+does not exist.
+.TP
+[EACCESS]
+Search permission is denied for a component of the path prefix of
+.IR path .
+.TP
+[ELOOP]
+Too many symbolic links were encountered in translating
+.IR path .
+.TP
+[EFAULT]
+Either
+.I buffer
+or
+.I start
+causes an illegal address to be referenced.
+.TP
+[EIO]
+An I/O error occurred while reading from the file system.
+.SH See Also
+gfsi(5)

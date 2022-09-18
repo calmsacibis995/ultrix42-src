@@ -1,0 +1,144 @@
+.TH prev 1mh
+.SH Name
+prev \- show the previous message
+.SH Syntax
+.B prev 
+[
+.I +folder
+] [
+.B \-[no]header
+] [
+.B \-help
+] [
+.B "\-showproc"
+.I program
+] [
+.B \-noshowproc
+] [
+.I "options to"
+.PN showproc
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "prev command"
+.NXR "message" "show previous message"
+The
+.PN prev
+command displays the previous message in the current folder.  
+The previous message is the one before the current message
+in the folder.
+The message that is shown becomes the current message.
+.PP
+You can specify a folder other than the current folder by using the 
+.I +folder
+argument.
+If you specify a folder, 
+that becomes the current folder.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-header" 10
+.PD 0
+.IP "\-noheader" 10
+.PD
+Displays a one-line header before the message.
+The header consists of the name of the folder
+and the message number.
+This is the default behavior.
+It can be suppressed with the
+.B \-noheader
+option.
+.\"
+.IP "\-help" 10
+Prints a list of the valid options to this command.
+.\"
+.IP "\-showproc \fIprogram\fR [ \fIoptions\fR ]\fB" 10
+.PD 0
+.IP "\-noshowproc" 10
+.PD
+Specifies an alternative program to list messages.
+The default is to use the program defined by the
+\f(CWshowproc:\fR entry in the
+.PN \&.mh_profile
+file.
+As with
+.PN show ,
+you can give options to the
+.PN showproc
+program at the command line.
+These are passed directly to
+.PN showproc
+by
+.PN prev .
+.\"
+.PP
+The defaults for this command are:
+.IP
+.I +folder
+defaults to the current folder
+.br
+.B \-header
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+The
+.PN prev
+command is really a link to the 
+.PN show
+program.
+As a result,
+if you make a link to 
+.PN prev
+and that link is not called 
+.PN prev ,
+your link will act like 
+.PN show
+instead.
+To avoid this,
+add a profile-entry for the link to your MH profile 
+and add the argument 
+.PN prev
+to the entry.
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+The command in the following example displays the previous
+message in the folder 
+.PN +copylog :  
+.EX
+$ \f(CBprev +copylog\f(CW
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine your Mail directory
+showproc:+Program to show the message
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+show(1mh), next(1mh)

@@ -1,0 +1,260 @@
+.\" SCCSID: @(#)execve.2	6.6	3/15/90
+.TH execve 2
+.SH Name
+execve \- execute a file
+.SH Syntax
+.ft B
+execve(name, argv, envp)
+.br
+char *name, *argv[], *envp[];
+.fi
+.SH Description
+.NXR "execve system call"
+.NXA "execve system call" "environ global variable"
+.NXR "file" "executing"
+The
+.PN execve
+system call transforms the calling process into a new process.
+The new process is constructed from an ordinary file
+called the \fInew process file\fP.
+.NXR "new process file" "defined"
+This file is either an executable object file,
+.NXR "executable object file" "defined"
+or a file of data for an interpreter.
+An executable object file consists of an identifying header,
+followed by pages of data representing the initial program (text)
+and initialized data pages.  Additional pages can be specified
+by the header to be initialized with zero data.
+For further information, see 
+.MS a.out 5 .
+.PP
+An interpreter file begins with a 
+line of the form ``#! \fIinterpreter\fP''.
+.NXR "interpreter file" "defined"
+When an interpreter file is executed
+the system 
+executes 
+the specified interpreter, giving
+it the name of the originally 
+executed 
+file as an argument,
+shifting over the rest of the original arguments.
+.PP
+There can be no return from
+a successful 
+.PN execve
+because the calling
+core image is lost.
+This is the mechanism whereby different process images become active.
+.PP
+The argument \fIargv\fP is an array of character pointers
+to null-terminated character strings.  These strings constitute
+the argument list to be made available to the new
+process.  By convention, at least one argument must be present in
+this array, and the first element of this array should be
+the name of the executed program, the last component of \fIname\fP.
+.PP
+The argument \fIenvp\fP is also an array of character pointers
+to null-terminated strings.  These strings pass information to the
+new process, but they are not directly arguments to the command.
+For further information, see 
+.MS environ 7 .
+.PP
+Descriptors open in the calling process remain open in
+the new process, except for those for which the 
+.I close-on-exec
+flag is set.  For further information, see 
+.MS close 2 .
+Descriptors which remain open are unaffected by
+.PN execve .
+.PP
+Ignored signals remain ignored across an
+.PN execve ,
+but signals that are caught are reset to their default values.
+The signal stack is reset to be undefined.  For further information,
+see 
+.MS sigvec 2 .
+.PP
+Each process has
+.I real
+user and group IDs and
+.I effective
+user and group IDs.  The
+.I real
+ID identifies the person using the system; the
+.I effective
+ID determines his access privileges.
+The
+.PN execve
+system call
+changes the effective user and group ID to
+the owner of the executed file if the file has the set-user-ID
+or set-group-ID modes.  The
+.I real
+user ID is not affected.
+.PP
+The new process also inherits the following attributes from
+the calling process:
+.PP
+.in +5n
+.nf
+.ta +2i
+Process ID	See getpid(2)
+Parent process ID	See getpid(2)
+Process group ID	See getpgrp(2)
+Access groups	See getgroups(2)
+Working directory	See chdir(2)
+root directory	See chroot(2)
+Control terminal	See tty(4)
+Resource usages	See getrusage(2)
+Interval timers	See getitimer(2)
+Resource limits	See getrlimit(2)
+File mode mask	See umask(2)
+Signal mask	See sigvec(2)
+.in \-5n
+.fi
+.PP
+When the executed program begins, it is called as follows:
+.PP
+.DT
+.nf
+	main(argc, argv, envp)
+	int argc;
+	char **argv, **envp;
+.fi
+.PP
+The
+.I argc
+argument is the number of elements in \fIargv\fP
+(the ``arg count'')
+and
+.I argv
+is the array of character pointers
+to the arguments themselves.
+.PP
+The
+.I envp
+argument is a pointer to an array of strings that constitute
+the
+.I environment
+of the process.
+A pointer to this array is also stored
+in the global environ variable.
+Each string consists of a name,
+an equal sign ( = ), and a null-terminated value.
+The array of pointers is terminated by a null pointer.
+The shell 
+.MS sh 1
+passes an environment entry for each global shell variable
+defined when the program is called.
+See 
+.MS environ 7
+for some conventionally used names.
+.PP
+If
+.PN execve
+returns to the calling process, an error has occurred; the
+return value is \-1 and the global variable
+errno
+contains an error code.
+.SH Environment
+.SS POSIX, System Five 
+When your program is compiled using the POSIX or System V environment,
+the
+effective user ID and effective group ID of the new process image
+are saved (as the saved-set-uid and saved-set-gid)
+for later use by the
+.PN setuid ,
+.PN setgid ,
+and
+.PN kill
+functions.
+.SH Restrictions
+.NXR "execve system call" "restricted"
+If a program's effective user ID is not the superuser,
+but it is executed when
+the real user ID is root, then the program has the powers
+of the superuser. 
+.SH Diagnostics
+.NXR "execve system call" "diagnostics"
+The
+.PN execve
+system call fails and returns to the calling process under the following
+conditions:
+.TP 15
+[ENOENT]
+The new process file does not exist.
+.TP 15
+[ENOTDIR]
+A component of the path prefix is not a directory.
+.TP 15
+[EACCES]
+Search permission is denied for a 
+component of the path prefix.
+.TP 15
+[EACCES]
+The new process file is not an ordinary file.
+.TP 15
+[EACCES]
+The new process file mode denies execute permission.
+.TP 15
+[ENOEXEC]
+The new process file has the appropriate access
+permission, but it has an invalid magic number in its header.
+.TP 15
+[ETXTBSY]
+The new process file is a pure procedure (shared text)
+file that is currently open for writing or reading by some process.
+.TP 15
+[ENOMEM]
+The new process requires more virtual memory than
+is allowed by the imposed maximum.  For further information,
+see 
+.MS getrlimit 2 .
+.TP 15
+[E2BIG]
+The number of bytes in the new process's argument list
+is larger than the system-imposed limit of {ARG_MAX} bytes.
+.TP 15
+[EFAULT]
+The new process file is not as long as indicated by
+the size values in its header.
+.TP 15
+[EFAULT]
+The
+\fIpath\fP\|, \fIargv\fP\|, or \fIenvp\fP points
+to an illegal address.
+.TP 15
+[EIO]
+An I/O error occurred while reading from the file system.
+.TP 15
+[ENAMETOOLONG]
+A component of a pathname exceeded 255 characters, or an
+entire path name exceeded 1023 characters.
+.TP 15
+[ELOOP]
+Too many symbolic links were encountered in translating the
+pathname.
+.TP 15
+[EROFS]
+If binaries cannot be executed from the file system.
+.TP 15
+[EROFS]
+If
+.PN setuid
+and
+.PN setgid
+programs cannot be executed from the file system.
+.TP 15
+[ESTALE]
+The file handle given in the argument is invalid.  The file
+referred to by that file handle no longer exists or has 
+been revoked.
+.TP
+[ETIMEDOUT]
+A connect request or remote file operation failed
+because the connected party
+did not properly respond after a period
+of time that is dependent on the communications protocol.
+.SH See Also
+exit(2), fork(2), execl(3), environ(7)

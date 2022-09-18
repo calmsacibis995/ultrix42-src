@@ -1,0 +1,30 @@
+.\" SCCSID: @(#)getenv.3f	8.1	9/11/90
+.TH getenv 3f VAX "" Unsupported
+.SH Name
+getenv \- get value of environment variables
+.SH Syntax
+.B subroutine getenv (ename, evalue)
+.br
+.B character*(*) ename, evalue
+.SH Description
+.NXR "getenv subroutine (FORTRAN)"
+.NXR "environment variable" "getting value"
+The
+.PN getenv
+subroutine searches the environment list
+for a string of the form
+.IB ename = value
+and returns
+.I value
+in
+.I evalue
+if such a string is present, otherwise fills
+.I evalue
+with blanks.
+For further information, see
+.MS environ 7 .
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+execve(2), environ(7)

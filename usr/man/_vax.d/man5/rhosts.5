@@ -1,0 +1,139 @@
+./" new page for v4.0
+./" DRI : Sue Y.
+./" Writer : Nolan Ring
+.TH rhosts 5
+.SH Name
+rhosts \- list of hosts that are logically equivalent 
+to the local host
+.SH Syntax
+.B /$HOME/\&.rhosts
+.SH Description
+.NXR "rhosts file=>\\&.rhosts file" 
+The
+.PN "\&.rhosts"
+file allows a user who has an account on the local host to log
+in from a remote host without supplying a password.  It also allows
+remote copies to the local host.
+.PP
+If the 
+.PN "\&.rhosts"
+file exists, it is located in a user's home directory.
+It is not a mandatory file, however.
+.PP
+The format of a
+.PN "\&.rhosts"
+file entry is:
+.EX
+\fIhostname\fR [\fIusername\fR]
+.EE
+The \fIhostname\fP is the name of the remote host from which the user
+wants to log into the local host.  The \fIusername\fP is the user's login name
+on the remote host.  If you do not specify
+a user name, the user must have the same login name on both the
+remote and local hosts.
+.PP
+The host names listed in the
+.PN "\&.rhosts"
+file may optionally contain the local BIND domain name.  For more 
+information on BIND, see the 
+.I Guide to the BIND/Hesiod Service.
+.PP
+If a user
+.PN ginger 
+is logged in to
+.PN host1 ,
+and wants to log in to
+a host called
+.PN machine1
+without supplying a password, she must:
+.IP \(bu 5
+Have an account on 
+.PN machine1
+.IP \(bu 5
+Create a 
+.PN "\&.rhosts"
+file in her home directory on 
+.PN machine1
+.IP \(bu 5
+Specify \f(CBhost1 ginger\fP as an entry in the
+.PN "\&.rhosts"
+file.
+.sp 6p
+If 
+.PN ginger
+has the same login on both 
+.PN host1
+and 
+.PN machine1 ,
+she can simply specify \f(CBhost1\fR in her 
+.PN "\&.rhosts" 
+entry.
+.NT
+.NXR(n) "rhosts file=>\\&.rhosts file" "remote system superuser and"
+You can allow the superuser of a remote system to log in to your
+system without password protection or perform a remote copy by having a
+.PN "\&.rhosts"
+file in the root ( \fB/\fR ) directory, but it is not recommended.
+.sp 6p
+In addition to having a
+.PN "\&.rhosts"
+file, the superuser needs a
+.PN secure
+terminal entry in the
+.PN /etc/ttys
+file for each pseudoterminal configured in the system.
+The secure entry looks similar to the following:
+.EX
+ttyp3      none    network         secure
+.EE
+See the
+.MS ttys 5
+reference page for more information.
+.NE
+.NXA "rhosts file=>\\&.rhosts file" "hosts.equiv file"
+.SH Examples
+The following is a sample 
+.PN "\&.rhosts"
+file for the user 
+.PN ginger .
+It is located in her home directory on
+.PN host1 .
+She also has accounts on the hosts called
+.PN machine1 ,
+.PN system1 ,
+and
+.PN host3 .
+Her login name on 
+.PN machine1
+and 
+.PN host3 
+is the same as on 
+.PN host1,
+but her login on 
+.PN system1 
+is 
+.PN gordon . 
+.PP
+To enable 
+.PN ginger 
+to log in to 
+.PN host1
+from
+.PN machine1 ,
+.PN system1 ,
+and
+.PN host3
+without supplying a password, her 
+.PN "\&.rhosts"
+on 
+.PN host1
+should contain the following entries:
+.EX
+machine1
+system1  gordon
+host3
+.EE
+.SH See Also
+hosts.equiv(5), ttys(5)
+.br
+.I "Introduction to Networking and Distributed System Services"

@@ -1,0 +1,27 @@
+.TH mkfifo 1
+.SH Name
+mkfifo \- make fifo special files
+.SH Syntax
+.B mkfifo 
+.I filename ...
+.SH Description
+The 
+.PN mkfifo
+command creates the `fifo special files' named by 
+its operand list.  The operands are taken sequentially, in the order 
+specified, and each `fifo special file' is either completed 
+or, in the case of an error or signal, not created at all. Unless 
+interrupted, 
+.PN mkfifo 
+will attempt to create all files specified.
+Error messages are written to standard error.
+.PP
+Each `fifo file' is created with a mode of 666, read and write 
+privileges for the user, group and other. The mode is modified by 
+clearing those bits set in the process's file mode creation mask. See
+.MS umask 2
+for more information.
+.SH See Also
+.MS mknod 2 , 
+.MS stat 2 , 
+.MS umask 2 

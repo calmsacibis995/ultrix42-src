@@ -1,0 +1,109 @@
+.TH kpropd 8krb
+.SH Name
+kpropd \- Kerberos utility
+.SH Syntax
+.B /usr/etc/kpropd
+.I output_file
+[
+.B \-d \fIkrb_database\fP
+] [
+.B \-l \fIlog_file\fP
+]
+.br
+[
+.B \-r \fIrealm_name\fP
+] [
+.B \-s \fIsrvtab_file\fP
+]
+.SH Description
+.NXR "Kerberos routines" "kpropd"
+The
+.PN kpropd
+daemon
+runs on a Kerberos slave and waits to receive the Kerberos database propagated
+from a 
+.PN kprop
+process
+on a Kerberos master.  The first parameter, \fIoutput_file\fP, that you 
+must supply to the
+.PN kpropd
+daemon is the name of a database file in which
+data will be placed when it comes over the network.
+.PP
+The
+.PN kpropd
+utility executes the
+.PN kdb_util(8krb)
+utility,
+which loads the database from the file specified in \fIoutput_file,\fP puts it 
+in 
+.PN ndbm
+format, and
+copies it into the
+Kerberos database in
+the
+.PN /var/dss/kerberos/dbase
+directory. 
+.SH Options
+.TP 7
+.B \-r
+Specifies the receiver realm for which data is accepted;
+.PN /etc/krb.conf
+specifies the default.  (See the
+.PN krb.conf(5krb)
+reference page for more information.)
+.TP
+.B \-s
+Specifies the
+service table (\f(CWsrvtab\fP)
+file from which to read the password of the
+.PN kpropd
+daemon, because a password cannot be entered manually when 
+.PN kpropd
+is running as
+a daemon.  The default is
+.PN /etc/srvtab .
+.TP
+.B \-d
+Specifies the primary Kerberos database file of a Kerberos slave.  This
+file receives a new or updated database propagated from the Kerberos
+master.  The default is
+the 
+.PN ndbm
+database in the directory,
+.PN /usr/var/dss/kerberos/dbase .
+The 
+.PN ndbm
+files are:
+.PN principal.dir ,
+.PN principal.ok ,
+and
+.PN principal.pag .
+.TP
+.B \-l
+This option specifies the name of the log file to use.
+The default log file is
+.PN /var/dss/kerberos/log/kpropd.log .
+.SH Restrictions
+The
+.PN kpropd
+command does not support the transfer of encrypted data.
+.PP
+If the 
+.PN /var/dss/kerberos/bin
+directory is not included in the PATH environment variable of the
+process that runs
+.PN kprop ,
+then
+.PN kprop
+will fail because it cannot locate
+.PN kdb_util .
+.SH Files
+.TP
+.PN /usr/var/dss/kerberos/dbase/principal.ok
+.TP
+.PN /usr/var/dss/kerberos/dbase/principal.pag
+.TP
+.PN /usr/var/dss/kerberos/dbase/principal.dir
+.SH See Also
+kprop(8krb), kdb_util(8krb), krb.conf(5krb)

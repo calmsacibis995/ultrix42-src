@@ -1,0 +1,29 @@
+.\" SCCSID: @(#)sync.2	8.2	1/28/91
+.TH sync 2
+.SH Name
+sync \- update super-block
+.SH Syntax
+.B void sync()
+.SH Description
+.NXR "sync system call"
+.NXR "file system" "examining"
+The
+.PN sync
+system call causes all information in 
+memory that should be on disk to be written out.
+This includes modified superblocks,
+modified i-nodes, and delayed block I/O.
+.PP
+Programs that examine a file system,
+for example,
+.PN "fsck"
+or
+.PN "df,"
+use the 
+.PN sync
+system call.
+The writing, although scheduled, is not necessarily
+complete upon return from 
+.PN sync .
+.SH See Also
+sync(1), fsync(2), update(8)

@@ -1,0 +1,56 @@
+.TH setscrreg 3cur 
+.SH Name
+setscrreg, wsetscrreg \- set scrolling region
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int setscrreg(top, bot)
+.br
+.B
+int top, bot;
+.PP
+.B
+int wsetscrreg(win, top, bot)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int top, bot;
+.SH Description
+.NXR "setscrreg subroutine"
+.NXR "wsetscrreg subroutine"
+.PP
+The 
+.PN setscrreg
+routine sets the scrolling region
+for the default window.
+.PP
+The 
+.PN wsetscrreg
+routine sets the scrolling region
+for the named window.
+Use these routines to set a software scrolling region
+in a window.  
+.PP
+For both routines, 
+the line numbers of the 
+top and bottom margins of the scrolling region are contained in
+.PN top
+and 
+.PN bot .
+Line 0 is the top line of the window.
+.PP
+If this option and 
+.PN scrollok 
+are enabled, an attempt to move off the bottom margin line will cause all
+lines in the scrolling region to scroll up one line.
+Only the text of the window is scrolled.
+.SH Return Values
+No return values are defined for these functions.
+.SH See Also
+scrollok(3cur)

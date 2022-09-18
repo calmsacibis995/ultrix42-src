@@ -1,0 +1,40 @@
+.TH ln01pp 8
+.SH Name
+ln01pp \- LN01(S) print filter
+.SH Syntax
+/usr/lib/lpdfilters/ln01pp
+.SH Description
+The 
+.PN ln01pp
+filter is the print filter for print function 
+.MS pr 1 .
+When
+the \fB\-p\fP option is specified in
+.MS lpr 1
+to print a job, the 
+.PN ln01pp
+filter is invoked. The filter sends the appropriate
+control sequences to the LN01(S)
+to set the size of the printable area on a sheet of paper. The filter then calls
+.PN /bin/pr .
+.PP
+The 
+.PN ln01pp
+filter should be specified in the \fBpp\fP field of the 
+.PN /etc/printcap
+file.  For further information, see 
+.MS printcap 5 .
+It is invoked when the \fB\-p\fP option is used with the
+.MS lpr 1
+command to print a job.
+.SH Files
+.TP 15
+.PN /etc/printcap
+Printer capabilities database
+.TP
+.PN /dev/lp?
+.SH See Also
+lpr(1), pr(1), printcap(5), MAKEDEV(8)
+.br
+``Line Printer Spooler Manual,''
+.I "ULTRIX Supplementary Documents, Volume 2: Programmer"

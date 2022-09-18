@@ -1,0 +1,42 @@
+.\" SCCSID: @(#)split.1	8.2	11/8/90
+.TH split 1 
+.SH Name
+split \- split file into smaller files
+.SH Syntax
+.B split
+[\fB\-\fIn\fR\|] [\|\fIfile\| [\fIname\fR\|]\|]
+.SH Description
+.NXR "split command"
+.NXR "file" "breaking into pieces"
+The
+.PN split
+command reads
+.I file
+and writes
+it in
+.IR n \-line
+pieces
+(default 1000), as many as necessary,
+onto
+a set of output files.  The name of the first output
+file is
+.I name
+with
+.B aa
+appended, and so on
+lexicographically.
+If no output name is given,
+.B x
+is default.
+.PP
+If no input file is given, or
+if
+.B \-
+is given in its stead,
+then the standard input file is used.
+.SH Options
+.IP \fB\-\fR 5
+Uses standard input.
+.IP \fB\-\fIn\fR
+Writes specified number of lines to
+each output file.  Default is 1000.

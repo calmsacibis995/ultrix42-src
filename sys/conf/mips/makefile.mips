@@ -1,0 +1,300 @@
+# @(#)makefile.mips	4.2	(ULTRIX)	9/4/90
+#
+# ------------------------------------------------------------------
+# | Copyright Unpublished, MIPS Computer Systems, Inc.  All Rights |
+# | Reserved.  This software contains proprietary and confidential |
+# | information of MIPS and its suppliers.  Use, disclosure or     |
+# | reproduction is prohibited without the prior express written   |
+# | consent of MIPS.                                               |
+# ------------------------------------------------------------------
+#
+# Makefile for 4.3 bsd on MIPS Computer Systems Charleston architecture
+#
+# This makefile is constructed from a machine description:
+#	config machine
+# Most changes should be made in the machine description
+#	/usr/sys/conf/mips/``machineid''
+# after which you should do
+#	 config machineid
+# Generic makefile changes should be made in
+#	/usr/sys/conf/mips/makefile.mips
+# after which config should be rerun for all machines.
+#
+# N.B.: NO DEPENDENCIES ON FOLLOWING FLAGS ARE VISIBLE TO MAKEFILE
+#	IF YOU CHANGE THE DEFINITION OF ANY OF THESE RECOMPILE EVERYTHING
+#
+# -DTRACE	compile in kernel tracing hooks
+#
+
+SYMORDER=	echo
+MV=		mv
+AWK=		/bin/awk
+C2=		/lib/c2
+CAT=		/bin/cat
+CHMOD=		/bin/chmod
+COMM=		/usr/bin/comm
+CP=		/bin/cp
+CPP=		/lib/cpp
+CTAGS=		/usr/ucb/ctags
+ECHO=		/bin/echo
+EX=		/usr/ucb/ex
+GREP=		/usr/ucb/grep
+LD=		/bin/ld
+LINT=		/usr/bin/lint
+LN=		/bin/ln
+LS=		/bin/ls
+PR=		/bin/pr
+RM=		/bin/rm
+SED=		/bin/sed
+SH=		/bin/sh
+SIZE=		/bin/size
+SORT=		/usr/bin/sort
+TR=		/usr/bin/tr
+
+UT=		0
+GP=		-G 8
+TEXTBASE=	80030000
+
+CONF=		../../conf/mips
+
+
+#
+# make macros constructed by config from config file
+#
+%MACROS
+
+#
+# -D defines for cc's and as's of kernel sources
+#
+DEFINES= ${IDENT} -DMIPS -DKERNEL
+
+#
+# COPTS is recognized by config and massaged for profiling kernels
+#
+INCLUDES=-I.
+COPTS= ${INCLUDES} -c ${GP}
+
+#
+# CGOPTS has a -G of 0
+#
+CGOPTS= ${INCLUDES} -c -G 0
+
+#
+# cc options for most kernel sources
+# CCNFLAGS - normal files
+# CCDFLAGS - device drivers
+# CCSFLAGS - swap*.c files
+# CCASFLAGS - *.s files
+# CCPFLAGS - profiling *.c files
+# CCPASFLAGS - profiling *.s files
+# CCASGFLAGS - *.s without any GP
+#
+# CCOPTS may be set from the config file
+# ASOPTS may be set from the config file
+# ENDIAN may be set from the config file
+#
+CCNFLAGS=	${ENDIAN} ${COPTS} -O2 -g3 ${DEFINES} ${CCOPTS}
+CCDFLAGS=	${ENDIAN} ${COPTS} -O0 -g3 ${DEFINES} ${CCOPTS}
+CCSFLAGS=	${ENDIAN} ${COPTS} -O2 -g3 ${DEFINES} ${CCOPTS}
+CCASFLAGS=	${ENDIAN} ${COPTS} -O0 -g3 ${DEFINES} -DLOCORE ${ASOPTS}
+CCPFLAGS=	${ENDIAN} ${PCOPTS} -g ${DEFINES} ${CCOPTS}
+CCPASFLAGS=	${ENDIAN} ${PCOPTS} -g ${DEFINES} -DLOCORE ${ASOPTS}
+CCASGFLAGS=     ${ENDIAN} ${CGOPTS} -O0 -g3 ${DEFINES} -DLOCORE ${ASOPTS
+
+#
+# special .o's that aren't in conf/files, loaded first
+#
+LOBJS=	entry.o param.o ioconf.o scb_vec.o
+
+#
+# loader options for loading kernel
+#
+# LDOPTS may be set from the config file
+#
+LDFLAGS= ${ENDIAN} -N ${GP} -T ${TEXTBASE} -e start ${LDOPTS}
+
+#
+# kernel .s's (constructed by config from conf/files*)
+#
+%SFILES
+
+#
+# kernel .c's (constructed by config from conf/files*)
+#
+%CFILES
+
+#
+# kernel .o's (constructed by config from conf/files*)
+#
+%OBJS
+
+#
+# load kernels (constructed by config from config file)
+#
+%LOAD
+
+#
+# misc targets
+#
+
+clean:
+	${RM} -f eddep makedep *vmunix *.o *.s assym.h param.c \
+	    linterrs makelinks
+
+clobber: clean
+	${RM} -f *.h *.c errs make.out makefile.bak
+
+lint: /tmp param.c
+	@${LINT} -hbxn ${INCLUDES} -DGENERIC ${DEFINES} ${PARAM} \
+	  ../machine/Locore.c ${ALLCFILES} \
+	  ../machine/swapgeneric.c ioconf.c param.c scb_vec.c | \
+	    ${GREP} -v 'struct/union .* never defined' | \
+	    ${GREP} -v 'possible pointer alignment problem'
+
+depend: param.c
+	-if [ ! -f assym.h ]; then ${ECHO} >assym.h; else exit 0; fi
+	-${RM} -f makedep eddep
+	${CC} -M ${CCNFLAGS} ${ALLCFILES} ioconf.c param.c scb_vec.c \
+	    ../machine/swapgeneric.c ${SFILES} ../machine/entry.s | \
+	${SED} -e ':loop' \
+	    -e 's/\.\.\/[^ /]*\/\.\./../' \
+	    -e 's/ \.\// /' \
+	    -e 't loop' | \
+	${AWK} ' { if ($$1 != prev) { \
+ 			print rec; rec = $$0; prev = $$1; \
+ 		} else { \
+ 			if (length(rec $$2) > 78) { \
+ 				print rec; rec = $$0; \
+ 			} else \
+ 				rec = rec " " $$2 \
+ 		} } \
+	      END { print rec } ' > makedep
+	-if [ -r swap*.c ]; \
+	then \
+		${CC} -M ${CCNFLAGS} swap*.c | \
+		${SED} -e ':loop' \
+		    -e 's/\.\.\/[^ /]*\/\.\./../' \
+		    -e 's/ \.\// /' \
+		    -e 't loop' | \
+		${AWK} ' { if ($$1 != prev) { \
+				print rec; rec = $$0; prev = $$1; \
+			} else { \
+				if (length(rec $$2) > 78) { \
+					print rec; rec = $$0; \
+				} else \
+					rec = rec " " $$2 \
+			} } \
+		      END { print rec } ' >> makedep; \
+	else exit 0; \
+	fi
+	${CC} -M ${CCNFLAGS} \
+		../machine/genassym.c | \
+	${SED} -e ':loop' \
+	    -e 's/\.\.\/[^ /]*\/\.\./../' \
+	    -e 's/ \.\// /' \
+	    -e 't loop' | \
+	${AWK} ' BEGIN { \
+		rec = "assym.h:"; \
+	      } \
+	      { \
+		if (length(rec $$2) > 78) { \
+		    print rec; \
+		    rec = "assym.h: " $$2; \
+		} else \
+		    rec = rec " " $$2; \
+	      } \
+	      END { \
+		 print rec; \
+	      } ' >> makedep
+	${ECHO} '/^# DO NOT DELETE THIS LINE/+1,$$d' >eddep
+	${ECHO} '$$r makedep' >>eddep
+	${ECHO} 'w makefile' >>eddep
+	${RM} -f makefile.bak
+	${CP} makefile makefile.bak
+	${RM} -f makefile
+	${EX} - makefile.bak < eddep
+	${RM} -f eddep makedep
+
+links:
+	${EGREP} '#if' ${ALLCFILES} | ${SED} -f ${CONF}/defines | \
+	  ${SED} -e 's/:.*//' -e 's/\.c/.o/' | ${SORT} -u > dontlink
+	${ECHO} ${ALLCFILES} | tr -s ' ' '\12' | ${SED} 's/\.c/.o/' | \
+	  ${SORT} -u | ${COMM} -23 - dontlink | \
+	  ${SED} 's,../.*/\(.*.o\),rm -f \1;ln -s ../../MIPS/GENERIC/\1 \1,' \
+		> makelinks
+	${SH} makelinks && ${RM} -f dontlink
+	${GREP} '^#include' ${ALLCFILES} scb_vec.c ioconf.c param.c ${SFILES} \
+		  ../machine/entry.s > maketmp
+tags:	/tmp
+	${RM} -f tag_tmp*
+	${CP} /dev/null tag_tmp
+	-(for i in ../${CONFNAME}/mips/*.c ../machine/swapgeneric.c \
+	  ${SFILES} ../machine/entry.s ../machine/*.h ${ALLCFILES} ; do \
+		${ECHO} $$i >> tag_tmp;\
+	done)
+	# split list into files with 100 lines each (else argv exceeds 10240)
+	-csplit -k -ftag_tmp tag_tmp 100 {90}
+	${CP} /dev/null tags
+	-(for i in tag_tmp?? ;do \
+		/usr/ucb/ctags -w -a `cat $$i`;\
+	done)
+	${RM} -f tag_tmp*
+
+print:
+	@${PR} -f makefile ../TODO linterrs
+	@${CTAGS} -x ${ALLCFILES} | ${PR} -f -h XREF
+	@(${SIZE} vmunix *.o) | ${PR} -f -h sizes
+	@${LS} -ls | ${PR} -f
+	@cd ../../h; ${LS} -ls | ${PR} -f ; ${PR} -f *.h
+	@${PR} -f ${SFILES}
+	@${PR} -f ${ALLCFILES}
+
+#
+# special dependencies not covered by "make depend"
+#
+autoconf_data.o: makefile	# autoconf.o depends on #if GENERIC
+af_data.o : makefile		# depends on network configuration
+ 
+#
+# special rules not generated by config
+#
+assym.h: makefile ../machine/genassym.c
+	-${RM} -f a.out a.out.q assym.h
+	${CC} ${PARAM} ${INCLUDES} ${DEFINES} ${CCOPTS} ../machine/genassym.c
+	./a.out >assym.h
+	-${RM} -f a.out
+
+../machine/symbols.sort: ../machine/symbols.raw
+	${GREP} -v '^#' ../machine/symbols.raw \
+	    | ${SED} 's/^	//' | ${SORT} -u > ../machine/symbols.sort
+
+#
+# Special rules to make LOBJS
+#
+entry.o: ../machine/entry.s makefile assym.h
+	-${RM} -f entry.o
+	${CC} ${CCASGFLAGS} ${PARAM} ../machine/entry.s
+
+ioconf.o: ioconf.c
+	-${RM} -f ioconf.o
+	${CC} ${CCNFLAGS} ioconf.c
+
+param.c: ${CONF}/param.c
+	-${RM} -f param.c
+	${CP} ${CONF}/param.c .
+
+param.o: param.c makefile
+	-${RM} -f param.o
+	${CC} ${CCNFLAGS} ${PARAM} param.c
+
+scb_vec.o: scb_vec.c
+	-${RM} -f scb_vec.o
+	${CC} ${CCNFLAGS} scb_vec.c
+
+#
+# config produced rules
+#
+%RULES
+
+# DO NOT DELETE THIS LINE -- make depend uses it
+

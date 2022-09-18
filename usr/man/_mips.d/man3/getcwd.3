@@ -1,0 +1,77 @@
+.\" SCCSID: @(#)getcwd.3	8.1	9/11/90
+.TH getcwd 3 
+.SH Name
+getcwd \- get pathname of working directory
+.SH Syntax
+.nf
+.B char \(\fI**getcwd (buf, size\fP)
+.B char \(\fI**buf\fP;
+.B int \fIsize\fP;
+.fi
+.SH Description
+.NXR "getcwd subroutine (standard C)"
+.NXR "working directory" "getting pathname"
+.NXA "directory" "working directory"
+The
+.PN getcwd
+subroutine returns a pointer to the current directory pathname.
+The value of
+.I size
+must be at least two greater than the length of the
+pathname to be returned.
+.PP
+If
+.I buf
+is a NULL pointer,
+.PN getcwd
+will obtain
+.I size
+bytes of space using 
+.PN malloc (3) .
+In this case, the pointer returned by
+.PN getcwd
+may be used as the argument in a subsequent call to
+.I free.
+.PP
+The function is implemented by using 
+.PN popen (3)
+to pipe the output of the 
+.PN pwd (1)
+command into the specified string space.
+.SH Examples
+.EX
+char \(**cwd, \(**getcwd();
+\&.
+\&.
+\&.
+if ((cwd = getcwd((char \(**)NULL, 64)) == NULL) {
+
+     perror("pwd");
+     exit(1);
+}
+printf("%s\en", cwd);
+.EE
+.SH Return Values
+Returns NULL with
+.I errno
+set if
+.I size
+is not large enough, or if an error occurs
+in a lower-level function.
+.SH Diagnostics
+.TP 15
+[EINVAL]
+The size argument is zero or negative.
+.TP
+[ERANGE]
+The size argument is greater than zero, but is smaller
+than the length of the pathname+1;
+.TP
+[EACCES]
+Read or search permission is denied for a component of the
+pathname.
+.TP
+[ENOMEM]
+Insufficient storage space is available.
+.SH See Also
+pwd(1), malloc(3), popen(3)

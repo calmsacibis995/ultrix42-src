@@ -1,0 +1,103 @@
+./" new manpage created for FT2 of V4.0       20 dec, 1989  (JM)
+.TH getsvc 3
+.SH Name
+getsvc - get a pointer to the svcinfo structure
+.SH Syntax
+.B #include <sys/svcinfo.h>
+.PP
+.B struct svcinfo *getsvc()
+.SH Description
+.NXR "getsvc call"
+.PP
+The 
+.PN getsvc 
+call retrieves information from the system about the
+.PN svcinfo 
+structure by returning a pointer to the structure.  This
+structure is initialized the first time a 
+.PN getsvc 
+call is made.  The
+contents of the 
+.PN /etc/svc.conf 
+file are parsed and stored in the
+.PN svcinfo 
+structure.  If the 
+.PN /etc/svc.conf 
+file is modified, the
+contents of this structure will be updated upon the next 
+.PN getsvc 
+call.
+.PP
+The 
+.PN /etc/svc.conf 
+file contains the names of the databases that can be
+served by YP, BIND, or local files and the name service selection for
+each database.  It also has settings for four security parameters.
+The database service selection and security parameters are stored
+in the 
+.PN svcinfo
+structure.
+.PP
+The following structure exists in the 
+.PN svcinfo.h
+file:
+.EX 
+#define SVC_DATABASES 20
+#define SVC_PATHSIZE 8
+struct svcinfo {
+    int svcdate;       /* Last mod date of /etc/svc.conf */
+
+    int svcpath[SVC_DATABASES][SVC_PATHSIZE];    /* indexed by
+                          databases and choice 0=first choice
+	                  1=second choice, etc value stored is
+			  source */
+
+       struct {
+           int passlenmin;
+           int passlenmax;
+           int softexp;
+           int seclevel;
+       } svcauth;
+};
+.EE
+.PP 
+The 
+.PN svcdate 
+field contains the date that the 
+.PN /etc/svc.conf 
+file was last modified.  The 
+.PN svcpath 
+array contains the name service choices for each database.  The 
+.PN svcauth 
+structure contains the values for the four security parameters:  
+password length minimum (\fIpasslenmin\fR), password length maximum
+(\fIpasslenmax\fR), soft expiration date of a password (\fIsoftexp\fR),
+and security mode of a system (\fIseclevel\fR).
+.SH Examples
+The following programming example shows how to use the
+.PN getsvc
+call to use the information in the 
+.PN svcinfo 
+structure to process specific
+host information.
+.EX
+#include <sys/svcinfo.h> 
+struct svcinfo *svcinfo;
+
+if ((svcinfo = getsvc()) != NULL)
+  for (i=0; (j = svcinfo->svcpath[SVC_HOSTS][i]) != SVC_LAST; i++)
+	 switch(j) {
+	     case SVC_BIND:
+	         /* process BIND hosts */
+	     case SVC_YP:
+	         /* process YP hosts */
+	     case SVC_LOCAL:
+		 /* process LOCAL hosts */
+	 }
+.EE
+.SH Files
+.PN /etc/svc.conf
+.br
+.PN /usr/include/sys/svcinfo.h
+.SH See Also
+svc.conf(5), svcsetup(8)

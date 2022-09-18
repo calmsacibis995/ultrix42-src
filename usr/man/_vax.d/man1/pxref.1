@@ -1,0 +1,37 @@
+.\" SCCSID: @(#)pxref.1	8.1	9/11/90
+.TH pxref 1 VAX
+.SH Name
+pxref \- Pascal cross-reference program
+.SH Syntax
+.B pxref
+[\fB\-\fR] \fIname\fR
+.SH Description
+.NXR "Pascal program" "listing cross-references"
+.NXR "Pascal program" "creating line-numbered listing"
+.NXA "pc compiler" "pxref program"
+.NXR "pxref program"
+The
+.PN pxref
+command
+makes a line numbered listing and a cross-reference of identifier usage
+for the program in
+.I name.
+The keywords
+.PN goto
+and
+.PN label
+are treated as identifiers for the purpose of the cross-reference.
+The
+.PN include
+directives are not processed, but cause the placement of an entry
+indexed by `#include' in the 
+.br
+cross-reference.
+.SH Options
+.IP \fB\-\fR 5
+Optional argument that suppresses the line numbered listing.  
+.SH Restrictions
+Identifiers are trimmed to 10 characters.
+.SH See Also
+"Berkeley Pascal User's Manual,"
+\fISupplementary Documents, Volume 2: Programmer\fP

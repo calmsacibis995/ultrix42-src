@@ -1,0 +1,331 @@
+.\" SCCSID: @(#)chmod.1	8.1	9/11/90
+.TH chmod 1
+.SH Name
+chmod \- change file mode
+.SH Syntax
+.B chmod
+[
+.B \-fR
+] 
+.I mode file...
+.SH Description
+.NX R "chmod command"
+.NX A "chmod command" "install command"
+.NX R "mode" "changing"
+Permissions on files are set according to 
+.I mode
+and
+.I file
+parameters.
+.PP
+For
+.IR file ,
+you can specify either a full or partial path.  You can specify
+multiple files, separated by spaces.
+.PP
+For
+.IR mode ,
+you specify one of two variants: absolute mode or symbolic mode.
+.SS Absolute Mode
+For
+.I mode
+in absolute form, you specify an octal number constructed from the sum
+of one or more of the following values:
+.RS
+.TP 10
+4000
+set user ID on execution (applies to executable files only)
+.br
+.ns
+.TP 10
+2000
+set group ID on execution (applies to executable files only)
+.br
+.ns
+.TP 10
+1000
+set sticky bit (see
+.MS chmod 2
+for more information)
+.br
+.ns
+.TP 10
+0400
+read by owner
+.br
+.ns
+.TP 10
+0200
+write by owner
+.br
+.ns
+.TP 10
+0100
+execute, or search if 
+.I file 
+is a directory, by owner
+.br
+.ns
+.TP 10
+0040
+read by group
+.br
+.ns
+.TP 10
+0020
+write by group
+.br
+.ns
+.TP 10
+0010
+execute, or search if 
+.I file 
+is a directory, by group
+.br
+.ns
+.TP 10
+0004
+read by others
+.br
+.ns
+.TP 10
+0002
+write by others
+.br
+.ns
+.TP 10
+0001 
+execute, or search if
+.I file
+is a directory, by others
+.RE
+.PP
+For example, the absolute mode value that provides read, write, and 
+execute permission to owner, read and execute permission to group, and
+read and execute permission to others is 755 (400+200+100+40+10+4+1).
+The absolute mode value that provides read, write, and execute
+permission to owner and no permission to group or others is 700
+(400+200+100).
+.SS Symbolic Mode
+To specify
+.I mode
+in symbolic form, use the following format:
+.IP
+.RI [ who ]
+.I op permission
+.RI [ "op permission" "] ..."
+.NT
+Spaces are included in the preceding format so that you can read the
+arguments; however, as will be shown in examples that follow, you do
+not enter spaces between mode arguments.
+.NE
+.PP
+Specify
+.I who
+using the letters
+.B u
+(for owner),
+.B g
+(for group) and
+.B o
+(for others) either alone or in combination.  You can also specify the
+letter
+.B a
+(for all), which is is equivalent to the letter combination
+.B ugo.
+If you omit the
+.I who
+parameter,
+.B a
+is assumed.  For more information, see 
+.MS umask 2 .
+.PP
+For the
+.I op
+parameter, specify the plus sign
+.RB ( + )
+to add 
+.I permission
+to the file's mode, the minus sign
+.RB ( \- )
+to remove
+.I permission
+from the 
+file's mode, or the equal sign
+.RB ( = )
+to assign
+.I permission
+absolutely (denying or revoking any permission not explicitly specified
+following the equal sign).  The first command in the following example
+provides group with execute permission for 
+.PN filea
+in addition to any other permissions group currently has for
+.PN filea .
+The second command limits the permission that group has for
+.PN fileb
+to execute alone:
+.EX
+chmod g+x filea
+chmod g=x fileb
+.EE
+.PP
+For the
+.I permission
+parameter, specify any combination of the letters
+.B r
+(read),
+.B w
+(write),
+.B x
+(execute),
+.B s
+(set owner or group id), and
+.B t
+(save text \- sticky).  Alternatively, you can specify the letter
+.BR u ,
+.BR g ,
+or
+.B o
+to set
+.I permission
+for the
+.I who
+parameter to be the same as the permission currently granted to the
+user category indicated by the letter.  In the following example, the
+group
+.RB ( g )
+is given the same permissions on 
+.PN filea
+as currently granted to owner
+.RB ( u ):
+.EX
+chmod g=u filea
+.EE
+.PP
+You can revoke all permissions by specifying the
+.I who
+argument followed by
+.BR = ,
+and omitting the
+.I permission
+argument.  For example, the following command removes all permissions
+from others for 
+.PN fileb:
+.EX
+chmod o= fileb
+.EE
+.PP
+When specifying more than one symbolic mode for
+.IR file ,
+separate the modes with commas. The mode changes are applied in the
+sequence specified.  In the following example, write permission is
+added to the permissions already granted to the owner of 
+.PN filea
+and group is then granted the same permissions on 
+.PN filea
+as granted the owner:
+.EX
+chmod u+w,g=u filea
+.EE
+.SH Options
+.IP \-f 5
+Inhibits display of errors that are returned if
+.PN chmod
+fails to change the mode on a file.
+.IP \-R
+Causes 
+.PN chmod 
+to recursively descend any directories subordinate to
+.I file
+and to set the specified mode for each file encountered.  However,
+when symbolic links are encountered, 
+.PN chmod
+does not change the mode of the link file and does not traverse
+the path associated with the link.  Note that the 
+.PN \-R 
+option is useful only when
+.I file
+identifies a directory that is not empty.
+.SH Restrictions
+.NX R "chmod command" "restricted"
+The 
+.I permission
+letter
+.B s
+is used only with 
+.I who 
+letter
+.B u
+or
+.B g.
+.PP
+Only the owner of a file  or someone logged on as superuser may change
+the mode of that file.
+.SH Examples
+Using absolute mode, provide read, write, and search permission to
+the owner, and read and search permission to others for a directory
+named 
+.PN public:
+.EX
+chmod 755 ~harris/public
+.EE
+.NX R(e) "chmod command"
+.PP
+Using absolute mode, set the UID for 
+.PN progrmb 
+execution to be the UID of
+of the file owner rather than the UID of the user
+running the program as follows:
+.EX
+chmod 4000 progrmb
+.EE
+.PP
+Using symbolic mode, perform the same operation as described for 
+the preceding example:
+.EX
+chmod u=s progrmb
+.EE
+.PP
+Using symbolic mode, deny write permission to others for the file
+.PN ourspec:
+.EX
+chmod o\-w ourspec
+.EE
+.PP
+Using symbolic mode, give execute permission on file 
+.PN myprog
+to all user 
+categories:
+.EX
+chmod +x myprog
+.EE
+.PP
+Using symbolic mode, give write permission to all group members,
+deny write permission to others, and give search permission to owner
+on 
+.PN docdir:
+.EX
+chmod g+w,o\-r,u+x docdir
+.EE
+.PP
+Using symbolic mode, give read and execute permissions to others for a 
+directory named 
+.PN programs ,
+and then recursively descend the paths subordinate to 
+.PN programs, 
+adding the  same permissions for others on all files and directories
+included in the subordinate paths:
+.EX
+chmod \-R o+rx programs
+.EE
+.NT
+In the preceding example, if 
+.PN programs
+were the name of a file rather than a directory, 
+.PN chmod
+would change the mode only of the 
+.PN programs 
+file.
+.NE
+.SH See Also
+ls(1), chmod(2), stat(2), umask(2), chown(8)

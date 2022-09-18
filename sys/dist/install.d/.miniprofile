@@ -1,0 +1,20 @@
+#!/bin/sh
+# .miniprofile: the installation only
+#	@(#).miniprofile	4.1	(ULTRIX)	7/2/90
+stty dec new prterase
+PATH=.:/bin
+HOME=/
+export PATH TERM HOME
+
+[ -f /etc/eli ] &&
+	{
+	/etc/eli -f -q > /dev/null 2>&1 
+	rm -f /etc/eli
+	}
+
+log /install.log /bin/sh install.1
+case $? in
+0 )
+	sync; sync; sync
+	/etc/halt
+esac

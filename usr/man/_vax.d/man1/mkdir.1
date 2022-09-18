@@ -1,0 +1,38 @@
+.\" SCCSID: @(#)mkdir.1	8.1	9/11/90
+.\" SCCSID: @(#)mkdir.1	8.1	9/11/90
+.TH mkdir 1 
+.SH Name
+mkdir \- make a new directory
+.SH Syntax
+.B mkdir
+.B \-p
+\fIdirname...\fR
+.SH Description
+.NXR "mkdir command"
+.NXR "directory" "creating"
+.NXA "mkdir command" "rmdir command"
+The
+.PN mkdir
+command creates specified directories in mode 777.  The
+directories are then modified by 
+.MS umask 2 ,
+according to how you have set up 
+.PN umask .
+Standard entries,
+.RB ` . ',
+for the directory itself, and 
+.lg 0
+.BR ` .. '
+.lg 1
+for its parent, are made automatically.
+.PP
+The
+.PN mkdir
+command requires write permission in the parent directory.
+.SH Options
+.IP \-p
+Create intermediate directories as required. If this option is
+not specified, the full path prefix of \fIdirname\fR must already
+exist.
+.SH See Also
+.MS rm 1 

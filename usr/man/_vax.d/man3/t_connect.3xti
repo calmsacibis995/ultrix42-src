@@ -1,0 +1,200 @@
+.TH t_connect 3xti
+.SH Name
+t_connect \- establish a connection with another transport user
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_connect(\fIfd, sndcall, rcvcall\fB)
+.br
+.B int \fIfd\fB;
+.br
+.B struct t_call \fI*sndcall\fB;
+.br
+.B struct t_call *\fIrcvcall\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint where communications is
+established.
+.IP \fIsndcall\fR 10
+Specifies information needed by the transport provider to establish a
+connection.
+.IP \fIrcvcall\fR 10
+Specifies information that is associated with the newly established
+connection.
+.IP
+The \fIsndcall\fR and \fIrcvcall\fR point to a \fBt_call\fR structure
+that contains the following members:
+.EX
+struct netbuf \fIaddr\fP;
+struct netbuf \fIopt\fP;
+struct netbuf \fIudata\fP;
+int \fIsequence\fR;
+.EE
+.SH Description
+This function enables a transport user to request a connection to the
+specified destination transport user. This function can be issued only
+in the T_IDLE state.
+.NXR "t_connect system call"
+.NXR "transport user" "requesting a connection"
+.PP
+In \fIsndcall\fR, the argument \fIaddr\fR specifies the protocol address of the
+destination transport user. The \fIopt\fR argument presents any protocol-specific
+information that might be needed by the transport provider. The \fIudata\fR argument
+points to optional user data that may be passed to the destination
+transport user during connection establishment. The \fIsequence\fR argument has
+no meaning for this function.
+.PP
+On return in \fIrcvcall\fR, \fIaddr\fR argument returns the protocol address
+associated with the responding transport endpoint. The \fIopt\fR argument presents
+any protocol-specific information associated with the connection. The
+\fIudata\fR argument points to optional user data that may be returned by the
+destination transport user during connection establishment. The \fIsequence\fR argument has
+no meaning for this function. 
+.PP
+The \fIopt\fR argument permits users to define the options that can be
+passed to the transport provider. These options are specific to the
+underlying protocol of the transport provider. The user can choose not
+to negotiate protocol options by setting the \fIlen\fR field of
+\fIopt\fR to zero. In this case, the provider may use default options.
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 4p
+Parameters@Before Call@After Call
+.sp 4p
+_
+.sp 6p
+resfd@x@/
+sndcall->addr.maxlen@/@/
+sndcall->addr.len@x@/
+sndcall->addr.buf@x(x)@/
+sndcall->opt.maxlen@/@/
+sndcall->opt.len@x@/
+sndcall->opt.buf@?(?)@/
+sndcall->udata.maxlen@/@/
+sndcall->udata.len@x@/
+sndcall->udata.buf@?(?)@/
+sndcall->sequence@/@/
+rcvcall->addr.maxlen@x@/
+rcvcall->addr.len@/@x
+rcvcall->addr.buf@x@(x)
+rcvcall->opt.maxlen@x@/
+rcvcall->opt.len@/@x
+rcvcall->opt.buf@x@(x)
+rcvcall->udata.maxlen@x@/
+rcvcall->udata.len@/@x
+rcvcall->udata.buf@x@(?)
+rcvcall->sequence@/@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.PP
+If used, \fBsndcall->opt.buf\fR structure must point to the
+corresponding options structures (\fBisoco_options\fR,
+\fBisocl_options\fR or \fBtcp_options\fR). The \fImaxlen\fR and
+\fIbuf\fR fields of the \fBnetbuf\fR structure pointed by
+\fIrcvcalladdr\fR and \fIrcvcall->opt\fR must be set before the call.
+.PP
+The \fIudata\fR argument enables the caller to pass user data to the
+destination transport and receive user data from the destination user during 
+connection establishment. However, the amount of
+user data must not exceed the limits supported by the transport provider as
+returned in the \fIconnect\fR field of the \fIinfo\fR argument of
+.PN t_open()\fR.\fR 
+If the \fIlen\fR of \fIudata\fR is zero in \fIsndcall\fR, no data are sent to the
+destination transport user.
+.PP
+On return, the \fIaddr\fR, \fIopt\fR, and \fIudata\fR fields of
+\fIrcvcall\fR updates to reflect values associated with the
+connection. Thus, the \fImaxlen\fR field of each argument must be set
+before issuing this function to indicate the maximum size of the buffer
+for each. However, \fIrcvcall\fR can be NULL, in which case no
+information is given to the user on return from 
+.PN t_connect()\fR.\fR
+.PP
+By default, 
+.PN t_connect() 
+executes in synchronous mode and waits
+for the destination user's response before returning control to the
+local user. A successful return (that is, a return value of zero)
+indicates that the requested connection has been established. However,
+if O_NONBLOCK is set by means of 
+.PN t_open() 
+or
+.PN fcntl()\fR,\fR 
+.PN t_connect() 
+executes in asynchronous mode. In this case, the call waits for the remote user's 
+response but returns control immediately to the local user and 
+returns \-1 with
+\fBt_errno\fR  set to [TNODATA] to indicate that the connection has
+not yet been established. In this way, the function simply initiates the
+connection establishment procedure by sending a connect request to the
+destination transport user. The 
+.PN t_rcvconnect() 
+function is used in conjunction with 
+.PN t_connect() 
+to determine the status of the requested connection.
+.SH Return Values
+Upon successful completion, a value of 0 is returned. Otherwise, a
+value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor  does not refer to a transport endpoint.
+.TP 20 
+[TOUTSTATE]
+The function was issued in the wrong sequence.
+.TP 20
+[TNODATA]
+O_NONBLOCK was set, so the function successfully initiated the
+connection establishment procedure but did not wait for a response from
+the remote user.
+.TP 20
+[TACCES]
+The user does not have permission to use the specified address or
+options.
+.TP 20
+[TBADOPT]
+The specified protocol options were in an incorrect format or contained
+illegal information.
+.TP 20
+[TBADADDR]
+The specified protocol address was in an incorrect format or contained
+illegal information.
+.TP 20
+[TBADDATA]
+The amount of user data specified was not within the bounds allowed by
+the transport provider.
+.TP 20
+[TBUFOVFLW]
+The number of bytes allocated for an incoming argument is not sufficient
+to store the value of that argument. If executed in synchronous mode,
+the provider's state, as seen by the user, changes to T_DATAXFER,
+and the connect indication information to be returned in \fIrcvcall\fR
+is discarded.
+.TP 20
+[TLOOK]
+An asynchronous event has occurred on this transport endpoint and requires 
+immediate attention.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the underlying transport provider. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+t_accept(3xti), 
+t_alloc(3xti), 
+t_getinfo(3xti), 
+t_listen(3xti),
+t_open(3xti),
+t_optmgmt(3xti), 
+t_rcvconnect(3xti)

@@ -1,0 +1,94 @@
+.\" SCCSID: @(#)dhb.4	2.4	2/29/88
+.TH dhb 4
+.SH Name
+dhb \- DHB32 communications multiplexer
+.SH Syntax
+.B "device dmb0 at vaxbi? node? flags 0x????"
+.br
+.ti +0.5i
+.B "vector dmbsint dmbaint dmblint"
+.SH Description
+.NXR "DHB32 communications interface"
+.NXS "dhb interface" "DHB32 communications interface"
+A
+DHB32
+device provides 16 asynchronous
+communication lines with full modem control.
+The DHB32 and the DMB32 share a common software device driver.
+For this reason, the configuration line is the same for both
+the DHB32 and DMB32.
+.PP
+Each line attached to a
+DHB32
+serial line port behaves as described
+in
+.MS tty 4 .
+Input and output for each line can independently be set to run at any
+of 16 speeds.  See
+.MS tty 4
+for the encoding.
+.PP
+Bit
+.I i
+of flags may be specified for a
+.PN dhb
+to say that a line 
+should be treated as a hardwired connection with carrier always present.
+If bit
+.I i
+of flags is not set, the line will operate under full modem control.
+Modem lines will operate in accordance to the CD (carrier detect),
+DSR (data set ready) and CTS (clear to send) leads.
+Thus, specifying ``flags 0x0004'' in the specification of
+.PN dmb0
+would cause line 2 on the DHB32 to be treated as hardwired
+with carrier always present.
+In this example, the remainder of the lines will be modem control lines.
+.SH Diagnostics
+.B "dmbinit: async lines unavailable"
+.br 
+This message is produced at system boot time if the DHB32
+fails its internal self test indicating that the asynchronous lines have
+failed to configure.
+.PP
+.B "dmb%d: fifo overflow" 
+.br
+The character input fifo overflowed
+before it could be serviced.  This can happen if the CPU is running
+with elevated priority for too long a period of time.  Overflow errors may
+indicate that configuration constraints have been reached.
+.PP
+.B "dmb%d: DMA Error. tbuf = 0x%x"
+.br 
+A DMA output transfer failed.  This problem can result from a memory error
+or an invalid pte (page table entry).
+For a description of the error code in the
+``tbuf'' register. See the DHB32 documentation.
+.PP
+.B "dmb%d: DMB Hardware Error. TX.DMA.START failed"
+.br 
+The 
+.PN dhb 
+failed to clear the start bit.  Normally, this is cleared to signal
+that a DMA transfer has completed.
+.PP
+.B "dmb%d: Modem Error. tbuf = 0x%x"
+.br 
+Indicates a problem with a modem or its cable.
+For a description of the error code in the
+``tbuf'' register. See the DHB32 documentation.
+.PP
+.B "dmb%d: Internal Error. tbuf = 0x%x"
+.br 
+Indicates that the DHB32 detected an internal error.
+For a description of the error code in the
+``tbuf'' register. See the 
+.I "DHB32 User Guide."
+.SH Files
+.TP 15
+.PN /dev/tty??
+.TP
+.PN /dev/ttyd?
+(modem lines only)
+.SH See Also
+tty(4), MAKEDEV(8), dmbsp(4)

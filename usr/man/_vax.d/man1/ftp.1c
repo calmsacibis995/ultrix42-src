@@ -1,0 +1,944 @@
+.\" SCCSID: @(#)ftp.1c	8.1	9/11/90
+.TH ftp 1c
+.SH Name
+ftp \- file transfer program
+.SH Syntax
+.B ftp
+[\fB\-d\fR] [[\fB\-g\fR] \fB\-i\fR] [\fB\-n\fR] [\fB\-v\fR] [\|\fIhost\fR\|]
+.SH Description
+.NXR "ftp program"
+.NXR "file" "transferring"
+.NXR "file transfer program" "ftp program"
+.NXR "Internet File Transfer Protocol interface" "ftp program"
+.NXAM "ftpd server" "ftp program"
+The
+.PN ftp
+command
+is the user interface to the ARPANET standard File Transfer Protocol.
+The program allows you to transfer files to and from a
+remote network site.
+.PP
+If you specify the client host on the command line,
+.PN ftp
+immediately attempts to establish a connection to an FTP
+server on that host; otherwise, 
+.PN ftp
+enters its command interpreter and awaits instructions.
+While
+.PN ftp
+is awaiting commands, it displays the 
+prompt 
+.PN ftp> .
+.SH Options
+.NXR "ftp program" "options"
+.IP \fB\-d\fR 10
+Enables debugging.
+.IP \fB\-g\fR 10
+Disables file name expansion.
+.IP \fB\-i\fR 10
+Disables interactive prompting during
+multiple file transfers.
+.IP \fB\-n\fR 10
+Disables autologin during an initial connection.  
+If auto-login is enabled, 
+.PN ftp
+will check the \f(CW.netrc\fR
+file in the user's home directory for an entry describing
+an account on the remote machine.  If no entry exists,
+.PN ftp
+will use the login name on the local machine as the user
+identity on the remote machine, prompt for a password
+and, optionally, an account with which to log in.
+.IP \fB\-v\fR 10
+Displays all responses from the remote server as well as all
+data transfer statistics.
+.SH Commands
+The commands
+listed in this section are recognized by
+.PN ftp .
+.PP
+Command arguments that have embedded spaces may be quoted with
+quotation marks (") to retain the spaces.
+.NXR "ftp program" "command list"
+.TP 10
+\fB?\fP [ \fIcommand\fP ]
+A synonym for 
+.BR help .
+.TP
+.B \&!
+Invokes a shell on the local machine.
+.TP
+\fB\&$\fP \fImacro-name\fP [ \fIargs\fP ]
+Executes the macro \fImacro-name\fP that was defined with the
+\fBmacdef\fP command.
+Arguments are passed to the macro unglobbed.
+.TP
+\fBaccount\fP [ \fIpasswd\fP ]
+.NXR "account command (ftp)"
+Supplies a supplemental password required by a remote system for access
+to resources once a login has been successfully completed.
+If you do not supply a 
+.PN passwd
+argument, you are prompted for an account
+password in a non-echoing input mode.
+.TP
+\fBappend\fP \fIlocal-file\fP [ \fIremote-file\fP ]
+.NXR "append command (ftp)"
+Appends a local file to a file on the remote machine.  If
+.I remote-file
+is not specified, the local file name is used in naming the
+remote file.  File transfer uses the current settings for
+.IR type ,
+.IR format ,
+.IR mode ,
+and
+.IR structure .
+.TP
+.B ascii
+.NXR "ascii command (ftp)"
+Sets the file transfer type
+to network ASCII.  This is the default type.
+.TP
+.B bell
+.NXR "bell command (ftp)"
+Sounds a bell after each file transfer
+command is completed.
+.TP
+.B binary
+.NXR "binary command (ftp)"
+Sets the file transfer
+type
+to support binary image transfer.
+.TP
+.B bye
+.NXR "bye command (ftp)"
+Terminates the FTP session with the remote server
+and exits
+.PN ftp .
+.TP
+.B case
+.NXR "case command (ftp)"
+Toggles the remote computer's file name case mapping during
+.B mget
+commands.
+When
+.B case
+is on (the default is off), the remote computer's file names
+are written in the local
+directory with all letters in uppercase
+mapped to lowercase.
+.TP
+.BI cd " remote-directory"
+.NXR "cd command (ftp)"
+Changes the working directory on the remote machine
+to 
+.IR remote-directory .
+.TP
+.B cdup
+.NXR "cdup command (ftp)"
+Changes the remote machine working directory to the parent of the
+current remote machine working directory.
+.TP
+.B close
+.NXR "close command (ftp)"
+Terminates the FTP session with the remote server and
+returns to the command interpreter.
+.TP
+.B cr
+.NXR "cr command (ftp)"
+Toggles the carriage return stripping during
+.B ascii
+type file retrieval.
+Records are denoted by a carriage return/linefeed sequence
+during
+.B ascii
+type file transfer.
+When
+.B cr
+is on (the default), carriage returns are stripped from this
+sequence to conform with the UNIX single-linefeed record
+delimiter.
+Records on non-UNIX remote systems can contain single linefeeds;
+when an 
+.B ascii
+type transfer is made, these linefeeds can be
+distinguished from a record delimiter only when
+.B cr
+is off.
+.TP
+\fBdebug\fP [ \fIdebug-value\fP ]
+.NXR "debug command (ftp)"
+Toggles the debugging mode.  If an optional
+.I debug-value
+is specified, it is used to set the debugging level.
+When debugging is on,
+.PN ftp
+prints each command sent to the remote machine, preceded
+by the string 
+.PN ---> .
+.TP
+.BI delete " remote-file"
+.NXR "delete command (ftp)"
+Deletes the file
+.I remote-file
+on the remote machine.
+.TP
+\fBdir\fP [ \fIremote-directory\fP ] [ \fIlocal-file\fP ]
+.NXR "dir command (ftp)"
+Prints a listing of the contents of the
+directory
+.IR remote-directory ,
+and optionally places the output in
+.IR local-file .
+If you do not specify a directory, 
+.PN ftp
+uses the current working
+directory.  If you do not specify a local
+file, 
+.PN ftp
+displays the listing on the terminal.
+.TP
+.B disconnect
+.NXR "disconnect command (ftp)"
+A synonym for
+.BR close .
+.TP
+.BI form " format"
+.NXR "form command (ftp)"
+Sets the file transfer form to 
+.IR format .
+The default format is 
+.IR file .
+.TP
+\fBget\fP \fIremote-file\fP [ \fIlocal-file\fP ]
+.NXR "get command (ftp)"
+Copies the 
+.I remote-file
+to the local machine.  If you do not specify a local
+file name, 
+.PN ftp
+uses the same
+name it has on the remote machine.
+The current settings for 
+.IR type ,
+.IR form ,
+.IR mode ,
+and
+.I structure
+are used while transferring the file.
+.TP
+.B glob
+.NXR "glob command (ftp)"
+Toggles file name expansion for 
+.BR mdelete ,
+.BR mget ,
+and
+.BR mput .
+If globbing (file name substitution) is turned off with
+.BR glob ,
+the file name arguments are taken literally and not expanded.
+Globbing for 
+.B mput
+is done as in
+.MS csh 1 .
+For 
+.B mdelete
+and
+.BR mget ,
+each remote file name is expanded separately on the remote machine
+and the lists are not merged.  Expansion of a directory name is likely to
+be different from expansion of the name of an ordinary file.  The exact
+result depends on the remote operating system and 
+.PN ftp
+server, and can be
+previewed by entering:  
+.BR mls\0\fIremote-files .
+Neither
+.B mget
+nor
+.B mput
+is meant to transfer entire directory subtrees of files.  That can
+be done by transferring a
+.MS tar 1
+archive of the subtree (in binary mode).
+.TP
+\fBhash\f
+.NXR "hash command (ftp)"
+Toggles the number-sign (#) printing for each data block
+transferred.  The size of a data block is 1024 bytes.
+.TP
+\fBlcd\fP [ \fIdirectory\fP ]
+.NXR "lcd command (ftp)"
+Changes the working directory on the local machine.  If
+you do not specify a local directory 
+.IR directory ,
+.PN ftp 
+uses your home directory.
+.TP
+\fBls\fP [ \fIremote-directory\fP ] [ \fIlocal-file\fP ]
+.NXR "ls command (ftp)"
+Prints an abbreviated listing of the contents of the
+remote directory.  If
+.I remote-directory
+is left unspecified, 
+.PN ftp 
+uses your current working directory.
+If you do not specify a local file, the listing
+is displayed on the terminal.
+.TP
+\fBmacdef\fP \fImacro-name\fP
+.NXR "macdef command (ftp)"
+Defines a macro.
+Subsequent lines are stored as the macro
+\fImacro-name\fP; a null line (consecutive newline characters
+in a file or
+carriage returns from the terminal) terminates macro input mode.
+There is a limit of 16 macros and 4096 total characters in all
+defined macros.
+Macros remain defined until a
+.B close
+command is executed.
+.RS 10
+.sp .5
+The macro processor interprets dollar signs ($) and
+backslashes (\e) as special characters.
+A dollar sign ($) followed by a number (or numbers) is replaced by the
+corresponding argument on the macro invocation command line.
+A dollar sign ($) followed by an i signals the macro processor that the
+executing macro is to be looped. On the first pass, $i is
+replaced by the first argument on the macro invocation command line.
+On the second pass it is replaced by the second argument, and so on.
+A backslash (\e) followed by any character is replaced
+by that character.  Use the backslash (\e) to prevent
+special treatment of the dollar sign ($).
+.RE
+.TP 10
+\fBmdelete\fP \fIremote-files\fP
+.NXR "mdelete command (ftp)"
+Deletes the specified files on the remote machine.  If globbing
+(file name substitution) 
+is enabled, the wildcard specification of remote files is first 
+expanded with
+.BR ls .
+.TP
+\fBmdir\fP \fIremote-files\fP \fIlocal-file\fP
+.NXR "mdir command (ftp)"
+Obtains a directory listing of multiple files on the remote
+machine and places the result in
+.IR local-file .
+.TP
+\fBmget\fP \fIremote-files\fP
+.NXR "mget command (ftp)"
+Retrieves the specified files from the remote machine and
+places them in the current local directory.  If globbing
+is enabled, the specification of remote files is first 
+expanding with
+.PN ls .
+.TP
+\fBmkdir\fP \fIdirectory-name\fP
+.NXR "mkdir command (ftp)"
+Makes a directory on the remote machine.
+.TP
+\fBmls\fP \fIremote-files\fP \fIlocal-file\fP
+.NXR "mls command (ftp)"
+Obtains an abbreviated listing of multiple files on the remote
+machine and places the result in
+.IR local-file .
+.TP
+\fBmode\fP [ \fImode-name\fP ]
+.NXR "mode command (ftp)"
+Sets the file transfer mode to
+.IR mode-name .
+The default mode is the stream mode.
+.TP
+\fBmput\fP \fIlocal-files\fP
+.NXR "mput command (ftp)"
+Transfers multiple local files from the current local directory
+to the current working directory on the remote machine.
+.TP
+\fBnmap\fP [ \fIinpattern\fP \fIoutpattern\fP ]
+.NXR "nmap command (ftp)"
+Sets or disables the file name mapping mechanism.
+If no arguments are specified, the file name mapping mechanism is disabled.
+If arguments are specified, remote file names are mapped during
+.B mput
+commands and
+.B put
+commands that are issued without a specified remote
+target file name.
+If arguments are specified, local file names are mapped during
+.B mget
+commands and
+.B get
+commands that are issued without a specified local target file
+name.
+.RS 10
+.sp .5
+This command is useful when connecting to a non-UNIX remote computer
+with different file naming conventions or practices.
+The mapping follows the pattern set by
+.I inpattern
+and
+.IR outpattern .
+.PP
+The
+.I inpattern
+is a template for incoming file names (which may have already been
+processed according to the
+.B ntrans
+and
+.B case
+settings).
+Specify variable templates by including the
+sequences $1, $2, ..., $9 in
+.IR inpattern .
+Use a backslash (\e) to prevent this special treatment of
+the dollar sign ($) character.
+All other characters are treated literally, and are used to determine the
+.B nmap
+.I inpattern
+variable values.
+For example, given
+.I inpattern
+$1.$2 and the remote file name 
+.PN mydata.data ,
+$1 has the value
+.PN mydata ,
+and $2 has the value
+.PN data .
+.PP
+The
+.I outpattern
+determines the resulting mapped file name.
+The sequences $1, $2, ...., $9 are replaced by any value
+resulting from the
+.I inpattern
+template.
+The sequence $0 is replace by the original file name.
+Additionally, the sequence [\fIseq1\fP,\fIseq2\fP] is replaced by
+.I seq1
+if
+.I seq1
+is not a null string; otherwise it is replaced by
+.IR seq2 .
+For example, the command 
+.PN nmap\0$1.$2.$3\0[$1,$2].[$2,file]
+yields
+the output file name 
+.PN myfile.data
+for input file names 
+.PN myfile.data
+and
+.PN myfile.data.old ,
+.PN myfile.file
+for the input file name
+.PN myfile ,
+and
+.PN myfile.myfile
+for the input file name \f(CW.myfile\fR.
+Spaces can be included in
+.IR outpattern ,
+as in the example: 
+.PN nmap\0$1\0|sed\0"s/\0\0*$//"\0>\0$1 .
+Use the backslash (\e) to prevent special treatment
+of the dollar sign ($), left bracket ([), right bracket (]),
+and comma (,).
+.RE
+.TP 10
+\fBntrans\fP [ \fIinchars\fP [ \fIoutchars\fP ] ]
+.NXR "ntrans command (ftp)"
+Sets or disables the file name character translation mechanism.
+If no arguments are specified, the file name character
+translation mechanism is disabled.
+If arguments are specified, characters in
+remote file names are translated during
+.B mput
+commands and
+.B put
+commands that are issued without a specified remote target file
+name.
+If arguments are specified, characters in
+local file names are translated during
+.B mget
+commands and
+.B get
+commands that are issued without a specified local target file
+name.
+.RS 10
+.sp .5
+This command is useful when connecting to a non-UNIX remote computer
+with different file naming conventions or practices.
+Characters in a file name matching a character in
+.I inchars
+are replaced with the corresponding character in
+.IR outchars .
+If the character's position in
+.I inchars
+is longer than the length of
+.IR outchars ,
+the character is deleted from the file name.
+.RE
+.TP 10
+\fBopen\fP \fIhost\fP [ \fIport\fP ]
+.NXR "open command (ftp)"
+Establishes a connection to the specified
+host
+.PN ftp
+server.  If an optional port number is supplied,
+.PN ftp
+attempts to contact an 
+.PN ftp
+server at that port.
+If the 
+.I auto-login
+option is on (the default), 
+.PN ftp
+automatically attempts to log the user in to
+the
+.PN ftp
+server (see the description of the \f(CW.netrc\fR file).
+.TP
+.B prompt
+.NXR "prompt command (ftp)"
+Toggles interactive prompting.  Interactive prompting
+occurs during multiple file transfers to allow the
+user to retrieve or store files selectively.  If
+prompting is turned off (the default), any
+.B mget
+or
+.B mput
+transfers all files.
+.TP
+\fBproxy\fP \fIftp-command\fP
+.NXR "proxy command (ftp)"
+Executes an 
+.PN ftp
+command on a secondary control connection.
+This command allows simultaneous connection to two remote 
+.PN ftp
+servers for transferring files between the two servers.
+The first
+.B proxy
+command should be an
+.BR open ,
+to establish the secondary control connection.
+Type the command
+.PN proxy\0? 
+to see other 
+.PN ftp
+commands executable on the
+secondary connection.
+The following commands behave differently when prefaced by
+.BR proxy :
+.IP
+.B open
+does not define new macros during the auto-login process.
+.IP
+.B close
+does not erase existing macro definitions.
+.IP
+.B get
+and
+.B mget
+transfer files from the host on the primary control connection
+to the host on the secondary control connection.
+.IP
+.BR put ,
+.BR mput ,
+and
+.B append
+transfer files from the host on the secondary control connection
+to the host on the primary control connection.
+Third-party file transfers depend upon support of the FTP
+PASV command by the server on the secondary control connection.
+.TP
+\fBput\fP \fIlocal-file\fP [ \fIremote-file\fP ]
+.NXR "put command (ftp)"
+Copies a local file to the remote machine.  If you do not
+specify a
+.IR remote-file ,
+the local file name is used
+to name the remote file.  File transfer uses the
+current settings for
+.IR type ,
+.IR format ,
+.IR mode ,
+and
+.IR structure .
+.TP
+.B pwd
+.NXR "pwd command (ftp)"
+Prints the name of the current working directory on the remote
+machine.
+.TP
+.B quit
+.NXR "quit command (ftp)"
+A synonym for 
+.BR bye .
+.TP
+.BI quote " arg1 arg2 ..."
+.NXR "quote command (ftp)"
+Sends the arguments that are specified, verbatim, to the remote
+.PN ftp
+server.  A single FTP reply code is expected in return.
+.TP
+\fBrecv\fP \fIremote-file\fP [ \fIlocal-file\fP ]
+.NXR "recv command (ftp)"
+A synonym for 
+.BR get .
+.TP
+\fBremotehelp\fP [ \fIcommand-name\fP ]
+.NXR "remotehelp command (ftp)"
+Requests help from the remote
+.PN ftp
+server.  If a 
+command name
+is specified, it is supplied to the server as well.
+.TP
+\fBrename\fP [ \fIfrom\fP ] [ \fIto\fP ]
+.NXR "rename command (ftp)"
+Renames the file
+.I from
+on the remote machine to the file
+.IR to .
+.TP
+.B reset
+.NXR "reset command (ftp)"
+Clears the reply queue.
+This command resynchronizes command/reply sequencing with the remote
+.PN ftp
+server.  If the remote server violates FTP,
+resynchronization may be necessary.
+.TP
+.BI rmdir " directory-name"
+.NXR "rmdir command (ftp)"
+Deletes a directory on the remote machine.
+.TP
+.B runique
+.NXR "runique command (ftp)"
+Toggles storing of files on the local system with unique file
+names.
+If a file already exists with a name equal to the target
+local file name for a
+.B get
+or
+.B mget
+command, a .1 is appended to the name.
+If the resulting name matches another existing file,
+a .2 is appended to the original name.
+If this process continues up to .99, an error
+message is printed, and the transfer does not take place.
+The generated unique file name will be reported.
+Note that
+.B runique
+will not affect local files generated from a shell command
+(see below).
+The default value is off.
+.TP
+\fBsend\fP \fIlocal-file\fP [ \fIremote-file\fP ]
+.NXR "send command (ftp)"
+A synonym for 
+.BR put .
+.TP
+.B sendport
+.NXR "sendport command (ftp)"
+Toggles the use of PORT commands.  By default, 
+.PN ftp
+attempts to use a PORT command when establishing
+a connection for each data transfer.  If the PORT
+command fails, 
+.PN ftp
+uses the default data port.  When the use of PORT
+commands is disabled, no attempt is made to use
+PORT commands for each data transfer.  This is useful
+for certain FTP implementations that do ignore PORT
+commands but, incorrectly, indicate that the commands
+have been accepted.
+.TP
+.B status
+.NXR "status command (ftp)"
+Shows the current status of
+.PN ftp .
+.TP
+\fBstruct\fP [ \fIstruct-name\fP ]
+.NXR "struct command (ftp)"
+Sets the file transfer structure to
+.IR struct-name .
+By default the file structure is used.
+.TP
+.B sunique
+.NXR "sunique command (ftp)"
+Toggles storing of files on a remote machine under unique file names.
+The remote 
+.PN ftp
+server must support the FTP STOU command for
+successful completion of this command.
+The remote server reports the unique name.
+The default value is off.
+.TP
+.B tenex
+Sets the file transfer type to that needed to
+talk to TENEX machines.
+.TP
+.B trace
+.NXR "trace command (ftp)"
+Toggles packet tracing.
+.TP
+\fBtype\fP [ \fItype-name\fP ]
+.NXR "type command (ftp)"
+Sets the file transfer
+.I type
+to
+.IR type-name .
+If no type is specified, the current type
+is printed.  The default type is network ASCII.
+.TP
+\fBuser\fP \fIuser-name\fP [ \fIpassword\fP ] [ \fIaccount\fP ]
+.NXR "user command (ftp)"
+Identifies you to the remote
+.PN ftp
+server.  If the
+password is not specified and the server requires it,
+.PN ftp
+disables the local echo and then prompts you for it.
+If an account field is not specified, and the
+.PN ftp
+server
+requires it, you are prompted for it also.  Unless
+.PN ftp
+is invoked with auto-login disabled, this
+process is done automatically on initial connection to
+the
+.PN ftp
+server.
+.TP
+.B verbose
+.NXR "verbose command (ftp)"
+Toggles the verbose mode.  In verbose mode, all responses from
+the
+.PN ftp
+server are displayed.  In addition,
+if verbose is on, statistics
+regarding the efficiency of a file transfer are reported when
+the transfer is complete.  By default,
+verbose is on.
+.SS Aborting a File Transfer
+To abort a file transfer, use the terminal interrupt key
+(usually CTRL/C).
+Sending transfers are halted immediately.
+Receiving transfers are halted by sending an FTP ABOR
+command to the remote server, and discarding any further data received.
+The speed at which this is accomplished depends on the remote
+server's support for ABOR processing.
+If the remote server does not support the ABOR command, an 
+.PN ftp>
+prompt appears when the remote server has completed
+sending the requested file.
+.PP
+The terminal interrupt key sequence is ignored when
+.PN ftp
+has completed any local processing and is awaiting a reply
+from the remote server.
+A long delay in this mode may result from ABOR processing,
+or from unexpected behavior by the remote server, including
+violations of the FTP.
+If the delay results from unexpected remote server behavior, the local
+.PN ftp
+program must be killed by hand.
+.SS File-Naming Conventions
+.NXR "ftp program" "file-naming conventions"
+Files specified as arguments to
+.PN ftp
+commands are processed according to the following rules:
+.TP 4
+1)
+Standard input is used for reading
+and standard output is used for writing
+when the file name is specified as a minus sign (\-).
+.TP
+2)
+If the first character of the file name is a vertical bar
+(|), the
+remainder of the argument is interpreted as a shell command.
+The
+.PN ftp
+command
+then forks a shell, using
+.MS popen 3
+with the argument supplied, and reads or writes from standard
+output
+or standard input respectively.  
+If the shell command includes spaces, the argument
+must be quoted, as in 
+\f(CW"|ls -lt"\fR.
+A particularly
+useful example of this mechanism is: 
+\f(CW"dir\0|more"\fR.
+.TP
+3)
+If globbing is enabled, 
+local file names are expanded
+according to the rules used in the 
+.MS csh 1   
+(compare to the
+.PN glob
+command).
+If the
+.PN ftp
+command expects a single local file, such as 
+.BR put ,
+only the first file name generated by the globbing operation is used.
+.TP
+4)
+For
+.B mget
+commands and
+.B get
+commands with unspecified local file names, the local file name is
+the remote file name and can be altered by a
+.BR case ,
+.BR ntrans ,
+or
+.B nmap
+setting.
+The resulting file name may then be altered if
+.B runique
+is on.
+.TP
+5)
+For
+.B mput
+commands and
+.B put
+commands with unspecified remote file names, the remote file name is
+the local file name and can be altered by a
+.B ntrans
+or
+.B nmap
+setting.
+The resulting file name can then be altered by the remote server if
+.B sunique
+is on.
+.SS File Transfer Parameters
+.NXR "ftp program" "parameters supported"
+Many parameters can affect a file transfer.  The 
+.I type
+can be 
+.BR ascii , 
+.B image
+(binary),
+.BR ebcdic ,
+or local byte size.
+The
+.PN ftp
+command supports the
+.B ascii
+ and
+.B image
+types of file transfer and local 
+byte size 8 for tenex mode transfers.
+.PP
+The
+.PN ftp
+command supports only the default values for the remaining
+file transfer parameters: 
+.IR mode ,
+.IR form ,
+and
+.IR struct .
+.SS The \&.netrc File
+The \f(CW.netrc\fR
+file contains login and initialization information
+used by the 
+.PN ftp
+auto-login process.
+It resides in your home directory.
+See
+.MS netrc 5
+for a description and example of a \f(CW.netrc\fR
+file.
+The following tokens in the \f(CW.netrc\fR
+file are recognized; 
+they can be separated by spaces,
+tabs, or new-lines:
+.TP 10
+\fBmachine\fP \fIname\fP
+Identifies a remote machine name.
+The auto-login process searches the \f(CW.netrc\fR file for a
+.B machine
+token that matches the remote machine specified on the
+.PN ftp
+command line or as an
+.B open
+command argument.
+Once a match 
+.ne 2
+is made, the subsequent \f(CW.netrc\fR tokens are processed,
+stopping when the end of file is reached or another
+.I machine
+token is encountered.
+.TP
+\fBlogin\fP \fIname\fP
+Identifies a user on the remote machine.
+If this token is present, the auto-login process initiates
+a login using the specified name.
+.TP
+\fBpassword\fP \fIstring\fP
+Supplies a password.
+If this token is present, the auto-login process supplies the
+specified string if the remote server requires a password as part
+of the login process.
+Note that if this token is present in the \f(CW.netrc\fR file,
+and if the \f(CW.netrc\fR is readable by
+anyone other than the user,
+.PN ftp
+aborts the auto-login process.
+.TP
+\fBaccount\fP \fIstring\fP
+Supplies an additional account password.
+When this token is present, the auto-login process supplies the
+the remote server with 
+an additional account password if the remote server requires it.
+If it does not, the auto-login process initiates an
+ACCT command.
+.TP
+\fBmacdef\fP \fIname\fP
+Defines a macro.
+This token functions like the
+.PN ftp
+.B macdef
+command.
+A macro is defined with a specified name; its contents begin with the
+next \f(CW.netrc\fR line and continue until a null line (consecutive new-line
+characters) is encountered.
+If a macro named
+.I init
+is defined, it is automatically executed as the last step in the
+auto-login process.
+.SH Restrictions
+.NXR "ftp program" "restricted"
+Correct execution of many commands depends on proper behavior by the 
+remote server.
+.PP
+The 
+.PN ftpd
+server prevents the unauthorized users listed in 
+the 
+.PN /etc/ftpusers
+file from transferring files.
+.PP
+An error in the treatment of carriage returns in the 4.2BSD UNIX 
+.BR ascii type
+transfer code has been corrected.  This correction may result in
+incorrect transfers of binary files to and from 4.2BSD servers using 
+the 
+.B ascii
+type.  Avoid this problem by using the
+.B binary
+image type.
+.SH Files
+.TP 20
+.PN /etc/ftpusers
+Contains the list of unauthorized users 
+.SH See Also
+netrc(5), services(5), ftpd(8c), inetd(8c), syslog(8)

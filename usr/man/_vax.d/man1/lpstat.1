@@ -1,0 +1,98 @@
+.\" Created on 30.10.89 by Adrian Pattison, OSCR-Europe
+.\"
+.\" Updated on 13.1.89 by Adrian Pattison, OSCR-Europe
+.\"
+.\" Print this document on a PostScript printer using the command line
+.\"	tbl filename | ditroff \-Tps \-man | devps | lpr
+.\"
+.TH lpstat 1
+.SH Name
+lpstat \- printer status information
+.SH Syntax
+.B lpstat
+[
+.I options
+]
+.SH Description
+The
+.PN lpstat
+utility prints the status of the system printers.
+.NXR "lpstat command"
+.NXR "printer" "status information"
+.PP
+Without any options,
+.PN lpstat
+prints the status of print requests made to the default printer.
+.PP
+This command exists for X/OPEN compatibility.
+.SH Options
+Some of the options can be followed by a list of arguments.
+The arguments must be specified as follows:
+.EX
+lpstat \-uuser1,user2,user3
+.EE
+List items can be separated by spaces, but the list must be enclosed
+in quotes.
+If you do not include any arguments, all the information relevant
+to the option is printed.
+.PP
+The valid options for
+.PN lpstat
+are:
+.PP
+.B
+\-a
+.R
+[
+.I
+printer1, printer2, ...
+.R
+]
+.IP "" .3i
+Print whether or not printers are accepting print requests.
+.IP \fB\-d\fR .3i
+Print the name of the default system printer.
+.PP
+.B
+\-o
+.R
+[
+.I
+printer1, printer2, ...
+.R
+]
+.IP "" .3i
+Print the status of print requests.
+.PP
+.B
+\-p
+.R
+[
+.I
+printer1, printer2, ...
+.R
+]
+.IP "" .3i
+Print the status of printers.
+.IP \fB\-r\fR .3i
+Print the status of the line printer daemon,
+.PN lpd .
+.IP \fB\-s\fR .3i
+Print a status summary, including the status of the line printer daemon
+.PN lpd ,
+and the default system printer.
+.IP \fB\-t\fR .3i
+Print all status information.
+.PP
+.B
+\-u
+.R
+[
+.I
+user1, user2, ...
+.R
+]
+.IP "" .3i
+Print the status of users' print requests.
+.SH See Also
+lp(1), lpq(1), lpr(1), lpc(8)

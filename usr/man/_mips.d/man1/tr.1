@@ -1,0 +1,77 @@
+.\" SCCSID: @(#)tr.1	8.1	9/11/90
+.TH tr 1 
+.SH Name
+tr \- translate characters
+.SH Syntax
+.B tr
+[\fB\-cds\fR] [\|\fIstring1\|\fR[\fIstring2\fR\|]\|]
+.SH Description
+.NXR "tr command"
+.NXR "character" "translating"
+The
+.PN tr
+command copies the standard input to the standard output with 
+substitution or deletion of selected characters.
+Input characters found in 
+.I string1
+are mapped into the corresponding characters of
+.IR string2 .
+When 
+.I string2
+is short it is padded to the length of 
+.I string1
+by duplicating its last character.
+Any combination of the options
+.B \-cds
+may be used:
+.B \-c
+complements the set of characters in
+.I string1
+with respect to the universe of characters
+whose ASCII codes are 0 through 0377 octal;
+.B \-d
+deletes all input characters in
+.I string1;
+.B \-s
+squeezes all strings of repeated output characters that are
+in 
+.I string2
+to single characters.
+.PP
+In either string the notation
+.IB a \- b
+means a range of characters from
+.I a
+to
+.I b
+in increasing ASCII order.
+The backslash character
+(\\) followed by 1, 2 or 3 octal digits stands for the
+character whose ASCII code is given by those digits.
+A \\ followed by any other character stands
+for that character.
+.PP
+The following example creates a list of all
+the words in `file1' one per line in `file2',
+where a word is taken to be a maximal string of alphabetics.
+The second string is quoted
+to protect \\ from the Shell.
+012 is the ASCII code for newline.
+.EX
+tr \-cs A\-Za\-z \'\\012\' <file1 >file2
+.EE
+.SH Options
+.IP \fB\-c\fR 5
+Translates complements:  string1 to those not 
+in string1.
+.IP \fB\-d\fR 
+Deletes all characters in string1 from output.
+.IP \fB\-s\fR 
+Squeezes succession of a character in string1 to one in output. 
+.SH Restrictions
+\`\\0', `\\00', and `\\000' are equivalent for NUL character.
+.PP
+\`\\012' is
+treated as octal 12 and not a NUL followed by characters 1 and 2.
+.SH See Also
+ed(1), ascii(7), expand(1)

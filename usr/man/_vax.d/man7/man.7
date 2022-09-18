@@ -1,0 +1,713 @@
+.\" SCCSID: @(#)man.7	8.6	2/26/91
+.TH man 7
+.SH Name
+man \- the man macro package for online reference pages
+.SH Syntax
+.B tbl
+.I file...
+.B | nroff
+[
+.BI \-n N
+] [
+.B \-rl1
+]
+.B \-man | col | ...
+.br
+.B tbl
+.I file...
+.B | *troff
+[
+.BI \-n N
+] [
+.B \-rl1
+]
+.B \-man | ...
+.SH Description
+.NXAM "man command" "man macro package"
+.NXAM "troff text processor" "man macro package"
+.NXAM "nroff text processor" "man macro package"
+.NXR "man macro package"
+.NXB "man macro package"
+.NXR "manual page" "formatting"
+The
+.PN man
+macro package is used to format reference manual pages for online viewing
+or printing.
+.if t .ig
+This reference page was formatted by the
+.MS nroff 1
+command and the
+.PN man
+macros, or was
+..
+.if n .ig
+The installed reference pages are
+..
+formatted by the
+.MS man 1
+and the
+.MS catman 8
+commands, using the
+.PN man
+macro package.
+..
+.PP
+The page size is 80 columns by 66 lines for
+.PN nroff
+output and is 8.5" x 11" when formatted with 
+.PN *troff
+text formatters.  Page numbers appear at the bottom of each output page with
+odd page numbers appearing on the right side and even page numbers appearing
+on the left side.
+.PP
+The format of the ULTRIX online reference pages is determined by the
+.MS man.repro 7
+macro package.  The
+.PN man
+macros are a compatible subset of the
+.PN man.repro
+macros.
+.SS Macros
+.NXB "man macro package" "macros"
+The following describes the macros in the
+.PN man
+macro package.
+.PP
+Any
+.I text
+argument
+can range from zero to six words.
+Quotation marks (" ") can be used to include blanks in words.
+If 
+.I text
+is not specified,
+special treatment is applied to
+the next input line that has text to be printed.
+In this way,
+.PN \&.I
+can be used to italicize a whole line or
+.PN \&.SM
+followed by
+.PN \&.B
+to make small bold letters.
+.PP
+A prevailing indent distance is remembered between
+successive indented paragraphs,
+and is reset to a default value upon reaching a nonindented paragraph.
+Default units for indents
+.I i
+are ens (an en is 1 
+.PN nroff
+character or 1/2 em space in current point size).
+.PP
+Typeface and size are reset to default values
+before each paragraph, and after processing
+font and size setting macros.
+.PP
+.IP "\&.B [ \fItext...\fR ]" 12
+Sets text \fItext\fR in boldface.  If no text is specified, the next text line
+is set in boldface.
+.IP "\&.BI \fIword1 word2\fR [ \fIwords...\fR ]"
+Sets \fIword1\fR in boldface, \fIword2\fR in an italic typeface, and then
+alternates between these two fonts for the remaining words, up to six
+words.  Blanks between words are stripped unless the string is enclosed
+in quotation marks (" ").
+.IP "\&.BR \fIword1 word2\fR [ \fIwords...\fR ]"
+Sets \fIword1\fR in boldface, \fIword2\fR in a roman typeface, and
+then alternates
+between these two fonts for the remaining words, up to six words.
+Blanks between words are stripped unless the string is enclosed
+in quotation marks (" ").
+.IP "\&.CT \fIcharacter\fR"
+Prints the keyboard control character indicator
+.CT \fIcharacter\fP
+\&.  For example,
+.PN "\&.CT A"
+prints as
+.CT A
+\&.
+.IP \&.CW
+Sets text in constant width font until another font change is found.
+.IP \&.De
+Ends an unfilled display block (started by
+.PN \&.Ds ).  
+Also ends automatic centering, if it was in effect.
+.IP \&.Ds
+Starts an unfilled display block.  Text between
+.PN \&.Ds
+and
+.PN \&.De
+is printed in a roman typeface,
+with `no fill' mode (no wrapping and blank lines allowed) in effect.
+The display block is set flush left.
+.IP \&.DT
+Restores default tabs.  Default tabs are set to 
+\&.5 inches, starting with \&.5i, 1i, \&... .
+.IP \&.EE
+Ends an example and restores basic text defaults and indents.
+.IP "\&.EX [ \fIi\fR ]"
+Starts an example.  Text between 
+.PN \&.EX
+and
+.PN \&.EE
+is printed in a constant width
+font with `no fill' mode (no wrapping and blank lines allowed) in effect.
+The example is set flush left unless an indent \fIi\fR is specified.  Units
+of \fIi\fR are ens.
+.IP "\&.G [ \fItext...\fR ]"
+Sets \fItext\fR in a sans-serif typeface.  If no text is specified, 
+the next text line is set in a sans-serif typeface.
+.IP "\&.GL [ \fItext...\fR ]"
+Sets \fItext\fR in a sans-serif italic typeface.  If no text is specified,
+the next text line is set in a sans-serif italic typeface.
+.IP "\&.HB [ \fIwords...\fR ]"
+Sets the text in underline mode or in a sans-serif bold typeface, depending on
+the type of text formatter 
+.Pn ( nroff
+or
+.PN troff ).
+If the text formatter is of type
+.PN nroff ,
+the next 999 input lines are formatted in underline mode 
+.Pn ( nroff
+italic mode), or all the lines up to a font change are formatted in
+underline mode, depending on which limit is encountered first.
+If the text formatter is of type
+.PN troff ,
+text is set in a sans-serif bold typeface until a font change is
+encountered.  Up to nine words can also be specified as arguments.
+.IP "\&.HP [\|\fIi\fP\|]\fR"
+Begins a paragraph with a hanging indent of \fIi\fR ens.
+.IP "\&.I [ \fItext...\fR ]"
+Sets \fItext\fR in an italic typeface.  If no text is specified, the next text
+line is set in an italic typeface.
+.IP "\&.I1 \fIword\fR"
+Sets a temporary indent to the length of the specified word.
+.IP "\&.I2 \fIword\fR"
+Reverses one line and then sets a temporary indent to the length of 
+the specified word.
+.IP "\&.IB \fIword1 word2\fR [ \fIwords...\fR ]"
+Sets \fIword1\fR in an italic typeface, \fIword2\fR in boldface, and then
+alternates between these two fonts for the remaining words, up to six
+words.  Blanks between words are stripped unless the string is enclosed
+in quotation marks (" ").
+.IP "\&.IP \fIx \fP[\|\fIi\fP\|]\fR"
+Sets the prevailing indent to \fIi\fR.  Then begins the indented
+paragraph with a hanging tag given by the next text line.  If the tag
+does not fit, the macro places the next text on a separate line.
+Tag \fIx\fR appears in bold typeface.
+.IP "\&.IR \fIword1 word2\fR [ \fIwords...\fR ]"
+Sets \fIword1\fR in an italic typeface, \fIword2\fR in a roman typeface, 
+and then alternates between these two fonts for the remaining 
+words, up to six words.  Blanks between words are stripped unless the
+string is enclosed in quotation marks (" ").
+.IP \&.LP
+Same as the
+.PN \&.PP
+macro.  This macro is obsolete, but is provided for backwards
+compatibility.
+.IP "\&.MS \fIreference_page section_subsection\fR [ \fIpunctuation\fR ]"
+Sets \fIreference_page\fR immediately followed by \fIsection_subsection\fR in
+parentheses
+followed by optional \fIpunctuation\fR, using fonts that distinguish this
+reference page reference from ordinary text.  For example,
+.MS manual section .
+.IP \&.NE
+Ends a note. Also cancels automatic centering if it was in effect.
+.IP "\&.NT [ \fIheader1\fR ] [ \fBC\fR ]"
+.ns
+.IP "\&.NT [ \fBC\fR ] [ \fIheader2\fR ]" 12
+Starts a note.  If no arguments are specified, the default header for the
+note is `Note'.
+If the first argument is the letter `C',
+all text in the note is
+centered, for the next 99 text lines or until the
+.PN \&.NE
+macro is called, whichever comes first.  
+If the first argument is not `C', it becomes the header of the
+note, even if \fIheader2\fR is also specified.  
+The \fIheader2\fR argument becomes the
+header of the note if the first argument is `C'.
+.IP "\&.PD [ \fIv\fR ]"
+Sets the interparagraph distance to \fIv\fR vertical spaces.  Resets 
+the distance to the default value if \fIv\fP is omitted.
+.IP "\&.PN \fIx\fR [ \fIy\fR ]"
+Sets \fIx\fR in an italic or constant width typeface (depending on
+the 
+.PN *roff
+formatter type) and then reverts to the previous typeface.
+The optional argument \fIy\fR is appended to \fIx\fR with
+no space, but printed in the previous typeface. 
+The \fIx\fR argument is usually a path name;
+\fIy\fR is usually punctuation.
+.IP "\&.Pn \fIx y\fR [ \fIz\fR ]"
+Sets \fIx\fR in the current typeface, sets \fIy\fR in an italic or constant
+width typeface (depending on the 
+.PN *roff
+formatter type) and appends it to \fIx\fR, and finally
+reverts to the previous typeface. 
+The optional argument \fIz\fR is appended to \fIy\fR, but printed in the
+previous typeface.  Spaces are removed between \fIx\fR, \fIy\fR, and \fIz\fR,
+unless quotation marks (" ") are used to enclose strings with spaces.
+The \fIx\fR argument is usually a fixed path name; \fIy\fR is
+usually a variable path name; and \fIz\fR is usually punctuation.
+.IP \&.PP
+Starts a block paragraph.  Sets the prevailing indent to \&.5i for
+.PN nroff 
+and four picas for
+.PN *troff 
+text formatters.
+.IP \&.R
+Sets the text in a roman typeface until another font change is encountered.  
+Also ends
+.PN nroff
+underline mode if it was in effect.
+.IP "\&.RB \fIword1 word2\fR [ \fIwords...\fR ]"
+Sets \fIword1\fR in a roman typeface, \fIword2\fR in boldface, and 
+then alternates between these two fonts for the remaining 
+words, up to six words.
+Blanks between words are stripped unless the string is enclosed in
+quotation marks (" ").
+.IP "\&.RE [ \fIk\fR ]"
+Returns to the \fIk\fRth relative right shift indent level.  (Restores the left
+margin to the position prior to the \fIk\fRth
+.PN \&.RS
+call).  Specifying \fIk\fR=0 is equivalent to specifying \fIk\fR=1.  
+If \fIk\fR is omitted,
+.PN \&.RE
+restores the left margin to the most recent previous position.  
+When \fIk\fR=1 or 0,
+the default 
+.PN \&.RS
+indent increment is restored.
+.IP "\&.RI \fIword1 word2\fR [ \fIwords...\fR ]"
+Sets \fIword1\fR in a roman typeface, \fIword2\fR in an italic typeface, and 
+then alternates between these two fonts for the remaining words, up to six
+words.  Blanks between words are stripped unless the string is enclosed
+in quotation marks (" ").
+.IP \&.RN
+Prints the return character indicator,
+.RN
+\&.
+.IP "\&.RS [ \fIi\fR ]"
+Shifts the left margin to the right (relatively) the amount of \fIi\fR ens. The
+.PN \&.RS
+macro calls can be nested up to nine levels.  If \fIi\fR is not specified for
+the first
+.PN \&.RS
+call, the relative right shift increases \&.5 inch for
+.PN nroff ,
+and four picas for
+.PN *troff 
+text formatters.
+Nested
+.PN \&.RS
+calls increment the relative indent by \fIi\fR ens, or by \&.2 inch for
+.PN nroff ,
+or by 2 picas for
+.PN *troff 
+text formatters.
+.IP "\&.SH \fItext\fR"
+Creates a section header.
+.IP "\&.SM [ \fItext\fR ]"
+Sets \fItext\fR to be two points smaller than the current point size.  If no 
+text is specified, the next text line is set in the smaller point size.
+.IP "\&.SS \fItext\fR"
+Creates a subsection header.
+.IP "\&.TB [ \fIwords...\fR ]"
+Same as the 
+.PN \&.HB
+macro.  This macro is obsolete, but is provided for backwards
+compatibility.
+.IP "\&.TH \fIn c\fR[\fIs\fR] [ \fIa\fR ] [ \fIf\fR ] [ \fIx\fR ]"
+Begins a new reference page and sets the page title.  Also sets up headers
+and footers for output pages, sets up all defaults and traps, and calls the
+.PN \&.DT
+and 
+.PN \&.PD
+macros.  The title appears as
+a header on all pages of the formatted reference page. The
+\fIn\fR argument is the reference page name.  
+The \fIc\fR argument is the primary section number or letter.
+The \fIs\fR argument is the subsection, if any.
+The \fIa\fR argument is for an optional machine architecture specific label;
+for example ``VAX''.
+The \fIf\fR argument optionally alters a portion of the page footer. 
+The \fIx\fR argument is for optional extra commentary; 
+for example ``Unsupported''.
+.IP
+Fields \fIn\fR, \fIc\fR, and \fIs\fR appear together at the top of each
+output page (see the top
+of this page for an example).  These fields alternate between the right top
+and left top of a page header, corresponding to odd and even page numbers.
+Field \fIa\fR appears opposing the page name in the header when formatted
+with
+.PN nroff ,
+but appears as a bleed tab when formatted with 
+.PN *troff 
+text formatters.
+The \fIf\fR argument appears in the page footer on the inside 
+edge of the page (left for
+odd page numbers, right for even).  
+The \fIx\fR argument appears underneath the page
+name in the header.
+.IP
+The last three fields are optional.  To skip a field, specify a pair of
+quotation marks ("") in the field to be skipped.
+.IP "\&.TP [\|\fIi\fP\|]\fR"
+Sets the prevailing indent to \fIi\fR.  Then begins the indented
+paragraph with a hanging tag given by the next text line.  If the tag
+does not fit, the macro places the next text on a separate line.
+.IP \&.VE
+End a vertical margin bar.
+.IP "\&.VS [ 4 ]"
+Starts a vertical margin bar, if `4' is specified; otherwise, the
+macro does nothing.
+.PP
+.NXE "man macro package" "macros"
+.SS Macros That Cause Line Breaks
+The following macros cause line breaks:
+.RS
+.PP
+.TS
+tab(@);
+l l l l l l.
+De@Ds@EE@EX@HP@IP
+LP@PP@RE@SH@SS@TH
+TP
+.TE
+.PP
+.RE
+.SS Macros That Need Text Lines
+The following macros affect the following line of text if they are specified
+in the input without arguments:
+.RS
+.PP
+.TS
+tab(@);
+l l l l l l.
+B@BI@BR@G@GL@I
+IB@IR@RI@RB@SH@SS
+SM
+.TE
+.PP
+.RE
+.TP
+.SS Defaults
+Automatic hyphenation is turned on. However, \fIlast\fP lines (ones that will
+cause a trap) are not hyphenated and the last and first two characters of
+a word are not split off.
+.PP
+Characters printed from the Special Font are artificially bolded by three units
+whenever the current font is `3'.
+.PP
+The default page size is 80 columns by 66 lines for
+.PN nroff
+output and 8.5" x 11" for output generated by
+.PN *troff 
+text formatters.
+The text area is horizontally placed on the page so that the effective page
+margin is
+\&.3 inches for
+.PN nroff 
+and 7.5 picas for
+.PN *troff
+text formatters.
+.PP
+The
+.PN \&.TH
+macro sets up the following defaults:
+.IP \(bu 4
+Text is set in ``noadjust'' mode; the right margin is ragged.
+.IP \(bu 4
+The default interparagraph distance is 1v for
+.PN nroff 
+and \&.5v for
+.PN *troff
+text formatters.
+.IP \(bu 4
+The basic text indent is \&.5 inches for
+.PN nroff 
+and four picas for
+.PN *troff
+text formatters, from the left margin.
+.IP \(bu 4
+The maximum text line length is 7.4 inches for
+.PN nroff 
+and 36 picas for
+.PN *troff
+text formatters.
+.IP \(bu 4
+Sets tab stops every \&.5 inches.
+.IP \(bu 4
+The basic text point size is 11 points, with line spacing set to 12 points.
+.IP \(bu 4
+The basic text font is ``R'' (a roman typeface).
+.IP \(bu 4
+Reference page headers, section headers, and subsection headers are set
+in a sans-serif bold typeface.
+.SH Options
+.IP \-n\fIN\fP 12
+Numbers the first generated page as
+.IR N .
+.IP \-rl1
+Turns on line double-spacing mode.
+.SH Restrictions
+.SS Predefined Registers
+The following registers are predefined by the
+.PN man
+macro package and should not be changed:
+.IP PO 12
+Page offset and page margin
+.IP IN
+Left margin indent relative to the section headers
+.IP LL
+Line length including
+.PN IN 
+.IP PL
+Page length
+.PP
+The register `l' is predefined when you specify the
+.PN *roff
+.PN \-rl
+option. Its default value is 0.  The
+.MS man 1
+command does not use this option.
+.SS Reserved Registers
+The following registers are reserved for internal use by the
+.PN man ,
+.PN man.nopage ,
+and
+.PN man.repro
+macro packages:
+.RS
+.PP
+.TS
+tab(@);
+l l l l l l.
+A1@DX@EX@l@p@p#
+PF
+.TE
+.PP
+.RE
+In addition, registers beginning with the characters
+`)', `]', and `}' are also reserved for internal use.
+.\"
+.\" At this moment the following registers are internally used:
+.\" 	}W }L PO ]C ]T
+.\"	p#
+.\"	)I )R )E )P
+.\"	)p ][1-9] )[1-9]
+.\"	EX PF
+.\" p is reserved for \-rpS \-man.nopage and \-man.repro use.
+.\"
+.PP
+Registers predefined by the
+.MS nroff 1 ,
+.MS tbl 1 ,
+commands, and the
+.PN *eqn
+and
+.PN *troff
+text preprocessors and formatters should not be redefined.
+.SS Predefined Strings
+The following strings are predefined by the
+.PN man
+macro package and should not be changed:
+.IP lq 12
+.ie n \{\
+\&\*(lq if
+.PN nroff ,
+\&`` if
+.PN *troff
+.\}
+.el \{\
+\&" if
+.PN nroff ,
+\&\*(lq if
+.PN *troff
+.\}
+.IP rq
+.ie n \{\
+\&\*(rq if
+.PN nroff ,
+\&'' if
+.PN *troff
+.\}
+.el \{\
+\&" if
+.PN nroff ,
+\&\*(rq if
+.PN *troff
+.\}
+.IP S
+Command string to change type size to 10 points.
+.SS Reserved Strings and Macros
+The following string and macro names are reserved for internal use by the
+.PN man ,
+.PN man.nopage ,
+and
+.PN man.repro
+macro packages:
+.RS
+.PP
+.TS
+tab(@);
+l l l l l l.
+##@A1@BD@BK@CD@D
+DE@DS@HH@ID@LD@NO
+NX@P@UF@ya@yn@yl
+ys
+.TE
+.PP
+.RE
+In addition, names beginning with the characters
+`)', `]', and `}' are also reserved for internal use.
+.\"
+.\" At this moment the following strings, macros, diversions are internally
+.\" used:
+.\"	]I ]R 
+.\"	}1 }2
+.\"	}E }F }f }H }K }M }N }S }X
+.\"	]B ]D ]H ]L ]W ]X
+.\"	]I ]R
+.\"	}C
+.\"	]F \" inside }S macro
+.\"	]i ]r
+.\"	D \fI?\fPD
+.\" ]S is defined in man.nopage and man.repro
+.\" ]T is defined in man.repro
+.\" NX is defined in man.repro
+.\"	## A1 HH ya yn yl ys are defined in other tools
+.\"	BK is defined in man.repro for use by another tool
+.\" UF is defined in man.repro
+.\" D, ID, CD, LD, BD are reserved in case we need to add full DS/DE
+.\"  support
+.\" DS/DE are reserved in case we need backwards compatibility with BSD.
+.\" P is reserved in case we need backwards compatibility with BSD and SysV.
+.\"	f.	\" defined by tbl
+.\"
+.PP
+Names predefined by the
+.MS nroff 1 ,
+.MS tbl 1 ,
+commands, and the
+.PN *eqn
+and
+.PN *troff
+text preprocessors and formatters should not be redefined.
+.SS \&.TH Macro Restrictions
+The section number should only be 1-8, `n', `l', `o', or `p'.
+Other values might not be recognized by the 
+.MS man 1
+or
+.MS catman 8
+commands.
+.PP
+Sections 6, 7, `n', `l', `o', and `p' do not currently have subsections,
+so subsections should not be specified.
+.PP
+The architecture field (\fIa\fP) should not exceed four characters.  A value
+longer than four characters might print outside the right page margin.
+.PP
+Reference pages containing
+.PN *eqn
+commands should be preprocessed by
+an
+.PN *neqn
+text preprocessor before being installed on the system.
+.PP
+Reference pages containing
+.MS tbl 1
+commands must not be preprocessed before being installed on the system.
+.SS The Name Section
+The
+.MS catman 8
+command assumes the Name section of a reference page has the
+following format:
+.EX
+name[, name, name ...] \\- explanatory text
+.EE
+There should be at least one space after any comma and only one space
+following the ``backslash hyphen'' (\\-).
+There should not be
+any
+.PN *roff
+commands in the explanatory text.  The explanatory text should be brief.
+The
+.MS catman 8
+command combines information in the Name section with parameters of the
+.PN \&.TH
+macro to create an entry in a database searched by the
+.MS apropos 1 ,
+.MS man 1 ,
+and 
+.MS whatis 1
+commands.
+.SH Portability Considerations
+The ULTRIX
+.PN man
+macro packages contain extensions and enhancements borrowed from
+other macro packages.  If you have a need to write portable reference pages,
+you should not use the following macros:
+.RS
+.PP
+.TS
+tab(@);
+l l l l l l.
+CT@CW@De@Ds@EE@EX
+G@GL@HB@I1@I2@LP
+MS@NE@NT@PN@Pn@R
+RN@TB@UF
+.TE
+.PP
+.RE
+The
+.PN LP 
+and
+.PN TB
+macros are obsolete.
+.PP
+The ULTRIX
+.PN man
+.PN \&.TH
+macro differs from other implementations of the 
+.PN \&.TH
+macro.  The primary differences are in the placement of the page title,
+and third and fifth fields in the
+.PN *roff
+output.
+The page title (the page name and section number) is commonly placed on
+both sides of the page header in other implementations.
+The more common placement of the third field is
+in the center of the page footer.  The more common placement
+of the fifth field is in the center of the page header.
+.PP
+The 
+.PN \&.TH 
+macro permits the use of the percent (%) character in any 
+of its fields.  The presence of the percent character may cause
+problems for other implementations of this macro.
+.PP
+Use of the
+.MS tbl 1
+and
+.PN *eqn
+commands should be avoided, because the version of the
+.MS man 1
+command in some other implementations might not preprocess reference
+pages through the
+.MS tbl 1
+command.  The
+.PN *eqn
+commands also might not be installed.
+.SH Files
+.TP 27
+.PN /usr/lib/tmac/tmac.an
+The
+.PN man
+macro package file
+.br
+.SH See Also
+col(1), man(1), nroff(1), tbl(1), man.nopage(7), man.repro(7), catman(8)
+.NXE "man macro package"

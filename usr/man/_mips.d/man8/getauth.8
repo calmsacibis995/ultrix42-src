@@ -1,0 +1,86 @@
+.TH getauth 8 
+.SH Name
+getauth, setauth, rmauth \- auth database maintenance
+.SH Syntax
+.B getauth
+[\fIusername\fP]
+.PP
+.B setauth
+.PP
+.B rmauth
+\fIusername\fP
+.SH Description
+.NXR "getauth command"
+.NXR "setauth command"
+.NXR "rmauth command"
+.NXR "auth database (commands)" "maintenance"
+The command
+.PN getauth
+takes as it's only argument a user name or UID.
+If a user name is supplied it is converted to a UID by searching through
+.PN /etc/passwd . 
+The UID is then used to look up the users entry in the 
+.PN /etc/auth 
+database.
+If an entry is found it is converted to an ASCII string with a syntax
+resembling that of the passwd file and printed out as a single line.
+If no entry is found nothing is printed and an exit status of `1'
+is returned.
+.EX
+# getauth username
+1000:idvidfy8d:1920129:3600:2678400:0e:0:1000:0:00:00
+.EE
+The first field is the UID of the entry which is used as the key into
+the database.  Then follows: the encrypted password,
+password modification time, minimum password lifetime,
+maximum password lifetime, account mask,
+login failure count, audit ID,
+audit control, audit mask, and a reserved field.
+.PP
+If the optional username argument is not supplied to getauth it
+will produce an output line for every entry in the auth database.
+.PP
+The
+.PN setauth
+command expects one or more lines from the standard input which must be
+of a form identical to that produced by the 
+.PN getauth 
+command.  The 
+.PN setauth 
+command converts and stores these lines into the 
+.PN auth 
+database,
+one entry per line, replacing any entry already existing for the given
+UID.  By piping the output of the 
+.PN getauth 
+command into the input of the 
+.PN setauth
+command an expensive NOP can be produced:
+.EX
+# /usr/etc/sec/getauth | /usr/etc/sec/setauth
+.EE
+.PP
+The
+.PN rmauth
+command expects exactly one argument, the user name or UID of an
+auth entry to be deleted. 
+If the entry is found it is erased and deleted.
+If it is not found no action is taken and an 
+exit status of 1 is returned.
+.SH Restrictions
+Only the superuser and members of the group
+.PN authread
+may read information from the auth database.  Only the superuser may
+modify the auth database.
+.SH Diagnostics
+An exit value of 0 indicates a successful operation. An exit status
+of 1 indicates the entry was not found on a lookup or 
+deletion operation.  Any other exit status indicates an error.
+.SH Files
+.PN /etc/auth.[pag,dir]
+.br
+.PN /etc/passwd
+.SH See Also
+getauthuid(3), getpwent(3), auth(5), edauth(8)
+.br
+.I "Security Guide for Administrators"

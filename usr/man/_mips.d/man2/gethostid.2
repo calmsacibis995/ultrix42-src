@@ -1,0 +1,33 @@
+.\" SCCSID: @(#)gethostid.2	8.1	9/11/90
+.TH gethostid 2
+.SH Name
+gethostid, sethostid \- get or set the unique identifier of the current host
+.SH Syntax
+.nf
+.ft B
+hostid = gethostid()
+int hostid;
+.PP
+.ft B
+sethostid(hostid)
+int hostid;
+.fi
+.SH Description
+.NXR "gethostid system call"
+.NXR "sethostid system call"
+.NXA "gethostid system call" "getpid system call"
+.NXR "host ID" "getting"
+.NXR "host ID" "setting"
+The
+.PN sethostid
+system call establishes a 32-bit identifier for the
+current processor that is intended to be unique among all
+UNIX systems in existence.  This is normally a DARPA Internet
+address for the local machine.  This call is allowed only to the
+superuser and is normally performed at boot time.
+.SH Return Values
+The
+.PN gethostid
+system call returns the 32-bit identifier for the current processor.
+.SH See Also
+hostid(1), gethostname(2)

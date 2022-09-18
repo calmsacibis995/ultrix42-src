@@ -1,0 +1,438 @@
+#!/bin/sh5
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)SSREM	4.2	(ULTRIX)	8/5/90"
+#
+#	000	Jonathan Wallace	1-Jun-1990
+#
+#	001	James C. Overman	05-Aug-1990
+#	    Moved references to /tmp to /usr/tmp 
+#	    
+#
+########################################################################
+#
+#
+################################################
+# Set variables and constants
+################################################
+PWD=`pwd`
+set -h
+trap 'Unticker; Cleanup_Routine; exit' 1 2 3 18
+X=0
+Y=0
+LL="
+"
+SP="                                     "
+FW="........................................"
+ERRFLG=0
+
+
+################################################
+# Set up Environment
+################################################
+>/usr/tmp/SSREM.menu
+>/usr/tmp/SSVALID.list
+cd /usr/etc/subsets
+
+
+######################################################
+# SH5 Subroutines #
+###############
+######################################################
+: Cleanup_Routine - Remove usr/tmp files, etc.
+######################################################
+Cleanup_Routine()
+{
+	cd /usr/tmp
+	rm -f SSREM.menu SSPICK.menu SSVALID.list
+}
+
+
+################################################################
+: Reverse_Routine - Reverse order of subsets created by 'depord'
+################################################################
+Reverse_Routine()
+{
+	for K in $1
+	do
+		REVLIST="$K $REVLIST"
+	done
+	echo "$REVLIST"
+}
+
+
+######################################################
+: Ticker - Put time stamps on screen
+######################################################
+Ticker()
+{
+	(
+		while :
+		do
+			echo "    working ..... \c"
+			date
+			sleep 120
+		done
+	)&
+	TICKPID=$!
+}
+
+
+: Unticker - Stop time stamps to screen
+Unticker()
+{
+	[ -n "$TICKPID" ] &&
+	{
+		(
+		kill -15 $TICKPID
+		wait $TICKPID
+		TICKPID=
+		)&
+	}
+}
+
+
+#######################################################
+: SSAutopsy_Routine - Take subset information apart
+#######################################################
+SSAutopsy_Routine()
+{
+	SS=`echo $1 | sed 's/.lk//g'`
+	#
+	# Read in the .ctrl file for each subset to find
+	# out if it can be deleted or not.  If not, don't
+	# offer it in the menu.
+	#
+	[ -f $SS.ctrl ] || return 1
+	. $SS.ctrl
+	NR=`expr $FLAGS % 2 2>/dev/null`
+	case $NR in
+	1 )
+		return 1
+		;;
+	esac
+	#
+	# grep out the subset description for presentation
+	# in the menu.  if no DESC is found, then the .ctrl
+	# is probably corrupt, so don't offer it in the menu.
+	#
+	SD=`echo $DESC | sed s/\'//g`
+	case $SD in
+	"" )
+		return 1
+		;;
+	esac
+}
+
+
+#######################################################
+: CreateMenu_Routine - Create menu to pick subsets from
+#######################################################
+CreateMenu_Routine()
+{
+	[ -s /usr/tmp/SSREM.menu ] ||
+	{
+	echo "
+*** SUBSET REMOVAL PROCEDURE ***
+
+It will take a few moments to create the subset removal menu: "
+	Ticker
+	for K in *.lk
+	do
+		SSAutopsy_Routine $K
+		case $? in
+		1 )
+			continue
+			;;
+		esac
+		#
+		# Add the subset to the menu.  The menu puts entries
+		# side by side, so we have to store one subset until
+		# we get two for an 80 character line.  Then write
+		# the line out to the menu file.
+		#
+		echo $K >>/usr/tmp/SSVALID.list
+		X=`expr $X + 1`
+		case $X in
+		[0-9] )
+			X=" $X"
+			;;
+		esac
+
+		case $Y in
+		0 )
+			PSTR1=`expr "$X) $SD$SP" : '\('$FW'\).*'`
+			Y=1
+			;;
+		1 )
+			PSTR2=`expr "$X) $SD$SP" : '\('$FW'\).*'`
+			echo "$PSTR1$PSTR2" >> /usr/tmp/SSREM.menu
+			PSTR1=
+			PSTR2=
+			Y=0
+			;;
+		esac
+	done
+	#
+	# Check to see if there is an odd subset left over after
+	# going through the entire list.  If so, write it out now
+	# all by itself.
+	#
+	case $PSTR1 in
+	"" )
+		;;
+	* )
+		echo "$PSTR1" >> /usr/tmp/SSREM.menu
+		;;
+	esac
+	#
+	# Offer an choice of NONE on the menu
+	#
+	NONE=`expr $X + 1`
+	case $NONE in
+	[0-9] )
+		echo "${LL} $NONE) None of the above" >> /usr/tmp/SSREM.menu
+		;;
+	* )
+		echo "${LL}$NONE) None of the above" >> /usr/tmp/SSREM.menu
+		;;
+	esac
+	Unticker
+	}
+}
+
+
+#################################################
+: DisplayMenu_Routine - Display the removal menu
+#################################################
+DisplayMenu_Routine()
+{
+	clear
+	echo "
+*** SUBSET REMOVAL PROCEDURE ***
+Select the subsets you want to remove, from the menu below:${LL}"
+	cat /usr/tmp/SSREM.menu
+	echo "${LL}Enter your choice(s) [no default]: \c"
+	read X
+	case $X in
+	"" )
+		DisplayMenu_Routine
+		;;
+	esac
+}
+
+
+############################################
+: Sort_Routine - Sort the input by the user
+############################################
+Sort_Routine()
+{
+	SORTED=
+	set $X
+	for I in $X
+	do
+		# is it a number?
+		J=`expr $I : '\([0-9][0-9]*\)'`
+
+		case $I in
+		$NONE )
+			exit 0
+			;;
+		$J)	;;
+		*)	echo "${LL}Invalid choice: $I (malformed number)"
+			ERRFLG=1
+			continue
+			;;
+		esac
+
+		# is it in range?
+		[ $I -gt $NONE ] &&
+		{
+			echo "${LL}Invalid Choice: $I (out of range)"
+			ERRFLG=1
+			continue
+
+		}
+
+		HI=$SORTED LO=
+		# insert # into sorted list...
+		for J in $SORTED
+		{
+			case "$I" in
+			$J)	I=
+				break
+				;;
+			esac
+			if [ $I -gt $J ]
+			then
+				LO="$LO $J"
+				set xx $HI
+				shift;shift
+				HI=$*
+			else
+				break
+			fi
+		}
+		SORTED="$LO $I $HI"
+	done
+}
+
+
+##################################################
+: DisplayChoice_Routine - Verify the users choice
+##################################################
+DisplayChoice_Routine()
+{
+	Y=0
+	SSLIST=
+	>/usr/tmp/SSPICK.menu
+
+	echo "${LL}Working ... `date` \c"
+
+	set $SORTED
+	I=$1
+	shift
+	SORTED=$*
+	X=0
+	for K in `cat /usr/tmp/SSVALID.list`
+	do
+		X=`expr $X + 1`
+		case $X in
+		$I )
+			SSAutopsy_Routine $K
+			SSLIST="$SSLIST $SS"
+			case $Y in
+			0 )
+				PSTR1=`expr "$SD$SP" : '\('$FW'\).*'`
+				Y=1
+				;;
+			1 )
+				PSTR2=`expr "$SD$SP" : '\('$FW'\).*'`
+				echo "$PSTR1$PSTR2" >>/usr/tmp/SSPICK.menu
+				PSTR1=
+				PSTR2=
+				Y=0
+				;;
+			esac
+
+			if [ "$SORTED" != "" ]
+			then
+				set $SORTED
+				I=$1
+				shift
+				SORTED=$*
+				continue
+			else
+				break
+			fi
+			;;
+		esac
+	done
+
+	case $PSTR1 in
+	"" )
+		;;
+	* )
+		echo "$PSTR1" >>/usr/tmp/SSPICK.menu
+		;;
+	esac
+
+	clear
+	echo "
+*** SUBSET REMOVAL PROCEDURE ***
+You want to remove the following subsets:${LL}"
+	cat /usr/tmp/SSPICK.menu
+}
+
+
+#######################
+: VerifyChoice_Routine
+#######################
+VerifyChoice_Routine()
+{
+	echo "${LL}Is this correct? (y/n) [n]: \c"
+	read resp
+	case $resp in
+	[Yy]* )
+		SSLIST=`/etc/stl/depord $SSLIST`
+		SSLIST=`Reverse_Routine "$SSLIST"`
+		;;
+	"" | [Nn]* )
+		SSLIST=
+		return 1
+		;;
+	* )
+		VerifyChoice_Routine
+		;;
+	esac
+}
+
+
+##########################################
+: SSRemoval_Routine - Remove subsets here
+##########################################
+SSRemoval_Routine()
+{
+	echo "	Working ... `date`"
+	setld -d $SSLIST 2>&1 | tee /usr/tmp/setlderr
+	grep -s setld: /usr/tmp/setlderr
+	case $? in
+	0 )
+		echo "${LL}Press <RETURN> to continue: \c"
+		read resp
+		Cleanup_Routine
+		exit 1
+		;;
+	* )
+		Cleanup_Routine
+		exit 0
+		;;
+	esac
+}
+
+
+###########################################
+# Program Procedure Routine
+###########################################
+while true
+do
+	clear
+	CreateMenu_Routine
+	DisplayMenu_Routine
+	Sort_Routine
+		case $ERRFLG in
+		1 )
+			echo "
+Press <RETURN> to re-enter choice(s): \c"
+			read resp
+			ERRFLG=0
+			continue
+			;;
+		esac
+	DisplayChoice_Routine
+	VerifyChoice_Routine
+	case $? in
+	1 )
+		continue
+		;;
+	esac
+	SSRemoval_Routine
+done

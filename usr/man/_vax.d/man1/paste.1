@@ -1,0 +1,125 @@
+.\" SCCSID: @(#)paste.1	2.3	7/15/87
+.TH paste 1
+.SH Name
+paste \- merge file data
+.SH Syntax
+\fBpaste \fIfile1 file2...\fR
+.br
+\fBpaste \-d\fI\|list file1 file2...\fR
+.br
+\fBpaste \-s [\-d\fI\|list\|\fR] \fIfile1 file2...\fR
+.SH Description
+.NXR "paste command"
+.NXR "file" "merging horizontally"
+In the first two forms,
+.PN paste
+concatenates corresponding lines of the given input
+files
+.IR file1 ,
+.IR file2 ,
+etc.
+It treats each file as a column or columns
+of a table and pastes them together horizontally
+(parallel merging).
+.PP
+In the last form, the
+.PN paste
+command combines subsequent lines of the input
+file (serial merging).
+.PP
+In all cases, lines are glued together with the
+.I tab\^
+character,
+or with characters from an optionally specified
+.IR list .
+Output is to the standard output, so it can be used as
+the start of a pipe,
+or as a filter,
+if \fB\-\fP is used in place of a file name.
+.PP
+.SH Options
+.NXR "paste command" "options list"
+.IP \fB\-\fR 8
+Used in place of any file name,
+to read a line from the standard input.
+(There is no prompting).
+.IP \fB\-\|d\fIlist\fR 
+Replaces characters of all but last file with nontabs characters (default
+tab).
+One or more characters immediately following
+.B \-d
+replace the default
+.I tab\^
+as the line concatenation character.
+The list is used circularly, i. e. when exhausted, it is reused.
+In parallel merging (i. e. no
+.B \-s
+option),
+the lines from the last file are always terminated with a new-line character,
+not from the
+.IR list .
+The list may contain the special escape sequences:
+.B \en
+(new-line),
+.B \et
+(tab),
+.B \e\e
+(backslash), and
+.B \e0
+(empty string, not a null character).
+Quoting may be necessary, if characters have special meaning to the shell
+(for example, to get one backslash, use
+.I \-d\|"\e\e\e\e\^"
+).
+.br
+Without this option,
+the new-line characters of each but the last file
+(or last line in case of the
+.B \-s
+option)
+are replaced
+by a
+.I tab\^
+character.
+This option allows replacing the
+.I tab\^
+character by one or more alternate characters (see below).
+.IP \fB\-s\fR 
+Merges subsequent lines rather than one from each input file.
+Use
+.I tab\^
+for concatenation, unless a
+.I list\^
+is specified
+with
+.B \-d
+option.
+Regardless of the
+.IR list ,
+the very last character of the file is forced to be a new-line.
+.SH Examples
+.NXR "paste command" "examples"
+.EX
+ls \|\(bv\| paste \|\-d" " \|\-
+.EE
+list directory in one column
+.EX
+ls \|\(bv\| paste \|\- \|\- \|\- \|\-
+.EE
+list directory in four columns
+.EX
+paste \|\-s \|\-d"\e\|t\e\|n" \|file
+.EE
+combine pairs of lines into lines
+.SH Diagnostics
+.NXR "paste command" "diagnostics"
+.TP 10m
+.I "line too long\^"
+Output lines are restricted to 511 characters.
+.TP
+.I "too many files\^"
+Except for
+.B \-s
+option, no more than 12 input files may be specified.
+.SH See Also
+cut(1), grep(1), pr(1)

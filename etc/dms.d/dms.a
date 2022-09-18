@@ -1,0 +1,1452 @@
+#!/bin/sh5
+# @(#)dms.a	4.6	(ULTRIX)	11/14/90
+#									
+# 			Copyright (c) 1989 by				
+# 		Digital Equipment Corporation, Maynard, MA		
+# 			All rights reserved.				
+# 									
+#    This software is furnished under a license and may be used and	
+#    copied  only  in accordance with the terms of such license and	
+#    with the  inclusion  of  the  above  copyright  notice.   This	
+#    software  or  any  other copies thereof may not be provided or	
+#    otherwise made available to any other person.  No title to and	
+#    ownership of the software is hereby transferred.			
+# 									
+#    The information in this software is subject to change  without	
+#    notice  and should not be construed as a commitment by Digital	
+#    Equipment Corporation.						
+# 									
+#    Digital assumes no responsibility for the use  or  reliability	
+#    of its software on equipment which is not supplied by Digital.	
+#
+# Environment:	/etc/dms calls this sh5 script.
+# Functions modules:
+# 	- Kernel rebuilt or copied 
+#	- List clients
+#	- Remove client
+# 	- Modify client
+# 	- Add or duplicate client
+# 
+# Modification History:
+# 001 - 8/21/90	  Tungning Cherng 
+#	Modified to be compatible with MOP in DECnet phase V 
+#
+# 000 - 10/3/88   Tungning Cherng Created
+#	Multi-architecture DMS supports VAX and RISC.
+#	
+# 	Prompts edits by Barbara Staines 
+#
+DNET=/usr/lib/dnet
+SERDMS=/usr/diskless
+DLDMS=usr/diskless
+DLPAR=etc
+set -h
+
+: getclients
+#
+# list clients in diskless env $CLIROOT
+#
+getclients()
+{
+	##
+	# Any clients in the chosen environment.
+	##
+	test -d /dlclient* || return 0
+	MCLIS=
+	for i in /dlclient*
+	do
+		cd $i 
+		for j in `ls -d *.root 2>/dev/null`
+		do
+			grep -s $CLIROOT $j/$DLPAR/dlparam &&
+			{
+				A_A=`expr $j : '\(.*\).root'`
+				case $A_A in
+				"" )	continue ;;
+				esac	
+				MCLIS="$MCLIS $A_A" 
+			}
+		done
+	done
+	case $MCLIS in
+	"" )	 
+		return 0 ;;
+	* )
+		return 1 ;;
+	esac 
+}
+
+: Ckdlparam
+Ckdlparam()
+{
+
+	[ -f /dlclient*/${1}.root/etc/dlparam ] || {
+		echo "\nNo parameter file exists for $CLIENT."
+		return 1
+	}
+	return 0
+}
+
+: Copydmsinit
+# If the dmsinit exists, check whether the kernel build script is inside.
+# If yes, skip it.  If no, append it.
+Copydmsinit()
+{
+	if [ -s $CLIROOT0/$DLPAR/dmsinit ] 
+	then
+		diff $CLIROOT0/$DLPAR/dmsinit $CLIROOT/$DLDMS/dmsinit | grep "^>" > /tmp/tn$$  
+		[ -s /tmp/tn$$ ] && {
+		grep -v "rm -f /etc/dmsinit" $CLIROOT0/$DLPAR/dmsinit > /tmp/tn$$
+		cat $CLIROOT/$DLDMS/dmsinit >> /tmp/tn$$
+		mv /tmp/tn$$ $CLIROOT0/$DLPAR/dmsinit
+		chmod 744 $CLIROOT0/$DLPAR/dmsinit
+		}
+	else
+		cp $CLIROOT/$DLDMS/dmsinit $CLIROOT0/$DLPAR/dmsinit
+	fi
+}
+
+: KernRebuilt
+## #############################################
+#
+# Kernel rebuild or copy function start here
+#
+################################################
+KernRebuilt()
+{
+	# 
+	# kernel rebuild or copy
+	#
+	while :
+	do
+		echo "
+1  Kernel Rebuild
+2  Kernel Copy from another client.
+
+enter your choice: \c"
+		read OPT
+		case $OPT in
+		1 )	MESG="rebuilt"	;;
+		2 )	MESG="changed"	;;
+		* )	continue	;;
+		esac
+		break
+	done
+
+	echo "\nThese clients are registered for $CLIROOT:\n"
+	getclients 	# Any clients in the chosen environment.
+	case $? in
+	1 )
+		for i in $MCLIS
+		do
+			echo "	$i"
+		done
+		while :
+		do
+			echo "
+Enter the name of the client whose kernel 
+you want to be $MESG: \c"
+			read CLIENT
+			[ -z "$CLIENT" ] && continue
+			Ckdlparam $CLIENT || exit 1
+			break
+		done
+		;;
+	0 )
+		echo "There are no clients registered for $CLIROOT."
+		exit 1 ;;
+	esac
+	. /dlclient*/$CLIENT.root/etc/dlparam 
+	case $OPT in
+	1 ) 
+		Kernbuild	
+		;;
+	2 )
+		while :
+		do
+			echo "
+Enter the name of the client whose kernel you want to copy
+to '$CLIENT':  \c"
+			read TNC
+			[ -z "$TNC" ] && continue
+			break
+		done
+		Kernchange $CLIENT $TNC
+	esac
+}
+
+: Kernbuild
+Kernbuild()
+{
+	# kernel rebuild
+	# Copy genvmunix and assign a temp server swap area.
+	cp $CLIROOT/$DLDMS/genvmunix $CLIROOT0/vmunix
+
+	cd $CLIROOT0/$DLPAR
+	case `sed -n 5p netblk.c` in
+	"1,") 	# swap on net
+		;;
+	* )	# swap on local disk
+		# 5s/.*/1,/		# SW_NFS=1 swap on net
+		# 7s/.*/32,/		# 16 meg for genvmunix
+		# 10s@.*@$CLIROOT0/dev/swap@	# swap on net
+		cp netblk.c gen.netblk.c
+		ed - ./gen.netblk.c <<xxEOFxx
+		5s@.*@1,@
+		7s@.*@32,@
+		10s@.*@"${CLIROOT0}/dev/swap",@
+		w
+		q
+xxEOFxx
+		cc -c gen.netblk.c
+		mv gen.netblk.o netblk.o
+	esac
+
+	Copydmsinit
+
+	[ ! -f $CLIROOT0/dev/swap ] && {
+		cd $CLIROOT0/dev
+		case `$SERDMS/make_swap $CLIROOT0/dev/swap 32` in
+		"" )	;;
+		* )	echo "Could not create swap file"
+			exit 1	
+		esac
+	}
+}
+
+: Kernchange
+Kernchange()
+{
+	CLIENT=$1; TNC=$2
+	Ckdlparam $TNC || exit 1
+	EX_CLIROOT0=$CLIROOT0
+	. /dlclient*/$TNC.root/etc/dlparam
+	cp $CLIROOT0/vmunix $EX_CLIROOT0
+	echo "\nTell client '$CLIENT' to reboot."
+}
+### <------
+
+: printdlparam
+#
+# print out the dlparam info
+#
+printdlparam()
+{
+	FLAG=$1
+	NAME=$2
+	echo "
+Root area to copy:	$CLIROOT
+$NAME's root area:	$CLIROOT0
+$NAME's usr  area:	$CLIUSR"
+	case $CLISWTP in
+	1 )
+		echo \
+"Swap file on server: 	$CLISWAP0
+Swap file size:	        `expr ${CLISWSZ} / 2` Mbytes" 
+		;;
+	* )
+		echo \
+"Swap on local disk	$CLISWAP0"
+		;;
+	esac
+	case $CLIDMPS in
+	"-1")	echo "Full crash dump";;
+	0)	echo "No crash dump";;
+	*)	
+		echo \
+"Partial crash dump   `expr ${CLIDMPS} / 2` Mbytes."
+	esac
+
+	[ -n  "$GDEV" ] && echo "\
+Graphic device:		$GDEV"
+	[ -n "$NI" ] && echo \
+"Network interface:	$NI"
+
+	case $FLAG in
+	-l )
+		echo "
+Hardware Address:	$CLINET
+Internet Address:	$CLIARP"
+		;;
+	esac
+}
+
+: ListClient
+#####################################################
+#
+# List the registered clients
+#
+#####################################################
+ListClient()
+{
+	getclients
+	case $? in
+	0 )
+		echo "There are no clients registered for $CLIROOT."
+		;;
+	1 )
+		echo "\nThese clients are registered for $CLIROOT:\n"
+		for i in $MCLIS
+		do 
+			echo "	$i"
+		done
+		while :
+		do
+			echo "
+Do you want to see the parameter file for one of these clients?
+If no, press RETURN.
+If yes, enter the client's host name: \c"
+			read CLIENT
+			case $CLIENT in
+			"" )	 break ;;
+			* )
+				Ckdlparam $CLIENT || exit 1
+				;;
+			esac	
+			. /dlclient*/$CLIENT.root/etc/dlparam
+			printdlparam -l $CLIENT 
+			break
+		done 
+		;;
+	esac
+}
+## <--------
+
+: Ckether
+#
+Ckether()
+{
+	ans=$1
+	set -- `Parse ":|-" $ans`
+	for i in $*
+	do
+		case $i in
+		[0-9A-Fa-f] )
+			i="0$i"
+			;;
+		[0-9A-Fa-f][0-9A-Fa-f] )
+			;;
+		* )
+			echo "
+Error: Invalid number for a hardware Ethernet or FDDI address." 1>&2
+			return 1
+			;;
+		esac
+		if [ -z "$ETHER" ] 
+		then
+			ETHER=$i 
+		else
+			ETHER="$ETHER-$i"
+		fi
+	done
+	case $ETHER in
+	[0-9A-Fa-f][0-9A-Fa-f]-[0-9A-Fa-f][0-9A-Fa-f]-[0-9A-Fa-f][0-9A-Fa-f]\
+-[0-9A-Fa-f][0-9A-Fa-f]-[0-9A-Fa-f][0-9A-Fa-f]-[0-9A-Fa-f][0-9A-Fa-f])
+		echo "$ETHER"
+		return 0
+		;;
+	* )	
+		echo "
+Error: Invalid number for a hardware Ethernet or FDDI address." 1>&2
+		return 1
+		;;
+	esac
+}
+
+: Getether
+# get the ethernet or FDDI address
+#
+Getether()
+{
+	while : true
+	do
+		echo  "
+Enter the client processor's hardware Ethernet or FDDI address, for
+example, 08-00-2b-02-67-e1 [$CLINET]: \c"
+		read ans 
+		[ -z "$ans" ] && ans=$CLINET
+		CLINET=`Ckether $ans` && break
+	done
+}
+
+CkswapNet()
+{
+	case $1 in
+	[1-9][0-9]|[1-9][0-9][0-9] ) 
+		CLISWSZ=`expr $1 '*' 2`
+		TMPSWSZ=$CLISWSZ
+		return 0
+			;;
+	[0-9] )
+		echo "the size is too small."
+		return 1
+		;;
+	* )
+		echo "Invalid input"
+		return 1
+	esac
+}
+#
+# get the swap area
+#
+getswap()
+{
+	while :
+	do
+		echo "
+Select the swap file system location:
+
+	1  Server 
+	2  Client Disk
+
+Enter your choice [$SWDEF]: \c"
+		read ans
+		[ -z "$ans" ] && ans=$SWDEF
+		case $ans in
+		1 )	
+			CLISWTP=1 	# SW_NFS=1 swap on the server
+			CLISWAP0=$CLIROOT0/dev/swap
+
+			# if modify 
+			case $SWDEF in
+			1 )
+				DEFSWSZ=`expr ${CLISWSZ} / 2`
+				;;
+			2 )
+				MKERN=1
+				;;
+			esac
+			# end modify
+				
+			while :
+			do
+				echo "
+Swap size should be two to three times the client's physcal memory size
+depending on need.  Enter the number of Mbytes for swap [$DEFSWSZ]: \c" 
+				read AAA
+				[ -z "$AAA" ] && AAA=$DEFSWSZ
+
+				CkswapNet $AAA || continue
+
+				# if modify 
+				case $AAA in
+				$DEFSWSZ )
+					MKSWAP=0	;;
+				* )
+					MKSWAP=1	;;
+				esac
+				# end modify
+
+				break
+			done
+			break
+			;;
+		2 )
+			# if modify
+			case $SWDEF in
+			1 )
+				MKERN=1
+				TDEV=
+				;;
+			2 )
+				TDEV=$CLISWAP0
+				;;
+			esac
+			# end modify
+
+			while :
+			do 
+				echo "
+Enter the device special file name for the swap partition, 
+for example 'rz0b' [$TDEV]: \c"
+				read DEV
+				[ -z "$DEV" ] && DEV=$TDEV
+				case $DEV in
+				/dev/* | "" )
+					echo "Invalid input."
+					continue	;;
+				* )
+					echo "
+The device special file name for the swap partition is '$DEV'. 
+Is this correct (y/n) [y]? \c"
+					read ans 
+					case $ans in
+					"" | [Yy])
+						;;
+					* )
+						continue	;;
+					esac
+					;;
+				esac
+
+				# if modify
+				case $DEV in
+				$TDEV )
+					;;
+				* )
+					MKERN=1	;;
+				esac
+				#end modify
+				break
+			done
+			CLISWTP=0 #SW_RAW
+			TMPSWSZ=32   ## 16 meg swap for genvmunix
+			CLISWSZ=0
+			CLISWAP0=$DEV
+			break
+			;;
+		esac
+	done
+}
+
+: Ckdump
+Ckdump()
+{
+	case $1 in
+	n ) 
+		DMPTYP=n
+		CLIDMPS=0
+		;;
+	f )
+		DMPTYP=f
+		CLIDMPS=-1
+		;;
+	* )
+		return 1
+	esac
+	return 0
+}
+
+: getdump
+# get the dump area
+#
+getdump()
+{
+	while :
+	do 
+		echo "
+The following network crash dump options are available:
+
+	n -  no dump
+	f -  full dump
+
+Enter your choice [$DMPTYP]: \c"
+		read ans
+		[ -z "$ans" ] && ans=$DMPTYP
+		Ckdump $ans && break
+	done
+}
+
+: Getbdname
+#
+Getbdname()
+{
+	CLIENTNAME=$CLIENT
+	SERHOST=`/bin/hostname`   ### In there other way to tell BIND  ?
+	binddomain=`expr $SERHOST : '[^.]*\.\(.*\)'`
+	bindtp=`expr $CLIENT : '[^.]*\.\(.*\)'`
+	case $bindtp in
+	"" )	 ;;
+	$binddomain )
+		CLIENT=`expr $CLIENT : '\([^.]*\)\..*'`
+			;;
+	* )
+		echo "
+The extension you entered, $bindtp, is incorrect. 
+$SERHOST is a BIND system, and $binddomain is the extension for
+the domain name listed for $SERHOST by the /bin/hostname command."
+		return 1
+	esac
+	return 0
+}
+
+: Ckname
+#
+Ckname()
+{
+	CLIENT=$1
+	case $CLIENT in
+	[A-Za-z]* )
+		Getbdname 
+		case $? in
+		0 )
+			ARPRET=`/etc/arp "$CLIENT"`
+			case $ARPRET in
+			"" ) 	return 1	
+			esac
+			return 0	
+		esac
+		;;
+	* ) 	echo "Invalid name.\n"
+	esac
+	return 1
+}
+				
+: Getname
+#
+Getname()
+{
+	while :
+	do
+		echo "\nEnter the client processor's hostname: \c"
+		read CLIENT
+		Ckname $CLIENT && break
+	done
+}
+
+: Rmclient
+###########################################################
+#
+# Remove client
+#
+###########################################################
+Rmclient()
+{
+	getclients
+	case $? in
+	0 )
+		echo "There are no clients registered for $CLIROOT."
+		exit 0 ;;
+	1 )
+		echo "\nThese clients are registered for $CLIROOT:\n"
+		for i in $MCLIS
+		do 
+			echo "	$i"
+		done
+		;;
+	esac
+
+	Getname
+
+	# only 6 char for mop clientname
+	echo "
+You have chosen to remove a diskless client.  This will
+remove the client's root area. \n
+Remove '$CLIENT'? (y/n) [n]: \c"
+	read ans
+	case $ans in
+	[yY])   ;;
+	*)	exit 0 ;;
+	esac
+	
+	Delclient $CLIENT
+}
+
+: Delclient 
+Delclient()
+{
+	CLIENT=$1
+	[ -d /dlclient*/$CLIENT.root ] ||  
+		{ echo "$CLIENT does not exist"; exit 1 ; }
+
+	Ckdlparam $CLIENT || exit 1
+
+	. /dlclient*/$CLIENT.root/etc/dlparam
+
+	trap '' 1 2 
+	rm -rf $CLIROOT0
+	Rm_dmsdb $CLIENT
+	#remove from /etc/exports
+	egrep -v "$CLIUSR |$CLIROOT0|$CLISWAP0" /etc/exports > /tmp/exports$$
+	grep "$CLIUSR " /etc/exports | sed "s/$CLIENT//" >> /tmp/exports$$
+	mv /tmp/exports$$ /etc/exports
+	trap 'exit' 1 2
+
+	if [ -f /var/dna/mop_client_db ] 
+	then
+		MOPCLI=$CLIENT
+	else
+		MOPCLI=`expr $CLIENT : '\(......\).*' '|' $CLIENT`
+	fi
+
+	## DECnet phase V won't need the following command  ##
+	GETNODE=`/etc/getnode $MOPCLI |sed s/node//g |sed s/=//g`
+	case $GETNODE in
+	"" )	exit	;;
+	esac
+
+	/etc/remnode $MOPCLI 
+
+	[ -f /var/dna/mop_client_db ] ||
+    {
+	if test -f $DNET/nodes_p 
+	then 
+		/etc/remnode $MOPCLI -P 
+	else 
+		cp $DNET/nodes_v $DNET/nodes_p
+	fi
+	
+	# remove executable script too
+	set $GETNODE; NODADR=$1
+	case $NODADR in
+		[A-Z]*) exit;;
+	esac
+	/etc/addnode $NODADR $MOPCLI
+	if test -f $DNET/nodes_p 
+	then 
+		/etc/addnode $NODADR $MOPCLI -P
+	else 
+		cp $DNET/nodes_v $DNET/nodes_p
+	fi
+    }
+	echo "\nRemoved $CLIENT as a diskless client."
+}
+
+: Modclient
+##############################################################
+#
+# Modifiy function start here
+#
+#############################################################
+Modclient()
+{
+	# modify function
+	#
+
+	getclients 	# Any clients in the chosen environment.
+	case $? in
+	0 )
+		echo "There are no clients registered for $CLIROOT."
+		exit 0
+		;;
+	1 )
+		echo "\nThese clients are registered for $CLIROOT:\n"
+		for i in $MCLIS
+		do
+			echo "	$i"
+		done
+
+		Getname
+		
+		Ckdlparam $CLIENT || exit 1
+	esac
+
+	. /dlclient*/$CLIENT.root/$DLPAR/dlparam
+	cp /dlclient*/$CLIENT.root/$DLPAR/dlparam /tmp/$CLIENT$$
+	
+	Getether  # get ethernet or FDDI address
+
+	case $CLISWTP in
+	1 )	# SW_NFS
+		SWDEF=1 ;;	
+	0 )	# SW_RAW
+		SWDEF=2	;;
+	esac
+
+	MKERN=0
+
+	getswap		# get the swap area
+
+	getdump		# get the dump area
+
+	case $MKSWAP in
+	1 )
+		echo "\nCreating the new swap area ..."
+		DONE=
+		DONE=`$SERDMS/make_swap $CLIROOT0/dev/newswap $CLISWSZ`  
+		[ -n "$DONE" ] && {
+			echo $DONE
+			echo "Could not create swap file."
+			rm -f $CLIROOT0/newswap; exit 1
+		}
+		(cd $CLIROOT0/dev; rm -f swap; mv newswap swap)
+		;;
+	esac
+
+##### make parameter file ###### 
+	cd $CLIROOT0/$DLPAR	|| exit 1	# make here
+	. $CLIROOT/$DLDMS/makconf
+
+##### edit network packet ######	
+	ed - ./netblk.c <<xxEOFxx
+		5s/./$CLISWTP/
+		7s/.*/${CLISWSZ},/
+		8s/.*/${CLIDMPS},/
+		10s@.*@"${CLISWAP0}",@
+		w
+		q
+xxEOFxx
+
+	case $MKERN in
+	1 )	
+		Copydmsinit
+		;;
+	0 )
+		# No need to build kernel, 
+		# but if client just added and have not booted, don't compile 
+		# new netblk.c.   Keep using the generic netblk.c around. 
+		[ ! -f $CLIROOT0/$DLPAR/gen.netblk.c ] && {
+			(cd $CLIROOT0/$DLPAR; cc -c netblk.c)
+		} 
+		;;
+	esac
+
+	if [ -f /var/dna/mop_client_db ]
+	then
+		MOPCLI=$CLIENT
+	else
+		MOPCLI=`expr $CLIENT : '\(......\).*' '|' $CLIENT`
+	fi
+
+	/etc/addnode $MOPCLI -h $CLINET || 
+		{ echo "failure of /etc/addnode"; exit 1; }
+
+	[ -f /var/dna/mop_client_db ] || 
+    {
+	if [ -f $DNET/nodes_p ]
+	then
+		/etc/addnode $MOPCLI -P -h $CLINET 
+	else
+		cp $DNET/nodes_v $DNET/nodes_p
+	fi
+    }
+
+	cmp /dlclient*/$CLIENT.root/etc/dlparam  /tmp/$CLIENT$$ 2>&1 >/dev/null
+	case $? in
+	0 )
+		echo "Client $CLIENT was not modified."
+		;;
+	* )
+		echo "
+Client $CLIENT has been modified.  
+Tell client $CLIENT to reboot."
+		;;
+	esac
+}
+# <----------
+# 
+: Parse
+# Name: Parse
+# 
+Parse()
+{(
+	IFS="$1"
+	shift
+	echo $*
+)}
+
+: AddClient
+###################################################
+#
+# Add client function 
+#
+###################################################
+Addclient()
+{
+	echo "
+You have chosen to add a client.
+
+The following conditions must be met to add a client:
+	 
+ 	1. The client must be entered in the server's host database(s).
+	2. You must know the client's hostname 
+	3. You must know the client's hardware Ethernet or FDDI address 
+
+Do you want to continue? (y/n) [y]: \c"
+	read ANS
+	case $ANS in
+	[yY] | "" )  ;;
+	*)	
+		exit 0 ;;
+	esac
+	
+	Getname
+	
+	Getether
+
+	DUP=0
+	MKSWAP=1
+
+	getclients 	# Any clients in the chosen environment.
+	case $? in
+	1 )
+    	while :
+    	do
+		set $MCLIS
+		case $# in
+		1 )	# only one client, it is itself
+			break ;;
+		esac
+		echo "
+Do you want to duplicate an existing client's environment 
+for '$CLIENT' ? (y/n): \c"
+		read ans
+		case $ans in
+		[nN] )
+			DUP=0
+			MKSWAP=1
+			break ;;
+		[yY] )
+			echo "
+These client environments are available:\n" 
+			for i in $MCLIS
+			do
+				echo "	$i"
+			done
+			while :
+			do
+				echo "
+Enter the name of the client whose environment you want duplicate
+for '$CLIENT':  \c"
+				read TNC
+				[ -z "$TNC" ] && continue
+				break
+			done
+
+			Ckdlparam $TNC || exit 1
+
+			# save the parameters
+			NEW_CLINET=$CLINET
+			NEW_CLIARP=$CLIARP
+ 			(cd /dlclient*/$TNC.root/$DLPAR; EX_dlparam=dlparam)
+
+			. /dlclient*/$TNC.root/etc/dlparam
+
+			EX_CLIROOT0=$CLIROOT0
+			CLINET=$NEW_CLINET
+			CLIARP=$NEW_CLIARP
+
+			[ -f $CLIROOT0/$DLPAR/gen.netblk.c ] && {
+			echo "\nA kernel for $TNC has not been built yet.\n"
+				continue
+			}
+
+			CLIROOT0=$CLIDLR0/$CLIENT.root
+			MKSWAP=0
+			case $CLISWTP in
+			1 )
+				CLISWAP0=$CLIDLR0/$CLIENT.root/dev/swap
+				TMPSWSZ=$CLISWSZ
+				MKSWAP=1
+				;;
+			esac
+			CLIDMS=$CLIROOT/$DLDMS
+			DUP=1
+			
+			printdlparam -s $CLIENT
+		
+			while :
+			do
+				echo "\nIs this correct? (y/n): \c"
+				read ans
+				case $ans in
+				[Yy] )
+					break ;;
+				[nN] )
+					continue 2 ;;
+				esac
+			done
+			break
+		esac
+    	done
+	esac
+
+	case $DUP in
+	0 )
+		CLIUSR=$CLIROOT/usr 
+	
+		echo "
+Select the name of the file system to contain the client's root directory: \n"
+		DIRS=`ls -d /dlclient*`
+		case $DIRS in
+		"" )	echo "\nNo /dlclient? directory"
+			exit 1	;;
+		esac
+		while :
+		do
+			INDEX=0
+			for i in $DIRS
+			do
+				INDEX=`expr $INDEX + 1`
+				echo "	$INDEX  $i"
+			done
+			echo "\nEnter your choice : \c"
+			read CHOICE
+			case $CHOICE in
+			[1-9]|[1-9][0-9]*)
+				INDEX=0
+				for i in $DIRS
+				do 
+					INDEX=`expr $INDEX + 1`
+					case $INDEX in
+					$CHOICE )
+						CLIDLR0=$i
+						[ -d $CLIDLR0 ] && break 2
+						echo "$CLIDLR0 is not valid."
+						continue 2 
+					esac
+				done
+			esac
+		done
+
+		CLIROOT0=$CLIDLR0/$CLIENT.root
+
+		getswap		# get swap area
+
+		getdump		# get dump area
+		;;
+	esac
+
+	Mkclient 
+}
+
+: Mkclient
+Mkclient()
+{
+	CLIDMS=$CLIROOT/$DLDMS
+	CLIUSR=$CLIROOT/usr 
+	CLIROOT0=$CLIDLR0/$CLIENT.root
+	case $1 in
+	-a )	
+		aflag=1	# Non-interactive mode
+		MKSWAP=1
+		DUP=0
+	esac
+	[ "$aflag" ] || {
+		cp $CLIROOT/etc/passwd /tmp/passwd
+		echo "\nEnter password for root on $CLIENT"
+		$SERDMS/passwd_dlws root
+	
+		echo "
+Making the diskless client area for '${CLIENT}' ...
+This may take several minutes depending on the processor."
+	}
+
+	#
+	## subroutine: get net parameters
+	#
+	NETPARAM=`getnetif ${CLIENT}` || exit 1
+	set xxx $NETPARAM
+	SERVER=$2; CLINETM=$3; CLIBRDC=$4
+
+	ARPRET=`/etc/arp $SERVER`
+	case $ARPRET in 
+	"" )	
+		echo "Error: Can not find $SERVER on the netowrk. "
+		exit 1	;;
+	* )	set $ARPRET; SERARP=$2
+	esac
+	set -- `/etc/arp $CLIENT` ;  T_CLIARP=$2
+	set -- `Parse '()' ${T_CLIARP}` ;  CLIARP=$1
+
+	[ "$aflag" ] || { 
+		echo "\nCopying the root directory for '${CLIENT}'..."
+	}
+	[ -d $CLIROOT0 ] && {
+		while :
+		do
+			echo "
+The root directory $CLIROOT0 exists.  Replace it (y/n)? \c"
+			read ans 
+			case $ans in
+			Y|y)	
+				rm -rf $CLIROOT0 
+				break	;;
+			N|n)
+				echo "The client $CLIENT was not added."
+				exit 1 ;;
+			esac
+		done
+	}
+
+	trap 'rm -r $CLIROOT0; exit' 1 2 ## don't mess up
+
+	DONE=`$CLIROOT/$DLDMS/make_client $CLIROOT0 $CLIROOT`
+	[ -n "$DONE" ] && {
+		echo $DONE
+		echo "Could not create root directory."
+		exit 1
+	}
+
+	case $MKSWAP in
+	1 )
+		case $aflg in
+		1 )
+			echo "\nCreating the client's swap file ..."
+		esac
+		DONE=
+		DONE=`$SERDMS/make_swap $CLIROOT0/dev/swap $TMPSWSZ`  
+		[ -n "$DONE" ] && {
+			echo $DONE
+			echo "Could not create swap file"
+			exit 1
+		}
+		;;
+	esac
+
+	trap 'exit' 1 2
+
+	if egrep -s "^/bin/hostname" $CLIROOT0/etc/rc.local
+	then
+		sed "/^\/bin\/hostname.*/s/hostname.*/hostname ${CLIENT}/"\
+		$CLIROOT0/etc/rc.local > $CLIROOT0/etc/rc.tmp
+	else
+		echo "/bin/hostname ${CLIENT}" | 
+		cat - $CLIROOT0/etc/rc.local > $CLIROOT0/etc/rc.tmp
+	fi
+	mv $CLIROOT0/etc/rc.tmp $CLIROOT0/etc/rc.local
+	chmod 644 $CLIROOT0/etc/rc.local
+
+	grep -s "%NFSSTART%" $CLIROOT0/etc/rc.local ||
+	cat >> $CLIROOT0/etc/rc.local <<xxEOFxx
+# %NFSSTART% - NFS daemons added by "nfssetup"
+	echo -n 'NFS daemons:'					>/dev/console
+	[ -f /etc/biod ] && {
+		/etc/biod 4 ; echo ' biod'			>/dev/console
+	}
+# %NFSEND%
+xxEOFxx
+
+	cp $CLIDMS/crontab $CLIROOT0/etc/crontab 
+
+	[ "$aflag" ] || 
+		mv /tmp/passwd $CLIROOT0/etc/passwd
+
+	trap '' 2
+
+	cd $CLIROOT/usr/etc/subsets &&
+		for i in `ls *.lk`
+		do
+			echo `expr $i : '\(.*\).lk` >> $CLIROOT0/$DLPAR/dms.scp
+		done
+
+	echo "$CLIUSR@$SERVER:/usr:ro:0:0:nfs::" >> $CLIROOT0/etc/fstab
+
+	test -d "$CLIDUMF" || mkdir $CLIDUMF 
+
+	grep -s "^$CLIROOT0 $CLIENT" /etc/exports >/dev/null 2>&1 || 
+		echo "$CLIROOT0 -r=0 $CLIENT" >> /etc/exports
+	egrep -v "^$CLIUSR |^$CLIUSR$" /etc/exports > /tmp/exportdms
+	GREUSR=`egrep "^$CLIUSR |^$CLIUSR$" /etc/exports`
+	case $GREUSR in
+	"" )
+		echo "$CLIUSR -o -r=0 $CLIENT" >> /tmp/exportdms
+		;;
+	* )
+		if (echo $GREUSR|grep -s -w $CLIENT ) 
+		then 
+			echo $GREUSR >> /tmp/exportdms
+		else 
+			echo "$GREUSR $CLIENT" >> /tmp/exportdms
+		fi
+	esac
+
+	mv /tmp/exportdms /etc/exports
+
+	##### make configuration file ###### 
+	CLIROTP=5 	# GT_NFS=5 root on the net for genvmunix
+	cd $CLIROOT0/$DLPAR		# make here
+	. $CLIDMS/makconf
+
+	egrep "GDEV|NI" EX_dlparam >> dlparam 2>/dev/null
+
+	##### make network packet ######	
+	# new mop.h
+	#
+	OUTP=`makpkt $SERARP $CLIENT $CLIARP $CLIBRDC $CLINETM` || exit 1
+
+	case $DUP in
+	0 )
+		#
+		# "1,"  SW_NFS=1 swap on the net for genvmunix
+		# "\"$CLIROOT0/dev/swap\"," only for genvmunix
+		#
+		echo "#include <sas/mop.h> 
+struct netblk   nblk={
+\"$SERVER\", 
+"$OUTP" 
+1, 
+$CLIROTP, 
+$TMPSWSZ,
+$CLIDMPS,
+\"$CLIROOT0\",
+\"$CLIROOT0/dev/swap\",
+\"\"
+};" > gen.netblk.c
+		cc -c gen.netblk.c
+		[ -f gen.netblk.o ] || exit 1
+		mv gen.netblk.o netblk.o
+
+		grep -w "$SERVER" $CLIROOT0/etc/hosts || 
+			echo "`Parse '()' $SERARP` $SERVER"  >> $CLIROOT0/etc/hosts
+		grep -w "$CLIENT" $CLIROOT0/etc/hosts || 
+			echo "$CLIARP $CLIENT"  >> $CLIROOT0/etc/hosts
+	
+		Copydmsinit
+
+		cp $CLIDMS/genvmunix $CLIROOT0/vmunix
+
+		(cd $CLIDMS/dev; tar cpf - . ) | (cd $CLIROOT0/dev; tar xpf - )
+	esac
+	## reset for rebuiding
+	#
+	echo "#include <sas/mop.h>
+struct netblk   nblk={
+\"$SERVER\",
+"$OUTP"
+$CLISWTP,
+$CLIROTP,
+$CLISWSZ,
+$CLIDMPS,
+\"$CLIROOT0\",
+\"$CLISWAP0\",
+\"\"
+};" > netblk.c
+
+	case $DUP in
+	1 )
+		cc -c netblk.c
+		cp $EX_CLIROOT0/vmunix    $CLIROOT0/vmunix
+		cp $EX_CLIROOT0/etc/hosts $CLIROOT0/etc/hosts
+		cp $EX_CLIROOT0/etc/ttys $CLIROOT0/etc/ttys
+    	(cd $EX_CLIROOT0/dev; tar cpf - `find . \( -type c -o -type b \) -print`) | 
+			(cd $CLIROOT0/dev; tar xpf - )
+	
+ 	#
+ 	# set up dmsinit for running setld -c INSTALL rule
+ 	#
+		> /tmp/tn$$
+		[ -s $CLIROOT0/etc/dmsinit ] && mv $CLIROOT0/etc/dmsinit /tmp/tn$$
+ 		echo "#!/bin/sh5" > $CLIROOT0/etc/dmsinit
+ 		cd $CLIROOT/usr/etc/subsets
+ 		for i in *.lk
+ 		do
+ 			Sub=`expr $i : '\(.*\).lk'`
+ 			echo "/etc/setld -c $Sub INSTALL" >> $CLIROOT0/etc/dmsinit
+ 		done
+
+		if [ -s /tmp/tn$$ ] 
+		then
+			cat /tmp/tn$$ >> $CLIROOT0/etc/dmsinit
+		else
+ 			echo "rm -f /etc/dmsinit" >> $CLIROOT0/etc/dmsinit
+		fi
+ 		chmod 744 $CLIROOT0/etc/dmsinit
+ 
+		# set up /sys area
+		SYSTEM=$CLIROOT/usr/sys
+		DLSYS=$CLIROOT0/sys
+		file $DLSYS | grep -s symbolic || [ ! -d $DLSYS ]
+		case $? in 
+		0 )
+			rm -f $DLSYS
+			mkdir $DLSYS
+			cd $SYSTEM
+    			for i in [a-z]* 
+    			do
+				[ $i = conf ] && {
+					mkdir ${DLSYS}/conf ${DLSYS}/conf/$arc
+					for j in `ls ${SYSTEM}/conf/$arc`
+					do 
+						case $j in
+						[a-z]* | BINARY | GENERIC )
+							(cd $DLSYS/conf/$arc
+							ln -s /usr/sys/conf/$arc/$j $j
+							)
+						;;
+						esac
+					done
+					continue
+				}
+			
+				[ $i = $ARC ] && {
+					mkdir ${DLSYS}/$i
+					for j in `ls ${SYSTEM}/$i`
+					do 
+						(cd $DLSYS/$i
+						ln -s /usr/sys/$i/$j $j
+						)
+					done
+				}
+			
+				[ ! -d $i ] && continue
+				(cd $DLSYS
+				ln -s /usr/sys/$i $i
+				)
+    			done
+			FROMC=`echo $TNC | dd conv=ucase 2>/dev/null`
+			TOC=`echo $CLIENT | dd conv=ucase 2>/dev/null`
+			(cd $EX_CLIROOT0/sys/conf/$arc
+			sed '/^ident/s/ident.*/ident	$CLIENT/' $FROMC > $CLIROOT0/sys/conf/$arc/$TOC 
+			)
+		esac
+	esac
+
+	#
+	# timezone from the server 
+	#
+	echo `$SERDMS/tzone` > $CLIROOT0/$DLPAR/timezone
+	
+	CLIPKT=$CLIROOT0/$DLPAR/netblk.o
+
+	if [ -f /var/dna/mop_client_db ]
+	then
+		MOPCLI=$CLIENT
+	else
+		MOPCLI=`expr $CLIENT : '\(......\).*' '|' $CLIENT`
+	fi
+	
+	CLIBOT=$CLIROOT/usr/mdec/netload
+	CLISYS=$CLIROOT0/vmunix
+	
+	case $CLIDMPS in
+	0 )	CLIDMPFILE=	
+	addnode $MOPCLI -h $CLINET -l $CLIBOT -t $CLISYS -s $CLIPKT ||
+		{ echo "failure of /etc/addnode"; exit 1; }
+		;;
+	* )
+		CLIDMPFILE=$CLIROOT0/var/adm/crash/vmcore # dumpfile
+addnode $MOPCLI -h $CLINET -l $CLIBOT -t $CLISYS -s $CLIPKT -D $CLIDMPFILE || 
+		{ echo "failure of /etc/addnode"; exit 1; }
+		;;
+	esac
+
+	[ -f /var/dna/mop_client_db ] ||
+    {
+	[ -f $DNET/nodes_p ] || touch $DNET/nodes_p
+	case $CLIDMPS in
+	0 )	CLIDMPFILE=	
+	addnode $MOPCLI -h $CLINET -l $CLIBOT -t $CLISYS -s $CLIPKT -P
+		;;
+	* )
+addnode $MOPCLI -h $CLINET -l $CLIBOT -t $CLISYS -s $CLIPKT -D $CLIDMPFILE -P
+	esac
+    }
+
+	case $CLISWSZ in
+	0 )
+		Add_dmsdb "$CLIENT:$CLINET:$CLIROOT:$CLIDLR0:$CLISWAP0:$DMPTYP"
+		;;
+	* )
+		Add_dmsdb "$CLIENT:$CLINET:$CLIROOT:$CLIDLR0:$CLISWSZ:$DMPTYP"
+	esac
+	echo "\nClient $CLIENT has been added."
+
+	trap 'exit'  2   
+}
+
+: Ckswap
+Ckswap()
+{
+	case $CLISWAP0 in
+	[1-9]* )	
+		CLISWTP=1
+		CLISWAP0=`expr $CLISWAP0 / 2` 
+		CkswapNet $CLISWAP0 || exit 1
+		CLISWAP0=$CLIROOT0/dev/swap
+		;;
+	* )	
+		CLISWTP=0
+		TMPSWSZ=32
+		CLISWSZ=0
+	esac
+}
+
+: Getclidb
+
+Getclidb()
+{
+	CLIENT=$1
+	[ -r $SERDMS/dmsdb ] || return 
+	ENT=`grep -w "^$CLIENT" $SERDMS/dmsdb` && {
+		set -- `Parse : $ENT`
+		O_CLINET=$2
+		O_CLIDLR0=$4
+		O_CLISWAP0=$5
+		O_DMPTYP=$6
+		[ -z "$CLINET" ] && CLINET=$O_CLINET
+		[ -z "$CLIDLR0" ] && {
+			CLIDLR0=$O_CLIDLR0
+			CLIROOT0=$CLIDLR0/$CLIENT.root
+		}
+		[ -z "$CLISWAP0" ] && CLISWAP0=$O_CLISWAP0
+		[ -z "$DMPTYP" ] && DMPTYP=$O_DMPTYP
+	}
+}
+			
+: Rm_dmsdb
+Rm_dmsdb()
+{
+	CLIENT=$1
+	[ -w $SERDMS/dmsdb ] && {
+		grep -v -w "$CLIENT" $SERDMS/dmsdb > /tmp/dmsdb$$
+		mv /tmp/dmsdb$$ $SERDMS/dmsdb
+	}
+}
+
+: Add_dmsdb
+Add_dmsdb()
+{
+	ENT=$1
+	set -- `Parse : $ENT`
+	CLIENT=$1
+	Rm_dmsdb $CLIENT
+	echo $ENT >> $SERDMS/dmsdb
+}
+
+#
+# Main program start here
+#
+case $ARGFLG in
+"" )	# Interactive mode
+	[ -z "$CLIROOT" ] && { echo "Don't know which environment."; exit 1; }
+	arc=`expr $CLIROOT : '.*\.\(.*\)'`
+	ARC=`echo $arc | dd conv=ucase 2>/dev/null`
+	case $1 in
+	-k ) 
+		KernRebuilt
+		;;
+	-l )
+		ListClient
+		;;
+	-r )
+		Rmclient
+		;;
+	-m )
+		Modclient
+		;;
+	"" | -a ) # forward compatibility
+		Addclient
+		;;
+	esac
+	;;
+1 )
+	CLIENT=$2
+	case $1 in
+	-a )
+		CLINET=
+		CLIDLR0=
+		CLISWAP0=
+		DMPTYP=
+		Getclidb $CLIENT
+		Ckswap
+		CLINET=`Ckether $CLINET` || exit 1
+		Ckdump $DMPTYP || exit 1
+		Mkclient -a 
+		;;
+	-k )
+		CLINET=
+		CLIDLR0=
+		CLISWAP0=
+		DMPTYP=
+		Getclidb $CLIENT
+		Kernbuild $CLIENT 
+		;;	
+	-r )
+		CLINET=
+		CLIDLR0=
+		CLISWAP0=
+		DMPTYP=
+		Getclidb $CLIENT
+		Delclient $CLIENT 
+		;;	
+	-l )
+		. /dlclient*/$CLIENT.root/etc/dlparam
+		echo "\n*** The parameters of $CLIENT *** "
+		printdlparam -l $CLIENT 
+		;;
+	esac
+esac
+
+exit 0
+

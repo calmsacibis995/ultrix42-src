@@ -1,0 +1,23 @@
+.TH chess 6 VAX "" Unsupported
+.SH Name
+chess \- the game of chess
+.SH Syntax
+.B /usr/games/chess
+.SH Description
+.NXR "chess game"
+The
+.PN chess
+computer program plays class D chess.
+Moves may be given either in standard (descriptive) notation
+or in algebraic notation.
+The symbol `+' is used to specify check; `o-o' and `o-o-o' specify castling.
+To play black, type `first'; to print the board, type an empty line.
+.PP
+Each move is echoed in the appropriate notation followed by the program's reply.
+.SH Restrictions
+Pawns may be promoted only to queens.
+.SH Diagnostics
+The most cryptic diagnostic is `eh?' which
+means that the input was syntactically incorrect.
+.SH Files
+/usr/lib/chess		binary image to run in compatibility mode

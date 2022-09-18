@@ -1,0 +1,146 @@
+.TH sortm 1mh
+.\"
+.\"
+.SH Name
+sortm \- sort messages
+.SH Syntax
+.B sortm
+[
+.I msgs
+] [
+.I +folder
+] [ 
+.I options
+]
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "sortm command"
+.NXR "MH user agent" "sorting messages"
+The command
+.PN sortm
+sorts all the messages in the current folder into 
+chronological order according to the contents of the 
+\f(CWDate:\fR fields of the messages.  
+.PP
+By default, 
+.PN sortm
+sorts all the messages in the current folder.
+You can select particular messages in the folder
+by giving a range of messages.
+You can also sort messages in another folder by specifying
+the folder name.
+.PP
+If 
+.PN sortm
+encounters a message without a \f(CWDate:\fR field,
+or if the message has a \f(CWDate:\fR field that
+.PN sortm
+cannot parse,
+it attempts to keep the message in the same relative position.
+However, this does not always work;
+for instance, if the first message encountered lacks a date which can be
+parsed,
+then it will usually be placed at the end of the messages being sorted.
+.PP
+When 
+.PN sortm
+complains about a message which it cannot
+order,
+it complains about the message number prior
+to sorting.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-datefield \fIfield\fR" 10
+Specifies the name of the header field to use 
+when making the date comparison.
+If you have a special field in each message,
+such as \f(CWDelivery\-Date:\fR,
+then the 
+.B \-datefield
+switch can be used to tell
+.PN sortm
+which
+field to examine.
+If you do not give this option, the default is to use the 
+\f(CWDate:\fR header field.
+.\"
+.\"
+.IP \-help
+Prints a list of all the valid options to this command.
+.\"
+.\"
+.IP \-verbose 10
+.PD 0
+.IP \-noverbose 10
+.PD
+Displays the general actions that it is taking 
+to place the folder in sorted order.
+The 
+.B \-noverbose
+option performs these actions silently.
+The default is 
+\fB\-noverbose\fR.
+.\"
+.\"
+.PP
+The default settings for this command are:
+.IP
+.I +folder
+defaults to the current folder
+.br
+.I msgs
+defaults to all
+.br
+.B \-datefield\ date
+.br
+.B \-noverbose
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine your MH directory
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+The following example sorts all the messages in the folder
+.PN +meetings :
+.EX
+% \f(CBsortm +meetings
+.EE
+.PP
+The next example sorts messages 10-30 in the folder called
+.PN +test :
+.EX
+% \f(CBsortm +test 10-30
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/\&.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+folder(1mh)

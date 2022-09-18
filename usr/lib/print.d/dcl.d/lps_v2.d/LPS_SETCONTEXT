@@ -1,0 +1,229 @@
+
+% LPS$$SETCONTEXT device control library module.
+% Version V1.1
+%
+% Copyright ) 1986 by DEC, Maynard, Mass.  All rights reserved.
+%
+
+% Remember, you are still in lps$lpsdict!
+
+% Select paper tray.
+%
+
+    /lps$current-sheet papersize pop def	% The current sheet size name
+
+    lps$sheet-defaulted not			% If we want a particular size
+    {	paper-size-dict lps$sheet-size get	% The op for the size we want
+	dup
+	lps$current-sheet ne			% If we don't have what we want.
+	{   lps$input-tray (unspecified) eq	% If we don't care which tray,
+	    {	dup /lps$current-sheet exch def	% Save new current sheet name.
+		dup cvx				% Make a copy of the size op
+		{   exec }			% Select the size with it,
+		stopped				% but catch a rangecheck
+		{   (\n        Your job was not printed because ") print
+		    20 string cvs (tray) search pop print lps$pop2
+		    (" size paper\n        was not present in )
+		    print 31 string printername print (.\n) print flush
+		    $error /newerror false put	% Suppress original message
+		    stop }			% Trigger error again
+		{   pop }			% Dump the extra paper size
+		ifelse }
+	    {					% If we do care which tray,
+		pop				% It's selected. Don't need op
+
+		(\r\n        Your job is not being printed because ") print
+		papersize pop 15 string cvs (tray) search pop print lps$pop2
+		(" size paper was\r\n        found in the ") print
+		lps$input-tray print (" paper tray when you specified ") print
+		lps$sheet-size print (" size paper.\r\n) print flush stop
+		}
+	    ifelse  % lps$input-tray (unspecified) eq
+	    }
+	{   pop }				% Scrap the dup'ed op.
+	ifelse	% current-sheet ne
+	}
+    if	% lps$sheet-defaulted not
+
+    % 
+    % Do we need page layup?
+    %
+    
+    lps$page-layup?
+    {	lps$page-layup-dict begin
+
+	    % Set params: sheet size, page size, page-orient.
+
+	    mark
+		842 1190    /a3tray
+		596 843	    /a4tray
+		420 596	    /a5tray
+		729 1033    /b4tray
+		516 729	    /b5tray
+		540 756	    /executivetray
+		396 612	    /halflettertray
+		612 792	    /lettertray
+		792 1224    /11x17tray
+		612 1008    /legaltray
+	    counttomark 1 add copy
+	    {	% Loop along the table.
+		dup mark eq { exit } if		% An escape if no name matches
+		lps$current-sheet eq		% When we find the name,
+		{   set-sheet-size exit }	% The sheet size is underneath
+		if
+		pop pop				% Pop this size
+		}
+	    loop cleartomark			% Dump the end of the table.
+
+	    /lps$page-size-name paper-size-dict lps$page-size get def
+
+	    {	% Loop along the table above.
+		dup mark eq { exit } if		% An escape if no name matches
+		lps$page-size-name eq
+		{   set-page-size exit }
+		if
+		pop pop
+		}
+	    loop cleartomark
+
+	    lps$page-orientation (portrait) eq set-orientation
+
+	    do-page-layup
+	    plu-hooks				% Get the hooks dict
+	    end					% lps$page-layup-dict
+	2 { currentdict end } repeat
+	3 -1 roll				% Pull up the hooks
+	3 { begin } repeat			% Dicts: sys usr plu stat lps
+	}
+    if
+
+    % Possibly redefine showpage et.al. for sheet limit.
+    % Our current dictionary is lps$lpsdict.
+
+    /lps$old-copypage /copypage load def % Preserve context
+    /lps$old-restore /restore load def % Preserve context
+    /lps$old-showpage /showpage load def % Preserve context
+
+    lps$page-limits?
+    {
+	% increment lps$pages-printed by 1.
+	%
+
+	/lps$incr-pages-printed {
+	    lps$lpsdict /lps$pages-printed	% Put on the stack for put.
+	    2 copy get 1 add put
+	    } bind def
+
+	% Add to the list of objects whose value is to be preserved
+	% across restore.
+	%
+
+	/lps$pages-printed lps$add-preserved-object
+
+	% If a page is outside the range of the page limits, don't print
+	% it, just clear the memory.
+	%
+
+	/lps$throw-out-page {erasepage initgraphics} bind def
+    
+	/showpage {
+	    lps$pages-printed lps$page-low-limit lt % printed < low-limit
+	    {	lps$throw-out-page
+		lps$incr-pages-printed }
+	    {	lps$page-high-limit 0 ne	% There is an upper limit
+		{   lps$page-high-limit lps$pages-printed lt
+		    {	lps$page-layup? % Check for partial pages under layup.
+           		{  lps$page-layup-dict begin flush-pages end  } if
+                        (\n       The upper limit of your job has been reached.)
+			print
+			(\n       The rest of your job will be flushed.)
+			print flush
+			stop }			% The job is done
+		    {	lps$old-showpage
+			lps$incr-pages-printed
+			}
+		    ifelse }
+		{   lps$old-showpage }
+		ifelse }
+	    ifelse				% No upper limit, print page.
+	    }
+	bind def
+
+	/copypage {
+	    lps$pages-printed lps$page-low-limit lt
+	    {	lps$incr-pages-printed }	% No output, just save bitmap
+	    {	lps$page-high-limit 0 ne	% There is a high limit
+		{   lps$page-high-limit lps$pages-printed lt
+		    {	(\n       The upper limit of your job has been reached.)
+			print
+			(\n       The rest of your job will be flushed.)
+			print flush
+			stop }			% The job is done
+		    {	lps$old-copypage
+			lps$incr-pages-printed
+			}
+		    ifelse }
+		{   lps$old-copypage }
+		ifelse }
+	    ifelse				% No upper limit, copy page.
+	    } bind def
+	}
+    if
+
+
+    % See if restore needs to be redefined because of variables that must be 
+    % preserved across restores.
+
+    lps$redefine-restore?
+    { /restore {
+        lps$preserved-objects
+        { pop dup load
+	  }
+        forall  % Save key value pair on stack
+        lps$preserved-objects length mul 2 1 add -1 roll % bring up save level
+        lps$old-restore
+        lps$preserved-objects length -1 1
+        { pop store
+	  }
+        for
+        } bind def
+      }
+    if
+
+    % These two functions are used by the file flag and trailer pages to make
+    % sure that they aren't under the influence of some of the weird stuff
+    % we've been doing here.
+
+    /lps$enter-standard-state {
+	% First make sure any partially filled sheet is output.
+
+	lps$page-layup?
+	{   lps$page-layup-dict begin
+		flush-pages
+		end
+	    }
+	if
+
+	save
+	systemdict begin
+	userdict begin
+	/lps$strange-state exch def		% Save the save level
+
+	initgraphics erasepage			% Insure a clean slate
+	/#copies 1 def				% Don't want duplicates
+
+	} bind def
+
+    /lps$exit-standard-state {
+	lps$strange-state			% Get the save level
+	end end					% Pop userdict and systemdict
+	restore
+	} bind def
+
+    % Now we prepare the user's context. If we are using page layup, then the
+    % proper hooks dictionary is already buried in the dictionary stack, so
+    % we don't have to consider it explicitly here.
+
+    end end					% lps and stat
+lps$lpsdict begin				% sys usr plu? lps
+  userdict begin				% sys usr plu? lps usr

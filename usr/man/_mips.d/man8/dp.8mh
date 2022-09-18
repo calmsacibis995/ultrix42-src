@@ -1,0 +1,112 @@
+.TH dp 8mh
+.SH Name
+dp \- parse dates RFC 822-style
+.SH Syntax
+.B /usr/lib/mh/dp
+[
+.B \-form
+.I file
+] [
+.B \-format
+.I string
+] [
+.B \-help
+] [
+.B \-width
+.I columns
+]
+.I dates
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "dp program"
+.NXR "RFC 822" "date parsing"
+The 
+.PN dp
+command parses dates according to the ARPA Internet standard.
+It also understands many non-standard formats,
+such as those produced by TOPS-20 sites and some UNIX sites using
+.MS ctime 3 .
+It is useful for seeing how MH will interpret a date.
+.PP
+The 
+.PN dp
+program treats each argument as a single date,
+and prints the date out in the official RFC 822 format.
+Hence, it is usually best to enclose each argument 
+in double quotes (") for the shell.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-form \fIfile\fB" 10
+Overrides the default output format of
+.PN dp .
+The output is formatted according to the instructions
+in the specified file.
+This must be a format file; see
+.MS mh-format 5mh .
+.\"
+.IP "\-format \fIstring\fB" 10
+Overrides the default output format of
+.PN dp .
+The output is formatted according to the instructions
+in the specified string.
+This must be a format string; see
+.MS mh-format 5mh .
+.IP
+The argument to the
+.B \-format
+option must be interpreted as a single token
+by the shell that invokes
+.PN dp .
+Therefore, you should usually place the argument to this
+option inside double quotes (").
+.\"
+.IP "\-help" 10
+Prints a list of the valid options to this command.
+.\"
+.IP "\-width \fIcolumns\fB" 10
+Specifies the width of the screen in columns.
+.\"
+.\"
+.PP
+The defaults for this command are as follows:
+.IP
+.B \-width
+defaults to the width of the terminal
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+This is the default format string used by
+.PN dp :
+.EX
+%<(nodate{text})error: %{text}%|%(pretty{text})%>
+.EE
+.PP
+When an error is detected, this prints 
+\f(CWerror:\fR 
+and the date that is in error.
+Otherwise, it outputs the proper RFC 822 format of the date.
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+User profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+ap(8mh)
+.br
+.I "Standard for the Format of ARPA Internet Text Messages"
+(RFC 822)

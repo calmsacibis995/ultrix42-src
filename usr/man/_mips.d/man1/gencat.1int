@@ -1,0 +1,67 @@
+.TH gencat 1int
+.SH Name
+gencat \- generate a formatted message catalog
+.SH Syntax
+.B gencat 
+.I catalog_file
+.RI [ source_file
+\&...]
+.SH Description
+.NXR "gencat utility"
+The 
+.PN gencat
+command takes one or more message source 
+files and either creates a new catalog
+or merges new message text into an existing catalog. 
+You should use the extension 
+.PN \&.msf 
+for message text files (for example, 
+.PN msgfile.msf 
+) and the extension
+.PN \&.cat
+for catalogs (for example, 
+.PN catfile.cat
+) to process files 
+with the 
+.PN gencat 
+command. 
+.PP
+In some cases, a formatted message catalog exists that has the same
+name the one that
+.PN gencat
+is creating.  When this occurs, 
+.PN gencat 
+merges the messages from the source message catalogs into this
+existing formatted message catalog.  The command merges the source
+message catalogs into the formatted message catalog in the same manner
+as it merges a group of source message catalogs.  If a source message
+catalog contains the same set number or message number as a set or
+message in the formatted message catalog, the source message catalog
+set or message has precedence. For example, if both the source and
+formatted message catalogs contain a message number 25, the message
+text for message 25 in the source message catalog replaces the message
+text in the formatted message catalog.  Thus, when source message
+catalogs are merged with formatted message catalogs, the formatted
+catalogs are updated.
+.PP
+If you do not specify a source file, the
+.PN gencat
+command accepts message source data from standard input.
+.PP
+Numeric message source files are portable between X/Open systems.
+.PP
+For information on the source format for messages files, see the 
+\fIGuide to Developing International Software\fP.
+.SH Restrictions
+The
+.PN gencat
+command does not accept mnemonic identifiers.
+You must run the
+.PN mkcatdefs
+command if you want to use mnemonic 
+identifiers.
+.SH See Also
+extract(1int), mkcatdefs(1int), trans(1int), catgets(3int), 
+catopen(3int), intro(3int), environ(5int) 
+.br
+\fIGuide to Developing International Software\fP

@@ -1,0 +1,105 @@
+.\" SCCSID: @(#)ftok.3	8.1	9/11/90
+.TH ftok 3
+.SH Name
+ftok \- standard interprocess communication package
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.B #include <sys/ipc.h>
+.PP
+.B key_t ftok(path, id)
+.B char \(**path;
+.B char id;
+.fi
+.SH Description
+.NXR "ftok subroutine"
+.NXR "interprocess communication package"
+All interprocess communication facilities
+require the user to supply a key
+to be used by the 
+.MS msgget 2 ,
+.MS semget 2 ,
+and
+.MS shmget 2
+system calls to obtain interprocess communication identifiers.
+One suggested method for forming a key
+is to use the
+.PN ftok ,
+file to key,
+subroutine described below.
+Another way to compose keys
+is to include the project ID in the most significant byte
+and to use the remaining portion as a sequence number.
+There are many other ways to form keys,
+but it is necessary for each system
+to define standards for forming them.
+If some standard is not adhered to,
+it will be possible for unrelated processes
+to unintentionally interfere with
+each other's operation.
+Therefore,
+it is strongly suggested that
+the most significant byte of a key
+in some sense
+refer to a project
+so that keys do not conflict
+across a given system.
+.PP
+The
+.PN ftok
+subroutine returns a key based on
+.I path
+and
+.I id
+that is usable in subsequent
+.PN msgget ,
+.PN semget ,
+and
+.PN shmget
+system calls.
+The
+.I path
+must be the path name
+of an existing file
+that is accessible
+to the process.  The
+.I id
+is a character
+which uniquely identifies
+a project.
+Note that
+.PN ftok
+will return the same key
+for linked files
+when called with the same
+.I id
+and that it will return
+different keys when
+called with the same file name
+but different
+.IR ids .
+.SH Return Values
+The
+.PN ftok
+subroutine returns
+.B "(key_t) \-1"
+if \fIpath\fP
+does not exist
+or if it is not accessible
+to the process.
+.SH Warning
+If the file whose \fIpath\fP is passed
+to
+.PN ftok
+is removed when keys still refer to the file,
+future calls to
+.PN ftok
+with the same \fIpath\fP and \fIid\fP
+will return an error.
+If the same file is recreated,
+then
+.PN ftok
+is likely to return a different key
+than it did the original time it was called.
+.SH See Also
+intro(2), msgget(2), semget(2), shmget(2)

@@ -1,0 +1,65 @@
+.TH error_c_get_text 3ncs
+.SH Name
+error_c_get_text \- return subsystem, module, and error texts for a status code
+.SH Syntax
+void error_$c_get_text(\fIstatus, subsys, subsysmax, module, modulemax\fP,
+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\fIerror, errormax\fP)
+.nf
+status_$t \fIstatus\fP;
+char *\fIsubsys\fP;
+long \fIsubsysmax\fP;
+char *\fImodule\fP;
+long \fImodulemax\fP;
+char *\fIerror\fP;
+long \fIerrormax\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS\" \fB%include '/usr/include/idl/pas/[].ins.pas'\fR
+.\"\fBprocedure error_$c_get_text(\fR
+.\"	\fBin \fIstatus\fB: status_$t;\fR
+.\"	\fBout \fIsubsys\fB: univ char;\fR
+.\"	\fBin \fIsubsysmax\fB: integer32;\fR
+.\"	\fBout \fImodule\fB: univ char;\fR
+.\"	\fBin \fImodulemax\fB: integer32;\fR
+.\"	\fBout \fIerror\fB: univ char;\fR
+.\"	\fBin \fIerrormax\fB: integer32);\fR
+.\".DE
+.SH Arguments
+.TP 15
+\fIstatus\fR
+A status code in \fBstatus_$t\fR format.
+.TP 15
+\fIsubsys\fR
+A character string.
+The subsystem represented by the status code.
+.TP 15
+\fIsubsysmax\fR
+The maximum number of bytes to be returned in \fIsubsys\fR.
+.TP 15
+\fImodule\fR
+A character string.
+The module represented by the status code.
+.TP 15
+\fImodulemax\fR
+The maximum number of bytes to be returned in \fImodule\fR.
+.TP 15
+\fIerror\fR
+A character string.
+The error represented by the status code.
+.TP 15
+\fIerrormax\fR
+The maximum number of bytes to be returned in \fIerror\fR.
+.SH Description
+The 
+.PN error_$c_get_text
+routine returns predefined text strings that describe
+the subsystem, the module, and the error represented by a status code.
+The strings are null terminated.  See the
+.MS intro 3ncs
+reference page which lists all of the possible diagnostics that could be returned in
+.PN status.all .
+.NXR "error_c_get_text"
+.SH Files
+.PN /usr/lib/stcode.db
+.SH See Also
+intro(3ncs)

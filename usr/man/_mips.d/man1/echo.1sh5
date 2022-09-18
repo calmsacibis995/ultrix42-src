@@ -1,0 +1,59 @@
+.TH echo 1sh5
+.SH Name
+echo \- echo arguments 
+.SH Syntax
+.NXR "echo arguments"
+.B echo
+[ arg ] ...
+.SH Description
+The
+.PN echo
+command
+writes its arguments separated by blanks and terminated by
+a new-line on the standard output.
+It also
+understands C-like escape conventions; however,
+beware of conflicts with the shell's use of 
+the backslash (\fB\e\fP) character:
+.PP
+.RS
+.PD 0
+.TP
+.B \eb
+backspace
+.TP
+.B \ec
+print line without new-line
+.TP
+.B \ef
+form-feed
+.TP
+.B \en
+new-line
+.TP
+.B \er
+carriage return
+.TP
+.B \et
+tab
+.TP
+.B \ev
+vertical tab
+.TP
+.B \e\e
+backslash
+.TP
+.BI \e n
+the 8-bit character whose \s-1ASCII\s0 code is
+the 1-, 2- or 3-digit octal number
+.IR n ,
+which must start with a zero.
+.RE
+.PD
+.PP
+The
+.PN echo
+is useful for producing diagnostics in command files
+and for sending known data into a pipe.
+.SH See Also
+sh5(1)

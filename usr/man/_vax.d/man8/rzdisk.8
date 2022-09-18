@@ -1,0 +1,305 @@
+.TH rzdisk 8 
+.SH Name
+rzdisk \- SCSI disk maintenance utility
+.SH Syntax
+.B /bin/rzdisk
+.br
+.B /bin/rzdisk
+.B \-c
+[
+.I ask
+]
+.I special
+.br
+.B /bin/rzdisk
+.B \-d
+[
+.I bfi
+|
+.I sector
+|
+.I block
+]
+.I special
+.br
+.B /bin/rzdisk 
+.B \-f 
+[
+.I vendor
+|
+.I known
+]
+.I special
+.RE
+.br
+.B /bin/rzdisk
+.B \-g
+[
+.I current
+|
+.I saved
+|
+.I default
+|
+.I changeable
+]
+.I special
+.br
+.B /bin/rzdisk
+.B \-h
+.br
+.B /bin/rzdisk
+.B \-i
+.I special
+.br
+.B /bin/rzdisk
+.B \-r
+.I LBN
+.I special
+.br
+.B /bin/rzdisk
+.B \-s
+.I LBN
+.I length
+.I special
+.SH Description
+.NXR "rzdisk utility"
+.NXR "SCSI disk" "managing"
+The 
+.PN rzdisk 
+utility, a SCSI disk maintenance program, formats a SCSI disk,
+scans a SCSI disk for bad blocks, and reassigns bad blocks on a 
+SCSI disk.
+.PP
+The 
+.I special 
+file argument is a raw device pathname.  You must specify an unmounted
+c partition of a character device special file (for example, 
+.PN /dev/rrz3c
+).  
+.SH Options
+.NXR "rzdisk utility" "options"
+.TP
+.B -c
+Changes disk parameters.
+.IP
+If the
+.I ask
+argument isn't specified, the disk parameters are set to the default values.
+When the
+.I ask
+argument is specified, you are interactively asked about each field marked as
+changeable in each page having changeable parameters.  In both cases, you are
+asked whether to save the parameters on disk.  If you answer 'yes', the
+parameters are saved on the disk which also updates the current parameters.
+Otherwise, only the current parameters are updated.  You must save the
+parameters if you want them to be preserved when the system is power cycled.
+Also note, the direct-access device format parameters (Page 3) and the rigid
+disk drive geometry parameters (Page 4) only get saved after formatting the
+drive, regardless of whether you said 'yes' to saving the parameters.
+.TP
+.B -d
+Reads defect lists from the disk.
+.IP
+This option allows you to get defect lists from the disk in either
+.I bfi
+(bytes from index),
+.I sector,
+or
+.I block,
+formats.
+.TP
+.B -g
+Gets parameters from the disk.
+.IP
+This option allows you to get either
+.I current,
+.I saved,
+.I default,
+or
+.I changeable
+parameters from the disk.  The program displays the parameters of all
+pages supported by the drive.
+.IP
+The
+.I changeable
+parameters are those fields which can be changed.  Any field displayed
+with a '1' value in it can be changed.
+.IP
+The
+.I default
+parameters are those parameters supplied by the vendor.
+.IP
+The
+.I current
+parameters are those parameters which you are currently running with.  These
+parameters are setup from the 
+.I saved
+parameters when the drive is powered on.
+.IP
+The
+.I saved
+parameters are those parameters which have been saved on the disk.  These
+parameters get used each time the drive is powered on.
+.TP
+.B -f
+Formats a SCSI hard disk (see Restrictions).
+.IP
+Since Digital ships the SCSI disk already formatted, only use this option
+if you have encountered a serious problem and must reformat the disk.
+You can format a disk with the 
+.I vendor 
+(manufacturer) defect list
+or with the 
+.I known 
+(vendor and grown) defect list.  The 
+.I grown
+defect list contains any blocks that may have been reassigned
+during the life of the SCSI disk drive.  When formatting
+a disk, you must specify the raw device pathname.
+.IP
+The following example reformats the disk on drive 3 using the known
+defect list:
+.EX 0
+/bin/rzdisk \-f known /dev/rrz3c 
+.EE
+.IP
+The \fI-f\fP option with no additional arguments formats a SCSI floppy
+diskette (see Restrictions).  New floppy diskettes are usually not
+formatted.  You need to format each diskette before you can store data
+on it.
+.IP
+The following example shows how to format a floppy diskette in
+RX23 drive one:
+.EX 
+/bin/rzdisk -f /dev/rrzlc
+.EE
+The floppy format operation is interactive.  The program
+.PN rzdisk
+will guide you through formatting the diskette.
+.TP
+.B -i
+Requests inquiry data from the disk.
+.IP
+This option causes the program to dump all inquiry data returned from
+the disk.  The information dumped includes the peripheral device type,
+the device type qualifier, the removable medium field, the version
+number, vendor identification, product information, and the firmware
+revision level.
+.TP
+.B -h
+Calls the HELP menu to the screen.
+.TP
+.B -r
+Reassigns a bad block on the disk (see Restrictions).
+.IP
+When reassigning a bad block, you must specify the 
+.I LBN,
+which is a unique number (decimal notation) that represents the disk block
+as reported in the errorlog file, and the raw device pathname.
+.IP
+The following example reassigns block 222658 on the c partition of drive 3:
+.EX 0
+/bin/rzdisk \-r 222658 /dev/rrz3c 
+.EE
+.IP
+The program
+.PN rzdisk
+reads the specified
+.I LBN
+prior to reassigning the block.  If
+.PN rzdisk
+reads valid data from the block, then the block is not actually
+bad or the SCSI driver already reassigned the block.  In this case,
+.PN rzdisk
+asks if the reassignment should be canceled.  Answer yes to
+cancel the reassignment.   This prevents double reassignment and
+replacement of good blocks.   
+.TP
+.B -s
+Scans for bad blocks on a specified area of the disk.
+.IP
+When scanning a disk, you must specify the 
+.I LBN,
+which is a unique number (decimal notation) that represents the disk block
+relative to the start of the partition, the
+.I length,
+and the raw device pathname of the partition to scan.
+.IP
+To start scanning from the first block of the specified partition, 
+use the number 0 to represent the
+.I LBN.
+When the number 0 is specified, the scan starts at the first block
+of the specified partition. 
+.IP
+The
+.I length
+is a decimal number that indicates how many 512-byte blocks to scan.
+To scan up to and including the last block of the specified partition, 
+use the number \-1 to represent the
+.I length.
+By specifying the 
+.I length, 
+you define the scope of the scan within the identified partition.
+.IP
+The following example scans the first ten blocks of the
+entire disk (c partition) on drive 3:
+.EX 0
+/bin/rzdisk 0 10 \-s /dev/rrz3c
+.EE
+The following example scans the entire disk (\fBc\fP partion) on drive 3:
+.EX 0
+/bin/rzdisk 0 -1 \-s /dev/rrz3c
+.EE
+.DT
+.SH Diagnostics
+The
+.PN rzdisk
+program generates messages when the user is not privileged, when the
+.I LBN
+is not in the specified partition, and when the length exceeds the
+size of the partition.
+.SH Restrictions
+You must have super-user privileges to run the 
+.PN rzdisk
+program.
+.PP
+You should not have to format your system disk.
+.PP
+The system should be in single-user mode and the file systems on the
+disk should be unmounted when running the
+.PN rzdisk
+program, except when formatting floppy diskettes.  
+.PP
+Use the
+.B \-f
+option with caution and only if the SCSI hard disk drive seems corrupted.
+Be aware that when you format a disk, all resident data is destroyed.  
+.PP
+Digital supports formatting, writing, and reading of High Density
+(HD) 3.5 inch diskettes in the RX23 and RX26 disk drives, or 5.25 inch
+diskettes in the RX33 disk drive.
+.PP
+Digital supports reading, but not formatting or writing, of Double
+Density (DD) 3.5 inch diskettes in the RX23 and RX26 disk drives
+or 5.25 inch diskettes in the RX33 disk drive.  Reliable reading of
+DD diskettes requires they be written only on a double density drive
+and have not been overwritten by an RX23, RX26, RX33, or other
+high density drive.  This restriction occurs because of differences
+in the write heads between DD and HD drives.  Data written by a DD
+drive cannot be completely overwritten by a HD drive.
+.PP
+This same restriction applies to the RX33 5.25 inch diskettes when using
+low density (48 TPI - Tracks Per Inch) diskettes.  Diskettes overwritten
+on different machines may suffer read failures from reduced signal-to-noise
+ratios.  So long as a diskette is formatted and written on a single machine,
+there should be no problem.
+.PP
+The 
+.B \-r 
+option is supported only with those SCSI disks that support the reassign
+block command.
+.SH See Also
+dkio(4), rz(4), chpt(8), mount(8), restore(8), uerf(8)
+.br
+\fIGuide to the Error Logger\fP

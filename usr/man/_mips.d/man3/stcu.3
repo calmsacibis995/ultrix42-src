@@ -1,0 +1,184 @@
+.TH stcu 3 RISC
+.SH Name
+stcu, st_cuinit, st_setchdr, st_currentpchdr, st_free, st_extadd, st_pext_iext, st_pext_rndx, st_iextmax, st_extstradd, st_str_extiss, st_idn_index_fext, st_idn_rndx, st_pdn_idn, st_rndx_idn, st_setidn \- routines that provide a compilation unit symbol table interface
+.SH Syntax
+.nf
+.B #include <syms.h>
+.PP
+.ft B
+pCHDRR st_cuinit ()
+.PP
+.ft B
+void st_setchdr (pchdr)
+pCHDRR	pchdr;
+.PP
+.ft B
+pCHDRR st_currentpchdr()
+.PP
+.ft B
+void st_free()
+.PP
+.ft B
+.PP
+.ft B
+long st_extadd (iss, value, st, sc, index)
+long iss;
+long value;
+long st;
+long sc;
+long index;
+.PP
+.ft B
+pEXTR st_pext_iext (iext)
+long	iext;
+.PP
+.ft B
+pEXTR st_pext_rndx (rndx)
+RNDXR rndx;
+.PP
+.ft B
+long st_iextmax()
+.PP
+.ft B
+long st_extstradd (str)
+char *str;
+.PP
+.ft B
+char *st_str_extiss (iss)
+long iss;
+.PP
+.ft B
+long st_idn_index_fext (index, fext)
+long index;
+long fext;
+.PP
+.ft B
+long st_idn_rndx (rndx)
+RNDXR rndx;
+.PP
+.ft
+pRNDXR st_pdn_idn (idn)
+long idn;
+.ft B
+RNDXR st_rndx_idn (idn)
+long idn;
+.PP
+.ft B
+void st_setidn (idndest, idnsrc)
+long idndest;
+long idnsrc;
+.fi
+.ft R
+.br
+.SH Description
+The
+.B stcu
+routines provide an interface to objects that occur once per 
+object, rather than once per file descriptor (for example,
+external symbols, strings, and dense numbers).
+The routines provide access to the current
+.I chdr
+(compile time hdr), which represents the symbol table in running processes with
+pointers to symbol table sections rather than indices and offsets used in
+the disk file representation.
+.PP
+A new symbol table can be created with 
+.I st_cuinit.
+This routine creates and initializes a CHDRR (see 
+.I cmplrs/stsupport.h).
+The CHDRR is the current chdr and is used in all
+later calls.  
+.NT
+A chdr can also be created with the read
+routines (see 
+.MS stio 3 ). 
+The 
+.I st_cuinit
+routine returns a pointer to the new CHDRR record.
+.NE
+.TP 15
+.I st_currentchdr
+Returns a pointer the current chdr.
+.TP 15
+.I st_setchdr
+Sets the current chdr to the
+.I pchdr
+argument and sets the per file structures to reflect a change in
+symbol tables.
+.TP 15
+.I st_free
+Frees all constituent structures associated with the
+current chdr.
+.TP 15
+.I st_extadd
+Lets you add to the externals table. It returns the index to
+the new external for future reference and use. The
+.I ifd
+field for the external is filled in by the current file (see 
+.MS stfd 3 ).
+For more details on the parameters, 
+see 
+.I sym.h.
+.TP 15
+.I st_pext_iext and st_pext_rndx
+Returns pointers to the external, given a index referencing them. The
+latter routine requires a relative index where the 
+.I index
+field should be the index in external symbols and the
+.I rfd
+field should be the constant ST_EXTIFD. \fBNOTE\fR:
+The externals contain the same structure as symbols (see the
+.I SYMR
+and
+.I EXTR
+definitions).
+.TP 15
+.I st_iextmax
+Returns the current number of entries in the external symbol table.
+.PP
+.PP
+The 
+.I iss 
+field in external symbols (the index into string space) must
+point into external string space.
+.TP 15
+.I st_extstradd
+Adds a null-terminated string to the external string space and returns
+its index.
+.TP 15
+.I st_str_extiss
+Converts that index into a pointer to the external string.
+.PP
+.PP
+The dense number table provides a convenience to the code optimizer,
+generator, and assembler. This table lets them reference symbols from
+different files and externals with unique densely packed numbers.
+.TP 15
+.I st_idn_index_fext
+Returns a new dense number table index, given an index into the symbol
+table of the current file (or if 
+.I fext
+is set, the externals table).
+.TP 15
+.I st_idn_rndx
+Returns a new dense number, but expects a RNDXR (see 
+.I sym.h
+to specify
+both the file index and the symbol index rather than implying the file
+index from the current file.
+The
+RNDXR contains two fields: an index into the externals table and a file 
+index 
+.I rsyms 
+can point into the symbol table, as well). The file
+index is ST_EXTIFD (see 
+.I stsupport.h) 
+for externals.
+.TP 15
+.I st_rndx_idn
+Returns a RNDX, given an index into the dense number table.
+.TP 15
+.I st_pdn_idn
+Returns a pointer to the RNDXR index by the idn argument.
+.SH See Also
+stfe(3), stfd(3)

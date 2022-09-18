@@ -1,0 +1,133 @@
+.\" SCCSID: @(#)ypmake.8yp	8.1	9/11/90
+.TH ypmake 8yp
+.SH Name
+ypmake \- rebuild yellow pages (YP) database using the make command
+.SH Syntax
+.nf
+.B cd /etc/yp
+.fi
+.B make 
+[ 
+.I options 
+] 
+[
+.I map
+] 
+.SH Description
+.NXR "ypmake command"
+.NXAM "make command (general)" "ypmake command"
+.NXR "YP data base lookup service" "rebuilding data base"
+The 
+.PN make
+command uses the 
+.PN /etc/yp/Makefile
+to build the yellow pages database.
+With no arguments,
+.PN make
+creates
+.PN dbm
+databases for any YP maps that are out-of-date,
+and then executes
+.MS yppush 8yp 
+to notify slave databases that there has been a change.
+It is important to note that the
+.PN ypmake 
+command should only be executed at a YP master server machine.  If it
+is executed from either a slave server or a pure YP client machine, the
+created changes will only be overwritten when the next YP master server
+machine update, using
+.PN ypxfr , 
+is performed. 
+.PP
+The 
+.I options 
+argument can be used to change the default values of
+three special variables used by 
+.PN make :
+.I DIR , 
+.I NOPUSH , 
+and 
+.I DOM .
+The 
+.I DIR 
+variable instructs 
+.PN make
+to give the directory of the source files.
+The 
+.I NOPUSH 
+variable, which when non-null, inhibits updating of the new data
+base files using the
+.MS yppush 8yp
+function.
+The 
+.I DOM 
+variable, instructs
+.PN make 
+to construct a domain
+other than the master's default domain.
+The default for 
+.I DIR 
+is
+.PN /etc ,
+and the default for 
+.I NOPUSH 
+is the null string.
+To change the default values of these special variables, an 
+.I options
+argument format of 
+.I special_variable = value
+is used.  See the Examples section for an example.
+.PP
+The
+.I map
+argument supplied on the command line instructs
+.PN make
+to update only the specified map.
+The specified maps are those located at
+.PN /etc/yp/{domain},
+where {domain} is the yellow pages domain name.
+Some typical entries for the
+.I map 
+argument are passwd, hosts, and networks.
+Typing
+.PN "make passwd"
+causes
+.PN make 
+to create and update the YP password database, if it is out of date.
+The 
+.PN make
+command updates the password data base using 
+.MS yppush 8yp .
+Therefore, typing 
+.EX
+make host
+.EE
+or
+.EX
+make networks
+.EE
+causes 
+.PN make 
+to create and to update
+the host and network files,
+.PN /etc/hosts
+and
+.PN /etc/networks 
+respectively.
+.PP
+See
+.MS ypfiles 5yp
+and
+.MS ypserv 8yp
+for an overview of the yellow pages.
+.SH Examples
+This example causes 
+.PN make 
+to create a password yellow pages map for the domain
+.PN NewDomain
+instead of for the default domain:
+.EX
+make DOM=NewDomain passwd
+.EE
+.SH See Also
+make(1), makedbm(8yp), ypserv(8yp), yppush(8yp)

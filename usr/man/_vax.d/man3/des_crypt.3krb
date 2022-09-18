@@ -1,0 +1,300 @@
+.TH des_crypt 3krb
+.SH Name
+des_crypt \- Data Encryption Standard (DES) encryption library routines.
+.SH Syntax
+.nf
+.nj
+ \fB#include <des.h>\fP
+.PP
+.ig ++
+ \fBint des_read_password\fP (\fIkey, prompt, verify\fP)
+	\fBC_Block\fP	\fI*key\fP;
+	\fBchar\fP		\fI*prompt;\fP
+	\fBint\fP		\fIverify;\fP
+.++
+.PP
+ \fBint des_string_to_key\fP    (\fIstr, key\fP)
+ \fBchar\fP		\fI*str\fP;
+ \fBC_Block\fP	\fI*key\fP;
+.PP
+ \fBint des_is_weak_key\fP (\fIkey\fP)
+ \fBC_Block\fP	\fIkey\fP;
+.ig ++
+ \fBint ecb_encrypt\fP \fI(input,output,schedule,encrypt)\fP
+	\fBC_Block\fP	\fI*input;\fP
+	\fBC_Block\fP	\fI*output;\fP
+	\fBKey_schedule\fP	\fIschedule;\fP
+	\fBint\fP		\fIencrypt;\fP
+.PP
+ \fBint cbc_encrypt\fP \fI(input,output,length,schedule,\fP
+                        \fIivec,encrypt)\fP
+	\fBC_Block\fP	\fI*input;\fP
+	\fBC_Block\fP	\fI*output;\fP
+	\fBlong\fP		\fIlength;\fP
+	\fBKey_schedule\fP	\fIschedule;\fP
+	\fBC_Block\fP	\fI*ivec;\fP
+	\fBint\fP		\fIencrypt;\fP
+.PP
+ \fBint pcbc_encrypt\fP \fI(input,output,length,schedule,\fP
+                         \fIivec,encrypt)\fP
+	\fBC_Block\fP	\fI*input;\fP
+	\fBC_Block\fP	\fI*output;\fP
+	\fBlong\fP		\fIlength;\fP
+	\fBKey_schedule\fP	\fIschedule;\fP
+	\fBC_Block\fP	\fI*ivec;\fP
+	\fBint\fP		\fIencrypt;\fP
+.PP
+ \fBunsigned long cbc_cksum\fP \fI(input,output,length,\fP
+                                \fIschedule,ivec)\fP
+	\fBC_Block\fP	\fI*input;\fP
+	\fBC_Block\fP	\fI*output;\fP
+	\fBlong\fP		\fIlength;\fP
+	\fBKey_schedule\fP	\fIschedule;\fP
+	\fBC_Block\fP	\fI*ivec;\fP
+.++
+.PP
+ \fBunsigned long des_quad_cksum\fP  (\fIinput, output, length, 
+                                                iterations, seed\fP)
+ \fBunsigned char\fP	 \fI*input\fP;
+ \fBunsigned long\fP	\fI*output\fP;
+ \fBlong\fP		\fIlength\fP;
+ \fBint\fP		\fIiterations\fP;
+ \fBC_Block\fP	\fI*seed\fP;
+.PP
+ \fBint des_key_sched\fP  (\fIkey, schedule\fP)
+ \fBC_Block\fP	\fIkey\fP;
+ \fBKey_schedule\fP	\fIschedule\fP;
+.PP
+.fi
+.SH Arguments
+.TP 9
+.I key
+For 
+.PN des_string_to_key ,
+\fIkey\fP is a pointer to a 
+.PN C_Block
+of 8-byte length.  For 
+.PN des_quad_cksum ,
+.PN des_is_weak_key ,
+and
+.PN des_key_sched ,
+\fIkey\fP 
+is a pointer to a DES key.
+.TP
+.I str
+A string that is converted to an 8-byte DES key.
+.TP
+.I input
+Pointer to a block of data to which a quadratic checksum algorithm is applied.  
+.TP
+.I output
+Pointer to a pre-allocated buffer that will contain the complete output from the quadratic
+checksum algorithm.  For each iteration of the quadratic checksum applied to the input,
+eight bytes (two longwords) of data are generated.
+.TP
+.I length
+Length of the data to which the quadratic checksum algorithm will be applied.  If input
+contains more than \fIlength\fP bytes of data, then the 
+quadratic checksum
+will only be applied to \fIlength\fP bytes of input.
+.TP
+.I iterations
+The number of iterations of the
+.PN des_quad_cksum
+algorithm to apply to \fIinput\fP.  If output is NULL, then one iteration of the algorithm
+will be applied to \fIinput\fP, no matter what the value of \fIiterations\fP is.  The
+maximum number of iterations is four.
+.TP
+.I seed
+An 8-byte quantity used as a seed to the \fIinput\fP of the
+.PN des_quad_cksum
+algorithm.
+.TP
+.I schedule
+A representation of a DES key in a form more easily used with encryption algorithms.  It
+is used as input to the 
+.PN krb_sendmutual
+routines. 
+.SH Description
+.NXR "Kerberos routines" "des_crypt"
+.NXR "Kerberos routines" "des_string_to_key"
+.NXR "Kerberos routines" "des_quad_cksum"
+.NXR "Kerberos routines" "des_key_sched"
+The
+.PN des_crypt
+routines are designed to provide the cryptographic routines which are used to support
+authentication.  Specifically,
+.PN des_quad_cksum
+and
+.PN des_key_sched
+are designed to be used with the DES key which is shared between one Kerberos principal
+and its authenticated peer to provide an easy authentication method after the initial
+Kerberos authentication pass.
+.PN des_string_to_key
+and
+.PN des_is_weak_key
+are designed to enable the input and inspection of a key by a user before that key is used
+with the Kerberos authentication routines.  The
+.PN des_crypt
+routines are not designed for general encryption.
+.PP
+The library makes extensive use of the locally defined data types
+\f(CWC_Block\fP and \f(CWKey_schedule\fP. The \f(CWC_Block\fP struct is an 8-byte 
+block used by the various routines of the 
+.PN des_crypt
+library as the fundamental unit for DES data and keys.
+.SH Routines
+.IP string_to_key 
+Converts a null-terminated string of arbitrary length
+to an 8-byte, odd-byte-parity DES key.
+The \fIstr\fP argument is a
+pointer to the character string to be converted and \fIkey\fP points to a
+\f(CWC_Block\fP supplied by the caller to receive the generated key.  The one-way
+function used to convert the string to a key makes it very difficult for anyone to
+reconstruct the string from the key.  No
+meaningful value is returned.
+.IP des_is_weak_key
+.PN des_is_weak_key
+checks a new key input by a user to determine if it belongs to the well known set of
+DES keys which do not provide good cryptographic behavior.  If a key passes the inspection
+of
+.PN des_is_weak_key ,
+then it can be used with the
+.PN des_quad_cksum
+routine.  The input is a DES key and the output is equal to 1 if the key is not a safe key
+to use; it is equal to 0 if it is safe to use.
+.ig ++
+.IP ecb_encrypt
+Encrypts or decrypts a single 8-byte block in electronic code book
+(ecb) mode. This routine always transforms the input data pointed to
+by \fIinput\fP into the output data pointed to by \fIoutput\fP.
+.IP
+The \fIencrypt\fP flag determines if \f(CWecb_encrypt\fP encrypts or
+decrypts data. If \fIencrypt\fP is non-zero, the \f(CWecb_encrypt\fP
+routine encrypts the cleartext data pointed to by \fIinput\fP into the
+ciphertext data pointed to by \fIinput\fP. If \fIencrypt\fP is zero,
+the \f(CWecb_encrypt\fP routine decrypts the ciphertext data pointed to
+by \fIinput\fP into the cleartext data pointed to by \fIoutput\fP.
+.IP
+Input and output may overlap. No meaningful value is returned.  Void is
+not used, for compatibility with other compilers.
+.IP cbc_encrypt
+Encrypts/decrypts a single 8-byte block using the cipher-block-chaining
+(cbc) mode of DES. If the \fIencrypt\fP flag is non-zero, the routine
+uses the  key schedule located in the \f(CWschedule\fP structure and the
+initialization vector provided by the \fIivec\fP argument to cbc
+encrypt the cleartext data pointed to by \fIinput\fP into the
+ciphertext pointed to by \fIoutput\fP. 
+.IP
+If the \fIlength\fP argument is not an integral multiple of eight
+bytes, \f(CWcbc_encrypt\fP copies the data to a temporary area and zero
+fills it (highest addresses).  The output is always an integral
+multiple of eight bytes.
+.IP
+If \fIencrypt\fP is zero, \f(CWcbc_encrypt\fP uses the key schedule
+located in the \f(CWschedule\fP structure and the initialization vector
+provided by the \fIivec\fP argument to cbc decrypt the (now) ciphertext
+data pointed to by the input argument into the (now) cleartext pointed
+to by the \fIoutput\fP.
+.IP
+Decryption always operates on integral multiples of 8 bytes, so the
+decryption routines will round up the length provided to the
+appropriate multiple.  Consequently, decryption will always produce the
+rounded-up number of bytes of output cleartext.  The application must
+determine if the output cleartext was zero-padded due to original
+cleartext lengths that were not integral multiples of 8.
+.IP
+No errors or meaningful values are returned by this routine.  Void is
+not used for compatibility with other compilers.
+.IP
+A characteristic of cbc mode is that changing a single bit of the
+cleartext, then encrypting using cbc mode, affects all the subsequent
+ciphertext.  This makes cryptanalysis much more difficult. However,
+modifying a single bit of the ciphertext, then decrypting, only affects
+the resulting cleartext from the modified block and the succeeding
+block.  Therefore, using the \f(CWpcbc_encrypt\fP is strongly
+recommended for applications where indefinite propagation of errors is
+required in order to detect modifications.
+.IP pcbc_encrypt 
+Encrypts/decrypts an 8-byte block using a modified block chaining mode.
+The calling sequence of \f(CWpcbc_encrypt\fP is identical to that of
+\f(CWcbc_encrypt\fP, however, its error propagation differs.
+.IP
+Because modifying a single bit of ciphertext affects all the subsequent
+(decrypted) cleartext, it is highly recommended that you use the
+\f(CWpcbc_encrypt\fP for most encryption purposes. Similarly, modifying
+a single bit of the cleartext affects all the subsequent
+(encrypted) ciphertext. 
+.IP
+PCBC mode on encryption, "xors" both the cleartext of block N and
+the ciphertext resulting from block N with the cleartext for block N+1
+prior to encrypting block N+1.
+.IP cbc_cksum 
+produces an 8 byte cryptographic checksum by cbc encrypting the
+cleartext data pointed to by \fIinput\fP and using the key schedule
+located in the \fIschedule\fP structure and the initialization vector
+provided by the \fIivec\fP argument. The \f(CWcbc_cksum\fP routine
+discards all of the ciphertext output except the last 8 byte ciphertext
+block, which is written into the area pointed to by \fIoutput\fP.
+.IP
+If \fIlength\fP is not an integral multiple of eight bytes, the last
+cleartext block is copied to a temporary location and zero filled (highest
+addresses). The output is always eight bytes.
+.IP
+The \f(CWcbc_cksum\fP routine also returns an unsigned long, which is
+the last (highest address) half of the 8 byte checksum computed.
+.++
+.IP des_quad_cksum 
+Produces a checksum by chaining quadratic operations on cleartext
+data.
+.PN des_quad_cksum
+can be used to produce a
+normal quadratic checksum and, if used with
+the DES key shared between two authenticated
+Kerberos principals, it can also provide
+for the integrity and authentication
+protection of data sent from one principal to another.
+.IP
+Input of \fIlength\fP bytes are run through the 
+.PN des_quad_cksum
+routine \fIiterations\fP times to produce \fIoutput\fP.  If \fIoutput\fP
+is NULL, one iteration is performed and \fIoutput\fP is not affected.
+If \fIoutput\fP is not NULL, the quadratic checksum algorithm will be
+performed \fIiterations\fP times on input, placing eight bytes 
+(two longwords) of result in \fIoutput\fP for each iteration.  At all 
+times, the low-order bits
+of the last quadratic checksum algorithm pass are returned
+by 
+.PN des_quad_cksum .
+.IP
+The quadratic checksum algorithm performs a checksum
+on a few bytes of data and feeds the result into the algorithm
+as an addition input to the checksum on the next few bytes.
+The seed serves as the additional input for the first checksum
+operation and, therefore, the final checksum that results
+depends upon the seed input into the algorithm.  If the
+DES key shared between two Kerberos principals is used as
+the initial seed, then since the checksum that results
+depends upon the seed, the ability to produce the checksum
+proves identity and authentication.  Also, since the message cannot
+be altered without knowledge of the seed, it also provides for
+data integrity.
+.IP des_key_sched
+.PN des_key_sched
+is used to convert the key input into
+a new format that can be used readily with encryption
+functions.  The result, schedule, can be used with the 
+.PN krb_sendmutual
+functions to enable mutual
+authentication of two Kerberos principals.
+.sp 1
+0 is returned from 
+.PN des_key_sched
+if successful.
+.sp .5
+-1 is returned if the each byte of the key does not
+have odd parity.
+.sp .5
+-2 is returned if the key is a weak key as
+defined by
+.PN des_is_weak_key .

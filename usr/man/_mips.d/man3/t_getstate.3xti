@@ -1,0 +1,79 @@
+.TH t_getstate 3xti
+.SH Name
+t_getstate \- get the current state 
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_getstate(\fIfd\fB)
+.br
+.B int \fIfd\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint the current state is
+returned from.
+.SH Description
+The 
+.PN t_getstate()
+function returns the current state of the transport provider
+associated with the transport endpoint specified by \fIfd\fR.
+.NXR "t_getstate system call"
+.NXR "transport provider" "returning current state"
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 4p
+Parameters@Before Call@After Call
+.sp 4p
+_
+.sp 6p
+fd@x@/
+.sp 6p
+_
+.TE
+.PP
+.SH Return Values
+Upon successful completion, 
+.PN t_getstate()
+returns the current state. 
+On failure, a value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error. The current state is one of the following:
+.IP T_UNBND 15
+Unbound
+.IP T_IDLE 15
+Idle
+.IP T_OUTCON 15
+Outgoing connection pending
+.IP T_INCON 15
+Incoming connection pending
+.IP T_DATAXFER 15
+Data transfer
+.IP T_OUTREL 15
+Outgoing orderly release (waiting for an orderly release indication)
+.IP T_INREL 15
+Incoming orderly release (waiting to send an orderly release request)
+.PP
+If the provider is undergoing a state transition when 
+.PN t_getstate()
+is called, the function fails.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint. This error may be 
+returned when the \fIfd\fR has been previously closed or an erroneous number has been passed to
+the call.
+.TP 20 
+[TSTATECHNG]
+The transport provider is undergoing a transient state change.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the current implementation of XTI. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+t_open(3xti)

@@ -1,0 +1,415 @@
+.TH mhl 1mh
+.SH Name
+mhl \- produce formatted listings of MH messages
+.SH Syntax
+.B mhl
+[
+.I options
+] [
+.I "files..."
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "mhl command"
+.NXR "Listing formatted messages"
+The 
+.PN mhl
+command is a program for listing formatted messages,
+which can be used as a replacement for 
+.PN more ,
+the default 
+.PN showproc 
+program.
+.PP
+As with 
+.PN more ,
+each of the messages specified as arguments 
+(or the standard input) are output.
+If more than one message file is specified,
+you are prompted prior to each one,
+and a <RETURN> or <EOT> begins the output.
+<RETURN> clears the screen (if appropriate),
+and <EOT>, usually <CTRL/D>, suppresses the screen clear.
+An <INTERRUPT>, usually <CTRL/C>, aborts the current message output,
+prompting for the next message, if there is one.
+A <QUIT>, usually <CTRL/E>, terminates the program 
+without generating a core dump.
+.PP
+The
+.PN mhl
+command
+operates in two phases:
+it reads and parses the format file; 
+then it processes each message (file).
+During the first phase, an internal description 
+of the format is produced as a structured list.
+In the second phase, this list is traversed for each message,
+and message information is output according to the instructions
+contained in the format file.
+.\"
+.\"
+.SS The Form File mhl.format
+The 
+.PN mhl.format
+form file contains information controlling
+screen clearing, screen size, wrap-around control, transparent text,
+component ordering, and component formatting.
+A list of components that should be ignored may also be specified,
+and some special components are defined to provide added
+functionality.
+Message output is in the order specified by the order in the format file.
+.PP
+Each line of the 
+.PN mhl.format 
+file has one of the following formats:
+.EX
+     ;comment
+     :cleartext
+     variable[\fIvariable...\fP]
+     component:[\fIvariable...\fP]
+.EE
+A line beginning with a semi colon (;) is a comment, and is ignored.
+A line beginning with a colon (:) is clear text, 
+and is output exactly as it is.
+A line containing only a colon (:)
+produces a blank line in the output.
+A line beginning with \f(CWcomponent:\fR 
+defines the format for the specified component.
+Remaining lines define the global environment.
+Examples of these are given below,
+together with the system default form file.
+.PP
+If variables or arguments follow a component,
+they apply only to that component; otherwise, 
+their effect is global.
+Since the whole format is parsed before any output processing,
+the last global switch setting for a variable applies to the whole message,
+provided that the variable is used in a global context
+(bell, clearscreen, width, length).
+All of the current variables and their arguments
+are shown in the following table:
+.PP
+.TS
+tab(+);
+l l l.
+_
+.sp 6p
+Variable+Type+Semantics
+.sp 6p
+_
+.sp 6p
+width+integer+screen width or component width
+length+integer+screen length or component length
+offset+integer+positions to indent the component
+overflowtext+string+text to use at the beginning of an
+++overflow line
+overflowoffset+integer+positions to indent overflow lines
+compwidth+integer+positions to indent component text
+++after the first line is output
+uppercase+flag+output text of this component in all
+++upper case
+nouppercase+flag+do not use uppercase
+clearscreen+flag/G+clear the screen prior to each page
+noclearscreen+flag/G+do not clear the screen
+bell+flag/G+ring the bell at the end of each page
+nobell+flag/G+disable bell
+component+string/L+name to use instead of \f(CWcomponent\fR for
+++this component
+nocomponent+flag+do not output \f(CWcomponent: \fRfor this
+++component
+center+flag+center component on line (works for
+++one-line components only)
+nocenter+flag+do not center
+leftadjust+flag+strip off leading white-space on each
+++line of text
+noleftadjust+flag+do not leftadjust
+compress+flag+change newlines in text to spaces
+nocompress+flag+do not compress
+formatfield+string+format string for this component
+addrfield+flag+field contains addresses
+datefield+flag+field contains dates
+.sp 6p
+_
+.TE
+.PP
+To specify the value of integer-valued and string-valued variables,
+follow their name with an equals-sign (=) and the value.
+Integer-valued variables are given decimal values,
+while string-valued variables are given arbitrary text bracketed by
+double-quotes.
+If a value is suffixed by \f(CW/G\fR or \f(CW/L\fR,
+then its value is useful in a global-only or local-only context
+(respectively).
+A line of the form:
+.EX
+    ignores=component,...
+.EE
+specifies a list of components which are never output.
+.PP
+The component \f(CWMessageName\fR
+outputs the actual message name (file name) preceded by
+the folder name if one is specified or found in the environment.
+The format is identical to that produced by the 
+.B \-header
+option to
+.PN show .
+.PP
+The component \f(CWExtras\fR outputs all of the components 
+of the message which were not matched by explicit components,
+or included in the ignore list.
+If this component is not specified, an ignore list 
+is not needed since all non-specified components are ignored.
+.PP
+If 
+.B \-nocomponent
+is not specified, then the component name is 
+output as it appears in the format file.
+.PP
+The variable \f(CWformatfield\fR
+specifies a format string; see 
+.MS mh-format 5mh .
+The variables \f(CWaddrfield\fR and \f(CWdatefield\fR,
+which are mutually exclusive,
+control the interpretation of the escapes.
+.PP
+By default,
+.PN mhl
+does not apply any formatting string to fields
+containing address or dates; see 
+.MS mh-mail 5mh
+for a list of these fields.
+This results in faster operation since 
+.PN mhl
+must parse both addresses and dates in order to apply a
+format string to them.
+If desired,
+.PN mhl
+can be given a default format string 
+for either address or date fields, but not both.
+To do this, on a global line specify either the variable 
+\f(CWaddrfield\fR or the variable \f(CWdatefield\fR,
+along with the variable \f(CWformatfield\fR.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP \-bell 10
+.PD 0
+.IP \-nobell 10
+.PD
+Tells 
+.PN mhl
+to ring the terminal bell at the end of each page.
+This is the default behavior.
+You can suppress this by using the 
+.B \-nobell
+option.
+.IP
+This option takes effect only if the profile entry 
+.PN moreproc
+is defined but empty,
+and if
+.PN mhl
+is outputting to a terminal.
+If the 
+.PN moreproc
+entry is defined and non-empty,
+and 
+.PN mhl
+is outputting to a terminal,
+then 
+.PN mhl
+causes the 
+.PN moreproc
+to be placed between the
+terminal and 
+.PN mhl ,
+and the switches are ignored.
+.\"
+.IP \-clear 10
+.PD 0
+.IP \-noclear 10
+.PD 
+Tells 
+.PN mhl
+to clear the screen at the end of
+each page, or output a formfeed after each message.
+You can suppress this by using the
+.B \-noclear
+option.
+The default behavior is 
+.BR \-noclear .
+.IP
+This option takes effect only if the profile entry 
+.PN moreproc
+is defined but empty,
+and if
+.PN mhl
+is outputting to a terminal.
+If the 
+.PN moreproc
+entry in the user's 
+.PN \&.mh_profile 
+is defined and non-empty, and 
+.PN mhl
+is outputting to a terminal,
+then 
+.PN mhl
+causes the 
+.PN moreproc
+program to be placed between the terminal and 
+.PN mhl ,
+and the options are ignored.
+.IP
+If the 
+.B \-clear
+option is used and the output of
+.PN mhl
+is directed to a terminal,
+then 
+.PN mhl
+consults the \f(CW$TERM\fR and \f(CW$TERMCAP\fR
+environment variables to determine your terminal type 
+in order to find out how to clear the screen.
+If the 
+.B \-clear
+switch is used and the output of
+.PN mhl
+is not directed to a terminal 
+(if, for example, it is directed to a pipe or a file),
+then 
+.PN mhl
+sends a formfeed after each message.
+.\"
+.IP "\-folder \fI+foldername\fB" 10
+Sets the folder name.
+This is used by components in the 
+.PN mhl.format 
+form file to output the message name.
+If you do not use this option,
+.PN mhl 
+consults the environmental variable \f(CW$mhfolder\fR.
+.\"
+.IP "\-form \fIformfile\fB" 10
+Specifies the format file used.
+If this option is not given, 
+.PN mhl
+searches in your Mail directory for a file called
+.PN mhl.format ;
+or, if this file does not exist,
+it uses the system default file
+.PN /usr/lib/mh/mhl.format .
+.\"
+.IP \-help 10
+Prints a list of the valid options to this command.
+.\"
+.IP "\-length \fIlines\fB" 10
+Sets the screen length.
+This defaults to the value indicated by
+.PN $TERMINFO , 
+if appropriate; otherwise, it defaults to 40.
+.\"
+.IP "\-width \fIcolumns\fB" 10
+Sets the screen width.
+This defaults to the value indicated by
+.PN $TERMINFO ,
+if appropriate; otherwise, it defaults to 80.
+.\"
+.IP "\-moreproc \fIprogram\fB" 10
+.PD 0
+.IP "\-nomoreproc" 10
+.PD
+Overrides the default 
+.PN moreproc
+program.
+Note that 
+.PN mhl
+never starts a 
+.PN moreproc
+if invoked on a
+hardcopy terminal.
+.\"
+.\"
+.PP
+The defaults for this command are:
+.IP
+.B "\-bell"
+.br
+.B "\-noclear"
+.br
+.B "\-length 40"
+.br
+.B "\-width 80"
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+The first example gives a typical line of a form file:
+.EX
+width=80,length=40,clearscreen,overflowtext="***",overflowoffset=5
+.EE
+The first two elements define the screen width to be 80 characters,
+and the screen length to be 40 lines.
+The next element, \f(CWclearscreen\fR, specifies that
+the screen should be cleared prior to each page.
+The next element, \f(CWoverflowoffset=5\fR, states that 
+that the overflow indentation is 5.
+The final element, \f(CWoverflowtext="***"\fR, specifies
+that overflow text should be flagged with three asterisks.
+.PP
+The system default form file,
+.PN /usr/lib/mh/mhl.format ,
+is:
+.EX
+: \-\- using template mhl.format \- \-
+overflowtext="***",overflowoffset=5
+leftadjust,compwidth=9
+ignores=msid,msgid,message-id,received
+Date:formatfield="%<(nodate{text})%{text}%|%(pretty{text})%>"
+To:
+cc:
+:
+From:
+Subject:
+:
+extras:nocomponent
+:
+body:nocomponent,overflowtext=,overflowoffset=0,noleftadjust
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine your Mail directory
+moreproc:+Program to use as interactive front-end
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN /usr/lib/mh/mhl.format
+The system default form file, used to format message.
+.TP 10
+.PN <mh-dir>/mhl.format
+The user-supplied alternate to the system default form file.
+.TP 10
+.PN $HOME/.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+more(1), show(1mh), mh_profile(5mh), ap(8mh), dp(8mh)

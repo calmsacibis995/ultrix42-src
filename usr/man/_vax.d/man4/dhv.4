@@ -1,0 +1,86 @@
+.\" SCCSID: @(#)dhv.4	2.1	3/10/87
+.TH dhv 4
+.SH Name
+dhv \- DHV11 communications interface
+.SH Syntax
+.B "device dhu0 at uba0 csr 0160440 flags 0x?? vector dhurint dhuxint"
+.SH Description
+.NXR "DHV11 communications interface"
+.NXS "dhv keyword" "DHV11 communications interface"
+.NXS "dhu interface" "DHV11 communications interface"
+A DHV11 provides eight communication lines with partial modem control,
+adequate for UNIX dialup use.
+Each line attached to the DHV11 communications interface
+behaves as described in
+.MS tty 4
+and can be set to run at any of 16 speeds.  See
+.MS tty 4
+for the encoding.
+.PP
+Bit
+.I i
+of flags may be specified for a DHV to say that a line is not properly
+connected and that the line should be treated as
+hardwired, with carrier
+always present.
+Thus, specifying ``flags 0x04'' in the specification of dhu0
+would cause line tty02 to be treated in this way.
+.PP
+The 
+.PN dhv
+driver normally interrupts on each input character.
+.NT
+The 
+.PN cxa ,
+.PN cxb ,
+.PN cxy ,
+.PN dhv ,
+and
+.PN dhq
+devices operate under the control of the 
+.PN dhu
+driver.
+.NE
+.SH Diagnostics
+.B "dhu%d: receive fifo overflow"  
+.br
+The character input fifo overflowed
+before it could be serviced.  This can happen if a hard error occurs
+when the CPU is running with elevated priority, as the system will
+then print a message on the console with interrupts disabled.
+This can cause a few input characters to be lost to users.
+It is not serious.
+.PP
+.B "dhu%d:%d DMA ERROR"
+.br
+A DMA transfer error has occurred.
+The
+.PN dhv
+unit number and line number are printed.
+This means that the channel indicated has failed to transfer DMA data
+within 10.7 microseconds of the bus request being acknowledged or that
+there is a memory parity error.
+This may cause a few output characters to be lost.
+.PP
+.B "dhu%d: DIAG. FAILURE"
+.br
+This indicates that the
+.PN dhv
+internal diagnostics have detected an error.
+.PP
+.B "dhu%d: DHU HARDWARE ERROR.  TX.DMA.START failed"
+.br
+The 
+.PN dhv 
+failed to clear the start bit.  Normally,
+this is cleared to signal 
+that a DMA transfer has completed.
+.SH Files
+.TP 15
+.PN /dev/tty??
+
+.TP
+.PN /dev/ttyd?
+Dialups
+.SH See Also
+tty(4), MAKEDEV(8)

@@ -1,0 +1,283 @@
+.TH lb_admin 1ncs
+.\".if '\nv'1' .TH LB_ADMIN 1 domain
+.\".if '\nv'4' .TH LB_ADMIN 8 domain
+.\".if '\nv'5' .TH LB_ADMIN 1M domain
+.\".if !\nh \{
+.SH Name
+lb_admin \- Location Broker Administrative Tool
+.SH Syntax
+\fB/etc/ncs/lb_admin\fR [ \fB\-version\fR ] [ \fB\-nq\fR]
+.SH Description
+The 
+.PN lb_admin
+tool monitors and administers the registrations of DECrpc-based servers in
+Global Local Broker (GLB) or Local Location Broker (LLB) databases.  A
+.NXR "Location Broker" "lb_admin"
+server registers Universal Unique Identifiers (UUIDs) specifying an
+object, a type, and an interface, along with a socket address specifying
+its location.  A client can locate servers by issuing lookup requests to
+GLBs and LLBs.  
+.PP
+In accepting input or displaying output, 
+.PN lb_admin
+uses either character strings or descriptive textual names to identify
+objects, types, and interfaces.  A character string directly represents
+the data in a UUID in the following format:
+.sp .5
+\fInnnnnnnnnnnn.nn.nn.nn.nn.nn.nn.nn.nn\fR
+.sp .5
+where each \fIn\fR is a hexadecimal digit.
+.PP
+With
+.PN lb_admin ,
+you examine or modify only one database at a time, referred to as
+the current database.  The    
+.PN use_broker
+command selects the type of Location Broker database, GLB or LLB.  The
+.PN set_broker
+command selects the host whose LLB database is to be
+accessed.
+.PP       
+Information about individual command interfaces is available through the
+.PN help
+command.
+.SH Options
+.TP 20 
+\fB\-nq\fR
+Do not query for verification of wildcard expansions
+in
+.PN unregister
+operations.
+.TP 20
+\fB\-version\fR
+Display the version of the Network Computing Kernel (NCK) that this
+.PN lb_admin
+belongs to, but do not start the tool.  (NCK is part of the Network
+Computing System (NCS) on which DECrpc is based.)
+.SH Commands
+In the descriptions of
+.PN lookup ,
+.PN register ,
+and
+.PN unregister ,
+the \fIobject\fR, \fItype\fR, and \fIinterface\fR
+arguments can be either character strings representing UUIDs or textual
+names corresponding to UUIDs, as described earlier.
+.PP
+In the descriptions of
+.PN register
+and
+.PN unregister ,
+the \fIlocation\fR argument is a string in the format
+\fIfamily:host[port]\fR, where \fIfamily\fR is an address family,
+\fIhost\fR is a host name, and \fIport\fR is a port number.  The only 
+value for \fIfamily\fR is \fBip\fR.  You can use a
+leading number sign (#) to indicate that a host name is in the standard
+numeric form.  For example, \fBip:vienna[1756]\fR, and
+\fBip:#192.5.5.5[1791]\fR are both acceptable \fIlocation\fR specifiers.
+.TP 1i
+.PN a[dd]
+Synonym for
+.PN register .
+.TP 
+.PN c[lean]
+Find and delete obsolete entries in the current database.
+.IP 
+When you issue the
+.PN clean
+command, 
+.PN lb_admin
+attempts to contact each server registered in the database.  If the
+server does not respond, 
+.PN lb_admin
+tries to look up its registration in the LLB database at
+the host where the server is located, tells you the result of this
+lookup, and asks whether you want to delete the entry.  If a server
+responds, but its UUIDs do not match the entry in the database, 
+.PN lb_admin
+tells you this result and asks whether you want to delete
+the entry, even if you used the \fB-nq\fR option to
+.PN lb_admin .
+.IP
+There are two situations in which it is likely that a database entry
+should be deleted:
+.RS
+.IP \(bu
+The server does not respond, 
+.PN lb_admin
+succeeds in contacting the LLB at the host where the server is located,
+and the server is not registered with that LLB.  The server is probably
+no longer running.
+.IP \(bu
+A server responds, but its UUIDs do not match the entry in the
+database.  The server that responded is not the one that registered the
+entry.
+.RE
+.IP 
+Entries that meet either of these conditions are probably safe to delete
+and are considered eligible for automatic deletion (described in the
+next paragraph).  In other situations, it is best not to delete the
+entry unless you can verify directly that the server is not running (for
+example, by listing the processes running on its host).
+.IP
+When the 
+.PN clean
+command asks whether you want to delete an entry, choose one of the
+following responses: 
+.RS
+.TP .5i
+\fBy[es]\fR 
+Delete the entry. 
+.TP .5i
+\fBn[o]\fR 
+Leave the entry intact in the current database. 
+.TP .5i
+\fBg[o]\fR 
+Invoke automatic deletion, in which all eligible
+entries (see the previous paragraph) are deleted and all ineligible entries are
+left intact, without your being queried, until all entries have been checked. 
+.TP .5i
+\fBq[uit]\fR 
+Terminate the
+.PN clean
+operation.
+.RE
+.TP
+.PN d[elete]
+Synonym for
+.PN unregister .
+.TP
+.PN h[elp]\0[\fIcommand\fR]\0or\0?\0[\fIcommand\fR]
+.IP
+\fRDisplay a description of the specified \fIcommand\fR or, if none is
+specified, list all of the 
+.PN lb_admin
+commands.
+.TP
+.PN l[ookup]\0\fIobject\0type\0interface\fR
+.IP
+Look up and display all entries with matching \fIobject, type,\fR and
+\fIinterface\fR fields in the current database.   Use the letter \fBl\fR to
+list all of the entries in the database.  You can use asterisks as
+wildcards for any of the arguments.  If all the arguments are wildcards,
+or if no arguments are given,
+.PN lookup
+displays the entire database.
+.TP
+.PN q[uit]
+Exit the  
+.PN lb_admin 
+session.
+.TP
+.PN r[egister]\0\fIobject\0type\0interface\0location\0annotation\0[flag]\fR
+.IP
+Add the specified entry to the current database.  You can use an
+asterisk to represent the nil UUID in the \fIobject, type\fR, and
+\fIinterface\fR fields.
+.IP
+The \fIannotation\fR is a string of up to 64 characters annotating the
+entry.  Use double quotation marks (" ") to delimit a string that
+contains a space or contains no characters.  To embed a double quotation
+mark in the string, precede it with a backslash (\\). 
+.IP
+The \fIflag\fR is either local (the default) or global,
+indicating whether the entry should be marked for local registration
+only or for registration in both the LLB and the GLB databases.  The
+\fIflag\fR is a field that is stored with the entry; it does not affect
+where the entry is registered.  The 
+.PN set_broker 
+and
+.PN use_broker
+commands select the particular LLB or GLB database for registration.
+.TP
+.PN set_broker\0[\fIbroker_switch\fR]\0\fIlocation\fR
+\fRSet the host for the current LLB or GLB.  If you specify global as
+the \fIbroker_switch\fR,
+.PN set_broker
+sets the current GLB; otherwise, it sets the current LLB.  The
+\fIhost\fR is a \fIlocation\fR specifier as described earlier, but the
+\fI[port]\fR portion is ignored and can be omitted.
+.IP
+Issue the 
+.PN use_broker 
+command, not the
+.PN set_broker
+command, to determine whether subsequent operations will access
+the LLB or the GLB.
+.TP 
+.PN set_t[imeout]\0\fI[short\0|\0long]\fR
+\fRSet the timeout period used by
+.PN lb_admin
+for all of its operations.  With an argument of \fIshort\fR or
+\fIlong\fR,
+.PN set_timeout
+sets the timeout accordingly.  With no argument, it displays the
+current timeout value.
+.TP
+.PN u[nregister]\0\fIobject\0type\0interface\0location\fR
+.IP
+Delete the specified entry from the current database.
+.IP
+You can use an asterisk as a wildcard in the \fIobject, type,\fR and
+\fIinterface\fR fields to match any value for the field.  Unless you
+suppress queries by specifying the \fB-nq\fR option of
+.PN lb_admin, 
+.PN unregister
+asks you whether to delete each matching entry.  Choose one of the following
+responses:
+.RS
+.TP .5i 
+\fBy[es]\fR
+Delete the entry. 
+.TP .5i 
+\fBn[o]\fR
+Leave the entry in the database. 
+.TP .5i 
+\fBg[o]\fR
+Delete all remaining database entries that match, without your being queried. 
+.TP .5i 
+\fBq[uit]\fR
+Terminate the
+.PN unregister
+operation, without deleting any more entries.
+.RE
+.TP
+.PN us[e_broker]\0\fI[broker_switch]\fR
+.IP
+Select the type of database that subsequent operations will access, GLB
+or LLB.  The \fIbroker_switch\fR is either global or local.
+If you do not supply a \fIbroker_switch\fR, 
+.PN use_broker
+tells whether the current database is global or local.
+.IP
+Use 
+.PN set_broker
+to select the host whose GLB or LLB is to be accessed.
+.\".PP  
+.\"The Domain/Dialogue menus display object, type, and interface UUIDs
+.\"when that operand is chosen via the switch at the top of the menu.
+.\"The UUIDs displayed are those belonging to the entries of the broker
+.\"selected in the top line when the update operation is performed.
+.\"When an item is selected from a menu, the UUID appears in the
+.\"Entry Information form and the next menu in the object, type, interface trio is displayed. 
+.\".PP
+.\"The asterisk (*) acts as a wildcard for the \fBlookup\fR and \fBunregister\fR operations. 
+.\"For the unregister operation, the user will be queried for each matching entry
+.\"when the wildcard is specified for an object, type or interface.
+.\"A "y[es]" response will delete the entry;
+.\"a "n[o]" response will leave the entry in the database;
+.\"a "q[uit]" response will return the user
+.\"from the unregister operation and no further entries will be deleted;
+.\"a "g[o]" response will delete all the matching database entries;
+.\"any other response will act as a "n[o]" response.
+.\"Querying can be suppressed
+.\"by supplying a \fB\-nq\fR flag to the lb_admin command line.
+.SH See Also
+llbd(8ncs), nrglbd(8ncs)
+.\".if '\nv'4' drm_admin(8), glbd(8), llbd(8)
+.\".if '\nv'5' drm_admin(1m), glbd(1m), llbd(1m)
+.\".if '\*(pR'ncs' drm_admin, glbd, llbd
+.br
+\fIGuide to the Location Broker\fP
+.\".DD "lb_admin.8 
+.\"lb_admin  Location Broker Administrative Tool

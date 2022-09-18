@@ -1,0 +1,33 @@
+.TH bootparamd 8 "" "" Unsupported
+.SH Name
+bootparamd \- boot parameter server
+.SH Syntax
+.B /usr/etc/rpc.bootparamd
+[
+.B \-d
+]
+.SH Description
+The
+.PN bootparamd
+.NXR "bootparamd daemon" "description"
+.NXR "booting Sun diskless clients" "and bootparamd"
+daemon is a server process that provides information to Sun
+diskless clients that is necessary for them to boot. It consults the
+.PN /etc/bootparams
+database for information about the client.  
+.PP
+The
+.PN bootparamd
+daemon can be invoked only
+.NXR "bootparamd daemon" "invoking"
+by the superuser.
+.SH Options
+.IP \-d 5 
+.NXR "bootparamd daemon" "options"
+Displays debugging information
+.SH Files
+.TP 20
+.PN /etc/bootparams
+boot parameters database
+.SH See Also
+bootparams(5), inetd(8c)

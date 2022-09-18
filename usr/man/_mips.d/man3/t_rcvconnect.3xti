@@ -1,0 +1,142 @@
+.TH t_rcvconnect 3xti
+.SH Name
+t_rcvconnect \- receive the confirmation from a connect request
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_rcvconnect(\fIfd, call\fB)
+.br
+.B int \fIfd\fB;
+.br
+.B struct t_call \fI*call\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint where communications is
+established.
+.IP \fIcall\fR 10
+Contains information associated with the newly established connection.
+\fICall\fR points to a t_\fIcall\fR structure that contains the
+following members:
+.EX
+struct netbuf \fIaddr\fP;
+struct netbuf \fIopt\fP;
+struct netbuf \fIudata\fP;
+int \fIsequence\fR;
+.EE
+.IP 
+The members of the \fIt_call\fR structure have the following meanings:
+.RS 10
+.IP \fIaddr\fR 12
+Returns the protocol address associated with the responding transport endpoint. 
+.IP \fIopt\fR 12
+Presents any protocol-specific information associated with the transport endpoint. 
+.IP \fIudata\fR 12
+Points to any optional user data that may be returned by the destination transport 
+user during connection establishment.
+.IP \fIsequence\fR 12
+Has no meaning for this function.
+.RE
+.SH Description
+This function enables a calling transport user to determine the status
+of a previously sent connect request. Is used in conjunction with
+.PN t_connect() 
+to establish a connection in asynchronous mode. The connection is established on 
+successful completion of this function.
+.NXR "t_rcvconnect system call"
+.NXR "connect request" "determining status"
+.PP
+The \fImaxlen\fR field of each argument must be set before issuing this
+function to indicate the maximum size of the buffer for each. However,
+\fIcall\fR can be NULL, in which case no information is given to the user
+on return from 
+.PN t_rcvconnect(). 
+By default,
+.PN t_rcvconnect() 
+executes in synchronous mode and waits for the
+connection to be established before returning. On return, the
+\fIaddr\fR, \fIopt\fR, and \fIudata\fR fields reflect values associated
+with the connection.
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+call->addr.maxlen@x@/
+call->addr.len@/@x
+call->addr.buf@x@(x)
+call->opt.maxlen@x@/
+call->opt.len@/@x
+call->opt.buf@x@(x)
+call->udata.maxlen@x@/
+call->udata.len@/@x
+call->udata.buf@x@(?)
+call->sequence@/@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+If O_NONBLOCK is set by means of 
+.PN t_open() 
+or
+.PN fcntl()\fR,\fR 
+.PN t_rcvconnect()
+executes in asynchronous mode and reduces to a poll for existing connect confirmations. If none 
+is available, 
+.PN t_rcvconnect() 
+fails and returns immediately without waiting for the connection to be established. The
+.PN t_rcvconnect()
+function must be reissued at a later time to
+complete the connection establishment phase and retrieve the information
+returned to \fIcall\fR. 
+.SH Return Values
+Upon successful completion, a value of 0 is returned. On failure, a
+value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, 
+.PN t_errno() 
+is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20 
+[TBUFOVFLW]
+The number of bytes allocated for an incoming argument is not sufficient
+to store the value of that argument. The connect information to be
+returned in \fIcall\fR is discarded. The provider's state, as seen
+by the user, is changed to DATAXFER.
+.TP 20
+[TNODATA]
+O_NONBLOCK was set, but a connect confirmation has not yet
+arrived.
+.TP 20
+[TLOOK]
+An asynchronous event has occurred on the transport connection and
+requires immediate attention.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the underlying transport provider. 
+.TP 20
+[TOUTSTATE]
+The function was issued in the wrong sequence on the transport endpoint
+referenced by \fIfd\fR.
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+t_accept(3xti),
+t_alloc(3xti),
+t_bind(3xti),
+t_connect(3xti), 
+t_listen(3xti), 
+t_open(3xti),
+t_optmgmt(3xti) 

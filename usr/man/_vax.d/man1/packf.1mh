@@ -1,0 +1,139 @@
+.TH packf 1mh
+.NXR "packf command"
+.SH Name
+packf \- compress a folder into a single file
+.SH Syntax
+.B packf
+[
+.I +folder
+] [
+.I msgs
+] [
+.B \-file
+.I name
+] [
+.B \-help
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+Each message in a folder is normally stored 
+as a separate file. 
+The 
+.PN packf
+command takes all messages from the current folder 
+and copies them to a single specified file.  
+Each message in the file is separated by four <CTRL/A>s
+and a newline.
+.PP
+You can specify a folder other than the current folder 
+by using the 
+.I +folder
+argument.  
+If you do not want all the messages in a folder 
+to be packed into one file, 
+you can specify a number of messages 
+or a range of messages with message numbers.  
+.PP
+The first message packed will become the current message.
+If you specify a 
+.I +folder 
+argument, that folder will become the current folder.
+.PP
+When messages have been packed into a file using 
+.PN packf ,
+you can separate them into individual messages using the 
+.PN burst
+command.
+See
+.MS burst 1mh .
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-file \fIname\fB" 10
+Specifies the file in which you want the message(s)
+to be stored.
+If you specify an existing file then the specified messages 
+will be appended to the end of that file. 
+Otherwise, a new file will be created and the messages placed in it.
+If you do not specify a filename, 
+.PN packf 
+attempts to place the messages in a file called
+.PN msgbox
+in the current working directory.
+If this file does not exist,
+.PN packf 
+asks whether you want to create it.
+.\"
+.IP "\-help" 10
+Prints a list of the valid options to this command.
+.\"
+.PP
+The default settings for this command are:
+.IP
+.I +folder
+defaults to the current folder
+.br
+.I msgs
+defaults to all
+.br
+.B "\-file ./msgbox"
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+The first example shows all the messages in the folder
+.PN +lrp
+being packed into a file called 
+.PN planning :
+.EX
+% \f(CBpackf +lrp -file planning\f(CW
+.EE
+.PP
+The next example shows how 
+.PN packf 
+prompts you if you do not specify a 
+.B "\-file"
+option.
+A file called
+.PN msgbox
+is created by 
+.PN packf 
+in your home directory,
+and messages 3 to 5 are packed into it:
+.EX
+% \f(CBpackf +lrp 3-5\f(CW
+Create file "/machine/disk/username/msgbox"? \f(CBy\f(CW
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine the user's Mail directory
+Msg-Protect:+To set protections when creating a new file
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TS
+tab(+);
+l l.
+$HOME/\&.mh_profile+The user profile.
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+burst(1mh)

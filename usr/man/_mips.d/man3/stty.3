@@ -1,0 +1,57 @@
+.\" SCCSID: @(#)stty.3	8.1	9/11/90
+.TH stty 3
+.SH Name
+stty, gtty \- set and get terminal state 
+.SH Syntax
+.nf
+.B #include <sgtty.h>
+.sp
+.B stty(fd, buf)
+.B int fd;
+.B struct sgttyb *buf;
+.sp
+.B gtty(fd, buf)
+.B int fd;
+.B struct sgttyb *buf;
+.fi
+.SH Description
+.NXR "stty subroutine"
+.NXA "stty subroutine" "ioctl system call"
+.NXR "gtty subroutine"
+.NXR "terminal" "setting state"
+.NXR "terminal" "getting state"
+This interface has been superseded by 
+.MS ioctl 2 .
+.PP
+The
+.PN stty
+subroutine
+sets the state of the terminal associated with
+.IR fd .
+The
+.PN gtty
+subroutine
+retrieves the state of the terminal associated
+with
+.IR fd .
+To set the state of a terminal the call must have
+write permission.
+.PP
+The
+.PN stty
+call is actually ``ioctl(fd, TIOCSETP, buf)'', while
+the
+.PN gtty
+call is ``ioctl(fd, TIOCGETP, buf)''.
+See 
+.MS ioctl 2
+and
+.MS tty 4
+for an explanation.
+.SH Return Values
+If the call is successful 0 is returned, otherwise \-1 is
+returned and the global variable
+.I errno
+contains the reason for the failure.
+.SH See Also
+ioctl(2), tty(4)

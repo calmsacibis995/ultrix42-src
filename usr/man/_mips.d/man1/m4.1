@@ -1,0 +1,306 @@
+.\" SCCSID: @(#)m4.1	8.1	9/11/90
+.TH m4 1 
+.SH Name
+m4 \- macro processor
+.SH Syntax
+.B m4
+[\fIoptions\fR] [\fIfiles\fR]
+.SH Description
+.NXR "m4 macro processor"
+The
+.PN m4
+macro processor is intended as a front end
+for Ratfor, C, and other languages.
+Each of the argument files is processed in order;
+if there are no arguments, or if an argument is hypen (-),
+the standard input is read.
+The processed text is written on the standard output.
+.SH Options
+The options and their effects are as follows:
+.TP 15
+.B \-e
+Operate interactively.  Interrupts are ignored and the output is unbuffered.
+.TP
+.B \-s
+Enable line sync output for the C preprocessor
+.RB ( # "line .\|.\|.\|)"
+.TP
+.BI \-B int\^
+Change the size of the push-back and argument collection
+buffers from the default of 4,096.
+.TP
+.BI \-H int\^
+Change the size of the symbol table hash array from the
+default of 199.  The size should be prime.
+.TP
+.BI \-S int\^
+Change the size of the call stack from the default of 100 slots.
+Macros take three slots, and non-macro arguments take one.
+.TP
+.BI \-T int\^
+Change the size of the token buffer from the default of 512 bytes.
+.PP
+To be effective, these flags must appear before any
+file names and before any
+.B \-D
+or
+.B \-U
+flags:
+.TP
+\fB\-D\fP\fIname\fP[\fI\=val\fP]
+Defines
+.I name\^
+to
+.I val\^
+or to null in
+.IR val 's
+absence.
+.TP
+.BI \-U name\^
+undefines
+.IR name .
+.PP
+Macro calls have the following form:
+.EX
+name(arg1,arg2, . . . , argn)
+.EE
+.PP
+The left parenthesis ( ( ) must immediately follow the name of
+the macro.  If a defined macro name is not followed by a left
+parenthesis, it is deemed to have no arguments.
+.PP
+Leading unquoted blanks, tabs, and new lines are ignored while collecting
+arguments.  Potential macro names consist of alphabetic letters,
+digits, and underscore (_), where the first character is not a digit.
+.PP
+Left and right single quotes (\`\|\') are used to quote strings.
+The value of a quoted string is the string stripped of the quotes.
+.PP
+When a macro name is recognized,
+its arguments are collected by searching
+for a matching right parenthesis.
+Macro evaluation proceeds normally during
+the collection of the arguments,
+and any commas or right parentheses
+which happen to turn up within the value
+of a nested call are as effective as those in the original input text.
+After argument collection, the value
+of the macro is pushed back onto the
+input stream and rescanned.
+.PP
+The
+.PN m4
+makes available the following built-in macros.
+They may be redefined,
+but once this is done the original meaning is lost.
+Their values are null unless otherwise stated.
+.NXR "m4 macro processor" "macro list"
+.TP 20
+.B define
+.NXR "define macro"
+The second argument is installed as the value of the macro
+whose name is the first argument.
+Each occurrence of $\fIn\fR in the replacement text, where
+.I n
+is a digit, is replaced by the
+.IR n \-th
+argument.  Argument 0 is the name of the macro;
+missing arguments are replaced by the null string.
+.B $#
+is replaced by the number of arguments;
+.B $\(**
+is replaced by a list of all the arguments separated by commas;
+.B $@
+is like
+.BR $\(** ,
+but each argument is quoted (with the current quotes).
+.TP
+.B undefine
+.NXR "undefine macro"
+removes the definition of the macro named in its argument.
+.TP
+.B defn
+returns the quoted definition of its argument(s).
+It is useful for renaming macros, especially built-ins.
+.TP
+.B pushdef
+like
+.IR define ,
+but saves any previous definition.
+.TP
+.B popdef
+removes current definition of its argument(s),
+exposing the previous one, if any.
+.TP
+.B ifdef
+.NXR "ifdef macro"
+If the first argument is defined, the value is the second argument,
+otherwise the third.  If there is no third argument, the value is null.
+The word
+.I unix
+is predefined on UNIX versions of
+.PN m4.
+.TP
+.B changequote
+.NXR "changequote macro"
+Change quote characters to the first and second arguments.
+The
+.I changequote
+without arguments restores the original values (that is, \`\|\').
+.TP
+.B changecom
+change left and right comment markers from the default
+.B #
+and new-line.
+With no arguments, the comment mechanism is effectively
+disabled.  With one argument, the left marker becomes the argument and
+the right marker becomes new-line.  With two arguments,
+both markers are affected.  Comment markers may be up to
+five characters long.
+.TP
+.B divert
+.NXR "divert macro"
+The
+.PN m4
+maintains 10 output streams, numbered 0-9.
+The final output is the concatenation of the streams in numerical order;
+initially stream 0 is the current stream.  The
+.I divert
+macro changes the current output stream to its (digit-string) argument.
+Output diverted to a stream other than 0 through 9 is discarded.
+.TP
+.B undivert
+.NXR "undivert macro"
+causes immediate output of text from diversions named as
+arguments, or all diversions if no argument.
+Text may be undiverted into another diversion.
+Undiverting discards the diverted text.
+.TP
+.B divnum
+.NXR "divnum macro"
+returns the value of the current output stream.
+.TP
+.B dnl
+.NXR "dnl macro"
+reads and discards characters up to and including the next new line.
+.TP
+.B ifelse
+.NXR "ifelse macro"
+has three or more arguments.
+If the first argument is the same string as the second,
+then the value is the third argument.
+If not, and if there are more than four arguments, the process is repeated with arguments 4, 5, 6 and 7.
+Otherwise, the value is either the fourth string, or, if it is not present,
+null.
+.TP
+.B incr
+.NXR "incr macro"
+returns the value of its argument incremented by 1.
+The value of the argument is calculated
+by interpreting an initial digit-string as a decimal number.
+.TP
+.B decr
+returns the value of its argument decremented by 1.
+.TP
+.B eval
+.NXR "eval macro"
+evaluates its argument as an arithmetic expression, using 32-bit arithmetic.
+Operators include +, \-, \(**, /, %, ^ (exponentiation), bitwise
+.BR & ,
+\(bv,
+.BR ^ ,
+and
+.BR ~ ;
+relationals;
+parentheses.  Octal and hex numbers may be specified as in C.
+The second argument specifies the radix for the result;
+the default is 10.
+The third argument may be used to specify the minimum number
+of digits in the result.
+.TP
+.B len
+.NXR "len macro"
+returns the number of characters in its argument.
+.TP
+.B index
+.NXR "index macro"
+returns the position in its first argument where the second argument
+begins (zero origin), or \-1 if the second argument does not occur.
+.TP
+.B substr
+.NXR "substr macro"
+returns a substring of its first argument.
+The second argument is a zero origin number selecting the first character;
+the third argument indicates the length of the substring.
+A missing third argument is taken to be large enough to extend to
+the end of the first string.
+.TP
+.B shift
+.NXR "shift macro"
+is an unimplemented macro.  Using shift generates an error message.
+.TP
+.B translit
+.NXR "translit macro"
+transliterates the characters in its first argument
+from the set given by the second argument to the set given by the third.
+No abbreviations are permitted.
+.TP
+.B include
+.NXR "include macro"
+returns the contents of the file named in the argument.
+.TP
+.B sinclude
+.NXR "sinclude macro"
+is identical to
+.I include,
+except that it says nothing if the file is inaccessible.
+.TP
+.B syscmd
+.NXR "syscmd macro"
+executes the UNIX command given in the first argument.
+No value is returned.
+.TP
+.B sysval
+is the return code from the last call to
+.IR syscmd .
+.TP
+.B maketemp
+.NXR "maketemp macro"
+fills in a string of XXXXX in its argument with the current process id.
+.TP
+.B m4exit
+causes immediate exit from
+.IR m4 .
+Argument 1, if given, is the exit code; the default is 0.
+.TP
+.B m4wrap
+argument 1 will be pushed back at final EOF.  For example:
+.EX
+m4wrap(`cleanup()')
+.EE
+.TP
+.B errprint
+.NXR "errprint macro"
+prints its argument on the diagnostic output file.
+.TP
+.B dumpdef
+.NXR "dumpdef macro"
+prints current names and definitions,
+for the named items, or for all if no arguments are given.
+.TP
+.B traceon
+with no arguments, turns on tracing for all macros
+(including built-ins).
+Otherwise, turns on tracing for named macros.
+.TP
+.B traceoff
+turns off trace globally and for any macros specified.
+Macros specifically traced by
+.I traceon\^
+can be untraced only by specific calls to
+.IR traceoff .
+.dt
+.SH See Also
+"The M4 Macro Processor,"
+.I ULTRIX Supplementary Documents
+Vol. II:Programmer

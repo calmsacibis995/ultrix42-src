@@ -1,0 +1,415 @@
+.TH mod 1 VAX "" Unsupported
+.SH Name
+mod \- Modula-2 compiler
+.SH Syntax
+.B mod
+[ \fIoptions\fP ] \fIname\fP ...
+.SH Description
+.NXS "Modula-2 compiler" "mod command"
+.NXB "mod command"
+.NXB "Modula-2 program" "compiling"
+The 
+.PN mod
+command
+compiles one or more Modula-2 programs or implementation modules.
+Definition modules are not compiled.
+In the absence of options, it will compile all specified modules and link
+them together into an executable file called
+.PN a.out.
+.PP
+Each program or implementation module must be in a separate file with a name
+ending with .mod.
+Each definition module must be in a separate file called module.def 
+where module is the name of the module.
+Object files ending with .o compiled with
+.PN mod
+or some
+other compiler may be specified.
+.PP
+File name arguments ending with .pcd, and .s, are assumed to be \-pcode
+and assembly language files respectively,
+and are translated and assembled into object files.
+.SH Options
+.NXR "mod command" "options"
+.IP \fB\-c\fR
+Create object files but do not link them together.
+.IP \fB\-g\fR
+Generate additional symbol table information for the debugger
+.MS dbx 1 .
+.IP \fB\-i\fR
+Ignore the errors in some of the modules
+and continue compiling the rest of them.
+.IP "\fB\-m \fRflags"
+Perform intermodule checking.
+If an out-of-date module is encountered, recompile it using the
+specified 
+.I flags.
+The flags are separated by commas or spaces, and must be quoted if spaces
+are used.
+.IP \fB\-n\fR
+Write out what will happen when the same command is entered
+without the \*(lq-n\*(rq option.
+.IP "\fB\-o \fIname\fR"
+Create an executable file called \*(lqname\*(rq instead of the default \*(lqa.out\*(rq.
+.IP \fB\-pg\fR
+Set up object files for profiling by
+.MS gprof 1 .
+.IP \fB\-r\fR
+Retain pcode and assembly language files in the current directory after
+compilation.
+.IP \fB\-s\fR
+Use standard conventions for reserved word case, cardinal data type, and strings.
+See Extensions below.
+.IP \fB\-sc\fR
+Use standard conventions for cardinal data type (See Extensions, below).
+.IP \fB\-sk\fR
+Use standard conventions for reserved word case (See Extensions, below).
+.IP \fB\-ss\fR
+Use standard conventions for string constants (See Extensions, below).
+.IP \fB\-u\fR
+Convert all identifiers and reserved words to upper case (that is, ignore
+the case of identifiers and reserved words on input).
+.IP \fB\-v\fR
+Print out messages which state what is occurring during compilation.
+.IP \fB\-C\fR
+Generate runtime checks for illegal pointers, subrange and index bounds,
+and variant record tags.
+.IP "\fB\-D \fIdirectory\fR"
+Use the specified directory for the phases of the compiler and the
+location of the standard definition modules and libraries.
+.IP \fB\-L\fR
+Ignore references to modules
+not specified while performing intermodule checking.
+This is useful when checking modules to be placed in a library.
+.IP \fB\-M\fR
+Perform intermodule checking, but do not recompile if inconsistencies
+are found.
+.IP \fB\-N\fR \fIname\fR
+Ignore references to the module
+name while performing intermodule checking.
+This is useful when the module name is not a Modula-2 module.
+You may use this option as many times as needed.
+.IP \fB\-O\fR
+Perform code optimizations.
+.IP \fB\-P\fR
+Stop after generating pcode in a file ending with .pcd. 
+.IP \fB\-S\fR
+Stop after generating assembly language in a file ending with .s.
+.SH Library Modules
+.NXR "mod command" "library modules"
+By default, an import of a global module will cause the compiler to look for
+the definition module first
+in the working directory and then in the standard library directory.
+The standard library modules are automatically linked with the program.
+.PP
+The default may be overridden to specify other directories of definition modules
+using the MODPATH environment variable.
+.NXR "MODPATH environment variable" "setting"
+MODPATH is set to a sequence of directory names separated by colons.
+Those directories will be searched in the order specified to find 
+a definition
+module.
+The corresponding object files or libraries are specified when linking.
+The MODPATH environment variable may be set by the user
+in .login or in .modpath in the working directory.
+If the file .modpath exists in the working directory, the 
+.PN mod
+command will use its first line as the value of the MODPATH variable.
+.PP
+The following modules are provided by this implementation of Modula-2.
+Note that system, memory, io, and bitoperations are builtin modules;
+definition modules for them are provided for documentation purposes only.
+Only strings and parameters are actually implemented in Modula-2.
+.TP 12
+system
+Built in system module.  Contains types of what word, address, etc., and process
+routines.
+.TP
+memory
+Built in storage module.  Sets up pointers properly for runtime checks.
+Contains ALLOCATE and DEALLOCATE.
+.TP
+io
+Built in I/O module that provides formatted read and write similar to
+.MS scanf 3
+and
+.MS printf 3 .
+.TP
+bitoperations
+Built in bit manipulation module.
+Performs operations such as shift, exclusive or, etc., on integer operands.
+.TP
+math
+Performs mathematical functions.
+Interface to the C math library.
+.TP
+parameters
+Accesses command line parameters and environment variables.
+.TP
+strings
+Compares, assigns, and links strings.
+.TP
+unix
+Defines some UNIX system calls and C library routines.
+.TP
+Storage
+Standard storage module, for compatibility with standard Modula-2.
+Contains ALLOCATE and DEALLOCATE.
+.SH Differences And Extensions
+.NXR "mod command" "Wirth's compiler and"
+This implementation of Modula-2 has compiled and run Wirth's Modula-2 compiler
+(as modified by Cambridge University for the VAX) with only minor changes
+to make Wirth's compiler more portable.
+However, the definition of the language has been relaxed in some areas.
+For the most part, these changes are compatible.
+.PP
+The following is an incomplete list of differences between this compiler and
+Wirth's compiler:
+.PP
+Reserved words and standard identifiers are recognized in upper
+and lower case,
+Thus, case variations of reserved words may not be used for identifiers.
+This feature is disabled by the
+.B \-sk
+option.
+.PP
+Cardinal and non-negative subranges that do not exceed MAXINT are considered
+to be subranges of integer and are compatible with integers.
+Subranges that exceed MAXINT are compatible with cardinal and non-negative
+subranges.
+This feature is disabled by the
+.B \-sc
+option.
+.PP
+A built in module called
+.I io
+provides formatted input and output.
+The
+.I readf
+and
+.I writef
+routines can accept any number of parameters, as long as their types
+correspond properly with the format string.
+Supported formats include: for integer and cardinal,
+.BR d ,
+.BR x ,
+and
+.BR o ;
+for real,
+.B g
+(output only),
+.BR f ,
+and
+.BR e ;
+for longreal,
+.B G
+(output only),
+.BR F ,
+and
+.BR E ;
+for char,
+.BR c ;
+and
+for string (array of char),
+.B s
+and
+[] (input only).
+.PP
+No import of
+.I allocate
+or
+.I deallocate
+is required to use new and dispose if the standard memory allocation routines
+are desired.
+Programs that require checking import 
+.I allocate 
+and 
+.I deallocate
+from memory rather than storage.
+.PP
+The sizes returned by
+.I size
+and
+.I tsize
+and expected by
+.IR allocate ,
+.I deallocate
+and
+.I newprocess
+are in units of bits.
+.PP
+The
+.I system
+module includes the type
+.IR byte ,
+which is analogous to
+.IR word ,
+as well as appropriate related constants.
+There is also a function cputime, which returns the accumulated program
+CPU time in milliseconds.
+.PP
+There is a standard type called
+.I longreal
+that stores a double precision real value.
+A standard function longfloat converts cardinals, integers, or reals 
+to longreal.
+.PP
+Additional standard procedures include:
+.TP 12
+min(a,b)
+Returns the smaller of two cardinal, integer, real, or longreal values.
+.TP
+max(a,b)
+Returns the larger of two cardinal, integer, real, or longreal values.
+.TP
+assert(condition[,message])
+Aborts the program (with the optional message)
+if the condition is false.
+.TP
+number(a)
+Returns the number of elements in the specified array.
+.TP
+first(type)
+Returns the smallest legal value of the specified type.
+.TP
+last(type)
+Returns the largest legal value of the specified type.
+.PP
+Definition modules are not compiled.
+.PP
+Escape sequences may be placed in strings to specify non-printing characters.
+E.g., \en, \et, \er, \ef, \eb, \e\e, \e', and \e" mean
+linefeed, tab, carriage return, form feed, backspace, backslash,
+single quote, and double quote, respectively.
+In addition a \e followed by up to three octal digits specifies the
+the character whose ASCII code is the octal value.
+A single (double) quote also may be put in a string delimited with
+single (double) quotes by specifying two single (double) quotes.
+This feature is disabled by the
+.B \-ss
+option.
+.PP
+The interface to Unix is through a module called
+.I unix
+rather than the
+.I system
+module.
+The
+.I unixcall
+procedure is handled for compatibility with the Cambridge compiler,
+but is not recommended.
+.PP
+Additional keywords are recognized in certain contexts.
+These keywords are prefixed by @ to avoid conflicting with valid
+identifiers.
+.TP
+Pointer attributes
+Attributes may be specified between the keywords
+.I pointer
+and
+.I to
+in order to change the default assumptions of Modula-2 pointer with checking.
+Recognized attributes are:
+.br
+.ta 2i
+@nocheck	Modula-2 pointer, no checking
+.br
+@c	C/malloc pointer, no checking
+.br
+@pascal	Pascal pointer, Pascal checking
+.TP
+Size and alignment
+The size and alignment of data types may be specified preceding any
+type specification.
+The size and alignment multiples are in bits.
+For example,
+.br
+    type Register = @align 2 @size 4 [-8..7];
+.br
+defines a type that occupies 4 bits aligned on a multiple of two bits.
+.TP
+Exports
+Exports from a definition module are assumed qualified.  
+Unqualified exports are permitted if the @unqualified keyword is used.
+Multiple export statements are permitted, but they must occur next to
+each other.
+.TP
+External variables and procedures
+A procedure or variable may be accessed by C and Pascal routines using
+its unqualified name if the @external attribute
+occurs between the keyword procedure and the name of the procedure or
+precedes the variable declaration. 
+.TP
+Uncounted open arrays
+Open array parameters appear as two parameters, the address of the array and
+the number of element-to-non-Modula-2 programs.
+If necessary, the count may be omitted by placing the attribute @nocount
+between the keywords
+.I array
+and
+.I of
+in the open array declaration.
+.SH Restrictions	 
+.NXR "mod command" "restricted"
+This is an experimental compiler, and thus no warranties are expressed or
+implied about its conformance to the definition of the Modula-2 language
+or about its proper functioning.
+We will endeavor to report and fix bugs, but users should be aware that this
+compiler is not a supported product.
+.SH Diagnostics
+.NXR "mod command" "diagnostics"
+All error messages suppress subsequent compilation phases.
+Error messages ending with a question mark are internal errors, and
+probably represent compiler bugs.
+When pointer checking is running in a Modula-2 program,
+segmentation faults may be generated by the pointer validation test.
+These are intentional and should be considered as invalid pointer messages.  
+The compiler runs with runtime checks enabled, and may produce core dumps.
+Report problems to the author.
+.SH Files
+.ta 2.6i
+file.mod	Program or implementation module
+.br
+file.def	Definition module
+.br
+file.pcd	Pcode (\-P or \-r)
+.br
+file.s	Assembly code (\-S or \-r)
+.br
+/usr/local/lib/mod/mod2.0	Modula-2 compiler front-end
+.br
+/usr/local/lib/mod/mod2.1	Modula-2 compiler back-end
+.br
+/usr/local/lib/mod/mod2.2	Intermodule checker
+.br
+/usr/local/lib/mod/*.def	Standard definition modules
+.br
+/usr/local/lib/mod/modlib	Default library
+.br
+/tmp/modNNNNNN.pcd	Temporary Pcode file
+.br
+/tmp/modNNNNNN.s	Temporary assembly code file
+.\"	.SH "SEE ALSO"
+.\"	N. Wirth,
+.\"	.IR "Programming in Modula-2" ,
+.\"	Springer-Verlag, New York, 1982.
+.\"	.SH AUTHOR
+.\"	Michael L. Powell
+.\"	.br
+.\"	Digital Equipment Corporation
+.\"	.br
+.\"	Western Research Laboratory
+.\"	.br
+.\"	4410 El Camino Real
+.\"	.br
+.\"	Los Altos, CA  94022
+.\"	.br
+.\"	Mail: powell@decwrl.csnet or {decvax,ucbvax}!decwrl!powell
+.\"	.PP
+.\"	Software and documentation is
+.\"	Copyright 1984, Digital Equipment Corporation,
+.\"	Maynard, Massachusetts.
+.\"	All rights reserved.
+.\"	This software is provided under license agreement and must be kept confidential.
+.NXB "mod command"
+.NXB "Modula-2 program" "compiling"

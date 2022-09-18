@@ -1,0 +1,97 @@
+.\" SCCSID: @(#)getnetgrent.3yp	8.1	9/11/90
+.TH getnetgrent 3yp
+.SH Name
+getnetgrent, setnetgrent, endnetgrent, innetgr \- get network group entry
+.SH Syntax
+.nf
+.ft B
+innetgr(netgroup, machine, user, domain)
+char *netgroup, *machine, *user, *domain;
+.sp.5
+setnetgrent(netgroup)
+char *netgroup
+.sp.5
+endnetgrent()
+.sp.5
+getnetgrent(machinep, userp, domainp)
+char **machinep, **userp, **domainp;
+.fi
+.SH Description
+.NXR "getnetgrent subroutine"
+.NXR "setnetgrent subroutine"
+.NXR "endnetgrent subroutine"
+.NXR "innetgr subroutine"
+.NXR "netgroup file" "getting member entry"
+.NXA "netgroup file" "innetgr subroutine"
+The 
+.PN innetgr
+routine accesses the
+.PN netgroup
+file and checks to see if
+the specified input parameters match an entry in the
+file.
+The routine
+returns 1 if it matches an entry, or 0 if it does not.
+Any of the three strings; 
+.B machine, 
+.B user, 
+or 
+.B domain 
+can be NULL, which signifies any string in that position is valid.
+.PP
+The 
+.PN getnetgrent 
+routine returns the next member of a network group.  After the call,
+.PN machinep 
+will contain a pointer to a string containing the name
+of the machine part of the network group member, and similarly
+for 
+.B userp 
+and 
+.B domainp.
+If 
+.B machinep, 
+.B userp 
+or 
+.B domainp 
+is 
+returned as a NULL pointer, it signifies any string is valid.
+The 
+.PN getnetgrent
+routine allocates space for the name
+by using the
+.PN malloc 
+routine.
+This space is released when an 
+.PN endnetgrent
+call is made.
+The 
+.PN getnetgrent
+routine returns 1 if it succeeds in obtaining another
+member of the network group, or 0 if it reaches the
+end of the group.
+.PP
+The 
+.PN setnetgrent
+routine establishes the network group from which 
+.PN getnetgrent
+will obtain members, and also restarts calls to
+.PN getnetgrent
+from the beginning of the list.  If the previous 
+.PN setnetgrent
+call was to a different network group, an 
+.PN endnetgrent
+call is implied.
+.PP
+The
+.PN endnetgrent
+routine releases the space allocated during the 
+.PN getnetgrent
+calls.
+.SH Files
+.nf
+/etc/netgroup
+/etc/yp/\fIdomain\fP/netgroup
+/etc/yp/\fIdomain\fP/netgroup.byuser
+/etc/yp/\fIdomain\fP/netgroup.byhost
+.fi

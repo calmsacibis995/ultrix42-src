@@ -1,0 +1,177 @@
+.TH t_open 3xti
+.SH Name
+t_open \- establish a transport endpoint
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B #include <fcntl.h>
+.br
+.B int t_open(\fIname, oflag, info\fB)
+.br
+.B char \fI*name\fB;
+.br
+.B int \fIoflag\fB;
+.br
+.B struct t_info \fI*info\fB;
+.SH Arguments
+.IP \fIname\fR 10
+Points to a transport provider identifier.
+.IP \fIoflag\fR 10
+Identifies any open flags as in 
+.PN open(). 
+The \fIoflag\fR argument
+is constructed from O_RDWR optionally ORed with O_NONBLOCK.
+These flags are defined by the header file \fB<fcntl.h>\fR. 
+.IP \fIinfo\fR 10
+Returns various default characteristics of the underlying transport
+protocol by setting fields in the \fIinfo\fR structure. This argument
+points to a 
+.PN t_info()
+structure that contains the following members:
+.RS 10
+.IP "long \fIaddr\fP" 15
+/* max size of the transport protocol  address */
+.IP "long \fIoptions\fP" 15
+/* max number of bytes of protocol specific options */
+.IP "long \fItsdu\fP" 15
+/* max size of a transport service data  unit (TSDU) */
+.IP "long \fIetsdu\fP" 15
+/* max size of expedited transport  service data unit (ETSDU) */      
+.IP "long \fIconnect\fP" 15
+/* max amount of data allowed on connection establishment functions */
+.IP "long \fIdiscon\fP" 15 
+/* max amount of data allowed on  
+.PN t_snddis()
+and 
+.PN t_rcvdis() 
+functions */
+.IP "long \fIservtype\fP" 15
+/* service type supported by the transport provider */
+.RE
+.PP
+The values of the fields have the following meanings:
+.RS 15 
+.IP  \fIaddr\fP 12
+A value greater than or equal to zero indicates the maximum size of a transport protocol address; 
+a value of \-1 specifies that there is no limit on the address size; and a value of \-2 specifies 
+that the transport provider does not provide user access to transport protocol addresses.
+.IP \fIoptions\fP 12
+A value greater than or equal to zero indicates the maximum number of bytes of protocol-specific 
+options supported by the provider; a value of \-1 specifies that there is no limit on the option 
+size; and a value of \-2 specifies that the transport provider does not support user\-settable options.
+.IP \fItsdu\fP 12
+A value greater than zero specifies the maximum size of a transport service data unit (TSDU); a 
+value of zero specifies that the transport provider does not support the concept of TSDU; although 
+it does support the sending of a data stream with no logical boundaries preserved across a 
+connection; a value of \-1 specifies that there is no limit on the size of an ETSDU; and a value 
+of \-2 specifies that the transfer of normal data is not supported by the transport provider.
+.IP \fIetsdu\fP 12
+A value greater than zero specifies the maximum size of an expedited transport service data unit 
+(ETSDU); a value zero specifies that the transport provider does not support the concept of ETSDU, 
+although it does support the sending of an expedited data stream with no logical boundaries 
+preserved across a connection; a value of \-1 specifies that there is no limit on the size of an 
+ETSDU; and a value \-2 specifies that the transfer of expedited data is not supported by the 
+transport provider.
+.IP \fIconnect\fP 12
+A value greater than or equal to zero specifies the maximum amount of data that may be associated 
+with connection establishment functions; a value of \-1 specifies that there is no limit on the 
+amount of data sent during connection establishment; and a value of \-2 specifies that the transport 
+provider does not allow data to be sent with connection establishment functions.
+.IP \fIdiscon\fP 12
+A value greater than or equal to zero specifies the maximum amount of data that may be associated 
+with the 
+.PN t_snddis()
+and 
+.PN t_rcvdis()
+functions; a value of \-1 specifies that there is no
+limit on the amount of data sent with these abortive release functions; and a \-2 specifies that the
+transport provider does not allow data to be sent with abortive release functions.
+.IP \fIservtype\fP 12
+This field specifies the service type supported by the transport provider, as described.
+.RE
+.PP 
+If a transport user is concerned with protocol independence, the 
+sizes can be accessed to determine how large the buffers must be to hold
+each piece of information. Alternately, the 
+.PN t_alloc()
+function may be used to allocate these buffers. An error will result if a
+transport user exceeds the allowed data size on any function.
+.PP
+The \fIservtype\fR field of \fIinfo\fR specifies one of the following
+values on return.
+.RS 10
+.IP T_COTS 15
+The transport provider supports a connection-mode service but does not support the optional orderly
+release facility.
+.IP T_COTS_ORD 15
+The transport provider supports a connection-mode service with the optional orderly release facility.
+.IP T_CLTS 15
+The transport provider supports a connectionless-mode service. For this service type, 
+.PN t_open() 
+returns \-2 for \fIetsdu\fP, \fIconnect\fP, and \fIdiscon\fP.
+.RE
+.PP
+A single transport endpoint may support only one of the above services
+at one time.
+If \fIinfo\fR is set to NULL by the transport user, no protocol
+information is returned by 
+.PN t_open()\fR.\fR
+.SH Description
+The 
+.PN t_open()
+function must be called as the first step in the initialization of a transport endpoint. 
+This function establishes a transport endpoint by supplying a transport provider identifier that
+indicates a particular transport provider, that is a transport protocol,
+and returns a file descriptor that identifies that endpoint.
+.NXR "t_open system call"
+.NXR "transport endpoint" "initializing"
+.PP
+The 
+.PN t_open()
+function returns a file descriptor that is used
+by all subsequent functions to identify that particular local transport
+endpoint.
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+name@x@/
+oflag@x@/
+info->addr@/@x
+info->options@/@x
+info->tsdu@/@x
+info->etsdu@/@x
+info->connect@/@x
+info->discon@/@x
+info->servtype@/@x
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, 
+.PN t_open() 
+returns a file descriptor. On failure, \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADFLAG]
+An invalid flag is specified.
+.TP 20 
+[TBADNAME]
+Invalid transport provider name.
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+open(2)

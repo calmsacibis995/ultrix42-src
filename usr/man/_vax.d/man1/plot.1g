@@ -1,0 +1,142 @@
+.\" SCCSID: @(#)plot.1g	3.1	11/23/87
+.TH plot 1g 
+.SH Name
+plot \- graphics filters
+.SH Syntax
+.B plot
+[\fB\-T\fIterminal\fR\|[\fIraster\fR\|]\|] [\fB\-l\fR#] [\fB\-w\fR#] [\fB\-c\fR#]
+.SH Description
+.NXR "plot command"
+.NXR "graphics filter"
+.NXA "plot command" "term command"
+.NXAM "plot command" "plot keyword"
+The 
+.PN plot
+command reads plotting instructions 
+from the standard input and produces plotting instructions for
+a specified
+.I terminal
+on the standard output.
+For further information see
+.MS plot 5 .
+.SH Options
+The following options are available with the 
+.PN plot
+command.
+.IP \fB\-T\fR\fIterminal\fR 15
+Uses the specified terminal name as the terminal type
+for which plotting instructions are to be generated.
+If a 
+.I terminal
+type is not specified, the environment parameter $TERM
+is used. For more information, see
+.MS environ 7 .
+The 
+.I terminal
+type can be one of the following:
+.RS
+.IP \fB450\fR 9
+DASI Hyterm 450 terminal (diablo mechanism).
+.IP \fB300\fR 9
+DASI 300 or GSI terminal (diablo mechanism).
+.IP \fB300S\fR 9
+DASI 300S terminal (diablo mechanism).
+.IP "\fB4014 or tek\fP" 9
+Tektronix 4014 or 4015 with Enhanced Graphics Module.
+(Use 4013 for Tektronix 4014 or Tektronix 4015 without 
+the Enhanced Graphics Module).
+.IP \fB4013\fP 9
+Tektronix 4013 Storage scope
+.IP \fBaed\fP 9
+AED 512 color graphics terminal
+.IP "\fBbitgraph or bg\fP" 9
+BBN bitgraph graphics terminal
+.IP \fBcrt\fP 9
+Any crt capable of running
+.MS vi 1
+.IP \fBdumb\fP 9
+dumb terminals without cursor addressing or line printers
+.IP \fBgrn\fP 9
+given a plot file, produces a grn file.
+.IP \fBhp7221\fP 9
+Hewlett Packard 7221 Graphics terminal.
+.IP \fBhp2648\fP 9
+Hewlett Packard 2648 Graphics terminal.
+.IP "\fBimagen or ip"\fP 9
+Imagen laser printer (default 240 DPI resolution).
+.IP \fBlvp16\fR 9
+DEC LVP16 Graphics Plotter.
+.IP \fBhp7475a\fR 9
+HP 7475A Graphics Plotter.
+.IP \fBver\fR 9
+Versatec D1200A printer-plotter. This version of
+.PN plot
+places a scan-converted image in 
+.PN /usr/tmp/raster
+and sends the result directly to the plotter device rather than to
+the standard output.  The optional argument causes a previously
+scan-converted file
+.I raster
+to be sent to the plotter.
+.IP \fBvar\fP 9
+Benson Varian printer-plotter.
+.IP \fBvt125\fP 9
+DEC vt125 terminal.
+.RE
+.IP \fIraster\fR 15
+Is a scan-converted temporary file that is sent directly to
+the plotter.  The
+.I raster
+file is only specified with the \-Tver option.
+.RE
+.PP
+If 
+.I terminal 
+is either an lvp16 or a hp7475a, you
+can specify the following options.  These options must
+follow the \fB\-T\fIterminal\fR option:
+.IP \fB\-l#\fR 15
+length of paper window in plotter units (unit scale)
+.IP \fB\-w#\fR 
+width of paper window in plotter units (unit scale)
+.IP \fB\-c#\fR 
+initial pen carousel to be used
+.SH Restrictions
+A lockout protection does not exist for
+.PN /usr/tmp/raster .
+.SH Files
+/usr/bin/t4013
+.br
+/usr/bin/aedplot
+.br
+/usr/bin/bgplot
+.br
+/usr/bin/crtplot
+.br
+/usr/bin/dumbplot
+.br
+/usr/bin/gigiplot
+.br
+/usr/bin/grnplot
+.br
+/usr/bin/hpplot
+.br
+/usr/bin/hp7221plot
+.br
+/usr/bin/implot
+.br
+/usr/bin/lvp16
+.br
+/usr/bin/tek
+.br
+/usr/bin/t450
+.br
+/usr/bin/t300
+.br
+/usr/bin/t300s
+.br
+/usr/bin/vplot
+.br
+/usr/tmp/raster
+.SH See Also
+graph(1g), plot(3x), plot(5)

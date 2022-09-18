@@ -1,0 +1,34 @@
+.\" SCCSID: @(#)fsirand.8nfs	8.1	9/11/90
+.TH fsirand 8nfs 
+.SH Name
+fsirand \- install random inode generation numbers
+.SH Syntax
+.B fsirand
+[
+.B \-p
+] 
+.I special
+.SH Description
+.NXR "fsirand command"
+.NXR "random inode generation number" "installing"
+The
+.PN fsirand
+command
+installs random inode generation numbers on all the inodes on device
+.I special.
+This helps increase the security of file systems exported by NFS.
+.PP
+The
+.PN fsirand
+command
+must be used only on an unmounted file system
+that has been checked with 
+.MS fsck 8 .
+The only exception is that it can be used
+on the root file system in single-user mode,
+if the system is then immediately rebooted.
+.SH Options
+.TP
+.B \-p
+Print out the generation numbers for all the inodes,
+but do not change the generation numbers.

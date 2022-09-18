@@ -1,0 +1,252 @@
+.\" SCCSID: @(#)indent.1	8.1	9/11/90
+.TH indent 1
+.SH Name
+indent \- indent and format C program source
+.SH Syntax
+.B indent
+\fIinput\fR
+[\|\fIoutput\fR\|] [\|\fIflags\fR\|]
+.SH Description
+.NXB "indent command"
+.NXB "C program" "formatting"
+The
+.PN indent
+command
+is intended primarily as a C program formatter.
+Specifically,
+.PN indent
+indents code lines,
+aligns comments,
+inserts spaces around operators where necessary and
+breaks up declaration lists as in ``int a,b,c;''.
+.PP
+The
+.PN indent
+command
+does not break up long statements to make them fit within the
+maximum line length, but it does flag lines that are too long.  Lines
+are broken so that each statement starts a new line, and braces
+appear alone on a line.  
+Also, an attempt is made to line up identifiers in declarations.
+.PP
+The 
+.I flags
+that can be specified follow. They
+can appear before or after the file names.
+If the
+.I output
+file is omitted, the formatted file is written
+back into
+.I input
+and a ``backup'' copy of
+.I input
+is written in the current directory.
+If
+.I input
+is named ``/blah/blah/file'',
+the backup file is
+named ``.Bfile''.
+If
+.I output
+is specified,
+.PN indent
+checks to make sure it is different from
+.IR input .
+.SH Options
+.NXR "indent command" "options"
+The following options are used to control the formatting
+style imposed by
+.PN indent :
+.IP \fB\-l\fInnn\fR 12
+Determines maximum length of output line.  The default is 75.
+.IP \fB\-c\fInnn\fR 
+Determines column in which comments start.  The default is 33.
+.IP \fB\-cd\fInnn\fR 
+Determines column in which comments on declarations start.  The default
+is for these comments to start in the same column as other comments.
+.IP \fB\-i\fInnn\fR 
+Determines number of spaces for one indentation level.  The default is 4.
+.IP \fB\-\|dj,\-\|ndj\fR 
+Causes declarations to be left justified. 
+.B \-ndj
+causes
+them to be indented the same as code.  The default is
+.BR \-ndj .
+.IP \fB\-\|v,\-\|nv\fR 
+.B \-v 
+turns on ``verbose'' mode,
+.B \-nv
+turns it off.  When in verbose mode,
+.PN indent
+reports when it 
+splits one line of input into two or more lines of output,
+and it gives some size statistics at completion. 
+The default is
+.BR \-nv .
+.IP \fB\-\|bc,\-\|nbc\fR 
+Forces newline after each comma in a declaration.  
+.B \-nbc
+turns off this option.  The default is
+.BR \-bc .
+.IP \fB\-d\fInnn\fR 
+Controls the placement of comments
+which are not to the right of code.
+Specifying
+.B \-d2
+means that such comments are placed two
+indentation levels to the left of code.
+The default
+.B \-d0
+lines up these comments with the code.
+See the section on comment indentation below.
+.IP \fB\-\|br,\-\|bl\fR 
+Specifying
+.B \-bl
+causes
+complex statements to be lined up in a space order.  For example, 
+.EX
+   if (...)
+   {
+       code
+   }
+.EE
+Specifying
+.B \-br
+(the default) makes them look like this:
+.EX
+   if (...) {
+       code
+   }
+.EE
+.PP
+You may set up your own ``profile'' of defaults to
+.PN indent
+by creating the file ``.indent.pro'' in your login directory
+and including whatever switches you like.
+.NXR "indent command" "setting default formatting"
+If
+.PN indent
+is run and a profile file exists, then it is read
+to set up the program's defaults.
+Switches on the command line, though,
+always override profile switches.
+The profile
+file must be a single line of not more than 127 characters.
+The switches should be separated on the line by spaces or tabs.
+.PP
+.B Multiline expressions
+.NXR "indent command" "multiline expressions and"
+.PP
+The
+.PN indent
+command
+does not break up complicated expressions that extend over multiple
+lines.  However, it usually indents such expressions that have
+already been broken up correctly.
+Such an expression might look like the following:
+.EX
+x =
+        (
+            (Arbitrary parenthesized expression)
+            +
+            (
+                (Parenthesized expression)
+                *
+                (Parenthesized expression)
+            )
+        );
+
+.EE
+.PP
+.B Comments
+.NXR "indent command" "comments recognized"
+.PP
+The
+.PN indent
+command
+recognizes the following four kinds of comments:
+.TP 4
+1)
+straight text
+.TP
+2)
+``box'' comments
+.TP
+3)
+UNIX-style comments
+.TP
+4) 
+comments that should be passed through unchanged
+.PP
+The comments are interpreted as follows:
+.TP 20
+.I ``Box'' comments
+The
+.PN indent
+command assumes that any comment with a dash
+immediately after the start of comment (i.e. ``/*\-'')
+is a comment surrounded by a box of stars.  Each line
+of such a comment is left unchanged,
+except that the first non-blank
+character of each successive line is lined up with the beginning
+slash of the first line.  Box comments are indented (see below).
+.TP
+.I ``Unix-style'' comments
+This is the type of section header which is used 
+extensively in the UNIX system source.  If the start
+of comment (``/*'') appears on a
+line by itself, 
+.PN indent
+assumes that it is a
+UNIX-style comment.  These are
+treated similarly to box comments, except
+the first non-blank character on each
+line is lined up with the `*' of the ``/*''.
+.TP
+.I Unchanged comments
+Any comment which starts in column 1 is left completely
+unchanged.  This is intended primarily for documentation header pages.
+The check for unchanged comments is made before
+the check for UNIX-style comments.
+.TP
+.I Straight text
+All other comments are treated as straight text. 
+.I Indent
+fits
+as many words (separated by blanks,
+tabs, or new lines) on a line as possible.
+Straight text comments are indented.
+.PP
+.B Comment indentation
+.PP
+Box, UNIX-style, and straight text comments may be indented.
+If a comment is on a line
+with code it is started in the ``comment
+column'', which is set by the
+.B \-cnnn
+command line parameter.
+Otherwise, the
+comment is started at 
+.I nnn
+indentation levels less than where code is
+currently being placed, where
+.I nnn
+is specified by the
+.B \-dnnn
+command line parameter.  (Indented
+comments is never be placed in column 1.)
+If the code on a line extends past the comment column,
+the comment is moved to the next line.
+.SH Restrictions
+.NXR "indent command" "restricted"
+Does not know how to format ``long'' declarations.
+.SH Diagnostics
+.NXR "indent command" "diagnostics"
+Diagnostic error messages, mostly to
+tell that a text line has been broken
+or is too long for the output line.
+.SH Files
+.DT
+\&.indent.pro	profile file
+.NXE "indent command"
+.NXE "C program" "formatting"

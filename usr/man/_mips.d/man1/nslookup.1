@@ -1,0 +1,473 @@
+.TH nslookup 1
+.SH Name
+nslookup \- interactively query servers running BIND, or BIND and
+Hesiod together
+.SH Syntax
+.NXR "nslookup command"
+.B /usr/ucb/nslookup
+[
+.I host
+][
+.I server
+]
+.br
+.B /usr/ucb/nslookup
+[
+.B \-
+][
+.I server
+]
+.SH Description
+The
+.PN nslookup
+command queries the BIND/Hesiod servers. 
+This command has two modes: interactive and non-interactive.
+Interactive mode allows you to query the BIND/Hesiod server for
+information about various hosts and domains.
+Non-interactive mode allows you to 
+obtain just the name and Internet address of a host or domain.
+.PP
+Use interactive mode if you have no arguments to provide.
+In this case,
+.PN nslookup
+queries the default BIND/Hesiod server.
+To specify a BIND/Hesiod server to query,
+the first argument should be a dash (\fB\-\fR)
+and the second argument should be the name of the server.
+.PP
+Use non-interactive mode when the name of the host you
+are looking up is the first argument.
+The optional second argument specifies a BIND/Hesiod server.
+If you do not supply a second argument,
+the current BIND/Hesiod server is queried.
+.PP
+To terminate the
+.PN nslookup
+command from within interactive mode,
+press <CTRL/D>.
+To terminate only the current lookup activity,
+press <CTRL/C>.
+.SH Non-interactive Options
+.IP "\fIhost \fR[\fIserver\fR]" 5
+The \fIhost\fR option is the name of the host for 
+which you are looking up information.
+If you do not specify a 
+.I server,
+the default server is queried.
+You can specify the 
+.I server 
+by either name or IP address.
+.IP "\fB\-\fR  [\fIserver\fR]"
+The
+.B \-
+option returns the name and IP address of the default server,
+or the 
+.I server 
+you specify.
+It then places you in interactive mode.
+If you do not specify a 
+.I server,
+the default server is queried.
+You can specify the 
+.I server 
+by either name or IP address.
+.SH Interactive Options
+The command line length must be less than 80 characters.
+Any unrecognized command is interpreted as a host name.
+The following are the standard options:
+.IP "\fIhost\fR [\fIserver\fR]" 5
+Looks up information for \fIhost\fP using the current default server
+or using \fIserver\fP if it is specified.
+.IP "\fBserver\fP \fIserver\fP"
+Changes the default server to the 
+.I server 
+specified.
+This option uses the current default server. 
+.IP "\fBlserver\fP \fIserver\fP"
+Changes the default server to the 
+.I server 
+specified.
+This option uses the initial default server to look up 
+information about the server specified.
+.IP \fBroot\fR
+Changes the default server to the server for the root of the
+domain name space specified.
+Currently, the host ns.nic.ddn.mil is used.
+.IP "\fBfinger\fP [ \fIname\fP ] [ \fB>\fP [ \fB>\fP ] \fIfile\fP ]"
+Connects with the finger server on the current host. 
+The current host is defined when a previous lookup for a host
+was successful and returned address information.
+See the 
+\fBset querytype=\fIvalue\fR command.
+The
+.I name
+field is optional; but if used, it specifies a user name.
+You can use the
+\fB>\fP
+and
+\fB>>\fP
+options to redirect output to the file specified.
+.IP "\fBls\fR [ \fB\-adhlmst\fR ] \fIdomain\fP [ \fB>\fR [ \fB>\fR ] \fIfile\fP ]"
+Lists the information available for the 
+.I domain 
+specified.
+The default output contains host names and their Internet addresses. 
+.RS
+.IP \-a 10
+Lists aliases of hosts in the 
+.I domain, 
+CNAME entries.
+.IP  \-d
+Lists all entries in the 
+.I domain.
+.IP \-h
+Lists CPU and operating system information for the 
+.I domain, 
+HINFO entries.
+.IP \-l
+Same as \-d.
+.IP \-m
+Lists mail exchangers in the 
+.I domain, 
+MX entries.
+.IP \-s
+Lists well known services in the 
+.I domain, 
+WKS entries.
+.IP \-t
+Lists Hesiod text information, TXT entries.
+.RE
+.IP " " 5
+If you redirect the output to a file,
+hash marks are printed for every
+50 records received from the server.
+.RE
+.IP "\fBview\fP \fIfile\fP" 5
+Sorts and lists the output of the
+.PN ls
+command with the
+.PN more
+command.
+.IP "help \fRor\fP ?"
+Print a brief summary of the
+.PN nslookup 
+commands and options.
+.IP "\fBset\fR \fIkeyword\fP[=\fIvalue\fP]"
+Changes the set options that affect the lookups,
+except for keywords 
+.PN all
+and 
+.PN ALL 
+which display information.
+Valid keywords are:
+.RS
+.IP "\fBall\fP" 10
+Prints the current values of the options you can set,
+as well as information about the current default server.
+.IP "\fBALL\fP"
+Prints the current values of the options you can set,
+as well as information about the current default server.
+In addition,
+the
+.B ALL
+option prints the server state information.
+.IP "\fB[no]debug\fP"
+Turns on debugging mode.
+Verbose information is printed about the
+packet sent to the server and the resulting answer.
+.IP
+The default is
+.B nodebug ,
+which you can abbreviate to [\fBno]\fBdeb\fR.
+.IP "\fB[no]defname\fP"
+Appends the default domain name to every lookup.
+The default is
+.B nodefname,
+which you can abbreviate to [\fBno\fR]\fBdef\fR.
+.IP "\fB[no]recurse\fP"
+Tells the BIND/Hesiod server to query other servers if it does not have the
+information.
+The default is
+.B recurse,
+and the abbreviation is [\fBno\fR]\fBrec\fR.
+.IP "\fB[no]vc\fP"
+Uses a TCP connection when sending requests to the server.
+The default is
+.B novc,
+and the abbreviation is
+[\fBno\fR]\fBv\fR.
+.IP "\fBdomain=\fIname\fR"
+Changes the default domain to the domain 
+.I name 
+specified.
+The default domain name is appended to all lookup requests if 
+the \fBdefname\fP option is set.
+The default value is set in the
+.PN /etc/resolv.conf
+file, which you can abbreviate to
+.B do.
+.IP "\fBclass=\fIvalue\fR"
+Changes the class of information returned from a query
+to one of the following values:
+.RS
+.IP IN 10
+Internet (default)
+.IP HS 10
+Hesiod 
+.IP ANY 10
+any
+.RE
+.IP
+The abbreviation for the
+.B class
+option is
+.B cl.
+.IP "\fBquerytype=\fIvalue\fR"
+Changes the type of information returned from a query to 
+.I value.
+The following is a list of the most common 
+values:
+.RS
+.IP A 10
+host Internet address (default)
+.IP CNAME 10
+canonical name for an alias
+.IP MX 10
+mail exchanger
+.IP NS 10
+name server
+.IP PTR 10
+host Internet name
+.IP SOA 10
+Start of authority
+.IP TXT 10
+A Hesiod data query
+.IP WKS 10
+A well known service
+.RE
+.IP
+The abbreviation for the
+.B querytype
+option is
+.B q.
+.IP \fBretry=\fInumber\fR
+Sets the number of retries to the 
+.I number 
+specified.
+If a reply to a request is not received within a certain 
+amount of time (changed with \fBset timeout\fP), 
+the request is resent. 
+The retry value controls how many times a request
+is to be resent before giving up.
+The default retry number is
+.PN 2 ,
+and the abbreviation for the
+.B retry
+option is
+.B ret.
+.IP \fBroot=\fIhost\fR
+Changes the name of the root server to the 
+.I host 
+name specified.
+This affects the \fBroot\fP command. 
+The default is
+.PN .ns.nic.ddn.mil ,
+and the abbreviation is
+.B ro.
+.IP \fBtimeout=\fInumber\fR
+Changes the time-out interval for waiting for a reply to the
+.I number 
+specified (in seconds).
+The default is 10 seconds, and the abbreviation for the
+.B timeout
+option is
+.B  t.
+.RE
+.SH Tutorial
+The domain name space is tree-structured and has six top-level
+domains: 
+.IP \(bu 5
+ARPA (for ARPAnet hosts)
+.sp 6p
+The ARPA domain is currently one of the top-level domains,
+but is being phased out.
+.IP \(bu 5
+COM (for commercial establishments)
+.IP \(bu
+EDU (for educational institutions)
+.IP \(bu
+GOV (for government agencies)
+.IP \(bu
+ORG (for not for profit organizations)
+.IP \(bu
+MIL (for MILNET hosts)
+.PP
+If you are looking for a specific host, 
+you need to know something about the host's organization  
+in order to determine the top-level domain it belongs to.
+For instance,
+if you want to find the Internet address of a host at UCLA,
+do the following:
+.IP 1. 5
+Connect with the root server,
+using the
+.PN root
+command.
+The root server of the name space has knowledge of the top-level
+domains.
+.IP 2. 5
+Connect with a server for the
+.PN ucla.edu
+domain.
+The domain name for UCLA,
+which is a university, is
+.PN ucla.edu .
+To connect with this server,
+you can type:
+.EX
+# nslookup
+>  server ucla.edu
+.EE
+The response is
+the names of the hosts that act as servers for the domain
+.PN ucla.edu .
+Note that the root server does not have information about
+.PN ucla.edu ,
+but knows the names and addresses of hosts that do.
+All future queries are sent to the UCLA BIND server.
+.IP 3. 5
+Request information about a particular host in the domain,
+for example,
+.PN purple .
+To do this,
+type the host name. 
+To request a list of hosts in the UCLA domain,
+use the
+.PN ls
+command.
+The
+.PN ls
+command requires a domain name (in this case,
+.PN ucla.edu )
+as an argument.
+.PP
+Note that if you are connected with a BIND server that handles
+more than one domain,
+all lookups for host names must be fully specified with its domain.
+For instance, the domain
+.PN harvard.edu
+is served by
+.PN seismo.css.gov ,
+which also services the
+.PN css.gov
+and
+.PN cornell.edu
+domains.
+A lookup request for the host
+.PN novel
+in the
+.PN harvard.edu
+domain must be specified as
+.PN novel.harvard.edu. 
+However,
+you can use the \fBset domain=\fIname\fR and \fBset defname\fP
+commands to automatically append a domain name to each request.
+.PP
+After a successful lookup of a host,
+use the
+.PN finger
+command to see who is on the system or to get information
+about  a specific person.
+To get other information about the host,
+use the \fBset querytype=\fIvalue\fR command,
+which allows you to change the type of information obtained
+and request another lookup. 
+The
+.PN finger
+command requires that the information requested information be
+of type A, a host Internet address.
+.SH Hesiod Tutorial
+If you  have set up Hesiod on your ULTRIX system and would
+like to look at this information, you must use the 
+.PN "set class=\fIvalue"\fR
+and 
+.PN "set querytype=\fIvalue"\fR
+commands, where value is HS and TXT respectively.
+.PP
+The following example presumes that the
+.PN networks
+database is set up to be distributed with BIND/Hesiod.  The
+answer received from the
+.PN nslookup
+command is that 128.45 is the network number for the 
+network named
+.PN ethernet
+in the networks.dec.com domain.
+.EX
+# \f(CBnslookup\f(CW
+Default Server:  localhost.dec.com
+Address:  127.0.0.1
+
+> \f(CBset cl=hs\f(CW
+> \f(CBset q=txt\f(CW
+> \f(CBethernet.networks\f(CW
+Server:  localhost.dec.com
+Address:  127.0.0.1
+
+ethernet.networks.dec.com  ethernet:128.45
+>
+.EE
+.SH Diagnostics
+If the lookup request was not successful, the
+.PN nslookup
+command displays one of the following error messages:
+.IP "Time-out" 0
+The server did not respond to a request after a certain amount of
+time (changed with \fBset timeout=\fIvalue\fR) 
+and a certain number of retries (changed with \fBset retry=\fIvalue\fR).
+.IP "No information"
+Depending on the query type set with the \fBset querytype\fP command,
+no information about the host was available,
+although the host name is valid.
+.IP "Non-existent domain"
+The host or domain name does not exist.
+.IP "Connection refused"
+The connection to the BIND/Hesiod server was refused.
+.IP "Network is unreachable"
+The connection to the BIND/Hesiod server cannot be made 
+at the current time.
+.IP "Server failure"
+The BIND/Hesiod server found an internal inconsistency in its database
+and could not return a valid answer.
+.IP "Refused"
+The BIND/Hesiod server refused to service the request.
+.IP "Format error"
+The name server found that the request packet was not in the proper
+format.
+Contact your DIGITAL Field Service representative.
+.SH Files
+.TP 20
+.PN /var/dss/namedb
+BIND server data file directory
+.TP 20
+.PN /var/dss/namedb/named.boot	
+BIND server boot file
+.TP 20
+.PN /var/dss/namedb/hosts.db
+BIND primary server hosts file
+.TP 20
+.PN /var/dss/namedb/hosts.rev
+BIND primary server reverse address hosts file
+.TP 20
+.PN /var/dss/namedb/named.local	
+BIND server local host reverse address host file
+.TP 20
+.PN /var/dss/namedb/named.ca	
+BIND server cache file
+.TP 20
+.PN /etc/resolv.conf	
+BIND data file
+.SH See Also
+finger(1), more(1), nsquery(1), resolver(3), resolver(5), named(8)
+.br
+\fIGuide to the BIND/Hesiod Service\fP

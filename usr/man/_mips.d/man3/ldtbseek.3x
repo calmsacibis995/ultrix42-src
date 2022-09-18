@@ -1,0 +1,34 @@
+.TH ldtbseek 3x RISC
+.SH Name
+ldtbseek \- seek to the symbol table of a common object file
+.SH Syntax
+.nf
+.B #include <stdio.h>
+.B #include <filehdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h>
+.PP
+.BR "int ldtbseek (" ldptr )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.fi
+.SH Description
+The
+.PN ldtbseek
+function seeks to the symbol table 
+of the \*N object file
+currently associated with
+.IR ldptr .
+.PP
+The
+.PN ldtbseek
+function returns success or failure.
+If
+the symbol table has been stripped from the object file
+or if it cannot seek to the symbol table,
+.I ldtbseek
+fails.
+.SH See Also
+ldclose(3x),
+ldopen(3x),
+ldtbread(3x),
+ldfcn(5)

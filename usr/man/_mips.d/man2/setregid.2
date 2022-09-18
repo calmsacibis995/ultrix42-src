@@ -1,0 +1,78 @@
+.\" SCCSID: @(#)setregid.2	8.1	9/11/90
+.TH setregid 2
+.SH Name
+setregid \- set real and effective group ID
+.SH Syntax
+.B setregid(\fIrgid, egid\fP)
+.br
+.B int \fIrgid, egid\fP;
+.SH Description
+.NXR "setregid system call"
+.NXR "real group ID" "setting"
+.NXR "effective group ID" "setting"
+The real and effective group ID's of the current process
+are set to the arguments.
+.PP
+Supplying a value of \-1 for either the real or effective
+group ID forces the system to substitute the current
+ID for the \-1 parameter.
+.SH Environment
+.PP
+.B BSD
+.br 
+If the process is superuser, or
+.PN rgid
+and
+.PN egid
+matches with the real group ID, the effective group ID, or the saved
+set-group-id (as described in
+.MS execve 2
+), then the real, effective, and saved set-group-id are set to 
+.PN rgid ,
+.PN egid ,
+and
+.PN egid ,
+respectively.
+.PP 
+.B POSIX
+.br
+.B SYSTEM-FIVE
+.br 
+When your program is compiled in POSIX or SYSTEM-FIVE mode, the
+following semantics apply when using the 
+.PN setregid
+function.
+.PP
+If the process is the superuser, the real, effective, and saved
+set-group-id (as described in 
+.MS execve 2
+) are set to 
+.PN rgid ,
+.PN egid ,
+and
+.PN egid ,
+respectively.
+.PP
+If the process is not the superuser, but the
+.PN rgid
+and
+.PN egid
+matches the real group ID, the effective group ID
+(only in SYSTEM-FIVE and BSD environment), or the saved set-group-id,
+then the effective ID is set to
+.PN egid. 
+The real group ID and the saved set-group-id are left unchanged.
+.SH Return Values
+Upon successful completion, a value of zero (0) is returned.  Otherwise,
+a value of \-1 is returned, and \fIerrno\fP is set to indicate the error.
+.SH Diagnostics
+.TP 15
+[EPERM]
+The current process is not the superuser and the
+.PN egid
+and
+.PN rgid
+specified does not match with the real group ID or the effective group
+ID (only in SYSTEM-FIVE and BSD environment) or the saved set-group-id.
+.SH See Also
+getgid(2), setreuid(2), setgid(3)

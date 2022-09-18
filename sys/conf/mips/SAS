@@ -1,0 +1,551 @@
+#
+# @(#)SAS	4.8	(ULTRIX)	11/21/90
+#
+machine		mips
+cpu		"DS3100"
+cpu		"DS5100"
+cpu		"DS5400"
+cpu		"DS5500"
+cpu		"DS5800"
+cpu		"DS5000"
+cpu		"DS5000_100"
+ident		"SAS"
+timezone	5 dst
+maxusers	1
+maxuprc		10
+physmem		8
+processors	1
+scs_sysid	1
+
+options		QUOTA
+options		INET
+options		UFS
+options		UWS
+
+makeoptions	VERSION="Ultrix_V4.0"
+makeoptions	ENDIAN="-EL"
+
+config		vmunix	root on md0a
+
+#all the adapters and adapter-like items
+adapter		xmi0	at nexus?
+adapter		vaxbi0	at nexus?
+adapter		vaxbi1	at nexus?
+adapter		vaxbi2	at nexus?
+adapter		vaxbi3	at nexus?
+adapter		vaxbi4	at nexus?
+adapter		vaxbi5	at nexus?
+adapter		vaxbi11 at nexus?
+adapter		vaxbi12 at nexus?
+adapter		vaxbi13 at nexus?
+adapter		vaxbi14 at nexus?
+adapter		uba0	at nexus?
+adapter		uba1	at nexus?
+adapter		uba2	at nexus?
+adapter		uba3	at nexus?
+adapter		uba4	at nexus?
+adapter		uba5	at nexus?
+adapter		uba6	at nexus?
+adapter		ibus0	at nexus?
+adapter		ibus1	at nexus?
+adapter		ibus2	at nexus?
+adapter		ibus3	at nexus?
+adapter		ibus4	at nexus?
+adapter		ibus5	at nexus?
+adapter		ibus6	at nexus?
+adapter		ibus7	at nexus?
+adapter		msi0	at nexus?
+adapter		ci0	at nexus?
+
+#all the controllers and controller-like items
+controller	hsc0	at ci0		cinode 0
+controller	hsc1	at ci0		cinode 1
+controller	hsc2	at ci0		cinode 2
+controller	hsc3	at ci0		cinode 3
+controller	hsc4	at ci0		cinode 4
+controller	hsc5	at ci0		cinode 5
+controller	hsc6	at ci0		cinode 6
+controller	hsc7	at ci0		cinode 7
+controller	hsc8	at ci0		cinode 8
+
+controller	aie0	at vaxbi?	node?
+controller	aie1	at vaxbi?	node?
+controller	kdb0	at vaxbi?	node?
+controller	kdb1	at vaxbi?	node?
+controller	kdb2	at vaxbi?	node?
+controller	kdb3	at vaxbi?	node?
+controller	kdb4	at vaxbi?	node?
+controller	kdb5	at vaxbi?	node?
+controller	kdb6	at vaxbi?	node?
+controller	kdb7	at vaxbi?	node?
+controller	kdb8	at vaxbi?	node?
+controller	kdb9	at vaxbi?	node?
+controller	kdb10	at vaxbi?	node?
+controller	kdb11	at vaxbi?	node?
+controller	klesib0 at vaxbi?	node?
+controller	klesib1 at vaxbi?	node?
+controller	klesib2 at vaxbi?	node?
+controller	klesib3 at vaxbi?	node?
+controller	kdm0	at xmi?		node?
+controller	kdm1	at xmi?		node?
+controller	kdm2	at xmi?		node?
+controller	kdm3	at xmi?		node?
+controller	uda0	at uba?
+controller	uda1	at uba?
+controller	uda2	at uba?
+controller	uda3	at uba?
+controller	klesiu0 at uba?
+controller	klesiu1 at uba?
+controller	klesiu2 at uba?
+controller	klesiu3 at uba?
+controller	bvpssp2 at aie0		vector bvpsspintr
+controller	bvpssp3 at aie1		vector bvpsspintr
+controller	uq0	at uda0		csr 0172150 vector uqintr
+controller	uq1	at uda1		csr 0172150 vector uqintr
+controller	uq2	at uda2		csr 0172150 vector uqintr
+controller	uq3	at uda3		csr 0172150 vector uqintr
+controller	uq4	at kdb0		vector uqintr
+controller	uq5	at kdb1		vector uqintr
+controller	uq6	at kdb2		vector uqintr
+controller	uq7	at kdb3		vector uqintr
+controller	uq8	at kdb4		vector uqintr
+controller	uq9	at kdb5		vector uqintr
+controller	uq10	at kdb6		vector uqintr
+controller	uq11	at kdb7		vector uqintr
+controller	uq12	at kdb8		vector uqintr
+controller	uq13	at kdb9		vector uqintr
+controller	uq14	at kdb10	vector uqintr
+controller	uq15	at kdb11	vector uqintr
+controller	uq16	at klesiu0	csr 0174500 vector uqintr
+controller	uq17	at klesiu1	csr 0174500 vector uqintr
+controller	uq18	at klesiu2	csr 0174500 vector uqintr
+controller	uq19	at klesiu3	csr 0174500 vector uqintr
+controller	uq20	at klesib0	vector uqintr
+controller	uq21	at klesib1	vector uqintr
+controller	uq22	at klesib2	vector uqintr
+controller	uq23	at klesib3	vector uqintr
+controller	uq24	at kdm0		vector uqintr
+controller	uq25	at kdm1		vector uqintr
+controller	uq26	at kdm2		vector uqintr
+controller	uq27	at kdm3		vector uqintr
+controller	dssc0	at msi0		msinode 0
+controller	dssc1	at msi0		msinode 1
+controller	dssc2	at msi0		msinode 2
+controller	dssc3	at msi0		msinode 3
+controller	dssc4	at msi0		msinode 4
+controller	dssc5	at msi0		msinode 5
+controller	dssc6	at msi0		msinode 6
+controller	dssc7	at msi0		msinode 7
+controller	uda0	at uba?
+controller	uda1	at uba?
+controller	uda2	at uba?
+controller	uda3	at uba?
+controller	klesiu0 at uba?
+controller	klesiu1 at uba?
+controller	klesiu2 at uba?
+controller	klesiu3 at uba?
+controller	sii0	at ibus?	vector sii_intr
+controller	asc0	at ibus?	vector ascintr
+controller	asc1	at ibus?	vector ascintr
+controller	asc2	at ibus?	vector ascintr
+controller	asc3	at ibus?	vector ascintr
+
+disk		ra0	at mscp		drive 0
+disk		ra1	at mscp		drive 1
+disk		ra2	at mscp		drive 2
+disk		ra3	at mscp		drive 3
+disk		ra4	at mscp		drive 4
+disk		ra5	at mscp		drive 5
+disk		ra6	at mscp		drive 6
+disk		ra7	at mscp		drive 7
+disk		ra8	at mscp		drive 8
+disk		ra9	at mscp		drive 9
+disk		ra10	at mscp		drive 10
+disk		ra11	at mscp		drive 11
+disk		ra12	at mscp		drive 12
+disk		ra13	at mscp		drive 13
+disk		ra14	at mscp		drive 14
+disk		ra15	at mscp		drive 15
+disk		ra16	at mscp		drive 16
+disk		ra17	at mscp		drive 17
+disk		ra18	at mscp		drive 18
+disk		ra19	at mscp		drive 19
+disk		ra20	at mscp		drive 20
+disk		ra21	at mscp		drive 21
+disk		ra22	at mscp		drive 22
+disk		ra23	at mscp		drive 23
+disk		ra24	at mscp		drive 24
+disk		ra25	at mscp		drive 25
+disk		ra26	at mscp		drive 26
+disk		ra27	at mscp		drive 27
+disk		ra28	at mscp		drive 28
+disk		ra29	at mscp		drive 29
+disk		ra30	at mscp		drive 30
+disk		ra31	at mscp		drive 31
+disk		ra32	at mscp		drive 32
+disk		ra33	at mscp		drive 33
+disk		ra34	at mscp		drive 34
+disk		ra35	at mscp		drive 35
+disk		ra36	at mscp		drive 36
+disk		ra37	at mscp		drive 37
+disk		ra38	at mscp		drive 38
+disk		ra39	at mscp		drive 39
+disk		ra40	at mscp		drive 40
+disk		ra41	at mscp		drive 41
+disk		ra42	at mscp		drive 42
+disk		ra43	at mscp		drive 43
+disk		ra44	at mscp		drive 44
+disk		ra45	at mscp		drive 45
+disk		ra46	at mscp		drive 46
+disk		ra47	at mscp		drive 47
+disk		ra48	at mscp		drive 48
+disk		ra49	at mscp		drive 49
+disk		ra50	at mscp		drive 50
+disk		ra51	at mscp		drive 51
+disk		ra52	at mscp		drive 52
+disk		ra53	at mscp		drive 53
+disk		ra54	at mscp		drive 54
+disk		ra55	at mscp		drive 55
+disk		ra56	at mscp		drive 56
+disk		ra57	at mscp		drive 57
+disk		ra58	at mscp		drive 58
+disk		ra59	at mscp		drive 59
+disk		ra60	at mscp		drive 60
+disk		ra61	at mscp		drive 61
+disk		ra62	at mscp		drive 62
+disk		ra63	at mscp		drive 63
+disk		ra64	at mscp		drive 64
+disk		ra65	at mscp		drive 65
+disk		ra66	at mscp		drive 66
+disk		ra67	at mscp		drive 67
+disk		ra68	at mscp		drive 68
+disk		ra69	at mscp		drive 69
+disk		ra70	at mscp		drive 70
+disk		ra71	at mscp		drive 71
+disk		ra72	at mscp		drive 72
+disk		ra73	at mscp		drive 73
+disk		ra74	at mscp		drive 74
+disk		ra75	at mscp		drive 75
+disk		ra76	at mscp		drive 76
+disk		ra77	at mscp		drive 77
+disk		ra78	at mscp		drive 78
+disk		ra79	at mscp		drive 79
+disk		ra80	at mscp		drive 80
+disk		ra81	at mscp		drive 81
+disk		ra82	at mscp		drive 82
+disk		ra83	at mscp		drive 83
+disk		ra84	at mscp		drive 84
+disk		ra85	at mscp		drive 85
+disk		ra86	at mscp		drive 86
+disk		ra87	at mscp		drive 87
+disk		ra88	at mscp		drive 88
+disk		ra89	at mscp		drive 89
+disk		ra90	at mscp		drive 90
+disk		ra91	at mscp		drive 91
+disk		ra92	at mscp		drive 92
+disk		ra93	at mscp		drive 93
+disk		ra94	at mscp		drive 94
+disk		ra95	at mscp		drive 95
+disk		ra96	at mscp		drive 96
+disk		ra97	at mscp		drive 97
+disk		ra98	at mscp		drive 98
+disk		ra99	at mscp		drive 99
+disk		ra100	at mscp		drive 100
+disk		ra101	at mscp		drive 101
+disk		ra102	at mscp		drive 102
+disk		ra103	at mscp		drive 103
+disk		ra104	at mscp		drive 104
+disk		ra105	at mscp		drive 105
+disk		ra106	at mscp		drive 106
+disk		ra107	at mscp		drive 107
+disk		ra108	at mscp		drive 108
+disk		ra109	at mscp		drive 109
+disk		ra110	at mscp		drive 110
+disk		ra111	at mscp		drive 111
+disk		ra112	at mscp		drive 112
+disk		ra113	at mscp		drive 113
+disk		ra114	at mscp		drive 114
+disk		ra115	at mscp		drive 115
+disk		ra116	at mscp		drive 116
+disk		ra117	at mscp		drive 117
+disk		ra118	at mscp		drive 118
+disk		ra119	at mscp		drive 119
+disk		ra120	at mscp		drive 120
+disk		ra121	at mscp		drive 121
+disk		ra122	at mscp		drive 122
+disk		ra123	at mscp		drive 123
+disk		ra124	at mscp		drive 124
+disk		ra125	at mscp		drive 125
+disk		ra126	at mscp		drive 126
+disk		ra127	at mscp		drive 127
+disk		ra128	at mscp		drive 128
+disk		ra129	at mscp		drive 129
+disk		ra130	at mscp		drive 130
+disk		ra131	at mscp		drive 131
+disk		ra132	at mscp		drive 132
+disk		ra133	at mscp		drive 133
+disk		ra134	at mscp		drive 134
+disk		ra135	at mscp		drive 135
+disk		ra136	at mscp		drive 136
+disk		ra137	at mscp		drive 137
+disk		ra138	at mscp		drive 138
+disk		ra139	at mscp		drive 139
+disk		ra140	at mscp		drive 140
+disk		ra141	at mscp		drive 141
+disk		ra142	at mscp		drive 142
+disk		ra143	at mscp		drive 143
+disk		ra144	at mscp		drive 144
+disk		ra145	at mscp		drive 145
+disk		ra146	at mscp		drive 146
+disk		ra147	at mscp		drive 147
+disk		ra148	at mscp		drive 148
+disk		ra149	at mscp		drive 149
+disk		ra150	at mscp		drive 150
+disk		ra151	at mscp		drive 151
+disk		ra152	at mscp		drive 152
+disk		ra153	at mscp		drive 153
+disk		ra154	at mscp		drive 154
+disk		ra155	at mscp		drive 155
+disk		ra156	at mscp		drive 156
+disk		ra157	at mscp		drive 157
+disk		ra158	at mscp		drive 158
+disk		ra159	at mscp		drive 159
+disk		ra160	at mscp		drive 160
+disk		ra161	at mscp		drive 161
+disk		ra162	at mscp		drive 162
+disk		ra163	at mscp		drive 163
+disk		ra164	at mscp		drive 164
+disk		ra165	at mscp		drive 165
+disk		ra166	at mscp		drive 166
+disk		ra167	at mscp		drive 167
+disk		ra168	at mscp		drive 168
+disk		ra169	at mscp		drive 169
+disk		ra170	at mscp		drive 170
+disk		ra171	at mscp		drive 171
+disk		ra172	at mscp		drive 172
+disk		ra173	at mscp		drive 173
+disk		ra174	at mscp		drive 174
+disk		ra175	at mscp		drive 175
+disk		ra176	at mscp		drive 176
+disk		ra177	at mscp		drive 177
+disk		ra178	at mscp		drive 178
+disk		ra179	at mscp		drive 179
+disk		ra180	at mscp		drive 180
+disk		ra181	at mscp		drive 181
+disk		ra182	at mscp		drive 182
+disk		ra183	at mscp		drive 183
+disk		ra184	at mscp		drive 184
+disk		ra185	at mscp		drive 185
+disk		ra186	at mscp		drive 186
+disk		ra187	at mscp		drive 187
+disk		ra188	at mscp		drive 188
+disk		ra189	at mscp		drive 189
+disk		ra190	at mscp		drive 190
+disk		ra191	at mscp		drive 191
+disk		ra192	at mscp		drive 192
+disk		ra193	at mscp		drive 193
+disk		ra194	at mscp		drive 194
+disk		ra195	at mscp		drive 195
+disk		ra196	at mscp		drive 196
+disk		ra197	at mscp		drive 197
+disk		ra198	at mscp		drive 198
+disk		ra199	at mscp		drive 199
+disk		ra200	at mscp		drive 200
+disk		ra201	at mscp		drive 201
+disk		ra202	at mscp		drive 202
+disk		ra203	at mscp		drive 203
+disk		ra204	at mscp		drive 204
+disk		ra205	at mscp		drive 205
+disk		ra206	at mscp		drive 206
+disk		ra207	at mscp		drive 207
+disk		ra208	at mscp		drive 208
+disk		ra209	at mscp		drive 209
+disk		ra210	at mscp		drive 210
+disk		ra211	at mscp		drive 211
+disk		ra212	at mscp		drive 212
+disk		ra213	at mscp		drive 213
+disk		ra214	at mscp		drive 214
+disk		ra215	at mscp		drive 215
+disk		ra216	at mscp		drive 216
+disk		ra217	at mscp		drive 217
+disk		ra218	at mscp		drive 218
+disk		ra219	at mscp		drive 219
+disk		ra220	at mscp		drive 220
+disk		ra221	at mscp		drive 221
+disk		ra222	at mscp		drive 222
+disk		ra223	at mscp		drive 223
+disk		ra224	at mscp		drive 224
+disk		ra225	at mscp		drive 225
+disk		ra226	at mscp		drive 226
+disk		ra227	at mscp		drive 227
+disk		ra228	at mscp		drive 228
+disk		ra229	at mscp		drive 229
+disk		ra230	at mscp		drive 230
+disk		ra231	at mscp		drive 231
+disk		ra232	at mscp		drive 232
+disk		ra233	at mscp		drive 233
+disk		ra234	at mscp		drive 234
+disk		ra235	at mscp		drive 235
+disk		ra236	at mscp		drive 236
+disk		ra237	at mscp		drive 237
+disk		ra238	at mscp		drive 238
+disk		ra239	at mscp		drive 239
+disk		ra240	at mscp		drive 240
+disk		ra241	at mscp		drive 241
+disk		ra242	at mscp		drive 242
+disk		ra243	at mscp		drive 243
+disk		ra244	at mscp		drive 244
+disk		ra245	at mscp		drive 245
+disk		ra246	at mscp		drive 246
+disk		ra247	at mscp		drive 247
+disk		ra248	at mscp		drive 248
+disk		ra249	at mscp		drive 249
+disk		ra250	at mscp		drive 250
+disk		ra251	at mscp		drive 251
+disk		ra252	at mscp		drive 252
+disk		ra253	at mscp		drive 253
+disk		ra254	at mscp		drive 254
+disk		rz0     at sii0         drive 0
+disk		rz1     at sii0         drive 1
+disk		rz2     at sii0         drive 2
+disk		rz3     at sii0         drive 3
+disk		rz4     at sii0         drive 4
+disk		rz5     at sii0         drive 5
+disk		rz6     at sii0         drive 6
+disk		rz7	at sii0		drive 7
+disk		rz0	at asc0		drive 0
+disk		rz1	at asc0		drive 1
+disk		rz2	at asc0		drive 2
+disk		rz3	at asc0		drive 3
+disk		rz4	at asc0		drive 4
+disk		rz5	at asc0		drive 5
+disk		rz6	at asc0		drive 6
+disk		rz7	at asc0		drive 7
+disk		rz8	at asc1		drive 0
+disk		rz9	at asc1		drive 1
+disk		rz10	at asc1		drive 2
+disk		rz11	at asc1		drive 3
+disk		rz12	at asc1		drive 4
+disk		rz13	at asc1		drive 5
+disk		rz14	at asc1		drive 6
+disk		rz15	at asc1		drive 7
+disk		rz16	at asc2		drive 0
+disk		rz17	at asc2		drive 1
+disk		rz18	at asc2		drive 2
+disk		rz19	at asc2		drive 3
+disk		rz20	at asc2		drive 4
+disk		rz21	at asc2		drive 5
+disk		rz22	at asc2		drive 6
+disk		rz23	at asc2		drive 7
+disk		rz24	at asc3		drive 0
+disk		rz25	at asc3		drive 1
+disk		rz26	at asc3		drive 2
+disk		rz27	at asc3		drive 3
+disk		rz28	at asc3		drive 4
+disk		rz29	at asc3		drive 5
+disk		rz30	at asc3		drive 6
+disk		rz31	at asc3		drive 7
+
+tape		tms0	at mscp		drive 0
+tape		tms1	at mscp		drive 1
+tape		tms2	at mscp		drive 2
+tape		tms3	at mscp		drive 3
+tape		tms4	at mscp		drive 4
+tape		tms5	at mscp		drive 5
+tape		tms6	at mscp		drive 6
+tape		tms7	at mscp		drive 7
+tape		tms8	at mscp		drive 8
+tape		tms9	at mscp		drive 9
+tape		tms10	at mscp		drive 10
+tape		tms11	at mscp		drive 11
+tape		tms12	at mscp		drive 12
+tape		tms13	at mscp		drive 13
+tape		tms14	at mscp		drive 14
+tape		tms15	at mscp		drive 15
+tape		tms16	at mscp		drive 16
+tape		tms17	at mscp		drive 17
+tape		tms18	at mscp		drive 18
+tape		tms19	at mscp		drive 19
+tape		tms20	at mscp		drive 20
+tape		tms21	at mscp		drive 21
+tape		tms22	at mscp		drive 22
+tape		tms23	at mscp		drive 23
+tape		tms24	at mscp		drive 24
+tape		tms25	at mscp		drive 25
+tape		tms26	at mscp		drive 26
+tape		tms27	at mscp		drive 27
+tape		tms28	at mscp		drive 28
+tape		tms29	at mscp		drive 29
+tape		tms30	at mscp		drive 30
+tape		tms31	at mscp		drive 31
+tape		tz0     at sii0         drive 0
+tape		tz1     at sii0         drive 1
+tape		tz2     at sii0         drive 2
+tape		tz3     at sii0         drive 3
+tape		tz4     at sii0         drive 4
+tape		tz5     at sii0         drive 5
+tape		tz6     at sii0         drive 6
+tape		tz7     at sii0         drive 7
+tape		tz0     at asc0         drive 0
+tape		tz1     at asc0         drive 1
+tape		tz2     at asc0         drive 2
+tape		tz3     at asc0         drive 3
+tape		tz4     at asc0         drive 4
+tape		tz5     at asc0         drive 5
+tape		tz6     at asc0         drive 6
+tape		tz7	at asc0		drive 7
+tape		tz8     at asc1         drive 0
+tape		tz9     at asc1         drive 1
+tape		tz10    at asc1         drive 2
+tape		tz11    at asc1         drive 3
+tape		tz12    at asc1         drive 4
+tape		tz13    at asc1         drive 5
+tape		tz14    at asc1         drive 6
+tape		tz15	at asc1		drive 7
+tape		tz16    at asc2         drive 0
+tape		tz17    at asc2         drive 1
+tape		tz18    at asc2         drive 2
+tape		tz19    at asc2         drive 3
+tape		tz20    at asc2         drive 4
+tape		tz21    at asc2         drive 5
+tape		tz22    at asc2         drive 6
+tape		tz23	at asc2		drive 7
+tape		tz24    at asc3         drive 0
+tape		tz25    at asc3         drive 1
+tape		tz26    at asc3         drive 2
+tape		tz27    at asc3         drive 3
+tape		tz28    at asc3         drive 4
+tape		tz29    at asc3         drive 5
+tape		tz30    at asc3         drive 6
+tape		tz31 	at asc3		drive 7
+
+device		xna0	at vaxbi?	node? vector xnaintr
+device		xna1	at vaxbi?	node? vector xnaintr
+device		xna2	at vaxbi?	node? vector xnaintr
+device		xna3	at vaxbi?	node? vector xnaintr
+
+device          ln0     at ibus?        vector lnintr
+device          ln1     at ibus?        vector lnintr
+device          ln2     at ibus?        vector lnintr
+device          ln3     at ibus?        vector lnintr
+device		ne0	at ibus?	vector neintr
+device		fza0	at ibus?	vector fzaintr
+device		fza1	at ibus?	vector fzaintr
+device		fza2	at ibus?	vector fzaintr
+
+device		dc0	at ibus?	vector dcintr
+device		scc0	at ibus?	vector sccintr
+device		mdc0	at ibus?	vector mdcintr
+device		fb0	at ibus?	vector fbint
+device		ga0	at ibus?	vector gaintr
+device		gq0	at ibus?	vector gqintr
+
+pseudo-device	pty
+pseudo-device	inet
+pseudo-device	xcons
+pseudo-device	ws
+pseudo-device	ether
+pseudo-device	loop
+pseudo-device	ufs
+pseudo-device	md	3072
+pseudo-device   presto

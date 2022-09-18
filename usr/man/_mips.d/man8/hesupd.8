@@ -1,0 +1,85 @@
+./" new manpage created for FT2 of V4.0 - 20 dec, 89  (JM)
+./"
+.TH hesupd 8
+.SH Name
+hesupd \- Hesiod update daemon for modifying BIND/Hesiod passwords
+.SH Syntax
+.PN /usr/etc/hesupd
+.SH Description
+.NXR "hesupd" "Hesiod update daemon"
+The Hesiod update daemon, 
+.PN /usr/etc/hesupd , 
+is a server that 
+handles password change requests from the 
+.PN passwd 
+command and is run
+only on the BIND/Hesiod primary server serving the 
+password database.  The daemon changes the password entries on
+the BIND/Hesiod primary server.  
+.PP
+The primary server is
+identified by the host name alias, bindmaster, which must
+exist on the server's host entry in the hosts database.  The
+bindsetup command adds the host name alias, bindmaster
+to the 
+.PN /var/dss/namedb/src/hosts 
+file if it does not already
+exist.
+.PP
+This daemon is not run by default, nor can it be started up
+from the 
+.PN inetd 
+daemon.  If you want to enable remote password
+updating for BIND/Hesiod, put an entry for 
+.PN hesupd 
+in the 
+.PN /etc/rc.local 
+file of the host serving as the
+primary server for the BIND/Hesiod 
+.PN passwd 
+file.  
+You can add the startup
+lines for 
+.PN hesupd 
+to 
+.PN /etc/rc.local 
+by running 
+the 
+.PN bindsetup 
+command.
+.PP
+Hesiod keeps a log file, 
+.PN /var/adm/hesupd.log , 
+which records successful
+and unsuccessful password changes by uid.
+.SH Examples
+This following example shows lines you can add to 
+.PN /etc/rc.local 
+in order to
+start the Hesiod update daemon at boot time.
+.EX
+   [ \-f /usr/etc/hesupd ] && {
+      /usr/etc/hesupd; echo \-n ' hesupd' >/dev/console
+   }
+.EE
+.SH Files
+.TP 35
+.PN /etc/rc.local
+Startup commands pertinent to a specific system
+.sp 6p
+.TP 35
+.PN /var/adm/hesupd.log     
+Log of password changes
+.sp 
+.TP 35
+Default BIND Files:
+.TP 35
+.PN /var/dss/namedb/src/passwd  
+BIND/Hesiod passwd file
+.TP 35
+.PN /var/dss/namedb/src/hosts   
+BIND hosts file
+.SH See Also
+bindsetup(8), passwd(1)  
+.br  
+.I Guide to the BIND/Hesiod Service

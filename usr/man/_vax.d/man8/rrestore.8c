@@ -1,0 +1,387 @@
+.\" SCCSID: @(#)rrestore.8c	8.1	9/11/90
+.TH rrestore 8c
+.SH Name
+rrestore \- restore a file system dump across the network
+.SH Syntax
+.B /etc/rrestore
+[ \-\fIkey\fP [
+\fIname\fP ... ] ]
+.SH Description
+.NXB "rrestore command"
+.NXA "restore command" "rrestore command"
+.NXA "rrestore command" "rmt program"
+.NXB "file system" "restoring incremental dumps across network"
+The
+.PN rrestore
+utility obtains files
+from a file, magnetic tape, or disk, which were
+saved by a previous
+.MS dump 8 .
+The utility is identical in operation to
+.MS restore 8
+except the 
+.B f
+key must be specified and the file
+supplied should be of the following form:
+.PP
+.I remote-system-name:device-or-file
+.PP
+The
+.PN rrestore
+command
+initiates a remote server,
+.PN /etc/rmt ,
+on the remote machine to access the remote file or device.
+The function portion of the key
+is specified by one of the following letters:
+.SH Keys
+.NXB "rrestore command" "keys"
+.TP 5 
+.B  i
+This key allows interactive restoration of files from the dump media.
+After reading in the directory information from the dump media,
+.PN rrestore
+lets the user move
+around the directory tree selecting or deselecting
+files to be extracted.
+The available interactive commands are: 
+.RS 5
+.TP 12
+\fBls [\fIarg\fR]
+List the specified directory.  If no directory is specified,
+the user's current directory is listed.
+Entries that are directories are appended with a slash (/).
+Entries that have been marked for extraction are prepended with an 
+asterisk (*).
+If the 
+.B verbose 
+key is set,
+the inode number of each entry is also listed.
+.TP
+\fBcd \fIarg\fR
+Change the current working directory to the directory specified.
+.TP
+\fBpwd\fR
+Print the full pathname of the current working directory.
+.TP
+\fBadd [\fIarg\fR]
+The current directory or the specified argument 
+(a directory or file)
+is added to the extraction list 
+(the list of files to be extracted).  
+If a directory is specified, then it and all its descendents are
+added to the extraction list,
+unless the
+.B h
+key is specified on the command line.
+Files that are on the extraction list are prepended with an
+asterisk (*)
+when they are listed by 
+.BR ls .
+.TP
+\fBdelete [\fIarg\fR]
+The current directory or specified argument
+is deleted from the extraction list (the list of
+files to be extracted).  
+If a directory is specified, then it and all its descendents are
+deleted from the extraction list,
+unless the
+.B h
+key modifier is specified on the command line.
+The easiest way to extract most of the files from a directory 
+is to add the directory to the extraction list and then delete
+those files that are not needed.
+.TP
+\fBextract\fR
+All the files on the extraction list are extracted
+from the dump media.
+The
+.PN rrestore
+command asks which volume the user wishes to mount.
+.TP
+\fBverbose\fR
+The verbose (
+.B v
+) key is toggled. 
+Entering the command turns on verbose.  Entering the command
+again turns off verbose.
+When used, the verbose key causes the 
+.B ls
+command to list the inode numbers of all entries.
+It also causes
+.PN rrestore
+to print out information about each file as it is extracted.
+.TP
+\fBhelp\fR
+List a summary of the available commands.
+.TP
+\fBquit\fR
+The
+.PN rrestore 
+utility immediately exits,
+even if the extraction list is not empty.
+.RE
+.TP 5
+.B R
+The
+.PN rrestore
+utility prompts for a particular volume of a multivolume
+set on which to restart a full restore. 
+This option lets
+.PN rrestore
+be interrupted and then restarted.
+.TP 5
+.B r
+The dump medias' data is read into the current directory.
+You should use this function key only to restore the complete
+dump media onto a newly created file system, or to restore incremental
+dump media after a full level-0 restore.  See Examples for
+a typical sequence to restore complete dump media.
+Note that
+.PN rrestore
+leaves a file,
+.PN restoresymtab ,
+in the root directory to pass information between incremental
+restore passes.  Remove this file after the last
+incremental dump media has been restored.
+A 
+.MS rdump 8
+followed by a
+.MS newfs 8
+and a
+.MS rrestore 8
+can be used to change the size of a file system.
+.TP 5
+.B t
+The names of the specified files are listed if they occur
+on the dump media.  If no 
+.I name
+argument is given, then the
+root directory is listed.  This results in the entire contents
+of the dump media being listed, unless the
+.B h
+key modifier has been specified.
+.TP 5
+.B x
+The files specified by the
+.I name
+argument are extracted from the dump media.  If a named
+file matches a directory whose contents had been written onto
+the dump media and the
+.B h
+key modifier is not specified, the directory is recursively
+extracted.  The owner, modification time, and mode are
+restored, if possible.
+If no
+.I name
+argument is given, the root directory is extracted.  This
+results in the extraction of the
+entire contents of the dump media unless
+the
+.B h
+key modifier has been specified.
+.PP
+You can use any of the following characters in addition to the 
+letter that selects the function desired: 
+.TP 5
+.B B
+The next argument to
+.PN rrestore
+is a number giving the size, in 1024-byte blocks, of a
+fixed-size storage medium, such as diskettes or removable
+disks (see Examples). 
+The
+.PN rrestore
+utility does not ask whether it should abort the restore
+if there is a dump media read error.  It always tries to
+skip over the bad block(s) and continue.
+.TP 5
+.B f
+The next argument to
+.PN rrestore
+is used as the name of the remote system followed by a colon and the device or file containing the dump data.
+.TP 5
+.B h
+The
+.PN rrestore
+utility extracts the actual directory, rather than the files
+that it references.  This prevents hierarchical restoration of
+complete subtrees from the dump media.
+.TP 5
+.B m
+The
+.PN rrestore
+utility extracts by inode numbers rather than by file name.  This
+is useful if only a few files are being extracted, and you want
+to avoid typing the complete pathname to the file.
+.TP 5
+.B o
+Provides compatibility with non-ULTRIX or pre-ULTRIX V2.0 
+remote systems.
+.TP 5
+.B s
+The next argument
+identifies
+which dump file on the dump media is to be used by 
+.PN rrestore .
+This is useful when
+the dump media has more than one dump image on it and  
+not all of them will be restored.
+.TP 5
+.B v
+Normally,
+.PN rrestore
+does its work silently.
+The
+.B v
+(verbose)
+key modifier causes it to display
+the name of each file it treats,
+preceded by its file type.
+.NXE "rrestore command" "keys"
+.SH Examples
+.NXR "rrestore command" "examples"
+The following example shows a typical sequence of
+commands to restore complete dump media
+from a system named ``remotesystem'' mounted 
+on a tape device on that system:
+.EX
+/etc/newfs /dev/rrp0g ra60
+/etc/mount /dev/rp0g /mnt
+cd /mnt
+rrestore rf remotesystem:/dev/rmt0h
+.EE
+Another
+.PN rrestore
+can be done to get an incremental dump.
+The following example shows how to restore files interactively
+from a dump on RX50 diskettes:
+.EX
+rrestore iBf 400 remotesystem:/dev/ra2a
+.EE
+The following example restores a previously dumped file system from a -
+non-ULTRIX or an ULTRIX remote system
+prior to Version 2.0.  The command
+restores the complete file system in verbose mode specifying 
+a 400 block device size from a remote system's RX50 device:
+.EX
+rrestore rvoBf 400 remotesystem:/dev/ra2a
+.EE
+.SH Restrictions
+.NXR "restore command" "restricted"
+The
+.PN rrestore
+utility
+can make errors when doing incremental restores from
+dump media that were made on active file systems.
+.PP
+You must do a level 0 dump after a full restore.
+Because 
+.PN rrestore 
+runs in user code,
+it has no control over inode allocation;
+thus, you must do a full 
+.PN restore 
+to get a new set of directories
+that reflects the new inode numbering,
+even though the contents of the files are unchanged.
+.SH Diagnostics
+.NXB "rrestore command" "diagnostics"
+Complains about bad key characters.
+.PP
+Complains if it gets a dump media read error.
+If 
+the user responds with a y,
+.PN rrestore
+attempts to continue the restore.
+.PP
+If the dump extends over more than one dump volume,
+.PN rrestore
+will ask the user to change volumes.
+If the
+.B x
+or
+.B i
+function key has been specified,
+.PN rrestore
+also asks which volume the user wishes to mount.
+.PP
+There are numerous consistency checks that can be listed by
+.PN rrestore .
+Most checks are self-explanatory. 
+Some common errors are: 
+.PP
+.B "Converting to new file system format"
+.br
+If dump media created from the Fast File System (FFS)
+has been loaded.
+It is automatically converted to the Berkeley Version 4.2
+file system format.
+.PP
+.B "<\fIfilename\fP>: not found on tape{disk}"
+.br
+The specified file name was listed in the dump media directory,
+but was not found on the media.
+This is caused by dump media read errors while looking for the file
+or from using dump media created on an active file system.
+.PP
+.B "expected next file <\fIinumber\fP>, got <\fIinumber\fP>"
+.br
+A file that was not listed in the directory was found on the media.
+This can occur when using dump media created on an active file system.
+.PP
+.B "Incremental tape{disk} too low"
+.br
+When doing incremental restore,
+dump media was loaded that was written 
+before the previous incremental media
+or has too low an incremental level.  
+.PP
+.B "Incremental tape{disk} too high"
+.br
+When doing incremental restore,
+dump media that does not begin its coverage 
+where the previous incremental 
+dump media left off,
+or that has too high an incremental level has been loaded.
+.PP
+.B "Tape{Disk} read error while restoring <filename>"
+.br
+.B "Dump media read error while skipping over inode <inumber>"
+.br
+.B "Dump media read error while trying to resynchronize"
+.br
+A dump media read error has occurred.
+If a file name is specified,
+then its contents are probably partially wrong.
+If an inode is being skipped or the restore is trying to resynchronize,
+then no extracted files have been corrupted,
+although files may not be found on the dump media.
+.PP
+.B "resync restore, skipped <num> blocks"
+.br
+After a dump media read error, 
+.PN rrestore
+may have to resynchronize itself.
+This message lists the number of blocks that were skipped. 
+.NXE "rrestore command" "diagnostics"
+.SH Files
+.TP 17
+.PN /dev/rmt0h
+Default tape drive
+.TP
+.PN /tmp/rstdir*
+File containing directories on the dump media
+.TP
+.PN /tmp/rstmode*
+Owner, mode, and time stamps for directories
+.TP
+.PN /restoresymtab
+Information passed between incremental restores
+.TP
+.PN /dev/tty
+Required for user interface
+.SH See Also
+restore(8), rmt(8c)
+.NXE "file system" "restoring incremental dumps across network"
+.NXE "rrestore command"

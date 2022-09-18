@@ -1,0 +1,118 @@
+.\" SCCSID: @(#)vlp.1	8.1	9/11/90
+.TH vlp 1 VAX "" Unsupported
+.SH Name
+vlp \- Format Lisp programs to be printed with nroff, vtroff, or troff
+.SH Syntax
+.B vlp
+[
+.B \-p
+.I pointsize
+] [
+.B \-d
+] [
+.B \-f
+] [
+.B \-l
+] [
+.B \-v
+] [
+.B \-T
+.I title1
+] 
+.I file1 
+[
+.B \-T
+.I title2
+] 
+.I file2 ...
+.SH Description
+The 
+.PN vlp
+command formats the named \fIfiles\fP
+so that they can be run through 
+.PN nroff ,
+.PN vtroff , 
+or
+.PN troff 
+to produce listings that line-up and are attractive.
+The first non-blank character of each line is lined-up vertically,
+as in the source file.
+Comments (text beginning with a semicolon)
+are printed in italics.
+Each function's name is printed in bold face next to the function.
+This format makes Lisp code look attractive when it is printed with a 
+variable width font.
+.PP
+Normally,
+.PN vlp 
+works as a filter and sends its output to the standard output.
+However,
+the 
+.B \-v
+option pipes the output directly to 
+.PN vtroff .
+If no \fIfiles\fP are specified,
+then 
+.PN vlp
+reads from the standard input.
+.SH Options
+.TP
+.B \-p
+Changes the size of the text from its default value of 8 points
+to one of 6, 8, 10, or 12 points.
+Once set, the point size is used for all subsequent files.
+This point size does not apply to embedded text (see the
+\fB\-f\fR option).
+.TP
+.B \-d
+Puts 
+.PN vlp
+into debugging mode.
+.TP
+.B \-f
+Sets the filtered mode
+in which all lines are passed unmodified,
+except those lines between the directives \fB.Ls\fR and \fB.Le\fR.
+This mode can be used to format Lisp code that is embedded in a document.
+The directive \fB.Ls\fR takes an optional argument that gives the point
+size for the embedded code.
+If not size is specified,
+the size of the surrounding text is used.
+.TP
+.B \-l
+Prevents 
+.PN vlp
+from placing labels next to functions.
+This switch is useful for embedded Lisp code,
+where the labels would be distracting.
+.TP
+.B \-v
+Causes 
+.PN vlp
+to send its output to 
+.PN vtroff 
+rather than the
+standard output.
+.TP
+.B \-T
+Print a title on each page.
+The 
+.B \-T
+option applies only to the next \fIfile\fP given.
+Titles are not printed for embedded text (see 
+.BR \-f ,
+above).
+This option may not be used if 
+.PN vlp
+is reading from the standard input.
+.SH Restrictions
+.PN vlp 
+transforms \\ into \\\\ so that it will be printed out.
+Hence, 
+.PN troff 
+commands cannot be embedded in Lisp code.
+.bp
+.SH Files
+/usr/lib/vlpmacs		troff/nroff macros
+.SH See Also
+vgrind(1), lisp(1)

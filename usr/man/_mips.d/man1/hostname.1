@@ -1,0 +1,23 @@
+.\" SCCSID: @(#)hostname.1	8.1	9/11/90
+.TH hostname 1
+.SH Name
+hostname \- print system name
+.SH Syntax
+.B hostname
+[\|\fInameofhost\fR\|]
+.SH Description
+.NXR "hostname command"
+.NXR "host name" "setting"
+.NXR "host" "printing"
+.NXA "host name" "host ID"
+.NXAM "hostname command" "gethostname system call"
+.NXAM "hostname command" "sethostname system call"
+The
+.PN hostname
+command prints the name of the current host, as given before the
+``login'' prompt.
+The super-user can set the hostname by giving an argument; this
+is usually done in the startup script 
+.PN /etc/rc.local .
+.SH See Also
+gethostname(2), sethostname(2)

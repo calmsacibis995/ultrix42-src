@@ -1,0 +1,50 @@
+.\" SCCSID: @(#)times.3	2.1	3/10/87
+.TH times 3
+.SH Name
+times \- get process times
+.SH Syntax
+.nf
+.B "#include <sys/times.h>
+.PP
+.B clock_t
+.B times(\fIbuffer\fP)
+.B struct tms *\fIbuffer\fP;
+.fi
+.SH Description
+.NXR "times subroutine"
+.NXR "process" "getting time-accounting information"
+The
+.PN times
+subroutine
+returns time-accounting information
+for the current process
+and for the terminated child processes
+of the current process.
+All times are in 1/HZ seconds, where HZ is equivalent to 60.
+.PP
+The following structure is returned by
+.PN times:
+.EX 0
+
+struct tms {
+        clock_t  tms_utime;     /* user time */
+        clock_t  tms_stime;     /* system time */
+        clock_t  tms_cutime;    /* user time, children */
+        clock_t  tms_cstime;    /* system time, children */
+};
+
+.EE
+.PP
+The children times are the sum
+of the children's process times and
+their children's times.
+.SH Return Values
+If successful, the function 
+.PN times 
+returns the elapsed time since
+00:00:00 GMT, January 1, 1970 in units of 1/60's of a second.
+When the function
+.PN times 
+fails, it returns \-1
+.SH See Also
+time(1), getrusage(2), wait3(2), time(3)

@@ -1,0 +1,206 @@
+.\" SCCSID: @(#)exp.3m	6.2	8/30/89
+.TH exp 3m VAX
+.SH Name
+exp, expm1, log, log10, log1p, pow, sqrt \- exponential, logarithm, power, square root
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double exp(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double expm1(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double log(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double log10(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double log1p(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double pow(\fIx,y\fP)
+.B double \fIx,y\fP;
+.PP
+.B double sqrt(\fIx\fP)
+.B double \fIx\fP;
+.fi
+.SH Description
+.NXR "exp subroutine (math)"
+.NXR "expm1 subroutine (math)"
+.NXR "log subroutine (math)"
+.NXR "log10 subroutine (math)"
+.NXR "log1p subroutine (math)"
+.NXR "pow subroutine"
+.NXR "sqrt subroutine (math)"
+.NXR "exp subroutine (math)" "erf subroutine"
+.NXR "exponential function"
+.NXR "logarithm function"
+.NXR "power function"
+.NXR "square root function"
+The 
+.PN exp
+function returns the exponential function of 
+.I x.
+.PP
+The
+.PN expm1 
+function
+returns exp(\fIx\fP)-1 accurately even for tiny 
+.IR x .
+.PP
+The
+.PN log
+function returns the natural logarithm of 
+.IR x ;
+.PN log10
+returns the base 10 logarithm.
+.PP
+The
+.PN log1p
+function returns log(1+\fIx\fP) accurately even for tiny
+.IR x .
+.PP
+The
+.PN pow
+function returns
+.I  x
+raised to the
+.I y
+power.
+.PP
+The
+.PN sqrt
+function returns the square root of 
+.I x.
+.SH Return Values
+The
+.PN exp
+function returns HUGE_VAL and sets
+.I errno
+to ERANGE when the correct value would overflow.
+When the correct value would underflow it returns zero and
+.I errno
+is set to ERANGE.
+.PP
+The
+.PN expm1
+function returns HUGE_VAL and sets
+.I errno
+to ERANGE when the correct value would overflow.
+When the correct value would underflow it returns \-1.
+.PP
+The
+.PN log
+and
+.PN log10
+functions return \-HUGE_VAL and set
+.I errno
+to EDOM when
+.I x
+is less than or equal to zero.
+When the correct value would overflow flow they return \-HUGE_VAL and
+.I errno
+is set to ERANGE.
+.PP
+The
+.PN log1p
+function returns \-HUGE_VAL and sets
+.I errno
+to EDOM when
+.I x
+is less than or equal to \-1.
+When the correct value would overflow flow it returns \-HUGE_VAL and
+.I errno
+is set to ERANGE.
+.PP
+The
+.PN pow
+function has many special cases.
+When
+.I x
+and
+.I y
+are both zero it returns 1.0.
+When
+.I x
+is negative and
+.I y
+is not an integer value it returns zero and
+.I errno
+is set to EDOM.
+When
+.I x
+is zero and
+.I y
+is negative it returns \-HUGE_VAL and
+.I errno
+is set to EDOM.
+When the correct value would overflow HUGE_VAL is returned and
+.I errno
+is set to ERANGE.
+When the correct value would underflow zero is returned and
+.I errno
+is set to ERANGE.
+.PP
+The
+.PN sqrt
+function returns zero and sets
+.I errno
+to EDOM when
+.I x
+is negative.
+.SH Environment
+.NXR "exp subroutine (math)" "System V and"
+When your program is compiled using the System V environment,
+.PN exp
+returns HUGE when the correct value would overflow, 
+and sets \fIerrno\fP to ERANGE; 
+.PN exp
+returns zero when the correct value would 
+underflow, and sets errno to ERANGE.
+.PP
+The
+.PN log
+and 
+.PN log10
+functions return HUGE and set \fIerrno\fP to EDOM
+when 
+.I x
+is nonpositive.  An error message is printed on
+the standard error output.
+.PP
+The
+.PN pow
+function returns zero and sets \fIerrno\fP to EDOM when 
+.I x
+is non-positive and y is not an integer, or when
+.I x
+and
+.I y
+are both zero.  In these cases, a message indicating
+DOMAIN error is printed on the standard error output.
+When the correct value for
+.PN pow
+would overflow,
+.PN pow
+returns HUGE and sets \fIerrno\fP to ERANGE.
+.PP
+The
+.PN sqrt
+function returns zero and sets \fIerrno\fP to EDOM when 
+.I x 
+is negative.  A message indicating DOMAIN error is 
+printed on the standard error output.
+.PP
+These error-handling procedures may be changed with 
+the function
+.MS matherr 3m .
+.PP
+.NT
+DOMAIN error is only printed in the System V environment.
+.NE
+.SH See Also
+hypot(3m), intro(3m), sinh(3m)

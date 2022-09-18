@@ -1,0 +1,227 @@
+QUICK INSTALLATION GUIDE
+
+
+/* static	char	*sccsid = "@(#)README	4.1	(ULTRIX)	7/2/90"; */
+
+/************************************************************************
+ *									*
+ *			Copyright (c) 1984 by				*
+ *		Digital Equipment Corporation, Maynard, MA		*
+ *			All rights reserved.				*
+ *									*
+ *   This software is furnished under a license and may be used and	*
+ *   copied  only  in accordance with the terms of such license and	*
+ *   with the  inclusion  of  the  above  copyright  notice.   This	*
+ *   software  or  any  other copies thereof may not be provided or	*
+ *   otherwise made available to any other person.  No title to and	*
+ *   ownership of the software is hereby transferred.			*
+ *									*
+ *   This software is  derived  from  software  received  from  the	*
+ *   University    of   California,   Berkeley,   and   from   Bell	*
+ *   Laboratories.  Use, duplication, or disclosure is  subject  to	*
+ *   restrictions  under  license  agreements  with  University  of	*
+ *   California and with AT&T.						*
+ *									*
+ *   The information in this software is subject to change  without	*
+ *   notice  and should not be construed as a commitment by Digital	*
+ *   Equipment Corporation.						*
+ *									*
+ *   Digital assumes no responsibility for the use  or  reliability	*
+ *   of its software on equipment which is not supplied by Digital.	*
+ *									*
+ ************************************************************************/
+
+
+
+
+
+
+
+Enhancements:
+
+Dialers			Lots of dialers included.
+
+Subdirectories		/usr/spool/uucp/sys contains per system subdirectories
+			and a DEFAULT directory.  This is a huge help on busy 
+			systems.
+
+/usr/var/uucp/L.cmds	List of commands permitted for remote execution.
+			A line of form 'PATH=...' sets the search path.
+			Execution levels must be assigned to each command.
+			See Installation and Administration Guide.
+			
+
+expect-send sequence	Escape characters now permitted: \r, \n.
+			\r, not \n, is default char sent at end of string.
+			\c	(put at end of string). Dont send ending \r.
+			\d	pause 1 second (\d\d pauses 2 seconds)
+			"" P_ZERO  `expect nothing, start sending zero parity.'
+			P_EVEN (default), P_ODD, P_ONE other parity modes.
+			\05	Send a control-E
+			"" ""   `expect nothing, send a \r'.
+
+uupoll [sysname]	Polls named system.
+
+uumonitor		Displays spooled files, and pending uuxqts.
+
+uuxqt			uuxqt can operate on a per command type basis
+			by using "-c" option. 
+			i.e.  uuxqt -cname_of_command.  It will default
+			to a general poll of commands.
+			Several uuxqt's can now run concurrently.
+			.XQTDIR now lives in /usr/spool/uucp.
+
+uuclean			the -s option has been added. -sALL will clean
+			all system subdirectories.  -ssystem_name will
+			clean spool directories belonging to system_name. 
+			uuclean will only mail back files if the -m option
+			is used.  Otherwise results will be mailed to "uucp".
+
+uucp			the -W option prevents expansion of file names that
+			reside on remote systems.  Normally files names are
+			prepended with the current working directory if the
+			full path of the file was not specified.  
+
+uucico			the -f option will force a connection attempt to
+			a specified system regardless of the system status
+			(STST. file).
+
+uumkspool		creates all subdirectories for the specified systems(s).
+
+uurespool		move files from old spool directories to new spool
+			format.  Also useful for moving files out of DEFAULT
+			into newly created per system spool directory.
+
+uucompact		compact spool directories. -sALL or -sname_of_system.
+			The uucp subsystem must be inactive for this to function
+			properly. Single user is best.  If uucompact is stopped
+			it can be started again, picking up where it left off.
+
+USERFILE		the format of the USERFILE has changed to increase
+			security and make it more legible.
+			Read the Installation and Administration Guide 
+			(System Managers Guide).
+
+Debugging output	the -x option of the uu commands has been split out
+			to -x and -X.  -X provides packet level output (i.e.
+			from the pk routines).  -x provides all other debugging
+			output.
+
+
+
+
+This version runs on all VAXen and PDPs under UNIX-V7M11 and 4.1bsd, 4.2BSD.
+
+UUCP installers should read the two papers (by Dave Nowitz)
+in Vol 2B of version 7 manuals.
+They should then read the "UUCP Installation and Administration Guide"
+provided in the System Managers Guide of the Ultrix documentation set.
+Understand each step below before executing.
+Some steps will vary slightly from system to system.
+
+**** INSTALLATION *******
+If you are starting with a new binary only Ultrix kit you only need
+to perform steps 6, 7, 11, and 12.
+
+1. If you are currently running uucp, save the old programs!:
+	su root
+	cd directory_where_makefile_resides
+	make save
+
+2. Editing Makefile and uucp.h  - you should skip this step
+   if you are running Ultrix/32 and are not adding/changing source code.
+
+	4.2 sites using the supported dialers are all set with defaults.
+
+	non-4.2
+		a) sites need to install the Berkeley directory reading library.
+			Try (cd LIBNDIR; make install).
+			Edit Makefile to have LIBNDIR= -lndir
+			define NDIR in uucp.h.
+		b) Check LDFLAGS, OWNER, GROUP, and LIBUUCICO.
+		c) pick a method to allow uucp to know its system:
+			Check out UNAME/UUNAME/WHOAMI/CCWHOAMI in uucp.h
+		d) define SYSIII if appropriate in uucp.h.
+		e) Your "make" may fail because the Makefile is so large.
+			If so, in /usr/src/cmds/make/defs, change
+			'#define NFLEFTS 60' to 512, and re-make make.
+
+3. Make the new commands. (object only sites should  skip this step)
+	make
+
+4. WAIT UNTIL THE UUCP SYSTEM IS IDLE!! Single-user is best.
+	su root  (it is important that chmod and chown work below)
+
+5. Install the new commands:  (object only sites so not do this step)
+	make install
+
+6. Edit and install the control files:
+	Edit and install into /usr/var/uucp if necessary
+	USERFILE, L.cmds, L.sys, L-devices, L-dialcodes.
+	THESE FILES MUST BE OWNED BY THE SAME OWNER AND GROUP AS
+	THE UUCP COMMANDS AND UUCP SPOOL FILES!!! (probably uucp, daemon).
+	The format for dialers is slightly different so that any dialer
+	can be handled.
+	Refer to "The Uucp Installation and Adminstration Guide" for details.
+
+7. Make new subdirectories:
+	For safety:  cd /usr/spool/uucp; tar c .   (save Qed files on tape)
+	The following assumes your site name is produced by `uuname -l`.
+
+	make mkdirs
+
+		This will make all spool directories including the DEFAULT
+		system spool directory: /usr/spool/uucp/sys/DEFAULT.
+
+	For each additional site that will have its own subdirectory :
+
+		/usr/var/uucp/uumkspool system
+
+8. Move old Qed files:
+	If you have spooled files, they must be moved into the subdirectories.
+	Assuming all spool files are in /usr/spool/uucp
+	(i.e. you did not have subdirectories before)
+	the following command will move the spool files
+	to the new system directories:
+	
+	/usr/var/uucp/uurespool -t1
+
+	Foreach system directory that was created with uumkspool
+	the following actions occur (assuming the name of your system
+	is duke):
+	Files beginning C. are put in the C. subdirectory.
+	Files beginning with D.dukeX are put in that directory, *not* D..
+	Files beginning with D.duke are put in the D.duke directory.
+	All other D.files are put in the D. directory.
+	X.files are put in the X. directory
+
+    Delete other old directories if you had any (e.g. "LOG.")
+
+9. Compact spool directories:
+	From time to time it may be necessary to compact spool
+	directories.  The following command facilitates this:
+	
+	/usr/var/uucp/uucompact -sALL or -sname_of_system
+
+	note: the uucp subsystem should be quiescent before and during
+		the execution of uucompact.  
+
+10. clear out status files:
+	cd /usr/var/uucp
+	cp /dev/null L_stat
+	cp /dev/null R_stat
+
+11. Test the new system
+	Test by mailing a letter somewhere and back.
+	If it works, the new system is probably fine.
+	Otherwise, figure out what is wrong.
+	Start by examining LOGFILE.  Try /usr/var/uucp/uucico -r1 -sname -x7
+	If things are no-go, you can back out the changes by restoring the
+	old uu programs and the spooled files.
+
+
+12. Install administrative scripts (uucp.hour, uucp.day, ...)
+	as described in the Installation and Administration Guide.
+
+	These scripts should be run via cron.
+

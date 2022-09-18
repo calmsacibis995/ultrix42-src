@@ -1,0 +1,69 @@
+.\" SCCSID: @(#)drtest.8	8.1	9/11/90
+.TH drtest 8 VAX
+.SH Name
+drtest \- standalone disk test program
+.SH Description
+.NXR "drtest program"
+.NXR "disk" "testing"
+The
+.PN drtest
+program
+is a standalone program used to read a disk 
+track by track. 
+It was primarily intended as a test program 
+for new standalone drivers, but has shown
+useful in other contexts as well, such as 
+verifying disks and running speed
+tests. For example, when a disk has been formatted
+(by 
+.MS format 8v ), 
+you can check that hard errors have been taken care of by running 
+.PN drtest .
+No hard errors should be found, but in many cases 
+quite a few soft ECC errors will be reported.
+.PP
+While
+.PN drtest
+is running, the cylinder number is printed on
+the console for every 10th cylinder read.
+.SH Examples
+.NXR(e) "drtest program" "running"
+A sample run of 
+.PN drtest
+is shown below.  
+In this example (using a 750), 
+.PN drtest
+is loaded from the root file system;
+usually it
+will be loaded from the machine's
+console storage device.  Boldface means user input.
+As usual, the number sign (#) and the at sign (@)
+can be used to edit input.
+.EX
+.sp 1
+>>>\fBB/3\fR
+%%
+loading hk(0,0)boot 
+Boot
+: \fBhk(0,0)drtest\fR
+Test program for stand-alone up and hp driver
+
+Debugging level (1=bse, 2=ecc, 3=bse+ecc)?
+Enter disk name [type(adapter,unit), e.g. hp(1,3)]? \fBhp(0,0)\fR
+Device data: #cylinders=1024, #tracks=16, #sectors=32
+Testing hp(0,0), chunk size is 16384 bytes.
+\fI(chunk size is the number of bytes read per disk access)\fP
+Start ...Make sure hp(0,0) is online
+ ...
+\fI(errors are reported as they occur)\fP
+ ...
+\fI(...program restarts to allow checking other disks)\fP
+\fI(...to abort halt machine with ^P)\fP
+.EE
+.SH Diagnostics
+The diagnostics are intended to be self explanatory. Note, however, that 
+the device number
+in the diagnostic messages is identified as  \fItypeX\fR instead of 
+\fItype(a,u)\fR where \fIX\fR = a*8+u, for example, hp(1,3) becomes hp11.
+.SH See Also
+bad144(8), format(8v)

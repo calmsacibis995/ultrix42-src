@@ -1,0 +1,69 @@
+.\" SCCSID: @(#)arp.8c	8.2	3/28/91
+.TH arp 8c
+.SH Name
+arp \- address resolution display and control 
+.SH Syntax  
+.br
+\fBarp \-a\fR [\fIvmunix\fR] [\fIkmem\fR]
+.br
+\fBarp [\-d] \fIhostname\fR
+.br
+\fBarp \-f \fIfilename\fR
+.br
+\fBarp \-s \fIhostname ether_addr\fR [\fItemp\fR] [\fIpub\fR] [\fItrail\fR]
+.SH Description
+.NXR "arp program"
+.NXAM "Address Resolution Protocol" "arp program"
+.NXS "arp keyword" "arp program"
+The
+.PN arp
+program displays and modifies
+the Internet-to-Ethernet address translation
+tables used by the address resolution protocol 
+.MS arp 4p .
+.PP
+The 
+.I hostname
+is the name of the host system for which information
+will be displayed or modified.
+.PP
+With no flags, the program displays the current ARP entry for
+.I hostname.
+.SH Options
+.TP 5
+.B \-a
+Displays current Address Resolution Protocol (ARP) entries
+from the specified name list and core files (next arguments).
+If not specified, uses 
+.PN /vmunix
+and
+.PN /dev/mem ,
+respectively.
+.TP 5
+.B \-d
+Deletes the entry for the host specified by name (next argument).
+.TP 5
+.B \-f
+Reads information from the specified file (next argument) and
+modifies entries accordingly.
+Entries in the file should be of the following form, with
+argument meanings as given previously:
+.EX
+hostname ether_addr [ temp ] [ pub ] [ trail ]
+.EE
+.TP 5
+.B \-s
+Creates an ARP entry for the host called
+.I hostname
+with the Ethernet address
+.I ether_addr.
+The Ethernet address is given as six hexadecimal
+bytes separated by colons. 
+The entry will be permanent unless the word \fItemp\fR is given in the command.  
+If the word \fIpub\fR is given, the entry will be published.  That is, the
+system will act as an ARP server, responding to requests for
+.I hostname
+even though the host address is not its own.  The word \fItrail\fR indicates
+that trailer encapsulations may be sent to this host.
+.SH See Also
+arp(4p), ifconfig(8c)

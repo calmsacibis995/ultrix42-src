@@ -1,0 +1,65 @@
+.\" SCCSID: @(#)dh.4	8.1	9/11/90
+.TH dh 4 VAX "" Unsupported
+.SH Name
+dh \- DH-11/DM-11 communications multiplexer
+.SH Syntax
+.B "device dh0 at uba? csr 0160020 flags 0x???? vector dhrint dhxint"
+.br
+.B "device dm0 at uba? csr 0170500 flags 0x???? vector dmintr"
+.SH Description
+A DH-11 provides 16 communication lines; DM-11's may be optionally
+paired with DH-11's to provide modem control for the lines.
+.PP
+Each line attached to the DH-11 communications multiplexer
+behaves as described in
+.MS tty 4 .
+Input and output for each line may independently
+be set to run at any of 16 speeds;
+see
+.MS tty 4
+for the encoding.
+.PP
+Bit
+.I i
+of flags may be specified for a 
+.PN dh 
+to say that a line is not properly
+connected, and that the line should be treated as hard-wired with carrier
+always present.  Thus specifying ``flags 0x0004'' in the specification of dh0
+would cause line ttyh2 to be treated in this way.
+.PP
+The 
+.PN dh 
+driver normally uses input silos
+and polls for input at each clock tick (10 milliseconds)
+rather than taking an interrupt on each input character.
+.SH Diagnostics
+.B "\fBdh%d: NXM\fR"
+.br
+No response from UNIBUS on a dma transfer
+within a timeout period.  This is often followed by a UNIBUS adapter
+error.	This occurs most frequently when the UNIBUS is heavily loaded
+and when devices which hog the bus (such as rk07's) are present.
+It is not serious.
+.PP
+.B "\fBdh%d: silo overflow\fR"
+.br
+The character input silo overflowed
+before it could be serviced.  This can happen if a hard error occurs
+when the CPU is running with elevated priority, as the system will
+then print a message on the console with interrupts disabled.  If the
+Berknet
+is running on a
+.PN dh
+line at high speed (for example, 9600 baud), 
+there is only 1/15th of a second of
+buffering capacity in the silo, and overrun is possible.  This may
+cause a few input characters to be lost to users and a network
+packet is likely to be corrupted, but the network will recover.
+It is not serious.
+.SH Files
+.PN /dev/tty[h-o][0-9a-f]
+.br
+.PN /dev/ttyd[0-9a-f]
+.SH See Also
+tty(4)

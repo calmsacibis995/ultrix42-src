@@ -1,0 +1,68 @@
+.\" SCCSID: @(#)dhq.4	2.1	3/10/87
+.TH dhq 4
+.SH Name
+dhq \- DHQ11 communications interface
+.SH Syntax
+.B "device dhu0 at uba? csr 0160440 flags 0x?? vector dhurint dhuxint"
+.SH Description
+.NXR "DHQ11 communications interface"
+.NXS "dhu interface" "DHQ11 communications interface"
+.NXS "dhq keyword" "DHQ11 communications interface"
+A DHQ11 provides eight communication lines with modem control.
+.PP
+Each line attached to the DHQ11 communications multiplexer
+behaves as described in
+.MS tty 4 .
+Input and output for each line can be set independently
+to run at any of 16 speeds.
+See
+.MS tty 4
+for the coding.
+.PP
+Bit
+.I i
+of flags can be specified for a DHQ11
+to say that a line is not properly
+connected and that the line should be treated as hardwired 
+with carrier always present.
+Thus, specifying ``flags 0x04'' in the specification of 
+.PN dhu0
+would cause the third line to be treated in this way.
+.NT
+The 
+.PN dhq
+driver operates under the control of the
+.PN dhu 
+driver.
+.NE
+.SH Diagnostics
+.B "dhu%d %d: DMA ERROR" 
+.br
+The indicated channel failed to transfer DMA
+data within 21.3 microseconds of the bus request being acknowledged or
+there was a memory parity error.
+.PP
+.B "dhu%d: DIAG. FAILURE"
+.br 
+The DHQ11 failed the diagnostics that
+run at initialization time.
+.PP
+.B "dhu%d: recv. fifo overflow"
+.br 
+The character input fifo overflowed
+before it could be serviced.  This can happen if a hard error occurs
+when the CPU is running with elevated priority.  Interrupts are
+disabled, and the system then prints a message on the console.
+.PP
+.B "dhu%d: DHU HARDWARE ERROR.  TX.DMA.START failed"
+.br 
+The dhq failed to clear the start bit.  Normally, this is cleared to signal 
+that a DMA transfer has completed.
+.SH Files
+.TP 15
+.PN /dev/tty??
+.TP
+.PN /dev/ttyd?
+Dialups
+.SH See Also
+tty(4), MAKEDEV(8)

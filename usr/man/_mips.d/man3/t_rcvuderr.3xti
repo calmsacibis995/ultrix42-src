@@ -1,0 +1,103 @@
+.TH t_rcvuderr 3xti
+.SH Name
+t_rcvuderr \- receive a unit error indication 
+.SH Syntax 
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_rcvuderr(\fIfd, uderr\fB)
+.br
+.B int \fIfd\fB;
+.br
+.B struct t_uderr \fI*uderr\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint through which the error report
+is received.
+.IP \fIuderr\fR 10
+Points to a \fBt_uderr\fR structure containing the following members:
+.EX
+struct netbuf \fIaddr\fP;
+struct netbuf \fIopt\fP;
+long \fIerror\fR;
+.EE
+.IP
+On return from this call, the members have the following meanings:
+.RS 10
+.IP \fIaddr\fP 12
+Specifies the destination protocol address of the erroneous data unit.
+.IP \fIopt\fP
+Identifies protocol-specific options that were associated with the data unit.
+.IP \fIerror\fR	
+Specifies a protocol-dependent error code.
+.RE
+.SH Description
+This function is used in connectionless mode to receive information
+concerning an error on a previously sent data unit and should be issued
+following a unit data error indication. It informs the transport user
+that a data unit with a specific destination address and protocol
+options produced an error.
+.NXR "t_tcvuderr system call" 
+.NXR "connectionless mode" "receiving error information"
+.PP
+The \fImaxlen\fR field of \fIaddr\fR and \fIopt\fR must be set before
+issuing this function to indicate the maximum size of the buffer for
+each.
+.PP
+If the user does not care to identify the data unit that produced an
+error, \fIuderr\fR may be set to NULL, and 
+.PN t_rcvuderr() 
+simply clears the error indication without reporting any information to the
+user.
+.sp 10
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+uderr->addr.maxlen@x@/
+uderr->addr.len@/@x
+uderr->addr.buf@x@(x)
+uderr->opt.maxlen@x@/
+uderr->opt.len@/@x
+uderr->opt.buf@x@(x)
+uderr->error@/@x
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, a value of 0 is returned. On failure,  a
+value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[BADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20 
+[TNOUDERR]
+No unit data error indication currently exists on the specified
+transport endpoint.
+.TP 20
+[TBUFOVFLW]
+The number of bytes allocated for the incoming protocol address or
+options is not sufficient to store the information. The unit data error
+information to be returned in \fIuderr\fR will be discarded.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the underlying transport provider. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+t_rcvudata(3xti), 
+t_sndudata(3xti) 

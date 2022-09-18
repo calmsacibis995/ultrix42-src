@@ -1,0 +1,781 @@
+/*        @(#)cptok.tdef	4.1      7/2/90      */
+
+/*  Version 2.00   4/ 3/89 13:27:00.0000  */
+/* maketok /c /v /setup=portab.h,cpsys.def,capdl.def,pdl_st.def cptok.def cpto
+  ...  k.tdef */
+
+
+#define	TOK_pr_pfs	 (0)
+
+#define	TOK_dec_pfs	 (1)
+
+#define	TOK_dec_vpfs	 (2)
+
+#define	TOK_dec_slpp	 (3)
+
+#define	TOK_dec_slrm	 (4)
+
+#define	TOK_dec_stbm	 (5)
+
+#define	TOK_dec_hpwa	 (6)
+
+#define	TOK_dec_asfc	 (7)
+
+#define	TOK_dec_vec	 (8)
+
+#define	TOK_dec_rvec	 (9)
+
+#define	TOK_dec_mac_enter	 (10)
+
+#define	TOK_dec_mac_font	 (11)
+
+#define	TOK_dec_mac_sxl	 (12)
+
+#define	TOK_dec_spp	 (13)
+
+#define	TOK_dec_rfs	 (14)
+
+#define	TOK_dec_rfnm	 (15)
+
+#define	TOK_dec_rbmm	 (16)
+
+#define	TOK_dec_uffm	 (17)
+
+#define	TOK_dec_lff_font	 (18)
+
+#define	TOK_dec_lff_sxl	 (19)
+
+#define	TOK_pr_gss	 (20)
+
+#define	TOK_pr_gsm	 (21)
+
+#define	TOK_pr_si	 (22)
+
+#define	TOK_pr_so	 (23)
+
+#define	TOK_pr_ss2	 (24)
+
+#define	TOK_pr_ss3	 (25)
+
+#define	TOK_pr_ls2	 (26)
+
+#define	TOK_pr_ls3	 (27)
+
+#define	TOK_pr_ls1r	 (28)
+
+#define	TOK_pr_ls2r	 (29)
+
+#define	TOK_pr_ls3r	 (30)
+
+#define	TOK_pr_scs	 (31)
+
+#define	TOK_dec_rqupss	 (32)
+
+#define	TOK_pr_ascef1	 (33)
+
+#define	TOK_pr_ascef2	 (34)
+
+#define	TOK_pr_ascef3	 (35)
+
+#define	TOK_dec_aupss_enter	 (36)
+
+#define	TOK_pr_sgr	 (37)
+
+#define	TOK_pr_sgr_off	 (38)
+
+#define	TOK_pr_bold	 (39)
+
+#define	TOK_pr_faint	 (40)
+
+#define	TOK_pr_italics	 (41)
+
+#define	TOK_pr_under	 (42)
+
+#define	TOK_pr_strike	 (43)
+
+#define	TOK_pr_font	 (44)
+
+#define	TOK_pr_dou_under	 (45)
+
+#define	TOK_pr_bold_off	 (46)
+
+#define	TOK_pr_italics_off	 (47)
+
+#define	TOK_pr_under_off	 (48)
+
+#define	TOK_pr_strike_off	 (49)
+
+#define	TOK_pr_black	 (50)
+
+#define	TOK_pr_red	 (51)
+
+#define	TOK_pr_green	 (52)
+
+#define	TOK_pr_yellow	 (53)
+
+#define	TOK_pr_blue	 (54)
+
+#define	TOK_pr_magenta	 (55)
+
+#define	TOK_pr_cyan	 (56)
+
+#define	TOK_pr_no	 (57)
+
+#define	TOK_pr_default	 (58)
+
+#define	TOK_dec_sgr	 (59)
+
+#define	TOK_dec_sgr_off	 (60)
+
+#define	TOK_dec_super	 (61)
+
+#define	TOK_dec_sub	 (62)
+
+#define	TOK_dec_over	 (63)
+
+#define	TOK_dec_trans	 (64)
+
+#define	TOK_dec_super_sub_off	 (65)
+
+#define	TOK_dec_over_off	 (66)
+
+#define	TOK_dec_trans_off	 (67)
+
+#define	TOK_dec_gri	 (68)
+
+#define	TOK_ca_zap_repeat	 (69)
+
+#define	TOK_dec_gra	 (70)
+
+#define	TOK_dec_gci	 (71)
+
+#define	TOK_dec_gcr	 (72)
+
+#define	TOK_dec_gnl	 (73)
+
+#define	TOK_pr_jfy	 (74)
+
+#define	TOK_dec_jfy	 (75)
+
+#define	TOK_pr_jfy_off	 (76)
+
+#define	TOK_pr_jfy_limits	 (77)
+
+#define	TOK_dec_jfy_nolimits	 (78)
+
+#define	TOK_pr_text	 (79)
+
+#define	TOK_pr_fast_text	 (80)
+
+#define	TOK_pr_can	 (81)
+
+#define	TOK_pr_sub	 (82)
+
+#define	TOK_pr_sxl_sub	 (83)
+
+#define	TOK_pr_space	 (84)
+
+#define	TOK_pr_fast_space	 (85)
+
+#define	TOK_pr_del	 (86)
+
+#define	TOK_pr_xa0	 (87)
+
+#define	TOK_pr_xff	 (88)
+
+#define	TOK_pr_st	 (89)
+
+#define	TOK_pr_esc	 (90)
+
+#define	TOK_pr_dcs	 (91)
+
+#define	TOK_pr_csi	 (92)
+
+#define	TOK_pr_osc	 (93)
+
+#define	TOK_pr_pm	 (94)
+
+#define	TOK_pr_apc	 (95)
+
+#define	TOK_pr_bs	 (96)
+
+#define	TOK_pr_lf	 (97)
+
+#define	TOK_pr_ff	 (98)
+
+#define	TOK_pr_cr	 (99)
+
+#define	TOK_pr_hpa	 (100)
+
+#define	TOK_pr_hpr	 (101)
+
+#define	TOK_pr_hpb	 (102)
+
+#define	TOK_pr_vpa	 (103)
+
+#define	TOK_pr_vpr	 (104)
+
+#define	TOK_pr_vpb	 (105)
+
+#define	TOK_pr_ind	 (106)
+
+#define	TOK_pr_pld	 (107)
+
+#define	TOK_pr_plu	 (108)
+
+#define	TOK_pr_ri	 (109)
+
+#define	TOK_pr_cuu	 (110)
+
+#define	TOK_pr_set	 (111)
+
+#define	TOK_pr_reset	 (112)
+
+#define	TOK_dec_set	 (113)
+
+#define	TOK_dec_reset	 (114)
+
+#define	TOK_pr_lnm	 (115)
+
+#define	TOK_pr_pum	 (116)
+
+#define	TOK_dec_awm	 (117)
+
+#define	TOK_dec_psp	 (118)
+
+#define	TOK_dec_psm	 (119)
+
+#define	TOK_dec_crnlm	 (120)
+
+#define	TOK_dec_opm	 (121)
+
+#define	TOK_pr_crm	 (122)
+
+#define	TOK_pr_ssu	 (123)
+
+#define	TOK_dec_ssu	 (124)
+
+#define	TOK_pr_decipoints	 (125)
+
+#define	TOK_pr_pixels	 (126)
+
+#define	TOK_dec_centipoints	 (127)
+
+#define	TOK_dec_tc1	 (128)
+
+#define	TOK_dec_ac1	 (129)
+
+#define	TOK_pr_s8c1t	 (130)
+
+#define	TOK_pr_s7c1t	 (131)
+
+#define	TOK_pr_bcmm	 (132)
+
+#define	TOK_dec_shorp	 (133)
+
+#define	TOK_dec_verp	 (134)
+
+#define	TOK_pr_spi	 (135)
+
+#define	TOK_pr_svs	 (136)
+
+#define	TOK_pr_shs	 (137)
+
+#define	TOK_ac_nop	 (138)
+
+#define	TOK_ac_nel	 (139)
+
+#define	TOK_ac_esc2	 (140)
+
+#define	TOK_ac_scs	 (141)
+
+#define	TOK_ac_text	 (142)
+
+#define	TOK_ac_fast_text_gl	 (143)
+
+#define	TOK_ac_fast_text_gr	 (144)
+
+#define	TOK_ac_fast_space	 (145)
+
+#define	TOK_ac_abort_fast_text	 (146)
+
+#define	TOK_ac_esc_invalid	 (147)
+
+#define	TOK_ac_csi_invalid	 (148)
+
+#define	TOK_ac_csi_startp	 (149)
+
+#define	TOK_ac_add_csip	 (150)
+
+#define	TOK_ac_add_csii	 (151)
+
+#define	TOK_ac_csi_addp	 (152)
+
+#define	TOK_ac_dcs_invalid	 (153)
+
+#define	TOK_ac_dcs_ignore	 (154)
+
+#define	TOK_ac_sxl_ignore	 (155)
+
+#define	TOK_ac_dcs_startp	 (156)
+
+#define	TOK_ac_dcs_addp	 (157)
+
+#define	TOK_ac_dec_graph	 (158)
+
+#define	TOK_ac_pr_ansb	 (159)
+
+#define	TOK_ac_dec_lff	 (160)
+
+#define	TOK_ac_dec_atff	 (161)
+
+#define	TOK_ac_dec_dtff	 (162)
+
+#define	TOK_ac_dec_aupss	 (163)
+
+#define	TOK_ac_dec_mac	 (164)
+
+#define	TOK_ac_dec_uffm	 (165)
+
+#define	TOK_ac_dec_dld	 (166)
+
+#define	TOK_ac_store_cmd2	 (167)
+
+#define	TOK_ac_store_cmd1	 (168)
+
+#define	TOK_ac_add_dcs	 (169)
+
+#define	TOK_ac_crm	 (170)
+
+#define	TOK_ac_crm3	 (171)
+
+#define	TOK_ac_crm4	 (172)
+
+#define	TOK_ac_crm3_startp	 (173)
+
+#define	TOK_ac_crm3_addp	 (174)
+
+#define	TOK_ac_crm_c0	 (175)
+
+#define	TOK_ac_crm2_esc	 (176)
+
+#define	TOK_ac_crm_c1	 (177)
+
+#define	TOK_ac_crm3_csi	 (178)
+
+#define	TOK_ac_crm_lf	 (179)
+
+#define	TOK_ac_crm_ff	 (180)
+
+#define	TOK_ac_crm_crnr	 (181)
+
+#define	TOK_ac_crm_ris	 (182)
+
+#define	TOK_ac_crm_str	 (183)
+
+#define	TOK_ac_crm_reset	 (184)
+
+#define	TOK_ac_do_cmd2	 (185)
+
+#define	TOK_ac_start_cmd1	 (186)
+
+#define	TOK_ac_start_cmd2	 (187)
+
+#define	TOK_ac_cr_sxl	 (188)
+
+#define	TOK_ac_nl_sxl	 (189)
+
+#define	TOK_ac_do_cr_sxl	 (190)
+
+#define	TOK_ac_do_nl_sxl	 (191)
+
+#define	TOK_ac_do_cmd1	 (192)
+
+#define	TOK_ac_add_cmd1	 (193)
+
+#define	TOK_ac_add_cmd2	 (194)
+
+#define	TOK_ac_do_sxl	 (195)
+
+#define	TOK_ac_do_store_cmd1	 (196)
+
+#define	TOK_ac_do_store_cmd2	 (197)
+
+#define	TOK_ac_gr_sxl	 (198)
+
+#define	TOK_ac_do_gr_sxl	 (199)
+
+#define	TOK_ac_start_mac_rpt	 (200)
+
+#define	TOK_ac_start_lff_rpt	 (201)
+
+#define	TOK_ac_lff_term_ignore	 (202)
+
+#define	TOK_ac_mac_term_ignore	 (203)
+
+#define	TOK_ac_reset_start	 (204)
+
+#define	TOK_ac_reset_font_lff	 (205)
+
+#define	TOK_ac_reset_font_mac	 (206)
+
+#define	TOK_ac_reset_lff	 (207)
+
+#define	TOK_ac_reset_mac	 (208)
+
+#define	TOK_ac_reset_sxl_lff	 (209)
+
+#define	TOK_ac_reset_sxl_mac	 (210)
+
+#define	TOK_ac_font_ignore	 (211)
+
+#define	TOK_pr_ht	 (212)
+
+#define	TOK_pr_vt	 (213)
+
+#define	TOK_pr_hts	 (214)
+
+#define	TOK_pr_vts	 (215)
+
+#define	TOK_dec_hts	 (216)
+
+#define	TOK_dec_shts	 (217)
+
+#define	TOK_dec_caht	 (218)
+
+#define	TOK_pr_tbc	 (219)
+
+#define	TOK_dec_vts	 (220)
+
+#define	TOK_dec_svts	 (221)
+
+#define	TOK_dec_cavt	 (222)
+
+#define	TOK_pr_htac	 (223)
+
+#define	TOK_pr_vtac	 (224)
+
+#define	TOK_pr_htcl	 (225)
+
+#define	TOK_pr_htc	 (226)
+
+#define	TOK_pr_vtc	 (227)
+
+#define	TOK_pr_dsr	 (228)
+
+#define	TOK_dec_str	 (229)
+
+#define	TOK_pr_ris	 (230)
+
+#define	TOK_pr_cpr	 (231)
+
+#define	TOK_pr_da	 (232)
+
+#define	TOK_pr_da2	 (233)
+
+#define	TOK_pr_bel	 (234)
+
+#define	TOK_dec_fnvr	 (235)
+
+#define	TOK_pr_ansb	 (236)
+
+#define	TOK_pr_ansb_num	 (237)
+
+#define	TOK_pr_ansb_cap	 (238)
+
+#define	TOK_pr_ansb_lc	 (239)
+
+#define	TOK_dec_bcmm	 (240)
+
+#define	TOK_pr_spd	 (241)
+
+#define	TOK_dec_den	 (242)
+
+#define	TOK_dec_snc	 (243)
+
+#define	TOK_dec_sss	 (244)
+
+#define	TOK_dec_scl	 (245)
+
+#define	TOK_nvm_recall	 (246)
+
+#define	TOK_cp_add_to_cur_param	 (247)
+
+#define	TOK_cp_add_to_esc_ibuf	 (248)
+
+#define	TOK_cp_add_to_csi_ibuf	 (249)
+
+#define	TOK_cp_add_to_dcs_ibuf	 (250)
+
+#define	TOK_cp_set_private	 (251)
+
+#define	TOK_cp_exit_cur_mode	 (252)
+
+#define	TOK_cp_text_search	 (253)
+
+#define	TOK_cp_cmd_search	 (254)
+
+#define	TOK_cp_search_cur_tab	 (255)
+
+#define	TOK_cp_font_name	 (256)
+
+ typedef void (* TOK_fn_ptr)();
+
+ const TOK_fn_ptr cp_tok_tbl[257] = {
+	 pr_pfs,
+	 dec_pfs,
+	 dec_vpfs,
+	 dec_slpp,
+	 dec_slrm,
+	 dec_stbm,
+	 dec_hpwa,
+	 dec_asfc,
+	 dec_vec,
+	 dec_rvec,
+	 dec_mac_enter,
+	 dec_mac_font,
+	 dec_mac_sxl,
+	 dec_spp,
+	 dec_rfs,
+	 dec_rfnm,
+	 dec_rbmm,
+	 dec_uffm,
+	 dec_lff_font,
+	 dec_lff_sxl,
+	 pr_gss,
+	 pr_gsm,
+	 pr_si,
+	 pr_so,
+	 pr_ss2,
+	 pr_ss3,
+	 pr_ls2,
+	 pr_ls3,
+	 pr_ls1r,
+	 pr_ls2r,
+	 pr_ls3r,
+	 pr_scs,
+	 dec_rqupss,
+	 pr_ascef1,
+	 pr_ascef2,
+	 pr_ascef3,
+	 dec_aupss_enter,
+	 pr_sgr,
+	 pr_sgr_off,
+	 pr_bold,
+	 pr_faint,
+	 pr_italics,
+	 pr_under,
+	 pr_strike,
+	 pr_font,
+	 pr_dou_under,
+	 pr_bold_off,
+	 pr_italics_off,
+	 pr_under_off,
+	 pr_strike_off,
+	 pr_black,
+	 pr_red,
+	 pr_green,
+	 pr_yellow,
+	 pr_blue,
+	 pr_magenta,
+	 pr_cyan,
+	 pr_no,
+	 pr_default,
+	 dec_sgr,
+	 dec_sgr_off,
+	 dec_super,
+	 dec_sub,
+	 dec_over,
+	 dec_trans,
+	 dec_super_sub_off,
+	 dec_over_off,
+	 dec_trans_off,
+	 dec_gri,
+	 ca_zap_repeat,
+	 dec_gra,
+	 dec_gci,
+	 dec_gcr,
+	 dec_gnl,
+	 pr_jfy,
+	 dec_jfy,
+	 pr_jfy_off,
+	 pr_jfy_limits,
+	 dec_jfy_nolimits,
+	 pr_text,
+	 pr_fast_text,
+	 pr_can,
+	 pr_sub,
+	 pr_sxl_sub,
+	 pr_space,
+	 pr_fast_space,
+	 pr_del,
+	 pr_xa0,
+	 pr_xff,
+	 pr_st,
+	 pr_esc,
+	 pr_dcs,
+	 pr_csi,
+	 pr_osc,
+	 pr_pm,
+	 pr_apc,
+	 pr_bs,
+	 pr_lf,
+	 pr_ff,
+	 pr_cr,
+	 pr_hpa,
+	 pr_hpr,
+	 pr_hpb,
+	 pr_vpa,
+	 pr_vpr,
+	 pr_vpb,
+	 pr_ind,
+	 pr_pld,
+	 pr_plu,
+	 pr_ri,
+	 pr_cuu,
+	 pr_set,
+	 pr_reset,
+	 dec_set,
+	 dec_reset,
+	 pr_lnm,
+	 pr_pum,
+	 dec_awm,
+	 dec_psp,
+	 dec_psm,
+	 dec_crnlm,
+	 dec_opm,
+	 pr_crm,
+	 pr_ssu,
+	 dec_ssu,
+	 pr_decipoints,
+	 pr_pixels,
+	 dec_centipoints,
+	 dec_tc1,
+	 dec_ac1,
+	 pr_s8c1t,
+	 pr_s7c1t,
+	 pr_bcmm,
+	 dec_shorp,
+	 dec_verp,
+	 pr_spi,
+	 pr_svs,
+	 pr_shs,
+	 ac_nop,
+	 ac_nel,
+	 ac_esc2,
+	 ac_scs,
+	 ac_text,
+	 ac_fast_text_gl,
+	 ac_fast_text_gr,
+	 ac_fast_space,
+	 ac_abort_fast_text,
+	 ac_esc_invalid,
+	 ac_csi_invalid,
+	 ac_csi_startp,
+	 ac_add_csip,
+	 ac_add_csii,
+	 ac_csi_addp,
+	 ac_dcs_invalid,
+	 ac_dcs_ignore,
+	 ac_sxl_ignore,
+	 ac_dcs_startp,
+	 ac_dcs_addp,
+	 ac_dec_graph,
+	 ac_pr_ansb,
+	 ac_dec_lff,
+	 ac_dec_atff,
+	 ac_dec_dtff,
+	 ac_dec_aupss,
+	 ac_dec_mac,
+	 ac_dec_uffm,
+	 ac_dec_dld,
+	 ac_store_cmd2,
+	 ac_store_cmd1,
+	 ac_add_dcs,
+	 ac_crm,
+	 ac_crm3,
+	 ac_crm4,
+	 ac_crm3_startp,
+	 ac_crm3_addp,
+	 ac_crm_c0,
+	 ac_crm2_esc,
+	 ac_crm_c1,
+	 ac_crm3_csi,
+	 ac_crm_lf,
+	 ac_crm_ff,
+	 ac_crm_crnr,
+	 ac_crm_ris,
+	 ac_crm_str,
+	 ac_crm_reset,
+	 ac_do_cmd2,
+	 ac_start_cmd1,
+	 ac_start_cmd2,
+	 ac_cr_sxl,
+	 ac_nl_sxl,
+	 ac_do_cr_sxl,
+	 ac_do_nl_sxl,
+	 ac_do_cmd1,
+	 ac_add_cmd1,
+	 ac_add_cmd2,
+	 ac_do_sxl,
+	 ac_do_store_cmd1,
+	 ac_do_store_cmd2,
+	 ac_gr_sxl,
+	 ac_do_gr_sxl,
+	 ac_start_mac_rpt,
+	 ac_start_lff_rpt,
+	 ac_lff_term_ignore,
+	 ac_mac_term_ignore,
+	 ac_reset_start,
+	 ac_reset_font_lff,
+	 ac_reset_font_mac,
+	 ac_reset_lff,
+	 ac_reset_mac,
+	 ac_reset_sxl_lff,
+	 ac_reset_sxl_mac,
+	 ac_font_ignore,
+	 pr_ht,
+	 pr_vt,
+	 pr_hts,
+	 pr_vts,
+	 dec_hts,
+	 dec_shts,
+	 dec_caht,
+	 pr_tbc,
+	 dec_vts,
+	 dec_svts,
+	 dec_cavt,
+	 pr_htac,
+	 pr_vtac,
+	 pr_htcl,
+	 pr_htc,
+	 pr_vtc,
+	 pr_dsr,
+	 dec_str,
+	 pr_ris,
+	 pr_cpr,
+	 pr_da,
+	 pr_da2,
+	 pr_bel,
+	 dec_fnvr,
+	 pr_ansb,
+	 pr_ansb_num,
+	 pr_ansb_cap,
+	 pr_ansb_lc,
+	 dec_bcmm,
+	 pr_spd,
+	 dec_den,
+	 dec_snc,
+	 dec_sss,
+	 dec_scl,
+	 nvm_recall,
+	 cp_add_to_cur_param,
+	 cp_add_to_esc_ibuf,
+	 cp_add_to_csi_ibuf,
+	 cp_add_to_dcs_ibuf,
+	 cp_set_private,
+	 cp_exit_cur_mode,
+	 cp_text_search,
+	 cp_cmd_search,
+	 cp_search_cur_tab,
+	 cp_font_name} ;

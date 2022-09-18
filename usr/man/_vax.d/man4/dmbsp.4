@@ -1,0 +1,44 @@
+.\" SCCSID: @(#)dmbsp.4	8.1	9/11/90
+.\" SCCSID: @(#)dmbsp.4	8.1	9/11/90
+.TH dmbsp 4 VAX
+.SH Name
+dmbsp \- DMB32 serial printer interface
+.SH Syntax
+.B "device dmb0 at vaxbi? node? flags 0x????"
+.br
+.ti +0.5i
+.B "vector dmbsint dmbaint dmblint"
+.SH Description
+.NXR "DMB32 serial printer interface"
+.NXS "dmb interface" "DMB32 serial printer interface"
+.NXS "dmbsp keyword" "DMB32 serial printer interface"
+A
+DMB32
+supports a connection to a line printer
+through the line printer port of the
+DMB32.
+.PP
+Bits
+8-15
+of the 
+.I flags 
+longword specify the number of columns per line on
+the line printer.  If 0 is specified, 132 columns are used.
+Bits
+16-23
+specify the number of lines per page.  If 0 is specified, 66
+are used.
+.SH Diagnostics
+.B "dmb%d: Line Printer Disconnected."
+.br 
+This message occurs if an open is performed on the printer port when
+the DMB32 detects that there is no printer cable connected.
+.PP
+.B "dmb%d: Printer DMA Error"
+.br 
+A DMA output transfer to the printer failed.
+This can be caused by a memory error or an invalid pte (page table entry).
+.SH Files
+.PN /dev/lp?
+.SH See Also
+dmb(4), MAKEDEV(8)

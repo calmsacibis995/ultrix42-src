@@ -1,0 +1,651 @@
+.\" SCCSID: @(#)eqnchar.7	8.1	9/11/90
+.TH eqnchar 7 "" "" Unsupported
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ps \n(99
+.ft \n(98
+.EN
+.SH Name
+eqnchar \- special character definitions for eqn
+.SH Syntax
+.B eqn /usr/pub/eqnchar
+[ files ]
+.B \(bv troff
+[ options ]
+.PP
+.B neqn /usr/pub/eqnchar
+[ files ]
+.B \(bv nroff
+[ options ]
+.SH Description
+.NXR "eqnchar file"
+.NXR "eqn program" "special character definitions"
+The
+.PN eqnchar
+file contains
+.PN troff
+and
+.PN nroff
+character definitions for constructing characters that are not
+available on the Graphic Systems typesetter.
+These definitions are primarily intended for use with
+.PN eqn
+and
+.PN neqn .
+The
+.PN eqnchar
+file contains definitions for the following characters:
+.if t .ig
+.PP
+NOTE: Your terminal may not properly display the 
+special characters.  See the 
+\fIReference Pages for Unsupported Software\fP
+for a description of these special characters.
+..
+.PP
+.nf
+.ta \w'angstrom  'u \n(.lu/3u +\w'angstrom  'u \n(.lu*2u/3u +\w'angstrom  'u
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "ciplus
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "O\|\(pl
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "|\||
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\|\f1|\fP\|\|\|\f1|\fP\|
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "square
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\f1[\fP\|\f1]\fP
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 40>\n(.v .ne 40u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "citimes
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "Ox
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "langle
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "<
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "circle
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "O
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 40>\n(.v .ne 40u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "wig
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "~
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "rangle
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 ">
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "blot
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "HIX
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 40>\n(.v .ne 40u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "-wig
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\(miwig
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "hbar
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "h\|\u-\|\d
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "bullet
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "oxe
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 40>\n(.v .ne 40u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 ">wig
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 ">
+.ds 13 "~
+.nr 12 \w'\s10\*(12'
+.nr 14 \n(12
+.nr 13 \w'\s7\*(13'
+.if \n(13>\n(14 .nr 14 \n(13
+.ds 14 \v'40u'\h'\n(14u-\n(13u/2u'\s7\*(13\s10\h'-\n(14u-\n(13u/2u'\v'-40u'\
+\h'\n(14u-\n(12u/2u'\*(12\h'\n(14u-\n(12u+2u/2u'\
+
+.as 11 "\*(14
+.ds 12 "\t
+.as 11 "\*(12
+.ds 12 "ppd
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "_\|\|\f1|\fP\|
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "prop
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "oc
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98\x'20u'
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 80>\n(.v .ne 80u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "<wig
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "<
+.ds 13 "~
+.nr 12 \w'\s10\*(12'
+.nr 14 \n(12
+.nr 13 \w'\s7\*(13'
+.if \n(13>\n(14 .nr 14 \n(13
+.ds 14 \v'40u'\h'\n(14u-\n(13u/2u'\s7\*(13\s10\h'-\n(14u-\n(13u/2u'\v'-40u'\
+\h'\n(14u-\n(12u/2u'\*(12\h'\n(14u-\n(12u+2u/2u'\
+
+.as 11 "\*(14
+.ds 12 "\t
+.as 11 "\*(12
+.ds 12 "<->
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "<-->
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "empty
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "O\|\(sl
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98\x'20u'
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 80>\n(.v .ne 80u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "=wig
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\(eq
+.as 11 "\|\*(12
+.ds 12 "~
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "<=>
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "<=>
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "member
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "C\|\(mi
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 40>\n(.v .ne 40u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "star
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "*
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "|\|<
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "<\|\|\f1|\fP\|
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "nomem
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "C\|\(mi\|\(sl
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 40>\n(.v .ne 40u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "bigstar
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "X\|\|\f1|\fP\|\|\(mi
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "|\|>
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\|\f1|\fP\|\|>
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "cup
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "U
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 40>\n(.v .ne 40u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "=dot
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\(eq
+.nr 12 \w'\s10\*(12'
+.nr 10 0u
+.ds 13 \v'-1'.\v'1'
+.nr 13 \w'\s10\*(13'
+.as 12 \h'-\n(12u-\n(13u/2u'\v'0-\n(10u'\*(13\v'\n(10u'\h'-\n(13u+\n(12u/2u'
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "ang
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\(sl_
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "cap
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\(ca
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 60>\n(.v .ne 60u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "orsign
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\e/
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "rang
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "L
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "incl
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "C_
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 40>\n(.v .ne 40u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "andsign
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\(sl\|\e
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "3dot
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 ".\|\u.\|\u.\|\d\d
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "subset
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\(sb
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 40>\n(.v .ne 40u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "=del
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\(eq
+.ds 13 "\(*D
+.nr 12 \w'\s10\*(12'
+.nr 14 \n(12
+.nr 13 \w'\s7\*(13'
+.if \n(13>\n(14 .nr 14 \n(13
+.ds 14 \h'\n(14u-\n(12u/2u'\*(12\h'\n(14u-\n(12u+2u/2u'\
+\v'-40u'\h'-\n(14u-\n(13u/2u'\s7\*(13\s10\h'\n(14u-\n(13u/2u'\v'40u'\
+
+.as 11 "\*(14
+.ds 12 "\t
+.as 11 "\*(12
+.ds 12 "thf
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "..\|\u.\|\d
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "supset
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\(sp
+.as 11 "\|\*(12
+.ds 11 \x'0'\x'0-20u'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 80>\n(.v .ne 80u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "oppA
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "V\|\(mi
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "quarter
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\f11\fP\|\(sl\|\f14\fP
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "!subset
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\(ib
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 40>\n(.v .ne 40u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "oppE
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "E\|\(sl
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "3quarter
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\f13\fP\|\(sl\|\f14\fP
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "!supset
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "\(ip
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 40>\n(.v .ne 40u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "angstrom
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "A
+.ds 13 "o
+.nr 12 \w'\s10\*(12'
+.nr 14 \n(12
+.nr 13 \w'\s7\*(13'
+.if \n(13>\n(14 .nr 14 \n(13
+.ds 14 \h'\n(14u-\n(12u/2u'\*(12\h'\n(14u-\n(12u+2u/2u'\
+\v'-40u'\h'-\n(14u-\n(13u/2u'\s7\*(13\s10\h'\n(14u-\n(13u/2u'\v'40u'\
+
+.as 11 "\*(14
+.ds 12 "\t
+.as 11 "\*(12
+.ds 12 "degree
+.as 11 "\|\*(12
+.ds 12 "\t
+.as 11 "\|\*(12
+.ds 12 "
+.ds 13 "o
+.as 12 \v'-20u'\*(13\v'20u'
+.as 11 "\|\*(12
+.ds 11 \x'0'\x'0-20u'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 80>\n(.v .ne 80u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.SH Files
+.PN /usr/pub/eqnchar
+.SH See Also
+troff(1), eqn(1)
+.br
+.if t .ig
+\fIReference Pages for Unsupported Software\fP
+..

@@ -1,0 +1,144 @@
+.TH dms 8
+.SH Name
+dms \- diskless management services utility
+.SH Syntax
+/etc/dms
+.SH Description
+.NXR "dms program (DMS)"
+The 
+.PN dms 
+utility performs diskless management services. 
+You can use 
+.PN dms 
+to install products into diskless management
+services areas on a server machine and register diskless
+clients so that they can
+access those products on the server machine, rather than having
+each client install the products to a disk on its local machine.
+The server machine can be either a VAX or a RISC machine and
+it can serve both VAX and RISC clients.
+.PP
+Before you set up a diskless management
+services area on a server, the following software should
+be installed: Local Area Network (LAN); Network File
+System (NFS); and Maintenance Operations Protocol (MOP).
+.PP
+The 
+.PN dms 
+utility performs the following functions:
+.TP 20
+a - Add Client Processor
+.TP
+m - Modify Client Parameters
+.TP
+r - Remove Client Processor
+.TP
+l - List Registered Clients
+.TP
+s - Show Products in Diskless Environments
+.TP
+i - Install Software
+.TP
+c - Create Diskless Area on Disk
+.TP
+k - Kernel Rebuild or Copy 
+.PP
+To set up a diskless management services area on a server, 
+select 
+.PN dms 
+functions in the following order:
+.PP
+1.   Create Diskless Area on Disk (c)
+.IP
+This sets up the disk partitions needed for the two
+diskless management services file systems, 
+.PN /dlenv? 
+and 
+.PN /dlclient? .
+(The question mark (?) represents a unique number assigned by 
+.PN dms .) 
+The 
+.PN /dlenv? 
+file system contains a common root 
+area that is copied to each client when it is registered,
+and a 
+.PN /usr 
+area that is shared by all the clients.  
+The
+.PN /dlclient?
+file system contains a copy of the common root area for each
+registered diskless client.
+.PP
+2.   Install Software (i)
+.IP
+This installs the products from the distribution media to the 
+.PN /dlenv? 
+file system.
+If the product will be accessed by VAX clients, the images from
+the media are put under a 
+.PN root?.vax 
+directory under the
+.PN /dlenv
+file system.
+If the product will be accessed by RISC clients, the images from
+the media will be put under a 
+.PN root?.mips 
+directory under the
+.PN /dlenv
+file system.
+The question mark (?) represents a unique number assigned by 
+.PN dms .  
+.PP
+To register a diskless client, select the Add Client Processor 
+option (a).
+This copies the common root
+area in the
+.PN /dlenv? 
+file system, for example, 
+.PN /dlenv0/root0.vax
+to the diskless client's directory in the
+.PN /dlclient?
+file system, for example, 
+.PN /dlclient0/hostname.root.  
+The server's 
+.PN /etc/exports 
+file is updated to allow the client to access its individual root and
+the shared 
+.PN /usr 
+area.
+.PP
+Each diskless client's area also contains a client parameter file,
+.PN /etc/dlparam .
+.PP
+You must use 
+.PN dms 
+interactively to set up a diskless environment or
+to modify client parameters.  
+.PP
+There are several functions you can use either interactively
+or from the command line:  
+.TP 20
+- Add Client Processor
+.TP
+- Show Products in Diskless Environments
+.TP
+- Remove Client Processor
+.TP
+- Kernel Rebuild
+.PP
+When the first diskless client is registered for a diskless
+management services area, a database file,
+.PN /usr/diskless/dmsdb ,
+is created on the server machine.  
+You can use this file and the command line to manage groups of
+diskless clients.
+.SH Files
+.PN /usr/diskless/dmsdb
+.br
+.PN /etc/dlparam
+.SH See Also
+exports(5nfs), addnode(8), setld(8)
+.br
+.I "Guide to Diskless Management Services"
+.br
+.I "Guide to Server Setup"

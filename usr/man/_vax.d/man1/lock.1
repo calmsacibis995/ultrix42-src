@@ -1,0 +1,18 @@
+.\" SCCSID: @(#)lock.1	8.1	9/11/90
+.TH lock 1
+.SH Name
+lock \- reserve a terminal
+.SH Syntax
+.B lock
+.SH Description
+.NXR "lock" "command"
+.NXR "terminal" "locking"
+The 
+.PN lock
+command requests a password from the user, then asks you to confirm
+the password by typing it in again.  The terminal refuses to
+relinquish the terminal until the password is repeated.  If
+you forget the password, you must 
+log in elsewhere and kill the lock process.
+.SH Restrictions
+Should time out after 15 minutes.

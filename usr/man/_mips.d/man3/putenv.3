@@ -1,0 +1,71 @@
+.\" SCCSID: @(#)putenv.3	8.1	9/11/90
+.TH putenv 3
+.SH Name
+putenv \- change or add value to environment 
+.SH Syntax
+.B int putenv (string)
+.br
+.B char \(**string;
+.SH Description
+.NXR "putenv subroutine"
+.NXA "getenv subroutine (standard C)" "putenv subroutine"
+.NXR "environment" "changing"
+The
+.I string\^
+points to a string of the form
+.IB ``name = value.''
+The
+.PN putenv
+subroutine makes the value of the environment variable
+.I name\^
+equal to
+.I value\^
+by altering an existing variable or creating a new one.
+In either case, the string pointed to by
+.I string\^
+becomes part of the
+environment, so altering the string will change the environment.
+The space used by
+.I string\^
+is no longer used once a new string-defining
+.I name\^
+is passed to
+.PN putenv .
+.SH Diagnostics
+The
+.PN putenv
+subroutine returns nonzero if it was unable to obtain enough space
+via 
+.PN malloc
+for an expanded environment, 
+otherwise zero.
+.SH Warnings
+The 
+.PN putenv
+subroutine manipulates the environment pointed to by 
+.PN environ ,
+and can be used in conjunction with 
+.PN getenv .
+However,
+.I envp
+(the third argument to 
+.IR main ) 
+is not changed.
+.br
+This routine uses 
+.MS malloc 3
+to enlarge the environment.
+.br
+After
+.PN putenv
+is called, environmental variables are not in
+alphabetical order.
+.br
+A potential error is to call
+.PN putenv
+with an automatic variable
+as the argument, then exit the calling function while
+.I string\^
+is still part of the environment.
+.SH See Also
+execve(2), getenv(3), malloc(3), environ(7)

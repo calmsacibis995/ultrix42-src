@@ -1,0 +1,176 @@
+#!/bin/sh
+#
+#	genrx - generate rx50 media in distributed environment.
+#
+#	000	ccb	06-19-1986
+#
+# genrx [-v|w] [host:]kitid special
+#
+SCCSID="@(#)genrx	4.1 (ULTRIX) 7/2/90"
+
+PATH="/etc:/usr/bin:/usr/ucb:/usr/hosts:/bin"
+export PATH
+PROG=$0
+NUL=/dev/null
+TD=/usr/tmp
+TMP=/usr/tmp/rxt$$
+DFS="$IFS"		# save for twiddlitude
+
+readonly TMP
+
+VFLAG=1 WFLAG=1
+case "$1" in
+-v)	# verify only.
+	WFLAG=0
+	shift
+	;;
+-w)	# write only
+	VFLAG=0
+	shift
+esac
+
+
+case $# in
+2)
+	DEV=$2
+	IFS=":"
+	set $1
+	IFS="$DFS"
+	case "$#" in
+	2)	HOST=$1
+		shift
+	esac
+	KD=$1
+	KIT=${1}RX
+	;;
+*)	echo "Use: $PROG host:kitid device"
+	exit 1
+	;;
+esac
+
+HERE=`hostname`
+# check if host is known in hosts file
+case "$HOST" in
+""|"$HERE")
+	HOST=$HERE
+	RCMD=
+	;;
+*)	grep -s "$HOST" /etc/hosts ||
+	{
+		echo "Host $HOST not in hosts file."
+		exit 1
+	}
+	RCMD="rsh $HOST"
+	;;
+esac
+
+# check access to output device.
+[ -w $DEV ] || 
+{
+	echo "$PROG: Insufficient privileges for $DEV"
+	exit 1
+}
+
+rcp $HOST:/etc/kitcap $TMP
+KITDESC=`grep "^$KIT" $TMP` ||
+{
+	echo "grep $?"
+	echo "$PROG: can't find $KIT kit descriptor in kitcap."
+	rm $TMP
+	exit 1
+}
+
+set `echo $KITDESC|sed 's/:/ /g'`
+echo "Kit $1"
+shift
+KITDIR=$1
+shift
+IMAGES=$*
+
+$RCMD test -d $KITDIR ||
+{
+	echo "$PROG: can't find $HOST:$KITDIR"
+	rm $TMP
+	exit 1
+}
+
+rcp $HOST:$KITDIR/$KD.floppies  $TD
+for K in $IMAGES
+do
+	# strip blocking factor from image descriptor
+	IFS="|"
+	set $K
+	IFS="$DFS"
+	K=$1
+	# get list of floppy images for image descriptor
+	case "$RCMD" in
+	"")	set `cd $KITDIR;echo $K?*'`
+		;;
+	*)	set `$RCMD cd $KITDIR;echo $K'?*'`
+		;;
+	esac
+	V=0
+	NFLOPS=$#
+	while :
+	do
+		case "$V" in
+		$NFLOPS)
+			break
+			;;
+		esac
+		V=`expr $V + 1`
+
+		echo -n "
+Insert diskette $K volume $V of $NFLOPS in $DEV.
+Press <RETURN> when ready: "
+
+		read _X_
+
+		case "$WFLAG" in
+		1)
+			echo -n "Writing..."
+			case "$RCMD" in
+			"")	# local
+				dd if=$KITDIR/$K$V of=$DEV bs=40k count=10 2> $NUL||
+				{
+					echo -n "error"
+				}
+				;;
+			*)	$RCMD "cat /output/$KITDIR/$J"|
+					dd of=$DEV bs=40k 2> $NUL||
+				{
+					echo -n "error"
+				}
+				;;
+			esac
+			;;
+		esac
+		case "$VFLAG" in
+		1)	# verify
+			_X_=`grep $K$V'$' $TD/$KD.floppies` &&
+			{
+				echo -n "Verifying..."
+				set $_X_
+				SUM=$1
+				COUNT=`expr $2 / 40`
+				_X_=`dd if=$DEV bs=40k count=$COUNT 2> $NUL|sum`
+				set $_X_
+				case "$SUM" in
+				$1)	;;
+				*)	echo "
+Checksum error: $K$V"
+					;;
+				esac
+			}
+			;;
+		esac
+		echo "done."
+
+		echo "
+Remove $K volume $V
+"
+	done
+done
+
+rm $TMP $TD/$KD.floppies
+exit 0

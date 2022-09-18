@@ -1,0 +1,30 @@
+.\" SCCSID: @(#)tsort.1	8.1	9/11/90
+.TH tsort 1 
+.SH Name
+tsort \- create topological sort
+.SH Syntax
+.B tsort
+[\|\fIfile\fR\|]
+.SH Description
+.NXR "tsort command"
+.NXA "lorder command" "tsort command"
+.NXR "object file" "ordering"
+The
+.PN tsort
+command
+produces on the standard output a totally ordered list of items
+consistent with a partial ordering of items
+mentioned in the input
+.IR file .
+If no
+.I file
+is specified, the standard input is understood.
+.PP
+The input consists of pairs of items (nonempty strings)
+separated by blanks.
+Pairs of different items indicate ordering.
+Pairs of identical items indicate presence, but not ordering.
+.SH Diagnostics
+Odd data: there is an odd number of fields in the input file.
+.SH See Also
+lorder(1)

@@ -1,0 +1,41 @@
+.\" SCCSID: @(#)rename.3f	8.1	9/11/90
+.TH rename 3f VAX "" Unsupported
+.SH Name
+rename \- rename a file
+.SH Syntax
+.B integer function rename (from, to)
+.br
+.B character*(*) from, to
+.SH Description
+.NXR "rename subroutine (FORTRAN)"
+.NXR "file" "renaming"
+The 
+.PN rename
+subroutine 
+renames a file.
+The
+.I from
+argument must be the pathname of an existing file, and
+.I to
+will become the new pathname for the file.
+If
+.I to
+exists, then both
+.I from
+and
+.I to
+must be the same type of file, and must reside on the same filesystem.
+If
+.I to
+exists, it will be removed first.
+.SH Restrictions
+Pathnames can be no longer than MAXPATHLEN as defined in
+<sys/param.h>.
+.SH Return Values
+The returned value will be 0 if successful  
+and a system error code otherwise.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+rename(2), perror(3f)

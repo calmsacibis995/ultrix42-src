@@ -1,0 +1,199 @@
+.TH vmstat 1
+.de s1
+.if n .sp
+.if t .sp .1i
+..
+.de t1
+.if n .ta 5n
+.if t .ta 1i
+..
+.SH Name
+vmstat \- report virtual memory statistics
+.SH Syntax
+.B vmstat
+[
+.I interval
+[
+.I count
+] ] 
+.br
+.B vmstat \-v
+[
+.I interval
+[
+.I count
+] ] 
+.br
+.B vmstat \-fKSsz
+.br
+.B vmstat \-Kks
+.I namelist
+[
+.I corefile
+]
+.SH Description
+.NXR "vmstat command"
+.NXA "vmstat command" "netstat command"
+.NXA "vmstat command" "iostat command"
+.NXR "virtual memory" "reporting statistics"
+.NXR "system" "reporting statistics"
+.NXR "memory" "reporting statistics"
+The
+.PN vmstat
+command reports statistics on processes, virtual memory, disk, trap, 
+and cpu activity.  
+.PP
+If 
+.PN vmstat
+is specified without arguments, this command summarizes the virtual
+memory activity since the system was last booted.  If the
+.I interval
+argument is specified, then successive lines are summaries of activity
+over the last
+.I interval
+seconds.
+Because many statistics are sampled in the system every five seconds,
+five is a good specification for 
+.I interval; 
+other statistics vary every second.
+If the 
+.I count
+argument is provided, the statistics are repeated 
+.I count
+times.  
+.PP
+When you run
+.PN vmstat
+the format fields are as follows:
+.NXR "vmstat command" "format fields"
+.PP
+Procs: information about numbers of processes in various states.
+.NXR "process" "reporting statistics"
+.RS 5
+.IP \fBr\fR 5
+in run queue
+.IP \fBb\fR
+blocked for resources (i/o, paging, and so on.)
+.IP \fBw\fR
+runnable or short sleeper (< 20 seconds) but swapped
+.RE
+.PP
+faults:  trap/interrupt rate averages per second over the last 
+5 seconds.
+.RS 5
+.IP in 5
+(non clock) device interrupts per second
+.IP sy
+system calls per second
+.IP cs
+cpu context switch rate (switches/second)
+.RE
+.PP
+cpu:  breakdown of percentage usage of cpu time
+.RS 5
+.IP us 5
+user time for normal and low priority processes
+.IP sy
+system time
+.IP id
+cpu idle time
+.RE
+.PP
+Memory:  information about the use of virtual and real memory.
+Virtual pages are considered active if they belong to processes which
+are running or have run in the last 20 seconds.
+.RS 5
+.IP \fBavm\fR 5
+active virtual pages
+.IP \fBfre\fR
+size of the free list
+.RE
+.PP
+Pages are reported in units of 1024 bytes.
+.PP
+If the number of pages exceeds 9999, it is shown in a scaled
+representation.  The suffix k indicates multiplication
+by 1000 and the suffix m indicates multiplication by
+1000000.  For example, the value 12345 appears as 12k.
+.PP
+page: information about page faults and paging activity.
+These are averaged every five seconds, and given in units per second.
+The size of a unit is always 1024 bytes and is independent of
+the actual page size on a machine.
+.NXR "page" "reporting statistics"
+.RS 5
+.IP \fBre\fR 5
+page reclaims (simulating reference bits)
+.IP \fBat\fR
+pages attached (found in free list not swapdev or filesystem)
+.IP \fBpi\fR
+pages paged in
+.IP \fBpo\fR
+pages paged out
+.IP \fBfr\fR
+pages freed per second
+.IP \fBde\fR 
+anticipated short term memory shortfall
+.IP \fBsr\fR
+pages scanned by clock algorithm, per-second
+.RE
+.PP
+disk:  s0, s1 ...sn: Paging/swapping disk sector transfers 
+per second (this field is system dependent).
+.NXR "disk" "reporting statistics
+Typically paging is split across several of the available drives.
+This will print for each paging/swapping device configured 
+into the kernel.
+.SH Options
+.IP \fB\-f\fR
+Provides reports on the number of
+.I forks
+and
+.I vforks
+since system startup and the number of pages of 
+virtual memory involved in each
+kind of fork.
+.IP \fB\-K\fR
+Displays usage statistics of the kernel memory allocator.
+.IP \fB\-k\fR
+Allows a dump to be interrogated to print the contents of the sum 
+structure when specified with a 
+.I namelist
+and
+.I corefile.
+This is the default.
+.IP \fB\-S\fR
+Replaces the page reclaim (re) and pages attached (at) fields with
+processes swapped in (si) and processes swapped out (so).
+.IP \fB\-s\fR
+Prints the contents of the
+.I sum
+structure, giving the total number of several
+kinds of paging related
+events that have occurred since boot.
+.IP \-v
+Prints an expanded form of the virtual memory statistics.
+.IP \fB\-z\fR
+Zeroes out the sum structure if the UID indicates root privilege.
+.NXR "fork" "reporting"
+.NXR "vfork" "reporting"
+.SH Examples
+.PP
+The following command prints what the system
+is doing every five seconds:
+.EX
+vmstat 5
+.EE
+To find the status after a core dump use the following:
+.EX
+cd /usr/adm/crash
+vmstat \-k vmunix.? vmcore.?
+.EE
+.SH Files
+.TP 12
+.PN /dev/kmem
+Kernel memory
+.TP
+.PN /vmunix
+System namelist
+

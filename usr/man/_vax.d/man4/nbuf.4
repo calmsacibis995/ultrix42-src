@@ -1,0 +1,140 @@
+.\" SCCSID: @(#)nbuf.4	8.1	9/11/90
+.TH nbuf 4
+.SH Name
+nbuf \- select multiple-buffer operation to a raw device
+.SH Syntax
+.nf
+.ft B
+#include <sys/ioctl.h>
+.PP
+.nf
+.ft B
+ioctl(d, FIONBUF, count)
+int d;
+int *count;
+.fi
+.PP
+.nf
+.ft B
+status=ioctl(d, FIONBDONE, buffer)
+int d, status;
+char **buffer;
+.fi
+.ft R
+.SH Description
+.NXR "nbuf keyword"
+.NXR "I/O operation" "multiple buffers and"
+The I/O operations to raw devices are usually performed through
+a single buffer. This means that the issuing process
+must wait for a buffer to complete before the process can
+do anything else. An
+.I N-buffered 
+I/O operation allows a process
+to begin an I/O operation and continue doing something else
+until the operation has finished. Once 
+.I N-buffered
+operation
+is enabled, 
+.MS read 2
+and 
+.MS write 2
+acts as before except that
+buffer completion is not guaranteed when the call returns.
+If the operation starts without errors,
+.MS read 2 
+and 
+.MS write 2 
+return
+as if the operation were successful.
+That is, the number of requested bytes
+have transferred and file pointers are updated. 
+On read operations,
+the process must not use the contents of the started buffer
+until the buffer actually completes. 
+On write operations,
+the process
+must not reuse the buffer until the operation actually completes.
+A second 
+.PN ioctl 
+is used to check the status of previously 
+issued 
+.I N-buffered 
+read/write requests to determine when the 
+operation has really completed.
+.PP
+.I N-buffered 
+I/O is used through a set of 
+.PN ioctl 
+calls.
+Setting the
+.I request
+argument in an
+.PN ioctl
+call to FIONBUF enables 
+.I count 
+buffers to be used with the raw device
+associated with the file descriptor 
+.IR d . 
+If 
+.I count
+is zero,
+the N-buffered operation is terminated and any pending buffers
+are completed. A 
+.I count
+less than zero is invalid.
+Any started I/O buffer's status is checked by the 
+.PN ioctl
+call with the
+.I request
+argument set to FIONBDONE,
+with the address of the buffer used as an argument. 
+The status field
+returns the actual byte count transferred or any error encountered
+on the I/O operation. The FIONBDONE ioctl must be called before 
+re-using a buffer. FIONBDONE blocks the process until
+the given buffer completes (unless FNDELAY has been specified
+with
+.MS fcntl 2 ,
+at which point EWOULDBLOCK is returned).
+In addition, a signal can be generated whenever a buffer completes, if 
+FIOASYNC has been specified with
+.MS fcntl 2 .
+.PP
+The
+.MS select 2
+call is also useful in checking on the status of pending 
+buffers. 
+The
+.MS select 2
+call returns immediately if less than 
+.I count
+operations have been started on an N-buffered channel. Otherwise,
+.PN select 
+blocks the specified amount of time for a buffer to 
+become done. At this point, FIONBDONE must be used to return
+actual status of the pending buffer.
+.SH Diagnostics
+The
+.PN ioctl
+call fails if one or more of the following are true:
+.TP 15
+[EBADF]
+The \fId\fP argument is not a valid descriptor.
+.TP 15
+[ENOTTY]
+The \fId\fP argument is not associated with a character
+special device.
+.TP 15
+[ENOTTY]
+The specified request does not apply to the kind
+of object which the descriptor \fId\fP references.
+.TP 15
+[EINVAL]
+The \fIrequest\fP or \fIargp\fP 
+argument is not valid. Returned for FIONBDONE, if
+requested buffer was never started. Also returned
+for FIONBUF, if this device does not support 
+.I N-buffered 
+I/O.
+.SH See Also
+fcntl(2), ioctl(2), select(2)

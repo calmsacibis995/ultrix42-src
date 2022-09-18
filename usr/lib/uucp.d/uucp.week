@@ -1,0 +1,26 @@
+#!/bin/sh
+# @(#)uucp.week	4.1 (ULTRIX) 7/2/90
+#
+# Execute every week early in the morning.
+#
+umask 022
+L=/usr/spool/uucp/LOG.shells
+UUL=/usr/var/uucp
+
+trap ':' 1
+
+echo  "week:$$: saving logfiles `date`" >>$L
+
+# clean up shell logfile
+cd /usr/spool/uucp
+cp LOG.shells LOG.shells.week
+cp /dev/null LOG.shells
+
+echo "week:$$: saved logfiles `date`" >>$L
+
+# brute force clean up
+# find /usr/spool/uucp -type f -a -mtime +7 -a -exec rm -f {} ";"
+
+echo "week:$$: starting general uucico `date`" >>$L
+$UUL/uucico -r1
+echo "week:$$:     complete `date`" >>$L

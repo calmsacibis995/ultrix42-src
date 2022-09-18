@@ -1,0 +1,417 @@
+.TH slocal 1mh
+.SH Name
+slocal \- MH receive-mail hooks
+.SH Syntax
+.B slocal
+.B $HOME/\&.maildelivery
+[
+.B \-form
+.I formfile
+] [
+.I "switches for"
+.PN postproc
+]
+.I "address ..."
+[
+.B \-help
+]
+.PP
+.B /usr/lib/mh/rcvpack
+.I file
+[
+.B \-help
+]
+.PP
+.B /usr/lib/mh/rcvtty 
+[
+.I "command ..."
+] [
+.B \-help
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "slocal command"
+A receive-mail hook is a program that is run whenever you receive a
+mail message.
+You do not invoke the hook yourself;  
+it is invoked on your behalf by 
+.PN sendmail ,
+when you include the following line
+in your 
+.PN \&.forward 
+file in your home directory:
+.EX
+| /usr/lib/mh/slocal \-user $USER
+.EE
+.PP
+The 
+.PN \&.maildelivery 
+file,
+which is an ordinary ASCII file,
+controls how local delivery is performed.
+This file is read by 
+.PN slocal .
+.PP
+The format of each line in the 
+.PN \&.maildelivery
+file is:
+.EX
+field pattern action result string
+.EE
+.PP
+These components are explained below:
+.\"
+.IP "field:" 10
+The name of a field that is to be searched for a pattern.
+This is any field in the headers of the message that might be present.
+In addition, the following special fields are also defined:
+.IP 
+.IR source : 
+the out-of-band sender information
+.IP
+.IR addr : 
+the address that was used to cause delivery to the recipient
+.IP
+.IR default : 
+this matches only if the message has not been delivered yet
+.IP
+.IR * :
+this always matches
+.\"
+.\"
+.IP "pattern:"
+The sequence of characters to match in the specified field.
+Matching is case-insensitive but not Regular Expression-based.
+.\"
+.\"
+.IP "action:" 10
+The action to take to deliver the message.
+This is one of the following:
+.\"
+.IP " " 10
+.I file
+or
+.IR > :
+.IP 
+Append the message to the file named by 
+.B string 
+using the standard maildrop delivery process.
+If the message can be appended to the file,
+then this action succeeds.
+When writing to the file,
+a new field is added:
+.EX
+Delivery-Date: <date>
+.EE
+This field indicates the date and time 
+at which the message was appended to the file.
+.\"
+.IP " " 10
+.I pipe
+or | :
+.IP 
+Pipe the message as the standard input 
+to the command named by 
+.BR string .
+The Bourne shell,
+.MS sh 1 ,
+is used to interpret the string.
+Prior to giving the string to the shell,
+it is expanded with the following built-in variables:
+.IP
+\f(CW$(sender)\fR: 
+the return address for the message
+.IP
+\f(CW$(address)\fR: 
+the address that was used to cause delivery to the recipient
+.IP
+\f(CW$(size)\fR: 
+the size of the message in bytes
+.IP
+\f(CW$(reply-to)\fR: 
+either the \f(CWReply-To:\fR or \f(CWFrom:\fR field of the message
+.IP
+\f(CW$(info)\fR: 
+miscellaneous out-of-band information
+.IP
+When a process is invoked, its environment is as follows:
+the user/group id's are set to recipient's id's;
+the working directory is the recipient's directory;
+the umask is 0077;
+the process has no 
+.PN /dev/tty ;
+the standard input is set to the message;
+the standard output and diagnostic output are set to 
+.PN /dev/null ;
+all other file-descriptors are closed;
+the environment variables \f(CW$USER\fR, \f(CW$HOME\fR, 
+and \f(CW$SHELL\fR are set appropriately;
+no other environment variables exist.
+.IP
+The process is given a certain amount of time to execute.
+If the process does not exit within this limit,
+it is terminated.
+The amount of time is calculated as \f(CW((size x 60) + 300)\fR seconds,
+where size is the number of bytes in the message.
+.IP
+The exit status of the process is consulted 
+to determine the success of the action.
+An exit status of 0 means that the action succeeded.
+Any other exit status (or abnormal termination) 
+means that the action failed.
+.IP
+In order to avoid any time limitations,
+you might implement a process that began by forking.
+The parent would return the appropriate value immediately,
+and the child could continue to do whatever it wanted
+for as long as it wanted.
+This approach should only be used if you do not care 
+about the outcome of the action, 
+because the success or failure of the child process 
+cannot be passed
+back to
+.PN slocal .
+However, if the parent is going to return a non-zero exit status,
+then this approach can lead to quicker delivery into your maildrop.
+.\"
+.IP " " 10
+.I qpipe
+or
+.I "^" 
+:
+.IP 
+This is similar to 
+.IR pipe ,
+but executes the command directly,
+after built-in variable expansion,
+without assistance from the shell.
+.\"
+.IP " " 10
+.IR destroy :
+.IP 
+This action always succeeds.
+.IP "result:" 10
+Indicates how the action should be performed.
+The following values are valid:
+.IP " " 10
+.IR A :
+.IP
+Perform the action.
+If the action succeeded, then the message is considered delivered.
+.IP " " 10
+.IR R :
+.IP
+Perform the action.
+Regardless of the outcome of the action,
+the message is not considered delivered.
+.IP " " 10
+.IR "?" :
+.IP 
+Perform the action only if the message has not been delivered.
+If the action succeeded, then the message is considered delivered.
+.\"
+.\"
+.PP
+The file is always read completely,
+so that several matches can be made and several actions can be taken.
+The 
+.PN \&.maildelivery
+file must be owned either by the user or by root,
+and must be writable only by the owner.
+If the 
+.PN \&.maildelivery
+file cannot be found, or does not perform an action 
+which delivers the message, then the file 
+.PN /usr/lib/mh/maildelivery 
+is read according to the same rules.
+This file must be owned by the root 
+and must be writable only by the root.
+If this file cannot be found or does not perform an action 
+which delivers the message,
+then standard delivery to the user's maildrop, 
+.PN /usr/spool/mail/$USER , 
+is performed.
+.PP
+Arguments in the 
+.PN \&.maildelivery
+file are separated by a comma (,) or by white space.
+Since double quotes are honored,
+these characters may be included in a single argument 
+by enclosing the entire argument in double quotes (").
+A double quote can be included by preceding it with a back-slash.
+.\"
+.\"
+.PP
+Four programs are currently available:
+.PN rcvdist
+redistributes incoming messages to additional recipients;
+.PN rcvpack 
+saves incoming messages in a 
+.MS packf 1mh
+file; and
+.PN rcvtty
+notifies the user of incoming messages.
+The fourth program,
+.PN rcvstore ,
+is described in the
+.MS rcvstore 1mh
+reference page.
+They all reside in the 
+.PN /usr/lib/mh
+directory.
+.PP
+The 
+.PN rcvdist
+program resends a copy of the message to all of the
+addresses listed on its command line.
+It uses the format string facility described in 
+.MS mh-format 5mh .
+.PP
+The 
+.PN rcvpack
+program appends a copy of the message to the file listed
+on its command line.
+It is made obsolete by
+.PN \&.maildelivery .
+.PP
+The 
+.PN rcvtty
+program executes the named file 
+with the message as its standard input,
+and gives the resulting output to the terminal access daemon 
+for display on your terminal.
+If the terminal access daemon is unavailable on your system, then 
+.PN rcvtty
+writes the output to your terminal,
+only if your terminal has world-writable permission.
+If no valid file is specified, then
+.PN rcvtty 
+gives a one-line scan listing
+to the terminal access daemon.
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+For compatibility with older versions of MH, if 
+.PN slocal 
+cannot find the user's 
+.PN \&.maildelivery
+file,
+it attempts to execute an old-style 
+.PN rcvmail 
+hook in the user's 
+.PN $HOME
+directory.
+Specifically,
+it first attempts to execute the command:
+.EX 
+\&.mh_receive file maildrop directory user
+.EE
+Failing that it attempts to execute:
+.EX
+$HOME/bin/rcvmail user file sender
+.EE
+If both of these fail, it gives up
+and write to the user's maildrop.
+.PP
+In addition,
+whenever a hook or process is invoked,
+file-descriptor three (3) is set to the message 
+in addition to the standard input.
+.PP
+Only two return codes are meaningful, others should be.
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+This section shows how
+.PN slocal 
+could be used.
+.PP
+In this example, line-by-line comments have been extracted from the code
+to aid readability of the example.  
+The line numbers would not normally be in the code; 
+they are there to help you.  
+The code fragment precedes the
+explanation:
+.PP
+.TS
+tab(@);
+l l l l l l.
+@\fIfield@pattern@action@result@string\fR
+.sp 6p
+(1)@To@mmdf2@file@A@mmdf2.log
+(2)@From@mmdf@pipe@A@err-message-archive
+(3)@Sender@uk-mmdf@file@?@mmdf2.log
+(4)@To@Unix@>@A@unix-news
+(5)@addr@jpo=mmdf@|@A@mmdf-redist
+(6)@addr@jpo=ack@|@R@resend \-r $(reply-to)
+(7)@From@steve@destroy@A@\-
+(8)@default@\-@>@?@mailbox
+(9)@*@\-@|@R@rcvalert
+.TE
+.TP 10
+Line 1:
+File mail with \f(CWmmdf2\fR in the \f(CWTo:\fR line into file 
+.PN mmdf2.log .
+.TP 10
+Line 2:
+Messages from \f(CWmmdf\fR are piped to the program 
+.PN err-message-archive .
+.TP 10
+Line 3: 
+Take anything with the address \f(CWuk-mmdf\fR
+in the \f(CWSender:\fR field, 
+and file it in 
+.PN mmdf2.log ,
+if it has not already been filed by line 1.
+.TP 10
+Line 4:
+Put messages addressed to \f(CWUnix\fR in the file
+.PN unix-news .
+.TP 10
+Line 5:
+If the address is \f(CWjpo=mmdf\fR,
+pipe the message into 
+.PN mmdf-redist .
+.TP 10
+Line 6:
+If the address is \f(CWjpo=ack\fR,
+send an acknowledgement copy back.
+.TP 10
+Line 7:
+Destroy anything from \f(CWsteve\fR.
+.TP 10
+Line 8:
+Take anything that is not matched yet
+and put it into mailbox.
+.TP 10
+Line 9:
+Always run 
+.PN rcvalert .
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN /usr/lib/mh/mtstailor
+The system customization file.
+.TP 10
+.PN /usr/lib/mh/maildelivery
+The system default file controlling local delivery.
+.TP 10
+.PN $HOME/.maildelivery
+The user-supplied alternative to the system default file
+controlling local delivery.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+rcvstore(1mh)

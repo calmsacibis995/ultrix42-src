@@ -1,0 +1,202 @@
+.\" SCCSID: @(#)hp.4	8.1	9/11/90
+.TH hp 4 VAX
+.SH Name
+hp \- MASSBUS disk interface
+.SH Syntax
+.B "disk hp0 at mba0 drive 0"
+.SH Description
+.NXR "hp interface" "RM03 disk interface"
+.NXR "hp interface" "RM05 disk interface"
+.NXR "hp interface" "RM80 disk interface"
+.NXR "hp interface" "RP06 disk interface"
+.NXR "hp interface" "RP07 disk interface"
+.NXR "hp interface" "RP05 disk interface"
+.NXR "MASSBUS disk interface" "RM03 disk interface"
+.NXR "MASSBUS disk interface" "RM05 disk interface"
+.NXR "MASSBUS disk interface" "RM80 disk interface"
+.NXR "MASSBUS disk interface" "RP06 disk interface"
+.NXR "MASSBUS disk interface" "RP07 disk interface"
+.NXR "MASSBUS disk interface" "RP05 disk interface"
+.NXR "RM03 disk interface"
+.NXR "RM05 disk interface"
+.NXR "RM80 disk interface"
+.NXR "RP06 disk interface"
+.NXR "RP07 disk interface"
+.NXR "RP05 disk interface"
+Files with minor device numbers 0 through 7 refer to various portions
+of drive 0;
+minor devices 8 through 15 refer to drive 1, and so forth.
+The standard device names begin with `hp' followed by
+the drive number and then a letter a-h for partitions 0-7 respectively.
+The character ? stands here for a drive number in the range 0-7.
+.PP
+The block files access the disk with the system's normal
+buffering mechanism and may be read and written without regard to
+physical disk records.	There is also a ``raw'' interface 
+that provides for direct transmission between the disk
+and the user's read or write buffer.
+A single read or write call results in exactly one I/O operation
+and, therefore, raw I/O is considerably more efficient when
+many words are transmitted.  The names of the raw files
+conventionally begin with an extra `r'.
+.PP
+In raw I/O, counts should be a multiple of 512 bytes (a disk sector).
+Similarly, 
+.PN seek
+calls should specify a multiple of 512 bytes.
+.PP
+Standard DIGITAL drive types are
+recognized according to the MASSBUS drive type register.
+The origin and size (in sectors) of the partitions
+on each drive are as follows:
+.NXR "MASSBUS disk interface" "drive types recognized"
+.PP
+.nf
+.ta .5i +\w'000000    'u +\w'000000    'u +\w'000000	'u +\w'000000	 'u
+.PP
+\fBRM03 partitions\fR
+.NXR "RM03 disk" "partitions"
+	disk	start	length	cyls
+	hp?a	0	15884	0-99
+	hp?b	16000	33440	100-308
+	hp?c	0	131680	0-822
+	hp?d	49600	15884	309-408
+	hp?e	65440	55936	409-758
+	hp?f	121440	10144	759-822
+	hp?g	49600	82144	309-822
+.PP
+\fBRM05 partitions\fR
+.NXR "RM05 disk" "partitions"
+	disk	start	length	cyls
+	hp?a	0	32768	0-53
+	hp?b	32832	66880	54-163
+	hp?c	0	500384	0-822
+	hp?d	341696	15884	562-588
+	hp?e	358112	55936	589-680
+	hp?f	414048	86240	681-822
+	hp?g	341696	158592	562-822
+	hp?h	99712	241984	164-561
+.PP
+\fBRP06 partitions\fR
+.NXR "RP06 disk" "partitions"
+	disk	start	length	cyls
+	hp?a	0	15884	0-37
+	hp?b	15884	33440	38-117
+	hp?c	0	340670	0-814
+	hp?d	49324	15884	118-155
+	hp?e	65208	55936	156-289
+	hp?f	121220	219384	290-814
+	hp?g	49324	291280	118-814
+.PP
+\fBRM80 partitions\fR
+.NXR "RM80 disk" "partitions"
+	disk	start	length	cyls
+	hp?a	0	15884	0-36
+	hp?b	16058	33440	37-114
+	hp?c	0	242606	0-558
+	hp?d	49910	15884	115-151
+	hp?e	68096	55936	152-280
+	hp?f	125888	120559	281-558
+	hp?g	49910	192603	115-558
+.PP
+\fBRP05 partitions\fR
+.NXR "RP05 disk" "partitions"
+	disk	start	length	cyls
+	hp?a	0	15884	0-37
+	hp?b	15884	33440	38-117
+	hp?c	0	171798	0-410
+	hp?d	2242	15884	118-155
+	hp?e	65208	55936	156-289
+	hp?f	121220	50512	290-410
+	hp?g	2242	122408	118-410
+.PP
+\fBRP07 partitions\fR
+.NXR "RP07 disk" "partitions"
+	disk	start	length	cyls
+	hp?a	0	15884	0-9
+	hp?b	16000	66880	10-51
+	hp?c	0	1008000 0-629
+	hp?d	376000	15884	235-244
+	hp?e	392000	307200	245-436
+	hp?f	699200	308650	437-629
+	hp?g	376000	631850	235-629
+	hp?h	83200	291346	52-234
+.DT
+.fi
+.PP
+It is unwise for all of these files to be present in one installation,
+because there is overlap in addresses and protection becomes
+difficult.
+The hp?a partition is normally used for the root file system,
+the hp?b partition as a paging area,
+and the hp?c partition for pack-to-pack copying (it maps the entire disk).
+On disks larger than about 205 Megabytes, the hp?h partition
+is inserted prior to the hp?d or hp?g partition;
+the hp?g partition then maps the remainder of the pack.
+All disk partition tables are calculated using the
+.MS diskpart 8
+program.
+.SH Restrictions
+.NXR "MASSBUS disk interface" "restricted"
+In raw I/O,
+.MS read 2
+and
+.MS write 2
+truncate file offsets to 512-byte block boundaries,
+and
+.PN write
+scribbles on the tail of incomplete blocks.
+Thus,
+in programs that are likely to access raw devices,
+.PN read ,
+.PN write ,
+and
+.MS lseek 2
+should always deal in 512-byte multiples.
+.SH Diagnostics
+.NXR "MASSBUS disk interface" "diagnostics"
+The following messages are printed at the console and noted
+in the error log file:
+.PP
+.B "hp%d%c: hard error sn%d"
+.br
+An unrecoverable error occurred during transfer of the specified sector
+of the named disk partition.
+Either the error was unrecoverable, or a large number of retry attempts
+(including offset positioning and drive recalibration) could not
+recover the error.  Additional register information may be
+gathered from the system error log file,
+.PN /usr/adm/syserr/syserr.<hostname>.
+.PP
+.B "hp%d: write locked"
+.br
+The write protect switch was set on the drive when a write was
+attempted.  The write operation is not recoverable.
+.PP
+.B "hp%d: not ready"
+.br
+The drive was spun down or off line when it was
+accessed.  The I/O operation is not recoverable.
+.PP
+During autoconfiguration, one of the following messages may appear
+on the console indicating the appropriate drive type was recognized.
+The last message indicates the drive is of an unknown type.
+.sp
+.PP
+The following message is written to the system error log file only:
+.PP
+.B "hp%d%c: soft ecc sn%d"
+.br
+A recoverable ECC error occurred on the specified sector of the
+named disk partition.
+This happens normally a few times a week.
+If it happens more frequently than this,
+the sectors where the errors are occurring should be checked to see
+if certain cylinders on the pack or spots on the carriage of the drive
+or heads are indicated.
+.SH Files
+.PN /dev/hp???
+.br
+.PN /dev/rhp???
+.SH See Also
+dkio(4), nbuf(4), MAKEDEV(8), uerf(8)

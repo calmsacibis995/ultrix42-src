@@ -1,0 +1,131 @@
+.TH t_sndudata 3xti
+.SH Name
+t_sndudata \- send a data unit
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_sndudata(\fIfd, unitdata\fB)
+.br
+.B int \fIfd\fB;
+.br
+.B struct t_unitdata \fI*unitdata\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint through which data will be sent.
+.IP \fIunitdata\fR 10
+Points to a \fBt_unitdata\fR structure containing the following members:
+.EX
+struct netbuf \fIaddr\fP;
+struct netbuf \fIopt\fP;
+struct netbuf \fIudata\fR;
+.EE
+.IP 
+The members have the following meanings:
+.RS 10
+.IP \fIaddr\fP 12
+Specifies the protocol address of the destination user.
+.IP \fIopt\fP	
+Identifies protocol-specific options that the user wants associated with the request.
+.IP \fIudata\fP
+Specifies the user data to be sent.
+.RE
+.SH Description
+This function is used in connectionless mode to send a data unit to
+another transport user.
+.NXR "t_sndudata system call"
+.NXR "connectionless mode" "sending data"
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+unitdata->addr.maxlen@/@/
+unitdata->addr.len@x@/
+unitdata->opt.maxlen@/@/
+unitdata->opt.len@x@/
+unitdata->opt.buf@?(?)@/
+unitdata->udata.maxlen@/@/
+unitdata->udata.len@x@/
+unitdata->udata.buf@x(x)@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.sp 2
+If the \fIlen\fR field of \fIudata\fR is zero, and sending of zero
+octets is not supported by the underlying transport service, the
+.PN t_sndudata() 
+returns \-1 with \fBt_errno\fR set to [TBADDATA].
+.PP
+By default, 
+.PN t_sndudata()
+operates in synchronous mode and may wait if
+flow control restrictions prevent the data from being accepted by the
+local transport provider at the time the call is made. However, if
+O_NONBLOCK is set by means of 
+.PN t_open() 
+or 
+.PN fcntl(),
+.PN t_sndudata()
+executes in asynchronous mode and fails under such
+conditions. The process can arrange to be notified of the clearance of a
+flow control restriction by means of 
+.PN t_look()\fR.\fR 
+.PP
+If the amount of data specified in \fIudata\fR exceeds the TSDU size as
+returned in the \fItsdu\fR field of the \fIinfo\fR argument of
+.PN t_open() 
+or 
+.PN t_getinfo(), 
+the provider generates a protocol error. See [TSYSERR] under the DIAGNOSTICS
+section. If 
+.PN t_sndudata()
+is issued before the destination user has activated its transport endpoint, 
+the data unit can be discarded.
+.SH Return Values
+Upon successful completion, a value of 0 is returned. On failure, a
+value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20 
+[TOUTSTATE]
+The function was issued in the wrong sequence on the transport endpoint
+referenced by \fIfd\fR.
+.TP 20
+[TFLOW]
+O_NONBLOCK was set, but the flow control mechanism prevented the
+transport provider from accepting any data at this time.
+.TP 20
+[TBADDATA]
+Illegal amount of data; zero octets are not supported.
+.TP 20
+[TLOOK]
+An asynchronous event has occurred on the transport endpoint.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the underlying transport provider. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function. A
+protocol error cannot cause 
+.PN t_sndudata()
+to fail until a subsequent access of the transport endpoint.
+.SH See Also
+fcntl(2), 
+t_alloc(3xti), 
+t_open(3xti),
+t_rcvudata(3xti), 
+t_rcvuderr(3xti)

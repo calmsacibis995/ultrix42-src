@@ -1,0 +1,91 @@
+.\" SCCSID: @(#)sigsetops.3	2.3	8/10/87
+.TH sigsetops 3
+.SH Name
+sigemptyset, sigfillset, sigaddset, sigdelset, sigismember \- manipulate signal sets (POSIX)
+.SH Syntax
+.nf
+.B #include <signal.h>
+.PP
+.B int sigemptyset(\fIset\fP)
+.B sigset_t *\fIset\fP;
+.PP
+.B int sigfillset (\fIset\fP)
+.B sigset_t \fI*set\fP;
+.PP
+.B int sigaddset(\fIset,sig\fP)
+.B sigset_t \fI*set\fP;
+.B int \fIsig\fP;
+.PP
+.B int sigdelset(\fIset,sig\fP)
+.B sigset_t \fI*set\fP;
+.B int \fIsig\fP;
+.PP
+.B int sigismember(\fIset,sig\fP)
+.B sigset_t \fI*set\fP;
+.B int \fIsig\fP;
+.SH Description
+The
+.MS sigsetops 3
+functions manipulate signal sets used by the other POSIX signal functions 
+.MS sigaction 3, 
+.MS sigprocmask 3, 
+.MS sigsuspend 3 .
+.PP
+The
+.MS sigemptyset 3
+function initializes the signal set pointed to by the argument
+.I set
+so that all signals are excluded.
+.NXR "sigemptyset subroutine"
+.NXR "sigfillset subroutine"
+.NXR "sigaddset subroutine"
+.NXR "sigdelset subroutine"
+.NXR "sigismember subroutine"
+.NXR "signal" 
+.PP
+The
+.MS sigfillset 3
+function initializes the signal set pointed to by the argument
+.I set
+so that all signals are included.
+.PP
+The
+.MS sigaddset 3
+and
+.MS sigdelset 3
+functions respectively add and delete the individual signal specified by the value
+of the argument
+.I sig
+from the signal set pointed to by the argument
+.I set.
+.PP
+The
+.MS sigismember 3
+function tests whether the signal specified by the value of the argument
+.I sig
+is a member of the set pointed to by the argument
+.I set.
+.SH Return Values
+Upon successful completion, the
+.MS sigismember 3
+function returns a value of 1 if the specified signal is a member of the set.
+If it is not a member of the set, a value of 0 is returned.
+.PP
+If the 
+.MS sigaddset 3,
+.MS sigdelset 3,
+or
+.MS sigismember 3
+functions fail a \-1 value is returned and 
+.I errno
+is set to indicate the reason.
+.SH Diagnostics
+The
+.MS sigsetops 3
+function will fail and the signal mask will remain unchanged if one of the
+following occur:
+.TP 15
+[EINVAL]
+The value of the \fIsig\fP argument is not a valid signal number
+.SH See Also
+sigprocmask(3), sigaction(3), sigsuspend(3), sigpending(2)

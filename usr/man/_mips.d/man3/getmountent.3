@@ -1,0 +1,136 @@
+.\" SCCSID: @(#)getmountent.3	8.1	9/11/90
+.TH getmountent 3
+.SH Name
+getmountent \- get information about mounted file systems without blocking
+.SH Syntax
+.nf
+.ft B
+#include <sys/types.h>
+#include <sys/param.h>
+#include <sys/mount.h>
+.PP
+.ft B
+getmountent(start, buffer, nentries)
+int 		*start;
+struct fs_data	*buffer;
+int		 nentries;
+.fi
+.SH Description
+.NXR "getmountent subroutine"
+.NXA "getmountent subroutine" "statfs subroutine"
+.NXR "file system" "getting information on mounted"
+The
+.PN getmountent
+library routine retrieves mounted file system information
+from memory without blocking.
+The file system information retrieved
+(the number of free inodes and blocks)
+might not be up to date.
+If the accuracy of the file system information retrieved is critical,
+you should use
+.PN statfs
+or
+.PN getmnt
+instead of
+.PN getmountent .
+.PP
+The 
+.I start
+argument is the current logical location within the
+internal system mount table and
+must be initially set to 0.
+The
+.I buffer
+argument is the holding area for the returned information;
+that is,
+the
+.PN fs_data
+structures.
+The size of
+.I buffer
+should be at least the number of entries
+times the size of the
+.PN fs_data
+structure,
+in bytes.
+
+The
+.I nentries
+argument defines the number of mount table entries that are to
+be retrieved.
+.PP
+The number of file systems described by the information placed in
+.I buffer
+is returned.
+The
+.I start
+argument is updated so that successive calls can be used to retrieve
+the entire mount table.
+.PP
+.SH Return Values
+.PP
+Upon successful completion, a value indicating the number of
+.PN struct
+.PN fs_data
+structures stored in
+.I buffer
+is returned.
+If there are no more file systems in the mount table,
+.PN 0
+is returned.
+Otherwise,
+.PN \-1
+is returned and the global variable
+.I errno
+is set to indicate the error.
+.\" .LP
+.\" Upon successful completion,
+.\" a value of 1 is returned.
+.\" Otherwise,
+.\" .PN \-1
+.\" is returned and the variable
+.\" .I errno
+.\" is set to indicate the error.
+.PP
+.SH Diagnostics
+.\" .TP 15
+.\" ENOTDIR
+.\" A component of the path prefix of
+.\" .I path
+.\" is not a directory.
+.TP 15
+EINVAL
+Invalid argument.
+.\" .TP 15
+.\" ENAMETOOLONG
+.\" The length of a component of
+.\" .I path
+.\" exceeds 255 characters,
+.\" or the length of
+.\" .I path
+.\" exceeds 1023 characters.
+.\" .TP 15
+.\" ENOENT
+.\" The file referred to by
+.\" .I path
+.\" does not exist.
+.\" .TP 15
+.\" EACCESS
+.\" Search permission is denied for a component of the path prefix of
+.\" .IR path .
+.TP 15
+.\" ELOOP
+.\" Too many symbolic links were encountered in translating
+.\" .IR path .
+.TP 15
+EFAULT
+Either
+.I buffer
+or
+.I start
+causes an illegal address to be referenced.
+.TP 15
+EIO
+An I/O error occurred while reading from the file system.
+.SH See Also
+getmnt(2), statfs(3)

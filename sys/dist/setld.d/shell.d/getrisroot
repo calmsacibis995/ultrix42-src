@@ -1,0 +1,102 @@
+#!/bin/sh5
+#
+#	getrisroot - writes root files system for a named ris client
+#		to stdout.
+#
+#			Copyright (c) 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)getrisroot	4.1	(ULTRIX)	7/2/90";
+#
+#	000	21-jun-1989	ccb
+#
+
+Error()
+{ (
+	1>&2 echo "$PROG: $*"
+) }
+
+Parse()
+{ (
+	IFS=$1
+	shift
+	echo $*
+) }
+
+PROG=$0
+
+CLIENT=.
+RISDB=clients/risdb
+
+case "$#" in
+1)	CLIENT=$1
+	;;
+*)	Error "Usage: $PROG clientname"
+	exit 1
+esac
+
+[ -r "$RISDB" ] ||
+{
+	Error "Cannot acccess $RISDB"
+	exit 1
+}
+
+ENTRY=`egrep $CLIENT $RISDB` ||
+{
+	Error "Cannot find $CLIENT in RIS database"
+	exit 1
+}
+
+set -- `Parse : $ENTRY`
+[ "$#" = 3 ] ||
+{
+	Error "database entry for client $CLIENT is corrupt"
+	exit 1
+}
+PLIST=$3
+set -- `Parse , $PLIST`
+PDIR=$1
+shift
+[ "$PDIR" ] ||
+{
+	Error "database entry for client $CLIENT is corrupt"
+	exit 1
+}
+[ -d "$PDIR" ] ||
+{
+	Error "Directory $PDIR does not exist"
+	exit 1
+}
+for PRODUCT
+{
+	[ -f $PDIR/$PRODUCT/ROOT ] &&
+	{
+		ROOT=$PDIR/$PRODUCT/ROOT
+		break
+	}
+}
+[ "$ROOT" ] ||
+{
+	Error "No ROOT Image available for $CLIENT"
+	exit 1
+}
+
+# ship out the root
+dd if=$ROOT bs=10k 2> /dev/null
+exit 0
+

@@ -1,0 +1,102 @@
+.TH ln03of 8
+.SH Name
+ln03of \- LN03(S) laser printer filter
+.SH Syntax
+/usr/lib/lpdfilters/ln03of [\fB\-c\fP] [\fB\-n\fP\fIlogin\fP] [\fB\-h\fP\fIhost\fP] [\fB\-w\fP\fIwidth\fP] [\fB\-l\fP\fInum\fP] [\fB\-i\fP\fIindent\fP]  [\fBaccounting file\fP]
+.SH Description
+The 
+.PN ln03of
+filter is used to filter text data destined for the 
+LN03 and LN03S laser printers.
+The filter handles the device dependencies of the printers
+and performs accounting functions. 
+Accounting records are written to the file specified
+by the \fBaf\fP field in 
+.PN /etc/printcap 
+at the time of completion for each job.
+.PP
+The filter can handle plain ASCII files and files
+that have been preprocessed by nroff.
+The 
+.PN ln03of
+filter translates nroff control sequences for underlining, 
+superscripting, and subscripting into the correct LN03(S) 
+control sequences.
+.PP
+The 
+.PN ln03of
+filter can be the specified filter in both
+the \fBof\fP and the \fBif\fP fields in the
+.PN /etc/printcap
+file.  For further information, see 
+.MS printcap 5 .
+When both fields are specified the \fBof\fP filter is used only
+to print the banner page.  It is then stopped to allow
+the \fBif\fP filter access to the printer. The
+\fBif\fP filter maintains accounting information.
+.PP
+If the \fBof\fP field is the only one specified the filter is used to print the
+banner page.  It is then stopped and restarted.
+This allows the \fBof\fP filter to be
+used to maintain accounting information.
+.PP
+If the \fBif\fP field is the only one specified
+the banner page will be sent directly to
+the printer. If the printer has been left
+in an undetermined state the banner page may not
+print correctly.
+.PP
+The best results will be obtained when the filter is specified
+in both the \fBof\fP and \fBif\fP fields.
+For a more detailed discussion on filters
+see the ``Line Printer Spooler Manual'' in the 
+.I "ULTRIX Supplementary Documents, Volume 2: Programmer.
+.PP
+.SH Options
+The arguments passed to the filter depend on its use.
+The \fBof\fP filter is called with the
+following arguments:
+.IP "ln03of \fB\-w\fP\fIwidth\fP \fB\-l\fP\fIlength\fP"
+The \fIwidth\fP and \fIlength\fP values come from
+the \fBpw\fP and \fBpl\fP fields in the 
+.PN /etc/printcap
+database. The \fBif\fP
+(or restarted \fBof\fP) filter is passed the following arguments:
+.IP "ln03of \fB\-c\fP \fB\-n\fP\fIlogin\fP \fB\-h\fP\fIhost\fP \fB\-w\fP\fIwidth\fP \fB\-l\fP\fInum\fP \fB\-i\fP\fIindent\fP  \fBaccounting file\fP"
+The \fB\-c\fP flag is optional, and supplied only when
+control characters are to be printed, that is, when
+the \fB\-l\fP option of
+.MS lpr 1
+is used to print the file. The \fB\-w\fP and \fB\-l\fP arguments are 
+the same as for the \fBof\fP filter, however,
+they may have different values if the \fB\-w\fP and/or
+\fB\-z\fP options of
+.MS lpr 1
+were used to print the file. If the value of the width is greater than
+80 the job will be printed in landscape
+mode with a slightly smaller font. The length of the page is
+assumed to be 66 regardless of the length specified.
+The \fB\-n\fP and \fB\-h\fP arguments 
+specify the login name and host name of the job owner.
+These arguments are used to record
+accounting information. The \fB\-i\fP option specifies 
+the amount of indentation to be used. The last
+argument is the name of the accounting file 
+specified from the \fBaf\fP field in the 
+.PN /etc/printcap 
+database.
+.SH Diagnostics
+The \fBlf\fP field (default /dev/null) in the
+.PN /etc/printcap
+database specifies error logging file name.
+.SH Files
+.TP 15
+.PN /etc/printcap
+Printer capabilities database
+.TP
+.PN /dev/lp?
+.SH See Also
+lpr(1), pr(1), printcap(5), lpd(8), MAKEDEV(8), pac(8)
+.br
+``Line Printer Spooler Manual,''
+.I "ULTRIX Supplementary Documents, Volume 2: Programmer"

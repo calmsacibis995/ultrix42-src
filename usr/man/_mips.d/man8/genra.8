@@ -1,0 +1,88 @@
+.TH genra 8
+.SH Name
+genra \- produce distribution RA60 media
+.SH Syntax
+.B "/etc/genra [-{wv}] [\fIhostname\fP:]\fIproduct_code\fP special"
+.SH Description
+The 
+.PN genra
+utility is used to produce RA60 distribution media.  The
+utility searches 
+.PN /etc/kitcap 
+for the 
+.I product_code 
+(as provided by
+the user on the command line), creates a new file system on the
+partition defined in the kit description, mounts the disk, transfers
+files and subsets as described in the kitcap kit description, uses
+.MS sum 1
+to verify files for accuracy in transfer, and then unmounts
+the file system.  The 
+.PN genra 
+utility can create multiple directories
+on the RA60 for separate products, and can also combine multiple
+products into one product, all controlled by 
+.PN /etc/kitcap .
+.PP
+The optional \fIhostname:\fP argument is the 
+name of a remote TCP/IP network machine that
+contains the kitcap file.  The utility will search 
+.PN /etc/kitcap 
+on the
+remote machine for the 
+.I product_code 
+and use it for creating the media. 
+The colon (:) is a required delimiter for TCP/IP networks, 
+and there is no space between the colon and the 
+.IR product_code .
+For example, if the product code was ULT-2.2-V-BW, and the kitcap file
+to be used was on node "mynode", the proper syntax for this option
+would be
+.EX
+			mynode:ULT-2.2-V-BW
+.EE
+.PP
+The 
+.I product_code
+is a user defined code that is located in 
+.PN /etc/kitcap ,
+and describes the partition, directories, and subsets, that make up a
+kitcap description.  It can be any set of numbers or letters, and is
+usually formed in a way to have some meaning as to the product that it
+describes.  For example, if the product name is MYPRODUCT and it is
+version 1, a proper 
+.I product_code 
+for that product might be MYP010.
+.PP
+The 
+.B special
+argument indicates that the device is a special device such as 
+.PN /dev/rra1a .
+The actual
+partition that the utility will write the files on is defined in the
+kitcap description for the 
+.I product_code 
+that is being used.  Therefore,
+it makes no difference what partition is appended to the special device
+file used on the command line.
+.SH Options
+.IP \-w
+Write only.  
+.IP \-v
+Verify only.
+.IP
+If neither option appears on the command line, then by default, the
+utility will write, then verify, the files in the kit descriptor.	
+.SH Restrictions
+You must be a superuser to run this program.  
+If the optional hostname is
+used, you must be able to access files on the remote host as superuser.
+.SH Files
+.TP 15
+.PN /dev/ra?a
+ra device special files
+.TP
+.PN /etc/kitcap
+Kit descriptor database
+.SH See Also
+gentapes(1), sum(1), kitcap(5)

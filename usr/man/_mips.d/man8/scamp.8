@@ -1,0 +1,65 @@
+.TH scamp 8
+.SH Name
+scamp \- System Configuration and Management Program
+.SH Syntax
+.B /usr/etc/scamp
+.SH Description
+.NXR "scamp program (SCAMP)"
+The 
+.PN scamp
+utility is a menu-driven program that helps you set up and manage your system.
+scamp allows you to manage user accounts and software subsets, and to perform 
+basic system management tasks such as setting the system date and time,
+and rebooting the system.
+.PP
+.PN scamp 
+uses the directory 
+.PN /usr/etc/scampdir
+to store all of it's files.
+.SH Restrictions
+This utility is installed in the 
+.PN /usr/etc
+directory.  To have access to 
+.PN scamp
+while in single-user mode the 
+.PN /usr
+partition must be mounted.
+.SH Examples
+When 
+.PN scamp
+is invoked a page of welcome text first displayed.  After you hit a 
+carriage return the Main Menu is displayed.
+.nf
+
+                *****************************
+                  ULTRIX  SCAMP  MAIN  MENU
+                *****************************
+
+                1 - User Account Management
+                2 - Network Setup Information
+                3 - Terminal Setup
+                4 - Modem Setup
+                5 - Printer Setup
+                6 - Install/Remove Software Subsets
+                7 - License Management Facility - LMF
+                8 - System Management Services
+
+                0 - Exit
+
+                Enter your choice: 
+.fi
+At the 'Enter your choice:' prompt you enter the number that is beside
+the task you would like to perform.  To enter a Product Authorization Key (PAK)
+you use the 'License Management Facility - LMF' menu item, so you would
+enter a 7 at the prompt.
+.PP
+Each of the Main Menu items have one or more screenfulls of information
+that could be displayed.  To exit to the previous screen, or to exit
+the utility when at Main Menu, enter a 0 at the prompt.
+.SH Files
+.PN /usr/etc/scamp
+.br
+.PN /usr/etc/scampdir
+.SH See Also
+.br
+\fIGuide to SCAMP\fP

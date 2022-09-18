@@ -1,0 +1,114 @@
+.TH pixie 1 RISC
+.UC 4
+.SH Name
+pixie \- add profiling code to a program
+.SH Syntax
+.B pixie
+in_prog_name [ options ]
+.SH Description
+The 
+.B pixie
+command reads an executable program, partitions it into basic blocks, and
+writes an equivalent program containing additional code that
+counts the execution of each basic block. A basic block is a region of
+the program that can be entered only at the beginning and exited only at
+the end.  The
+.B pixie 
+command also generates a file containing the address of each of the
+basic blocks.
+.PP
+When you run the pixie-generated program, it (provided it terminates
+normally or via a call to
+.MS exit 2 )
+generates a file containing the basic block counts. The name of the file
+is that of the original program with any leading directory names removed
+and ".Counts" appended.
+.MS prof 1
+and
+.MS pixstats 1
+can analyze these files and produce a listing of profiling data.
+.SH Options
+.TP 20
+.B \-o \fIout_prog_name
+Specify a name for the translation.  The default is to remove any leading
+directory names from the in_prog_name and append ".pixie".
+.TP 20
+.B \-bbaddrs \fIname
+Specify a name for the file of basic block addresses.  Default is to
+remove any leading directory names from the in_prog_name and append
+".Addrs".
+.TP 20
+.B \-[no]quiet
+Controls whether a summary is given of the binary-to-binary
+translation process. The default is
+.B \-noquiet.
+.TP 20
+.B \-[no]dwops
+Controls translation of double-word load/store instructions so that
+binaries using these instructions can be run on old processors.
+The default is
+.B \-nodwops
+(translate).
+.TP 20
+.B \-[no]textdata
+Controls whether pixie puts the original text into the translated output.
+This is required to correctly translate programs with data in the text
+section (for example, f77 format statements in some compiler releases). 
+The default is
+.B \-textdata
+(include original text).
+.TP 20
+.B \-[no]idtrace
+Disables or enables tracing of instruction and data memory references.
+.B \-idtrace
+is equivalent to using both
+.B \-itrace
+and
+.B \-dtrace
+together.
+The default is
+.B \-noidtrace
+.TP 20
+.B \-[no]itrace
+Disable or enable tracing of instruction memory references.
+The default is
+.B \-noitrace
+.TP 20
+.B \-[no]dtrace
+Disable or enable tracing of data memory references.
+Currently,
+.B \-dtrace
+requires
+.BR \-itrace .
+The default is
+.B \-nodtrace
+.TP 20
+.B \-[no]oldtrace
+Disable or enable the old memory reference trace format.
+The default is
+.BR \-oldtrace .
+.TP 20
+.B \-idtrace_sample \fInumber
+Record only 1 out of every
+.I number
+memory reference chunks. (This feature not yet implemented.)
+.TP 20
+.B \-idtrace_file \fInumber
+Specify a UNIX file descriptor number for the trace output file.
+The default is 19.
+.SH Restrictions
+The handler function address to the signal system calls is not translated,
+therefore, programs that receive signals  cannot work pixified.
+.PP
+Programs that call 
+.B vfork 
+cannot work pixified because the child process
+modifies the parent state required for pixie operation.  Use 
+.B fork
+instead.
+.PP
+Pixified code is substantially larger than the original code.  Conditional
+branches that used to fit in the 16-bit branch displacement field may no
+longer fit, generating a pixie error.
+.SH See Also
+prof(1), pixstats(1)

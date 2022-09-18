@@ -1,0 +1,116 @@
+.\" SCCSID: @(#)utime.3	2.1	3/10/87
+.TH utime 3
+.SH Name
+utime \- set file times
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.B int utime (\fIpath, times\fP)
+.B char *\fIpath\fP;
+.B struct utimbuf *\fItimes\fP;
+.fi
+.SH Description
+.NXR "utime function"
+.NXR "file" "setting access time"
+.NXR "file" "setting modification time"
+The
+.I path
+points to a pathname naming a file.  The
+.PN utime
+function
+sets the access and modification times
+of the named file.
+.PP
+If
+.I times
+is NULL,
+the access and modification times
+of the file are set to the current time.
+A process must be the owner of the file
+or have write permission to use
+.PN utime
+in this manner.
+.PP
+If
+.I times
+is not NULL,
+.I times
+is interpreted as a pointer to a
+.I utimbuf
+structure and
+the access and modification times
+are set to the values contained in
+the designated structure.  Only the
+owner of the file or the super-user can use
+.PN utime
+this way.
+.PP
+The function
+.PN utime
+causes the time of the last file status 
+change(st_ctime) to be updated with the current time.
+.PP
+The times in the following structure
+are measured in seconds since 00:00:00
+GMT\*S,
+January 1, 1970.
+.EX 0
+struct  utimbuf  {
+        time_t  actime;    /* access time */
+        time_t  modtime;   /* modification time */
+};
+.EE
+.SH Return Values
+Upon successful completion, a value of zero (0) is returned.  
+Otherwise, a value of \-1 is returned, and 
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+The
+.PN utime
+function fails, if any of the following is true:
+.TP 15
+[EACCES]
+Search permission is denied by a component of the
+.I path
+prefix.
+.TP 15
+[EACCES]
+The effective user ID is not super-user, not the owner of the file,
+.I times
+is NULL, and write access is denied.
+.TP 15
+[EFAULT]
+The
+.I times
+is not NULL and points outside the process's allocated address space.
+.TP 15
+[EFAULT]
+The
+.I path
+points outside the process's allocated address space.
+.TP 15
+[ENOENT]
+The named file does not exist or
+.I path
+points to an empty string and the environment defined is POSIX or SYSTEM_FIVE.
+.TP 15
+[ENOTDIR]
+A component of the
+.I path
+prefix is not a directory.
+.TP 15
+[EPERM]
+The effective user ID is not a super-user, not the owner of the file, and
+.I times
+is not NULL.
+.TP 15
+[EROFS]
+The file system containing the file is mounted read-only.
+.TP 15
+[ETIMEDOUT]
+A connect request or remote file operation failed, because the connected party
+did not respond after a period of time determined by the communications
+protocol.
+.SH See Also
+stat(2)

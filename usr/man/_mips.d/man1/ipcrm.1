@@ -1,0 +1,57 @@
+.\" SCCSID: @(#)ipcrm.1	8.1	9/11/90
+.TH ipcrm 1
+.SH Name
+ipcrm \- remove a message queue, semaphore set 
+.SH Syntax
+.ft B
+ipcrm [\|\fIoptions\fR\|]
+.SH Description
+.NXR "ipcrm command"
+.NXAM "ipcrm command" "semctl system call"
+.NXAM "ipcrm command" "msgctl system call"
+.NXR "message queue" "removing"
+.NXR "semaphore set" "removing"
+.NXR "shared memory ID" "removing"
+The
+.PN ipcrm
+command
+removes one or more specified messages, semaphores or shared memory
+identifiers.  
+.PP
+The details of the removes are described in
+.MS msgctl 2 ,
+.MS shmctl 2 ,
+and 
+.MS semctl 2 .
+The identifiers and keys may be found by
+.MS ipcs 1 .
+.SH Options
+.IP "\fB\-q\fI msqid\fR" 20
+Removes the message queue identifier \fImsqid\fR
+from the system and destroys the message queue
+and data structure associated with it.
+.IP "\fB\-m\fI shmid\fR"
+Removes the shared memory identifier \fIshmid\fR
+from the system.  The shared memory segment and data
+structure associated with it are destroyed after
+the last detach.
+.IP "\fB\-s\fI semid\fR"
+Removes the semaphore identifier \fIsemid\fR
+from the system and destroys the set of semaphores and
+data structure associated with it.
+.IP "\fB\-Q\fI msgkey\fR"
+Removes the message queue identifier, created with key \fImsgkey\fR,
+from the system and destroys the message queue
+and data structure associated with it.
+.IP "\fB\-M\fI shmkey\fR"
+Removes the shared memory identifier, created with key \fIshmkey\fR,
+from the system.  The shared memory segment and data
+structure associated with it are destroyed after
+the last detach.
+.IP "\fB\-S\fI semkey\fR"
+Removes the semaphore identifier, created with key \fIsemkey\fR,
+from the system and destroys the set of semaphores and
+data structure associated with it.
+.SH See Also
+ipcs(1), msgctl(2), msgget(2), msgop(2), semctl(2), semget(2), semop(2),
+shmctl(2), shmget(2), shmop(2)

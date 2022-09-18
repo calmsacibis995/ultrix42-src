@@ -1,0 +1,36 @@
+.\" SCCSID: @(#)cron.8	8.1	9/11/90
+.TH cron 8 
+.SH Name
+cron \- clock daemon
+.SH Syntax
+.B /etc/cron
+.SH Description
+.NXR "cron command"
+.NXR "crontab file" 
+.NXR "clock daemon"
+The
+.PN cron
+command executes commands at specified dates and times
+according to the instructions in the file
+.PN /usr/lib/crontab .
+Since
+.PN cron
+never exits,
+it should only be executed once.
+This is best done by running
+.PN cron
+from the initialization
+process through the file
+.PN /etc/rc .
+.PP
+The
+.PN crontab
+file is examined by
+.PN cron
+every minute.
+.SH Files
+.PN /usr/lib/crontab
+.SH See Also
+crontab(5), init(8)
+.br
+.I "Guide to System Environment Setup"

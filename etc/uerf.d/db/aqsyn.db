@@ -1,0 +1,295 @@
+# @(#)aqsyn.db	4.2   (ULTRIX)   12/20/90
+
+sseg 
+name aqcpusyn_cds
+id CDS
+label "cpu syndrome info"
+elements
+ aqsyn_format
+ aqsyn_end_time
+ aqsyn_begin_time
+ aqsyn_attn_code
+ aqsyn_proc_id
+ aqsyn_proc_rev
+ aqsyn_cpu_num
+ aqsyn_event_cnt
+ aqsyn_sid
+ aqsyn_sys_type
+ aqsyn_cpu_id
+ aqsyn_node_name
+ aqsyn_bcm_dev_name
+ aqsyn_bcm_rev
+ aqsyn_synd_code
+ aqsyn_pcs_synd_code
+
+sseg
+name aqiosyn_cds
+id CDS
+label "io syndrome info"
+elements
+ aqsyn_format
+ aqsyn_end_time
+ aqsyn_begin_time
+ aqsyn_attn_code
+ aqsyn_proc_id
+ aqsyn_proc_rev
+ aqsyn_cpu_num
+ aqsyn_event_cnt
+ aqsyn_sid
+ aqsyn_sys_type
+ aqsyn_cpu_id
+ aqsyn_node_name
+ aqsyn_bcm_dev_name
+ aqsyn_bcm_rev
+ aqsyn_synd_code
+ aqsyn_pcs_synd_code
+ aqsyn_dev_type
+ aqsyn_dev_name
+ aqsyn_dev_serial_num
+ aqsyn_media_type
+ aqsyn_media_label
+ aqsyn_media_serial_num
+ aqsyn_mount_time
+
+sitem
+name aqsyn_format
+size 2
+class integer
+type short_index
+label 'syndrome format'
+map
+ 1 AQSYN_CPU "CPU SYNDROME"
+ 2 AQSYN_IO "I/O SYNDROME"
+
+sitem
+name aqsyn_end_time
+size 1
+class time
+type vms_time
+display date_time
+label 'END TIME'
+
+sitem
+name aqsyn_begin_time
+size 1
+class time
+type vms_time
+display date_time
+label 'BEGIN TIME'
+
+sitem
+name aqsyn_attn_code
+size 1
+label 'ATTN CODE'
+class composite
+type register
+display nil
+map
+    field
+class coded
+size 8
+map
+ 0 'attn field service'
+ 1 'attn customer'
+ 
+sitem
+name aqsyn_proc_id
+size 1
+label 'process id'
+class composite
+type register
+display nil
+map
+	field
+class coded
+size 8
+map
+ 1 'aquarius spu sdd'
+ 2 'ssa snapshot analysis'
+ 3 'test directed analysis'
+ 4 'vaxsim single event analysis'
+ 5 'vaxsim multiple event analysis'
+
+
+sitem
+name aqsyn_proc_rev
+size 2
+label 'process rev'
+class integer
+type short
+display decimal
+
+sitem
+name aqsyn_cpu_num
+size 2
+label 'cpu count'
+class composite
+type register
+display nil
+map
+  field
+size 16
+label 'number of cpus = '
+class integer
+display decimal
+
+sitem
+name aqsyn_event_cnt
+size 2
+label 'event count'
+class integer
+type short
+display decimal
+
+sitem
+name aqsyn_sid
+size 4
+label 'sid'
+class integer
+type long
+display hex
+
+sitem
+name aqsyn_sys_type
+size 4
+label 'sys_type'
+class integer
+type long
+display hex
+
+sitem
+name aqsyn_cpu_id
+size 4
+label 'cpu id'
+class integer
+type long
+display hex
+
+sitem
+name aqsyn_node_name
+class character
+type string
+label 'node name'
+size 16
+display nil
+
+sitem
+name aqsyn_bcm_dev_name
+size 24
+label 'bcm device name'
+class character
+type string
+display nil
+
+sitem
+name aqsyn_bcm_rev
+size 12
+label 'bcm rev'
+class character
+type string
+display nil
+
+sitem
+name aqsyn_synd_code
+size 52
+label 'syndrome code'
+class character
+type string
+display nil
+
+sitem
+name aqsyn_pcs_synd_code
+label 'pcs syndrome'
+size 52
+class character
+type string
+display nil
+
+sitem
+name aqsyn_dev_type
+size 4
+label 'device type'
+class integer
+type long
+display hex
+
+sitem
+name aqsyn_dev_name
+size 32
+label 'device name'
+class character
+type string
+display nil
+
+sitem
+name aqsyn_dev_serial_num
+label 'device serial #'
+size 8
+class integer
+type byte_vector
+display hex
+
+sitem
+name aqsyn_media_type
+size 4
+label 'media type'
+class integer
+type long
+display hex
+
+sitem
+name aqsyn_media_label
+size 12
+label 'media label'
+class character
+type string
+display nil
+
+sitem
+name aqsyn_media_serial_num
+label 'media serial #'
+size 8
+class integer
+type byte_vector
+display hex
+
+sitem
+name aqsyn_mount_time
+size 1
+class time
+type vms_time
+display date_time
+label 'mount time'
+
+
+oitem 
+name GEN_BV_32 
+type ASCIZ 
+class BYTES 
+size 32 
+doc "GENERIC BYTE VECTOR LENGTH 32"
+map NIL 
+
+oitem 
+name GEN_ASC_24 
+type ASCIZ 
+class CHARACTER 
+size 24 
+doc "generic ascii with 24 bytes"
+map NIL 
+
+oitem 
+name GEN_ASC_52 
+type ASCIZ 
+class CHARACTER 
+size 52 
+doc "generic ascii with 24 bytes"
+map NIL 
+
+oitem 
+name GEN_LONG_VEC 
+type LONG_VECTOR 
+class INTEGER 
+size 32 
+doc "generic long vector type"
+map NIL 

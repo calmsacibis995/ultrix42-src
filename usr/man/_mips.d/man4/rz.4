@@ -1,0 +1,293 @@
+.\" SCCSID: @(#)rz.4	2.1	3/10/87
+.TH rz 4
+.SH Name
+rz \- SCSI disk interface
+.SH Syntax
+.ta .2i 1.5i 2.3i 3.4i
+VAX NCR 5380:
+.br
+	\fBadapter	uba0	at nexus?    
+.br
+	controller	scsi0	at uba0	csr 0x200c0080  vector szintr 
+.br
+	disk	rz0	at scsi0	drive 0\fP
+.PP
+VAX DEC SII:
+.br
+	\fBadapter	ibus0	at nexus?    
+.br
+	controller	sii0	at ibus?	vector sii_intr 
+.br
+	disk	rz0	at sii0	drive 0\fP
+.PP     
+RISC DEC SII:
+.br
+	\fBadapter	ibus0	at nexus?    
+.br
+	controller	sii0	at ibus?	vector sii_intr 
+.br
+	disk	rz0	at sii0	drive 0\fP
+.PP     
+RISC DEC KZQ:
+.br
+	\fBadapter	uba0	at nexus?    
+.br
+	controller	kzq0	at ibus? csr 0761300	vector sii_intr 
+.br
+	disk	rz0	at kzq0	drive 0\fP
+.PP
+RISC NCR ASC:
+.br
+	\fBadapter	ibus0	at nexus?    
+.br
+	controller	asc0	at ibus?	vector ascintr 
+.br
+	disk	rz0	at asc0	drive 0\fP
+.SH Description
+.NXR "rz interface" "SCSI disk interface"
+.NXR "SCSI disk interface"
+.NXR "uda interface" "SCSI disk interface"
+.PP
+The 
+.PN rz
+driver is for all Digital SCSI disk drives.
+.PP
+The following rules are used to determine the major and minor numbers that 
+are associated with an 
+.PN rz
+type disk.  There is one major number used to represent  
+.PN rz 
+disks.  The major number represents 32 disks.
+The minor number is used to represent the both the SCSI unit
+number and partition.  A disk partition refers to a designated portion
+of the physical disk.
+To accomplish this, the 8-bit minor number is broken up
+into two parts.  The low three bits of the minor number specify a disk
+partition.  These three bits allow for the naming of eight partitions.  The
+partitions have a letter, a through h, as their name.  
+The upper five bits of the minor
+number specify the SCSI unit number within a group of 32 disks.
+.PP
+The device special file names associated with 
+.PN rz 
+disks are based on 
+the following conventions.  These conventions are closely associated with
+the minor number assigned to the disk. 
+The standard device names begin with
+.PN rz 
+for the block special file and
+.PN rrz 
+for the raw (character) special file.
+Following the
+.PN rz
+is the logical unit number and then a letter, a through h, to represent
+the partition.  Throughout this reference page, the question mark (?) 
+character represents
+the logical unit number in the name of the device special file.  For example,
+rz?b could represent rz0b, rz1b, and so on.
+.PP
+The following examples illustrate how the SCSI unit number is
+calculated given the major and minor number of an 
+.PN rz
+disk.  For the device special file rrz6a, the major number is 56 and the
+minor number is 48.  The partition is represented by the lower three
+bits of the number 48.  The lower 
+three bits are 0, which specifies the ``a'' partition.  The
+upper five bits of 48 specify the number 6.  The major number is 56.  Because
+56 is the base major number, it represents the group of 32 disks. 
+Putting all these pieces together reveals that the major/minor pair 56/48
+refers to the ``a'' partition of SCSI unit 6. 
+.PP
+The disk can be accessed through either the block special file or the 
+character special file.  The block special file accesses the disk using
+the file system's normal buffering mechanism.  Reads and writes to the block
+special file can specify any size.  This avoids the need to limit data 
+transfers to the size of physical disk records and to calculate offsets
+within disk records.
+The file system can break up large read and write requests into smaller 
+fixed size transfers to the disk.
+.PP
+The character special file provides a raw interface that allows for
+direct transmission between the disk and the user's read or write buffer.
+In contrast to the block special file, reads and writes to the raw interface
+must be done on full sectors only.  
+For this reason, 
+in raw I/O, counts must be a multiple of 512 bytes (a disk sector).
+In the same manner,
+.PN seek
+calls must specify a multiple of 512 bytes.
+A single read or write to the raw interface results in 
+exactly one I/O operation.
+Consequently raw I/O may be considerably more efficient for large transfers.
+Multiply buffered I/O operations are
+possible to any raw SCSI device. (See 
+.MS nbuf 4 
+for more information.)
+.PP
+For systems with SCSI disks, the first boot of the ULTRIX software after
+the system is powered on may take longer than expected. This delay is
+normal and is caused by the software spinning up the SCSI disk drives.
+.SS Disk Support
+.NXR "SCSI disk interface" "disk support"
+This driver handles all disk drives that can be connected to the SCSI bus.
+Consult the 
+.I "ULTRIX Software Product Description" 
+to determine which drives
+are supported for which CPU types and hardware configurations.
+.PP
+The starting location and length (in 512 byte sectors) 
+of the disk partitions of each
+drive are shown in the following table.
+Partition sizes can be changed by 
+.MS chpt 8 .
+For further information, see 
+.MS dkio 4 .
+.PP
+.NXR "SCSI disk interface" "partition tables"
+.nf
+.ta .5i +\w'000000    'u +\w'000000    'u +\w'000000	'u +\w'000000	 'u
+.PP
+.B "RZ22 partitions"
+	disk	start	length
+.sp
+	rz?a	0	32768
+	rz?b	32768	69664
+	rz?c	0	102431
+	rz?d	0	0
+	rz?e	0	0
+	rz?f	0	0
+	rz?g	0	0
+	rz?h	0	0
+.PP
+.B "RZ23 partitions"
+	disk	start	length
+.sp
+	rz?a	0	32768
+	rz?b	32768	66690
+	rz?c	0	204864
+	rz?d	99458	35135	
+	rz?e	134593	35135
+	rz?f	169728	35136
+	rz?g	99458	105406
+	rz?h	134593	70271
+.PP
+.B "RZ23L partitions"
+	disk	start	length
+.sp
+	rz?a	0	32768
+	rz?b	32768	66690
+	rz?c	0	237588
+	rz?d	99458	35135	
+	rz?e	134593	35135
+	rz?f	169728	67860
+	rz?g	99458	138130
+	rz?h	134593	102995
+.PP
+.B "RZ24 partitions"
+	disk	start	length
+.sp
+	rz?a	0	32768
+	rz?b	32768	131072
+	rz?c	0	409792
+	rz?d	163840	81984
+	rz?e	245824	81984
+	rz?f	327808	81984
+	rz?g	163840	245952
+	rz?h	0	0
+.PP
+.B "RZ55 partitions"
+	disk	start	length
+.sp
+	rz?a	0	32768
+	rz?b	32768	131072
+	rz?c	0	649040
+	rz?d	163840	152446
+	rz?e	316286	152446
+	rz?f	468732	180308
+	rz?g	163840	485200
+	rz?h	0	0
+.PP
+.B "RZ56 partitions"
+	disk	start	length
+.sp
+	rz?a	0	32768
+	rz?b	32768	131072
+	rz?c	0	1299174
+	rz?d	163840	292530
+	rz?e	456370	292530
+	rz?f	748900	550273
+	rz?g	163840	1135334
+	rz?h	731506	567668
+.PP
+.B "RZ57 partitions"
+	disk	start	length
+.sp
+	rz?a	0	32768
+	rz?b	32768	184320
+	rz?c	0	2025788
+	rz?d	831488	299008
+	rz?e	1130496	299008
+	rz?f	1429504	596284
+	rz?g	217088	614400
+	rz?h	831488	1194300
+.PP
+.B "RRD40/RRD42 (read only) partitions"
+	disk	start	length
+.sp
+	rz?a	0	(size varies per CD)
+	rz?b	0	0
+	rz?c	0	(size varies per CD)
+	rz?d	0	0
+	rz?e	0	0
+	rz?f	0	0
+	rz?g	0	0
+	rz?h	0	0
+.PP
+.B "RX23 partitions"
+	disk	start	length
+.sp
+	rz?a	0	2879
+	rz?b	0	0
+	rz?c	0	2879
+	rz?d	0	0
+	rz?e	0	0
+	rz?f	0	0
+	rz?g	0	0
+	rz?h	0	0
+.PP
+.B "RX26 partitions"
+	disk	start	length
+.sp
+	rz?a	0	5759
+	rz?b	0	0
+	rz?c	0	5759
+	rz?d	0	0
+	rz?e	0	0
+	rz?f	0	0
+	rz?g	0	0
+	rz?h	0	0
+.PP
+.B "RX33 partitions"
+	disk	start	length
+.sp
+	rz?a	0	2400
+	rz?b	0	0
+	rz?c	0	2400
+	rz?d	0	0
+	rz?e	0	0
+	rz?f	0	0
+	rz?g	0	0
+	rz?h	0	0
+.DT
+.fi
+.PP
+Usually, the rz?a partition is used for the root file system and
+the rz?b partition as a paging area.
+The rz?c partition is used for disk-to-disk copying because 
+it maps the entire disk.
+.SH Files
+.PN /dev/rz???
+.br
+.PN /dev/rrz???
+.SH See Also
+nbuf(4), dkio(4), SCSI(4), chpt(8), MAKEDEV(8), uerf(8)

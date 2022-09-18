@@ -1,0 +1,302 @@
+.\" SCCSID: @(#)delta.1	8.1	9/11/90
+.nr f 0
+.bd S B 3
+.de SP
+.if n .ul
+\%[\fB\-\\$1\fR\\c
+.if n .ul 0
+\\$2\\$3
+..
+.de SF
+.if n .ul
+\%[\fB\-\\$1\fR]
+.if n .ul 0
+..
+.de AR
+.if \\nf \{ \
+.    RE
+.    nr f 0 \}
+.PP
+.RS 5
+.TP 15
+\fB\-\\$1\\fR
+\\$2 \\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.nr f 1
+..
+.de C1
+.if \\nf \{ \
+.    RE
+.    nr f 0 \}
+.PP
+.RS 5
+.TP 15
+\\$1
+\\$2 \\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.nr f 1
+..
+.de A1
+.if \\nf \{ \
+.    RE
+.    nr f 0 \}
+.PP
+.RS 5
+.TP 15
+\fB\-\\$1\fR[\fI\\$2\fR]
+\\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.nr f 1
+..
+.de A2
+.if \\nf \{ \
+.    RE
+.    nr f 0 \}
+.PP
+.RS 5
+.TP 15
+\fB\-\\$1\fI\\$2\fR
+\\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.nr f 1
+..
+.ds W)  \fI\s-1RESTRICTIONS\s+1\fR
+.ds M)  \fB\s-1MR\s+1\fR
+.ds S)  \s-1SCCS\s+1
+.ds I)  \s-1SID\s+1
+.TH delta 1
+.SH Name
+delta \- create new SCCS delta to save changes
+.SH Syntax  
+.B delta
+[\fB\-r\fISID\fR\|] [\fB\-s\fR] [\fB\-n\fR] [\fB\-g\fIlist\fR\|]
+[\fB\-m\fR\|[\fImrlist\fR\|]\|] [\fB\-y\fR\|[c\fIomment\fR\|]\|]
+[\fB\-p\fR] \fIfiles\fR
+.SH Description
+.NXB "delta command (sccs)"
+.NXA "delta command (sccs)" "rmdel command (sccs)"
+.NXB "sccs preprocessor" "changing file"
+The
+.PN delta
+command is used to permanently introduce into
+the named \*(S) file changes that were made to the file retrieved by
+.MS get 1
+(called the
+.IR g-file ,
+or generated file).
+.PP
+The
+.PN delta
+command
+makes a delta to each named \*(S) file.
+If a directory is named,
+.PN delta
+behaves as though each file in the directory were
+specified as a named file,
+except that non-\*(S) files
+(last component of the path name does not begin with \fBs.\fR)
+and unreadable files
+are silently ignored.
+If a name of \fB\-\fR is given, the standard input is read
+(see RESTRICTIONS);
+each line of the standard input is taken to be the name of an \*(S) file
+to be processed.
+.PP
+The
+.PN delta
+command may issue prompts on the standard output depending upon
+certain keyletters specified and flags
+that may be
+present in the \*(S) file.
+For further information, see
+.B \-m
+and
+.B \-y
+keyletters below and 
+.MS admin 1 .
+.PP
+The
+.PN delta
+includes commentary, input by the user,
+that consists of one or more lines,
+terminated by a period (.) in
+column one of a new line.
+.PP
+Keyletter arguments
+apply independently
+to each named file.
+.SH Options
+.NXB "delta command (sccs)" "keyletters"
+Keyletter arguments:
+.IP \fB\-g\fIlist\fR 20
+Ignores specified list of deltas.
+.IP \fB\-m\fR[\fImrlist\fR] 20
+Indicates the modification request number.  
+(\fB\-m\fR[\fImrlist\fR]).
+.RS 20
+.sp
+If
+.B \-m
+is not used and the standard input is a terminal, the prompt
+.SM
+.B MR\*Ss?
+is issued on the standard output before the standard input
+is read; if the standard input is not a terminal, no prompt is issued.
+The
+.SM
+.B MR\*Ss?
+prompt always precedes the
+.B comments?
+prompt
+(see
+.B \-y
+keyletter).
+.PP
+MRs in a list are separated by blanks and/or tab characters.
+An unescaped new-line character terminates the \*(M) list.
+.PP
+Note
+that if the
+.B v
+flag has a value
+it is taken to be the name of a program (or shell procedure) which will validate
+the correctness of the \*(M) numbers.
+For further information, see 
+.MS admin 1 .
+If a non-zero exit status is returned from \*(M) number validation program,
+.PN delta
+terminates
+(it is assumed that the \*(M) numbers were not all valid).
+.RE
+.IP \fB\-n\fR 20
+Does not delete edited file.
+.IP \fB\-p\fR 20
+Displays differences before and after delta is applied.
+.IP \fB\-r\fISID\fR 20
+Identifies which delta is to be made to the \*(S) file.
+Use this keyletter only if two or more
+outstanding
+.IR get s
+for editing
+.RB ( "get \-e" )
+on the same \*(S) file has been done by the same person
+(login name).
+The \*(I) value specified with the
+.B \-r
+keyletter can be either the \*(I) specified on the
+.PN get
+command line or the \*(I) to be made as reported by the
+.PN get
+command.
+For further information, see 
+.MS get 1 .
+A diagnostic results if the specified \*(I) is ambiguous, or,
+if necessary and omitted on the command line.
+.IP \fB\-s\fR 20
+Suppresses all messages.
+.IP \fB\-y\fR[\fIcomment\fR] 20
+Creates delta with specified commentary.
+text
+A null string is considered a valid \fIcomment\fR.
+.br
+If
+.B \-y
+is not specified and the standard input is a terminal, the prompt
+.B comments?
+is issued on the standard output before the standard
+input is read; if the standard input is not a terminal, no
+prompt is issued.
+A period (.) in column one of a newline terminates the
+.I comment
+text.
+.RE
+.NXE "delta command (sccs)" "keyletters"
+.SH Restrictions 
+.NXR "delta command (sccs)" "restricted"
+Lines beginning with an \s-1\fBSOH\fP ASCII\s+1 character (binary 001)
+cannot be placed in the \*(S) file unless the
+.SM
+.B SOH
+is escaped.
+This character has special meaning to \*(S)
+and will cause an error.
+For further information, see
+.MS sccsfile 5 .
+.PP
+A
+.PN get
+of many \*(S) files,
+followed by a
+.PN delta
+of those files, should be avoided when the
+.PN get
+generates a large amount of data.
+Instead,
+multiple
+.PN "get/delta\^"
+sequences should be used.
+.PP
+If the standard input
+(\fB\-\fR)
+is specified on the
+.PN delta
+command line, the
+.B \-m
+(if necessary)
+and
+.B \-y
+keyletters must also be present.
+Omission of these keyletters causes an error to occur.
+.PP
+.SH Diagnostics
+See
+.MS sccshelp 1
+for explanations.
+.SH Files
+.TP 20
+g-file
+Existed
+before the execution of
+.PN delta;
+removed after completion of
+.PN delta .
+.TP
+p-file
+Existed
+before the execution of
+.B delta;
+may exist after completion of
+.PN delta .
+.TP
+q-file
+Created during the execution of
+.PN delta;
+removed after completion of
+.PN delta .
+.TP
+x-file
+Created during the execution of
+.PN delta;
+renamed to \*(S) file after completion of
+.PN delta .
+.TP
+z-file
+Created during the execution of
+.PN delta;
+removed during the execution of
+.PN delta .
+.TP
+d-file
+Created during the execution of
+.PN delta;
+removed after completion of
+.PN delta .
+.TP
+/usr/bin/bdiff
+Program to compute differences
+between the ``gotten'' file and the
+.IR g-file .
+.PD
+.SH See Also
+admin(1), bdiff(1), cdc(1), get(1), help(1), prs(1),
+rmdel(1), sccs(1), sccsfile(5)
+.br
+\fIGuide to the Source Code Control System\fP
+.NXE "sccs preprocessor" "changing file"
+.NXE "delta command (sccs)"

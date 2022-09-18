@@ -1,0 +1,268 @@
+#! /bin/sh
+#  @(#)syscript	4.1 (ULTRIX) 7/2/90
+#
+#	syscript
+#
+#	Author: pete keilty
+#	Date: 1-Jun-85
+#
+# ----------
+# Modification History
+# ~~~~~~~~~~~~~~~~~~~~
+# 03    31-May-89, Tim Burke
+#	Changed the test associated with magtapes from cmx to tapex.
+#
+# 02	02-Dec-85, pete keilty
+#	Changed script to create testsuite file to execute.
+#
+# 01	20-Nov-85, Greg Tarsa
+#	Fixed MST-32, "script fails to run because /usr/field is not
+#	in the search path.
+#
+origwd=`pwd`	#save the current working directory
+trap "cd $origwd; exit 1" 1 2 4 10 11
+trap "cd $origwd; exit 0" 0
+
+PATH=${PATH}:/usr/field		# add /usr/field to search path
+export PATH
+
+cd /usr/field	# must be in this dir for memx and fsx to work
+
+rm -f \#LOG*
+rm -f testsuite
+TEST=0
+DTEST=0
+TTEST=0
+FTEST=0
+MTEST=0
+NTEST=0
+CTEST=0
+LTEST=0
+NUM=0
+MIN=0
+
+cat > testsuite << -E-O-F
+-E-O-F
+
+echo "This system test script will ask you which, how many and
+how long you wish to run the system exercisers.
+You MUST be super user to start the exercisers!"
+echo ""
+STG='
+There are three ways to test a disk drive they are readonly,
+read-write and read-write a partition. Here is the syntax.
+readonly:     "rhp0" buffered or "rrhp0" raw
+read-write:   "cra2" buffered or "crra2" raw
+rw partition: "pra0[a-h] buffered or "prra3[a-h] raw
+
+Enter the disk or disk and partition you wish to test: '
+echo ""
+echo -n 'How many disk exercisers do you wish to run [0-4]: '
+read NUM
+if test $NUM -gt 0
+then TEST=`expr $TEST + 1`
+     DTEST=`expr 0 + $NUM`
+     echo -n 'Enter number of minutes you wish to run the disk test[s]: '
+     read MIN
+fi
+while test $NUM -gt 0
+do
+	echo -n "$STG"
+	read PARM
+	echo "dskx -t$MIN -$PARM < /dev/tty > /dev/tty &" >> testsuite
+	echo "sleep 10" >> testsuite
+	NUM=`expr $NUM - 1`
+done
+
+STG1='
+Enter the raw tape drive you wish to test <rmt[0-31][hl]>:  '
+STG_1='
+The tape exerciser can be run in an exhaustive mode to test different
+areas of tape functionality.  This mode can not be timed.  The tape
+exerciser can also be run in a timed mode which will run a write and 
+read verification test for the specified time interval.  Responding 
+with a y will cause the write/read test to be run.
+
+Do you wish to run the tape exerciser for a specific period of time? (y/n): '
+STG_2='Enter number of minutes you wish to run the magtape test[s]: '
+echo ""
+echo -n 'How many magtape exercisers do you wish to run [0-4]: '
+read NUM
+if test $NUM -gt 0
+then TEST=`expr $TEST + 1`
+     TTEST=`expr 0 + $NUM`
+     while :
+	do
+	    echo -n "$STG_1"
+	    read X
+	    case "$X" in
+	        [Nn]*) TAPEX_TEST='-E'	
+		break
+		;;
+	        [Yy]*) echo -n "$STG_2"
+     		read MIN
+	        TAPEX_TEST="-r -t $MIN"
+		break
+		;;
+	    esac
+	done
+fi
+while test $NUM -gt 0
+do
+	echo -n "$STG1"
+	read PARM
+	echo "tapex $TAPEX_TEST -f /dev/$PARM -o \#LOG_TAPEX_$NUM -T &" >> testsuite
+	echo "sleep 10" >> testsuite
+	NUM=`expr $NUM - 1`
+done
+
+STG2='
+Enter the directory were the test files are to be made, as a path name.
+example: /usr or /mnt, the default is /usr/field 
+: '
+echo ""
+echo -n 'How many file system exercisers do you wish to run [0-4]: '
+read NUM
+if test $NUM -gt 0
+then TEST=`expr $TEST + 1`
+     FTEST=`expr 0 + $NUM`
+     echo -n 'Enter number of minutes you wish to run the f.s. test[s]: '
+     read MIN
+fi
+while test $NUM -gt 0
+do
+	echo -n 'Enter number of processes you wish to run [1-250]: '
+	read PARM1
+	echo -n "$STG2"
+	read PARM2
+	echo "fsx -t$MIN -p$PARM1 -f$PARM2 > /dev/tty &" >> testsuite
+	echo "sleep 10" >> testsuite
+	NUM=`expr $NUM - 1`
+done
+
+echo ""
+echo -n 'How many memory exercisers do you wish to run [0-1]: '
+read NUM
+if test $NUM -gt 0
+then TEST=`expr $TEST + 1`
+     MTEST=`expr 0 + $NUM`
+     echo -n 'Enter number of minutes you wish to run the memory test[s]: '
+     read MIN
+fi
+while test $NUM -gt 0
+do
+	echo -n 'Enter number of processes you wish to run [1-20]: '
+	read PARM1
+	echo "memx -t$MIN -p$PARM1 > /dev/tty &" >> testsuite
+	echo "sleep 10" >> testsuite
+	NUM=`expr $NUM - 1`
+done
+
+STG3='
+Enter the lines you wish to test as per the /dev directory,
+separated by a space in between the line numbers.
+
+example: 00 03 04 33 45 78<return>
+
+No pseudo devices p*,q*,r*,s*,t*,u*! 
+No lta devices major number 39!
+All lines need a loop back connector on them to be tested!
+All lines must be disabled in /etc/ttys file!
+: '
+echo ""
+echo -n 'How many comm. exercisers do you wish to run [0-4]: '
+read NUM
+if test $NUM -gt 0
+then TEST=`expr $TEST + 1`
+     CTEST=`expr 0 + $NUM`
+     echo -n 'Enter number of minutes you wish to run the comm. test[s]: '
+     read MIN
+fi
+while test $NUM -gt 0
+do
+	echo -n "$STG3"
+	read PARM1
+	echo "cmx -t$MIN -l $PARM1 > /dev/tty &" >> testsuite
+	echo "sleep 10" >> testsuite
+	NUM=`expr $NUM - 1`
+done
+
+echo ""
+echo -n 'How many tcp/ip net exercisers do you wish to run [0-4]: '
+read NUM
+if test $NUM -gt 0
+then TEST=`expr $TEST + 1`
+     NTEST=`expr 0 + $NUM`
+     echo -n 'Enter number of minutes you wish to run the netx test[s]: '
+     read MIN
+fi
+while test $NUM -gt 0
+do
+	echo -n 'Enter the nodename you wish to connect to: '
+	read PARM1
+	echo "netx -t$MIN $PARM1 > /dev/tty &" >> testsuite
+	echo "sleep 10" >> testsuite
+	NUM=`expr $NUM - 1`
+done
+
+echo ""
+echo -n 'How many lp exercisers do you wish to run [0-1]: '
+read NUM
+if test $NUM -gt 0
+then TEST=`expr $TEST + 1`
+     LTEST=`expr 0 + $NUM`
+     echo -n 'Enter number of minutes you wish to run the lp test[s]: '
+     read MIN
+fi
+while test $NUM -gt 0
+do
+	echo -n 'Enter lp device as per /dev directory [lp,lp1,lph]: '
+	read PARM1
+	echo "lpx -t$MIN -d$PARM1 > /dev/tty &" >> testsuite
+	echo "sleep 10" >> testsuite
+	NUM=`expr $NUM - 1`
+done
+
+if test $TEST -gt 0
+then 
+     echo "wait" >> testsuite
+     sh testsuite &
+     echo ""
+     echo "To abort the exerciser[s] before the time period ends type cntl-c!"
+     echo "Starting exerciser[s]"
+     echo ""
+fi
+
+wait
+
+if test $TEST -gt 0
+then if test $DTEST -gt 0
+     then echo "$DTEST Disk exerciser[s] stopped"
+     fi
+     if test $TTEST -gt 0
+     then echo "$TTEST Tape exerciser[s] stopped"
+     fi
+     if test $FTEST -gt 0
+     then echo "$FTEST File system exerciser[s] stopped"
+     fi
+     if test $MTEST -gt 0
+     then echo "$MTEST Memory exerciser stopped"
+     fi
+     if test $CTEST -gt 0
+     then echo "$CTEST Communication exerciser[s] stopped"
+     fi
+     if test $NTEST -gt 0
+     then echo "$NTEST Tcp/ip Net exerciser[s] stopped"
+     fi
+     if test $LTEST -gt 0
+     then echo "$LTEST Line Printer exerciser stopped"
+     fi
+     echo ""
+     echo "Look at the log file[s] in this directory for errors, then remove them."
+     echo "Also run the report generator on the errlog file in /usr/adm/syserr for errors."
+     echo ""
+else echo ""
+     echo "No exercisers chosen to run, exit"
+     echo ""
+fi
+exit 0

@@ -1,0 +1,90 @@
+.\" SCCSID: @(#)dmf.4	3.1	11/24/87
+.TH dmf 4 VAX
+.SH Name
+dmf \- DMF32 communications interface
+.SH Syntax
+.B "device dmf0 at uba? csr 0160340 flags 0x????"
+.br
+.ti +0.5i
+.B "vector dmfsrint dmfsxint dmfdaint dmfdbint dmfrint dmfxint dmflint"
+.SH Description
+.NXS "dmf interface" "DMF32 communications interface"
+.NXR "DMF32 communications interface"
+.NXA "DMF32 communications interface" "DMF32 serial printer interface"
+The
+.PN dmf
+device provides eight lines of asynchronous serial line support with full
+modem control on two lines only.   The device driver
+also supports a connection to a line printer through the line printer
+port of the DMF32.
+.PP
+Each line attached to a DMF32 serial line port behaves as described
+in 
+.MS tty 4 .
+Input and output for each line can be set independently to run at any
+of 16 speeds.  See 
+.MS tty 4
+for the encoding.
+.PP
+Bit
+.I i
+of 
+.PN flags 
+can be specified for a
+.PN dmf
+to say that a line is not properly connected, and that the
+line should be treated as hardwired, with carrier always present.
+Thus, specifying ``flags 0x00f6'' in the specification of
+.PN dmf0
+would cause lines 0 and 1 on the DMF32 to be treated 
+as modem lines, while lines 2 through 7 are direct connect no-modem lines.
+It is important to specify lines 2 through 7 as direct connect, because the
+device does not support modem control on these lines.
+.PP
+The
+.PN dmf
+driver normally uses input silos and polls for input at each clock
+tick (10 milliseconds).
+.NT Caution
+.NXR(c) "DMF32 communications interface" "restricted"
+The DMF32 will discard incoming characters on the lines with
+full modem control, if carrier is not present.
+.NE
+.SH Restrictions
+The DMF32 provides other services, but these are
+not supported by the driver.
+.SH Diagnostics
+.B "dmf%d: NXM line %d" 
+.br
+No response from UNIBUS on a 
+.PN dma 
+transfer within a timeout period.  This is often followed by a UNIBUS adapter
+error.  This occurs most frequently when the UNIBUS is heavily loaded
+and when devices that monopolize the bus, such as RK07s, are present.
+It is not serious.
+.PP
+.B "dmf%d: silo overflow"
+.br
+The character input silo overflowed
+before it could be serviced.  This can happen if a hard error occurs
+when the CPU is running with elevated priority, as the system 
+then prints a message on the console with interrupts disabled.
+.PP
+.B "dmfsrint"
+.br
+.B "dmfsxint"
+.br
+.B "dmfdaint"
+.br
+.B "dmfdbint"
+.br
+One of the unsupported ports of the DMF32 interrupted because
+of a problem.  Check your interrupt vectors for a conflict with
+another device.
+.SH Files
+.PN /dev/tty??
+.TP 15
+.PN /dev/ttyd?
+(modem lines only)
+.SH See Also
+dmfsp(4), tty(4), MAKEDEV(8) 

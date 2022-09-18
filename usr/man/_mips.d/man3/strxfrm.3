@@ -1,0 +1,57 @@
+.TH strxfrm 3
+.SH Name
+strxfrm \- string transformation
+.SH Syntax
+.B size_t strxfrm (\fIto, from, maxsize\fP)
+.br
+.B char *\fIto\fP;
+.br
+.B char *\fIfrom\fP;
+.br
+.B size_t \fImaxsize\fP; 
+.SH Description
+.NXR "strxfrm subroutine"
+The
+.PN strxfrm
+function transforms the string pointed to by \fIfrom\fR and places the resulting string into the array pointed to by \fIto\fR.
+The transformation is such that two transformed strings
+can be ordered by the
+.PN strcmp
+function as appropriate to the program's locale category
+.PN LC_COLLATE .
+.PP
+The length of the resulting string may be much longer than 
+the original.
+No more than 
+.PN maxsize 
+characters are placed into the resulting string including the
+terminator.  If the transformed string does not exceed
+.PN maxsize 
+characters, the 
+number of characters (less the terminator) is returned.
+Otherwise the number of characters (less the terminator)
+in the transformed string is returned and the contents of the array 
+are undefined.
+.SS International Environment
+.IP LC_COLLATE 15
+Contains the user requirements for language, territory, and codeset for
+the character collation format. 
+.PN LC_COLLATE
+affects the behavior of regular expressions and the string collation functions
+in 
+.PN strxfrm .
+If 
+.PN LC_COLLATE
+is not defined in the current environment,
+.PN LANG
+provides the necessary default.
+.IP LANG 15
+If this environment is set and valid, 
+.PN strxfrm
+uses the international language database named in the definition to determine 
+the character collation formatting rules. If 
+.PN LC_COLLATE 
+is defined, its definition supercedes the definition of 
+.PN LANG .
+.SH See Also
+string(3), setlocale(3), strcoll(3), environ(5int)

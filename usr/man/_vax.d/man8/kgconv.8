@@ -1,0 +1,52 @@
+.TH kgconv 8
+.SH Name
+kgconv \- convert a dump from kgmon (kgdump.out) to gprof format (gmon.out)
+.SH Syntax
+.B kgconv 
+[
+.B \-d
+] [
+.B \-n\fIcpunumber\fP
+] [
+.I dumpfile
+] [
+system
+]
+.SH Description
+The 
+.PN kgconv 
+command is used to convert the dump file (kgdump.out)
+produced by 
+.PN kgmon
+to the format required by 
+.PN gprof. 
+.NXR "SMP" "kgconv"
+The output file 
+is gmon.out, which can be directly used by 
+.PN gprof. 
+If the 
+.B \-n
+flag is 
+not used, kgconv dumps the cumulative profile data about all
+the processors in the system.
+.SH Options
+.IP \-n\fIcpunumber\fP 15
+Converts profile data for the specified processor only.
+.IP \-d
+Uses the 
+.I dumpfile 
+specified as the next argument, instead of kgdump.out as 
+the input file.
+.SH Files
+.TP 15
+.PN /vmunix
+default system
+.TP 15
+.PN \&./kgdump.out
+default input dump file
+.TP 15
+.PN \&./gmon.out
+output file used by 
+.PN gprof
+.SH See Also
+kgmon(8), gprof(1), config(8)

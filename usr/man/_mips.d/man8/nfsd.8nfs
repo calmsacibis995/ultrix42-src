@@ -1,0 +1,35 @@
+.\" SCCSID: @(#)nfsd.8nfs	8.1	9/11/90
+.TH nfsd 8nfs
+.SH Name
+nfsd \- NFS server daemon
+.SH Syntax
+.nf
+.B /etc/nfsd [nservers]
+.fi
+.SH Description
+.NXR "nfsd daemon"
+.NXAM "nfsd daemon" "rpc file"
+.NXAM "biod daemon" "nfssv_async_daemon system call"
+.NXAM "nfsd daemon" "nfs_svc system call"
+The
+.PN nfsd
+daemon starts the specified number of
+NFS
+server daemons which handle file system requests from clients.
+The 
+.I nservers
+argument tells
+.PN nfsd
+how many file system server daemons to start.  This
+number should be based on the load expected on this server.
+The 
+.PN nfsd
+daemon is normally invoked at boot time through the
+.PN /etc/rc.local
+file.
+.SH Examples
+.EX
+/etc/nfsd 4    /* Start four daemons on a large machine /*  
+.EE
+.SH See Also
+exports(5nfs), mountd(8nfs)

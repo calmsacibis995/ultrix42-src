@@ -1,0 +1,124 @@
+.\" SCCSID: @(#)bind.2	8.1	9/11/90
+.TH bind 2
+.SH Name
+bind \- bind a name to a socket
+.SH Syntax
+.nf
+.ft B
+#include <sys/types.h>
+#include <sys/socket.h>
+.PP
+.ft B
+bind(s, name, namelen)
+int s;
+struct sockaddr *name;
+int namelen;
+.PP
+.ft B
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+.PP
+.ft B
+bind(s, name, namelen)
+int s;
+struct sockaddr_un *name; 
+int namelen;
+.fi
+.SH Description
+.NXR "bind system call" 
+.NXA "bind system call" "listen system call"
+.NXR "socket" "binding to a name"
+The
+.PN bind
+system call assigns a name to an unnamed socket.
+When a socket is created 
+with the 
+.PN socket 
+call, it exists in a name space (address family)
+but has no name assigned.
+The
+.PN bind
+system call requests that
+.IR name 
+be assigned to the socket.
+.PP
+Binding a name in the UNIX domain creates a socket in the file
+system that must be deleted by the caller when it is no longer
+needed, using the 
+.PN unlink 
+system call.
+.PP
+The
+.I sockaddr
+argument specifies a general address family.
+The
+.I sockaddr_un
+argument specifies an address family in the UNIX domain.
+.PP
+The rules used in name binding vary between communication domains.
+Consult the reference pages in the
+\fIULTRIX Reference Pages Section 4: Special Files\fP 
+for detailed information.
+.SH Return Value 
+If the 
+.PN bind
+is successful, the call returns a 0 value. 
+A return value of \-1 indicates an error, which is
+further specified in the global variable \fIerrno\fP.
+.SH Diagnostics
+The 
+.PN bind
+call fails under the following conditions:
+.TP 15
+[EBADF]
+\fIS\fP is an invalid descriptor.
+.TP 15
+[ENOTSOCK]
+\fIS\fP is not a socket.
+.TP 15
+[EADDRNOTAVAIL]
+The specified address is not available from the local machine.
+.TP 15
+[EADDRINUSE]
+The specified address is already in use.
+.TP 15
+[EINVAL]
+The socket is already bound to an address.
+.TP 15
+[EACCESS]
+The requested address is protected, and the current user
+has inadequate permission to access it.
+.TP 15
+[EFAULT]
+The \fIname\fP parameter is not in a valid part of the user
+address space.
+.PP
+The following errors are specific to binding names in the
+UNIX domain:
+.TP 15
+[ENOTDIR]
+A component of the path prefix is not a directory.
+.TP 15
+[ENAMETOOLONG]
+A component of a pathname exceeds 255 characters,
+or an entire pathname exceeds 1023 characters.
+.TP 15
+[ENOENT]
+A prefix component of the path name does not exist.
+.TP 15
+[ELOOP]
+Too many symbolic links were encountered in translating
+the pathname.
+.TP 15
+[EIO]
+An I/O error occurred while making the directory entry
+or allocating the inode.
+.TP 15
+[EROFS]
+The name would reside on a read-only file system.
+.TP 15
+[EISDIR]
+A null pathname was specified.
+.SH See Also
+connect(2), getsockname(2), listen(2), socket(2), unlink(2)

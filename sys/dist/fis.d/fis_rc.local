@@ -1,0 +1,16 @@
+#
+# FIS  Startup
+#
+[ -f /etc/fis/fisinit ] &&
+{
+	ADMDIR="/usr/adm"
+	FISDIR="/etc/fis"
+	if [ -f $FISDIR/mantest ]
+	then
+		rm -f $FISDIR/mantest
+	else
+		echo 'Start of FIS Configuration' > /dev/console
+		rm -f $ADMDIR/fisinit.log
+		$FISDIR/fisinit
+	fi
+}

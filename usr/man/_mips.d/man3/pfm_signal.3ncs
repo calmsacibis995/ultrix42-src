@@ -1,0 +1,90 @@
+.\"	@(#)pfm_signal.3ncs	8.1 of 9/11/90
+.TH pfm_signal 3ncs
+.SH Name
+pfm_signal \- signal the calling process
+.SH Syntax
+.nf
+#include <idl/c/base.h>
+#include <idl/c/pfm.h>
+
+void pfm_$signal(\fIfault_signal\fR)
+status_$t \fI*fault_signal\fR;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/sys/ins/base.ins.pas';\fR
+.\"\fB%include '/sys/ins/pfm.ins.pas';\fR
+.\"
+.\"\fBprocedure pfm_$signal(in \fIfault_signal\fB: status_$t);\fR
+.\".DE
+.ig
+.SH Synopsis (fortran)
+.nf
+\fB%include '/sys/ins/base.ins.ftn'\fR
+\fB%include '/sys/ins/pfm.ins.ftn'\fR
+
+	 \fBinteger*4 \fIfault_signal\fR
+
+	 \fBcall pfm_$signal(\fIfault_signal\fB)\fR
+.fi
+..
+.SH Arguments
+.TP 20 
+\fIfault_signal\fR
+A fault code.
+.SH Description
+The 
+.PN pfm_$signal
+routine signals the fault specified by 
+.I fault_signal
+to the calling process.
+It is usually called to leave clean-up handlers.
+.NXR "Fault Management" "pfm_signal"
+.SH Diagnostics 
+This section lists status codes for errors returned by this
+.PN pfm_$
+routine. 
+.TP 20
+\fBpfm_$bad_rls_order\fR
+Attempted to release a clean-up handler out of order.
+.TP 20
+\fBpfm_$cleanup_not_found\fR
+There is no pending clean-up handler.
+.TP 20
+\fBpfm_$cleanup_set\fR
+A clean-up handler was established successfully.
+.TP 20
+\fBpfm_$cleanup_set_signalled\fR
+Attempted to use \fBpfm_$cleanup_set\fR as a signal.
+.TP 20
+\fBpfm_$invalid_cleanup_rec\fR
+Passed an invalid clean-up record to a routine.
+.TP 20
+\fBpfm_$no_space\fR
+Cannot allocate storage for a clean-up handler.
+.NT
+This routine does not return when successful.
+.NE
+.SH Files
+.PN /usr/include/idl/c/base.h
+.br
+.PN /usr/include/idl/base.idl
+.br
+.PN /usr/include/idl/c/pfm.h
+.SH See Also
+intro(3ncs)
+.ig
+.SH See Also
+pfm_error_trap
+..
+.\".DM "\
+.\"path syscalls/pfm/pfm_$signal\
+.\"type reference\
+.\"book syscalls\
+.\"chapter pfm\
+.\"section pfm_$signal\
+.\""
+.\".DD "\
+.\"exit(ed)(s)(ing) current procedure(s) signal(ed)(s)(ing) clean-up cleanup clean(ed)(s)(ing)\
+.\" up handler(s) pfm pfm_$\
+.\""

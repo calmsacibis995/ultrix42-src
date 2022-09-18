@@ -1,0 +1,152 @@
+.\" SCCSID: @(#)chown.2	8.1	9/11/90
+.TH chown 2
+.SH Name
+chown, fchown \- change owner and group of a file
+.SH Syntax
+.nf
+#include <sys/types.h>
+.PP
+chown(\fIpath, owner, group\fP)
+char *\fIpath\fP;
+uid_t \fIowner\fP;
+gid_t \fIgroup\fP;
+.PP
+fchown(\fIfd, owner, group\fP)
+int \fIfd\fP;
+uid_t \fIowner\fP;
+gid_t \fIgroup\fP;
+.fi
+.SH Description
+.NXR "chown system call"
+.NXR "fchown system call"
+.NXR "file" "changing owner"
+.NXR "file" "changing group"
+The 
+.PN chown
+and
+.PN fchown
+system calls change the owner and group of the file named by 
+.I path
+or referenced by
+.I fd .
+Only the superuser can change the owner
+of a file.  Other users can change the group-id of a file that they own
+to another group to which they belong.
+.PP
+If you specify \-1 in \fIowner\fP or \fIgroup,\fP the corresponding owner-id or
+group-id of
+the file is unchanged.
+.PP
+The
+.PN chown
+system call clears the set-user-id and set-group-id bits on
+the file when it returns successfully, unless the call is made by the
+superuser. Clearing these bits when a file's owner is changed protects the
+file from remaining set-user-id or set-group-id after being modified.
+If a file, specifically a program, remained set-user-id
+or set-group-id after being modified, that file could allow
+unauthorized access to other files or accounts.
+.PP
+You should use the
+.PN fchown
+system call 
+with the file locking primitives because 
+.PN fchown
+preserves any locks you previously obtained with the
+.PN flock
+system call.  For more information about file locking, see the
+.MS flock 2 
+reference page.
+.SH Return Values
+The
+.PN chown
+and 
+.PN fchown
+calls return zero if the operation is successful; if an error occurs they return
+\-1 and store a more specific
+error code in the global variable \fIerrno\fP.
+.SH Environment
+.SS System Five 
+Differs from the System V definition in that only
+the superuser can change the ownership of a file.  In addition, 
+ELOOP is a possible error condition.
+.SS POSIX
+When your program is compiled in the POSIX environment, the
+.I owner
+argument is of type 
+.I uid_t, 
+and the
+.I group
+argument is of type 
+.I gid_t.
+.SH Diagnostics
+The
+.PN chown
+system call fails and the file is unchanged under the following
+conditions:
+.TP 15
+[ENOTDIR]
+A component of the path prefix is not a directory.
+.TP 15
+[ENAMETOOLONG]
+A component of a pathname exceeded 255 characters, or an
+entire pathname exceeded 1023 characters.
+.TP 15
+[ENOENT]
+The named file does not exist.
+.TP 15
+[EACCES]
+Search permission is denied for a component of the path prefix.
+.TP 15
+[EPERM]
+The effective user-id is not the superuser.
+.TP 15
+[EROFS]
+The named file resides on a read-only file system.
+.TP 15
+[EFAULT]
+The pathname
+points outside the process's allocated address space.
+.TP 15
+[ELOOP]
+Too many symbolic links are encountered in translating the pathname.
+.TP 15
+[EIO]
+An I/O error occurs while reading from or writing to the file system.
+.TP 15
+[ESTALE]
+The 
+.I fd
+argument is invalid because the file referred
+to by that file handle no longer exists or has been revoked.
+.PP
+The
+.PN fchown
+system call fails if:
+.TP 15
+[EBADF]
+The
+.I fd
+argument does not refer to a valid descriptor.
+.TP 15
+[EINVAL]
+The
+.I fd
+argument refers to a socket, not a file.
+.TP 15
+[EPERM]
+The effective user-id is not the superuser.
+.TP 15
+[EROFS]
+The named file resides on a read-only file system.
+.TP 15
+[EIO]
+An I/O error occurred while reading from or writing to the
+file system.
+.TP 15
+[ETIMEDOUT]
+A connect request or remote file operation fails because the connected party
+does not properly respond after a period of time that is dependent on
+the communications protocol.
+.SH See Also
+chmod(2), flock(2)

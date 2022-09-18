@@ -1,0 +1,195 @@
+.TH t_bind 3xti
+.SH Name
+t_bind \- bind an address to a transport endpoint 
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_bind(\fIfd, req, ret\fB)
+.br
+.B int \fIfd\fB;
+.br
+.B struct t_bind \fI*req\fB;
+.br
+.B struct t_bind\fI *ret\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Refers to the transport endpoint which will be associated with a protocol
+address. 
+.IP \fIreq\fR 10
+Points to a \fBt_bind\fR structure containing the following members:
+.EX
+struct netbuf \fIaddr\fP;
+unsigned \fIqlen\fR;
+.EE
+.IP
+The \fIaddr\fR field of the 
+.PN t_bind()
+structure specifies a protocol
+address, and the \fIqlen\fR field is used to indicate the maximum number
+of outstanding connect indications.
+.IP \fIret\fR 10
+Points to a 
+.PN t_bind()
+structure. See the \fIreq\fR argument.
+.SH Description
+.NXR "t_bind system call"
+This function associates a protocol address with the transport endpoint
+specified by \fIfd\fR and activates the transport endpoint. In
+connection mode, the transport provider can begin enqueuing incoming
+connect indications or servicing a connection request on the transport
+endpoint. In connectionless mode, the transport user can send or receive
+data units through the transport endpoint.
+.NXR "t_bind system call"
+.NXR "transport endpoint" "protocol address" 
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+.sp 4p
+Parameters@Before Call@After Call
+.sp 4p
+_
+.sp 6p
+fd@x@/
+req->addr.maxlen@/@/
+req->addr.len@x>=0@/
+req->addr.buf@x(x)@/
+req->qlen@x>=0@/
+ret->addr.maxlen@x@/
+ret->addr.len@/@x
+ret->addr.buf@x@(x)
+ret->qlen@/@x>=0
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+The \fIreq\fR argument is used to request that an address, represented by the
+\fBnetbuf\fR structure, be bound to the given transport endpoint. The
+\fIlen\fR specifies the number of bytes in the address, and \fIbuf\fR
+points to the address buffer. The \fImaxlen\fR has no meaning for the
+\fIreq\fR argument. On return, \fIret\fR contains the address that the
+transport provider actually bound to the transport endpoint; this may be
+different from the address specified by the user in \fIreq\fR. In
+\fIret\fR, the user specifies \fImaxlen\fR, which is the maximum size of
+the address buffer, and \fIbuf\fR, which points to the buffer where the
+address is to be placed. On return, \fIlen\fR specifies the number of
+bytes in the bound address, and \fIbuf\fR points to the bound address. If
+\fImaxlen\fR is not large enough to hold the returned address, an error
+results.
+.PP
+If the requested address is not available, or if no address is specified
+in \fIreq\fR (the \fIlen\fR field of \fIaddr\fR in \fIreq\fR is zero),
+the transport provider assigns an appropriate address to be bound
+only if automatic generation of an address is supported and returns
+that address in the \fIaddr\fR field of \fIret\fR. The user can compare
+the addresses in \fIreq\fR and \fIret\fR to determine whether the
+transport provider bound the transport endpoint to a different address
+than that requested. In any XTI implementation, if the 
+.PN t_bind()
+function does not allocate a local transport address, then the returned
+address is always the same as the input address and the structure
+\fIreq->addr\fR must be filled by the user before the call. If the
+local address is not furnished for the call (\fIreq->addr.len=0\fR), the
+.PN t_bind()
+returns \-1 with \fBt_errno\fR set to [TNOADDR].
+.PP
+The \fIreq\fR may be NULL if the user does not wish to specify an
+address to be bound. Here, the value of \fIqlen\fR is assumed to be
+zero, and the transport provider must assign an address to the transport
+endpoint. Similarly, \fIret\fR may be NULL if the user does not care
+what address was bound by the provider and is not interested in the
+negotiated value of \fIqlen\fR. It is valid to set \fIreq\fR and
+\fIret\fR to NULL for the same call, in which case the provider chooses
+the address to bind to the transport endpoint and does not return the
+information to the user.
+.PP
+The \fIqlen\fR field has meaning only when initializing a
+connection-mode service. It specifies the number of outstanding connect
+indications the transport provider should support for the given
+transport endpoint. An outstanding connect indication is one that has
+been passed to the transport user by the transport provider but 
+has not been accepted or rejected. A value of \fIqlen\fR greater than zero is 
+meaningful only when issued by a passive transport user that expects other users to call
+it. The value of \fIqlen\fR will be
+negotiated by the transport provider and may be changed if the transport
+provider cannot support the specified number of outstanding connect
+indications. On return, the \fIqlen\fR field in \fIret\fR contains
+the negotiated value.
+.PP
+This function allows more than one transport endpoint to be bound to the
+same protocol address. The transport provider, however, must support this
+capability also, it is not allowable to bind more than one protocol
+address to the same transport endpoint. If a user binds more than one
+transport endpoint to the same protocol address, only one endpoint can
+be used to listen for connect indications associated with the protocol
+address. 
+.PP
+In other words, only one 
+.PN t_bind() 
+for a given protocol
+address can specify a value of \fIqlen\fR  greater than zero. In this way, the
+transport provider can identify which transport endpoint should be notified of an
+incoming connect indication. If a user attempts to bind a protocol address to a second
+transport endpoint with a value of \fIqlen\fR greater than zero, the transport provider
+assigns another address to be bound to that
+endpoint or, if automatic generation of addresses is not supported, 
+returns \-1 and sets \fBt_errno\fR to [TADDRBUSY]. 
+.PP
+When a user
+accepts a connection on the transport endpoint that is being used as the
+listening endpoint, the bound protocol address will be found to be busy
+for the duration of the connection, until a 
+.PN t_unbind() 
+or
+.PN t_close() 
+call has been issued. No other transport endpoints
+may be bound for listening on that same protocol address while that
+initial listening endpoint is active (in the data transfer phase or in
+the T_IDLE state). This prevents more than one transport
+endpoint bound to the same protocol address from accepting connect
+indications.
+.SH Return Values
+Upon successful completion, 
+.PN t_bind()
+returns 0 and \-1 on failure,
+and \fBt_errno\fR is set to indicate the error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20
+[TOUTSTATE]
+The function was issued in the wrong sequence.
+.TP 20
+[TBADADDR]
+The specified protocol address was in an incorrect format or contained
+illegal information.
+.TP 20
+[TNOADDR]
+The transport provider could not allocate an address.
+.TP 20
+[TACCES]
+The user does not have permission to use the specified address.
+.TP 20
+[TBUFOVFLW]
+The number of bytes allowed for an incoming argument is not sufficient
+to store the value of that argument. The provider's state changes to
+T_IDLE and the information to be returned in \fIret\fR is 
+discarded.
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.TP 20
+[TADDRBUSY]
+The address requested is in use and the transport provider cannot be
+allocate a new address.
+.SH See Also
+t_alloc(3xti), 
+t_close(3xti), 
+t_open(3xti),
+t_optmgmt(3xti),
+t_unbind(3xti)

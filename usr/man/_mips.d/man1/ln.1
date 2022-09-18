@@ -1,0 +1,90 @@
+.\" SCCSID: @(#)ln.1	8.1	9/11/90
+.TH ln 1
+.SH Name
+ln \- link to a file
+.SH Syntax
+.B ln
+[ \fB\-f\fR ] [ \fB\-i\fR ] [ \fB\-s\fR ] \fIname1\fR [\|\fIname2\fR\|]
+.br
+.B ln
+[ \fB\-f\fR ] [ \fB\-i\fR ] [ \fB\-s\fR ] name ... directory
+.SH Description
+.NXR "ln command"
+.NXR "link" "creating"
+.NXAM "ln command" "lstat system call"
+.NXAM "ln command" "readlink system call"
+.NXAM "ln command" "symlink system call"
+.NXAM "ln command" "link system call"
+A link is a directory entry referring
+to a file.
+.NXR "link" "defined" 
+A file, together with
+its size and all its protection
+information may have several links to it.
+There are two kinds of links: hard links and symbolic links.
+.PP
+By default
+.PN ln
+makes hard links.
+A hard link to a file is indistinguishable from the
+original directory entry. 
+.NXR "hard link" "defined"
+Any changes to a file are effective independent of the name used
+to reference the file.
+Hard links may not span file systems and may not refer to directories.
+.PP
+Given one or two arguments,
+.PN ln
+creates a link to an existing file
+.IR name1 .
+If
+.I name2
+is given, the link has that name.
+The
+.I name2
+may also be a directory in which to place the link.
+Otherwise it is placed in the current directory.
+If only the directory is specified, the link is made
+to the last component of
+.IR name1 .
+.PP
+Given more than two arguments,
+.PN ln
+makes links to all the named files in the named directory.
+The links made have the same name as the files being linked to.
+.SH Options
+.NXR "ln command" "options"
+.IP \fB\-f\fR 5 
+Forces existing
+.I destination
+pathnames to be removed before linking 
+without prompting for confirmation.
+.IP \fB\-i\fR 5
+Write a prompt to standard output requesting information for each link
+that would overwrite an existing file. If the 
+response from standard input is
+affirmative, and if permissions allow, the link is done. The 
+.B \-i 
+option has
+this effect even if the standard input is not a terminal.
+.IP \fB\-s\fR 5
+Creates a symbolic link.
+.IP
+A symbolic link contains the name of the file to
+which it is linked.  
+.NXR "symbolic link"
+The referenced file is used when an 
+.MS open 2
+operation is performed on the link.
+A 
+.MS stat 2
+on a symbolic link returns the linked-to file. 
+An 
+.MS lstat 2 
+must be done to obtain information about the link.
+The 
+.MS readlink 2
+call may be used to read the contents of a symbolic link.
+Symbolic links may span file systems and may refer to directories.
+.SH See Also
+cp(1), mv(1), rm(1), link(2), readlink(2), stat(2), symlink(2)

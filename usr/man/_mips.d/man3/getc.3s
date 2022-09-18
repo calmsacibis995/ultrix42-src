@@ -1,0 +1,85 @@
+.\" SCCSID: @(#)getc.3s	8.1	9/11/90
+.TH getc 3s
+.SH Name
+getc, getchar, fgetc, getw \- get character or word from stream
+.SH Syntax
+.B #include <stdio.h>
+.PP
+.B int getc(stream)
+.br
+.SM
+.B FILE
+.B *stream;
+.PP
+.B int getchar()
+.PP 
+.B int fgetc(stream)
+.br
+.SM
+.B FILE
+.B *stream;
+.PP
+.B int getw(stream)
+.br
+.SM
+.B FILE
+.B *stream;
+.SH Description
+.NXR "getc subroutine (standard I/O)"
+.NXR "getchar subroutine"
+.NXR "fgetc subroutine (standard I/O)"
+.NXR "getw subroutine"
+.NXA "getc subroutine (standard I/O)" "unget subroutine"
+.NXR "stream" "getting character from"
+.NXR "stream" "getting word from"
+The
+.PN getc
+function returns the next character from the named input
+.IR stream .
+.PP
+The
+.PN getchar
+function 
+is identical to 
+.PN getc
+(stdin).
+.PP
+The
+.PN fgetc
+function behaves like 
+.PN getc ,
+but is a genuine function, not a macro.
+It may be used to save object text.
+.PP
+The
+.PN getw
+function returns the next
+word (in a 32-bit integer on a VAX-11 or MIPS machine) from the named input
+.IR stream .
+It returns the constant EOF
+upon end of file or error, but since that is a good
+integer value,
+.I feof
+and
+.MS ferror 3s
+should be used to check the success of
+.PN getw .
+The
+.PN getw
+assumes no special alignment in the file.
+.SH Restrictions
+Because it is implemented as a macro,
+.PN getc
+treats a stream argument with side effects incorrectly.
+In particular, `getc(*f++);' doesn't work as expected.
+.SH Diagnostics
+These functions return the integer constant EOF
+at end of file or upon read error.
+.PP
+A stop with message,
+`Reading bad file', means an attempt has been made to
+read from a stream that has not been opened for
+reading by
+.PN fopen .
+.SH See Also
+fopen(3s), fread(3s), gets(3s), putc(3s), scanf(3s), ungetc(3s)

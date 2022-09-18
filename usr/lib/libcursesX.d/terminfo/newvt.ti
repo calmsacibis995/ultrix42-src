@@ -1,0 +1,143 @@
+#
+# @(#)newvt.ti	4.2	(ULTRIX)	12/20/90
+#
+#************************************************************************
+#*									*
+#*       Copyright (c) Digital Equipment Corporation, 1988, 1990	*
+#*									*
+#*   All Rights Reserved.  Unpublished rights  reserved  under  the	*
+#*   copyright laws of the United States.				*
+#*									*
+#*   The software contained on this media  is  proprietary  to  and	*
+#*   embodies  the  confidential  technology  of  Digital Equipment	*
+#*   Corporation.  Possession, use, duplication or dissemination of	*
+#*   the  software and media is authorized only pursuant to a valid	*
+#*   written license from Digital Equipment Corporation.		*
+#*									*
+#*   RESTRICTED RIGHTS LEGEND   Use, duplication, or disclosure  by	*
+#*   the U.S. Government is subject to restrictions as set forth in	*
+#*   Subparagraph (c)(1)(ii)  of  DFARS  252.227-7013,  or  in  FAR	*
+#*   52.227-19, as applicable.						*
+#*									*
+#************************************************************************
+#
+# The beginning of VT200-series 8-bit terminals; only 7 bits are transmitted
+#
+vt200|vt200-am|dec vt200,
+	smacs=\E(B$<4>,
+	il1=\E[L,
+	rmacs=\E(<$<2>,
+	dch1=\E[P, dl1=\E[M, rmir=\E[4l, smir=\E[4h, mir,
+	cuf1=\E[C, rmso=\E[m, smso=\E[7m, ri=\EM, rmul=\E[m, cuu1=\E[A,
+	smul=\E[4m,
+	use=vt100-am,
+# color vt200 (vt241)
+vt200black|dec vt200 black background,
+	rmul=\E[m\EPpS(M0(AD))\E\\,
+	rmso=\E[m\EPpS(M0(AD))\E\\, clear=\E[;H\E[2J\EPpS(M0(AD))\E\\,
+	is2=\E[1;24r\E[24;1H\EPpS(M0(AD))\E\\, use=vt200,
+vt200red|dec vt200 red background,
+	rmul=\E[m\EPpS(M0(AR))\E\\,
+	rmso=\E[m\EPpS(M0(AR))\E\\, clear=\E[;H\E[2J\EPpS(M0(AR))\E\\,
+	is2=\E[1;24r\E[24;1H\EPpS(M0(AR))\E\\, use=vt200,
+vt200green|dec vt200 green background,
+	rmul=\E[m\EPpS(M0(AG))\E\\,
+	rmso=\E[m\EPpS(M0(AG))\E\\, clear=\E[;H\E[2J\EPpS(M0(AG))\E\\,
+	is2=\E[1;24r\E[24;1H\EPpS(M0(AG))\E\\, use=vt200,
+vt200blue|dec vt200 blue background,
+	rmul=\E[m\EPpS(M0(AB))\E\\,
+	rmso=\E[m\EPpS(M0(AB))\E\\, clear=\E[;H\E[2J\EPpS(M0(AB))\E\\,
+	is2=\E[1;24r\E[24;1H\EPpS(M0(AB))\E\\, use=vt200,
+vt200cyan|dec vt200 cyan background,
+	rmul=\E[m\EPpS(M0(AC))\E\\,
+	rmso=\E[m\EPpS(M0(AC))\E\\, clear=\E[;H\E[2J\EPpS(M0(AC))\E\\,
+	is2=\E[1;24r\E[24;1H\EPpS(M0(AC))\E\\, use=vt200,
+vt200yellow|dec vt200 yellow background,
+	rmul=\E[m\EPpS(M0(AY))\E\\,
+	rmso=\E[m\EPpS(M0(AY))\E\\, clear=\E[;H\E[2J\EPpS(M0(AY))\E\\,
+	is2=\E[1;24r\E[24;1H\EPpS(M0(AY))\E\\, use=vt200,
+vt200magenta|dec vt200 magenta background,
+	rmul=\E[m\EPpS(M0(AM))\E\\,
+	rmso=\E[m\EPpS(M0(AM))\E\\, clear=\E[;H\E[2J\EPpS(M0(AM))\E\\,
+	is2=\E[1;24r\E[24;1H\EPpS(M0(AM))\E\\, use=vt200,
+vt200white|dec vt200 white background,
+	rmul=\E[m\EPpS(M0(AW))\E\\,
+	rmso=\E[m\EPpS(M0(AW))\E\\, clear=\E[;H\E[2J\EPpS(M0(AW))\E\\,
+	is2=\E[1;24r\E[24;1H\EPpS(M0(AW))\E\\, use=vt200,
+vt200-nam|vt200 w/no am,
+	am@,
+	rs2=\E>\E[?3l\E[?4l\E[?5l\E[?7l\E[?8h, use=vt200-am,
+#
+# VT300-series terminals.
+# The beginning of VT300-series 8-bit terminals; only 7 bits are transmitted
+# Define functionality of 25th status line for the VT300 series 
+#
+vt300|vt300-am|dec vt300,
+	hs,
+	es,
+	tsl=\E[1$}\E[;H\E[K,
+	fsl=\E[0$},
+	ds=\E[1$}\E[;H\E[K\E[0$},
+	use=vt200-am,
+vt300-nam|vt300 w/no am,
+	am@,
+	rs2=\E>\E[?3l\E[?4l\E[?5l\E[?7l\E[?8h, use=vt300-am,
+vt320|vt320-am|dec vt320,
+	use=vt300-am,
+vt320-nam|dec vt320 w/no am,
+	use=vt300-nam,
+#
+#  VT330/340 graphics terminals
+#
+vt330|vt330-am|dec vt320,
+	use=vt320-am,
+vt330-nam|dec vt330 w/no am,
+	use=vt320-nam,
+#
+#  graphics/color terminals
+#
+vt340|vt340-am|dec vt340,
+	use=vt330-am,
+vt340-nam|dec vt340 w/no am,
+	use=vt330-nam,
+#
+# VT400 series terminals
+# The beginning of VT400-series 8-bit terminals; only 7 bits are transmitted
+#
+vt400|vt400-am|vt420|vt420-am|dec vt420,
+	rf=/usr/lib/tabset/vt300,
+	rs2=\E>\E[80$|\E[24*|\E[24t\E[?4l\E[?5l\E[?7h\E[?8h\E[1;24r\E[24;1H,
+	use=vt320-am,
+vt400-nam|vt420-nam|dec vt420 w/no am,
+	rf=/usr/lib/tabset/vt300,
+	rs2=\E>\E[80$|\E[24*|\E[24t\E[?4l\E[?5l\E[?7l\E[?8h\E[1;24r\E[24;1H,
+	use=vt320-nam,
+vt400-w|vt420-w| dec vt400 series; vt420-am 132 cols,
+	cols#132, lines#24,
+	rs2=\E>\E[132$|\E[24*|\E[24t\E[?4l\E[?5l\E[?7h\E[?8h\E[1;24r\E[24;1H,
+	use=vt400-am,
+vt400-w-nam|vt420-w-nam| dec vt400 series; vt420-nam 132 cols,
+	cols#132, lines#24,
+	rs2=\E>\E[132$|\E[24*|\E[24t\E[?4l\E[?5l\E[?7l\E[?8h\E[1;24r\E[24;1H,
+	use=vt400-nam,
+vt400-36|vt420-36| dec vt400 series; vt420-am 36 lines; 80 cols,
+	cols#80, lines#36,
+	is2=\E[1;36r\E[36;1H,
+	rs2=\E>\E[80$|\E[36*|\E[36t\E[?4l\E[?5l\E[?7h\E[?8h\E[1;36r\E[36;1H,
+	use=vt400-am,
+vt400-36-nam|vt420-36-nam| dec vt400 series; vt420-nam 36 lines; 80 cols,
+	cols#80, lines#36,
+	is2=\E[1;36r\E[36;1H,
+	rs2=\E>\E[80$|\E[36*|\E[36t\E[?4l\E[?5l\E[?7l\E[?8h\E[1;36r\E[36;1H,
+	use=vt400-nam,
+vt400-36-w|vt420-36-w| dec vt400 series; vt420-am 36 lines; 132 cols,
+	cols#132, lines#36,
+	is2=\E[1;36r\E[36;1H,
+	rs2=\E>\E[132$|\E[36*|\E[36t\E[?4l\E[?5l\E[?7h\E[?8h\E[1;36r\E[36;1H,
+	use=vt400-am,
+vt400-36-w-nam|vt420-36-w-nam| dec vt400; vt420-nam 36 lines; 132 cols,
+	cols#132, lines#36,
+	is2=\E[1;36r\E[36;1H,
+	rs2=\E>\E[132$|\E[36*|\E[36t\E[?4l\E[?5l\E[?7l\E[?8h\E[1;36r\E[36;1H,
+	use=vt400-nam,
+#

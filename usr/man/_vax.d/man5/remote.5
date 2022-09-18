@@ -1,0 +1,182 @@
+.\" SCCSID: @(#)remote.5	8.1	9/11/90
+.\" Last modified 11/8/85 by CCB.  Note the UNIX's here
+.\" must stay -- they are in the code.
+.TH remote 5 
+.SH Name
+remote \- remote host description file
+.SH Description
+.NXR "remote file" "format"
+.NXR "remote host" "format file"
+.NXAM "tip command" "remote file"
+The systems known by 
+.MS tip 1c
+and their attributes are stored in an ASCII file that
+is structured somewhat like the 
+.MS termcap 5
+file.  Each line in the file provides a description for a single
+.IR system .
+Fields are separated by colons (:).
+Lines ending in a backslash (\\) followed 
+immediately by a newline character are continued on the next line.
+.PP
+The first entry is the names of the host system.  If there is more
+than one name for a system, the names are separated by vertical bars.
+After the name of the system comes the fields of the description.  A
+field name followed by an equal sign (=) indicates
+a string value follows.  A field
+name followed by a number sign (#) indicates a following numeric value.
+.PP
+Entries named ``tip*'' and ``cu*''
+are used as default entries by
+.PN tip 
+and the
+.PN cu
+interface to
+.PN tip ,
+as follows.  When
+.PN tip
+is invoked with only a phone number, it looks for an entry
+of the form ``tip300'', where 300 is the baud rate with
+which the connection is to be made.  When the
+.PN cu
+interface is used, entries of the form ``cu300'' are used.
+.SH Capabilities
+Capabilities are either strings (str), numbers (num), or Boolean
+flags (bool).  A string capability is specified by
+.IR capability = value ;
+for example, 
+.PN dv=/dev/harris .  
+A numeric capability is specified by
+.IR capability # value ;
+for example,  
+.PN xa#99 .  
+A Boolean capability is specified by simply listing
+the capability.
+.TP 0.5i
+.B at
+(str)
+Autocall unit type. This string is what is searched for in 
+.PN /etc/acucap
+to decide if the generic dialer is to be used. 
+For further information, see 
+.MS acucap 5 .
+.TP 0.5i
+.B br
+(num)
+The baud rate used in establishing
+a connection to the remote host.
+This is a decimal number.
+The default baud rate is 300 baud.
+.TP 0.5i
+.B cm
+(str)
+An initial connection message to be sent
+to the remote host.  For example, if a
+host is reached through port selector, this
+might be set to the appropriate sequence
+required to switch to the host.
+.TP 0.5i
+.B cu
+(str)
+Call unit if making a phone call.
+Default is the same as the 
+.PN dv
+field.
+.TP 0.5i
+.B di
+(str)
+Disconnect message sent to the host when a
+disconnect is requested by the user.
+.TP 0.5i
+.B du
+(bool)
+This host is on a dial-up line.
+.TP 0.5i
+.B dv
+(str)
+UNIX devices to open to establish a connection.
+If this file refers to a terminal line, 
+.MS tip 1c
+attempts to perform an exclusive open on the device to ensure only
+one user at a time has access to the port.
+.TP 0.5i
+.B el
+(str)
+Characters marking an end-of-line.
+The default is NULL.  Tilde (~) escapes are 
+recognized by
+.PN tip
+only after one of the characters in 
+.PN el ,
+or after a carriage-return.
+.TP 0.5i
+.B fs
+(str)
+Frame size for transfers.
+The default frame size is equal to BUFSIZ.
+.TP 0.5i
+.B hd
+(bool)
+The host uses half-duplex communication; local
+echo should be performed.
+.TP 0.5i
+.B ie
+(str)
+Input end-of-file marks.
+The default is NULL.
+.TP 0.5i
+.B md
+(bool)  
+A hardwired device being used accepts modem control
+signals.  Used when 
+.PN du
+is not present but modem
+signals are to be used.
+.TP 0.5i
+.B oe
+(str)
+Output end-of-file string.
+The default is NULL.  When
+.I tip
+is transferring a file, this
+string is sent at end-of-file.
+.TP 0.5i
+.B pa
+(str)
+The type of parity to use when sending data
+to the host. The type can be one of even,
+odd, none, zero (always set bit 8 to zero), or
+1 (always set bit 8 to 1).  The default
+is even parity.
+.TP 0.5i
+.B pn
+(str)
+Telephone numbers for this host.
+If the telephone number field contains
+an @ sign,
+.PN tip
+searches the file 
+.PN /etc/phones
+file for a list of telephone numbers.  For further information, see
+.MS phones 5 .
+.TP 0.5i
+.B tc
+(str)
+Indicates that the list of capabilities is continued
+in the named description.  This is used
+primarily to share common capability information.
+.PP
+Here is a short example showing the use of the capability continuation
+feature:
+.EX 0
+UNIX-1200:\e
+	:dv=/dev/ttyd0:el=^D^U^C^S^Q^O:\
+.br
+	:du:at=df112:ie=#$%:oe=^D:br#1200:
+ourvax|ox:\e
+	:pn=7654321:tc=UNIX-1200
+.EE
+.SH Files
+.PN /etc/remote
+.SH See Also
+tip(1c), acucap(5), phones(5)

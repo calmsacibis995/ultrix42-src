@@ -1,0 +1,55 @@
+.\" SCCSID: @(#)getdiskbyname.3x	6.2	8/30/89
+.TH getdiskbyname 3x
+.SH Name
+getdiskbyname \- get disk description by its name
+.SH Syntax
+.nf
+.B #include <disktab.h>
+.PP
+.B struct disktab *
+.B getdiskbyname(name)
+.B char *name;
+.fi
+.SH Description
+.NXR "getdiskbyname subroutine"
+.NXR "disk" "getting description"
+The
+.PN getdiskbyname
+subroutine
+takes a disk name (for example, RM03) and returns a structure
+describing its geometry information and the standard
+disk partition tables.  All information obtained from
+the 
+.MS disktab 5
+file.
+A separate subroutine called 
+.PN creatediskbyname 
+dynamically generates
+disktab entries by obtaining disk geometry information from the controlling
+device driver.
+.PP
+<disktab.h>
+has the following form:
+.EX 0
+#define DISKTAB        "/etc/disktab"
+
+struct  disktab {
+      char   *d_name;          /* drive name */
+      char   *d_type;          /* drive type */
+      int    d_secsize;        /* sector size in bytes */
+      int    d_ntracks;        /* # tracks/cylinder */
+      int    d_nsectors;       /* # sectors/track */
+      int    d_ncylinders;     /* # cylinders */
+      int    d_rpm;            /* revolutions/minute */
+      struct partition {
+              int     p_size;   /* #sectors in partition */
+              short   p_bsize;  /* block size in bytes */
+              short   p_fsize;  /* frag size in bytes */
+        } d_partitions[8];
+};
+
+struct  disktab *getdiskbyname();
+struct  disktab *creatediskbyname();
+.EE
+.SH See Also
+creatediskbyname(3x), disktab(5) 

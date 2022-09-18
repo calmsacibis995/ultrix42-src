@@ -1,0 +1,109 @@
+.\" SCCSID: @(#)rl.4	8.1	9/11/90
+.TH rl 4 VAX
+.SH Name
+rl \- RL211/RL02 disk interface
+.SH Syntax
+.B "controller hl0 at uba? csr 0174400 vector rlintr"
+.br
+.B "disk rl0 at hl0 drive 0"
+.SH Description
+.NXS "rl interface" "RL211 disk interface"
+.NXS "rl interface" "RL02 disk interface"
+.NXR "RL211 disk interface"
+.NXR "RL02 disk interface"
+Files with minor device numbers 0 through 7 refer to various portions
+of drive 0;
+minor devices 8 through 15 refer to drive 1, and so forth.
+The standard device names begin with
+.PN rl
+followed by
+the drive number and then a letter, a through h, for partitions 0-7.
+The question mark (?) character
+stands here for a drive number in the range 0-7.
+.PP
+The block files access the disk by the system's normal
+buffering mechanism and can be read and written without regard to
+physical disk records.
+There is also a raw interface,
+which provides for direct transmission between the disk
+and the user's read or write buffer.
+A single read or write call results in exactly one I/O operation.
+Therefore, raw I/O is considerably more efficient when
+many words are transmitted.  The names of the raw files
+conventionally begin with an addition letter r, for example,
+.PN rrx2c .
+.PP
+Although RL02 disks have 256-byte sectors,
+the driver emulates 512-byte sectors.
+Raw I/O 
+counts should be multiples of 512 bytes (a normal disk sector).
+In the same way,
+.PN seek
+calls should specify a multiple of 512 bytes.
+.PP
+The origin and size (in 512-byte sectors) of the
+pseudodisks on each drive are as follows:
+.NXR "RL02 disk" "pseudodisk partitions"
+.PP
+.nf
+.ta .5i +\w'000000    'u +\w'000000    'u +\w'000000	'u
+\fBRL02 partitions:\fR
+.sp 6p
+	disk	start	length	cyl
+.sp 6p
+	rl?a	0	15884	0-397
+	rl?b	15884	4520	398-510
+	rl?c	0	20480	0-511
+	rl?d	15884	4520	398-510
+	rl?g	0	20480	0-511
+.DT
+.fi
+.SH Restrictions
+In raw I/O, 
+.PN read
+and
+.PN write
+functions truncate file offsets to 512-byte block boundaries,
+and
+.PN write
+overwrites the tail of incomplete blocks.
+Thus, in programs that are likely to access raw devices, 
+.MS read 2 ,
+.MS write 2 ,
+and
+.MS lseek 2
+should always deal in 512-byte multiples.
+.SH Diagnostics
+The following messages are printed at the console:
+.PP
+.B "rl%d%c: hard error sn%d"
+.br
+An unrecoverable error occurred during transfer of the
+specified sector of the specified disk partition.
+Either the error was unrecoverable,
+or a large number of retry attempts
+(including offset positioning and drive recalibration)
+could not recover the error.  Additional register information
+may be gathered from the system error log file,
+\f(CW/usr/adm/syserr/syserr.\fI<hostname>\fR.
+.PP
+.B "rl%d: write protected"
+.br
+The write protect switch was set on the drive when
+a write was attempted.
+The write operation is not recoverable.
+.PP
+.B "hl%d: lost interrupt"
+.br
+A timer watching the controller detected no interrupt for
+an extended period while an operation was outstanding.
+This indicates a hardware or software failure.
+The error causes a UNIBUS reset and retry of the pending operations.
+If the controller continues to lose interrupts, this error will recur
+a few seconds later.
+.SH Files
+.PN /dev/rl???
+.br
+.PN /dev/rrl???
+.SH See Also
+dkio(4), nbuf(4), MAKEDEV(8), uerf(8)

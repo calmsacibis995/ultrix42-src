@@ -1,0 +1,56 @@
+#!/bin/sh
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)ssizes	4.1	(ULTRIX)	7/27/90"
+#
+#	001	Jonathan Wallace	1-Jun-1990
+#		Adapted for use with FIS
+#
+########################################################################
+#
+#
+#	ssizes - add up subset sizes
+#
+TMP=kona$$
+echo "
+*** Software Subset List ***
+
+Subset			root	usr
+======			====	===" > SIZES
+for K in *.inv
+do
+	SS=`expr $K : '\(.*\)\.inv'`
+	echo -n "$K ... "
+	echo -n "$SS		" >> SIZES
+
+	awk '{printf "%s\t%s\n", $2, $10}' $K|tee $TMP|grep -v '\./usr' |
+		awk 'BEGIN {SIZE = 0}
+{SIZE += $1}
+END {SIZE += 1000;print SIZE/1000}' > XSIZE
+	echo -n `cat XSIZE` >> SIZES 
+	echo -n "	" >> SIZES
+	grep '\./usr' $TMP | awk 'BEGIN {SIZE=0}
+{SIZE += $1}
+END {SIZE += 1000;print SIZE/1000}' > XSIZE
+	echo `cat XSIZE` >> SIZES 
+	echo done
+done
+rm $TMP XSIZE

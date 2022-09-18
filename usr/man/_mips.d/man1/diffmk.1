@@ -1,0 +1,101 @@
+.\" SCCSID: @(#)diffmk.1	8.1	9/11/90
+.if t .ds ' \h@.05m@\s+4\v@.333m@\'\v@-.333m@\s-4\h@.05m@
+.if n .ds ' '
+.if t .ds ` \h@.05m@\s+4\v@.333m@\`\v@-.333m@\s-4\h@.05m@
+.if n .ds ` `
+.TH diffmk 1
+.SH Name
+diffmk \- mark differences between files
+.SH Syntax
+.B diffmk
+\fIname1 name2 name3\fR
+.SH Description
+.NXR "diffmk command"
+.NXR "file" "comparing"
+The
+.PN diffmk
+command
+compares two versions of a file and creates a
+third file that includes ``change mark'' commands for
+.PN nroff
+or
+.PN troff .
+The
+.I name1\^
+and
+.I name2\^
+are the old and new versions of the file.
+The
+.PN diffmk
+command generates
+.IR name3 ,
+which contains the lines of
+.I name2\^
+plus inserted formatter ``change mark''
+.RB ( \&.mc )
+requests.
+When
+.I name3\^
+is formatted,
+changed or inserted text is shown by \(bv at the right
+margin of each line.
+The position of deleted text is shown by a single
+.BR \(** .
+.PP
+The
+.PN diffmk\^
+command
+can be used to produce listings of C (or other)
+programs with changes marked.
+A typical command line for such use is the following:
+.EX
+diffmk \|old.c \|new.c \|tmp; \|nroff \|macs \|tmp \|\(bv \|pr
+.EE
+In this example the file
+.B macs
+contains:
+.RS
+.PP
+.nf
+\&.pl \|1
+\&.ll \|77
+\&.nf
+\&.eo
+\&.nc \|\*`
+.fi
+.RE
+.PP
+The
+.B \&.ll
+request might specify a different line length, depending on the
+nature of the program being printed.
+The
+.B \&.eo
+and
+.B \&.nc
+requests are probably needed only for C programs.
+.PP
+If the characters \(bv and
+.B \(**
+are inappropriate,
+a copy of
+.PN diffmk
+can be edited to change them.
+The
+.PN diffmk
+command
+is a shell procedure.
+.SH Restrictions
+.NXR "diffmk command" "restricted"
+Aesthetic considerations may dictate manual adjustment of some output.
+File differences involving only formatting requests may produce undesirable
+output,
+that is, replacing
+.B \&.sp
+by
+.B \&.sp 2
+will
+produce a ``change mark'' on the preceding or following line of output.
+.SH See Also
+cmp(1), comm(1), diff(1), nroff(1), join(1), sccsdiff(1), 
+troff(1), uniq(1)

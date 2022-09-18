@@ -1,0 +1,38 @@
+.\" SCCSID: @(#)ttynam.3f	8.1	9/11/90
+.TH ttynam 3f VAX "" Unsupported
+.SH Name
+ttynam, isatty \- find name of a terminal port
+.SH Syntax
+.B character*(*) function ttynam (lunit)
+.sp 1
+.B logical function isatty (lunit)
+.SH Description
+.NXR "ttynam subroutine (FORTRAN)"
+.NXR "isatty subroutine (FORTRAN)"
+.NXR "terminal" "finding port name"
+The
+.PN ttynam
+subroutine
+returns a blank padded pathname
+of the terminal device associated with logical unit
+.IR lunit .
+.PP
+The
+.PN isatty
+subroutine returns .true.
+Otherwise,
+if
+.I lunit
+is associated with a terminal device, .false.
+.SH Diagnostics
+The
+.PN ttynam
+returns an empty string (all blanks) if
+.I lunit
+is not associated with a terminal device in directory 
+.PN /dev .
+.SH Files
+/dev/\(**
+.br
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a

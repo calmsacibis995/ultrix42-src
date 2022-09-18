@@ -1,0 +1,118 @@
+##############################################################################
+#    Instructions to Make, for compilation of X400S /SMTP-MTS  library
+#
+#	@(MHWARNING)
+##############################################################################
+
+# The following entries were inserted during MH configuration
+OPTIONS	=	@(MHOPTIONS) -I..
+
+CC	=	@(MHCOMPILER)
+@BEGIN: OPTIM
+CFLAGS	=	-O    $(OPTIONS)
+@END: OPTIM
+@BEGIN: DEBUG
+CFLAGS	=	      $(OPTIONS)
+@END: DEBUG
+LFLAGS	=	-bhu $(OPTIONS)
+
+LIB	=	x400mts.a
+
+CFILES	=	hosts.c x4mail.c
+OFILES	=	hosts.o x4mail.o
+
+
+@BEGIN: OPTIM
+##############################################################################
+#	Generation Rules
+##############################################################################
+
+.c.o:;		$(CC) $(CFLAGS) -c $*.c
+@BEGIN: NEWLOAD
+		-ld -x -r $@
+		mv a.out $@
+@END: NEWLOAD
+@BEGIN: OLDLOAD
+		${CC} -s -o $@
+@END: OLDLOAD
+
+
+@END: OPTIM
+##############################################################################
+#	Here it is...
+##############################################################################
+
+all:		$(LIB)
+depend:;
+lint:		l-x400mts
+
+$(LIB):		$(OFILES)
+		-mv $@ z$@
+@BEGIN: RANLIB
+		ar r $@ $(OFILES); ranlib $@
+@END: RANLIB
+@BEGIN: LORDER
+		ar r $@ `lorder $(OFILES) | tsort`
+@END: LORDER
+		-rm -f ../libx400s.a
+		ln $@ ../libx400s.a
+		-rm -f ../llib-lx400
+		ln llib-lx400 ../llib-lx400
+		-@ls -l $@
+		-@echo "X400S /SMTP-MTS library built normally"
+l-x400mts:;	lint $(LFLAGS) $(CFILES) $(LLIBS)
+
+hosts.o:	Makefile
+x4mail.o:	Makefile x4mail.h
+
+
+##############################################################################
+#	Miscellaneous tasks
+##############################################################################
+
+distribution:   clean
+		-rm -f bboardsMH.m4 popMH.m4
+
+clean:		unclean
+		-rm -f *.o $(LIB) z$(LIB)
+
+unclean:;	-rm -f _* :* core
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

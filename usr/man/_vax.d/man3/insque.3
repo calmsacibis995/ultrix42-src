@@ -1,0 +1,40 @@
+.\" SCCSID: @(#)insque.3	8.2	1/28/91
+.TH insque 3
+.SH Name
+insque, remque \- insert/remove element from a queue
+.SH Syntax
+.nf
+.DT
+.B struct qelem {
+.B      struct	qelem *q_forw;
+.B      struct	qelem *q_back;
+.B      char	q_data[];
+};
+.PP
+.B void insque(\fIelem, pred\fP)
+struct qelem *\fIelem, *pred\fP;
+.PP
+.B void remque(\fIelem\fP)
+struct qelem *\fIelem\fP;
+.fi
+.SH Description
+.NXR "insque subroutine"
+.NXR "remque subroutine"
+.NXR "queue" "removing elements"
+The
+.PN insque
+and 
+.PN remque
+subroutines manipulate queues built from doubly linked lists.  Each
+element in the queue must in the form of ``struct qelem.''
+The
+.PN insque
+subroutine inserts 
+.I elem
+in a queue immediately after 
+.IR pred .
+The
+.PN remque
+subroutine removes an entry
+.I elem 
+from a queue.

@@ -1,0 +1,125 @@
+.\" SCCSID: @(#)elcsd.conf.5	2.1	3/10/87
+.TH elcsd.conf 5 
+.SH Name 
+elcsd.conf \- error logging configuration file 
+.SH Description 
+.NXR "elcsd.conf file" "format"
+.NXR "configuration file (error logger)"
+.NXAM "elcsd daemon" "elcsd.conf file"
+The 
+.PN elcsd.conf 
+file contains information used by the 
+.PN elcsd 
+daemon to configure error logging for the system.  The system manager
+maintains this file.  The error logging daemon is dependent on the
+current order of the entries in the 
+.PN elcsd.conf
+file.  Do not change the order. 
+.PP
+The information in the 
+.PN elcsd.conf 
+file shows any defaults and describes what you can enter.  A newline
+is used to delimit each entry in the file, a null entry consists of a
+newline alone, and comments begin with #.
+.EX 0
+#
+#    elcsd - errlog configuration file
+#
+
+{           # delimiter DON'T remove or comment out!
+1           # status 1-local,2-logrem,4-remlog,5-remlog+priloglocal
+            # errlog file size limit num. of blocks
+/usr/adm/syserr # errlog dir. path
+            # backup errlog dir. path
+/           # single user errlog dir. path
+/usr/adm/syserr # log remote hosts errlog dir. path
+            # remote hostname to log to
+}           # delimiter DON'T remove or comment out!
+#  hosts to log :S - separate file or :R - remotes file (together)
+remote1:S
+remote2:S
+#remote3:S		# disabled 
+remote4:S
+   .
+   .
+   .
+.EE
+The status line of the 
+.PN elcsd.conf 
+file describes where you can log error packets, also called error
+messages: 
+.RS 5
+.TP
+Logs error packets locally = 
+.BR 1, 
+the default.
+.TP
+Logs error packets from a remote system or systems to the local machine =
+.BR 2.
+.TP
+Logs local and remote error packets locally =
+.BR 3.
+.TP
+Logs error packets from the local system to a remote system =
+.BR 4. 
+.TP
+Logs error packets from the local system remotely and logs high
+priority messages locally =
+.BR 5.
+.RE
+.PP
+The errorlog file size defines the maximum size of an errorlog file.  If
+disk space is limited, you can specify the maximum number of blocks
+(512 bytes each) you want the
+errorlog file to be.  If you do not specify
+the maximum number of blocks, the system will notify you when the file
+system is 98% full.
+.PP
+The default errorlog directory path is 
+.PN /usr/adm/syserr. 
+You can direct
+error packets to a different directory; if you do, you must change
+the default for 
+.PN uerf 
+also. For further information, see 
+.MS uerf 8 .
+.PP
+If the error-logging daemon cannot write to the primary errorlog
+directory path, it attempts to log to the backup errorlog directory
+path automatically. 
+.PP
+The root directory is the default for the single-user errorlog
+directory path.  When the system makes the transition to multiuser
+mode, errors logged in single-user mode are transferred to the default
+errorlog directory path 
+.PN /usr/adm/syserr .
+You can direct single-user
+error packets to another directory.
+.PP
+To log error packets from a remote system locally, set up an
+errorlog directory path on the local system.  The default is
+.PN /usr/adm/syserr.  
+.PP
+Errorlog packets from remote systems can be logged to separate files
+or to one file.
+.B S 
+sets up a separate errorlog file for each remote
+system that logs locally.
+.B R 
+logs packets from the corresponding remote system
+to the file 
+syserr.remotes. 
+The default is 
+.B S.
+.SH Restrictions
+You must have superuser privileges to change the 
+.PN elcsd.conf
+file.  However, anyone can view the file.
+.SH Files
+.TP 15
+.PN /usr/adm/elcsdlog
+elcsd daemon messages
+.SH See Also
+elcsd(8), eli(8), uerf(8)
+.br
+.I Guide to the Error Logger System

@@ -1,0 +1,130 @@
+.\" SCCSID: @(#)uuaids.8c	8.1	9/11/90
+.TH uuaids 8c
+.SH Name
+uucompact, uumkspool, uurespool, uupoll \- uucp utilities 
+.SH Syntax
+.B uucompact
+.B \-s\fIsystem\fP 
+.br
+.B uumkspool
+.I system ...
+.br
+.B uurespool
+[ 
+.B \-t\fI#\fP 
+]
+.br
+.B uupoll
+.I system ...
+.SH Description
+.NXR "uuaids keyword"
+.NXR "uucompact utility"
+.NXR "uumkspool utility"
+.NXR "uurespool utility"
+.NXR "uupoll utility"
+.NXR "uucp utility" "spool directories and"
+.NXAM "uucp utility" "uucompact utility"
+All of the 
+.PN uucp
+commands are located in 
+.PN /usr/lib/uucp .
+.PP
+The
+.PN uucompact
+command compacts uucp system spool directories 
+and associated subdirectories. If 
+.I system 
+is ALL, then all existing uucp system spool 
+directories are compacted.  
+Otherwise, only the specified system spool directory is compacted.
+If no system is specified, 
+.PN /usr/spool/uucp/sys 
+is compacted.  If 
+.PN uucompact
+is stopped before it is finished,
+it can be restarted without reprocessing directories. 
+The
+.PN uucompact
+command continues 
+processing where it left off during it's previous instantiation.
+.PP
+The
+.PN uumkspool
+command makes a per system spool directory and associated subdirectories
+for each of the specified systems.
+For example, if \fIsystem\fP is mk3 and if the local system name
+is penny, the following directories are created:
+.RS
+.EX
+ /usr/spool/uucp/sys/mk3
+ /usr/spool/uucp/sys/mk3/C.
+ /usr/spool/uucp/sys/mk3/X.
+ /usr/spool/uucp/sys/mk3/D.
+ /usr/spool/uucp/sys/mk3/D.penny
+ /usr/spool/uucp/sys/mk3/D.penny
+.EE
+.RE
+The
+.PN uurespool
+command moves files from old spool directories to  new spool
+directories.
+Because the structure of the spool directories has changed from older 
+versions of 
+.PN uucp ,
+it is necessary to respool old spooled files
+to new spool directories in at least two instances: 
+.IP \(bu 5
+When installing the current version of 
+.PN uucp. 
+.IP \(bu 5
+When creating a new system spool directory for each system.  
+.PP
+In the latter case, it is necessary to move files from 
+.PN /usr/spool/uucp/sys/DEFAULT
+to the new spool directories.  To ease this task,
+.PN uurespool
+moves files that have been spooled
+in one of 4 formats and respools them under the new spooling structure.
+The format is specified by the \f(CW\-t#\fP option, where 
+the number sign (#) can be any one of the following:
+.IP \(bu 4
+Original spool - All files are in 
+.PN /usr/spool/uucp .
+.IP \(bu
+Split spool - Contains the subdirectories 
+.PN C. , 
+.PN X. , 
+.PN D. , 
+.PN D.local , 
+.PN D.localX .
+.IP \(bu
+Modified split spool -  Contains all subdirectories 
+listed in split spool, and 
+.PN STST. , 
+.PN TM. , 
+.PN C./OTHERS .
+.IP \(bu
+Used when a new system directory has been created and
+spool files must be moved from the DEFAULT directory
+to the new system directory.
+.PP
+The 
+.PN uupoll
+command forces a connect attempt to the named systems even
+if recent attempts have failed, but not if the 
+.PN L.sys
+file prohibits the call.  For example, the 
+.PN L.sys 
+file will prohibit the call if it is the wrong time of day.
+Thus, the
+.PN /usr/spool/uucp/LOGFILE
+should be monitored for messages about the connection.
+.SH Files
+.TP 20
+.PN /usr/spool/uucp
+Spool directory
+.TP 
+.PN /usr/spool/uucp/LOGFILE
+Logfile
+.SH See Also
+mail(1), uucp(1c), uux(1c)

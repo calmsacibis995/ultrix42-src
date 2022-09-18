@@ -1,0 +1,494 @@
+.\" SCCSID: @(#)hier.7	3.2	9/6/88
+.TH hier 7 RISC
+.SH Name
+hier \- file system hierarchy
+.SH Description
+.NXR "hier keyword"
+.NXR "hierarchy" "root file system" 
+.NXB "root file system" "hierarchy"
+The following is a brief description of the root file system.
+The major directory hierarchy and representative files are listed.
+.PP
+Symbolic links can be included in the files to provide backward
+compatibility. To display the links, type:
+.EX
+% ls -l
+.EE
+.PP
+See the 
+\fIGuide to Disk Maintenance\fP
+for more detailed information.
+.IP / 8
+Directory for root file system. This file system is separated into
+nonsharable data, 
+(\f(CWroot\fP (/))
+and sharable data, 
+(\f(CW/usr\fP).
+These two file systems are each divided into the following types: static
+data, variable data, and executable data.
+.IP /bin 
+Directory for the single user executable data files.
+.IP /bin/init
+Parent of all processes,
+.MS init 8 .
+.IP /bin/mount
+Mount program,
+.MS mount 8 .
+.IP /dev
+Directory for devices.
+.RS 11
+.PD 0
+.IP MAKEDEV 8
+Shell script to create special files
+.IP MAKEDEV.local
+Site-specific part of MAKEDEV
+.IP console
+Main console,
+.MS tty 4 
+.IP rz
+SCSI disks,
+.MS rz 4 
+.IP rrz*
+Raw SCSI disks,
+.MS rz 4 
+.IP rmt*
+Tapes
+.IP mrmt*
+Tapes
+.IP tty*
+Terminals,
+.MS tty 4 
+.IP "     ."
+.IP "     ."
+.IP "     ." 
+.PD
+.RE
+.IP /etc 8
+Directory for the machine-specific static data files and 
+shell scripts for booting.
+.RS 11
+.PD 0
+.IP crontab 10
+System clock daemon table,
+.MS crontab 5
+.IP disktab
+Disk characteristics and partition tables,
+.MS disktab 5 
+.IP fstab
+File system configuration table,
+.MS fstab 5 
+.IP group
+Group file,
+.MS group 5 
+.IP hosts
+Host name-to-network address mapping file,
+.MS hosts 5 
+.IP motd
+Message-of-the-day file,
+.MS login 1 
+.IP networks
+Network name-to-network number mapping file,
+.MS networks 5 
+.IP passwd
+Password file,
+.MS passwd 5 
+.IP protocols
+Name-to-number mapping file,
+.MS protocols 5 
+.IP rc
+Shell script to bring the system to multiuser mode
+.IP rc.local
+Site-dependent portion of 
+.I rc
+.IP remote
+Names and description of remote hosts for 
+.MS tip 1c 
+and
+.MS remote 5 
+.IP services
+Network services definition file,
+.MS services 5 
+.IP termcap
+Description of terminal capabilities,
+.MS termcap 5 
+.IP ttys
+Properties of terminals,
+.MS ttys 5 
+.IP "     ."
+.IP "     ."
+.IP "     ." 
+.PD
+.RE
+.IP /lib 8 
+Symbolic link to 
+.PN /usr/lib .
+.IP /lost+found
+Directory for connecting detached files for
+.MS fsck 8 .
+.IP /sys
+Symbolic link, normally to 
+.PN /usr/sys .
+.IP /tmp
+Directory for temporary files (see also 
+.PN /usr/tmp ).
+.RS 11
+.PD 0
+.IP e* 7
+Used by
+.MS ed 1 
+.IP ctm*
+Used by 
+.MS cc 1 
+.IP "     ."
+.IP "     ."
+.IP "     ." 
+.RE
+.PD
+.IP /usr 8
+General purpose directory, on which the 
+.PN /usr 
+file system is normally mounted (see description that follows).
+.IP /var
+Directory for variable length files, such as spool, administrative, 
+and temporary files. These files can
+also be located in 
+.PN /usr/var .
+See the 
+\fIGuide to Disk Maintenance\fP.
+.IP /vmunix
+Kernel image
+.NXE "root file system" "hierarchy"
+.sp
+.PP
+The
+.PN /usr
+directory contains the sharable data. The following is a brief 
+description of the 
+.PN /usr 
+file system.
+.NXB "/usr file system" "hierarchy"
+The major directory hierarchy and representative
+files are listed. 
+.IP /usr 10
+Root directory for 
+.PN /usr 
+file system.
+.IP /usr/adm
+Directory for administrative information, which is now a symbolic
+link to
+.PN /var/adm .
+.RS 13
+.PD 0
+.IP crash 8
+Directory for crash dumps
+.IP vmcore.?,vmunix.? 20
+Crash dump files
+.RE
+.RS 13
+.IP lpacct 8
+Line printer accounting,
+.MS lpr 1 
+.IP tracct
+Phototypesetter accounting,
+.MS troff 1 
+.IP wtmp
+Login history,
+.MS utmp 5 
+.IP "     ."
+.IP "     ."
+.IP "     ." 
+.PD
+.RE
+.IP /usr/bin 10 
+Directory for the shared executable data files, including utility
+programs and Shell scripts.
+.RS 13
+.PD 0
+.IP as 5
+assembler
+.IP cc
+C compiler executive (see also 
+.PN /usr/lib/ccom  
+and
+.PN /usr/lib/cpp )
+.IP csh
+C shell
+.IP "     ." 
+.IP "     ." 
+.IP "     ." 
+.RE
+.PD
+.IP /usr/dict 10
+Directory for word lists.
+.PD 0
+.RS 13
+.IP spellhist 10
+History file,
+.MS spell 1 
+.IP words
+Word list,
+.MS look 1 
+.IP "     ."
+.IP "     ."
+.IP "     ." 
+.PD
+.RE
+.IP /usr/doc 10
+Directories containing files for the Vol.2 documentation.
+.PD 0
+.RS 13
+.IP as 5
+Assembler manual
+.IP c
+C manual
+.IP "     ."
+.IP "     ."
+.IP "     ." 
+.PD
+.RE
+.IP /usr/etc 10
+Directory for utility programs and shell scripts.
+.IP /usr/etc/cron
+Clock daemon,
+.MS cron 8 .
+.IP /usr/etc/dump
+Dump program,
+.PN dump(8) .
+.IP /usr/examples
+A directory where components of the base system and Digital's
+separately licensed products can locate code examples, scripts, and
+demos for customers to use.  A typical use is to complement printed
+documentation.
+.IP /usr/games
+Directory for games.
+.PD 0
+.RS 13
+.IP hangman 10
+Hangman game
+.IP lib
+Library directory for games
+.IP "     ."
+.IP "     ."
+.IP "     ." 
+.PD
+.RE
+.IP /usr/etc/getty 10
+Part of
+.IR login ,
+.MS getty 8 .
+.IP /usr/include
+Directory for standard #include files.
+.PD 0
+.RS 13
+.IP a.out.h 9
+Object file layout,
+.MS a.out 5 
+.IP math.h
+.MS matherr 3m 
+.IP stdio.h
+Standard I/O,
+.MS intro 3s 
+.IP sys
+Symbolic link to 
+.PN /sys/h 
+(system generation #include files)
+.IP "     ."
+.IP "     ."
+.IP "     ." 
+.PD
+.RE
+.IP /usr/lib 10
+Directory for the shared static data files, such as object libraries. 
+.RS 13
+.PD 0
+.IP atrun 8
+System scheduler,
+.MS at 1 
+.IP cpp
+C preprocessor
+.IP libc.a
+System calls and standard I/O (2,3,3S)
+.IP font
+Directory for 
+.MS *roff 1 
+fonts
+.IP lint
+Directory for utility files for 
+.MS lint 1 
+.IP tmac
+Directory for 
+.MS *roff 1 
+macros
+.IP units
+Data file of conversion tables for
+.MS units 1 
+.IP uucp
+Directory for
+.MS uucp 1c 
+programs and data 
+.IP "     ."
+.IP "     ."
+.IP "     ." 
+.RE
+.PD
+.IP /usr/man 10
+Directory for unformatted and preformatted reference (manual) pages.
+.RS 13
+.PD 0
+.IP cat1 8
+Section 1 (preformatted)
+.IP cat2
+Section 2 (preformatted)
+.IP cat3
+Section 3 (preformatted)
+.IP "     ."
+.IP "     ."
+.IP "     ." 
+.IP man1 8
+Section 1 (unformatted)
+.IP man2
+Section 2 (unformatted)
+.IP man3
+Section 3 (unformatted)
+.IP "     ."
+.IP "     ."
+.IP "     ." 
+.PD
+.RE
+.IP /usr/mdec 10
+Directory for ULTRIX boot files.
+.IP /usr/msgs 
+Directory for messages, 
+.MS msgs 1 .
+.IP /usr/new
+Directory for binaries of new versions of programs.
+.IP /usr/preserve
+Directory for editor 
+.PN temp 
+files preserved after crashes or hangups.
+.IP /usr/skel
+Directory for sample 
+.I user
+startup files.
+.RS 13
+.PD 0
+.IP .cshrc 9
+Startup file for
+.MS csh 1 
+.IP .login
+Login startup file for
+.MS csh 1 
+.IP .mailrc
+Startup file for
+.MS mail 1 
+.IP .profile
+Startup file for
+.MS sh 1 
+.IP .project
+Lists information used by 
+.MS finger 1 
+.PD
+.RE
+.IP /usr/spool 10
+Directory for delayed execution files, which is now a symbolic link to
+.PN /var/spool .
+.RS 13
+.PD 0
+.IP at 5
+Directory used by 
+.MS at 1 
+.IP lpd
+Directory used by
+.MS lpr 1 
+.RE
+.RS 21
+.IP lock 5
+Present when line printer is active
+.IP cf*
+Copy of file to be printed, if necessary
+.IP df*
+Daemon control file,
+.MS lpd 8 
+.IP tf*
+Transient control file (exists while 
+.PN lpr
+is working)
+.RE
+.RS 13
+.IP mail 6
+Mailboxes for
+.MS mail 1 
+.RE 
+.RS 21
+.IP \fIname\fP 12
+Mail file for user
+.I name
+.IP \fIname.lock\fP
+Lock file (exists while
+.I name
+is receiving mail)
+.RE
+.RS 13
+.IP uucp 6
+Work files and staging area for 
+.MS uucp 1c 
+.RE
+.RS 21
+.IP LOGFILE 12
+Summary log
+.PD
+.RE
+.IP /usr/src 10
+Generic sources.
+.PD 0
+.RS 13
+.IP usr.bin 8
+User sources
+.RE
+.RS 23
+.IP troff 6 
+.PN nroff 
+and 
+.PN troff 
+sources
+.IP term
+Directory of description files for new printers
+.PD
+.RE
+.IP /usr/sys 10
+Directory for system files.
+.RS 13
+.PD 0
+.IP b.mips 10
+BINARY for MIPS
+.IP b.vax
+BINARY for VAX
+.IP fs
+Filesystem SRC
+.IP net 
+Netword SRC
+.IP mips
+MIPS-specific SRC
+.IP vax
+VAX-specific SRC
+.IP data
+System data files
+.IP conf/{mips,vax}
+Configuration files
+.IP h
+#include files
+.IP SAS
+Standalone system
+.IP sys
+Machine independent SRC
+.PD
+.RE
+.IP /usr/tmp 10
+Symbolic link to
+.PN /var/tmp .
+.NXE "/usr file system" "hierarchy"
+.SH See Also
+apropos(1), find(1), finger(1), grep(1), ls(1), whatis(1), whereis(1),
+which(1), ncheck(8)
+.br
+\fIGuide to Disk Maintenance\fP

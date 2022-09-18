@@ -1,0 +1,64 @@
+.TH kdestroy 8krb
+.SH Name
+kdestroy \- destroy Kerberos tickets
+.SH Syntax
+.B /usr/bin/kdestroy
+[
+.B \-f
+]
+[
+.B \-q
+]
+.SH Description
+.NXR "Kerberos routines" "kdestroy"
+The 
+.PN kdestroy
+utility destroys the user's active Kerberos authorization tickets by
+writing zeros to the file that contains them. If the ticket file does
+not exist,
+.PN kdestroy
+displays a message to that effect.
+.PP
+After overwriting the file,
+.PN kdestroy
+removes the file from the system. The utility displays a message
+indicating the success or failure of the operation. If
+.PN kdestroy
+is unable to destroy the ticket file,
+the utility will issue a warning by making the terminal beep.
+The ticket file has the name,
+.PN /var/dss/kerberos/tkt/tkt[\fIuid\fP]
+\fRwhere \fIuid\fP is the user ID of the\fP
+.PN kdestroy
+\fRprocess\fP.
+.PP
+If your site does not provide a ticket-destroying mechanism,
+you can place the 
+.PN kdestroy 
+command in your
+.PN \&.logout 
+file so that your tickets are destroyed automatically at logout.
+.SH Options
+.TP 7
+.B \-f
+Causes 
+.PN kdestroy
+to run without displaying the status message.
+.TP
+.B \-q
+Disables terminal beeping if 
+.PN kdestroy 
+fails to destroy the tickets.
+.SH Restrictions
+The
+.PN kdestroy
+utility
+is useful only in environments with user-level
+authentication.  ULTRIX Kerberos does not support
+user-level authentication.
+.PP
+Only the tickets in the user's current ticket file are destroyed.
+.SH Files
+.PN /var/dss/kerberos/tkt/tkt\[\fIuid\fP]
+.SH See Also
+kinit(8krb), klist(8krb)

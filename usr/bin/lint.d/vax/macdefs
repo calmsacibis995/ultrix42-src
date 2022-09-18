@@ -1,0 +1,120 @@
+/*
+ *		@(#)macdefs	4.2	(ULTRIX)	4/19/88
+ */
+/************************************************************************
+ *									*
+ *			Copyright (c) 1984, 1988 by			*
+ *		Digital Equipment Corporation, Maynard, MA		*
+ *			All rights reserved.				*
+ *									*
+ *   This software is furnished under a license and may be used and	*
+ *   copied  only  in accordance with the terms of such license and	*
+ *   with the  inclusion  of  the  above  copyright  notice.   This	*
+ *   software  or  any  other copies thereof may not be provided or	*
+ *   otherwise made available to any other person.  No title to and	*
+ *   ownership of the software is hereby transferred.			*
+ *									*
+ *   This software is  derived  from  software  received  from  the	*
+ *   University    of   California,   Berkeley,   and   from   Bell	*
+ *   Laboratories.  Use, duplication, or disclosure is  subject  to	*
+ *   restrictions  under  license  agreements  with  University  of	*
+ *   California and with AT&T.						*
+ *									*
+ *   The information in this software is subject to change  without	*
+ *   notice  and should not be construed as a commitment by Digital	*
+ *   Equipment Corporation.						*
+ *									*
+ *   Digital assumes no responsibility for the use  or  reliability	*
+ *   of its software on equipment which is not supplied by Digital.	*
+ *									*
+ ************************************************************************/
+/************************************************************************
+ *			Modification History				*
+ *									*
+ *	Jon Reeves, 11-April-1988					*
+ * 002	Add econvert(p) from BSD 4.3 to stop bad messages for functions	*
+ *	with arguments that were pointers to enums.			*
+ *									*
+ *	David L. Ballenger, 14-Nov-1984, 1.2				*
+ * 001	Add definitions of ALSTACK so that code shared with PCC will	*
+ *	work								*
+ *									*
+ ************************************************************************/
+
+#if defined(pdp11) || defined(vax)
+#define makecc(val,i)  lastcon |= val<<(8*i);  /* pdp-11 womp next char  */
+#else
+#define makecc(val,i)	lastcon = i ? (val<<8)|lastcon : val
+#endif
+
+# define  ARGINIT 288 /* initial offset for arguments */
+# define  AUTOINIT 0   /* initial automatic offset */
+extern int  SZCHAR;
+extern int  SZINT;
+extern int  SZFLOAT;
+extern int  SZDOUBLE;
+extern int  SZLONG;
+extern int  SZSHORT;
+extern int SZPOINT;
+extern int ALCHAR;
+extern int ALINT;
+extern int ALFLOAT;
+extern int ALDOUBLE;
+extern int ALLONG;
+extern int ALSHORT;
+extern int ALPOINT;
+extern int ALSTRUCT;
+extern int ALSTACK;
+# define SAVEADJUST 0 /* bits of adjustment required for stackframe */
+
+
+/* type (INT OR LONG) big enough to hold pointers */
+
+
+/*	size in which constants are converted */
+/*	should be long if feasable */
+
+# define CONSZ long
+# define CONFMT "%Ld"
+# define CONOFMT "%Lo"
+
+/*	size in which offsets are kept
+/*	should be large enough to cover address space in bits
+*/
+
+# define OFFSZ long
+
+/* 	character set macro */
+
+# define  CCTRANS(x) x
+
+/*	register cookie for stack pointer */
+
+# define STKREG 9
+
+/*	maximum and minimum register variable values */
+
+# define MAXRVAR 1000
+# define MINRVAR 1
+
+/* many macro definitions for functions irrelevant to lint */
+
+# define locctr(n) 0
+# define getlab() 10
+# define genswitch( x,y)
+# define bccode()
+# define cendarg()
+# define incode(a,s) (inoff += (s))
+# define fincode(a,s) (inoff += (s) )
+# define vfdzero(n) (inoff += (n))
+# define aobeg()
+# define aoend()
+# define econvert(p)
+
+# ifndef unix
+# define NOFORTRAN  {extern int pflag; if(pflag) werror( "fortran keyword nonportable" );}
+# else
+# define NOFORTRAN { werror( "fortran keyword nonportable" ); }
+# endif
+
+# define LINT

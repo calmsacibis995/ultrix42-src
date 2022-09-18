@@ -1,0 +1,19 @@
+.\" SCCSID: @(#)whoami.1	8.1	9/11/90
+.TH whoami 1
+.SH Name
+whoami \- print your current login name
+.SH Syntax
+.B whoami
+.SH Description
+.NXR "whoami command"
+.NXR "user ID" "showing effective"
+The
+.PN whoami
+command prints who you are.
+It works even if you are su'd, while `who am i' does not since
+it uses 
+.PN /etc/utmp .
+.SH Files
+/etc/passwd	Name data base
+.SH See Also
+who(1)

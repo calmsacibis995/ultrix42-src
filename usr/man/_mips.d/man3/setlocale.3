@@ -1,0 +1,216 @@
+.TH setlocale 3
+.SH Name 
+setlocale \- set localization for internationalized program
+.SH Syntax 
+.B #include <locale.h>
+.PP
+.B char *setlocale (\fIcategory\fP, \fIlocale\fP)
+.br
+.B int category;
+.br
+.B char *locale;
+.SH Description 
+.NXR "setlocale subroutine"
+The
+.PN setlocale
+function changes or queries the run-time environment of the program.
+The function can affect the settings of 
+language, territory, and codeset in the program's environment. 
+.PP
+In the 
+.I category
+argument, you specify what part of the run-time environment you want to
+affect. Possible values for
+.I category
+are shown in the following table:
+.PP
+.TS 
+tab(@);
+lfHBp-1v-1 lfHBp-1v-1 lfHBp-1v-1
+lfHBp-1v-1 lfHBp-1v-1 lfHBp-1v-1
+lp-1v-1 lp-1v-1 lp-1v-1 .
+_
+.sp 4p
+@Effect of Specifying@Environment Variable 
+\fIcategory\fP@the Value@Affected
+.sp 4p
+_
+.sp 4p
+LC_ALL@T{
+Sets or queries entire environment
+T}@LANG
+LC_COLLATE@T{
+Changes or queries collation sequences
+T}@LC_COLLATE
+LC_CTYPE@T{
+Changes or queries character classification
+T}@LC_CTYPE
+LC_NUMERIC@T{
+Changes or queries number format information
+T}@LC_NUMERIC
+LC_TIME@T{
+Changes or queries time conversion parameters
+T}@LC_TIME
+LC_MONETARY@T{
+Changes or queries monetary information
+T}@LC_MONETARY
+.sp 4p
+_
+.TE
+.PP
+You change only one part of the program's
+locale in a single call to
+.PN setlocale ,
+unless you use the category
+.PN LC_ALL .
+.PP
+The 
+.I locale
+argument is a pointer to a character string
+containing the required setting of 
+.I category 
+in the following format:
+.EX
+language[_territory[.codeset]][@modifier]
+.EE
+You use 
+.I language
+to specify the native language you want in the
+program environment.  You can specify what dialect of the native language
+you want in 
+.I _territory, 
+and the codeset to be used in 
+.I codeset.
+For example, the following string 
+specifies the French native language, as spoken in
+France (as opposed to Switzerland), and the Digital Multinational
+Character Set:
+.EX 0
+LANG = FRE_FR.MCS
+.EE
+You use 
+.I @modifier
+to select a specific instance
+of an environment setting within a single category.  For example, you
+could use 
+.I @modifier
+to select dictionary sorting of data, as
+opposed to telephone directory sorting.  You can use 
+.I @modifier
+for all
+categories, except 
+.PN LC_ALL .
+.PP
+The following preset values of 
+.I locale
+are defined for all the settings of \fIcategory\fR:
+.IP \fB"C"\fP 10
+Specifies setting the locale to the minimum C
+language environment, as specified by the ANSI standard for the C
+language. (Draft ANSI X3.159)  
+.IP \fB""\fP 10
+Specifies using the environment variable corresponding
+to \fIcategory\fR to set the locale.
+If the appropriate environment variable is not set, the 
+.PN LANG
+environment variable is used. 
+If 
+.PN LANG
+is not set, 
+.PN setlocale
+returns an error.
+.IP \fBNULL\fP 10
+Queries the current international environment and returns current
+locale setting. 
+You can use the string 
+.PN setlocale 
+returns only as input to a subsequent
+.PN setlocale
+call; in particular, the string cannot be printed for category
+.PN LC_ALL .
+The string
+.PN setlocale
+returns is a pointer to static data area that might be written over.
+.\".NT
+.\"When a C program is compiled the
+.\.PN \-li
+.\"option must be used to include the internationalization library, for
+.\"example:
+.\".sp
+.\"\f(CWcc \-o prog prog.c \-li\fR
+.\".NE
+.SS International Environment
+.IP INTLINFO 15
+The INTLINFO environment variable specifies the directory to search for
+language databases. The default is to search the  
+.PN /usr/lib/intln
+directory.
+.SH Examples 
+The following calls to the
+.PN setlocale
+function set the environment to the French language and then
+modify the collating sequence to German dictionary collation:
+.EX
+setlocale (LC_ALL, "FRE_FR.MCS");
+setlocale (LC_COLLATE, "GER_DE.MCS@dict");
+.EE
+You can use the
+.PN setlocale
+function to bind the specific language requirements of a user
+to the program as follows:
+.EX
+status = setlocale (LC_ALL, "");
+.EE
+For this example to work properly, the user of the international
+program sets the LANG variable before running the program.  Once LANG
+is set and the program runs, this call causes
+.PN setlocale
+to use the definition of LANG to set the current locale.  You
+should test the value of 
+.PN status
+after the call completes to be sure no errors occur.
+.SH Return Values 
+If you pass valid setting for 
+.I category 
+and 
+.IR locale ,
+other than NULL,
+.PN setlocale
+changes the current locale and returns the string associated with that
+locale.
+.PP
+If 
+.I locale
+is NULL,
+.PN setlocale
+returns the string associated with 
+.I category
+for the current 
+.I locale.
+The current
+.I locale
+is unchanged.  The string
+.PN setlocale
+returns may not be in a printable format.
+.PP
+If either the 
+.I category
+or 
+.I locale
+argument is invalid, 
+.PN setlocale 
+returns
+.PN NULL .
+The 
+.PN setlocale
+function does not modify the locale if any part of the call is invalid.
+.PP
+The
+.PN setlocale
+function stores its return values in a data area that may be written
+over. You should move the return value to another location if you want
+to use it in your program.
+.SH See Also 
+ic(1int), nl_langinfo(3int), printf(3int), environ(5int), lang(5int)
+.br
+.I Guide to Developing International Software

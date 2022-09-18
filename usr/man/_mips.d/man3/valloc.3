@@ -1,0 +1,48 @@
+.\" SCCSID: @(#)valloc.3	8.1	9/11/90
+.TH valloc 3
+.SH Name
+valloc \- aligned memory allocator
+.SH Syntax
+.nf
+.B #include <stdlib.h>
+.PP
+.B void *valloc(\fIsize\fP) 
+.B size_t \fIsize\fP; 
+.fi
+.SH Description
+.NXR "valloc subroutine"
+.NXR "memory" "allocating"
+The
+.PN valloc
+subroutine allocates
+.I size
+bytes aligned on a page boundary.
+It is implemented by calling 
+.MS malloc 3 
+with a slightly larger request, saving the true beginning of the block
+allocated, and returning a properly aligned pointer.
+.SH Diagnostics
+The
+.PN valloc
+subroutine
+returns a null pointer (0) if there is no available memory
+or if the arena has been detectably
+corrupted by storing outside the bounds
+of a block.
+The
+.PN valloc
+subroutine will fail and no additional memory will be allocated if
+one of the following is true:
+.TP 12
+[ENOMEM]
+The limit, as set by
+.MS setrlimit 2 ,
+is exceeded.
+.TP
+[ENOMEM]
+The maximum possible size of a data segment (compiled into the
+system) is exceeded.
+.TP
+[ENOMEM]
+Insufficient space exists in the swap area to support the expansion.
+

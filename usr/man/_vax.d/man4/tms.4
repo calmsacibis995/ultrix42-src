@@ -1,0 +1,102 @@
+.\" SCCSID: @(#)tms.4	3.1	11/24/87
+.TH tms 4
+.SH Name
+tms \- TMSCP magnetic tape interface
+.SH Syntax
+.B For UNIBUS, Q-bus:
+.RS 3
+.br
+.B "controller klesiu0 at uba0"
+.br
+.B "controller uq0 at klesiu0 csr 0174500 vector uqintr"
+.br
+.B "tape tms0 at uq0 drive 0"
+.RE
+.PP
+.B For MSI Bus:
+.RS 3
+.br
+.B "adapter msi0 at nexus?"
+.br
+.B "controller dssc0 at msi0 msinode 0"
+.br
+.B "tape tms0 at dssc0 drive 3"
+.RE
+.PP
+.B For VAXBI:
+.RS 3
+.br
+.B "controller klesib0 at vaxbi0 node 0"
+.br
+.B "controller uq0 at klesib0 vector uqintr"
+.br
+.B "tape tms0 at uq0 drive 0"
+.sp
+.B "controller aie0 at vaxbi? node?"
+.br
+.B "controller bvpssp0 at aie0 vector bvpsspintr"
+.br
+.B "tape tms0 at bvpssp0 drive 0"
+.RE
+.PP
+.B For MSI Bus:
+.RS 3
+.br
+.B "adapter msi0 at nexus?"
+.br
+.B "controller dssc0 at msi0 msinode 0"
+.br
+.B "tape tms0 at dssc0 drive 0"
+.RE
+.PP
+.B For VAX CI/HSC:
+.RS 3
+.br
+.B "adapter ci0 at nexus?"
+.br
+.B "adapter ci0 at vaxbi? node?"
+.br
+.B "controller hsc0 at ci0 cinode 6"
+.br
+.B "tape tms0 at hsc0 drive 3"
+.RE
+.SH Description
+.NXR "tms interface" "TMSCP magnetic tape interface"
+.NXR "Tape Mass Storage Control Protocol" "TMSCP magnetic tape interface"
+.NXR "TMSCP magnetic tape interface" "nbuf keyword"
+.NXR "TK50 magnetic tape interface"
+.NXR "TK70 magnetical tape interface"
+.NXR "TU81 magnetic tape interface"
+.NXR "TU81E magnetic tape interface"
+.NXR "TA90 magnetic tape interface"
+.NXR "TA91 magnetic tape interface"
+.NXR "tmscp keyword" "tms interface"
+Prior to Version 2.0, this device was referenced by 
+tmscp(4).
+.PP
+The TMSCP driver provides a standard tape drive interface,
+as described in
+.MS mtio 4 .
+This is a driver for any controller that adheres
+to the Tape Mass Storage Control Protocol (TMSCP).
+The TMSCP controllers communicate with the host
+through a packet-oriented protocol termed
+the Tape Mass Storage Control Protocol.
+This driver also supports n-buffered reads and writes to
+the raw tape interface (used with streaming tape drives).
+See
+.MS nbuf 4
+for further details.
+.SH Tape Support
+TK50, TK70, TF70, TU81, TU81e, TA78, TA79, TA81, RV20, TA90, TA90E, TA91
+.SH Diagnostics
+.PP
+All diagnostic messages are sent to the error logger subsystem.
+.SH Files
+.PN /dev/rmt???
+.br
+.PN /dev/nrmt???
+.SH See Also
+mtio(4), nbuf(4), MAKEDEV(8), uerf(8), tapex(8)
+.br
+\fIGuide to the Error Logger\fP

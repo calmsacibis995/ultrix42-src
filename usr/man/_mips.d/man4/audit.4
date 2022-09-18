@@ -1,0 +1,19 @@
+.\" SCCSID: @(#)audit.4		02/22/89
+.TH audit 4
+.SH Name
+audit \- audit log interface
+.SH Description
+.NXR "audit log interface"
+This is a special character device that provides an interface for the
+audit daemon process, 
+.PN /etc/sec/auditd ,
+to the kernel audit buffers.
+.SH Restrictions
+This device should be readable and writable only by root,
+to protect access by nonsystem processes.
+The major number assigned to this device must correlate with
+the corresponding major number designation in the system kernel.
+.SH Files
+.PN /dev/audit
+.SH See Also
+MAKEDEV(8)

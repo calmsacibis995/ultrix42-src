@@ -1,0 +1,827 @@
+# @(#)xma2.db	4.2   (ULTRIX)   9/11/90
+
+sseg
+id CDS 73
+name xma2_cds
+doc "xma2 registers"
+label "XMA-2 Memory Registers"
+elements
+    xnode dtype xbe0 seadr 6500_mctl1 6500_mctl4 mecer mecea mctl2 becer becea stadr enadr intlv mctl3 bsctl bsadr eectl tmoer 
+
+sitem 
+id 763
+name 6500_mctl1
+type register 
+class composite 
+size 4 
+label "mctl1"
+display hex 
+doc "mctl1"
+map
+    field
+    class integer
+    size 8
+    label "DATA CHECK BITS"
+    display HEX
+    doc nil
+    map NIL
+    field
+    class FILLER
+    size 2
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "DATA RMW WRITE ERROR"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "INTERLOCK SEQUENCE ERROR"
+    field
+    class FILLER
+    size 1
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "ENABLE 2MB DATA PROTECT MODE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "ON BOARD MEMORY VALID"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "INHIBIT CRD STATUS"
+    field
+    class INTEGER
+    size 2
+    label "RAM TYPE BITS""
+    display HEX
+    doc nil
+    map NIL
+    field
+    class INTEGER
+    size 11
+    label "MEMORY SIZE BITS"
+    display HEX
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "DATA ECC DISABLE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "DATA ECC DIAGNOSTIC MODE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "ERROR SUMMARY"
+
+sitem 
+id 764
+name 6500_mctl4
+type register
+class composite 
+size 4 
+label "mctl4"
+display hex 
+doc "mctl4"
+map
+    field
+    class INTEGER
+    size 5
+    label "BLOCK STATE ECC CHECK BITS"
+    display HEX
+    doc nil
+    map NIL
+    field
+    class INTEGER
+    size 4
+    label "BLOCK STATE COMMANDER ID"
+    display HEX
+    doc nil
+    map NIL
+    field
+    class INTEGER
+    size 2
+    label "BLOCK STATE CODE"
+    display HEX
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "OWNERSHIP SEQUENCE ERROR"
+    field
+    class FILLER
+    size 2
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "BLOCK STATE RMW WRITE ERROR"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "MODULE POPULATION"
+    field
+    class INTEGER
+    size 2
+    label "RAM TYPE BITS"
+    display HEX
+    doc nil
+    map NIL
+    field
+    class INTEGER
+    size 5
+    label "MEMORY SIZE BITS"
+    display HEX
+    doc nil
+    map NIL
+    field
+    class FILLER
+    size 6
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "BLOCK STATE ECC DISABLE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "BLOCK STATE DIAGNOSTIC MODE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "ERROR SUMMARY"
+
+
+sitem 
+id 767 
+name becer
+type register 
+class composite 
+size 4 
+label "becer" 
+display hex 
+doc "becer"
+map
+    field
+    class INTEGER
+    size 5
+    label "BLOCK STATE ERROR SYNDROME"
+    display HEX
+    doc nil
+    map nil
+    field
+    class integer
+    size 4
+    label "BLOCK STATE COMMANDER ID"
+    display hex
+    doc nil
+    map nil
+    field
+    class coded
+    size 2
+    label nil
+    display nil
+    doc nil
+    map
+        0 "FREE STATE"
+        1 "OWNED STATE"
+        2 "INTERLOCKED STATE"
+        3 "TAGGED BAD STATE"
+    field
+    class FILLER
+    size 1
+    label NIL
+    display NIL
+    doc nil
+    map nil
+    field
+    class integer
+    size 4
+    label "COMMAND CODE"
+    display hex
+    doc nil
+    map nil
+    field
+    class integer
+    size 6
+    label "COMMANDER ID"
+    display hex
+    doc nil
+    map nil
+    field
+    class FILLER
+    size 2
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "TAGGED BAD BLOCK ACCESSED"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "COLUMN PE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "ROW PE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "BYTE WRITE ERROR"
+    field
+    class FILLER
+    size 1
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "BLOCK STATE CORR ERROR"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "SECOND BLOCK STATE ERROR OCCURRED"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "BLOCK UNCORRECTABLE ERROR"
+
+sitem 
+id 768 
+name becea
+type register 
+class composite 
+size 4 
+label "becea" 
+display hex 
+doc "becea"
+map
+    field
+    class FILLER
+    size 3
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class integer
+    size 29
+    label "BLOCK ERROR ADDR"
+    display hex
+    doc nil
+    map nil
+
+sitem 
+id 769 
+name stadr
+type register 
+class composite 
+size 4 
+label "stadr" 
+display hex 
+doc "starting adr"
+map
+    field
+    class FILLER
+    size 6
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class integer
+    size 10
+    label "STARTING ADDR"
+    display hex
+    doc nil
+    map nil
+    field
+    class FILLER
+    size 16
+    label nil
+    display nil
+    doc nil
+    map NIL
+
+sitem 
+id 770 
+name enadr
+type register 
+class composite 
+size 4 
+label "enadr" 
+display hex 
+doc "ending adr"
+map
+    field
+    class FILLER
+    size 6
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class integer
+    size 10
+    label "ENDING ADDR"
+    display hex
+    doc nil
+    map nil
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "TOP OF SEG MEMORY ENDING ADDR"
+    field
+    class FILLER
+    size 15
+    label nil
+    display nil
+    doc nil
+    map NIL
+
+sitem
+id 771 
+name intlv
+type register 
+class composite 
+size 4
+label "intlv"
+display hex
+doc "interleave register"
+map
+    field
+    class integer
+    size 2
+    label "INTERLEAVE MODE"
+    display hex
+    doc nil
+    map nil
+    field
+    class FILLER
+    size 3
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class integer
+    size 3
+    label "INTERLEAVE ADDR"
+    display hex
+    doc nil
+    map nil
+    field
+    class FILLER
+    size 8
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class integer
+    size 5
+    label "SEGMENT ADDR"
+    display hex
+    doc nil
+    map nil
+    field
+    class FILLER
+    size 11
+    label nil
+    display nil
+    doc nil
+    map NIL
+
+sitem
+id 772
+name mctl3
+type register 
+class composite 
+size 4
+label "mctl3"
+display hex
+doc "mem ctl reg 3"
+map
+    field
+    class integer
+    size 15
+    label "TRIGGER GENERATION MODE"
+    display hex
+    doc nil
+    map nil
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "TRIGGER ENABLE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "SEQ - INV CMD TYPE FROM INPUT CMD QUEUE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "SEQ - PE ACROSS SEQ STAGES"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "SEQ - STUCK IN IDLE STATE, VALID CMD PENDING"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "SEQ - CMD QUEUE HEAD POINTER INCR ERR"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "SEQ - INV CSR CONFIG"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "OUTPUT - UNEXPECTED DATA RECEIVED"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "BLOCK STATE CNTL ERR - PE ACROSS SEQ STAGES"
+    field
+    class FILLER
+    size 6
+    label NIL
+    display NIL
+    doc nil
+    map nil
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "ATTEMPTED INVALID EEPROM UPDATE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "EEPROM UPDATE ENABLE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "ERROR SUMMARY"
+
+sitem
+id 774
+name bsctl
+type register 
+class composite 
+size 4
+label "bsctl"
+display hex
+doc "bsctl"
+map
+    field
+    class integer
+    size 5
+    label "BLOCK STATE ECC CHECK BITS"
+    display hex
+    doc nil
+    map nil
+    field
+    class integer
+    size 4
+    label "BLOCK COMMANDER ID"
+    display hex
+    doc nil
+    map nil
+    field
+    class coded
+    size 2
+    label "BLOCK STATE"
+    display nil
+    doc nil
+    map
+        0 "FREE"
+        1 "OWNED"
+        2 "INTERLOCKED"
+        3 "TAGGED BAD"
+    field
+    class FILLER
+    size 18
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class integer
+    size 2
+    label "BLOCK STATE ACCESS MODE"
+    display hex
+    doc nil
+    map nil
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "BLOCK STATE PORT ENABLE"
+
+sitem
+id 775
+name bsadr
+type register 
+class composite 
+size 4
+label "bsadr"
+display hex
+doc "bsadr"
+map
+    field
+    class FILLER
+    size 5
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class integer
+    size 27
+    label "BLOCK ADDR"
+    display hex
+    doc nil
+    map nil
+
+sitem
+id 776
+name eectl 
+type register 
+class composite 
+size 4
+label "eectl"
+display hex
+doc "eectl"
+map
+    field
+    class integer
+    size 8
+    label "DATA BYTE"
+    display hex
+    doc nil
+    map nil
+    field
+    class FILLER
+    size 8
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class integer
+    size 11
+    label "EEPROM ADDR"
+    display hex
+    doc nil
+    map nil
+    field
+    class FILLER
+    size 3
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label "EEPROM OP CMD -"
+    display nil
+    doc nil
+    map
+        0 "READ"
+        1 "WRITE"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "INITIATE EEPROM OPERATION"
+
+sitem
+id 777
+name tmoer
+type register 
+class composite 
+size 4
+label "tmoer"
+display hex
+doc "tmoer"
+map
+    field
+    class coded
+    size 1
+    label "TIMEOUT AT"
+    display nil
+    doc nil
+    map
+        0 "2.09MS"
+        1 "8.39MS"
+    field
+    class FILLER
+    size 14
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "TIMEOUT COUNTER DISABLE"
+    field
+    class FILLER
+    size 14
+    label nil
+    display nil
+    doc nil
+    map NIL
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "SECOND TIMEOUT OCCURRED"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc nil
+    map
+        1 "TIMEOUT OCCURRED"
+
+sitem
+id 778
+name DTYPE
+type LONG
+class INTEGER
+size 4
+label "dtype"
+display hex
+doc "xma dev type"
+map
+

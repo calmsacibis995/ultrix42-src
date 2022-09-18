@@ -1,0 +1,26 @@
+% LPS$$SETSIDES device control library module
+% Version V1.1
+%
+% Copyright (c) 1988, 1989 by DEC, Maynard, Mass.  All rights reserved.
+/lps$sides exch def/lps$sides-defaulted? false def mark/report-error{mark
+lps$pn 3 -1 roll returnstatus $error/newerror false put
+stop}/set-tumble{/tumble-op?/settumble where dup{exch pop}if
+def{lps$lpsdict/lps$tumble? true put tumble-op?{{true settumble}stopped{122
+report-error}{true settumble}ifelse}{122
+report-error}ifelse}{lps$lpsdict/lps$tumble? false put tumble-op?{false
+settumble}if}ifelse}/set-logical-duplex{{lps$lpsdict/lps$logical-duplex?
+true put}{lps$lpsdict/lps$logical-duplex? false put statusdict/firstside
+true put}ifelse}/set-physical-duplex{/duplex-op?/duplexmode where dup{exch
+pop}if def{lps$lpsdict/lps$physical-duplex? true put duplex-op?{{true
+setduplexmode}stopped{114 report-error}{true setduplexmode}ifelse}{114
+report-error}ifelse}{lps$lpsdict/lps$physical-duplex? false put{false
+setduplexmode}stopped not{false setduplexmode}{$error/newerror false
+put}ifelse}ifelse}/one{false set-tumble false set-logical-duplex false
+set-physical-duplex}/two{false set-tumble true set-logical-duplex true
+set-physical-duplex}/tumble{true set-tumble true set-logical-duplex true
+set-physical-duplex}/one_sided_duplex{false set-tumble true
+set-logical-duplex false set-physical-duplex}/one_sided_tumble{true
+set-tumble true set-logical-duplex false
+set-physical-duplex}/two_sided_simplex{false set-tumble false
+set-logical-duplex true set-physical-duplex}counttomark 2 idiv 2 add dup
+dict begin 2 sub{def}repeat lps$sides load exec end cleartomark

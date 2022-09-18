@@ -1,0 +1,131 @@
+.\" SCCSID: @(#)msgctl.2	8.1	9/11/90
+.TH msgctl 2
+.SH Name
+msgctl \- message control operations
+.SH Syntax
+.nf
+#include <\fIsys/types.h\fP>
+#include <\fIsys/ipc.h\fP>
+#include <\fIsys/msg.h\fP>
+.PP
+int msgctl (\fImsqid, cmd, buf\fP)
+int \fImsqid, cmd\fP;
+struct \fImsqid_ds, buf\fP;
+.fi
+.SH Description
+.NXR "msgctl system call"
+.NXR "msgctl system call" "msgget system call"
+.NXR "msgctl system call" "msgsnd system call"
+.NXR "message" "control operations"
+The
+.PN msgctl
+system call
+provides message control operations as specified by
+.I cmd.
+The following
+.I cmds
+are available:
+.TP 15
+IPC_STAT
+Place the current value of each member
+of the data structure associated with
+.I msqid
+into the structure pointed to by
+.I buf.
+The contents of this structure are defined in 
+.MS intro 2 .
+.TP 15
+IPC_SET
+Set the value of the following members of the data structure
+associated with
+.I msqid
+to the corresponding value found in the structure
+pointed to by
+.IR buf :
+.EX
+msg_perm.uid
+msg_perm.gid
+msg_perm.mode	/* only low 9 bits */
+msg_qbytes
+.EE
+.PP
+This
+.I cmd
+can be executed only by a process that has an effective user ID
+that is equal to superuser or the value of either
+.I msg_perm.uid
+or
+.I msg_perm.cuid
+in the data structure associated with
+.IR msqid.
+Only the superuser can raise the value of
+.IR msg_qbytes.
+.RE
+.TP 15
+IPC_RMID
+Remove the message queue identifier specified by
+.I msqid
+from the system and destroy the message queue
+and data structure associated with it. This command can only be executed
+by a process that has an effective
+user ID equal to either that of the superuser or to the value of
+.I msg_perm.uid
+in the data structure associated with
+.IR msquid.
+.SH Return Values
+Upon successful completion, a value of 0 is returned.
+Otherwise, a value of \-1 is returned and
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+The
+.PN msgctl
+system call
+fails under the following conditions:
+.TP 15
+[EINVAL]
+The
+.I msqid
+is not a valid message queue identifier.
+.TP 15
+[EINVAL]
+The
+.I cmd
+is not a valid command.
+.TP 15
+[EACCES]
+The
+.I cmd
+is equal to IPC_STAT
+and read operation permission is denied to
+the calling process.  For further information, see 
+.MS intro 2 .
+.TP 15
+[EPERM]
+The
+.I cmd
+is equal to IPC_RMID
+or IPC_SET
+and the effective user ID of the
+calling process is not equal to that of
+the superuser or to the value of
+.I msg_perm.uid
+in the data structure associated with
+.IR msqid.
+.TP 15
+[EPERM]
+The
+.I cmd
+is equal to IPC_SET,
+an attempt is being made to increase to the
+value of
+.IR msg_qbytes,
+and the effective user ID of the calling process is
+not equal to that of superuser.
+.TP 15
+[EFAULT]
+The
+.I buf
+points to an illegal address.
+.SH See Also
+msgget(2), msgop(2)

@@ -1,0 +1,236 @@
+# @(#)mariah.db	4.1   (ULTRIX)   7/2/90
+
+sseg
+id ADS 69
+name 6500_int_ads
+doc "Mariah interrupt registers"
+label "6500 Specific Registers"
+elements
+    xbe0 xfadr0 xfaer xbeer wfadr0 wfadr1 fdal0 fdal1 fdal2 fdal3 6500_sscbtr bcsts bcera bcert 6500_pcsts pcerr 6500_vintsr
+
+sseg
+id CDS 71
+name 6500_mcheck_cds
+doc "Mariah mcheck"
+label "6500 Machine Check Registers"
+elements
+   mcbcnt mc_code vaddr viba 6500_iccs_sisr 6500_istate sc pc 6500_psl 
+
+sitem 
+id 745 
+name xbe0 
+type long 
+class integer 
+size 4 
+label "xbe" 
+display hex 
+doc " MAXMI Bus error register"
+map nil 
+
+sitem 
+id 746 
+name xfadr0
+type long 
+class integer 
+size 4 
+label "xfadr" 
+display hex 
+doc "MAXMI xfadr"
+map nil 
+
+sitem 
+id 748 
+name xbeer
+type long 
+class integer 
+size 4 
+label "xbeer" 
+display hex 
+doc "maxmi bus error ext register"
+map nil 
+
+sitem 
+id 749 
+name wfadr0
+type long 
+class integer 
+size 4 
+label "wfadr0" 
+display hex 
+doc "maxmi fadr for wbck0"
+map nil 
+
+sitem 
+id 750 
+name wfadr1
+type long 
+class integer 
+size 4 
+label "wfadr1" 
+display hex 
+doc "maxmi fadr for wbck1"
+map nil 
+
+sitem 
+id 751 
+name fdal0
+type long 
+class integer 
+size 4 
+label "fdal0" 
+display hex 
+doc "fdal0"
+map nil 
+
+sitem 
+id 752 
+name fdal1
+type long 
+class integer 
+size 4 
+label "fdal1" 
+display hex 
+doc "fdal1"
+map nil 
+
+sitem 
+id 753 
+name fdal2
+type long 
+class integer 
+size 4 
+label "fdal2" 
+display hex 
+doc "fdal2"
+map nil 
+
+sitem 
+id 754 
+name fdal3
+type long 
+class integer 
+size 4 
+label "fdal3" 
+display hex 
+doc "fdal3"
+map nil 
+
+sitem
+id 755 
+name 6500_sscbtr
+type long
+class integer
+size 4
+label "sscbtr"
+display hex
+doc "sscbtr"
+map nil
+
+sitem
+id 756
+name bcsts
+type long
+class integer
+size 4
+label "bcsts"
+display hex
+doc "bcsts"
+map nil
+
+sitem
+id 757
+name bcera
+type long
+class integer
+size 4
+label "bcera"
+display hex
+doc "bcerr adr"
+map nil
+
+sitem
+id 758
+name bcert
+type long
+class integer
+size 4
+label "bcert"
+display hex
+doc "cchip err tag"
+map nil
+
+sitem
+id 759
+name 6500_pcsts
+type long
+class integer
+size 4
+label "pcsts"
+display hex
+doc "pcsts"
+map nil
+
+sitem
+id 760
+name pcerr
+type long
+class integer
+size 4
+label "pcerr"
+display hex
+doc "pcerr"
+map nil
+
+sitem
+id 761
+name 6500_vintsr
+type long
+class integer
+size 4
+label "vintsr"
+display hex
+doc "vintsr"
+map nil
+
+sitem 
+id 789
+name mc_code
+type long
+class integer
+size 4
+label "mcode"
+display hex
+doc "mcode"
+map nil
+
+sitem 
+id 790
+name 6500_iccs_sisr
+type long
+class integer
+size 4
+label "iccs-sisr"
+display hex
+doc "iccs sisr"
+map nil
+
+sitem 
+id 791
+name 6500_istate
+type long
+class integer
+size 4
+label "istate"
+display hex
+map nil
+
+sitem 
+id 792
+name 6500_psl
+type long
+class integer
+size 4
+label "psl"
+display hex
+map nil
+

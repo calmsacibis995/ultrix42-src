@@ -1,0 +1,91 @@
+.TH t_free 3xti
+.SH Name
+t_free \- free a library structure 
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_free(\fIptr, struct_type\fB)
+.br
+.B char \fI*ptr\fB;
+.br
+.B int \fIstruct_type\fB;
+.SH Arguments
+.IP \fIptr\fR 10
+Points to one of the seven structure types described for
+.PN t_alloc().
+.IP \fIstruct_type\fR 10
+Identifies the type of that structure, which must be one of the
+following:
+.IP 
+.EX
+T_BIND_STR		\fIstruct\fP	\fBt_bind\fP;
+T_CALL_STR		\fIstruct\fP	\fBt_call\fP
+T_OPTMGMT_STR		\fIstruct\fP	\fBt_optmgmt\fP
+T_DIS_STR       	\fIstruct\fP	\fBt_discon\fP
+T_UNITDATA_STR	\fIstruct\fP	\fBt_unitdata\fP
+T_UDERROR_STR		\fIstruct\fP	\fBt_uderr\fP
+T_INFO_STR		\fIstruct\fP	\fBt_info\fP
+.EE
+.IP
+Each of these structures is used as an argument to one or more
+transport functions.
+.SH Description
+The 
+.PN t_free()
+function frees memory previously allocated by
+.PN t_alloc()\fR.\fR
+This function frees memory for the specified
+structure and also frees memory for buffers referenced by the
+structure.
+.NXR "t_free system call"
+.NXR "memory" "freeing"
+.NXA "t_free system call" "t_alloc system call"
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 4p
+Parameters@Before Call@After Call
+.sp 4p
+_
+.sp 6p
+ptr@x@/
+struct_type@x@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+The 
+.PN t_free()
+function checks the \fIaddr\fR, \fIopt\fR, and
+\fIudata\fR fields of the given structure (as appropriate) and free the
+buffers pointed to by the \fIbuf\fR field of the \fBnetbuf\fR structure.
+If \fIbuf\fR is NULL, 
+.PN t_free()
+does not attempt to free memory.
+After all buffers are freed, 
+.PN t_free()
+frees the memory associated with the structure pointed to by \fIptr\fR.
+.PP
+Results are undefined if \fIptr\fR or any of the \fIbuf\fR
+pointers points to a block of memory not previously allocated
+by 
+.PN t_alloc()\fR.\fR
+.SH Return Values
+Upon successful completion, a value of 0 is returned. On failure,  a
+value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the current implementation of XTI. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+t_alloc(3xti)

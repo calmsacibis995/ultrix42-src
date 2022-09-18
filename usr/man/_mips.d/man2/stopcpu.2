@@ -1,0 +1,41 @@
+.TH stopcpu 2 
+.SH Name
+stopcpu \- stop a CPU
+.SH Syntax
+.B stopcpu(\fIcpunumber\fP)
+.br
+int \fIcpunumber\fP;
+.SH Description
+The
+.PN stopcpu 
+system call stops the CPU specified by 
+.I cpunumber.
+.NXR "SMP" "stopcpu"
+Any nid-boot CPU can be stopped using this system call. Only a superuser
+can execute the 
+.PN stopcpu
+system call. 
+.SH Return Values
+The 
+.PN stopcpu
+call returns 0 if the CPU was stopped successfully, or else it returns
+-1 and sets errno appropriately.
+.SH Diagnostics
+.TP 15
+[EPERM]
+The caller is not a superuser
+.TP 15
+[EACCES]
+Trying to stop boot CPU
+.TP 15
+[EBUSY]
+The CPU is already stopped or no such CPU present
+.TP 15
+[EINVAL]
+Invalid value for 
+.I cpunumber.
+A value 
+.I cpunumber
+is between 0 and 31.
+.SH See Also
+startcpu (2), startcpu (8), stopcpu (8) 

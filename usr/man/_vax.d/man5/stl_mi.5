@@ -1,0 +1,100 @@
+.TH stl_mi 5
+.SH Name
+stl_mi \- software distribution master inventory file format
+.SH Description
+.NX R "kits" "master inventory file format"
+.NX R "setld" "master inventory file format"
+The master inventory (mi) files are used by the subset kitting program
+.PN kits
+when manufacturing subsets for installation with the
+.PN setld
+utility.
+.PP
+A master inventory file
+contains one record for each file in a product containing
+vendor-specified
+attribute information about each file in the kit.
+.PP
+The master inventory contains ASCII data, one record per line.
+Each record is composed of
+three fields,
+which must be separated by TAB characters.
+.PP
+Here is a description of each of the fields:
+.TP 10
+FLAGS
+This is an integer flags value. The two lowest bits of
+this flag are defined. All other bits are reserved for
+use by Digital.
+.IP "" 10
+Bit 0 of this flag is the precedence
+bit. Setting the precedence bit for a file indicates to
+.PN setld
+that a new copy of this file
+is not as important to the target
+system as a copy that is already there. This is used by
+.PN setld
+when determining which files to restore to the system after
+updating a subset. Files containing configuration information
+that can be modified after being installed are often marked
+with this flag.
+.IP
+Bit 1 of this flag is defined as the volatility
+bit. It is used to indicate that the file will change after
+being installed to the target system and that the changes do
+not indicate that the contents of the file have been corrupted.
+When an application requires a log file, it is often
+installed as a zero length file on the target system. Such log
+files are normally marked in the master inventory with bit 1.
+.TP 10
+PATHNAME
+This is the name of the file for which the record exists. The
+pathname in this field must begin with a leading period (.).
+All records in the file must be sorted in ascending order
+on this field. There cannot be two records in a master
+inventory that represent the same file. The
+.PN newinv
+program enforces these requirements.
+.TP
+SUBSET
+The name of the subset to which the file belongs. A file
+can be distributed as part of one subset only. Files that share
+a gnode (links) must be in the same subset. Files that
+are in the product hierarchy but are not distributed as part of
+any subset should have a dash (-) in this field.
+.SH Examples
+This example shows a section of the master inventory
+used to manufacture a release of the ULTRIX software:
+.EX
+0	./etc/newfs	UDTBASE040
+0	./etc/zoneinfo/Poland	-
+0	./usr/bin/passwd	UDTBASE040
+0	./usr/diskless/dev/rrz2c	UDTDL040
+0	./usr/etc/lockpw	UDTBASE040
+0	./usr/include/search.h	UDTBASE040
+0	./usr/lib/cmplrs/cc2.0/ppu	UDTBASE040
+0	./usr/lib/libplotdumb.a	UDTPGMR040
+0	./usr/lib/terminfo/2/2621-nl	UDTBASE040
+0	./usr/lib/terminfo/a/altoh19	UDTBASE040
+0	./usr/lib/terminfo/h/h19b	UDTBASE040
+0	./usr/lib/terminfo/t/tek4024	UDTBASE040
+0	./usr/man/man1/capsar.1	UDTMAN040
+0	./usr/man/man1/ptx.1	UDTMAN040
+0	./usr/man/man2/listen.2	UDTMAN040
+0	./usr/man/man3/endhostent.3n	UDTMAN040
+0	./usr/man/man3/ldaopen.3x	UDTMAN040
+0	./usr/man/man3/ruserok.3x	UDTMAN040
+0	./usr/man/man3/tparm.3cur	UDTMAN040
+0	./usr/man/man5/tzfile.5	UDTMAN040
+0	./usr/man/man8/secsetup.8	-
+0	./usr/sys/MIPS/BINARY/mc146818clock.o	UDTBIN040
+0	./usr/sys/data/dhu_data.c	UDTBIN040
+0	./usr/sys/h/devio.h	UDTBASE040
+0	./usr/sys/io/uba/qduser.h	UDTBIN040
+0	./usr/sys/net/rpc/clnt.h	UDTBIN040
+0	./usr/var/dss/ncs/llbd	UDTRPCRT040
+.EE
+.SH See Also
+invcutter(1), kits(1), iff(8), setld(8).
+.br
+\fIGuide to Preparing Software for Distribution on ULTRIX Systems\fP

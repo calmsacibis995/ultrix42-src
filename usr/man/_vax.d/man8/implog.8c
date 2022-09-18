@@ -1,0 +1,57 @@
+.\" SCCSID: @(#)implog.8c	8.2	12/3/90
+.TH implog 8c VAX "" Unsupported
+.SH Name
+implog \- IMP log interpreter
+.SH Syntax
+.B /etc/implog
+[ \fIoptions\fR\ ]
+.SH Description
+.NXR "implog program"
+.NXS "IMP log interpreter" "implog program"
+The
+.PN implog
+program interprets the message log produced by 
+.MS implogd 8c .
+.PP
+If no arguments are specified, 
+.PN implog
+interprets and prints every message present in the message
+file.
+.SH Options
+Options may be specified to force the printing of only a
+subset of the logged messages.
+.IP \fB-c\fR 10 
+In addition to printing any data messages logged, show the
+contents of the data in hexadecimal bytes.
+.IP \fB-D\fR 
+Do not show data messages. 
+.IP \fB-f\fR 
+Follow the logging process in action.  This flag causes
+.PN implog
+to print the current contents of the log file, then
+check for new logged messages every 5 seconds. 
+.IP "\fB\-h\fP \fIhost\fP#" 
+Show only those messages received from the specified host.
+(Usually specified in conjunction with an 
+.PN imp.)
+.IP "\fB\-i\fP \fIimp\fP#" 
+Show only those messages received from the specified 
+.PN imp .
+.IP "\fB\-l\fP [ \fIlink\fP# ]" 
+Show only those messages received on the specified link.  If
+no value is given for the link, the link number of the IP protocol
+is assumed.
+.IP \fB\-r\fR 
+Print the raw 
+.PN imp 
+leader, showing all fields, in addition to the
+formatted interpretation according to type.
+.IP "\fB\-t\fP \fImessage-type\fP"
+Show only those messages received of the specified message type.
+.SH Restrictions
+Cannot specify multiple hosts, imps, and so forth.
+.sp
+Cannot follow the reception of messages without looking at
+those currently in the file.
+.SH See Also
+imp(4), implogd(8c)

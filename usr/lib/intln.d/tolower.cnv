@@ -1,0 +1,8 @@
+/*
+ * @(#)tolower.cnv	4.1	(ULTRIX)  7/2/90
+ *	Standard tolower conversion for ISO646 ASCII
+ */
+CONVERSION tolower :
+	DEFAULT -> SAME;
+	A - Z	-> a - z;
+END.

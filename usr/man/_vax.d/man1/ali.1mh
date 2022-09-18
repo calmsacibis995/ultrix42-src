@@ -1,0 +1,156 @@
+.TH ali 1mh
+.SH Name
+ali \- list mail aliases
+.SH Syntax
+.B ali 
+[
+.B \-alias
+.I aliasfile
+] [
+.B \-help
+] [
+.B \-[no]list
+] [
+.B \-[no]normalize
+] [
+.B \-user 
+.I useraddr
+] [
+.B \-nouser
+] [
+.I "aliases ..."
+] 
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "ali command"
+.NXR "mail aliases" "listing"
+The
+.PN ali
+command searches the specified mail alias files 
+for each of the given aliases.
+It creates a list of addresses for those aliases,
+and displays that list on the screen.  
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-alias \fIaliasfile\fB" 10
+Specifies the alias file to be consulted by 
+.PN ali .
+You can specify more than one alias file, but each 
+.I aliasfile
+must be preceded by
+.BR \-alias .
+In addition to any alias files that you specify,
+.PN ali
+consults the system alias file
+.PN /usr/lib/mh/MailAliases .
+.IP
+You can set up an entry in your
+.PN \&.mh_profile
+so that
+.PN ali
+automatically consults an alias file.
+To do this, add the 
+\f(CWAliasfile\fR
+entry to your profile.
+See
+.MS mh_profile 5mh 
+for more information.
+.\"
+.IP "\-help" 10
+Prints a list of the valid options to this command.
+.\"
+.IP "\-list" 10
+.PD 0
+.IP "\-nolist" 10
+.PD
+Prints the addresses on separate lines.
+If you do not specify the
+.B \-list 
+option, the addresses are separated by commas and printed on
+as few lines as possible.
+.\"
+.IP "\-normalize" 10
+.PD 0
+.IP "\-nonormalize" 10
+.PD
+Instructs
+.PN ali
+to try to track down the official hostname of the address.
+This can be suppressed by using
+.BR \-nonormalize .
+The default is
+.BR \-nonormalize .
+.\"
+.IP "\-user \fIuseraddr\fB" 10
+.PD 0
+.IP "\-nouser" 10
+.PD
+Displays all the aliases that contain a specific name.
+Instead of listing the addresses that each given alias expands to,
+.PN ali
+lists the aliases that expand to include each given address.  
+You must specify the
+complete user name that you have used in your alias file.
+.PP
+The defaults for this command are:
+.IP
+.B "\-alias /usr/lib/mh/MailAliases"
+.br
+.B \-nolist
+.br
+.B \-nonormalize
+.br
+.B \-nouser
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+The following example shows how the 
+.B \-user
+option can be used to list all the aliases containing the address
+\f(CWParker@Venus\fR:
+.EX
+% \f(CBali \-user Parker@Venus\f(CW
+Parker@Venus: Group, Reviewers, Badminton
+.EE
+.\"
+.\"
+.\"
+.\" 
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+Location of your Mail directory.
+Aliasfile:+Location of your personal alias file.
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+The user profile.
+.TP 10
+.PN /usr/lib/mh/MailAliases
+The system alias file.
+.TP 10
+.PN /etc/passwd
+The system password file.
+.TP 10
+.PN /etc/group
+The system group file.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+mh-alias(5mh)

@@ -1,0 +1,324 @@
+.TH extract 1int
+.SH Name
+extract \- interactive string extract and replace
+.SH Syntax
+.B extract 
+[
+.B \-i
+.I ignorefile
+] [
+.B \-m 
+.I prefix
+] [ 
+.B \-n
+] [
+.B \-p
+.I patternfile
+] [ 
+.B \-s
+.I string
+]
+.br
+[ 
+.B \-u
+]
+.I source-program...
+.SH Description
+.NXR "extract utility"
+The 
+.PN extract
+command interactively extracts text strings from source programs.
+The
+.PN extract
+command replaces the strings it extracts with calls to the
+.PN catgets
+function.    The command also writes the string it extracts to a
+source message catalog.
+You use this command to replace hard-coded messages in
+your program source file with calls to the
+.PN catgets
+command and create a source message catalog.  At run time, the program
+reads the message text from the message catalog.  By storing
+messages in a message catalog, instead of in your program, you allow
+the text of messages to be translated to a new language or modified
+without the source program being
+changed.
+.PP
+In the 
+.I source-program
+argument, you name one or more source programs from which you want
+messages extracted.  The
+.PN extract
+command does not extract messages from source programs included using
+the
+.PN #include 
+directive.  Therefore, you might want to name a source program and all
+the source programs it includes on a single 
+.PN extract 
+command line.
+.PP
+You can create a patterns file (as specified by (\fIpatternfile\fP) to control 
+how the
+.PN extract
+command extracts and replaces text.  The patterns file is divided
+into several sections, each of which is identified by a keyword.  The
+keyword must start at the beginning of a new line, and its first character
+must be a dollar sign ($).  Following the identifier, you specify a
+number of patterns.  Each pattern begins on a new line and follows the
+regular expression syntax you use in the  
+.MS regex 3 
+routine. For more information on the patterns file, see the
+.MS patterns 5int
+reference page.
+.PP
+In addition to the patterns file, you can create a file that indicates
+strings that
+.PN extract
+ignores.  Each line in this ignore file contains a single string to be
+ignored that
+follows the syntax of the 
+.MS regex 3
+routine.
+.PP
+When you invoke the
+.PN extract
+command, it reads the patterns file and the file that contains strings
+it ignores.  You can specify a patterns file and an ignore file on the
+.PN extract 
+command line.  Otherwise, the
+.PN extract
+command matches all strings and uses a default patterns file.
+.PP
+When you run 
+.PN extract ,
+it displays three windows on your terminal.
+The first window contains the program source code. The string that
+matches a string in the patterns file is displayed in reverse video.
+.PP
+The second window displays the contents of the source message catalog that
+the 
+.PN extract
+command is creating.  
+.PP
+The third window contains a list of the commands that are available.
+The
+.PN extract 
+command displays the current command in reverse video.
+You can execute the current command by pressing the RETURN key.
+Select another command by typing the first letter in the
+command name and pressing the RETURN key.  The 
+.PN extract 
+command is not
+sensitive to the case of letters, so you can use uppercase or
+lowercase letters to issue commands.
+.PP
+You can use the following commands to control how
+.PN extract
+treats the string displayed in the first window:
+.IP \fBEXTRACT\fR 15
+Extract the string into the catalog file and rewrite the source using the
+rewrite
+string in the patterns
+file.
+.IP DUPLICATE 15
+If the string has been encountered previously, rewrite the source program
+using the same message number as before.  The
+.PN extract
+command need not add the message to the source message catalog again,
+so this command saves space in catalogs.
+.IP IGNORE 15
+Ignore this and all subsequent occurrences of this string during this
+interactive session.  This command does not add the string to the
+ignore file.
+.IP PASS 15
+Pass by (ignore) this occurrence of this particular string.
+.IP ADD 15
+Ignore this and all subsequent occurrences of this string during this
+interactive session.  Add the string to the ignore file.
+.IP COMMENT 15
+Add the comment you enter to the source message catalog.  The 
+.PN extract
+command prompts you to be sure the comment you entered is correct.
+You answer the prompt by typing ``y,'' \*Qn,\*U or \*Qq,\*U without
+pressing the RETURN key.
+.IP \fBQUIT\fR 15
+Quit from the interactive session.  The
+.PN extract 
+command prompts you to be sure you want to quit.  Answer ``y'' or
+``n'' to the prompt, without pressing the return key.
+.IP
+The output files that 
+.PN extract
+creates up to this point are not removed by this command.  However,
+the files contain only the result of the string extractions that
+occurred before you issued the QUIT command.
+.IP \fBHELP\fR 15
+Display a description of all the
+.PN extract
+commands.
+.PP
+The
+.PN extract
+command creates to files in your current working directory.  The
+command creates a new version of the source program that contains
+calls to the
+.PN catgets
+function, instead of hard-coded messages.  The new version of the
+source program has the same name as the input source program, with the
+prefix ``nl_''.  For example, if the input source program is named 
+.PN update.c ,
+the output source program is named
+.PN nl_update.c
+.PP
+In addition to a new source program, the
+.PN extract 
+command creates a source message catalog. The source message catalog 
+contains the text for each message extracted from your input source program.
+The 
+.PN extract
+command names the file by appending ``.msf'' to the name of the
+input source program.  For example, the source message catalog for the
+.PN update.c
+source program is named
+.PN update.msf .
+You can use the source message catalog as input to the
+.PN gencat
+command.
+.SH Options
+.IP \fB-i \fP 5
+Ignore text strings specified in 
+.I ignorefile .
+By default, the
+.PN extract
+command searches for 
+.I ignorefile
+in the current working directory,
+your home directory, and
+.PN /usr/lib/intln .
+.IP
+If you omit the 
+.PN \-i 
+option, 
+.PN extract
+recognizes all strings specified in the patterns file.
+.IP \fB-m\fP 5
+Add 
+.I prefix
+to message numbers 
+in the output source program and source message catalog. You can
+use this prefix as a mnemonic.  You must process source message catalogs
+that contain message number prefixes using the 
+.PN gencat 
+.PN \-h 
+option.
+.IP \fB-n\fP 5
+Create a new source message catalog for each input source program. By
+default, if you specify more than one input source program on the
+.PN extract
+command line, the command creates one source message catalog for all
+the input source programs.
+.IP \fB-p\fP 5
+Use 
+.I patternfile
+to match strings in the input source program.
+By default, the command searches for the pattern file
+in the current directory, your home directory and finally
+.PN /usr/lib/intln .
+.IP
+If you omit the
+.PN \-p
+option, the 
+.PN extract 
+command uses a default patterns file that is stored in
+.PN /usr/lib/intln/patterns .
+.IP \fB-s\fP 5
+Write
+.I string
+at the top of the source message catalog.
+If you omit the
+.PN \-s
+option, 
+.PN extract
+uses the string specified in the
+.PN $CATHEAD
+section of the patterns
+file.
+.IP \fB-u\fP 5
+Use a
+.PN message
+file produced by a previous run of 
+.PN strextract .
+This file contains details of all the strings which matched the pattern file along with file offsets and line numbers.
+By default
+.PN strextract 
+is run and its output is used to drive 
+.PN extract .
+.SH Restrictions
+Given the current syntax of the patterns file, you cannot cause
+.PN extract
+to ignore strings in comments that are longer than one line.
+.PP
+You can specify only one rewrite string for all classes of pattern matches.
+.PP
+The 
+.PN extract
+command does not extract strings from files you include with the
+.PN #include
+directive.  You must run the
+.PN extract
+commands on these files separately.
+.PP
+Your terminal screen must contain at least 80 columns and 24 lines for
+.PN extract
+to display its three windows.
+.PP
+The
+.PN extract 
+command does not recognize strings that extend beyond one line.
+.SH Examples
+The following example shows the commands you issue to run the
+.PN extract
+command, create a message catalog from the source message catalog, 
+and compile the output source program:
+.EX
+% extract \-i newignore \-p c_patterns remove.c
+% gencat remove.cat remove.msf
+% vi nl_remove.c
+% cc nl_remove.c
+.EE
+.PP
+In this example, the
+.PN extract
+command uses the
+.PN newignore
+file to determine which strings to ignore.  The command uses the
+.PN c_patterns 
+file to determines which strings to match.  The input source program
+is named
+.PN remove.c .
+.PP
+In response to this command, 
+.PN extract
+creates the source message catalog 
+.PN remove.msf
+and the output source program
+.PN nl_remove.c .
+.PP
+You must edit 
+.PN nl_remove.c
+to include the appropriate 
+.PN catopen
+and 
+.PN catclose
+function calls.
+.PP
+The 
+.PN gencat
+command creates a message catalog and the
+.PN cc
+command creates an executable program.
+.SH See Also
+intro(3int), gencat(1int), strextract(1int), strmerge(1int), regex(3),
+catopen(3int), catgets(3int), patterns(5int)
+.br
+\fIGuide to Developing International Software\fP

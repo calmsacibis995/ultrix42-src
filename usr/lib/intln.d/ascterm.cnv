@@ -1,0 +1,88 @@
+/*
+ * @(#)ascterm.cnv	4.1
+ *
+ * This file defines a conversion to allow the ISO 8859/1 code
+ * to be displayed on any ASCII terminal
+ *
+ */
+
+STRING CONVERSION ascterm :
+
+	/*
+	 * ASCII characters are their own strings
+	 */
+	DEFAULT -> SAME;
+
+	/*
+	 * supplementary control characters:
+	 */
+	sc00 -> ""; sc01 -> ""; sc02 -> ""; sc03 -> "";
+	sc04 -> ""; sc05 -> ""; sc06 -> ""; sc07 -> "";
+	sc08 -> ""; sc09 -> ""; sc0a -> ""; sc0b -> "";
+	sc0c -> ""; sc0d -> ""; sc0e -> ""; sc0f -> "";
+
+	sc10 -> ""; sc11 -> ""; sc12 -> ""; sc13 -> "";
+	sc14 -> ""; sc15 -> ""; sc16 -> ""; sc17 -> "";
+	sc18 -> ""; sc19 -> ""; sc1a -> ""; sc1b -> "";
+	sc1c -> ""; sc1d -> ""; sc1e -> ""; sc1f -> "";
+
+	/*
+	 * extended characters:
+	 */
+	nbsp	-> "";			revexcl	-> "|'";
+	cent	-> "c/";		pound	-> "L|";
+	currency-> "oX"; 		yen 	-> "Y=";
+	vertbar -> "|";			section -> "S^S";
+	diaresis-> ":";			copyright-> "cO";
+	fem_ord	-> "^a";		ang_q_l	-> "<<";
+	not	-> "'~";		shy	-> " shy ";
+	register-> "rO";		macron	-> "^_";
+
+	degree	-> "^o";		plu_min -> "+-";
+	sup_two -> "^2";		sup_three-> "^3";
+	acute 	-> "'";			micro	-> "/u";
+	pilcrow -> "P|";		mid_dot -> "^.";
+	cedilla	-> ",";			sup_one -> "^1";
+	mas_ord	-> "^o";		ang_q_r -> ">>";
+	o_quart -> "1/4";		half	-> "1/2";
+	t_quart -> "3/4";		revquest-> "5'";
+
+	/*
+	 * special characters for languages:
+	 */
+	GRAVE_A	-> "`A";		ACUTE_A	-> "'A";
+	CIRC_A	-> "^A";		TILDE_A -> "~A";
+	DIA_A	-> ":A";		RING_A 	-> "*A";
+	AE	-> "A+E";		CEDIL_C	-> ",C";
+	GRAVE_E -> "`E";		ACUTE_E	-> "'E";
+	CIRC_E	-> "^E";		DIA_E	-> ":E";
+	GRAVE_I	-> "`I";		ACUTE_I	-> "'I";
+	CIRC_I	-> "^I";		DIA_I	-> ":I";
+
+	ETH	-> "-D";		TILDE_N	-> "~N";
+	GRAVE_O -> "`O";		ACUTE_O	-> "'O";
+	CIRC_O	-> "^O";		TILDE_O	-> "~O";
+	DIA_O	-> ":O";
+	SLASH_O	-> "/O";		GRAVE_U	-> "`U";
+	ACUTE_U	-> "'U";		CIRC_U	-> "^U";
+	DIA_U	-> ":U";		ACUTE_Y	-> "'Y";
+	THORN	-> "|o";		sharp_s	-> "s+s";
+
+	grave_a	-> "`a";		acute_a	-> "'a";
+	circ_a	-> "^a";		tilde_a -> "~a";
+	dia_a	-> ":a";		ring_a 	-> "*a";
+	ae	-> "a+e";		cedil_c	-> ",c";
+	grave_e -> "`e";		acute_e	-> "'e";
+	circ_e	-> "^e";		dia_e	-> ":e";
+	grave_i	-> "`i";		acute_i	-> "'i";
+	circ_i	-> "^i";		dia_i	-> ":i";
+
+	eth	-> "-d";		tilde_n	-> "~n";
+	grave_o -> "`o";		acute_o	-> "'o";
+	circ_o	-> "^o";		tilde_o	-> "~o";
+	dia_o	-> ":o";
+	slash_o	-> "/o";		grave_u	-> "`u";
+	acute_u	-> "'u";		circ_u	-> "^u";
+	dia_u	-> ":u";		acute_y	-> "'y";
+	thorn	-> "Io";		dia_y	-> ":y";
+END.

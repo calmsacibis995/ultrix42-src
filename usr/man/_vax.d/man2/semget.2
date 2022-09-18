@@ -1,0 +1,138 @@
+.\" SCCSID: @(#)semget.2	8.1	9/11/90
+.TH semget 2
+.SH Name
+semget \- get set of semaphores
+.SH Syntax
+.nf
+.ft B
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+.PP
+.ft B
+int semget (\fIkey, nsems, semflg\fP)
+key_t \fIkey\fP;
+int \fInsems, semflg\fP;
+.fi
+.SH Description
+.NXR "semget system call"
+.NXA "semget system call" "ftok subroutine"
+.NXA "semget system call" "semctl system call"
+.NXA "semget system call" "semop system call"
+.NXR "semaphore" "getting"
+The
+.PN semget
+system call
+returns the semaphore identifier associated with
+.IR key .
+A semaphore identifier and associated data structure and set containing 
+.I nsems
+semaphores are created for
+.IR key , 
+if one of the following is true:
+.IP \(bu 4
+The
+.I key
+is equal to IPC_PRIVATE
+.IP \(bu
+The
+.I key
+does not already have a semaphore identifier associated with it, and
+.RI ( semflg
+& IPC_CREAT )
+is true.
+.PP
+For further information, see 
+.MS intro 2 .
+.PP
+Upon creation,
+the data structure associated with the new semaphore identifier
+is initialized as follows:
+.IP \(bu 4
+The
+.BR sem_perm.cuid ,
+.BR sem_perm.uid ,
+.BR sem_perm.cgid
+and
+.B sem_perm.gid
+are set equal to the effective user ID and effective group ID, respectively, of
+the calling process.
+.IP \(bu 4
+The low-order nine bits of
+.B sem_perm.mode
+are set equal to the low-order nine bits of
+.IR semflg .
+.IP \(bu 4
+The
+.B sem_nsems 
+is set equal to the value of
+.I nsems.
+.IP \(bu 4
+The
+.B sem_otime
+is set equal to zero (0) and
+.B sem_ctime 
+is set equal to the current time.
+.SH Return Values
+Upon successful completion, a nonnegative integer, namely a semaphore
+identifier, is returned.  Otherwise, a value of \-1 is returned and 
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+.NXR "semget system call" "diagnostics"
+The
+.I semget
+system call
+fails if any of the following is true:
+.TP 15
+[EINVAL]
+The
+.I nsems
+is either less than or equal 
+to zero or greater than the system-imposed limit
+.TP 15
+[EACCES]
+A semaphore identifier exists for
+.IR key ,
+but operation permission,
+as specified by the low-order nine bits of
+.I semflg
+would not be granted. 
+For further information, see 
+.MS errno 2 .
+.TP 15
+[EINVAL]
+A semaphore identifier exists for
+.IR key ,
+but the number of semaphores in the set associated with it is less than 
+.I nsems
+and
+.I nsems
+is not equal to zero. 
+.TP 15
+[ENOENT]
+A semaphore identifier does not exist for
+.I key 
+and 
+.RI ( semflg
+& IPC_CREAT )
+is false. 
+.TP 15
+[ENOSPC]
+A semaphore identifier is to be created
+but the system-imposed limit on the
+maximum number of allowed semaphore
+identifiers in the system would be exceeded.
+.TP 15
+[EEXIST]
+A semaphore identifier exists for
+.I key
+but 
+.RI (( semflg
+& IPC_CREAT )
+& 
+.RI ( semflg
+& IPC_EXCL ))
+is true. 
+.SH See Also
+semctl(2), semop(2), ftok(3)

@@ -1,0 +1,4 @@
+: '@(#)xtoken	4.1	(ULTRIX)	7/17/90'
+: extract tokens for new yyparse from y.tab.h
+grep '^#.*define' y.tab.h |
+sed 's/^# define \([^ ]*\) [^ ]*$/	"\1",/' > y.tok.h

@@ -1,0 +1,72 @@
+#
+# @(#)PMAX	4.1 ULTRIX  7/2/90
+#
+machine		mips
+cpu		"DS3100"
+ident		"PMAX"
+timezone	5 dst 1
+maxusers	32
+maxuprc		50
+physmem		24
+processors	1
+bufcache	34
+
+options		QUOTA
+options		INET
+options		NFS
+options		UFS
+options		RPC
+options		SYS_TRACE
+options		DECNET
+options		LAT
+options		DLI
+options		UWS
+
+makeoptions	ENDIAN="-EL"
+
+config vmunix root on rz0a swap on rz0b dumps on rz0b
+
+#all the adapters and adapter-like items
+adapter		ibus0	at nexus?
+
+#all the controllers and controller-like items
+controller	sii0	at ibus?	vector sii_intr
+
+disk		rz0        at sii0      drive 0
+disk		rz1        at sii0      drive 1
+disk		rz2        at sii0      drive 2
+disk		rz3        at sii0      drive 3
+disk		rz4        at sii0      drive 4
+disk		rz5        at sii0      drive 5
+disk		rz6        at sii0      drive 6
+disk		rz7	   at sii0	drive 7
+tape		tz0        at sii0      drive 0
+tape		tz1        at sii0      drive 1
+tape		tz2        at sii0      drive 2
+tape		tz3        at sii0      drive 3
+tape		tz4        at sii0      drive 4
+tape		tz5        at sii0      drive 5
+tape		tz6        at sii0      drive 6
+tape		tz7	   at sii0	drive 7
+
+#all the networks
+device          ln0     at ibus?        vector lnintr
+
+# terminal devices
+device		dc0	at ibus?	vector dcintr
+
+# graphic devices
+device		pm0	at ibus?	vector pmvint
+
+pseudo-device	pty	64
+pseudo-device	inet
+pseudo-device	ether
+pseudo-device	loop
+pseudo-device	nfs
+pseudo-device	ufs
+pseudo-device	rpc
+pseudo-device	sys_trace
+pseudo-device	lat
+pseudo-device	lta	32
+pseudo-device	dli
+pseudo-device   decnet

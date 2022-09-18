@@ -1,0 +1,114 @@
+.\" SCCSID: @(#)shmx.8	8.1	9/11/90
+.TH shmx 8 
+.SH Name
+shmx \- shared memory exerciser
+.SH Syntax
+.B /usr/field/shmx
+[
+.B \-h
+] [
+.BI \-o file
+.B ] [
+.BI \-t i
+.B ] [
+.BI \-m j
+.B ] [
+.BI \-s k
+.B ] [
+.BI \-v
+.B ]
+.SH Description
+.NXR "shmx exerciser"
+.NXR "shared memory" "exercising"
+The 
+.PN shmx 
+memory exerciser spawns a background
+process
+.PN shmxb
+and these two processes exercise the shared memory
+segments. They each take turns writing and reading
+the other's data in the segments.
+.PP
+You can specify the number of memory segments to test 
+and the size of the segment to be tested by  
+.PN shmx
+and
+.PN shmxb
+processes. The 
+.PN shmx
+exerciser
+runs until the process
+receives a
+.CT C
+or a kill \-15 \fIpid\fR.
+.PP
+A logfile is made in 
+.PN /usr/field
+for you to examine and then remove. If there are errors
+in the logfile, check the 
+.PN /usr/adm/syserr/syserr.<hostname> 
+file, where the driver and kernel error
+messages are saved.
+The 
+.PN shmx
+exerciser is automatically invoked when the 
+.PN memx
+exerciser is started.  You can also run 
+.PN shmx
+by itself.
+.SH Options
+.IP \fB\-h\fR 10
+Print the help message for the
+.PN shmx
+command.
+.IP \fB\-v\fR
+Use the 
+.MS fork 2
+system call instead of 
+.MS vfork 2
+to spawn
+.PN shmxb .
+.IP \fB\-o\fIfile\fR
+Save diagnostic output in \fIfile\fR.
+.IP \fB\-t\fIi\fR
+Run time in minutes (\|\fIi\fR\|).  The default is to run until
+the process receives a
+.CT C 
+or a kill \-15 \fIpid\fR.
+.IP \fB\-m\fIj\fR
+The memory segment size in bytes (\|\fIj\fR\|) to be tested by the
+processes.  Must be greater than 0.  The default is
+SMMAX/6.  (SMMAX is a system parameter set in the file
+.PN sys/conf/param.c .) 
+.IP \fB\-s\fIk\fR
+The number of memory segments (\|\fIk\fR\|).  The default is 6.
+The maximum is also 6.
+.SH Examples
+The following example tests six memory segments (default),
+each with a segment size of SMMAX/6, until a
+.CT C
+or kill \-15\fI pid\fR is received:
+.EX
+% /usr/field/shmx 
+.EE
+The following example runs three memory segments of size 100,000
+bytes for 180 minutes in the background:
+.EX
+% /usr/field/shmx \-t180 \-m100000 \-s3 &
+.EE
+.SH Restrictions 
+If there is a need to run a system exerciser over an NFS 
+link or on a diskless system there are some restrictions.  
+For exercisers that need to write into a file system, such as 
+.MS fsx 8 ,
+the target file system must be writable by root.  Also the 
+directory, in which any of the exercisers are executed, must 
+be writable by root because temporary
+files are written into the current directory.  These latter 
+restrictions are sometimes difficult to overcome because often 
+NFS file systems are mounted in a way that prevents root from 
+writing into them.  Some of the restrictions may be
+overcome by copying the exerciser to another directory and then 
+executing it.  
+.SH See Also
+.I Guide to System Exercisers

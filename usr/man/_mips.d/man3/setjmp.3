@@ -1,0 +1,120 @@
+.TH setjmp 3 RISC
+.SH Name
+setjmp, longjmp \- non-local goto
+.SH Syntax
+.nf
+.B #include <setjmp.h>
+.PP
+.B int setjmp (env)
+.B jmp_buf env;
+.PP
+.B void longjmp (env, val)
+.B jmp_buf env;
+.B int val;
+.SH Description
+The
+.PN setjmp
+and 
+.PN longjmp
+functions help deal with errors and interrupts encountered in a low-level 
+subroutine of a program.
+.PP
+The
+.PN setjmp
+function saves its stack environment in
+.I env
+(whose type,
+.IR jmp_buf ,
+is defined in the
+.I <setjmp.h>
+header file) for later use by
+.PN longjmp .
+It returns the value 0.
+.PP
+The
+.PN longjmp
+function restores the environment saved by the last call of
+.PN setjmp
+with the corresponding
+.I env
+argument.
+After
+.PN longjmp
+finishes, program execution
+continues as if the corresponding call of 
+.PN setjmp
+(which must not itself have returned in the interim)
+had just returned the value
+.IR val.
+The
+.PN longjmp
+function cannot cause
+.PN setjmp
+to return the value 0.  If
+.PN longjmp
+is invoked with a second argument of 0,
+.PN setjmp
+returns 1.
+At the time of the second return from
+.PN setjmp ,
+all accessible data have values as of the time 
+.PN longjmp
+is called.
+However, global variables have the expected values.
+For example, those as of the time of
+the 
+.PN longjmp (see example).
+.SH Examples
+.EX
+#include <setjmp.h>
+
+jmp_buf env;
+int i = 0;
+main ()
+{
+	void exit();
+
+	if(setjmp(env) != 0) {
+		(void) printf("value of i on 2nd return from setjmp: %d\n", i);
+		exit(0);
+	}
+	(void) printf("value of i on 1st return from setjmp: %d\n", i);
+	i = 1;
+	g();
+	/*NOTREACHED*/
+}
+
+g()
+{
+	longjmp(env, 1);
+	/*NOTREACHED*/
+}
+.EE
+.PP
+If the a.out resulting from this C language code is run, the 
+output is as follows:
+.EX
+value of i on 1st return from setjmp:\^0 
+
+value of i on 2nd return from setjmp:\^1 
+.EE
+.NT
+Unexpected behavior occurs if
+.PN longjmp 
+is called without a previous call to
+.PN setjmp ,
+or when the last such call was in a function which has since returned.
+.NE
+.SH Restrictions
+The values of the registers on the second return from 
+.PN setjmp
+are register values at the time of the first call to 
+.PN setjmp, 
+not those of the
+.PN longjmp .
+Thus, variables in a given function can produce unexpected results
+in the presence of
+.PN setjmp ,
+depending on whether they are register or stack variables.
+.SH See Also
+signal(2).

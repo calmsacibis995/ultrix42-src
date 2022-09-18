@@ -1,0 +1,55 @@
+.\" SCCSID: @(#)talkd.8c	8.2	1/7/91
+.TH talkd 8c
+.SH Name
+talkd \- inter-terminal communications server
+.SH Syntax
+.B /etc/talkd
+.SH Description
+.NXR "talkd server"
+.NXAM "talk program" "talkd server"
+The 
+.PN talkd
+program is the server for the 
+.PN talk(1)
+program.  The server provides a rendezvous method for the
+requesting (possibly remote) 
+.PN talk 
+and the local responding
+.PN talk .
+.PP
+The
+.PN talkd
+server is invoked by 
+.MS inetd 8c
+when it receives a packet on
+the port indicated in
+the talk service specification.
+.SH Restrictions
+The
+.PN talkd
+server does not strictly follow network byte order in its packet format
+and may have difficulty in talking with implementations of 
+.PN talkd
+on other architectures that do not take this into account.
+.PP
+The version of
+.PN talk
+released with ULTRIX V3.0 uses a protocol that is incompatible with the
+protocol used in earlier versions. Starting with ULTRIX V3.0, the
+.PN talk
+program
+communicates with other machines running ULTRIX, V3.0 (and later), 
+and machines running 4.3 BSD or versions of UNIX based on 4.3 BSD.
+.PP
+The
+.PN talk
+command is not 8-bit clean. Typing in DEC
+Multinational Characters (DECMCS) causes the characters
+to echo as a sequence of a carets (^) followed by the
+character represented with its high bit cleared. This limitation makes
+.PN talk
+unusable if
+you want to communicate using a language which has DECMCS characters
+in its alphabet.
+.SH See Also
+talk(1), services(5), inetd(8c), ntalkd(8c)

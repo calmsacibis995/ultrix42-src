@@ -1,0 +1,27 @@
+.TH kdb_destroy 8krb 
+.SH Name
+kdb_destroy \- destroy the Kerberos master database
+.SH Syntax
+.B /var/dss/kerberos/bin/kdb_destroy
+.SH Description
+.NXR "Kerberos routines" "kdb_destroy"
+The 
+.PN kdb_destroy
+command removes the Kerberos master database by unlinking
+the
+.PN /var/dss/kerberos/dbase/principal.dir ,
+.PN /var/dss/kerberos/dbase/principal.pag ,
+and
+.PN /var/dss/kerberos/dbase/principal.ok
+files.
+.SH Restrictions
+This utility can be used only on the master database host.
+.SH Files
+.TP
+.PN /var/dss/kerberos/dbase/principal.dir
+.TP
+.PN /var/dss/kerberos/dbase/principal.pag
+.TP
+.PN /var/dss/kerberos/dbase/principal.ok
+.SH See Also
+kdb_init(8krb), kdb_edit(8krb), kstash(8krb), kdb_util(8krb)

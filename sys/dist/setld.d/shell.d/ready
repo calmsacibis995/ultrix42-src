@@ -1,0 +1,13 @@
+#!/bin/sh
+#@(#)ready	4.1 (ULTRIX) 7/2/90
+while :
+do
+	sleep 2
+	echo -n "
+Are you ready? (y/n): "
+	read X
+	case "$X" in
+	[yY]*)	break
+		;;
+	esac
+done

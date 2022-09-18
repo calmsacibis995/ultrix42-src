@@ -1,0 +1,199 @@
+# @(#)kn230.db	4.2   (ULTRIX)   7/17/90
+
+sseg
+id ADS 
+name 5100_ads
+doc "Mipmate interrupt registers"
+label "kn230 Specific Registers"
+elements
+    icsr leds 5100_wear oid
+
+sitem 
+id 745 
+name icsr
+type register 
+class composite 
+size 4 
+label "icsr" 
+display nil 
+doc " Interrupt CSR"
+map 
+    field
+    class filler
+    size 8
+    doc nil
+    map nil
+    field
+    class coded
+    size 1
+    doc "dzirq field"
+    map 
+	1 "DZ uart posting interrupt request"
+    field 
+    class coded
+    size 1
+    doc "expirq0 field"
+    map
+	1 "interrupt on ioexp0irq"
+    field
+    class coded
+    size 1 
+    doc "expirq1 field"
+    map
+	1 "interrupt on ioexp1irq"
+    field
+    class coded
+    size 1
+    doc "scsirq field"
+    map
+	1 "SII posting interrupt request"
+    field 
+    class coded
+    size 1
+    doc "niirq field "
+    map
+	1 "lance is posting interrupt request"
+    field
+    class coded
+    size 1 
+    doc "wmerr field"
+    map
+	1 "memory write nxm"
+    field
+    class coded
+    size 1
+    doc "halt"
+    map 
+	1 "halt" 
+
+sitem 
+id 746 
+name leds
+type register 
+class composite 
+size 4 
+label "leds" 
+display nil 
+doc "leds"
+map  
+    field
+    class filler
+    size 8
+    doc "filler"
+    map nil
+    field
+    class coded
+    size 1
+    doc "leds 0"
+    map
+	0 "reset enabled"
+	1 "Halt enabled"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc "leds 1"
+    map 
+	0 "bank0 has 32MBytes"
+	1 "bank0 has 8MBytes"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc "leds 2"
+    map 
+	1 "19.2k baud selected"
+	0 "38.4k baud selected"
+    field
+    class coded
+    size 1
+    label nil
+    display nil
+    doc "leds 3"
+    map 
+	0 "EEPROM writes Disabled"
+	1 "Main Memory Disabled"
+    field
+    class filler
+    size 4
+    label nil 
+    display nil
+    doc "leds 4-7"
+    map nil
+
+sitem 
+id 748 
+name 5100_wear
+type register 
+class composite 
+size 4 
+label "wear" 
+display nil 
+doc "mipsmate wear register"
+map 
+    field 
+    class coded
+    size 1
+    display nil
+    doc "iopresent bit"
+    map 
+	0 "i/o module present"
+    field 
+    class coded
+    size 1
+    display nil
+    doc "secure bit"
+    map
+	0 "security can be used"
+	1 "system always insecure"
+
+sitem 
+name wear_adr
+type register
+class composite
+size 4
+label nil
+display nil
+doc "second part of wear register -- only if nxm error in icsr"
+map
+    field
+    class filler
+    size 2
+    display nil
+    doc "filler for the first two bits of the wear"
+    map nil
+    field
+    class integer
+    size 27
+    display hex
+    label "wr err adr" 
+    doc "write error address <2:28>"
+    map nil
+
+sitem 
+id 749 
+name oid
+type register 
+class composite 
+size 4 
+label "option id" 
+display nil 
+doc "option id register"
+map
+    field
+    class integer
+    size 8
+    display decimal
+    label "option num"
+    doc "option number"
+    map nil
+    field 
+    class integer
+    size 8
+    display decimal
+    label "err cnt"
+    doc "error count"
+    map nil 
+

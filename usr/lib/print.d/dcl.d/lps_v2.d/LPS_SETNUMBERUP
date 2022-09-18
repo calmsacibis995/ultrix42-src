@@ -1,0 +1,85 @@
+
+%! LPS$$SETNUMBERUP device control library module
+% Version V1.2
+%
+% Copyright (c) 1987 by DEC, Maynard, Mass.  All rights reserved.
+
+/lps$page-layup-dict 150 dict def lps$page-layup-dict begin /N {cvx bind
+executeonly def }dup exec /e {exch def }N /d {exch cvi def }N /B {dup 3 1
+roll N exec }N /a {{pop }repeat }N /t {1 add }N /c {1 sub }N /h {flush
+print (\n)print flush }N [/showpage /copypage /erasepage /initmatrix
+/initgraphics /initclip /currentmatrix /setmatrix /gsave /grestore
+/grestoreall /save /restore /nulldevice ]/l e /r /b /f /g /i /j /k /m /n /o
+/p /q /s /u l {load def }forall [/11x17tray /a3tray /a4tray /a5tray /b4tray
+/b5tray /executivetray /ledgertray /legaltray /lettertray ]/v e /w /x /y /z
+/A /C /D /E /F /G v {statusdict exch get def }forall statusdict
+/setpapertray get /H e matrix currentmatrix /I e /J [currenttransfer
+/settransfer cvx ]N true /K e 1 /set-first-page {c /L d }B true
+/set-lines-around-pages {/M e }B ()/set-margin-flip {/O e }B 36 36 36 36
+/set-margins {/P e /Q e /R e /S e }B 1 /set-number-up {/T d }B true
+/set-orientation {/U e }B /set-page-grid {/V d /W d true /X e }N false /X e
+(rd)/set-page-order {/Y e }B 612 792 /set-page-size {/Z e /# e }B
+/set-pages-per-sheet {c /$ d }N 612 792 /set-sheet-size {/? e /@ e }B 0 /^
+e .1 /& e /* {/| e ! {Q }{@ P sub _ sub }ifelse | - {+ mod }{; idiv }ifelse
+! not {neg }if : U and {t }if _ mul add , {? S sub . sub }{R }ifelse | - {+
+idiv }{; mod }ifelse , {neg }if : U not and {t }if . mul add }N /` {0 1 ' c
+{gsave * translate " concat ~ dup scale matrix currentmatrix grestore }for
+}N matrix /NN e matrix /Ne e /Nd {/NB e /Na e NN m Nt Na get Ne
+invertmatrix NN concatmatrix NB copy }N /Nc {[/newpath load {{/moveto load
+}{/lineto load }{/curveto load }{/closepath load }pathforall }stopped {4 a
+(The current path may have been lost.)h }if ]}N /Nh {cvx exec }N /Nl {true
+/Nr e M {Nb }if Nf ' mod $ eq {j J u i false /Nr e Nf ' idiv t ' mul Ng mod
+}{Nf t }ifelse /Nf e }N /Nb {j o J Ni newpath 0 0 Nj moveto # 0 Nj lineto #
+Z Nj lineto 0 Z Nj lineto closepath p & setlinewidth stroke i }N /Nj
+{transform 2 {1.000001 mul floor .5 add exch }repeat itransform }N /Nk {K
+{Nl Nm }if Nn }N /No {K {$ 0 eq O ()eq and {Nb s
+}{("copypage" is not supported by multi-page layup.)h Nf Nl Np }ifelse }if
+}N /Nm {K {j n Ni Nq 1 setgray fill i }if }N /Ni {K {Nt Nf get k }{p
+}ifelse }N /Nn {o Ni Ns }N /Nu {K {Nf NN Nd I NN concatmatrix exch copy }{m
+}ifelse }N /Nv {K {I NN invertmatrix NN concatmatrix Nt Nf get NN
+concatmatrix }if k }N /Ns {Nc NN m n Ni Nq clip k Nh }N 32 array /Nw e 32
+array /Nx e 0 /Ny e /Np {/Na e Nf Na ne {Nc clippath Nc Na NN Nd Nt Nf get
+NN concatmatrix k n Nh clip Nh }if }N /Nz {Nw Ny Nf put Nx Ny K put Ny t
+/Ny e j }N /NA {i Ny c /Ny e Nx Ny get /K e Nw Ny get Np }N /NC {g 0 /Ny e
+Nx Ny get /K e Nw 0 get Np }N /ND {Nx Ny K put f Nw 0 Nf put 1 /Ny e }N /NE
+{Nw 0 get Nf Nr 4 3 roll b /Nr e /Nf e Nx Ny get /K e Np }N /NF {r false /K
+e }N /NG {Z mul exch # mul exch 2 copy gt NH NI gt xor dup 4 1 roll {NH
+exch div exch NI exch div }{NI exch div exch NH exch div exch }ifelse 2
+copy lt {pop true }{exch pop false }ifelse }N /NJ {0 /~ e T /NK e {0 /NL e
+1 1 NK {dup NK exch div dup dup floor eq {2 copy NG exch dup NL gt {dup /NL
+e dup ~ gt {/~ e /NM e dup /: e {exch }if /; d /+ d NK /' e }{5 a }ifelse
+}{5 a }ifelse }{2 a }ifelse }for # NL mul Z NL mul mul NK mul NH NI mul div
+.75 gt {exit }if NK t /NK e }loop }N /do-page-layup {@ Q sub P sub /NH e ?
+S sub R sub /NI e NH 0 lt NI 0 lt or
+{
+(\n        Your job was not printed because you specified\n        sheet margins that result in negative usable area.)
+h stop }if NH NI mul 1 lt
+{
+(\n        Your job was not printed because you specified\n        sheet margins that result in no usable area.)
+h stop }if X {W V U not {exch }if 2 copy NG /NM e /~ e /: e : {exch }if /;
+e /+ e + ; mul dup /' e /T e }{NJ }ifelse /$ where {pop }{T c /$ e }ifelse
+$ T ge {(Pages per sheet is larger than Number_Up. Defaulting..)h ' c /$ e
+}if L $ gt {(First page is larger than pages per sheet. Defaulting..)h 0 /L
+e }if (rd7 ru6 ld5 lu4 dr3 ur2 dl1 ul0)Y search {2 a token {exch pop /NO e
+}if }if : U xor not {[5 7 4 6 1 3 0 2 ]NO get /NO e }if NO 1 and 0 ne /, e
+NO 2 and 0 ne /! e NO 4 and 0 ne /- e # Z : {exch }if ; mul /NP e + mul /NQ
+e NM {NI NP ~ mul sub 2 div dup S add /S e R add /R e }{NH NQ ~ mul sub 2
+div dup Q add /Q e P add /P e }ifelse # ~ mul Z ~ mul : {exch }if /. e /_ e
+[: {U {0 1 -1 0 }{0 -1 1 0 }ifelse }{1 0 0 1 }ifelse 0 0 ]/" e [` O
+(t)search {3 a S R /S e /R e true }{pop false }ifelse O (l)search {3 a Q P
+/Q e /P e true }{pop false }ifelse or {` }if ]dup length /Ng e /Nt e 1 1
+idtransform abs exch abs 2 copy lt {exch }if pop & 2 div add ~ div ^ 2 copy
+lt {exch }if pop /^ e /Nq {newpath 0 0 Nj ^ add exch ^ add exch moveto # 0
+Nj ^ add exch ^ sub exch lineto # Z Nj ^ sub exch ^ sub exch lineto 0 Z Nj
+^ sub exch ^ add exch lineto closepath }N L /Nf e false /Nr e Nn }N
+/flush-pages {Nr {J Nm u false /Nr e }if L /Nf e Nn }N statusdict maxlength
+dict dup /NR e begin statusdict {def }forall /setpapertray
+{//lps$page-layup-dict begin $ 0 eq {H }{pop
+("setpapertray" is not supported by multi-page layup.)h }ifelse Nn Nm end
+}N /w /x /y /z /A /C /D /E /F /G v {{//lps$page-layup-dict begin $ 0 eq 0
+{(Tray selection is not supported by multi-page layup.)h }ifelse Nn Nm end
+}dup length array copy dup 5 5 4 roll cvx 1 array astore cvx put N }forall
+end l length t dict /plu-hooks e plu-hooks begin NR /statusdict e /NF /NE
+/ND /NC /NA /Nz /Nv /Nu /Ns /Nn /Ni /Nm /No /Nk l {{//lps$page-layup-dict
+begin 0 end }4 array copy dup 2 5 4 roll cvx put N }forall end cvi
+set-number-up end /lps$page-layup? true def 

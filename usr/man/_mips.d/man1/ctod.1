@@ -1,0 +1,58 @@
+.TH ctod 1
+.SH Name
+ctod \- combine DDIS objects into DOTS format
+.SH Syntax
+.B ctod
+[ 
+.B \-x
+]
+.I object.ddis
+.SH Description
+.NXR "ctod command"
+The
+.PN ctod
+command combines a DDIS encoded object into a Data Object Transport
+Syntax (DOTS) format, which is written to standard output.  The object
+may contain references to other DDIS files.  The purpose of
+.PN ctod
+is to create a single file from multiple references to other
+files, in order to transfer or move DDIS objects from one
+location to another.
+.PP
+.I object.ddis
+is a file name, or a minus sign (\-) for standard input.  If
+a minus sign is specified, or if
+no file name is present, standard input is read.  The named object and
+its external references, if any, are combined into a DOTS data stream
+which is written to standard output.
+.PP
+Because a DOTS stream contains binary data, 
+.PN ctod
+output should be redirected to a file or a pipe.
+.PP
+.SH Options
+.TP 5
+.B \-x
+Specifies that
+.PN ctod
+is to DOTS encode the input file without resolving any external
+references present in the file.  This option is for use only with files
+containing no external references.
+.PP
+.SH Restrictions
+The only DDIS object types supported in this release are DDIF and DTIF.
+.PP
+.SH Diagnostics
+.PP
+The exit status is 0 if all files were combined successfully and 1 if
+any of the files could not be combined.  Consult
+`standard error' to see what files failed, and why.
+.PP
+If the \fB\-x\fP option is used and
+.PN object.ddis
+contains any external references,
+.PN ctod
+returns an error status of 1, and writes an error message to
+`standard error'.
+.SH See Also
+dtoc(1), DDIS(5), DDIF(5), DTIF(5), DOTS(5)

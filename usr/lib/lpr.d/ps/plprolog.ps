@@ -1,0 +1,136 @@
+%
+% Start fixed stuff (@(#)plprolog.ps	1.1 ULTRIX 4/23/86)
+%
+/inch  {72 mul} def
+/exdef {exch def} def
+%
+% Input output tray
+%
+/tray-control
+{
+currentdict /tray known
+	{
+	statusdict /setpapertray known
+		{
+		tray statusdict begin setpapertray end
+		} if
+	} if
+currentdict /out known
+	{
+	statusdict /setoutputtray known
+		{
+		out statusdict begin setoutputtray end
+		} if
+	} if
+} def
+%
+% Get Paper information
+%
+/paper-control
+{
+gsave initclip newpath clippath pathbbox grestore
+/ury exdef /urx exdef /lly exdef /llx exdef
+statusdict /papersize known
+	{
+	statusdict begin papersize end pop
+	(               ) cvs
+	dup (lettertray) eq
+		{
+			/paperwidth 8.5 inch def
+			/paperheight 11 inch def
+		} if
+	dup (legaltray) eq
+		{
+			/paperwidth 8.5 inch def
+			/paperheight 14 inch def
+		} if
+	dup (11x17tray) eq
+		{
+			/paperwidth 11 inch def
+			/paperheight 17 inch def
+		} if
+	dup (a3tray) eq
+		{
+			/paperwidth 11.7 inch def
+			/paperheight 16.5 inch def
+		} if
+	dup (a4tray) eq
+		{
+			/paperwidth 8.3 inch def
+			/paperheight 11.7 inch def
+		} if
+	dup (a5tray) eq
+		{
+			/paperwidth 5.8 inch def
+			/paperheight 8.3 inch def
+		} if
+	dup (b4tray) eq
+		{
+			/paperwidth 10.1 inch def
+			/paperheight 14.3 inch def
+		} if
+	(b5tray) eq
+		{
+			/paperwidth 7.2 inch def
+			/paperheight 10.1 inch def
+		} if
+	}
+	{
+	/paperwidth urx llx add def /paperheight ury lly add def
+	} ifelse
+%
+% Calc default margin
+%	I think that if imaginable region is not full page
+%	left and right , top and bottom have same margine.
+%
+llx 0 eq					% Imaginable region=full page
+	{					% Am I LPS40 ?
+	/hm 0.25 inch def
+	}
+	{
+	llx 0.25 inch lt			% atleast 0.25 inch
+		{
+		/hm 0.25 inch def
+		}
+		{
+		/hm llx def
+		} ifelse
+	} ifelse
+lly 0 eq					% Imaginable region=full page
+	{					% Small paper on LPS40 ?
+	/vm 0.25 inch def
+	}
+	{
+	lly 0.25 inch lt
+		{
+		/vm 0.25 inch def
+		}
+		{
+		/vm lly def
+		} ifelse
+	} ifelse
+/imwidth  paperwidth  hm 2 mul sub def		% define maximum image size
+/imheight paperheight vm 2 mul sub def
+%
+% if lasdscape (alway landscape)
+%
+orientation landscape eq
+	{
+	vm hm urx ury llx lly imwidth imheight paperwidth paperheight
+	/paperwidth  exdef
+	/paperheight exdef
+	/imwidth     exdef
+	/imheight    exdef
+	/llx         exdef
+	/lly         exdef
+	/urx         exdef
+	/ury         exdef
+	/vm          exdef
+	/hm          exdef
+	} if
+} def
+tray-control
+paper-control
+%
+% End fixed stuff
+%

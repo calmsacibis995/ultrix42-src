@@ -1,0 +1,128 @@
+.TH rmf 1mh
+.SH Name
+rmf \- remove folder
+.SH Syntax
+.B rmf 
+[
+.I +folder
+] [
+.B \-help
+] [
+.B \-[no]interactive
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "rmf command"
+.NXR "folders" "removing"
+The 
+.PN rmf
+command removes all of the messages within the current folder,
+and then removes the folder itself.  
+If there are any files within the folder which are not part of MH,
+they are not removed, and an error message is displayed.
+.PP
+You can specify a folder other than the current folder 
+by using the 
+.I +folder
+argument.  
+If you do not specify a folder, and
+.PN rmf
+cannot find the current folder,
+.PN rmf
+asks you whether you want to delete
+.PN +inbox
+instead.
+.PP
+If the current folder is removed,
+it makes 
+.PN +inbox
+current.
+.PP
+Note that the 
+.PN rmf
+command irreversibly deletes messages that do not have other links,
+so use it with caution.
+.PP
+If the folder being removed is a sub-folder, 
+the parent folder becomes the new current folder, and 
+.PN rmf
+tells you that this has happened.
+This provides an easy mechanism for selecting a set of messages,
+operating on the list, then removing the list and returning to
+the current folder from which the list was extracted.
+.PP
+Using 
+.PN rmf
+to delete a read-only folder deletes the private sequence 
+and current message information from the 
+.PN \&.mh_profile
+file, without affecting the folder itself.
+If you have sub-folders within a folder,
+you must delete all the sub-folders 
+before you can delete the folder itself.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP \-help 10
+Prints a list of the valid options to this command.
+.\"
+.IP \-interactive 10
+.PD 0
+.IP \-nointeractive 10
+.PD
+Asks for confirmation before deleting a folder.
+By default, 
+.PN rmf
+deletes a folder and its messages 
+without asking for confirmation.
+If you specify the 
+.B \-interactive 
+option, 
+.PN rmf 
+asks if you are sure before deleting the folder.
+You are advised to use this option, since when
+.PN rmf 
+deletes a folder its contents are lost irretrievably.
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+This example shows how 
+.PN rmf
+asks for confirmation when the 
+.B \-interactive 
+option is used:
+.EX
+% \f(CBrmf -interactive +test\f(CW
+Remove folder "test"? \f(CBy\f(CW
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine the user's Mail directory
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/\&.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+rmm(1mh)

@@ -1,0 +1,67 @@
+.\" SCCSID: @(#)catman.8	8.1	9/11/90
+.TH catman 8
+.SH Name
+catman \- create the cat files for the manual
+.SH Syntax
+.B /etc/catman
+[
+.B \-p
+] [
+.B \-n
+] [
+.B \-w
+]
+[ 
+.I sections 
+]
+.SH Description
+.NXR "catman command"
+.NXR "manual page" "formatting on line"
+The
+.PN catman
+command creates the preformatted versions of
+the on-line manual from the 
+.PN nroff
+input files.
+Each manual page is examined and those whose preformatted versions are
+missing or out of date are recreated.
+If any changes are made,
+.PN catman
+will recreate the 
+.PN /usr/lib/whatis
+database.
+.PP
+If there is one parameter not starting with a minus sign (\-),
+it is taken to be a list of manual sections to look in.
+The following example causes updating to occur to 
+manual sections 1, 2, and 3.  
+.EX
+catman 123
+.EE
+.SH Options
+.TP
+.B \-n
+Prevents creations of 
+.PN /usr/lib/whatis .
+.TP
+.B \-p
+Prints what would be done instead of doing it.
+.TP
+.B \-w
+Causes only the 
+.PN /usr/lib/whatis
+database to be created.
+No manual reformatting is done.
+.SH Files
+.TP 20
+.PN /usr/man/man?/*.*
+Raw (nroff input) manual sections
+.TP
+.PN /usr/man/cat?/*.*
+Preformatted manual pages
+.TP
+.PN /usr/lib/makewhatis
+Commands to make whatis database
+.DT
+.SH See Also
+man(1)

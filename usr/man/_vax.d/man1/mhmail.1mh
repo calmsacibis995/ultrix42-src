@@ -1,0 +1,158 @@
+.TH mhmail 1mh
+.SH Name
+mhmail \- send or read mail
+.SH Syntax
+.B mhmail
+[
+.I "addrs ..."
+] [
+.I options
+]
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.\" .SH Arguments
+.\" .IP \fIaddrs 10
+.\" The address or addresses of the recipients of the message.
+.\" Addresses given as arguments appear on the \f(CWTo:\fR
+.\" line of the message.
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "mhmail command"
+.NXR "sending mail (mhmail command)"
+.NXR "reading mail (mhmail command)"
+The
+.PN mhmail
+program is intended as a replacement 
+for the standard mail programs, 
+.PN bellmail 
+and
+.PN ucbmail .
+See
+.MS binmail 1 
+and
+.MS mail 1 
+for more details of these mail programs.
+When invoked without arguments, it simply 
+invokes 
+.PN inc
+to incorporate new messages from the user's maildrop.
+When one or more users is specified, a message is read from
+the standard input and spooled to a temporary file.
+.PN mhmail
+then invokes 
+.PN post
+with the name of the temporary file as
+its argument to deliver the message to the specified user.
+.PP 
+Normally, people will use 
+.PN comp 
+and 
+.PN send 
+to send messages.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-body \fItext" 10
+Specifies the text of the message. 
+If it is specified, then the standard input is not read.
+.\"
+.\"
+.IP "\-cc\ \fIaddrs"
+Specifies addresses to be placed in the \f(CWcc:\fR
+field of the message.
+.\"
+.\"
+.IP "\-from \fIaddr"
+Specifies the content of the \f(CWFrom:\fR
+header of the draft.
+The address given is placed in the \f(CWFrom:\fR
+field of the message.
+The \f(CWSender:\fR
+field is filled in correctly by 
+.PN post .
+.\"
+.\"
+.IP \-help
+Prints a list of the valid options for this command.
+.\"
+.\"
+.\" 
+.\" ***COMMENTED OUT
+.ig
+.IP \-mts\ \fImtsname
+Specifies whether you want to send mail to
+X.400 users or non-X.400 users.
+Two options are valid:
+.B \-mts\ x400 
+to send mail to X.400 users;
+.B \-mts\ smtp
+to send mail to non-X.400 users.
+As with 
+.PN post ,
+you cannot mix X.400 and non-X.400 addresses in the
+same message; you must choose one or the other.
+The default is to assume non-X.400 transport.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.IP "\-mts smtp"
+Specifies the mail system over which mail is sent.
+The only value allowed is \fBsmtp\fR,
+which is the standard ULTRIX mail system.
+Additional values are supported only for use with other
+mail systems.
+.\"
+.\"
+.\"
+.IP \-subject\ \fItext
+Provides the text of the \f(CWSubject:\fR field of the message.  
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+Messages with a null body part will not be sent by
+.PN mhmail .
+You must include some body text in all messages to be sent by 
+.PN mhmail .
+.PP
+For this version, the
+.B \-mts
+option only supports the value \fBsmtp\fR.
+Additional values are supported for use only with
+other mail systems.
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN /usr/bin/mh/inc
+Program to incorporate a maildrop into a folder.
+.TP 10 
+.PN /usr/lib/mh/post
+Program to deliver a message.
+.TP 10
+.PN /tmp/mhmail*
+Temporary copy of message.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+inc(1mh), post(8mh)

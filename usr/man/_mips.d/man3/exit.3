@@ -1,0 +1,40 @@
+.\" SCCSID: @(#)exit.3	8.2	1/28/91
+.TH exit 3
+.SH Name
+exit \- terminate a process after flushing any pending output
+.SH Syntax
+.nf
+.B void exit(\fIstatus\fP)
+.B int \fIstatus\fP;
+.br
+.B int atexit(\fIfunc\fP)
+.B void (*\fIfunc\fP)();
+.fi
+.SH Description
+.NXR "exit subroutine (standard C)"
+.NXR "_exit subroutine"
+.NXR "process" "terminating after flushing pending output"
+The
+.PN exit
+function terminates a process after calling the Standard I/O library
+function,
+.I _cleanup,
+to flush any buffered output.
+The
+.PN exit
+function never returns.
+.PP
+The
+.PN atexit
+function registers a function to be called 
+(without arguments) at normal program termination; functions are
+called in the reverse order of their registration 
+(that is, most recent first). If a function is registered more than once,
+it will be called more than once.
+.SH Return Values
+The
+.PN atexit
+function returns zero if the registration succeeds, or \-1 if 
+the function pointer is null or if too many functions are registered.
+.SH See Also
+exit(2), intro(3s)

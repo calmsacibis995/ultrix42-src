@@ -1,0 +1,42 @@
+#
+# @(#)PMAX2	4.1	ULTRIX 7/2/90
+#
+machine		mips
+cpu		"R2000a"
+ident		"PMAX2"
+timezone	8 dst
+maxusers	8
+maxuprc		25
+physmem		8
+processors	1
+
+options		QUOTA
+options		INET
+options		NFS
+options		UFS
+options		RPC
+options		SYS_TRACE
+options		KMEMSTATS
+options		ultrix
+options		XPRBUG
+options		ASSERTIONS
+
+makeoptions	ENDIAN="-EL"
+
+config		vmunix	root on se0
+config          rzvmunix root on rz0
+config          rzovmunix root on rz1
+config          rztvmunix root on rz2
+config          rzthvmunix root on rz3
+config          rzfvmunix root on rz4
+config          rzfivmunix root on rz5
+config          rzsvmunix root on rz6
+
+pseudo-device	pty
+pseudo-device	inet
+pseudo-device	ether
+pseudo-device	loop
+pseudo-device	nfs
+pseudo-device	ufs
+pseudo-device	rpc
+pseudo-device	sys_trace

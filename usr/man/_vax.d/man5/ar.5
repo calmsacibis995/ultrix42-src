@@ -1,0 +1,64 @@
+.\" SCCSID: @(#)ar.5	8.1	9/11/90
+.TH ar 5 VAX
+.SH Name
+ar \- archive (library) file format
+.SH Syntax
+.B #include <ar.h>
+.SH Description
+.NXR "ar file" "format"
+.NXAM "ld command" "ar file"
+.NXAM "ar program" "ar file"
+.NXR "archive file" "searching"
+.NXR "file" "merging"
+The archive command,
+.PN ar ,
+combines several files into one.
+Archives are used mainly as libraries to be searched by the link-editor
+.PN ld .
+.PP
+A file produced by
+.PN ar
+has a magic string at the start,
+followed by the constituent files, each preceded by a file header.
+The magic number and header layout as described in the include file are:
+.EX
+#define	ARMAG	"!<arch>\n"
+#define	SARMAG	8
+
+#define	ARFMAG	"`\n"
+
+struct ar_hdr {
+	char	ar_name[16];
+	char	ar_date[12];
+	char	ar_uid[6];
+	char	ar_gid[6];
+	char	ar_mode[8];
+	char	ar_size[10];
+	char	ar_fmag[2];
+};
+.EE
+.PP
+The name is a blank-padded string.
+The
+.I ar_fmag
+field contains ARFMAG to help verify the presence of a header.
+The other fields are left-adjusted, blank-padded numbers.
+They are decimal except for
+.IR ar_mode ,
+which is octal.
+The date is the modification date of the file
+at the time of its insertion into the archive.
+.PP
+Each file begins on a even (0 mod 2) boundary;
+a new-line is inserted between files if necessary.
+Nevertheless, the size given reflects the
+actual size of the file exclusive of padding.
+.PP
+There is no provision for empty areas in an archive file.
+.PP
+The encoding of the header is portable across machines.
+If an archive contains printable files, the archive itself is printable.
+.SH Restrictions
+File names lose trailing blanks.
+.SH See Also
+ar(1), ld(1), nm(1)

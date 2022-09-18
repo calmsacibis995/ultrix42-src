@@ -1,0 +1,118 @@
+.TH fitset 8
+.SH Name
+fitset \- determine if subset fits on a system
+.SH Syntax
+.B fitset 
+[
+.B \-d
+]
+[
+.I root-path
+]
+.SH Description
+.NX R "setld" "subset fits on a system"
+.NX R "kits" "subset fits on a system"
+The
+.PN fitset
+utility is used to determine if the files in a software
+subset will fit on a system.
+.PP
+Subset inventory records are
+read from the standard input. For each record, the space required
+to install
+the file described in that record is deducted from the available
+free space on the file system to which it would be installed.
+Only currently mounted UFS file systems are used in the
+computations. Space requirements for files already on the
+disk will be modified to account for the size of the resident copy.
+After all records have been read, the free space computed
+for all file systems is checked. If the space required
+to install the files would cause any file system to be more
+than 90% full, 
+.PN fitset 
+returns an exit status of \-1.
+.PP
+The
+.PN setld 
+utility uses
+.PN fitset
+to size all subsets before attempting to install them.
+The
+.I root-path
+argument is the pathname of the top directory for the hierarchy into
+which the files are going to be installed. If no
+.I root-path
+is specified, the directory '/' is assumed.
+.SH Options
+.TP
+.B \-d
+Enable debugging. This will make
+.PN fitset
+print voluminous status information on standard output. This
+information is the initial file system statistics, the
+file system location of the file from each input record and
+the statistics for the file system after the space required to
+install the file has been deducted.
+.SH Restrictions
+NFS mounts are ignored. If software would be installed to
+an NFS mounted directory, it is sized against the file system
+containing the NFS mount point.
+.PP
+The program does not detect the use of symbolic links in
+paths to
+.I root-path
+or any of the mount points. This can cause
+.PN fitset
+to size a subset incorrectly if
+.I root-path
+is a symbolic link or
+a symbolic link exists in the path of any of the pathnames
+used with the
+.PN mount
+command to mount local file systems.
+.SH Examples
+To determine if a particular subset will fit on the system,
+redirect the contents of the subset inventory file into
+.PN fitset . 
+For example:
+.EX
+    fitset < /usr/etc/subsets/ULTUUCP400.inv
+.EE
+.PP
+To determine if the same subset will fit in a hierarchy
+rooted at 
+.PN /var/tmp/root , 
+the command would be:
+.EX
+    fitset /var/tmp/root < /usr/etc/subsets/ULTUUCP400.inv
+.EE
+.SH Diagnostics
+.B "fitset: root path must be absolute"
+.br
+A relative pathname was specified for
+.I root-path.
+This path must be absolute.
+.PP
+.B "fitset: cannot stat"
+.I root-path (error message)
+.br
+The
+.I root-path
+cannot be accessed. The error message provides more information.
+.PP
+.B fitset:
+.I root-path
+.B is not a directory.
+.br
+Either
+.I root-path
+is not a directory or it is a symbolic link to something
+which is not a directory.
+.SH Files
+.TP 20
+.PN /usr/etc/subsets/*.inv
+Subset inventory files
+.SH See Also
+stl_inv(5), setld(8)
+.br
+.I "Guide to Preparing Software for Distribution on ULTRIX Systems"

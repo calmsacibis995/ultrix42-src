@@ -1,0 +1,41 @@
+.\" SCCSID: @(#)getgid.2	2.1	3/10/87
+.TH getgid 2
+.SH Name
+getgid, getegid \- get group identity
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.B #include <unistd.h>
+.PP
+.B gid = getgid()
+.B gid_t gid;
+.PP
+.B egid = getegid()
+.B gid_t egid;
+.fi
+.SH Description
+.NXR "getgid system call"
+.NXR "getegid system call"
+.NXR "real group ID" "getting"
+.NXR "effective group ID" "getting"
+The
+.PN getgid
+system call returns the real group ID of the current process, and the
+.PN getegid
+call returns the effective group ID.
+.PP
+The real group ID is specified at login time.
+.PP
+The effective group ID is more transient and determines
+additional access permission during execution of a
+``set-group-ID'' process. The
+.PN getgid
+call is most useful with processes that are ``set-group-ID.''
+.SH Environment
+Differs from the System V definition in that
+the return values are of type
+.I int, 
+instead of type 
+.I unsigned short.
+.SH See Also
+getuid(2), setregid(2), setgid(3)

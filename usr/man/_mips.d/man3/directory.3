@@ -1,0 +1,211 @@
+.\" SCCSID: @(#)directory.3	2.4	8/13/87
+.TH directory 3
+.SH Name
+opendir, readdir, telldir, seekdir, rewinddir, closedir \- directory operations
+.SH Syntax
+.B #include <sys/types.h>
+.br
+.B #include <sys/dir.h>
+.PP
+.B DIR
+.B *opendir(\fIdirname\fP)
+.br
+.B char *\fIdirname\fP;
+.PP
+.B struct direct
+.B *readdir(\fIdirp\fP)
+.br
+.B DIR
+.B *\fIdirp\fP;
+.PP
+.B long
+.B telldir(\fIdirp\fP)
+.br
+.B DIR
+.B *\fIdirp\fP;
+.PP
+.B void seekdir(\fIdirp, loc\fP)
+.br
+.B DIR
+.B *\fIdirp\fP;
+.br
+.B long loc;
+.PP
+.B void rewinddir(\fIdirp\fP)
+.br
+.B DIR
+.B *\fIdirp\fP;
+.PP
+.B int
+.B closedir(\fIdirp\fP)
+.br
+.B DIR
+.B *\fIdirp\fP;
+.SH Description
+.NXR "directory keyword"
+.NXR "opendir subroutine"
+.NXR "readdir subroutine"
+.NXR "telldir subroutine"
+.NXR "seekdir subroutine"
+.NXR "rewinddir subroutine"
+.NXR "closedir subroutine"
+.NXR "directory" "operations"
+The 
+.PN opendir
+library routine opens the directory named by
+.I filename
+and associates a directory stream with it.  A pointer is returned to
+identify the directory stream in subsequent operations.  The pointer
+NULL is returned if the specified
+.I filename
+can not be accessed, or if insufficient memory is available to open 
+the directory file.
+.PP
+The 
+.PN readdir
+routine returns a pointer to the next directory entry.  It returns
+NULL upon reaching the end of the directory or on detecting an invalid
+.PN seekdir
+operation.
+The 
+.PN readdir 
+routine uses the
+.PN getdirentries
+system call to read directories. Since the 
+.PN readdir
+routine returns NULL upon reaching the end of the directory or on
+detecting an error, an application which wishes to detect the difference must
+set errno to 0 prior to calling
+.PN readdir .
+.PP
+The 
+.PN telldir
+routine returns the current location associated with the named
+directory stream. Values returned by
+.PN telldir
+are good only for the lifetime of the DIR pointer from which they are derived.
+If the directory is closed and then reopened, the 
+.PN telldir
+value may be invalidated due to undetected directory compaction.
+.PP
+The 
+.PN seekdir
+routine sets the position of the next
+.PN readdir
+operation on the directory stream.  Only values returned by
+.PN telldir
+should be used with
+.PN seekdir .
+.PP
+The 
+.PN rewinddir
+routine resets the position of the named directory stream to the beginning
+of the directory.
+.PP
+The 
+.PN closedir
+routine closes the named directory stream and returns a value of 0 if
+successful. Otherwise, a value of \-1 is returned and errno is set to indicate
+the error.  All resources associated with this directory stream are released.
+.SH Examples
+.NXR(e) "opendir subroutine"
+The following 
+sample code searches a directory for the entry 
+.I name.
+.EX 0
+len = strlen(name);
+
+dirp = opendir(".");
+
+for (dp = readdir(dirp); dp != NULL; dp = readdir(dirp))
+
+if (dp->d_namlen == len && !strcmp(dp->d_name, name)) {
+
+		closedir(dirp);
+
+		return FOUND;
+
+	}
+
+closedir(dirp);
+
+return NOT_FOUND;
+.EE
+.SH Environment
+In the POSIX environment, the file descriptor returned in
+the DIR structure after an
+.PN opendir()
+call will have the FD_CLOEXEC flag set.  See <\fBfcntl.h\fP> for more detail.
+.SH Return Values
+Upon successful completion,
+.PN opendir()
+returns a pointer to an
+object of type DIR.  Otherwise, a value of NULL is returned
+and errno is set to indicate the error.
+.PP
+The
+.PN readdir()
+routine returns a pointer to an object of type
+struct dirent upon successful completion.  Otherwise, a value
+of NULL is returned and errno is set to indicate the error.
+When the end of the directory is encountered, a value of NULL is
+returned and errno is not changed.
+.PP
+The
+.PN telldir()
+routine returns the current location.  No errors are defined for
+.PN telldir(),
+.PN seekdir(),
+and
+.PN rewinddir().
+.PP
+The
+.PN closedir()
+routine returns zero upon successful completion.
+Otherwise, a value of \-1 is returned and errno is set to indicate
+the error.
+.SH Diagnostics
+The
+.PN closedir()
+routine will fail if:
+.TP 15
+[EBADF]
+The \fIdirp\fP argument does not refer to an open directory stream.
+.TP
+[EINTR]
+The routine was interrupted by a signal.
+.PP
+The
+.PN opendir()
+routine will fail if:
+.TP 15
+[EACCES]
+Search permission is denied for any component of \fIdirname\fP
+or read permission is denied for \fIdirname\fP.
+.TP
+[ENAMETOOLONG]
+The length of the \fIdirname\fP string exceeds {PATH_MAX}, or a pathname
+component is longer than {NAME_MAX}.
+.TP
+[ENOENT]
+The \fIdirname\fP argument points to the name of a file which
+does not exist, or to an empty string and the environment
+defined is POSIX or SYSTEM_FIVE.
+.TP
+[ENOTDIR]
+A component of \fIdirname\fP is not a directory.
+.TP
+[EMFILE]
+Too many file descriptors are currently open for the process.
+.TP
+[ENFILE]
+Too many files are currently open in the system.
+.PP
+The
+.PN readdir()
+routine will fail if:
+.TP 15
+[EBADF]
+The \fIdirp\fP argument does not refer to an open directory stream.
+.SH See Also
+close(2), getdirentries(2), lseek(2), open(2), read(2), dir(5)

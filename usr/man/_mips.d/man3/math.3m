@@ -1,0 +1,549 @@
+.TH math 3m RISC
+.ds up \fIulp\fR
+.ds nn \fINaN\fR
+.de If
+.if n \\
+\\$1Infinity\\$2
+.if t \\
+\\$1\\(if\\$2
+..
+.SH Name
+math \- introduction to mathematical library functions
+.SH Description
+These functions constitute the C math library
+.I libm.
+There are two versions of the math library
+.I libm.a
+and
+.I libm43.a.
+.PP
+The first,
+.I libm.a,
+contains routines written in MIPS assembly language and tuned for best
+performance and includes many routines for the
+.I float
+data type. The routines in there are based on the algorithms of Cody and
+Waite or those in the 4.3 BSD release, whichever provides the best performance
+with acceptable error bounds.  Those routines with Cody and Waite
+implementations are marked with a `*' in the list of functions below.
+.PP
+The second version of the math library,
+.I libm43.a,
+contains routines all based on the original codes in the 4.3 BSD release.
+The difference between the two version's error bounds is typically around 1
+unit in the last place, whereas the performance difference may be a factor
+of two or more.
+.PP
+The link editor searches this library under the \*(lq\-lm\*(rq (or
+\*(lq\-lm43\*(rq) option.
+Declarations for these functions may be obtained from the include file
+.RI < math.h >.
+The Fortran math library is described in ``man 3f intro''.
+.SS List Of Functions
+The cycle counts of all functions are approximate; cycle counts often depend
+on the value of argument. The error bound sometimes applies only to the
+primary range.
+.PP
+.TS
+tab(@);
+l l lfHB s s s
+lfHB lfHB lfHB lfHB lfHB lfHB
+l l l l l l .
+_
+.sp 4p
+@@Error Bound (ULPs) Cycles
+Name@Description@libm.a@libm43.a@libm.a@libm43.a
+.sp 4p
+_
+.sp 6p
+acos@T{
+inverse trig function
+T}@3@3@?@?
+acosh@T{
+inverse hyperbolic function
+T}@3@3@?@?
+asin@T{
+inverse trig function
+T}@3@3@?@?
+asinh@T{
+inverse hyperbolic function
+T}@3@3@?@?
+atan@T{
+inverse trig function
+T}@1@1@152@260
+atanh@T{
+inverse hyperbolic function
+T}@3@3@?@?
+atan2@T{
+inverse trig function
+T}@2@2@?@?
+cabs@T{
+complex absolute value
+T}@1@1@?@?
+cbrt@cube root@1@1@?@?
+ceil@T{
+integer no less than
+T}@0@0@?@?
+copysign@copy sign bit@0@0@?@?
+cos*@trig function@2@1@128@243
+cosh*@hyperbolic function@?@3@142@294
+drem@remainder@0@0@?@?
+erf@error function@?@?@?@?
+erfc@T{
+complementary error function
+T}@?@?@?@?
+exp*@exponential@2@1@101@230
+expm1@exp(x)\-1@1@1@281@281
+fabs@absolute value@0@0@?@?
+fatan*@T{
+inverse trig function
+T}@3@@64
+fcos*@trig function@1@@87
+fcosh*@hyperbolic function@?@@105
+fexp*@exponential@1@@79
+flog*@natural logarithm@1@@100
+floor@T{
+integer no greater than
+T}@0@0@?@?
+fsin*@trig function@1@@68
+fsinh*@hyperbolic function@?@@44
+fsqrt@square root@1@@95
+ftan*@trig function@?@@61
+ftanh*@hyperbolic function@?@@116
+hypot@Euclidean distance@1@1@?@?
+j0@bessel function@?@?@?@?
+j1@bessel function@?@?@?@?
+jn@bessel function@?@?@?@?
+lgamma@log gamma function@?@?@?@?
+log*@natural logarithm@2@1@119@217
+logb@exponent extraction@0@0@?@?
+log10*@logarithm to base 10@3@3@?@?
+log1p@log(1+x)@1@1@269@269
+pow@exponential x**y@60\-500@60\-500@?@?
+rint@T{
+round to nearest integer
+T}@0@0@?@?
+scalb@exponent adjustment@0@0@?@?
+sin*@trig function@2@1@101@222
+sinh*@hyperbolic function@?@3@79@292
+sqrt@square root@1@1@133@133
+tan*@trig function@?@3@92@287
+tanh*@hyperbolic function@?@3@156@293
+y0@bessel function@?@?@?@?
+y1@bessel function@?@?@?@?
+yn@bessel function@?@?@?@?
+.sp 6p
+_
+.TE
+.PP
+In 4.3 BSD, distributed from the University of California
+in late 1985, most of the foregoing functions come in two
+versions, one for the double\-precision "D" format in the
+DEC VAX\-11 family of computers, another for double\-precision
+arithmetic conforming to the IEEE Standard 754 for Binary
+Floating\-Point Arithmetic.  The two versions behave very
+similarly, as should be expected from programs more accurate
+and robust than was the norm when UNIX was born.  For
+instance, the programs are accurate to within the numbers
+of \*(ups tabulated above; an \*(up is one \fIU\fRnit in the \fIL\fRast
+\fIP\fRlace.  And the programs have been cured of anomalies that
+afflicted the older math library \fIlibm\fR in which incidents like
+the following had been reported:
+.sp
+.RS
+sqrt(\-1.0) = 0.0 and log(\-1.0) = \-1.7e38.
+.br
+cos(1.0e\-11) > cos(0.0) > 1.0.
+.br
+pow(x,1.0)
+.if n \
+!=
+.if t \
+\(!=
+x when x = 2.0, 3.0, 4.0, ..., 9.0.
+.br
+pow(\-1.0,1.0e10) trapped on Integer Overflow.
+.br
+sqrt(1.0e30) and sqrt(1.0e\-30) were very slow.
+.RE
+.sp
+RISC machines conform to the IEEE Standard 754 for Binary
+Floating\-Point Arithmetic, to which only the notes for
+IEEE floating-point apply and are included here.
+.SS "BIEEE STANDARD 754 Floating\-Point Arithmetic:"
+This standard is on its way to becoming more widely adopted
+than any other design for computer arithmetic.
+.PP
+The main virtue of 4.3 BSD's
+\fIlibm\fR codes is that they are intended for the public domain;
+they may be copied freely provided their provenance is always
+acknowledged, and provided users assist the authors in their
+researches by reporting experience with the codes.
+Therefore no user of UNIX on a machine that conforms to
+IEEE 754 need use anything worse than the new \fIlibm\fR.
+.SS "Properties of IEEE 754 Double\-Precision:"
+.RS
+\fBWordsize:\fP 64 bits, 8 bytes.  \fBRadix:\fP Binary.
+.br
+\fBPrecision:\fP 53
+.if n \
+sig.
+.if t \
+significant
+bits, roughly like 16
+.if n \
+sig.
+.if t \
+significant
+decimals.
+.RS
+If x and x' are consecutive positive Double\-Precision
+numbers (they differ by 1 \*(up), then
+.br
+1.1e\-16 < 0.5**53 < (x'\-x)/x \(<= 0.5**52 < 2.3e\-16.
+.RE
+.nf
+.ta \w'Range:'u+1n +\w'Underflow threshold'u+1n +\w'= 2.0**1024'u+1n
+\fBRange:\fP	Overflow threshold	= 2.0**1024	= 1.8e308
+	Underflow threshold	= 0.5**1022	= 2.2e\-308
+.ta
+.fi
+.RS
+Overflow goes by default to a signed
+.If "" .
+.br
+Underflow is \fIGradual,\fR rounding to the nearest
+integer multiple of 0.5**1074 = 4.9e\-324.
+.RE
+Zero is represented ambiguously as +0 or \-0.
+.RS
+Its sign transforms correctly through multiplication or
+division, and is preserved by addition of zeros
+with like signs; but x\-x yields +0 for every
+finite x.  The only operations that reveal zero's
+sign are division by zero and copysign(x,\(+-0).
+In particular, comparison (x > y, x \(>= y, etc.)
+cannot be affected by the sign of zero; but if
+finite x = y then
+.If
+\&= 1/(x\-y)
+.if n \
+!=
+.if t \
+\(!=
+\-1/(y\-x) =
+.If \- .
+.RE
+.If
+is signed.
+.RS
+it persists when added to itself
+or to any finite number.  Its sign transforms
+correctly through multiplication and division, and
+.If (finite)/\(+- \0=\0\(+-0
+(nonzero)/0 =
+.If \(+- .
+But 
+.if n \
+Infinity\-Infinity, Infinity\(**0 and Infinity/Infinity
+.if t \
+\(if\-\(if, \(if\(**0 and \(if/\(if
+are, like 0/0 and sqrt(\-3),
+invalid operations that produce \*(nn. ...
+.RE
+\fBReserved operands:\fP
+.RS
+there are 2**53\-2 of them, all
+called \*(nn (\fIN\fRot \fIa N\fRumber).
+Some, called Signaling \*(nns, trap any floating\-point operation
+performed upon them; they could be used to mark missing
+or uninitialized values, or nonexistent elements
+of arrays.  The rest are Quiet \*(nns; they are
+the default results of Invalid Operations, and
+propagate through subsequent arithmetic operations.
+If x
+.if n \
+!=
+.if t \
+\(!=
+x then x is \*(nn; every other predicate
+(x > y, x = y, x < y, ...) is FALSE if \*(nn is involved.
+.NT
+Trichotomy is violated by \*(nn.
+Besides being FALSE, predicates that entail ordered
+comparison, rather than mere (in)equality,
+signal Invalid Operation when \*(nn is involved.
+.NE
+.RE
+\fBRounding:\fP
+.RS
+Every algebraic operation (+, \-, \(**, /,
+.if n \
+sqrt)
+.if t \
+\(sr)
+is rounded by default to within half an \*(up, and
+when the rounding error is exactly half an \*(up then
+the rounded value's least significant bit is zero.
+This kind of rounding is usually the best kind,
+sometimes provably so; for instance, for every
+x = 1.0, 2.0, 3.0, 4.0, ..., 2.0**52, we find
+(x/3.0)\(**3.0 == x and (x/10.0)\(**10.0 == x and ...
+despite that both the quotients and the products
+have been rounded.  Only rounding like IEEE 754
+can do that.  But no single kind of rounding can be
+proved best for every circumstance, so IEEE 754
+provides rounding towards zero or towards
+.If +
+or towards
+.If \-
+at the programmer's option.  And the
+same kinds of rounding are specified for
+Binary\-Decimal Conversions, at least for magnitudes
+between roughly 1.0e\-10 and 1.0e37.
+.RE
+\fBExceptions:\fP
+.RS
+IEEE 754 recognizes five kinds of floating\-point exceptions,
+listed below in declining order of probable importance.
+.PP
+.TS
+tab(@);
+lfHB lfHB
+lfR  lfR .
+_
+.sp 4p
+Exception@Default Result
+.sp 4p
+_
+.sp 6p
+Invalid Operation@\*(nn, or FALSE
+.if n \{\
+Overflow@\(+-Infinity
+Divide by Zero@\(+-Infinity \}
+.if t \{\
+Overflow@\(+-\(if
+Divide by Zero@\(+-\(if \}
+Underflow@Gradual Underflow
+Inexact@Rounded value
+.sp 6p
+_
+.TE
+.PP
+.NT
+An Exception is not an Error unless handled
+badly.  What makes a class of exceptions exceptional
+is that no single default response can be satisfactory
+in every instance.  On the other hand, if a default
+response will serve most instances satisfactorily,
+the unsatisfactory instances cannot justify aborting
+computation every time the exception occurs.
+.NE
+.RE
+.PP
+For each kind of floating\-point exception, IEEE 754
+provides a Flag that is raised each time its exception
+is signaled, and stays raised until the program resets
+it.  Programs may also test, save and restore a flag.
+Thus, IEEE 754 provides three ways by which programs
+may cope with exceptions for which the default result
+might be unsatisfactory:
+.IP 1) \w'\0\0\0\0'u
+Test for a condition that might cause an exception
+later, and branch to avoid the exception.
+.IP 2) \w'\0\0\0\0'u
+Test a flag to see whether an exception has occurred
+since the program last reset its flag.
+.IP 3) \w'\0\0\0\0'u
+Test a result to see whether it is a value that only
+an exception could have produced.
+.NT
+The only reliable ways to discover
+whether Underflow has occurred are to test whether
+products or quotients lie closer to zero than the
+underflow threshold, or to test the Underflow
+flag.  (Sums and differences cannot underflow in
+IEEE 754; if x
+.if n \
+!=
+.if t \
+\(!=
+y then x\-y is correct to
+full precision and certainly nonzero regardless of
+how tiny it may be.)  Products and quotients that
+underflow gradually can lose accuracy gradually
+without vanishing, so comparing them with zero
+(as one might on a VAX) will not reveal the loss.
+Fortunately, if a gradually underflowed value is
+destined to be added to something bigger than the
+underflow threshold, as is almost always the case,
+digits lost to gradual underflow will not be missed
+because they would have been rounded off anyway.
+So gradual underflows are usually \fIprovably\fR ignorable.
+The same cannot be said of underflows flushed to 0.
+.NE
+.PP
+At the option of an implementor conforming to IEEE 754,
+other ways to cope with exceptions may be provided:
+.IP 4) \w'\0\0\0\0'u
+ABORT.  This mechanism classifies an exception in
+advance as an incident to be handled by means
+traditionally associated with error\-handling
+statements like "ON ERROR GO TO ...".  Different
+languages offer different forms of this statement,
+but most share the following characteristics:
+.IP \(em \w'\0\0\0\0'u
+No means is provided to substitute a value for
+the offending operation's result and resume
+computation from what may be the middle of an
+expression.  An exceptional result is abandoned.
+.IP \(em \w'\0\0\0\0'u
+In a subprogram that lacks an error\-handling
+statement, an exception causes the subprogram to
+abort within whatever program called it, and so
+on back up the chain of calling subprograms until
+an error\-handling statement is encountered or the
+whole task is aborted and memory is dumped.
+.IP 5) \w'\0\0\0\0'u
+STOP.  This mechanism, requiring an interactive
+debugging environment, is more for the programmer
+than the program.  It classifies an exception in
+advance as a symptom of a programmer's error; the
+exception suspends execution as near as it can to
+the offending operation so that the programmer can
+look around to see how it happened.  Quite often
+the first several exceptions turn out to be quite
+unexceptionable, so the programmer ought ideally
+to be able to resume execution after each one as if
+execution had not been stopped.
+.IP 6) \w'\0\0\0\0'u
+\&... Other ways lie beyond the scope of this document.
+.RE
+.PP
+The crucial problem for exception handling is the problem of
+Scope, and the problem's solution is understood, but not
+enough manpower was available to implement it fully in time
+to be distributed in 4.3 BSD's \fIlibm\fR.  Ideally, each
+elementary function should act as if it were indivisible, or
+atomic, in the sense that ...
+.IP i) \w'iii)'u+2n
+No exception should be signaled that is not deserved by
+the data supplied to that function.
+.IP ii) \w'iii)'u+2n
+Any exception signaled should be identified with that
+function rather than with one of its subroutines.
+.IP iii) \w'iii)'u+2n
+The internal behavior of an atomic function should not
+be disrupted when a calling program changes from
+one to another of the five or so ways of handling
+exceptions listed above, although the definition
+of the function may be correlated intentionally
+with exception handling.
+.PP
+Ideally, every programmer should be able \fIconveniently\fR to
+turn a debugged subprogram into one that appears atomic to
+its users.  But simulating all three characteristics of an
+atomic function is still a tedious affair, entailing hosts
+of tests and saves\-restores; work is under way to ameliorate
+the inconvenience.
+.PP
+Meanwhile, the functions in \fIlibm\fR are only approximately
+atomic.  They signal no inappropriate exception except
+possibly ...
+.RS
+Over/Underflow
+.RS
+when a result, if properly computed, might have lain barely within range, and
+.RE
+Inexact in \fIcabs\fR, \fIcbrt\fR, \fIhypot\fR, \fIlog10\fR and \fIpow\fR
+.RS
+when it happens to be exact, thanks to fortuitous cancellation of errors.
+.RE
+.RE
+Otherwise, ...
+.RS
+Invalid Operation is signaled only when
+.RS
+any result but \*(nn would probably be misleading.
+.RE
+Overflow is signaled only when
+.RS
+the exact result would be finite but beyond the overflow threshold.
+.RE
+Divide\-by\-Zero is signaled only when
+.RS
+a function takes exactly infinite values at finite operands.
+.RE
+Underflow is signaled only when
+.RS
+the exact result would be nonzero but tinier than the underflow threshold.
+.RE
+Inexact is signaled only when
+.RS
+greater range or precision would be needed to represent the exact result.
+.RE
+.RE
+ 
+\fBExceptions on RISC machines:\fP
+.RS
+The exception enables and the flags that are raised when an exception
+occurs (as well as the rounding mode) are in the floating\-point control and
+status register.  This register can be read or written by the routines
+described on the man page
+.IR fpc (3).
+This register's layout is described in the file
+.RI < mips/fpu.h >
+in UMIPS\-BSD releases and in
+.RI < sys/fpu.h >
+in UMIPS\-SYSV releases.
+.sp +.5
+What is currently available is only the raw interface which was only
+intended to be used by the code to implement IEEE user trap handlers.
+IEEE floating\-point exceptions are enabled by setting the enable bit
+for that exception in the floating\-point control and status register.
+If an exception then occurs the UNIX signal SIGFPE is sent to the
+process.  It is up to the signal handler to determine the instruction
+that caused the exception and to take the action specified by the
+user.  The instruction that caused the exception is in one of two
+places.  If the floating\-point board is used (the floating\-point
+implementation revision register indicates this in it's implementation
+field) then the instruction that caused the exception is in the
+floating\-point exception instruction register.  In all other
+implementations the instruction that caused the exception is at
+the address of the program counter as modified by the branch delay
+bit in the cause register.  Both the program counter and cause register
+are in the sigcontext structure passed to the signal handler (see
+.MS signal 3 ).
+If the program is to be continued past the instruction that caused
+the exception the program counter in the signal context must be
+advanced.  If the instruction is in a branch delay slot then the
+branch must be emulated to determine if the branch is taken and
+then the resulting program counter can be calculated (see
+.MS emulate_branch 3
+and 
+.MS signal 3 ).
+.RE
+.SH Restrictions
+When signals are appropriate, they are emitted by certain
+operations within the codes, so a subroutine\-trace may be
+needed to identify the function with its signal in case
+method 5) above is in use.  And the codes all take the
+IEEE 754 defaults for granted; this means that a decision to
+trap all divisions by zero could disrupt a code that would
+otherwise get correct results despite division by zero.
+.SH See Also
+fpc(3), signal(3), emulate_branch(3)
+.br
+.I "R2010 Floating Point Coprocessor Architecture"
+.br
+.I "R2360 Floating Point Board Product Description"
+.PP
+An explanation of IEEE 754 and its proposed extension p854
+was published in the IEEE magazine MICRO in August 1984 under
+the title "A Proposed Radix\- and Word\-length\-independent
+Standard for Floating\-point Arithmetic" by W. J. Cody et al.
+.PP
+Articles in the IEEE magazine COMPUTER vol. 14 no. 3 (Mar.
+1981), and in the ACM SIGNUM Newsletter Special Issue of
+Oct. 1979, may be helpful although they pertain to
+superseded drafts of the standard.

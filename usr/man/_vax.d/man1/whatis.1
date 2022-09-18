@@ -1,0 +1,35 @@
+.\" SCCSID: @(#)whatis.1	8.1	9/11/90
+.TH whatis 1
+.SH Name
+whatis \- display command description
+.SH Syntax
+.B whatis
+\fIcommand...\fR
+.SH Description
+.NXR "whatis command (general)"
+.NXAM "whatis command (general)" "catman command"
+.NXA "man command" "whatis command (general)"
+.NXR "command" "getting online information"
+The
+.PN whatis
+command looks up a given command and
+gives the header line from the manual section.
+You can then run the 
+.MS man 1
+command to get more information.
+If the line starts ``name(section) ...'' you can do
+``man section name'' to get the documentation for it.
+Try ``whatis ed'' and then you should do ``man 1 ed'' to get the manual.
+.PP
+The
+.PN whatis
+command is actually just the
+.B \-f
+option to the 
+.MS man 1
+command.
+.SH Files
+.DT
+/usr/lib/whatis	Data base
+.SH See Also
+man(1), catman(8)

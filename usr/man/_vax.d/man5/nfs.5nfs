@@ -1,0 +1,28 @@
+.\" SCCSID: @(#)nfs.5nfs	8.1	9/11/90
+.TH nfs 5nfs
+.SH Name
+nfs \- Network File System
+.SH Description
+.NXR "NFS file system" "format"
+.NXS "Network File System" "NFS file"
+.NXR "NFS file system"
+The Network File System (NFS)
+is a specific file system implemented under
+the Generic File System Interface,
+as described in 
+.MS gfsi 5 . 
+.PP
+NFS provides support for sharing ordinary 
+files and directories in a multivendor networking environment. 
+The system administrator for a file server machine makes a file system
+available for remote access by placing the name of the file
+system to be shared in an export list.  The administrator
+for a client machine can import a file system from any server machine
+that has granted access permission to the requesting client machine.
+A complete exported file system or any subtree of an exported
+file system can be imported by the client machine.  Once imported,
+users on the client machine can access files
+in the remote file system as though they were local files.  
+.SH See Also
+getdirentries(2), getmnt(2), mount(2nfs), mount(2), exports(5nfs),
+fstab(5), gfsi(5), mount(8nfs), showmount(8nfs)

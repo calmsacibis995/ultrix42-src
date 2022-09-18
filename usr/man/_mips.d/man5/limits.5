@@ -1,0 +1,249 @@
+.TH limits 5 RISC
+.SH Name
+limits \- header files for implementation-specific constants
+.SH Syntax
+.B #include <\fIlimits.h\fP>
+.br
+.B #include <\fIfloat.h\fP>
+.SH Description
+The header file \fI<limits.h>\fR specifies the sizes of integral
+types as required by the proposed ANSI C standard.
+.NXR "limits.h"     
+The header file \fI<float.h>\fR specifies the characteristics of
+floating types as required by the proposed ANSI C standard.
+.NXR "float.h"
+The constants that refer to long doubles that should appear in
+\fI<float.h>\fR are not specified because RISC does not implement
+long doubles.
+.PP
+The file <\fIlimits.h\fR> contains the following:
+.EX  0
+#define  CHAR_BIT  8         /* # of bits in a `char'              */
+#define  SCHAR_MIN (-128)    /* min integer value of a `signed     */
+                             /* char'                              */
+#define  SCHAR_MAX (+127)    /* max integer value of a `signed     */
+                             /* char'                              */
+#define  UCHAR_MAX 255       /* max integer value of `unsigned     */
+                             /* char'                              */
+#define  CHAR_MIN  (-128)    /* min integer value of a `char'      */
+#define  CHAR_MAX  (+127)    /* max integer value of a `char'      */
+#define  SHRT_MIN  (-32768)  /* min decimal value of a `short'     */
+#define  SHRT_MAX  (+32767)  /* max decimal value of a `short'     */
+#define  USHRT_MAX 65535     /* max decimal value of `unsigned     */
+                             /* short'                             */
+#define  INT_MIN   (-2147483648) /* min decimal value of an `int'  */
+#define  INT_MAX   (+2147483647) /* max decimal value of a `int'   */
+#define  UINT_MAX  4294967295  /* max decimal value of `unsigned   */
+                               /* int'                             */
+#define  LONG_MIN  (-2147483648) /* min decimal value of a `long'  */
+#define  LONG_MAX  (+2147483647) /* max decimal value of a `long'  */
+#define  ULONG_MAX 4294967295  /* max decimal value of `unsigned   */
+                               /* long'                            */
+#define  USI_MAX  4294967295    /* max decimal value of `unsigned' */
+#define  WORD_BIT   32            /* # of bits in a ``word'' or    */
+                                  /* `int'                         */
+#define CHILD_MAX       25       /* max # of processes per user id */
+#define CLK_TCK 60               /* # of clock ticks per second    */
+#define LOCK_MAX    0   */ max # of entries in system              */
+                       /* lock table                               */
+#define LINK_MAX        32766    /* max # of links to a single     */
+                                 /* file                           */
+#define LONG_BIT        32       /* # of bits in a "long" (X/OPEN) */
+#define NAME_MAX        255  /* max # of characters in a file name */
+#define NGROUPS_MAX     32              /* max # of groups         */
+#define MAX_INPUT       256       /* max # of bytes in terminal    */
+                                  /* input queue                   */
+#define MAX_CANON       256       /* max # of bytes in term canon  */
+                                  /* input line                    */
+#define MAX_CHAR        256       /* max # of bytes in term canon  */
+                                  /* input line (X/OPEN)           */
+#define OPEN_MAX        64       /* max # of files a process can   */
+                                 /* have open                      */
+#define PASS_MAX        8        /* max # of characters in         */
+                                 /* a password                     */
+#define PATH_MAX        1024     /* max # of characters in         */
+                                 /* a path name                    */
+#define PID_MAX         30000    /* max value for a process ID     */
+#define SYSPID_MAX      2        /* max value for a system         */
+                                 /* proc ID (X/OPEN)               */
+#define PIPE_BUF        4096     /* max # bytes atomic in          */
+                                 /* write to pipe                  */
+#define PIPE_MAX        4096     /* max # bytes written to a       */
+                                 /* pipe in a write                */
+
+#define PROC_MAX        100    /* max # of simultaneous processes  */
+#define STD_BLK         8192   /* # bytes in a physical I/O block  */
+#define SYS_NMLN        32 /* # of chars in uname-returned strings */
+#define SYS_OPEN        200 /* max # of files open on system       */
+#define TMP_MAX 17576 /* max # of calls to tmpnam(3S) before       */
+                         /* recycling of names occurs              */
+#define UID_MAX         32000    /* max value for a user or group  */
+                                 /* ID                             */
+#define NZERO 20                
+                                 /* default nice value (as seen    */
+                                /* by nice(3), not intrinsically)  */           
+/*
+ * Internationalization constants
+ */
+#define MB_LEN_MAX      1  /* max number of bytes in a multibyte   */
+                           /* character, any locale: placeholder   */
+#define NL_ARGMAX       9  /* max value of digits in calls to      */
+                           /* nl_scanf(3S) and nl_printf(3S)       */
+#define NL_MSGMAX       32767   /* max message number              */
+#define NL_NMAX         2    /* max n-to-1 bytes in mapping chars  */ 
+#define NL_SETMAX       255     /* max set number                  */
+#define NL_TEXTMAX      256     /* max no. of bytes in a message   */
+                                /* string                          */
+#define NL_LBLMAX       32767   /* max number of labels            */
+                                /* in catalogue                    */
+#define NL_LANGMAX      32      /* max number of bytes in LANG     */
+                                /* name                            */
+/*
+ *      POSIX minimum values
+ *
+ *      These values are the MINIMUM allowable by POSIX. Actual values
+ *      for ULTRIX are defined above.
+ */
+#define _POSIX_ARG_MAX   4096   /* Length of arguments for         */
+                                /* exec( )                         */
+#define _POSIX_CHILD_MAX 6      /* Number of simultaneous          */
+                                /* procs per uid                   */
+#define _POSIX_LINK_MAX  8      /* Number of file links            */
+#define _POSIX_MAX_CANON 255    /* Number of bytes in              */
+                                /* a terminal canon                */
+                                /* input queue                     */
+#define _POSIX_MAX_INPUT 255    /* Number of bytes                 */
+                                /* for which space is              */
+                                /* guaranteed in terminal          */
+                                /* input queue                     */
+#define _POSIX_NAME_MAX  14     /* Number of bytes in a filename   */
+#define _POSIX_NGROUPS_MAX 0    /* Number of allowable             */
+                                /* supplementary group ID's        */
+#define _POSIX_OPEN_MAX  16     /* Number of files open at one     */
+                                /* time by a given process.        */
+#define _POSIX_PATH_MAX  255    /* Number of bytes in a pathname   */
+#define _POSIX_PIPE_BUF  512    /* Number of bytes that is         */
+                                /* guaranteed to be written        */
+                                /* atomically when writing to      */
+                                /* a pipe.                         */
+.EE
+.PP
+The file <\fIlimits.h\fR> contains the following values for RISC architecture:
+.NXR "limits.h" "values for RISC architecture:
+.EX 0
+#define ARG_MAX         20480   /* max length of arguments to exec */
+#define HUGE_VAL        1.8e+308 /* infinity                       */
+.EE
+.PP                             
+The file <\fIlimits.h\fR> contains the following value for
+VAX architecture:
+.NXR "limits.h" "values for VAX architecture"
+.EX 0
+#define ARG_MAX         10240   /* max length of arguments to exec */
+.EE
+.PP
+The file <\fIlimits.h\fR> contains the following value for VAX D-float
+architecture:
+.NXR "limits.h" "values for VAX D-float architecture"
+.EX 0
+#define HUGE_VAL        1.701411834604692293e+38
+.EE
+.PP
+The file <\fIlimits.h\fR> contains the following value for
+VAX G-float architecture:
+.NXR "limits.h" "values for VAX G-float architecture"
+.EX 0
+#define HUGE_VAL        8.9884656743115790e+307
+.EE
+.PP
+The file <\fIfloat.h\fR> contains the following values for
+RISC architecture:
+.NXR "float.h" "values for RISC architecture"
+.EX 0
+#define  FLT_RADIX  2 /* radix of exponent representation          */
+#define  FLT_ROUNDS  1 /* addition rounds                          */
+                       /* (>0 implementation-defined)              */
+/* number of base-FLT_RADIX digits in the floating point mantissa  */ 
+#define  FLT_MANT_DIG  24
+#define  DBL_MANT_DIG  53 
+/* minimum positive floating-point number x such that              */
+/* 1.0 + x \< > 1.0                                                */   
+#define  FLT_EPSILON  1.19209290e-07
+#define  DBL_EPSILON  2.2204460492503131e-16
+/* number of decimal digits of precision                           */
+#define  FLT_DIG  6
+#define  DBL_DIG  15
+/* minimum negative integer such that FLT_RADIX raised to that     */
+/* power minus 1 is a normalized floating point number             */
+#define  FLT_MIN_EXP  (-125)
+#define  DBL_MIN_EXP  (-1021)
+/* minimum normalized positive floating-point number               */
+#define  FLT_MIN  1.17549435e-38
+#define  DBL_MIN  2.2250738585072014e-308
+/* minimum negative integer such that 10 raised to                 */
+/* that power is in the range of normalized floating-point numbers */
+#define  FLT_MIN_10_EXP  (-37)
+#define  DBL_MIN_10_EXP  (-307)
+/* maximum integer such that FLT_RADIX raised to that              */
+/* power minus 1 is a representable finite floating-point number   */
+#define  FLT_MAX_EXP  +128
+#define  DBL_MAX_EXP  +1024
+/* maximum representable finite floating-point number              */
+#define  FLT_MAX  3.40282347e+38
+#define  DBL_MAX  1.7976931348623157e+308
+/* maximum integer such that 10 raised to that power is in         */
+/* the range of representable finite floating-point numbers        */
+#define  FLT_MAX_10_EXP  38
+#define  DBL_MAX_10_EXP  308\s+2
+.EE
+.PP
+The file <\fIfloat.h\fR> contains the following values for VAX architecture:
+.NXR "float.h" "values for VAX architecture"
+.EX 0
+#define  FLT_RADIX  2 /* radix of exponent representation          */
+#define  FLT_ROUNDS  1 /* addition rounds                          */
+                       /* (>0 implementation-defined)              */
+#define FLT_MIN_10_EXP  (-37)
+#define DBL_MIN_10_EXP  (-307)
+#define LDBL_MIN_10_EXP
+
+#define FLT_MANT_DIG 24
+#define FLT_EPSILON 5.96046448e-08
+#define FLT_DIG  6
+#define FLT_MIN_EXP  (-127)
+#define FLT_MIN float  2.93873588e-39
+#define FLT_MIN_10_EXP  (-38)
+#define FLT_MAX_EXP     127
+#define FLT_MAX 1.701411733192644299e+38
+#define FLT_MAX_10_EXP  380
+.EE
+.PP
+The file <\fIfloat.h\fR> contains the following values for
+VAX D-float:
+.NXR "float.h" "values for D-float"
+.EX 0
+#define DBL_MANT_DIG    56
+#define DBL_EPSILON     1.3877787807814457e-17
+#define DBL_DIG 16
+#define DBL_MIN_EXP     (-127)
+#define DBL_MIN 2.93873587705571880e-39
+#define DBL_MIN_10_EXP  (-38)
+#define DBL_MAX_EXP     127
+#define DBL_MAX 1.701411834604692293e+38
+#define DBL_MAX_10_EXP  38 
+.EE
+.PP
+The file <\fIfloat.h\fR> contains the following values for
+VAX G-float (cc - Mg):
+.NXR "float.h" "values for G-float"
+.EX
+#define DBL_MANT_DIG    53
+#define DBL_EPSILON     1.1102230246251570e-016
+#define DBL_DIG 15
+#define DBL_MIN_EXP     (-1023)
+#define DBL_MIN 5.56268464626800350e-309
+#define DBL_MIN_10_EXP  (-308)
+#define DBL_MAX_EXP     1023
+#define DBL_MAX 8.9884656743115790e+307
+#define DBL_MAX_10_EXP  307
+.EE

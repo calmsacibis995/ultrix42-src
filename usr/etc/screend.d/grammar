@@ -1,0 +1,106 @@
+	Informal guide to the screend configuration file
+
+Lexical:
+	(1) Comments can either be "C-style" /* comments */
+		or "csh-style" # comments
+
+	(2) Case is significant in reserved words (all are lower-case).
+		This is actually a win, because if a host name happens
+		to conflict with a reserved word, you can use the
+		host name in upper-case.
+
+	(3) Host names begin with alphabetics but may contain
+		digits, `-', `.', and `-'.  Ditto for network,
+		subnet, and netmask names.  All can also be entered
+		in dotted quad notation.  Names are bound when the
+		file is read; if a (name, address) binding changes
+		while the daemon is running, tough.
+
+	(4) Numbers may be in decimal or in hex (0x0 notation).
+		Octal notation is not allowed because nobody
+		uses it in this context.  (Actually, hex is almost
+		as useless).
+
+	(5) Protocol names and port names (for TCP or UDP) are
+		as in /etc/protocols and /etc/services, respectively.
+		These can also be given as numbers (host byte order).
+
+	(6) All white space is the same (including newlines).
+
+General Syntax:
+	(1) The configuration file consists of "rules" terminated by
+		semicolons.
+
+	(2) There are three kinds of rules:
+		(a) default action specification
+			There should only be one of these (the last
+			one is the one that counts).
+		(b) subnet mask specifications
+		(c) action specifications
+
+	(3) Rule kinds can appear in any order, but the evaluation
+		order of action specifications is the order in which
+		they appear in the file.
+		
+Syntax for default action specification:
+	"default" {"accept" | "reject"} ["notify"] ["log"] ;
+    Note that "default accept notify;" is legal but the "notify" is a no-op.
+
+Syntax for subnet mask specifications:
+	"for" <network> "netmask is" <maskval> ;
+    The <network> is either a network name or a dotted-quad address,
+    such as `36.0.0.0'.  `36' is NOT a reasonable value.
+    Maskval is either a name (treated as a hostname) or a dotted-quad
+    address, such as `255.255.255.0' (bits are ON where the network
+    and subnet parts are.)
+
+Syntax for action specifications:
+	"from" <object> "to" <object> {"accept" | "reject"} ["notify"] ["log"]
+    Says that packets flowing this way between this pair of objects
+    (defined below) should either be accepted or rejected.  If "notify"
+    is specified, when a packet is rejected an ICMP error message is
+    returned to the source.  If "log" is specified, this packet and
+    its disposition is logged.
+
+    Conceptually, for each packet the action specification rules are
+    searched in the order they appear in the configuration file, until
+    one matches.  The specified action is then performed.  If no rule
+    matches, the default action is performed.
+
+
+Object specifications:
+    This is probably most easily described in notation:
+
+    <object> ::= <address-spec> | <port-spec> | <address-spec> <port-spec>
+
+    <address-spec> ::= <net-spec> | <subnet-spec> | <host-spec> | "any"
+
+    <net-spec> ::= "net" <name-or-addr> | "net-not" <name-or-addr>
+    <subnet-spec> ::= "subnet" <name-or-addr> | "subnet-not" <name-or-addr>
+    <host-spec> ::= "host" <name-or-addr> | "host-not" <name-or-addr>
+
+    <name-or-addr> ::= <name> | <dotted-quad> | "any"
+
+    <port-spec> ::= "proto" <proto-name-or-number>
+			| "icmp type" <type-name-or-number>
+			| "icmp type-not" <type-name-or-number>
+			| "tcp port" <port-name-or-number>
+			| "tcp port-not" <port-name-or-number>
+			| "udp port" <port-name-or-number>
+			| "udp port-not" <port-name-or-number>
+
+    <proto-name-or-number> ::= <name> | <number>
+    <type-name-or-number> ::= <name> | <number> | "any"
+    <port-name-or-number> ::= <name> | <number> | "any"
+    				| "reserved" | "xserver"
+
+    Notes:
+	If the protocol is not specified, "any" is assumed.
+	"reserved" ports are those reserved by 4.xBSD Unix for
+		privileged processes.
+	"xserver" ports are those use by X server processes.
+	The "-not" convention means that the object-spec matches
+		if the specified field does not have the specified
+		value.
+	The "subnet" and "subnet-not" forms match against the
+		entire address under the subnet mask.

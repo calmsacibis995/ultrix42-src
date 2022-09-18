@@ -1,0 +1,77 @@
+.\" Last edited by Kent Jackson. 03/06/90
+.\" SCCSID: @(#)yppasswd.1	6.1	4/27/89
+.TH yppasswd 1yp
+.SH Name
+yppasswd \- change password in yellow pages (YP) service.
+.SH Syntax
+.B yppasswd
+[
+.I name
+]
+.SH Description
+.NXR  "yppasswd command"  
+.NXR  "yellow pages service"  "changing password in"
+.NXR  "password"  "changing in yellow pages"  
+The
+.PN yppasswd
+command lets you change your password in the yellow pages (YP) map, a network
+data base service.  Only you or the superuser can change your YP
+password.
+.PP
+When you enter the
+.PN yppasswd
+command, the program prompts you for the old password and then for the
+new password. Note that the passwords are not displayed on the screen.  
+.PP
+Next, the program asks you for the new password again, to
+verify that you have typed it correctly.  If you do not type the
+passwords correctly, you will receive an error message after you enter
+the new password. 
+.PP
+Your new YP password must meet 
+.B one 
+of the following requirements:
+.RS 3 
+.IP \(bu 2  
+It must be a combination of at least six alphanumeric characters, 
+.B or
+.IP \(bu
+It must be a minimum of four characters, with at least one being 
+non-alphanumeric, such as a control sequence. 
+.RE
+.NT
+The
+.PN passwd
+command does not change the YP password.  
+This command only changes the local
+password file
+.PN (/etc/passwd),
+and not the YP master password file.  See Chapter 3 of the
+\fIGuide to the Yellow Pages Service\fP
+for further information.
+.NE
+.SH Diagnostics
+.PP
+.B "Please use a longer password"
+.br
+Your new password does not meet the minimum length requirement.
+.PP
+.B "Mismatch- password unchanged"
+.br
+You misspelled your new password or its verification.
+.PP
+.B "couldn't change passwd"
+.br
+Your new password can not be activated. It must be different from
+your old password and your login name.
+.SH Files
+.TP 15
+.PN /etc/passwd
+Password file
+.TP
+.PN /etc/yp
+Yellow Pages directory
+.SH See Also
+passwd(1), passwd(5yp), ypfiles(5yp), yppasswdd(8yp) 
+.br
+\fIGuide to the Yellow Pages Service\fP

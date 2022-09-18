@@ -1,0 +1,117 @@
+.\" SCCSID: @(#)mkfs.8	8.2	9/27/90
+.TH mkfs 8
+.SH Name
+mkfs \- construct a file system
+.SH Syntax
+.B /etc/mkfs
+[ \fI-N\fP ]
+\fIspecial size\fP
+[ \fInsect\fP ]
+[ \fIntrack\fP ]
+[ \fIblksize\fP ]
+.br
+[ \fIfragsize\fP ]
+[ \fIncpg\fP ]
+[ \fIminfree\fP]
+[ \fIrps\fP ]
+[ \fInbpi\fP ]
+[ \fIopt\fP ]
+.SH Description
+.NXR "mkfs command"
+.NXR "file system" "constructing prototype"
+.NXA "mkfs command" "newfs command"
+.NXA "mkfs command" "tunefs command"
+File systems are normally created with the
+.MS newfs 8
+command.
+.PP
+The \fI-N\fP option is used to run
+.PN mkfs
+in no update mode.  In this mode, 
+.PN mkfs
+will not write to
+.PN special .
+.PP
+The
+.PN mkfs
+command constructs a file system
+by writing on the special file
+.I special.
+The numeric size specifies the number of sectors in the file system.
+The
+.PN mkfs
+command builds a file system with a root directory and a
+.I lost+found
+directory.
+For further information, see 
+.MS fsck 8 .
+The number of i-nodes is calculated
+as a function of the file system size.
+No boot program is initialized by
+.PN mkfs .
+For further information, see 
+.MS newfs 8 .
+.PP
+When the on-disks inodes of the file system are written, each contains
+a unique number in its generation number field.  This number uniquely
+identifies each inode in a file system.
+.PP
+The optional arguments allow fine tune control over the
+parameters of the file system.
+The
+.I nsect
+argument specifies the number of sectors per track on the disk.
+The
+.I ntrack 
+argument specifies the number of tracks per cylinder on the disk.
+The
+.I blksize 
+argument gives the primary block size for files on the file system.
+It must be a power of two, currently selected from 4096 or 8192.
+The
+.I fragsize
+argument gives the fragment size for files on the file system.
+The
+.I fragsize
+argument represents the smallest amount of disk space
+that will be allocated to a file.
+It must be a power of two currently selected from the range 512 to 8192.
+The
+.I ncpg
+argument specifies the number of disk cylinders per cylinder group.
+This number must be in the range 1 to 32.
+The
+.I minfree
+argument specifies the minimum percentage of free disk space allowed.
+Once the file system capacity reaches this threshold, only
+the superuser is allowed to allocate disk blocks.  The default
+value is 10%.
+If a disk does not revolve at 60 revolutions per second, the
+.I rps
+parameter may be specified.
+Users with special demands for their file systems are referred to
+``A Fast File System for UNIX'' in the
+.I "ULTRIX Supplementary Documents, Volume 3: System Manager"
+for a discussion of the tradeoffs in using different configurations.
+The
+.I nbpi
+argument specifies the number (ratio) of bytes per inode. 
+The default is 2048 bytes.  
+The
+.I opt
+argument is used to indicate the whether the 
+file system should optimize for
+space or time.
+The
+.I opt
+argument can be assigned a value of s or t.
+.SH Restrictions
+If 
+.PN /bin/mkfs
+is invoked without arguments, 
+the RISC machines dump core instead of returning an error.
+.SH See Also
+dir(5), fs(5), fsck(8), newfs(8), tunefs(8)
+.br
+"A Fast File System for UNIX",
+\fISupplementary Documents, Volume 3: System Manager\fP

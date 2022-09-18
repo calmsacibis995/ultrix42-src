@@ -1,0 +1,86 @@
+.\" SCCSID: @(#)bstring.3	8.2	1/28/91
+.TH bstring 3 
+.SH Name
+bcopy, bcmp, bzero, ffs \- bit and byte string operations
+.SH Syntax
+.nf
+.B void bcopy(b1, b2, length)
+.B char *b1, *b2;
+.B int length;
+.PP
+.B bcmp(b1, b2, length)
+.B char *b1, *b2;
+.B int length;
+.PP
+.B void bzero(b1, length)
+.B char *b1;
+.B int length;
+.PP
+.B ffs(i)
+.B int i;
+.fi
+.SH Description
+.NXR "bstring keyword"
+.NXR "bcopy subroutine"
+.NXR "bcmp subroutine"
+.NXR "bzero subroutine"
+.NXR "ffs subroutine"
+.NXR "string" "operations on variable-length"
+.NXR "bit" "determining setting in byte"
+.NXA "strcat subroutine" "bcopy subroutine"
+The functions
+.PN bcopy ,
+.PN bcmp ,
+and
+.PN bzero
+operate on variable length strings of bytes.
+They do not check for null bytes as the routines in
+.MS string 3  
+do.
+.PP
+The
+.PN bcopy
+function copies 
+.I length
+bytes from string
+.I b1
+to the string
+.IR b2 .
+.PP
+The
+.PN bcmp
+function
+compares byte string
+.I b1
+against byte string
+.IR b2 ,
+returning zero if they are identical,
+non-zero otherwise.  Both strings are
+assumed to be
+.I length
+bytes long.
+.PP
+The
+.PN bzero
+function places
+.I length
+0 bytes in the string
+.IR b1 .
+.PP
+The
+.I ffs
+finds the first bit set in the argument passed it and
+returns the index of that bit.  Bits are numbered
+starting at 1.  A return value of 0 indicates the
+value passed is zero.
+.SH Restrictions
+The
+.PN bcmp
+and 
+.PN bcopy
+routines take parameters backwards from
+.PN strcmp
+and
+.PN strcpy .
+.SH See Also
+.MS memory 3

@@ -1,0 +1,36 @@
+.TH restartterm 3cur 
+.SH Name
+restartterm \- restart terminal for curses application
+.SH Syntax
+.B
+restartterm(term, filenum, errret)
+.br
+.B
+char *term;
+.br
+.B
+int filenum;
+.br
+.B
+int *errret;
+.SH Description
+.NXR "restartterm subroutine"
+This function 
+sets up the current terminal
+.PN term
+after a save/restore of a 
+.PN curses
+application program.
+.PN restartterm
+assumes that the windows and modes are the same for the restarted 
+application as when memory was saved.
+It assumes that the terminal type 
+and dependent settings, such as baudrate, may have changed.
+The routine
+.PN setupterm 
+is called to extract the terminal information from the 
+.PN terminfo 
+database
+and set up the terminal.
+.SH See Also
+setupterm(3cur), terminfo(5)

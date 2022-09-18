@@ -1,0 +1,49 @@
+.TH nl 3cur 
+.SH Name
+nl, nonl \- enable/disable newline control
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int nl(\|)
+.PP
+.B
+int nonl(\|)
+.SH Description
+.NXR "nl macro"
+.NXR "nonl subroutine"
+The 
+.PN nl
+routine enables the newline control translations.
+When newline control is enabled,
+a newline is translated into 
+a carriage return
+and a linefeed on output, and a return is translated into 
+a newline on
+input.
+Initially, these translations do occur.
+.PP
+The
+.PN nonl
+routine
+disables these translations, 
+allowing
+the
+.PN curses
+program to use the
+linefeed capability
+of the terminal,
+resulting in faster cursor motion.
+The
+.PN nl
+routine
+is a macro.
+.SH Return Values
+The
+.PN nl
+and
+.PN nonl
+functions return OK on success and ERR on error.

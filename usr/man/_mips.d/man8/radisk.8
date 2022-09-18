@@ -1,0 +1,170 @@
+.\" SCCSID: @(#)radisk.8	3.1	11/24/87
+.\" to produce output: 
+.\" ditroff \-Tln01 \-t \-man filename | lpr \-n \-Pln &
+.TH radisk 8
+.UC 4
+.SH Name
+radisk \- Digital Storage Architecture (DSA) disk maintenance
+.SH Syntax
+.B /etc/radisk
+.sp
+.B radisk
+.B \-c 
+.I LBN
+.I length
+.I special
+.RE
+.br
+.B radisk
+.B \-e
+.I special
+.br
+.B radisk
+.B \-n
+.I special
+.br
+.B radisk
+.B \-r
+.I LBN
+.I special
+.br
+.B radisk
+.B \-s
+.I LBN
+.I length
+.I special
+.SH Description
+.NXR "radisk utility"
+.NXR "DSA disk" "managing"
+.NXS "Digital Storage Architecture" "DSA disk"
+The Digital Storage Architecture (DSA) disk maintenance program
+.PN radisk
+provides the essential functions to manage DSA 
+disk devices. The
+.PN radisk
+command must be used on unmounted disk partitions to insure correct
+results.
+.PP
+The 
+.I LBN 
+is a decimal number that represents the logical block number as
+reported in the errorlog file.  The 
+.I LBN 
+is the actual disk block number
+starting from the beginning of the disk. 
+.PP
+The
+.I length 
+is a decimal number that indicates how many (512 byte) blocks to
+process.  The length specified may be 
+.B \-1 
+to indicate the last block of the specified partition.
+.PP
+The 
+.I special 
+file specified is used with 
+.B \-c, \-e, \-n,  
+and 
+.B \-r 
+options and indicates an unmounted 
+.B c
+partition of a character device special file.
+.SH Options
+The following options may be set with 
+.PN radisk .
+.NXR "radisk utility" "options"
+.IP \fB\-c\fR 5  
+Clears a forced error indicator on the range of specified LBNs.  The
+forced error condition indicates that the data in the disk block is
+bad.  The disk block is good, but the data can not be read without
+getting an error detection code (EDC) error.  This option will cause the
+forced error condition to be removed.  After the forced error indicator
+is cleared, the EDC error will not be reported nor will the data be
+marked as bad.  
+.IP
+All indications that the data is corrupt are lost.  The
+data should be restored either by manual methods or with the 
+.PN restore
+command. The 
+.PN radisk 
+command affects the integrity of the data on a disk and should be
+followed by a file system restore if data is affected.
+.IP \fB\-e\fR 5
+Sets the exclusive access attribute associated with the specified disk.  This
+attribute is provided by multihost controllers to restrict access to a disk
+to one host.  The 
+.PN radisk 
+command will return a failure status if the disk is already exclusively 
+associated with another host or the underlying controller does not provide
+multihost support.
+If the 
+command is issued to a disk that is currently mounted and the command fails,
+the disk will no longer be online to this host.  For this reason the
+\f(CW\-e\fR option should not be issued to a disk that is mounted.
+.IP \f(B\-n\fR 5
+Clears the exclusive access attribute associated with the specified disk.  
+If the controller provides multihost support and the exclusive access attribute
+is not set for a particular disk, it would be possible for the disk to be 
+accessed by more than one host.
+The 
+.PN radisk 
+command will return a failure status if the disk is not currently and exclusively
+associated with this host or the underlying controller does not provide
+multihost support.
+.IP \fB\-r\fR 5
+Replaces a block on the disk specified by LBN. See Restrictions.
+.IP \fB\-s\fR 5
+Starts a scan for bad blocks on the specified area on a disk. Bad blocks
+are disk blocks that have data transfer errors to the extent that they
+cannot be relied on.  When a bad block is found, it is replaced and the
+bad block's LBN is reported.  The LBN specified with the
+.PN \-s 
+option can be 
+.B 0 
+to indicate the first block in the specified partition.  If 
+.B 0
+is specified, however, the program starts searching from the first block 
+of the partition. The 
+.PN \-s 
+option will accept any valid partition on the disk. This allows any
+partition to be scanned without scanning the entire disk and ensures
+that the specified partition is free of bad blocks. As an example,
+.PN /dev/rra3h 
+indicates the 
+.B h 
+partition of the third logical disk unit.
+.PP
+.DT
+.SH Diagnostics
+The
+.PN radisk
+command generates messages when the user is not privileged, when the
+LBN is not in the specified partition, and when the length exceeds the
+size of the partition.
+.SH Restrictions
+You must be in single-user mode when using the
+.PN \-c ,
+.PN \-r ,
+and
+.PN \-s
+options of the
+.PN radisk
+program.  If you are in multiuser mode, 
+.PN radisk
+hangs the system and cannot be killed.  If this happens, you must reboot.
+.PP
+The 
+.PN \-r 
+option is supported only with those DSA disks which use host-initiated
+dynamic bad block replacement. 
+.PP
+The
+.PN \-e
+and
+.PN \-n
+options are only supported on controllers that provide multi-host support.
+These options are only supported on HSC Version 5.00 or later.
+.SH See Also
+dkio(4), ra(4), sdc(4), chpt(8), mount(8), restore(8)
+.br
+.I "Guide to System Disk Maintenance"

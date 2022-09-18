@@ -1,0 +1,32 @@
+.TH endwin 3cur 
+.SH Name
+endwin \- restore initial terminal environment
+.SH Syntax
+.B
+int endwin(\|)
+.SH Description
+.NXR "endwin subroutine"
+This routine restores tty modes, moves the cursor to the lower left
+corner of the screen and resets the terminal to the
+last
+non-\c
+.PN curses
+mode.
+.PP
+A program should always call 
+.PN endwin
+before exiting or escaping from
+.PN curses
+mode temporarily.
+Call
+.PN refresh 
+or 
+.PN doupdate 
+to resume after a temporary escape.
+.SH Return Values
+The
+.PN endwin
+function returns OK on success and ERR on error.
+.SH See Also
+doupdate(3cur),
+refresh(3cur)

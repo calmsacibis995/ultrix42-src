@@ -1,0 +1,6 @@
+! lpsholes.lup provides for a larger left margin for hole punching
+! that will work on either duplex or simplex modes.  Note that it 
+! will not produce the desired result with any tumbling operation.
+
+no borders
+margins = 19, 19, 60, 19

@@ -1,0 +1,86 @@
+.\" SCCSID: @(#)setjmp.3	2.2	8/10/87
+.TH setjmp 3 VAX
+.SH Name
+setjmp, longjmp \- nonlocal goto
+.SH Syntax
+.nf
+.B #include <setjmp.h>
+.PP
+.B setjmp(env)
+.B jmp_buf env;
+.PP
+.B longjmp(env, val)
+.B jmp_buf env;
+.PP
+.B _setjmp(env)
+.B jmp_buf env;
+.PP
+.B _longjmp(env, val)
+.B jmp_buf env;
+.fi
+.SH Description
+.NXR "setjmp subroutine"
+.NXR "longjmp subroutine"
+.NXR "program" "debugging"
+These routines are useful for dealing with errors 
+and interrupts encountered in
+a low-level subroutine of a program.
+.PP
+The
+.PN setjmp 
+subroutine
+saves its stack environment in
+.I env
+for later use by
+.PN longjmp .
+It returns value 0.
+.PP
+The
+.PN longjmp
+subroutine
+restores the environment saved by the last call of
+.PN setjmp .
+It then returns in such a way that execution
+continues as if the call of 
+.PN setjmp
+had just returned the value
+.I val
+to the function that invoked
+.PN setjmp ,
+which must not itself have returned in the interim.
+However, 
+.PN longjmp
+cannot cause 
+.PN setjmp
+to return the value 0. If 
+.PN longjmp
+is invoked with a 
+.I val
+of 0, 
+.PN setjmp
+will return 1.
+All accessible data have values as of the time
+.PN longjmp
+was called. 
+.PP
+The
+.PN setjmp
+and
+.PN longjmp
+subroutines
+save and restore the signal mask sigsetmask(2),
+while
+.PN _setjmp
+and
+.PN _longjmp
+manipulate only the C stack and registers.
+.SH Restrictions
+The
+.PN setjmp
+subroutine
+does not save current notion of whether the process is
+executing on the signal stack.  The result is that a
+longjmp to some place on the signal stack leaves the
+signal stack state incorrect.
+.SH See Also
+sigstack(2), sigvec(2), signal(3)

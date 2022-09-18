@@ -1,0 +1,55 @@
+.\" SCCSID: @(#)uumonitor.8c	8.1	9/11/90
+.TH uumonitor 8c
+.SH Name
+uumonitor \- monitor the UUCP system
+.SH Syntax
+.B uumonitor
+.SH Description
+.NXR "uumonitor program"
+.NXAM "uucp utility" "uumonitor program"
+The
+.PN uumonitor
+command displays a synopsis in tabular format of the current UUCP
+status.  The format of each line is as follows:
+.PP
+.sp
+.I system_name  
+#C #X  
+.I most_recent_status  
+CNT:#    
+.I time
+.sp
+In the format of this line,
+.IP \fIsystem_name\fP 15
+is the remote system for which the entry applies.
+.IP \fB#C\fP
+is the number of C.files queued for the remote system.
+.IP \fB#X\fP 
+is the number of requests for remote execution from the
+remote system.
+.IP \fImost_recent_status\fP
+is the result of the most recent attempt to connect to the
+remote system.
+.IP \fBCNT:#\fP
+is the number of times that a failure to log in to the remote
+system has occurred.  This does NOT include the number failed 
+dial attempts.  
+.IP \fItime\fP
+is the time of the last status entry was made for this system.
+.PP
+.PP
+The
+.PN uumonitor
+command is helpful for detecting systems that have
+backlogs, that have gone away for awhile, that have changed 
+phone numbers, and so forth.  
+The CNT: field is useful for detecting a system whose login/passwd
+has changed. 
+If the CNT: field gets larger than the maximum allowable failures
+(currently 20),
+no further attempts to connect to this system are made.
+If the number of C.files queued starts getting unusually large
+(depending on the system anywhere from 100-1000),
+action should be taken to determine the cause of the backlog.
+.SH See Also
+uucp(1c)

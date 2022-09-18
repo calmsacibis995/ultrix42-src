@@ -1,0 +1,155 @@
+.\" SCCSID: @(#)view.1	8.1	9/11/90
+.TH view 1
+.SH Name
+view \- displays a file using the vi commands 
+.SH Syntax 
+.B view
+[\fB\-t\fI tag\fR\|] [\fB\-r\fR] [\fB+\fR\fIcommand\fR\|] [\fB\-l\fR] 
+[\fB\-w\fIn\fR\|] [\fB\-x\fR] \fIname...\fR
+.SH Description
+.NXR "view command"
+.NXR "view command" "encryption"
+.NXR "encryption" "view command"  
+The
+.PN view
+command displays a text file. 
+The
+.PN view
+command and the
+.PN vi
+command
+run almost the same code except that in 
+.PN view
+changes to a file are not allowed.  It is possible to get to
+the command mode of
+.PN ex
+from within both.
+.PP
+The following is a list of some of the 
+.PN view 
+commands. See the
+\fIvi Beginner's Reference Card\fP
+and the
+"Introduction to Display Editing with vi" in the
+\fISupplementary Documents, Volume 1: General User\fP
+for more details that can be helpful for using 
+.PN view .
+.PP
+.B Screen Control Commands
+.RS 5
+.IP <CTRL/L> 15 
+Reprints current screen.
+.IP \fB<CTRL/Y>\fP 
+Exposes one more line at top of screen.
+.IP \fB<CTRL/E>\fP 
+Exposes one more line at bottom of screen.
+.RE
+.PP
+.B Paging Commands
+.RS 5
+.IP <CTRL/F> 15
+Pages forward one screen.
+.IP <CTRL/B>
+Pages back one screen.
+.IP <CTRL/D>
+Pages down half screen.
+.IP <CTRL/U>
+Pages up half screen.
+.RE
+.PP
+.B Cursor Positioning Commands
+.RS 5
+.IP j 15
+Moves cursor down one line, same column.
+.IP k
+Moves cursor up one line, same column.
+.IP h
+Moves cursor back one character.
+.IP l
+Moves cursor forward one character.
+.IP <RETURN>
+Moves cursor to beginning of next line.
+.IP 0
+Moves cursor to beginning of current line.
+.IP $
+Moves cursor to end of current line.
+.IP <SPACE>
+Moves cursor forward one character.
+.IP \fIn\fBG\fR
+Moves cursor to beginning of line \fIn\fR.  Default is last line 
+of file.
+.IP /\fIpattern\fP
+Moves cursor forward to next occurrence of \fIpattern\fP.
+.IP ?\fIpattern\fP
+Moves cursor backward to next occurrence of \fIpattern\fP.
+.IP n
+Repeats last / or ? pattern search.
+.RE
+.PP
+.B Exiting view
+.RS 5
+.IP ZZ 15
+Exits 
+.PN view. 
+.IP :q
+Quits 
+.PN view 
+session.
+.RE
+.SH Options
+.IP "\-t \fItag\fR" 10
+Specifies a list of 
+.I tag
+files. The 
+.I tag
+files are preceded by a backslash (\\)
+and are separated by spaces. The 
+.I tag
+option should always be the first
+entry.
+.IP +\fIcommand\fR
+Tells the editor to begin by executing the specified 
+.I command. 
+An example would be +/\fIpattern\fR that would search
+for a 
+.I pattern.
+.IP \-l
+Sets the showmatch and lisp options for viewing LISP code..
+.IP \-r\fI name\fR
+Retrieves the last saved version of the 
+.IR name 'd
+file in the event of a
+system crash. If no file is specified, a list of saved files is
+produced.
+.IP \-w\fIn\fR
+Sets the default window size to
+.I n.
+This option is useful for starting in a small window on dialups.
+.NT
+The 
+.B \-x
+option is available only if the Encryption 
+layered product is installed.
+.NE
+.IP \-x 10
+Causes
+.PN view
+to prompt for a
+.I key.
+The
+.I key
+is used to encrypt and decrypt the contents of the file. 
+If the file has been encrypted with one
+.IR key ,
+you must use the same
+.I key
+to decrypt the file.
+.SH See Also
+edit(1), ex(1), vi(1) 
+.br
+\fIThe Little Gray Book: An ULTRIX Primer\fP
+.br
+\fIThe Big Gray Book: The Next Step with ULTRIX\fP
+.br
+"An Introduction to Display Editing with vi" in the 
+\fISupplementary Documents, Volume 1: General User\fP

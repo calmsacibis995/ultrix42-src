@@ -1,0 +1,103 @@
+.\" SCCSID: @(#)graph.1g	8.1	9/11/90
+.TH graph 1g
+.SH Name
+graph \- draw a graph
+.SH Syntax
+.B graph
+[\|\fIoption...\fR\|] 
+.SH Description
+.NXA "graph command" "spline command"
+.NXA "graph command" "plot command"
+.NXR "graph" "drawing"
+.NXR "graph command"
+The
+.PN graph
+command with no options takes pairs of numbers from the
+standard input as abscissas and
+ordinates of a graph.
+Successive points are connected by straight lines.
+The graph is encoded on the standard output
+for display by the 
+.MS plot 1g
+filters.
+.PP
+If the coordinates of a point are followed by
+a nonnumeric string, that string is printed as a
+label beginning on the point.
+Labels may be surrounded with quotes "...", in
+which case they may be empty or contain blanks
+and numbers;
+labels never contain new lines.
+.PP
+A legend indicating grid range is produced
+with a grid unless the
+.B \-s
+option is present.
+.PP
+If a specified lower limit exceeds the upper limit,
+the axis
+is reversed.
+.SH Options
+.NXR "graph command" "options"
+.IP \fB\-a\fR 12
+Supplies abscissas automatically and uses next two arguments 
+to set spacing and
+starting point.
+Spacing is given by the next
+argument (default 1).
+A second optional argument is the starting point for
+automatic abscissas (default 0 or lower limit given by
+.BR \-x ).
+.IP \fB\-b\fR 
+Breaks graph after each label in the input.
+.IP \fB\-c\fR 
+Uses specified string (next argument) as label.
+.IP \fB\-g\fR 
+Uses specified number (next argument) in setting up
+grid style:  0 (no grid), 1 (frame with ticks),
+and 2 (full grid).  Default is 2.
+.IP \fB\-h\fR 
+Uses specified number (next argument) as fraction of space for height.
+.IP \fB\-l\fR 
+Uses specified string (next argument) as graph label. 
+.IP \fB\-m\fR 
+Uses specified number (next argument) in setting up line mode:  0
+(disconnected) and 1 (connected).  Default is 1.
+.IP \fB\-r\fR 
+Uses specified number (next argument) as fraction of space to right before
+plotting.
+.IP \fB\-s\fR 
+Saves screen (no erase) before plotting.
+.IP \fB\-t\fR 
+Transposes vertical and horizontal axes.
+.IP \fB\-u\fR 
+Uses specified number (next argument) as fraction of space to move up 
+before plotting.
+.IP \fB\-w\fR 
+Uses specified number (next argument) as fraction of space for width.
+.IP "\fB\-x\fR [ \fBl\fR ]" 
+Determines x axis logarithmically.  Next two arguments after 
+.B l
+determine lower and upper
+.I x
+limits respectively.  The third argument determines grid spacing on 
+.I x
+axis.
+.IP "\fB\-y\fR [ \fBl\fR ]" 
+Same as 
+.B x
+but for 
+.B y
+axis.
+.SH Restrictions
+.NXR "graph command" "restricted"
+The
+.PN graph
+command stores all points internally and drops those for which
+there is not room.
+.sp
+Segments that run out of bounds are dropped, not windowed.
+.sp
+Logarithmic axes may not be reversed.
+.SH See Also
+plot(1g), spline(1g)

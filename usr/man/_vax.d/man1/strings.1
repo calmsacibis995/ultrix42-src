@@ -1,0 +1,33 @@
+.\" SCCSID: @(#)strings.1	8.1	9/11/90
+.TH strings 1
+.SH Name
+strings \- print ASCII strings in program
+.SH Syntax
+.B strings
+[\fB\-|a\fR] [\fB\-o\fR] [\fB\-\fInumber\fR\|] \fIfile...\fR
+.SH Description
+.NXR "strings command"
+.NXR "string" "defined"
+.NXR "object file" "finding printable strings"
+.NXR "binary file" "finding printable strings"
+The
+.PN strings
+command looks for ascii strings in a binary file.
+A string is any sequence of 4 or more printing characters ending with
+a newline or a null.
+.PP
+The
+.PN strings
+command
+is useful for identifying random object files and many other things.
+.SH Options
+.IP "\fB\-\fR or \fB\-a\fR" 10 
+Looks through the entire object file for ASCII strings.  Default is 
+to look only in the initialized data space.  
+.IP \fB\-\fInumber\fR
+Sets the minimum string length to specified number of characters 
+and default is 4.
+.IP \fB\-o\fR
+Precedes each string with its file offset (octal).  
+.SH See Also
+od(1)

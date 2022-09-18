@@ -1,0 +1,51 @@
+(*#@(#)system.def	4.1	Ultrix	7/17/90 *)
+(* $Header: system.def,v 1.3 84/05/27 13:03:19 powell Exp $ *)
+This module should not be compiled, but is supplied for documentation purposes.
+definition module system;
+
+(* This is a dummy definition module to indicate what is in the built-in *)
+(* system module.  Note that case is ignored in built-in identifiers *)
+
+const
+    BYTESPERWORD = 4;
+    BITSPERWORD = 32;
+    MOSTSIGBIT = 31;
+    LEASTSIGBIT = 0;
+    MAXINT = 2^31-1;
+    MAXUNSIGNED = 2^32-1;
+    MAXCARD = MAXINT (default) or MAXUNSIGNED (-s option)
+
+type
+    Word;	(* parameter compatible with any 1-word thing *)
+    Byte = @size 8 Word;
+    Address = pointer @nocheck to Word; (* compatible with all pointers *)
+    Process;	(* coroutine descriptor *)
+
+procedure Adr(variable : array of Word) : Address;
+    (* return the address of the specified variable *)
+
+procedure Size(variable : array of Word) : Cardinal;
+    (* returns the size in bits of the specified variable *)
+
+procedure TSize(typeName : Type) : Cardinal;
+    (* returns the size in bits of the specified type *)
+
+procedure ByteSize(variable : array of Word) : Cardinal;
+    (* returns the size in bytes of the specified variable *)
+
+procedure ByteTSize(typeName : Type) : Cardinal;
+    (* returns the size in bytes of the specified type *)
+
+procedure CPUTime() : Cardinal;
+    (* returns the accumulated program CPU time in milliseconds *)
+
+procedure NewProcess(procName : Proc; stackArea : Address; stackSize : Cardinal;
+		var processVar : Process) ;
+    (* Create a coroutine to execute procedure procName using stackArea *)
+    (* of size stackSize bits.  return coroutine descriptor in processVar *)
+
+procedure Transfer(var saveCurrent : Process; var transferTo : Process);
+    (* save the current coroutine stack in saveCurrent and resume the *) 
+    (* coroutine in transferTo *)
+
+end system.

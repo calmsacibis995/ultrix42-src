@@ -1,0 +1,292 @@
+.\" SCCSID: @(#)prs.1	8.1	9/11/90
+'\" t
+.nr f 0
+.bd S B 3
+.de SP
+.if n .ul
+\%[\fB\-\\$1\fP\\c
+.if n .ul 0
+\\$2\\$3
+..
+.de SF
+.if n .ul
+\%[\fB\-\\$1\fP]
+.if n .ul 0
+..
+.de AR
+.if \\nf \{ \
+.    RE
+.    nr f 0 \}
+.PP
+.RS 5
+.TP 15
+\fB\-\\$1\\fP
+\\$2 \\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.nr f 1
+..
+.de A1
+.if \\nf \{ \
+.    RE
+.    nr f 0 \}
+.PP
+.RS 5
+.TP 15
+\fB\-\\$1\fP[\fI\\$2\^\fP]
+\\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.nr f 1
+..
+.ds S)  \s-1SCCS\s+1
+.ds I)  \s-1SID\s+1
+.TH prs 1
+.SH Name
+prs \- display information from an SCCS file
+.SH Syntax
+.B prs
+[\fB\-d\fR[\fIdataspec\fR]\|] [\fB\-r\fR[\fISID\fR]\|] 
+[\fB\-e\fR] [\fB\-l\fR] [\fB\-a\fR] \fIfiles\fR 
+.SH Description
+.NXR "prs command (sccs)"
+.NXR "SCCS file" "printing"
+.NXAM "sccsfile" "SCCS file"
+The
+.PN prs
+command prints on the standard output all or parts of an \*(S) file
+in a user supplied format.
+For further information, see 
+.MS sccsfile 5 .
+If a directory is named,
+.PN prs
+behaves as though each file in the directory were
+specified as a named file,
+except that non-\*(S) files
+(last component of the path name does not begin with \fBs.\fP),
+and unreadable files
+are silently ignored.
+If a name of \fB\-\fP is given, the standard input is read;
+each line of the standard input is taken to be the name of an \*(S) file
+or directory
+to be processed;
+non-\*(S) files and unreadable files are silently ignored.
+.PP
+Arguments to
+.PN prs ,
+which may appear in any order, consist of
+keyletter arguments, and file names.
+.SH Options
+.NXR "prs command (sccs)" "options"
+All the described
+keyletter arguments apply independently to each named file:
+.IP \fB\-a\fR 20
+Displays printing of information for both removed
+and existing deltas.
+For example, removed delta type =
+.IR R ,
+and existing delta type =
+.IR D .
+For further information, see 
+.MS rmdel 1 .
+If the
+.B \-a
+keyletter is not specified,
+information is provided only for existing deltas. 
+.IP \fB\-d\fR[\fIdataspec\fR] 20
+Displays information specified by 
+.I dataspec.  
+The
+.I dataspec\^
+is a string consisting of \*(S) file
+.I "data keywords\^"
+(see
+.BR "\s-1DATA KEYWORDS\s+1" )
+interspersed with optional user-supplied text.
+.IP \fB\-e\fR 20
+Displays information for all deltas created
+earlier than and including the delta designated by the
+.B \-r
+keyletter.
+.IP \fB\-l\fR 20
+Displays information for all deltas created
+later than and including the delta designated by the
+.B \-r
+keyletter.
+.IP \fB\-r\fR[\fISID\fR] 20
+Indicates delta version number.  
+If no \*(I) is specified, the \*(I) of the most recently created delta
+is assumed.
+.PP
+.i0
+.SH Data Keywords
+.NXR "SCCS file" "data keywords"
+Data keywords
+specify which parts of an \*(S) file are to be retrieved and 
+printed on the standard output.
+All parts of an \*(S) file 
+have an associated data keyword.
+For further information, see 
+.MS sccsfile 5 .
+There is no limit on the number of times a data keyword
+may appear in a
+.IR dataspec .
+.PP
+The information printed by
+.PN prs\^
+consists of
+the user supplied text and
+the appropriate values (extracted from the \*(S) file)
+substituted for the recognized data keywords
+in the order of appearance in the \fIdataspec\^\fP.
+The format of a data keyword value is either
+.I Simple\^
+(S), in which
+keyword substitution is direct, or
+.I "Multi-line\^"
+(M), in which keyword substitution is followed
+by a carriage return.
+.PP
+User supplied text
+is any text other than
+recognized data keywords.
+A tab is specified
+by \fB\et\fP and carriage return/new-line is specified by \fB\en\fP.
+.in 0
+.if t .ps \-1
+.if t .vs \-1p
+.ps 9
+.TS
+center;
+c s s s s
+cI lI cI cI cI
+a1 l1 c1 c1 a.
+Table 1. \s-1SCCS\s+1 Files Data Keywords
+.sp .5
+Keyword	Data Item	File Section	Value	Format
+:Dt:	Delta Information	Delta Table	See below*	S
+.T&
+a l a c a.
+:DL:	Delta line statistics	"	:Li:/:Ld:/:Lu:	S
+:Li:	Lines inserted by Delta	"	nnnnn	S
+:Ld:	Lines deleted by Delta	"	nnnnn	S
+:Lu:	Lines unchanged by Delta	"	nnnnn	S
+:DT:	Delta type	"	\fID\fR or \fIR\fR	S
+:I:	SCCS ID string (SID)	"	:R:.:L:.:B:.:S:	S
+:R:	Release number	"	nnnn	S
+:L:	Level number	"	nnnn	S
+:B:	Branch number	"	nnnn	S
+:S:	Sequence number	"	nnnn	S
+:D:	Date Delta created	"	:Dy:/:Dm:/:Dd:	S
+:Dy:	Year Delta created	"	nn	S
+:Dm:	Month Delta created	"	nn	S
+:Dd:	Day Delta created	"	nn	S
+:T:	Time Delta created	"	:Th:::Tm:::Ts:	S
+:Th:	Hour Delta created	"	nn	S
+:Tm:	Minutes Delta created	"	nn	S
+:Ts:	Seconds Delta created	"	nn	S
+:P:	Programmer who created Delta	"	logname	S
+:DS:	Delta sequence number	"	nnnn	S
+:DP:	Predecessor Delta seq-no.	"	nnnn	S
+:DI:	Seq-no. of deltas incl., excl., ignored	"	:Dn:/:Dx:/:Dg:	S
+:Dn:	Deltas included (seq #)	"	:DS: :DS:...	S
+:Dx:	Deltas excluded (seq #)	"	:DS: :DS:...	S
+:Dg:	Deltas ignored (seq #)	"	:DS: :DS:...	S
+:MR:	MR numbers for delta	"	text	M
+:C:	Comments for delta	"	text	M
+.T&
+a l c c a.
+:UN:	User names	User names	text	M
+:FL:	Flag list	Flags	text	M
+.T&
+a l a c a.
+:Y:	Module type flag	"	text	S
+:MF:	MR validation flag	"	\fIyes\fR or \fIno\fR	S
+:MP:	MR validation pgm name	"	text	S
+:KF:	Keyword error/warning flag	"	\fIyes\fR or \fIno\fR	S
+:KV:	Keyword validation string	"	text	S
+:BF:	Branch flag	"	\fIyes\fR or \fIno\fR	S
+:J:	Joint edit flag	"	\fIyes\fR or \fIno\fR	S
+:LK:	Locked releases	"	:R:...	S
+:Q:	User-defined keyword	"	text	S
+:M:	Module name	"	text	S
+:FB:	Floor boundary	"	:R:	S
+:CB:	Ceiling boundary	"	:R:	S
+:Ds:	Default SID	"	:I:	S
+:ND:	Null delta flag	"	\fIyes\fR or \fIno\fR	S
+.T&
+a l c c a.
+:FD:	File descriptive text	Comments	text	M
+:BD:	Body	Body	text	M
+.T&
+a l a c a.
+:GB:	Gotten body	"	text	M
+.T&
+a l a c a.
+:W:	A form of \fIwhat\fR (1) string	N/A	:Z::M::I:	S
+:A:	A form of \fIwhat\fR (1) string	N/A	:Z::Y: :M: :I::Z:	S
+:Z:	\fIwhat\fR (1) string delimiter	N/A	@(#)	S
+:F:	SCCS file name	N/A	text	S
+:PN:	SCCS file path name	N/A	text	S
+.TE
+.PP
+.in +3
+*:Dt: = :Dt: :I: :D: :T: :P: :DS: :DP:
+.ps 10
+.SH Examples
+.NXR(e) "prs command"
+The following is an example of a 
+.PN prs 
+command line and what it produces on
+the standard output:
+.EX
+prs \-d"Users and/or user \s-1ID\s+1s for \fB:\fPF\fB:\fP are\fB:\fP\en\fB:\fP\s-1UN\s+1\fB:\fP" s\fB.\fPfile
+.PP
+.RS
+.nf
+Users and/or user \s-1ID\s+1s for s\fB.\fPfile are\fB:\fP
+xyz
+131
+abc
+.fi
+.RE
+.EE
+.PP
+This is another example and its output.
+.EX
+prs \-d"Newest delta for pgm \fB:\fPM\fB:\fP\fB:\fP \fB:\fPI\fB:\fP Created \fB:\fPD\fB:\fP By \fB:\fPP\fB:\fP" \-r s\fB.\fPfile
+.PP
+.IP
+Newest delta for pgm main\fB.\fPc\fB:\fP 3\fB.\fP7 Created 77/12/1 By case
+.EE
+.PP
+This is an example of a \fIspecial case:\^\fP
+.EX
+prs s\fB.\fPfile
+.EE
+.PP
+This is what it may produce on the standard output:
+.PP
+.RS
+D 1\fB.\fP1 77/12/1 00\fB:\fP00\fB:\fP00 cas 1 000000/00000/00000
+\s-1MR\s+1s\fB:\fP
+bl78-12345
+bl79-54321
+\s-1COMMENTS\s+1\fB:\fP
+this is the comment line for s\fB.\fPfile initial delta
+for each delta table entry of the ``D'' type.
+The only keyletter argument allowed to be used with the
+.I "special case"
+is the
+.B \-a
+keyletter.
+.RE
+.SH Diagnostics
+See
+.PN sccshelp(1)
+for explanations.
+.SH Files
+.RE
+.TP 10
+/tmp/pr?????
+.i0
+.SH See Also
+admin(1), delta(1), get(1), help(1), sccs(1), sccsfile(5)
+.br
+\fIGuide to the Source Code Control System\fP

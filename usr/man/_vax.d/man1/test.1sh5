@@ -1,0 +1,175 @@
+.TH test 1sh5
+.SH Name
+test \- condition evaluation command
+.SH Syntax
+.B test
+expr
+.br
+.B [
+expr
+.B ]
+.SH Description
+.NXR "test command" "command programming language"
+The
+.PN test
+command evaluates the expression
+.I expr.
+If the value of
+.I expr
+is true, the 
+.PN test 
+command returns a zero exit status; otherwise, it
+returns a nonzero exit status.  The
+.PN test
+command also
+returns a nonzero exit status if no arguments are specified.
+The following primitives are used to construct
+.IR expr  :
+.TP 15
+.BI \-r " file\^"
+True if \fIfile\fR exists and is readable.
+.TP
+.BI \-w " file\^"
+True if \fIfile\fR exists and is writable.
+.TP
+.BI \-x " file\^"
+True if
+.I file\^
+exists and is executable.
+.TP
+.BI \-f " file\^"
+True if \fIfile\fR exists and is a regular file.
+.TP
+.BI \-d " file\^"
+True if \fIfile\fR exists and is a directory.
+.TP
+.BI \-c " file\^"
+True
+if
+.I file\^
+exists and is a character special file.
+.TP
+.BI \-b " file\^"
+True if
+.I file\^
+exists and is a block special file.
+.TP
+.BI \-p " file\^"
+True if
+.I file\^
+exists and is a named pipe (fifo).
+.TP
+.BI \-u " file\^"
+True if
+.I file\^
+exists and its set-user-\c
+.SM ID
+bit is set.
+.TP
+.BI \-g " file\^"
+True if
+.I file\^
+exists and its set-group-\c
+.SM ID
+bit is set.
+.TP
+.BI \-k " file\^"
+True if
+.I file\^
+exists and its sticky bit is set.
+.TP
+.BI \-s " file\^"
+True if \fIfile\fR exists and has a size greater than zero.
+.TP
+.BR \-t " [ \fIfildes\fR ]"
+True if the open file whose file descriptor number is
+.I fildes\^
+(1 by default)
+is associated with a terminal device.
+.TP
+.BI \-z " s1\^"
+True if the length of string
+.I s1\^
+is zero.
+.TP
+.BI \-n " s1\^"
+True if the length of the string
+.I s1\^
+is non-zero.
+.TP
+.IB s1 " = " s2\^
+True
+if strings
+.I s1\^
+and
+.I s2\^
+are identical.
+.TP
+.IB s1 " != " s2\^
+True
+if strings
+.I s1\^
+and
+.I s2\^
+are
+.I not\^
+identical.
+.TP
+.I s1\^
+True if
+.I s1\^
+is
+.I not\^
+the null string.
+.TP
+.IB n1 " \-eq " n2\^
+True if the integers
+.I n1\^
+and
+.I n2\^
+are algebraically equal.
+Any of the comparisons
+.BR \-ne ,
+.BR \-gt ,
+.BR \-ge ,
+.BR \-lt ,
+and
+.BR \-le
+may be used in place of
+.BR \-eq .
+.PP
+These primitives can be combined with the
+following operators:
+.TP 15
+.B  !
+unary negation operator.
+.TP
+.B  \-a
+binary
+.I and\^
+operator.
+.TP
+.B  \-o
+binary
+.I or\^
+operator
+.RB ( \-a
+has higher precedence than
+.BR \-o ).
+.TP
+.BR "(\| " "expr" " \|)"
+parentheses for grouping.
+.PP
+Note that all the operators and flags are separate
+arguments to the
+.PN test 
+command.  Note also that parentheses are meaningful
+to the Shell and must be escaped.
+.NT Note
+In the form of the command that uses
+square brackets ([\|]),
+instead of the word
+.IR test ,
+the brackets must be delimited by blanks.
+.SH See Also
+find(1), sh5(1), test(1)

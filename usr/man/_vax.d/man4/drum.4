@@ -1,0 +1,23 @@
+.\" SCCSID: @(#)drum.4	8.1	9/11/90
+.\" SCCSID: @(#)drum.4	8.1	9/11/90
+.TH drum 4
+.SH Name
+drum \- paging device
+.SH Description
+.NXR "drum keyword"
+.NXR "paging device"
+This file refers to the paging device in use by the system.
+This may actually be a subdevice of one of the disk drivers, but, in
+a system with paging interleaved across multiple disk drives,
+it provides an indirect driver for the multiple drives.
+.SH Restrictions
+Reads from the drum are not allowed across the interleaving boundaries.
+Because these occur only every
+.BR . 5Mbytes
+or so,
+and because the system never allocates blocks across the boundary,
+this is usually not a problem.
+.SH Files
+.PN /dev/drum
+.SH See Also
+MAKEDEV(8)

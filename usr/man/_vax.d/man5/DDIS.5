@@ -1,0 +1,40 @@
+.TH DDIS 5
+.SH Name
+DDIS \- Digital Data Interchange Syntax / ISO ASN.1 (DDIS/ASN.1) files
+.SH Description
+.NXR "DDIS"
+.NXR "Digital Data Interchange Syntax"
+.NXR "ISO ASN.1 (DDIS/ASN.1) files"
+DDIS/ASN.1 files conform to Digital's Digital Data Interchange Syntax. 
+DDIS conforms to syntaxes that can be defined within the
+specifications of International Standards Organization Abstract Syntax
+Notation One (ISO ASN.1), but is not itself an implementation of full
+ISO ASN.1 syntax.
+.PP
+DDIS/ASN.1 files conform to the DDIS/ASN.1 syntax.  The DDIS/ASN.1
+syntax is itself used to define other syntaxes.
+The following are among the syntaxes that are
+subsets of DDIS/ASN.1:
+.RS 
+.IP DDIF 7
+Digital Document Interchange Format
+.IP DTIF
+Digital Table Interchange Format
+.IP DOTS
+Data Object Transport Syntax
+.RE
+.PP
+Files that conform to one of the DDIS/ASN.1 family of syntaxes are 
+described as DDIS/ASN.1 files.  More specifically, however, the
+files are typed 
+according to a particular DDIS/ASN.1 syntax.  For example, a
+file that conforms to the DDIF syntax is a DDIF file, and
+is identified by the
+.MS file 1
+command as a ddis/ddif file. The
+.PN file
+command includes the string ddis/ as a part of its output if a
+file belongs in the DDIS family.
+.PP
+.SH See Also
+ctod(1), dtoc(1), DDIF(5), DOTS(5), DTIF(5), CDA(5)

@@ -1,0 +1,512 @@
+.\" SCCSID: @(#)telnet.1c	8.1	9/11/90
+.TH telnet 1c
+.SH Name
+telnet \- user interface to the TELNET protocol
+.SH Syntax
+\fBtelnet\fR [\|\fIhost\|\fR[\fIport\fR\|]\|]
+.SH Description
+.NXR "telnet user interface"
+.NXS "TELNET protocol" "telnet user interface"
+The
+.PN telnet
+interface
+is used to communicate with another host using the TELNET protocol.  If 
+.PN telnet
+is invoked without arguments, it enters command mode,
+which is indicated by the prompt, telnet>.
+In this mode,
+.PN telnet
+accepts and executes the commands listed below.
+If it is invoked with arguments, it performs an
+.B open
+command (see below) with those arguments.
+.PP
+Once a connection is opened,
+.PN telnet
+enters input mode.
+The input mode is either character-at-a-time or 
+line-by-line, depending on what the remote system supports.
+In character-at-a-time mode, text is sent to the remote host as
+it is typed.
+In line-by-line mode, text is echoed locally and
+only completed
+lines are sent to the remote host.  The local-echo-character,
+initially ^E.
+turns the local echo on and off, which is
+useful when you want to enter passwords without them
+echoing to the screen.
+.PP
+In either mode, if the
+.I localchars
+toggle is TRUE (the default in line mode), then the user's 
+.I quit,
+.I intr,
+and
+.I flush 
+characters are trapped locally and sent as TELNET
+protocol sequences to the remote side.  Options such as toggle
+.I autoflush
+and toggle
+.I autosynch
+flush previous terminal input, as in
+.I quit
+and
+.I intr, 
+in addition to flushing subsequent output to the terminal until
+the remote host acknowledges the TELNET sequence.
+.PP
+To issue
+.PN telnet
+commands when in input mode, precede them with the
+.PN telnet
+escape character, initially the control character followed
+by a right bracket (\fB^]\fR).
+When in command mode, use the normal terminal editing conventions.
+.PP
+The following commands are available:
+.NXR "telnet user interface" "command list"
+.TP 15
+\fBopen\fP \fIhost\fP [ \fIport\fP ]
+.NXR "open command (TELNET)"
+Opens a connection to the named host.  If no port number
+is specified, 
+.PN telnet
+attempts to contact a TELNET server at the default port.
+The host specification may be either a host name
+or an Internet address specified in the dot notation.
+For further information, see 
+.MS hosts 5 
+and
+.MS inet 3n .
+.TP
+.B close
+.NXR "close command (TELNET)"
+Closes a TELNET session and returns to command mode.
+.TP
+.B quit
+.NXR "quit command (TELNET)"
+Closes any open TELNET session and exits
+.PN telnet .
+.TP
+.B z
+.NXR "z command (TELNET)"
+Suspends
+.PN telnet .
+This command only works when the user is using the 
+.MS csh 1 .
+.TP
+\fBmode \fItype\fR
+.NXR "mode command (TELNET)"
+The
+.I type
+is either
+.I line,
+for line-by-line mode, or
+.I character,
+for character-at-a-time mode.
+The local host asks the remote host for permission to go into
+one or the other mode.  
+The remote host enters the requested mode if it is capable of it.
+.TP
+.B status
+.NXR "status command (TELNET)"
+Shows the current status of 
+.PN telnet .
+This includes the peer one is connected to, as well
+as the state of debugging.
+.TP
+.B display \fR[\fP \fIargument...\fP \fR]\fP
+.NXR "display command (TELNET)"
+.br
+Displays all, or some, of the
+.B set
+and
+.B toggle
+values (see below).
+.TP
+.B ? \fR[\fP \fIcommand\fP \fR]\fP
+.NXR "? command (TELNET)"
+.br
+Accesses on-line help.  With no arguments,
+.PN telnet
+prints a help summary.
+If a command is specified, 
+.PN telnet
+prints the help information for that command.
+.TP
+.B send \fIargument(s)\fP
+.NXR "send command (TELNET)"
+.br
+Sends one or more special character sequences to the remote host.
+One or more of the following arguments can be specified:
+.RS
+.TP
+.I escape
+.br
+Sends the current
+.PN telnet
+escape character (initially the control character followed by a
+right bracket, \fB^]\fR).
+.TP
+.I synch
+.br
+Sends the TELNET SYNCH
+sequence.
+This sequence causes the remote system to discard input that
+was previously entered but that it has not yet read.
+This sequence is sent as TCP urgent
+data and may not work if the remote system is a 4.2 BSD system.  If
+it does not work, a lower case r may be echoed on the terminal screen.
+.TP
+.I brk
+.br
+Sends the TELNET BRK
+(Break) sequence, which may have significance to the remote
+system.
+.TP
+.I ip
+.br
+Sends the TELNET IP
+(Interrupt Process) sequence, which causes the remote
+system to abort the currently running process.
+.TP
+.I ao
+.br
+Sends the TELNET AO
+(Abort Output) sequence, which causes the remote system to flush
+all output
+.B from
+the remote system
+.B to
+the user's terminal.
+.TP
+.I ayt
+.br
+Sends the TELNET AYT
+(Are You There)
+sequence.  The remote system may or may not respond.
+.TP
+.I ec
+.br
+Sends the TELNET EC
+(Erase Character)
+sequence, which causes the remote system to erase the last character
+entered.
+.TP
+.I el
+.br
+Sends the TELNET EL
+(Erase Line)
+sequence, which causes the remote system to erase the line currently
+being entered.
+.TP
+.I ga
+.br
+Sends the TELNET GA
+(Go Ahead)
+sequence.  Often this sequence has no significance to the remote system.
+.TP
+.I nop
+.br
+Sends the TELNET NOP
+(No OPeration)
+sequence.
+.TP
+.I ?
+.br
+Prints out help information for the
+.B send
+command.
+.RE
+.TP
+.B set \fIargument value\fP
+.NXR "set command (TELNET)"
+.br
+Sets a
+.PN telnet
+variable to a specific value.
+The off value turns off the function associated with
+the variable.
+The current values of variables can be displayed with the
+.B display
+command.
+.PP
+The following variables that can be specified:
+.RS
+.TP
+.I echo
+.br
+Toggles between local echoing
+of entered characters, and suppressing
+echoing of entered characters when in
+line-by-line mode.  The value  is initially ^E.
+.TP
+.I escape
+.br
+Enters the
+.PN telnet
+command mode when you are connected to
+a remote system.  The value is initially
+the control character followed by a left bracket
+(\fB^[\fR).
+.TP
+.I interrupt
+.br
+Sends a TELNET IP
+sequence (see
+.B send
+.I ip
+above)
+to the remote host if
+.PN telnet
+is in
+.I localchars
+mode (see
+.B toggle
+.I localchars
+below) and the
+.I interrupt
+character is typed.
+The initial value for the interrupt character is
+the terminal's
+.B intr
+character.
+.TP
+.I quit
+.br
+Sends a TELNET BRK
+sequence (see
+.B send
+.I brk
+above)
+to the remote host if
+.PN telnet
+is in
+.I localchars
+mode (see
+.B toggle
+.I localchars
+below)
+and the
+.I quit
+character is typed.
+The initial value for the quit character is
+the terminal's
+.B quit
+character.
+.TP
+.I flushoutput
+.br
+Sends a TELNET AO
+sequence (see
+.B send
+.I ao
+above)
+to the remote host if
+.I telnet
+is in
+.I localchars
+mode (see
+.B toggle
+.I localchars
+below)
+and the
+.I flushoutput
+character is typed.
+The initial value for the flush character is 
+the terminal's
+.B flush
+character.
+.TP
+.I erase
+.br
+Sends a TELNET EC
+sequence (see
+.B send
+.I ec
+above)
+to the remote system if
+.I telnet
+is in
+.I localchars
+mode (see
+.B toggle
+.I localchars
+below),
+.B and
+if
+.I telnet
+is operating in character-at-time mode.
+The initial value for the erase character is
+the terminal's
+.B erase
+character.
+.TP
+.I kill
+.br
+Sends a TELNET EL
+sequence (see
+.B send
+.I el
+above)
+to the remote system if
+.PN telnet
+is in
+.I localchars
+mode (see
+.B toggle
+.I localchars
+below)
+.B and
+if
+.PN telnet
+is operating in character-at-a-time mode.
+The initial value for the kill character is 
+the terminal's
+.B kill
+character.
+.TP
+.I eof
+.br
+Sends this character to 
+the remote system if
+.PN telnet
+is operating in line-by-line mode and this character is
+entered as the first character on a line.
+The initial value of the eof character is the terminal's
+.B eof
+character.
+.RE
+.TP
+.B toggle \fIarguments...\fP
+.NXR "toggle command (TELNET)"
+.br
+Toggles (between
+TRUE
+and
+FALSE)
+flags that control how
+.PN telnet
+responds to events.
+More than one argument may be specified and
+the current value of these flags can be displayed with the
+.B display
+command.
+Valid arguments for the 
+.PN toggle
+command are the following:
+.RS
+.TP
+.I localchars
+.br
+Causes the 
+.IR flush ,
+.IR interrupt ,
+.IR quit ,
+.IR erase ,
+and
+.I kill
+characters to be recognized
+locally and transformed into appropriate
+TELNET control sequences if this flag is set to
+TRUE.  (See
+.B set
+above).  The appropriate TELNET control sequences are:
+.IR ao ,
+.IR ip ,
+.IR brk ,
+.IR ec ,
+and
+.IR el ,
+respectively.
+For more information see the
+.PN send
+command.
+The initial value for this toggle is TRUE in line-by-line mode,
+and FALSE in character-at-a-time mode.
+.TP
+.I autoflush
+.br
+Causes the 
+.PN telnet
+command to not display any data on the user's terminal
+until the remote system acknowledges (via a TELNET
+.I Timing Mark
+option)
+that it recognized and processed the following TELNET sequences:
+.IR ao ,
+.IR intr ,
+or
+.I quit.
+Both 
+.I autoflush
+and
+.I localchars
+must be TRUE for
+.I autoflush
+to work in this manner.
+The initial value for this toggle is TRUE if the terminal user did not
+specify
+.PN "stty noflsh" .  
+Otherwise it is FALSE.  For further information, see
+.MS stty 1 .
+.TP
+.I autosynch
+Causes the TELNET SYNCH
+sequence to follow the TELNET sequence that is initiated
+when either the
+.I intr
+or
+.I quit
+character is typed.
+The
+.I autosynch
+flag works in this manner when both the
+.I autosynch
+and
+.I localchars
+are TRUE.
+This procedure should
+cause the remote system to begin throwing away all previously
+typed input until both of the TELNET
+sequences have been read and acted upon.
+The initial value of this toggle is FALSE.
+.TP
+.I crmod
+.br
+Toggles carriage return mode.
+When this mode is enabled, most carriage return characters received from
+the remote host are mapped into a carriage return followed by
+a line feed.
+It is useful only
+when the remote host sends carriage returns but never line feeds.
+The initial value for this toggle is FALSE.
+.TP
+.I debug
+.br
+Toggles socket level debugging which is useful only to the
+.IR superuser.
+The initial value for this toggle is FALSE.
+.TP
+.I options
+.br
+Toggles the display of internal
+.PN telnet
+protocol processing that deals with TELNET
+options.
+The initial value for this toggle is FALSE.
+.TP
+.I netdata
+.br
+Toggles the display of all network data (in hexadecimal format).
+The initial value for this toggle is FALSE.
+.TP
+.I ?
+.br
+Displays the legal
+.B toggle
+commands.
+.RE
+.SH Restrictions
+In line-by-line mode, the terminal's EOF character is only recognized and
+sent to the remote system when it is the first character on a line.

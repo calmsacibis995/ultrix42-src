@@ -1,0 +1,19 @@
+./"   struct text {"n
+./"       struct xfree x_free;"n
+./"           struct text  *xun_freef;  "Xn
++/"           struct text  *xun_freeb;  "Xn
++/"       swblk_t  *x_daddr;            "Xn
++/"       swblk_t  x_ptdaddr;           "Xn
++/"       size_t   x_size;              "Xn
++/"       struct proc *x_caddr;         "Xn
++/"       struct gnode *x_gptr;         "Xn
++/"       short	 x_rssize;              "dn
++/"       short	 x_swrss;               "dn
++/"       short	 x_count;               "dn
++/"       short	 x_ccount;              "dn
++/"       short	 x_lcount;              "dn
++/"       short	 x_poip;                "xn
++/"       u_int	 x_flag;                "Xn
++/"   };
+
+

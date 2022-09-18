@@ -1,0 +1,69 @@
+.TH ranhash 3x RISC
+.SH Name
+ranhashinit, ranhash, ranlookup \- access routine for the symbol table
+definition file in archives
+.SH Syntax
+.B #include <ar.h>
+.PP
+.B int ranhashinit(pran, pstr, size)
+.br
+.B struct ranlib *pran;
+.br
+.B char *pstr;
+.br
+.B int size;
+.PP
+.B ranhash(name)
+.br
+.B char *name;
+.PP
+.B struct ranlib *ranhash(name)
+.br
+.B char *name;
+.SH Description
+The function
+.PN ranhashinit
+initializes static information for future use by
+.PN ranhash
+and
+.PN ranlookup .
+The argument
+.IR pran
+points to an array of ranlib structures.
+The argument
+.IR pstr
+points to the corresponding ranlib string table (these are only used by 
+.PN ranlookup ).
+The argument size
+.IR size
+is the size of the hash table and should be a power of 2. If the size is not
+a power of 2,
+a 1 is returned; otherwise, a 0 is returned.
+.PP
+The function
+.PN ranhash
+returns a hash number given a name. It uses a multiplicative
+hashing algorithm
+and the
+.IR size
+argument to
+.PN ranhashinit .
+.PP
+The
+.PN ranlookup
+function 
+looks up
+.IR name
+in the ranlib table specified by
+.IR ranhashinit.
+It uses the
+.PN ranhash
+routine as a starting point. Then, it does a rehash from there.
+This routine returns a pointer to a valid ranlib entry on a match. 
+If no matches are found (the "emptiness" can be
+inferred if the ran_off field is zero), the empty ranlib structure 
+hash table should be sparse.  This routine does not expect to run out
+of places to look in the table.  For example, if you collide on all entries in
+the table, an error is printed tostderr and a zero is returned.
+.SH See Also
+ar(1), ar(5)

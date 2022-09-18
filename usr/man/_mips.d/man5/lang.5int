@@ -1,0 +1,71 @@
+.TH lang 5int
+.SH Name
+lang \- language names
+.SH Description
+.NXR "lang"
+.NXR "language names"
+The language support databases used by
+.PN setlocale
+are stored in the directory
+.PN /usr/lib/intln .
+If either the language support databases are moved or 
+you specify your own language support database, 
+it is necessary to set the INTLINFO environment variable to the new 
+location of these tables. The syntax of this environment variable is identical 
+to 
+.PN NLSPATH . 
+See the
+.MS environ 5int
+reference page for more information.
+.PP 
+Should you want to create your own database, use the 
+.MS nl_langinfo 5int
+reference  page and the
+.I "Guide to Developing International Software"
+as references for what information your database should contain. 
+After you create the database, 
+you can specify it by using the international compiler,
+.PN ic .
+.PP 
+The following table defines the supplied settings of the LANG and LC_ 
+environment variables. 
+.PP
+.TS
+tab(@);
+lp-1v-1fHB lp-1v-1fHB lp-1v-1fHB lp-1v-1fHB lp-1v-1fHB 
+lp-1v-1 lp-1v-1 lp-1v-1 lp-1v-1 lp-1v-1 . 
+.sp 6p
+_
+.sp 6p
+Database@Language@Territory@Codeset@Use
+.sp 6p
+_
+.sp 6p
+ENG_GB.MCS@English@United Kingdom@DEC MCS@VT200 series
+FRE_FR.MCS@French@France
+GER_DE.MCS@German@Germany
+@
+ENG_GB.8859@English@United Kingdom@ISO Latin-1@VT300 series
+FRE_FR.8859@French@France
+GER_DE.8859@German@Germany
+@
+ENG_GB.646@English@United Kingdom@ISO 646@VT100 series
+FRE_FR.646@French@France
+GER_DE.646@German@Germany
+.sp 6p
+_
+.TE
+.PP
+In addition to the default collation definition for the GER_DE.nnn language,
+Digital provides a character collation table that collates information using 
+the German telephone directory ordering of data. The following example
+shows how to set the
+.PN LC_COLLATE 
+variable to use this table with the ISO Latin-1 codeset:
+.EX
+LC_COLLATE = GER_DE.8859@P_TELEPHONE
+.EE
+.SH See Also
+ic(1int), intro(3int), nl_langinfo(3int), setlocale(3int), environ(5int)
+.br 
+.I "Guide to Developing International Software"

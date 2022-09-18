@@ -1,0 +1,195 @@
+.\" SCCSID: @(#)rename.2	6.3	9/12/89
+.TH rename 2
+.SH Name
+rename \- change the name of a file
+.SH Syntax
+.nf
+rename(\fIfrom, to\fP)
+char \fI*from, *to\fP;
+.fi
+.SH Description
+.NXR "rename system call" 
+.NXR "directory" "renaming"
+.NXR "file" "renaming"
+The
+.PN rename
+system call
+causes the link named
+.I from
+to be renamed 
+.IR to .
+If 
+.I to
+exists, then it is first removed.
+Both 
+.I from
+and
+.I to
+must be of the same type (that is, both directories or both
+nondirectories) and must reside on the same file system.
+.PP
+The
+.PN rename
+system call guarantees that an instance of
+.I to
+will always exist, even if the system should crash in
+the middle of the operation.
+.SH Return Values
+A zero (0) value is returned if the operation succeeds. Otherwise
+.PN rename
+returns \-1, and the global variable 
+.I errno
+indicates the reason for the failure.
+.SH Restrictions
+The system can deadlock if a loop in the file system graph is present.and
+two processes issue the 
+.PN rename 
+call at the same time.
+For example, suppose a directory, 
+.PN dirname ,
+contains a file, 
+.PN dirname/filename .
+Suppose that file is hard-linked to a directory,
+.PN secondir , 
+and the
+.PN secondir
+directory contains a file,
+.PN secondir/secondfile . 
+If 
+.PN secondir/secondfile
+is hard-linked
+to 
+.PN dirname ,
+a loop exists.
+Now suppose one process issues the
+following 
+.PN rename 
+call:
+.EX
+rename (dirname/filename secondir/secondfile)
+.EE
+At the same time, another process issues the following 
+.PN rename 
+call:
+.EX
+rename (secondir/secondfile dirname/filename)
+.EE
+In this case, the system can deadlock.
+The system administrator should replace hard links to directories 
+with symbolic links.
+.SH Diagnostics
+The
+.PN rename
+system call
+fails and neither of the argument files are 
+affected under the following conditions:
+.TP 15
+[ENOTDIR]
+A component of either path prefix is not a directory.
+.TP 15
+[ENOENT]
+A component of the
+.I from
+path does not exist, or a path prefix of
+.I to
+does not exist.
+.TP 15
+[ENOENT]
+Either \fIfrom\fP or \fIto\fP points to an empty string and the environment
+defined is POSIX or SYSTEM_FIVE.
+.TP 15
+[EACCES]
+A component of either path prefix denies search permission.
+.TP 15
+[EPERM]
+The
+.I to
+file exists, the directory containing
+.I from 
+is marked sticky, and neither the
+containing directory nor the
+.I to 
+directory is owned by the
+effective user ID.
+.TP 15
+[EPERM] 
+The directory containing
+.I from
+is marked sticky,
+and neither the containing directory nor the
+.I from
+directory is owned by the effective user ID.
+.TP 15
+[EXDEV]
+The link named by \fIto\fP and the file named by \fIfrom\fP
+are on different logical devices (file systems).  Note that this error
+code is not returned if the implementation permits cross-device
+links.
+.TP 15
+[EACCES]
+The requested link requires writing in a directory with a mode
+that denies write permission.
+.TP 15
+[EROFS]
+The requested link requires writing in a directory on a read-only file
+system.
+.TP 15
+[EFAULT]
+The
+.I path
+points outside the process's allocated address space.
+.TP 15
+[EINVAL]
+The
+.I from
+is a parent directory of
+.IR to ,
+or an attempt is made to rename dot (.) or dot-dot (..).
+.TP 15
+[ENAMETOOLONG]
+A component of either pathname exceeded 255 characters,
+or the entire length of either pathname exceeded 1023
+characters.
+.TP 15
+[ELOOP]
+Too many symbolic links were encountered in translating
+either pathname.
+.TP 15
+[ENOTDIR]
+The
+.I from
+is a directory, but
+.I to
+is not a directory.
+.TP 15
+[EISDIR]
+The
+.I to
+is a directory, but
+.I from 
+is not a directory.
+.TP 15
+[ENOSPC]
+The directory in which the entry for the new name is being placed
+cannot be extended, because there is no space left on the
+file system containing the directory.
+.TP 15
+[EDQUOT]
+The directory in which the entry for the new name
+is being placed cannot be extended, because the user's
+quota of disk blocks on the file system containing
+the directory has been exhausted.
+.TP 15
+[EIO]
+An I/O error occurred while making or updating a
+directory entry.
+.TP 15
+[ENOTEMPTY]
+The
+.I to
+is a directory and is not empty.
+.TP 15
+[EBUSY]
+The directory named by \fIfrom\fP or \fIto\fP is a mount point.
+.SH See Also
+open(2)

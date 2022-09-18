@@ -1,0 +1,444 @@
+.\" Created on 13.10.88 by Adrian Pattison, OSCR-EUROPE
+.\"
+.\" Updated on 20.12.89 by Adrian Pattison, OSCR-EUROPE
+.\"
+.\" Print this document on a PostScript printer using the command line
+.\"     tbl <filename> | ditroff \-Tps \-man | devps | lpr
+.\"
+.\" Print this document on a LN01 using the command line
+.\"     tbl <filename> | ditroff \-man | lpr
+.\"
+.TH lmf 8
+.SH Name
+lmf \- License Management Facility (LMF)
+.SH Syntax
+.B /etc/lmf
+[
+.B \-d
+.I dir
+] [
+.I command
+[
+.I argument...
+] ]
+.SH Description
+You can use the
+.PN lmf
+utility to maintain a file of registered software licenses.
+The file is called the License Database (LDB) and is derived from Product
+Authorization Key (PAK) information.
+.NX R "License Management Facility commands"
+.NX R "lmf commands"
+You maintain the LDB by using the commands provided by the
+.PN lmf
+utility (these are described in the LMF Commands section).
+.PP
+You can also use the
+.PN lmf
+utility to keep the kernel cache updated.
+The kernel cache contains the active license information 
+which is read by
+license checking functions in products that provide full
+LMF support.
+The license checking functions ensure that a product has a valid
+license before making the product available for use on the system.
+.PP
+For more information about the LMF, see the
+\fIGuide to Software Licensing\fR.
+.PP
+When you use the LMF commands you can type them on a single line, for
+example:
+.EX
+# \f(CBlmf register\f(CW
+.EE
+or you can enter the
+.PN lmf
+utility and type the commands after the prompt, for example:
+.EX
+# \f(CBlmf\f(CW
+lmf> \f(CBregister\f(CW
+.EE
+.PP
+You can abbreviate the commands, but you must ensure that the abbreviation
+is not ambiguous.
+For example, you could abbreviate
+.PN lmf
+.PN register
+to
+.PN lmf
+.PN reg
+but not
+.PN lmf
+.PN re .
+.PP
+If you need to use the \fIproduct\fR, \fIproducer\fR or \fIauthorization\fR
+arguments, they must be specified exactly as they are on the PAK.
+Use these arguments if the LDB contains more than one record for a
+given \fIproduct\fR name.
+.SH Options
+.IP "\fB\-d\ \fIdir\fR" .3i
+Defines the directory containing the LDB file and the history file.
+If you do not use the \fB\-d\fR option, the default LMF directory (\c
+.PN /usr/var/adm/lmf )
+is used.
+The \fB\-d\fR option allows you to have more than one LDB on your system.
+.SH LMF Commands
+There are three types of
+.PN lmf
+commands:
+.IP \(bu 4
+Information commands, which you use to monitor your licensing actions, 
+and the status of the LDB and kernel cache
+.IP \(bu 4
+LDB maintenance commands, which you use to modify the contents of the
+License Database
+.IP \(bu 4
+Service commands, which you use to communicate with the kernel cache 
+and may have an immediate effect on users' access to licensed software
+.SS "Information Commands"
+\fBhelp\fR [ \fIcommand\fR ]
+.IP
+Prints the syntax of the command specified in the argument list.
+If no command is specified,
+.PN lmf
+.PN help
+prints a list of all the recognized commands.
+.PP
+\fBexit\fR
+.IP
+Exits from the 
+.PN lmf
+utility.
+You can also press CTRL/D to leave the utility.
+.PP
+\fBlist\fR [ \fBfull\fR ] [ \fIsource\fR ] [ \fBfor\fR \fIproduct\fR
+[ \fI producer\fR ] ]
+.IP
+Displays details of the registered products on the system.
+If you do not supply any arguments,
+.PN lmf
+.PN list
+displays a one line summary of the PAK data for each product in the LDB.
+.IP
+The
+.PN full
+argument displays the complete license details for each product.
+The \fIsource\fR argument determines the source of the license information.
+There are three choices for \fIsource\fR:
+.PP
+.TS
+tab(@);
+lw(0.5i) lw(4i).
+.sp 6p
+\fIldb\fR@T{
+Displays a summary for each product in the LDB.
+T}
+
+\fIcache\fR@T{
+Displays a summary for each product in the kernel cache.
+The kernel cache contains the license data used by the license
+checking functions.
+T}
+
+\fIall\fR@T{
+Displays a combined summary for each product in the LDB, and for each
+product in the kernel cache.
+T}
+
+.TE
+.PP
+\fBhistory\fR [ \fIlength\fR ] [ \fBfrom\fR \fIdate\fR ] [ \fBfor\fR
+\fIproduct\fR [ \fIproducer\fR ] ]
+.IP
+Lists data from the license management history file.
+The history file is maintained by the
+.PN lmf
+utility and is a record of the LDB Maintenance Commands (\c
+.PN register ,
+.PN disable ,
+.PN enable ,
+.PN issue ,
+.PN cancel ,
+.PN delete ,
+.PN modify 
+and 
+.PN amend ).
+The creation of a new LDB is also recorded in the history file.
+The history data is output with the most recent operations first.
+The data for each 
+.PN lmf
+command recorded comprises the product identity,
+the date and time the command was issued, and the fields that
+were changed on the license.
+.IP
+There are two choices for \fIlength\fR:
+.PP
+.TS
+tab(@);
+lw(0.5i) lw(4i).
+.sp 6p
+\fIshort\fR@T{
+Displays a one-line summary of the history data for each command issued.
+T}
+
+\fIfull\fR@T{
+Displays the history data for each command issued, and the license as it
+appeared before the command was issued.
+T}
+
+.TE
+.PP
+The
+.PN from
+\fIdate\fR argument displays history data for commands issued after the 
+\fIdate\fR specified.
+The \fIdate\fR argument can be specified in most common formats but
+the order must be: day, month, year.
+You do not need to use a separator between the day and month, or the month
+and the year.
+For example, 1st July 1989 could be specified as: 1-jul-1989, 1/7/89,
+010789, or 1.july.89.
+.SS "LDB Maintenance Commands"
+\fBregister\fR [ \fIinput\fR ]
+.IP
+Registers data from a PAK into the LDB.
+If you do not specify any arguments, the command displays a template which
+includes the fields that occur on the PAK.
+An editor is invoked so that you can add the license data to the
+appropriate fields.
+The editor used is defined by the EDITOR environment variable, but if this
+is not set,
+.PN /usr/ucb/vi
+is used.
+When you leave the editor, the LMF scans the completed template to ensure
+that all the license data has been entered correctly.
+If it has not, an appropriate error message is displayed and you are given
+an opportunity to re-enter the editor and correct any mistakes.
+.IP
+When you have successfully registered a license you should store the PAK in
+a safe place; the PAK is a valuable proof of purchase and represents your
+license from Digital Equipment Corporation to use a software product.
+.IP
+There are two choices for \fIinput\fR:
+.PP
+.TS
+tab(@);
+lw(0.5i) lw(4i).
+.sp 6p
+\fIfilename\fR@T{
+Displays a copy of the file specified and invokes an editor so you can fill
+in any additional license details before registering the license data in
+the LDB.
+T}
+
+\fI\-\fR@T{
+Registers license data direct from standard input to the LDB.
+T}
+
+.TE
+.PP
+Use the
+.PN lmf
+.PN register
+\fIfilename\fR command to register license data from a file on your
+system that contains a partially complete PAK.
+When you have finished editing the license data, the LMF scans the file
+and gives you the opportunity to correct any mistakes.
+.IP
+Use the
+.PN lmf
+.PN register
+\fI\-\fR command to register license data direct from standard input.
+You can also register a PAK from a file that already has valid license data,
+for example:
+.EX
+# \f(CBlmf register \- < \fIfilename
+.EE
+The command shown in the previous example does not 
+display the contents of
+the file, neither does the command allow you to edit the file.
+However, the LMF does scan the file to ensure format and 
+data is correct.
+If the license data is valid, the license is registered in the LDB, 
+if not, the appropriate error message is displayed.
+.PP
+\fBdisable\fR \fIproduct\fR [ \fIproducer\fR [ \fIauthorization\fR ] ]
+.IP
+Disables a license from use on the system.
+Licenses which have been disabled remain in the LDB, but do not get copied
+into the kernel cache.
+The
+.PN lmf
+.PN disable
+command does not have an immediate affect on the kernel cache.
+To remove a license from the kernel cache straight away, use the
+.PN lmf
+.PN unload
+command.
+.PP
+\fBenable\fR \fIproduct\fR [ \fIproducer\fR [ \fIauthorization\fR ] ]
+.IP
+Enables a license for use on the system.
+Licenses are automatically enabled when they are registered.
+.IP
+The
+.PN lmf
+.PN enable
+command does not have an immediate affect on the kernel cache.
+To load the license details into the kernel cache straight away, use the
+.PN lmf
+.PN load
+command.
+.PP
+\fBissue\fR \fIfile\fR \fIproduct\fR [ \fIproducer\fR [ \fIauthorization\fR ] ]
+.IP
+Issues a reconstructed PAK for the product and removes the license from the
+LDB.
+The reconstructed PAK is output to the \fIfile\fR given in the command.
+If the PAK is issued without errors, the license is automatically removed
+from the kernel cache.
+The format of the reconstructed PAK is suitable for registering using the
+.PN lmf
+.PN register
+.PN \-
+.PN <
+\fIfilename\fR command.
+You can use
+.PN lmf
+.PN issue
+to transfer a license from one system to another.
+The license is revoked on the executing system 
+and a PAK is produced which can be registered on another system.
+.PP
+\fBcancel\fR \fIdate\fR \fIproduct\fR [ \fIproducer\fR [
+\fIauthorization\fR ] ]
+.IP
+Cancels the license on the \fIdate\fR given.
+This allows you to stop use of the product earlier than the date shown by
+the Key Termination Date field on the PAK.
+You can change the cancellation date more than once; by reissuing the
+.PN lmf
+.PN cancel
+command with a different \fIdate\fR argument.
+.IP
+The \fIdate\fR argument can be specified in most common formats but
+the order must be: day, month, year.
+You do not need to use a separator between the day and month, or the month
+and the year.
+.IP
+The
+.PN lmf
+.PN cancel
+command does not have an immediate affect on the kernel cache.
+To update the license details for the product in the kernel cache straight
+away, use the
+.PN lmf
+.PN load
+command.
+.PP
+\fBdelete\fR \fIproduct\fR [ \fIproducer\fR [ \fIauthorization\fR ] ]
+.IP
+Deletes a license from the LDB and the kernel cache.
+.IP
+Before you do this you should ensure that you have a record of the license
+in your files.
+.PP
+\fBmodify\fR \fIproduct\fR [ \fIproducer\fR [ \fIauthorization\fR ] ]
+.IP
+Modifies the unprotected fields on a license.
+You can only modify the Comments field and, if the license has
+the MOD_UNITS Key Option, the Number of Units field.
+These fields have a colon (:) after the field name, and changes to
+fields other than Comments and Number of Units are ignored.
+The editor used is the same as for
+.PN lmf
+.PN register .
+.IP
+The command does not have an immediate effect on the kernel cache, so you
+should use the
+.PN lmf
+.PN load
+command to update the license for the product in the kernel cache.
+.PP
+\fBamend\fR \fIproduct\fR [ \fIproducer\fR [ \fIauthorization\fR ] ]
+.IP
+Amends the protected fields on a license.
+You must only use this command when you need to register the license data
+from a Product Authorization Amendment (PAAM).
+The fields you can change have a colon (:) after the field name.
+You must make all the changes shown on the PAAM, including entering a new
+Checksum.
+Changes made to fields without colons after the field name are ignored.
+The editor used is the same as for
+.PN lmf
+.PN register .
+.IP
+The command does not have an immediate effect on the kernel cache, so you
+should use the
+.PN lmf
+.PN load
+command to update the license for the product in the kernel cache.
+.SS "Service Commands"
+\fBreset\fR [ \fBcpus\fR [ \fIn\fR ] ]
+.IP
+Rescans the LDB so that any changes that have been made are copied to the
+kernel cache.
+If you do not supply any arguments,
+.PN lmf
+.PN reset
+copies the license details for all products from the LDB to the kernel
+cache.
+.IP
+Use the
+.PN lmf
+.PN reset
+.PN cpus
+command to copy license details from the LDB to the kernel cache, and to
+determine the System Marketing Model (SMM) by using the number of active
+CPUs.
+The SMM is the model name of a computer system, as used in marketing and
+pricing and is read by the LMF when the system is rebooted.
+The SMM is used by some products to define the number of license units
+needed in the kernel cache before access to the product is granted.
+.IP
+Use the
+.PN lmf
+.PN reset
+.PN cpus
+\fIn\fR command to copy license details from the LDB to the kernel cache,
+and to determine the SMM by using \fIn\fR as the number of active CPUs.
+.PP
+\fBload\fR \fIusers\fR \fIproduct\fR [ \fIproducer\fR [
+\fIauthorization\fR ] ]
+.IP
+Loads enough license units into the kernel cache to enable use of the product
+by the number of \fIusers\fR specified.
+The number of license units required for the specified number of \fIusers\fR
+is calculated by the LMF.
+An appropriate number of units must be registered in the LDB before
+issuing the
+.PN load
+command.
+.IP
+If you specify zero (0) as the \fIusers\fR argument, all the license
+units for the product are loaded into the kernel cache.
+If the product is Availability Licensed, you must always specify 
+zero (0) as the \fIusers\fR argument.
+.PP
+\fBunload\fR \fIusers\fR \fIproduct\fR [ \fIproducer\fR ]
+.IP
+Unloads enough license units from the kernel cache to reduce the use of the
+product by the number of \fIusers\fR specified.
+The number of license units required for the specified number of \fIusers\fR
+is calculated by the LMF.
+After you have issued the command any existing users of the product are
+allowed to finish using it before the new limit is imposed.
+.IP
+If you specify zero (0) as the \fIusers\fR argument, all the license
+units for the product are removed from the kernel cache.
+If the product is Availability Licensed, you must always specify 
+zero (0) as the \fIusers\fR argument.
+.SH See Also
+lmfsetup(8)
+.br
+.I Guide to Software Licensing

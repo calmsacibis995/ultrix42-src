@@ -1,0 +1,219 @@
+.ds MA MH
+.TH mtstailor 5mh
+.SH Name
+mtstailor \- system customization for MH message system
+.SH Description
+.NXR "mtstailor file"
+.NXR "MH system" "system customization file"
+The file 
+.PN /usr/lib/mh/mtstailor 
+defines run-time options for those MH
+programs which interact (in some form) with the message transport system.
+At present, these (user) programs are:
+.PN ap ,
+.PN conflict , 
+.PN inc ,
+.PN msgchk ,
+.PN msh ,
+.PN post ,
+.PN rcvdist ,
+and 
+.PN rcvpack .
+.PP
+The options available along with default values and a description of their
+meanings are listed below:
+.\"
+.TP 10
+.PN localname: 
+The host name that \*(MA considers local.
+If not set, depending on the version of ULTRIX you are running,
+\*(MA will query the system for this value
+(for example: \f(CW<whoami.h>, gethostname\fR).
+This has no equivalent in the MH configuration file.
+.\"
+.TP 10
+.PN systemname:
+The name of the local host in the UUCP \*(lqdomain\*(rq.
+If not set, depending on the version of ULTRIX you are running,
+\*(MA will query the system for this value.
+This has no equivalent in the MH configuration file.
+.\"
+.TP
+.PN servers:
+A host or list of hosts running 
+.PN sendmail
+can be specified.
+When an MH program is run, it uses this entry to search for a central 
+.PN sendmail
+to connect to.
+This is particularly useful for workstation users who may not have 
+.PN sendmail
+running on their workstation.
+.\"
+.\"
+.\"
+.\" *****************************************************
+.\" pophost stuff commented out - not supported for X.400
+.\" *****************************************************
+.\"
+.\" .TP
+.\" pophost:
+.\" The host on which you have a remote maildrop set up.
+.\" Mail can be delivered to a remote host and collected
+.\" using the 
+.\" .PN inc\ \-source\ pop
+.\" command.
+.\"
+.\" ********************************************************************
+.\"
+.\" ***COMMENTED OUT
+.ig
+.TP
+.PN x400host:
+The name of the host where X.400 mail is delivered.
+The user's mail is delivered to this host and 
+collected by the user agent via a network connection.
+This enables users to receive X.400 mail without having
+to run an X.400 MTA on their workstation.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.TP
+.PN "mmdfldir: \f(CW/usr/spool/mail"
+The directory where maildrops are kept.
+If this is empty, the user's home directory is used.
+This overrides the \f(CWmail\fR field in the MH configuration file.
+.\"
+.TP
+.PN mmdflfil: 
+The name of the maildrop file in the directory where maildrops are kept.
+If this is empty, the user's login name is used.
+This overrides the \f(CWmail\fR field in the MH configuration file.
+.\"
+.TP
+.PN "mmdelim1: \e001\e001\e001\e001\en"
+The beginning-of-message delimiter for maildrops.
+.\"
+.TP
+.PN "mmdelim2: \e001\e001\e001\e001\en"
+The end-of-message delimiter for maildrops.
+.\"
+.TP
+.PN mmailid: 0
+If non-zero, then support for MMailids in 
+.PN /etc/passwd
+is enabled.
+Basically, the 
+.PN pw_gecos 
+field in the password file is of the form
+.EX
+My Full Name <mailid>
+.EE
+The \*(MA internal routines that deal with user and full names will return
+\f(CWmailid\fR and \f(CWMy Full Name\fR respectively.
+.\"
+.TP
+.PN "lockstyle: 0"
+The locking discipline to perform.
+A value of \f(CW0\fR means to use 
+.PN flock
+if available, standard 
+.PN BellMail
+locking otherwise.
+A value of \f(CW1\fR means to use 
+.PN BellMail
+locking always (the name of the lock is based on the file name).
+A value of \f(CW2\fR means to use
+.PN MMDF
+locking always (the name of the lock is based on device/inode pairs).
+.\"
+.TP
+.PN lockldir:
+The name of the directory for making locks.
+If your system does not have the 
+.PN flock
+syscall, then this directory is used when creating locks.
+If the value is empty, then the directory of the file to be locked is used.
+.\"
+.TP
+.PN "sendmail: \f(CW/usr/lib/sendmail"
+The pathname to the 
+.PN sendmail
+program.
+.\"
+.TP
+.PN "maildelivery: \f(CW/usr/lib/mh/maildelivery"
+The name of the system-wide default
+.PN \&.maildelivery
+file.
+See 
+.MS slocal 1mh 
+for the details.
+.\"
+.TP
+.PN "everyone: 200"
+The highest user-id which should NOT receive mail addressed to
+everyone.
+.\"
+.TP
+.PN "noshell: path"
+If set, then each user-id greater than \f(CWeveryone\fR 
+that has a login shell equivalent to the given value 
+(for example, 
+.PN /bin/csh )
+indicates that mail for \f(CWeveryone\fR should not be sent to them.
+This is useful for handling admin, dummy, and guest logins.
+.\"
+.PP
+A few words on locking:
+MH has a flexible locking system for making locks on files.
+There are two 
+.PN mtstailor
+variables you should be aware of:
+\f(CWlockstyle\fR and \f(CWlockldir\fR.
+The first controls the method of locking:
+the second says where lock files should be created.
+.PP
+The \f(CWlockstyle\fR variable can take on three values: 
+\f(CW0\fR, \f(CW1\fR, \f(CW2\fR.
+A value of \f(CW0\fR means use the 
+.PN flock 
+syscall if you are running on 4.2BSD,
+otherwise use a locking style of \f(CW1\fR.
+A value of \f(CW1\fR or \f(CW2\fR specifies that a file 
+should be created whose existence means \f(CWlocked\fR 
+and whose non-existence means \f(CWunlocked\fR.
+A value of \f(CW1\fR specified that the lockname is constructed
+by appending 
+.PN \&.lock
+to the name of the file being locked.
+.PP
+A value of \f(CW2\fR says to construct the lockname 
+by looking at the device and inode numbers of the file being locked.
+If the \f(CWlockldir\fR variable is not specified,
+lock files will be created in the directory 
+where the file being locked resides.
+Otherwise, lock files will be created in the directory 
+specified by \f(CWlockldir\fR.
+Prior to installing MH, you should see how locking is done at your site,
+and set the appropriate values.
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN /usr/lib/mh/mtstailor
+System customization file.
+.\"
+.TP 10
+.PN /etc/passwd
+System password file.
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH See Also 
+flock(2), mh_profile(5mh)

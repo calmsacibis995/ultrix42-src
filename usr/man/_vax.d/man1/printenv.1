@@ -1,0 +1,25 @@
+.\" SCCSID: @(#)printenv.1	8.1	9/11/90
+.TH printenv 1
+.SH Name
+printenv \- display value of a shell variable
+.SH Syntax
+.B printenv
+[\|\fIname\fR\|]
+.SH Description
+.NXR "printenv command"
+.NXAM "environ global variable" "printenv command"
+.NXR "environment" "printing variable values"
+The
+.PN printenv
+command
+prints out the values of the variables in the environment.  If a
+.I name
+is specified, only its value is printed.
+.PP
+If a
+.I name
+is specified and it is not defined in the environment,
+.PN printenv
+returns exit status 1, else it returns status 0.
+.SH See Also
+csh(1), environ(7), sh(1)

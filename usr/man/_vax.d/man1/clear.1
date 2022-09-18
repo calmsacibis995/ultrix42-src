@@ -1,0 +1,18 @@
+.\" SCCSID: @(#)clear.1	8.1	9/11/90
+.TH clear 1
+.SH Name
+clear \- clear terminal screen
+.SH Syntax
+.B clear
+.SH Description
+.NXR "clear command"
+.NXR "terminal" "clearing screen"
+The
+.PN clear
+command
+clears your screen if this is possible.
+It looks in the environment for the terminal type and then in
+.PN /etc/termcap
+to figure out how to clear the screen.
+.SH Files
+/etc/termcap	terminal capability data base

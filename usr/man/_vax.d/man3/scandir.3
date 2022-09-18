@@ -1,0 +1,67 @@
+.\" SCCSID: @(#)scandir.3	8.1	9/11/90
+.TH scandir 3 
+.SH Name
+scandir \- scan a directory
+.SH Syntax
+.nf
+.B #include <sys/types.h>
+.B #include <sys/dir.h>
+.PP
+.B scandir(dirname, namelist, select, compar)
+.B char *dirname;
+.B struct direct *(*namelist[]);
+.B int (*select)();
+.B int (*compar)();
+.PP
+.B alphasort(d1, d2)
+.B struct direct **d1, **d2;
+.fi
+.SH Description
+.NXR "scandir subroutine"
+.NXR "directory" "scanning"
+The
+.PN scandir
+subroutine reads the directory
+.I dirname
+and builds an array of pointers to directory
+entries using 
+.MS malloc 3 .
+It returns the number of entries in the array and a pointer to the
+array through
+.IR namelist .
+.PP
+The
+.I select
+parameter is a pointer to a user supplied subroutine which is called by
+.PN scandir
+to select which entries are to be included in the array.
+The select routine is passed a
+pointer to a directory entry and should return a non-zero
+value if the directory entry is to be included in the array.
+If
+.I select
+is null, then all the directory entries will be included.
+.PP
+The
+.I compar
+parameter is a pointer to a user supplied subroutine which is passed to
+.MS qsort 3
+to sort the completed array.
+If this pointer is null, the array is not sorted.
+The
+.PN alphasort
+is a routine which can be used for the
+.I compar
+parameter to sort the array alphabetically.
+.PP
+The memory allocated for the array can be deallocated with
+.I free
+by freeing each pointer in the array and the array itself.
+For further information, see 
+.MS malloc 3 .
+.SH Diagnostics
+Returns \-1 if the directory cannot be opened for reading or if
+.MS malloc 3
+cannot allocate enough memory to hold all the data structures.
+.SH See Also
+directory(3), malloc(3), qsort(3), dir(5)

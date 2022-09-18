@@ -1,0 +1,68 @@
+
+/*
+ * @(#)GER_DE.646.in	4.1
+ *
+ * This is the International UNIX data base for
+ *
+ * 	GERMAN		ISO646
+ *
+ */
+
+CODESET GER_DE.646 :
+#include "ISO646.inc"
+
+/*
+ * Giving name and property to the country spesific codes 2/3, 2/4, 4/0, 5/11, 
+ * 5/12, 5/13, 5/14, 6/0, 7/11, 7/12, 7/13 and 7/14
+ */
+numbsign = '#'	: MISCEL, PUNCT;
+dollar = '$'	: CURENCY, PUNCT;
+section = 4/0	: MISCEL, PUNCT;
+DIA_A	= 5/11	: UPPER ;
+DIA_O	= 5/12	: UPPER ;
+DIA_U	= 5/13	: UPPER ;
+circ = '^'	: MISCEL, PUNCT;
+grav_acc = '`'	: MISCEL, PUNCT;
+dia_a	= 7/11	: LOWER ;
+dia_o	= 7/12	: LOWER ;
+dia_u	= 7/13 	: LOWER ;
+sharp_s = 7/14 	: LOWER, DIPHTONG ;
+
+END.
+
+/*
+ * German needs an additional property table for telephone book collation
+ */
+PROPERTY P_TELEPHONE:
+	/*
+	 * we only define the letters here because anything else will 
+	 * not be considered valid anyway when we do the collation.
+	 */
+	A: UPPER, HEX; B: UPPER, HEX; C: UPPER, HEX;
+	D: UPPER, HEX; E: UPPER, HEX; F: UPPER, HEX;
+	G: UPPER; H: UPPER; I: UPPER; J: UPPER;
+	K: UPPER; L: UPPER; M: UPPER; N: UPPER;
+	O: UPPER; P: UPPER; Q: UPPER; R: UPPER;
+	S: UPPER; T: UPPER; U: UPPER; V: UPPER;
+	W: UPPER; X: UPPER; Y: UPPER; Z: UPPER;
+	DIA_A: UPPER, DIPHTONG;
+	DIA_O: UPPER, DIPHTONG;
+	DIA_U: UPPER, DIPHTONG;
+
+	/*
+	 * same for lower case letters
+	 */
+	a: LOWER, HEX; b: LOWER, HEX; c: LOWER, HEX;
+	d: LOWER, HEX; e: LOWER, HEX; f: LOWER, HEX;
+	g: LOWER; h: LOWER; i: LOWER; j: LOWER;
+	k: LOWER; l: LOWER; m: LOWER; n: LOWER;
+	o: LOWER; p: LOWER; q: LOWER; r: LOWER;
+	s: LOWER; t: LOWER; u: LOWER; v: LOWER;
+	w: LOWER; x: LOWER; y: LOWER; z: LOWER;
+	dia_a: LOWER, DIPHTONG;
+	dia_o: LOWER, DIPHTONG;
+	dia_u: LOWER, DIPHTONG;
+	sharp_s: LOWER, DIPHTONG;
+END.
+
+#include "GER.inc"

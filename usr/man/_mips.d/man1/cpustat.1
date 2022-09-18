@@ -1,0 +1,216 @@
+.TH cpustat 1 
+.SH Name
+cpustat \- report CPU statistics
+.SH Syntax
+.B cpustat
+[\fB\-cfhsv\fR] [\fIinterval\fR [\fIcount\fR]] 
+.SH Description
+The
+.PN cpustat
+command displays statistics about the use and state of each CPU in the
+system. 
+.NXR "SMP" "reporting CPU statistics"
+.NXR "cpustat command (SMP)"
+.NXR "CPU" "getting state information about"
+.NXR "CPU" "getting statistics about"
+The information about the CPU might change while the
+.PN cpustat
+command is running, so the information it gives is a snapshot taken at a
+given time.
+.PP
+Normally, the 
+.PN cpustat
+command displays the statistics and state only once. You can cause the
+command to repeat the display by specifying a decimal number in the
+\fIinterval\fR argument. The
+.PN cpustat
+command repeats the display until it is interrupted, for example, by a
+control character entered at the terminal.
+.PP
+You can limit the number of times the
+.PN cpustat
+command repeats the display by specifying an integer in the \fIcount\fR
+argument. 
+.PP
+The
+.PN cpustat
+command provides an interactive interface that you can invoke using the
+.B \-f
+option.
+.PP
+The following describes the fields in the
+.PN cpustat
+display:
+.PP
+Statistics: Information about how each CPU's time is being used
+.RS 5
+.TP 9
+us%
+Percent of time spent in user mode
+.TP 9
+ni%
+Percent of time spent in nice mode
+.TP 9
+sy%
+Percent of time spent in system mode
+.TP 9
+id%
+Percent of time spent idle 
+.TP 9
+csw
+Number of context switches
+.TP 9
+sys
+Number of system calls
+.TP 9
+trap
+Number of traps
+.TP 9
+intr
+Number of device interrupts
+.TP 9
+ipi
+Number of interprocessor interrupts
+.TP 9
+ttyin
+Number of characters input to the terminal
+.TP 9
+ttyout
+Number of characters output to the terminal 
+.RE
+.PP
+State: Information about the different states of each CPU
+.RS 5
+.TP 9
+cpuid
+Unique identifier of the CPU.
+.TP 9
+state
+CPU state.
+.RS 12
+B - boot CPU
+.br
+D - disable soft errors
+.br
+S - stopped
+.br
+R - running
+.br
+T - TB needs invalidation
+.br
+P - panicked
+.RE
+.TP 9
+ipi-mask
+interprocessor interrupt mask 
+.RS 12
+P - panic
+.br
+R - console print
+.br
+S - schedule
+.br
+D - disable
+.br
+T - TB invalidation
+.br
+H - stop CPU
+.RE
+.TP 9
+proc
+Indication of whether the CPU has an associated process. A Y indicates
+that an associated process exists, while an N indicates that no associated
+process exists.
+.TP 9
+pid
+Process ID of the running process.
+.PP
+If any statistic field value exceeds 9999, it is shown in a scaled
+representation with the suffix k, which indicates multiplication
+by 1000, or with the suffix m, which indicates multiplication by 1,000,000.  
+For example, the value 12,345 would appear as 12k.
+.SH Options
+.IP \-c 5
+Displays only the statistics for each CPU.
+.IP \-f
+Displays statistics and state information on a full screen.
+If you use the 
+.B \-f 
+option, you are prompted to enter one of the following commands:
+.RS
+.IP c 5
+Displays only statistics about each CPU.
+.IP d
+Uses the default mode of display.
+.IP h
+Displays the help screen. To return to the original display screen,
+enter any character. 
+.IP q
+Quits from the full screen display.
+.IP s 
+Displays only state information about each CPU.
+.IP v
+Displays information about each vector processor and omits information
+about other processors.
+.RE
+.IP \-s
+Displays only state information about each CPU.
+.IP \-h
+Provides help information about the usage of the
+.PN cpustat
+command.
+.IP \-v
+Displays information about each vector processor and omits information
+about other processors. When
+.PN cpustat
+displays information about vector processors, it adds the
+following information to the display:
+.RS
+.IP "vp state" 10
+Indicates that the vector processor is operational (OK), not usable
+(DEAD), enabled (ENA), or disabled (DIS). The
+.PN cpustat
+command display may contain a combination of these states.
+.IP "vp owner"
+PID of the vector process whose context is stored in the vector
+processor.
+.IP "chp cxsw"
+Number of context switches in which the process whose context
+changed is the only process using a particular vector processor. Because
+no other process uses the vector processor, the register data associated
+with the processor does not change. Therefore, the system does not need
+to save and restore the register data; the data remains in the registers
+until the process is ready to use it.
+.IP "exp cxsw"
+Number of context switches in which a number of processes might
+be using the same vector processor.  When more than one process uses the
+same processor, the register data associated with the processor might be
+changed by any process. Therefore, the system saves and restores the
+register data during a context switch for any process.
+.IP "succ req"
+Number of times the vector process has successfully allocated the vector
+processor.
+.IP "failed req"
+Number of times the vector process has been refused vector processor
+allocation.
+.RE
+.PP
+If you omit all options,
+.PN cpustat
+reports a summary of the statistics
+since the system has been booted and the state of each CPU.
+.SH Examples
+To print the system status every five seconds ten 
+times, enter the following command:
+.EX
+% \f(CBcpustat 5 10\fP 
+.EE
+.SH Files
+.TP 15
+.PN /dev/kmem 
+Virtual main memory image
+.TP
+.PN /vmunix
+System namelist
+.SH See Also
+iostat(1), vmstat(1)

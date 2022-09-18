@@ -1,0 +1,71 @@
+
+(LPS$FINDFONT_ISOLATIN1_DECMCS_v40 device control module)pop
+(Copyright (C) Digital Equipment Corporation, 1986)pop/setpacking
+where{pop}{/setpacking{pop}def/currentpacking{false}def/packedarray{astore}
+def}ifelse currentpacking true setpacking/findfont{LPS$findfontdict begin
+dup FontDirectory exch known{FontDirectory exch get}{mark 1
+index(123456789012345678901234567890123456789)cvs/LPS$encodings
+where{/LPS$encodings get{3 1 roll(1234567890)cvs search{exit}{exch
+pop}ifelse}forall}if counttomark 1 ne{exch pop exch length 0 eq{3 -1 roll
+pop true}{pop pop pop false}ifelse}{pop pop false}ifelse{dup findfont dup
+length dict 3 -1 roll dup/Courier eq/extendcourierfont where{pop
+true}{false}ifelse and{pop 0 extendcourierfont}{dup/Courier-Oblique
+eq/extendcourierfont where{pop true}{false}ifelse and{pop 1
+extendcourierfont}{dup/Courier-Bold eq/extendcourierfont where{pop
+true}{false}ifelse and{pop 2 extendcourierfont}{dup/Courier-BoldOblique
+eq/extendcourierfont where{pop true}{false}ifelse and{pop 3
+extendcourierfont}{pop exch{1 index/FID ne 2 index/UniqueID ne and{2 index
+3 1 roll put}{pop
+pop}ifelse}forall}ifelse}ifelse}ifelse}ifelse/LPS$fallbacks where{pop
+dup/Encoding 4 -1 roll exec 256 array copy put dup/CharStrings known{0 1
+255{{1 index/Encoding get 1 index get 2 index/CharStrings get exch known
+not{1 index/Encoding get 1 index get 2 index/Encoding get 2 index
+LPS$fallbacks/others get put LPS$fallbacks{exch 2 index eq{3 index/Encoding
+get 3 index 3 -1 roll put exit}{pop}ifelse}forall pop}{exit}ifelse}loop
+pop}for}if}{dup/Encoding 4 -1 roll exec put}ifelse
+definefont}{systemdict/findfont get exec}ifelse}ifelse end}bind
+def/LPS$findfontdict 32 dict def LPS$findfontdict begin/findfont dup load
+def/$obliquefont 1 dict def/obliquefont{$obliquefont begin neg dup sin exch
+cos div mat exch 2 exch put mat makefont end}def $obliquefont begin/mat
+matrix def end/cvc{(x)dup 0 4 -1 roll put}def/fontcopy{exch{1 index/FID ne
+2 index/UniqueId ne and{2 index 3 1 roll put}{pop
+pop}ifelse}forall}def/$scalefont2 1 dict def/scalefont2{$scalefont2 begin
+mat exch 3 exch put mat exch 0 exch put mat makefont end}def $scalefont2
+begin/mat matrix def end/fonts[[{/Symbol findfont}{/Times-Roman
+findfont}{/Times-Roman-ISOLatin1 findfont}][{/Symbol findfont -12
+obliquefont}{/Times-Roman findfont -12 obliquefont}{/Times-Roman-ISOLatin1
+findfont -12 obliquefont}][{/Symbol findfont}{/Times-Bold
+findfont}{/Times-Bold-ISOLatin1 findfont}][{/Symbol findfont -12
+obliquefont}{/Times-Bold findfont -12 obliquefont}{/Times-Bold-ISOLatin1
+findfont -12 obliquefont}]]def/characters[[/mu 0 8#155][/degree 0
+8#260][/plusminus 0 8#261][/multiply 0 8#264][/divide 0 8#270][/trademark 0
+8#324][/fi 1 8#256][/fl 1 8#257][/perthousand 1 8#275][/AE 1 8#341][/OE 1
+8#352][/ae 1 8#361][/oe 1 8#372][/minus 2 8#055][/brokenbar 2
+8#246][/copyright 2 8#251][/logicalnot 2 8#254][/registered 2
+8#256][/twosuperior 2 8#262][/threesuperior 2 8#263][/onesuperior 2
+8#271][/onequarter 2 8#274][/onehalf 2 8#275][/threequarters 2 8#276][/Eth
+2 8#320][/Yacute 2 8#335][/Thorn 2 8#336][/eth 2 8#360][/yacute 2
+8#375][/thorn 2 8#376]]def/extendcourierfont{/STYLE exch def/newfont exch
+def/oldfont exch def oldfont newfont fontcopy pop/newcharstrings
+oldfont/CharStrings get dup length characters length add 1 add dict exch{2
+index 3 1 roll put}forall def newfont/CharStrings newcharstrings put
+characters{dup 0 get/name exch def dup 1 get/fnum exch def dup 2 get/code
+exch def pop newcharstrings name known not{newcharstrings name[fonts STYLE
+get fnum get code/buildchar load/exec cvx]cvx put}if}forall
+newfont}def/buildchar{currentdict LPS$findfontdict begin/FONTDICT exch
+def/CODE exch def/FONT exch exec def/PSCODE exch def/WX 600 def/WY 0
+def/LBXadj FONT 925 scalefont setfont CODE cvc stringwidth pop dup 600
+gt{currentfont exch 600 exch div 1 scalefont2 setfont 0}{600 exch sub 2
+div}ifelse def/LBYadj 0 def FONTDICT/Metrics known{/CNAME Encoding PSCODE
+get def Metrics CNAME known{Metrics CNAME get dup type/arraytype eq{dup 0
+get/WX exch def/LBXorig newpath 0 0 moveto CODE cvc true charpath pathbbox
+newpath pop pop pop def dup length 2 gt{dup 1 get/WY exch def dup 2
+get/LBXnew exch def 3 get/LBYadj exch def}{1 get/LBXnew exch
+def}ifelse/LBXadj LBXnew LBXorig sub def}{/WX exch def}ifelse}if}if WX WY
+newpath LBXadj LBYadj moveto CODE cvc true charpath pathbbox newpath
+setcachedevice LBXadj LBYadj moveto CODE cvc PaintType 2 ne{show}{true
+charpath gsave FONTDICT/StrokeWidth get setlinewidth 1 setlinecap 1
+setlinejoin stroke grestore}ifelse end}def/LPS$encodings 6 dict def
+LPS$encodings
+begin/-ISOLatin1{ISOLatin1Encoding}def/-DECMCS{DECMCSEncoding}def/-DECTech{
+DECTechEncoding}def/-DECPub{DECPubEncoding}def end end setpacking

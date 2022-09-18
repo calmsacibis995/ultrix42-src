@@ -1,0 +1,37 @@
+.\" SCCSID: @(#)il.4	8.1	9/11/90
+.TH il 4 VAX "" Unsupported
+.SH Name
+il \- Interlan 10 Mb/s Ethernet interface
+.SH Syntax
+.B "device il0 at uba0 csr 0161000 vector ilrint ilcint"
+.SH Description
+The
+.PN il
+interface provides access to a 10 Mb/s Ethernet network through
+an Interlan controller.
+.PP
+The host's Internet address is specified at boot time with an SIOCSIFADDR
+ioctl.  The
+.PN il
+interface employs the address resolution protocol described in
+.MS arp 4p
+to dynamically map between Internet and Ethernet addresses on the local
+network.
+.PP
+The interface normally tries to use a ``trailer'' encapsulation
+to minimize copying data on input and output.  This may be
+disabled, on a per-interface basis, by setting the IFF_NOTRAILERS
+flag with an SIOCSIFFLAGS ioctl.
+.SH Diagnostics
+\fBil%d: input error\fP.
+.br
+The hardware indicated an error
+in reading a packet off the cable or an illegally sized packet.
+.PP
+\fBil%d: can't handle af%d\fP.
+.br
+The interface was handed
+a message with addresses formatted in an unsuitable address
+family; the packet was dropped.
+.SH See Also
+intro(4n), inet(4f), arp(4p)

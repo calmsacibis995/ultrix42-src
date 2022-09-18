@@ -1,0 +1,37 @@
+.TH clearok 3cur 
+.SH Name
+clearok \- enable screen clearing
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int clearok(win, bf)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+bool bf;
+.SH Description
+.NXR "clearok subroutine"
+If 
+.PN bf
+is 
+.PN TRUE, 
+the next call to 
+.MS refresh 3cur
+for the specified 
+window will clear the window completely and redraw the entire
+window without changing the original screen's contents.
+This is useful when the contents of the screen are uncertain.
+If the window is
+.PN stdscr
+the entire screen is redrawn.
+.SH Return Values
+The
+.PN clearok
+function returns OK on success and ERR on error.
+.SH See Also
+refresh(3cur)

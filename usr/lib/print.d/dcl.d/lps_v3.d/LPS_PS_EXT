@@ -1,0 +1,30 @@
+%! 
+p%! Module Name:  LPS_PS_EXT 
+%! This module shows how you can redefine POSTSCRIPT extensions
+%! that are used by non-Digital printers to be Digital POSTSCRIPT
+%! extensions. Note that for Control-D and Control-Z, you cannot 
+%! simply type ^D and ^Z. You must use the actual control codes
+%! in the setup module. 
+%!
+%! Please note that this example is based on North American 
+%! (letter) paper size. For Europe, change all the "lettertray"
+%! references to "a4tray".
+%!
+%! Example:  Redefining POSTSCRIPT Extensions
+%
+/a3        {statusdict begin a3tray     end} def
+/a4        {statusdict begin a4tray     end} def
+/a5        {statusdict begin a5tray     end} def
+/b4        {statusdict begin b4tray     end} def
+/b5        {statusdict begin b5tray     end} def
+/11x17     {statusdict begin 11x17tray  end} def
+/ledger    {statusdict begin ledgertray end} def
+/legal     {statusdict begin legaltray  end} def
+/letter    {statusdict begin lettertray end} def
+/note      {statusdict begin lettertray end} def
+/statement {statusdict begin statementtray end} def
+statusdict begin /statementtray /lettertray load def end
+<03> cvn { } def % control-c
+<04> cvn { } def % control-d
+<14> cvn { } def % control-t
+<1A> cvn { } def % control-z

@@ -1,0 +1,66 @@
+.\"	@(#)pfm_enable.3ncs	8.1 of 9/11/90
+.TH pfm_enable 3ncs
+.SH Name
+pfm_enable \- enable asynchronous faults
+.SH Syntax
+.nf
+#include <idl/c/base.h>
+#include <idl/c/pfm.h>
+
+void pfm_$enable()
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/sys/ins/base.ins.pas';\fR
+.\"\fB%include '/sys/ins/pfm.ins.pas';\fR
+.\"
+.\"\fBprocedure pfm_$enable;\fR
+.\".DE
+.ig
+.SH Synopsis (fortran)
+.nf
+\fB%include '/sys/ins/base.ins.ftn'\fR
+\fB%include '/sys/ins/pfm.ins.ftn'\fR
+
+	 \fBcall pfm_$enable\fR
+.fi
+..
+.SH Description
+The 
+.PN pfm_$enable
+routine enables asynchronous faults
+after they have been inhibited
+by a routine to 
+.PN pfm_$inhibit;
+.PN pfm_$enable
+causes the operating system
+to pass asynchronous faults on to the calling process.
+.NXR "Fault Management" "pfm_enable"
+.PP
+While faults are inhibited,
+the operating system holds
+at most one asynchronous fault.
+Consequently,
+when 
+.PN pfm_$enable
+returns, there can be at most one fault
+waiting on the process.
+If more than one fault was received
+between routines to 
+.PN pfm_$inhibit
+and 
+.PN pfm_$enable ,
+the process receives the first asynchronous fault received
+while faults were inhibited.
+.SH See Also
+intro(3ncs), pfm_enable_faults(3ncs), pfm_inhibit(3ncs)
+.\".DM "\
+.\"path syscalls/pfm/pfm_$enable\
+.\"type reference\
+.\"book syscalls\
+.\"chapter pfm\
+.\"section pfm_$enable\
+.\""
+.\".DD "\
+.\"enable(ed)(s)(ing) asyn(chronous) fault(s) pfm pfm_$\
+.\""

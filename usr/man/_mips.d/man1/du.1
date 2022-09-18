@@ -1,0 +1,44 @@
+.\" SCCSID: @(#)du.1	8.1	9/11/90
+.TH du 1
+.SH Name
+du \- print amount of disk usage
+.SH Syntax
+.B du
+[\fB\-as\fR] [\|\fIname...\fR\|]
+.SH Description
+.NXR "disk" "summarizing usage"
+.NXR "du command"
+.NXAM "du command" "quot command"
+The
+.PN du
+command gives the number of kilobytes contained in all files
+and, recursively, directories within each specified
+directory or file
+.IR name .
+If
+.I name
+is missing,
+`\fB.\fR'
+is used.
+.PP
+Absence of either \fB\-a\fR or \fB\-s\fR causes an entry to be generated for
+each directory only.
+.PP
+A file that has two links to it is only counted once.
+.SH Options
+.IP \fB\-a\fR 5
+Displays the disk usage for each file.
+.IP \fB\-s\fR 5
+Displays a summary total only.
+.SH Restrictions
+.NXR "du command" "restricted"
+Non-directories
+given as arguments (not under
+.B \-a
+option) are not listed.
+.sp
+If there are too many distinct linked files,
+.PN du
+counts the excess files multiply.
+.SH See Also
+df(1), quot(8)

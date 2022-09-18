@@ -1,0 +1,326 @@
+.\"#@(#)installation	4.1	Ultrix	7/17/90
+.po 1i
+.nr PO 1i
+.if n .ds lq ""
+.if n .ds rq ""
+.if t .ds lq ``
+.if t .ds rq ''
+.DA "May 15, 1984"
+.TL
+Installing the DECWRL Modula-2 Compiler
+.AU
+Michael L. Powell
+
+\*(DY
+.NH 1
+OVERVIEW
+.PP
+The DECWRL Modula-2 compiler consists of two compilation phases,
+an intermodule checker, and a command to invoke the various phases.
+The first phase checks and compiles individual Modula-2 modules into
+P-code, a machine-independent intermediate language.
+The second phase translates P-code into VAX assembly language suitable
+for the Unix assembler.
+After assembling by the Unix assembler,
+a collection of object modules is examined by the intermodule
+checker before linking to detect any inconsistencies in shared information.
+The Unix linker is then used to combine the object modules into an executable
+file.
+.FS
+DEC and VAX are trademarks of Digital Equipment Corporation.
+.br
+Unix is a trademark of Bell Laboratories.
+.FE
+.PP
+The DECWRL Modula-2 compiler is distributed on a tape in a format readable by
+the Unix
+.I tar
+command.
+For the purposes of this document, Unix will mean
+4.2 BSD (the Fourth Berkeley Software Distribution).
+The tape will be 9-track, 1600 BPI.
+Although we have compiled and run this compiler on 4.1 BSD, 4.1c BSD, and
+4.2 BSD systems, it may or may not run on your version of Unix.
+The main things that the compiler depends on are:
+the Berkeley Pascal compiler, which is used to
+compile most of the source;
+the Unix YACC parser generator,
+which is used to generate a parser for the compiler;
+and
+the Unix C compiler, which is used to compile some of the library routines
+and the mod command.
+The runtime library calls some C routines, but they are standard across most
+implementations.
+.PP
+NOTE ABOUT LICENSES:
+The distribution contains no software proprietary
+to Bell Laboratories or the Regents of the University of California.
+The compiler was written from scratch, and is not derived from Wirth's Lilith
+compiler.
+Software and documentation is copyright 1984 by Digital Equipment Corporation,
+Maynard, Massachusetts, and is made available subject to a license agreement.
+.NH 1
+INSTALLING THE COMPILER
+.PP
+The compiler is organized as several components.
+Each component is in a separate directory on the distribution tape.
+Generally, a component can be recompiled by invoking the
+.I make
+command in its directory.
+A component may be installed by typing \*(lqmake install\*(rq in its directory.
+.PP
+The installed compiler is accessed in two places.
+The
+.I mod
+command needs to be installed in a bin directory that the compiler's users
+will have in their search pathes.
+This directory is specified by the INSTALLDIR variable in the mod Makefile
+(default /usr/local/bin).
+The
+.I p2m2
+command works the same way.
+.PP
+The phases of the compiler, the runtime library, and the standard definition
+modules all exist in a directory known by the
+.I mod
+command and the intermodule checker.
+This directory is specified by the MODLIBDIR variable in the Makefiles
+(default /usr/local/lib/mod).
+.I
+This directory must be created before the compiler can be installed.
+.R
+.PP
+For testing purposes, it is handy to be able to execute the compiler without
+installing it.
+The way I do this is to use the lib source directory as the standard library
+directory.
+All you need to do is add symbolic links from the lib source directory to
+the executables in the mod2, xlate, and imc directory.
+These should be already exist but, if needed,
+you can do a \*(lqmake testdir\*(rq in the lib
+directory to make the symbolic links.
+You must assign the full path name of the lib source directory
+to the TESTLIBDIR variable in the mod and imc Makefiles.
+Then, executing the test version of the mod command will use the test versions
+of the binaries and libraries.
+.PP
+The Unix manual pages for the
+.I mod
+and
+.I p2m2
+commands are set up to be in the \*(lql\*(rq (the letter between k and m)
+section of the manual.
+.PP
+The components of the compiler should be installed in the order
+in which they are described below.
+In particular, the mod command
+and both the front and back ends of the compiler,
+must be working in order to compile the runtime library and the intermodule
+checker.
+.PP
+NOTE ABOUT UNIX SYSTEM COMPATIBILITY:
+Although the sources distributed can probably be compiled and run on any
+4.x BSD system,
+there is a good chance the object modules on the tape will not work.
+This predicament results from the frequent changes to the Berkeley Pascal 
+system, its runtime library, and the C stdio library.
+If you have problems linking the programs (unresolved references),
+or errors that might be attributed to I/O problems (mysterious core dumps
+before the compiler does anything, the compiler runs but produces no output,
+etc.),
+you should be sure you are not linking in any old object files.
+If you run into problems,
+I recommend doing a \*(lqmake clean\*(rq and a \*(lqmake install\*(rq before
+panicking.
+.NH 1
+MOD COMMAND
+.PP
+The mod command is a C program that invokes the phases of the compiler.
+The source is in a directory called
+mod.
+Typing \*(lqmake install\*(rq will install it as mod in the appropriate bin directory.
+.NH 1
+FRONT END
+.PP
+The compiler front end is a YACC and Pascal program that parses individual
+Modula-2 programs and generates P-code for them.
+An optimizer may be selected to improve the speed of the generated
+code.
+.PP
+The source for the front end is in the directory
+.I mod2.
+Typing \*(lqmake install\*(rq will install the compiler front end as
+.I mod2.0
+in the standard library directory.
+.NH 1
+BACK END
+.PP
+The compiler back end is a Pascal program that parses P-code files and
+generates VAX/Unix assembly language.
+The source for the back end is in the directory
+.I xlate.
+Typing \*(lqmake install\*(rq will install the compiler back end as
+.I mod2.1
+(the digit between 0 and 1)
+in the standard library directory.
+.NH 1
+LIBRARY
+.PP
+The runtime library is a set of C and Modula-2 programs that provide
+a minimal runtime environment for Modula-2.
+Only two of the Modula-2 routines (strings and parameters)
+actually run as Modula-2 programs.
+Most of the others exist as Modula-2 definition modules, but are implemented
+in C.
+The system.def, memory.def, io.def, and bitoperations.def modules
+are never read by the compiler, but document the builtin modules.
+The Storage.def module is provided for programs that import the standard
+memory allocation routines ALLOCATE and DEALLOCATE, although such imports
+are not needed to use new and dispose in this implementation of Modula-2.
+.PP
+The unix.def module defines many common Unix system calls in a way that
+Modula-2 programs can use.
+Feel free to add your favorites.
+.PP
+The file runtime.c contains much of the miscellaneous runtime support.
+Included is a procedure called SYSTEM_cputime that returns the accumulated
+CPU time for a program in milliseconds.
+It may be necessary to modify this on your system.
+The file mem.c contains the memory allocation routines, coroutine.c contains
+the Modula-2 process routines, and udiv.c contains an unsigned 32-bit
+division routine.
+.PP
+Typing \*(lqmake install\*(rq will create the library and install it in the standard
+library directory.
+Two versions of the library will be created: one for use in profiling
+Modula-2 programs
+(-pg option) and the other for normal use.
+The Modula-2 library routines will be the first Modula-2 programs you will
+compile on your system.
+If you have problems, check that the mod command is able to find the phases
+of the compiler in the appropriate places.
+Also, see above NOTE ABOUT UNIX SYSTEM COMPATIBILITY.
+.NH 1
+INTERMODULE CHECKER
+.PP
+The intermodule checker is a Modula-2 program that examines the symbol table
+information in a set of object files to be sure they are consistent.
+It will optionally recompile any files that are out of date.
+.PP
+The intermodule checker uses information similar to that used by
+.I dbx.
+The information is placed into the object modules with type
+80 decimal (= 50 hexadecimal).
+It is possible that this number is in use by another language processor,
+in which case an alternate should be selected
+(probably 16 plus some multiple of 32).
+To specify a different value, change the constant STABNMOD2 in mod2/dbstab.p
+and in imc/imc.mod and add the constant N_MOD2 to /usr/include/stab.h.
+For cleanliness, you should also modify the Unix
+.I nm
+command to recognize it.
+If /usr/include/stab.h does not define N_MOD2,
+dbx will assume 80 decimal.
+.PP
+The source for the intermodule checker is in directory
+.I imc.
+Typing \*(lqmake install\*(rq will install the intermodule checker as
+.I mod2.2
+in the standard library directory.
+.NH 1
+P2M2
+.PP
+.I P2m2
+is a conversion aid for translating Berkeley Pascal programs into Modula-2.
+It consists of a YACC parser and some Pascal routines
+to read .h and .p files
+and produce .def and .mod files.
+The source is in a directory called p2m2.
+.PP
+Typing \*(lqmake install\*(rq will install p2m2 in the appropriate bin directory.
+.NH 1
+DBX
+.PP
+We use the debugger
+.I dbx
+for Modula-2.
+Mark Linton of Stanford University developed the debugger, and has extended
+it to work for Modula-2.
+Since that software is covered by a 4.2 BSD license,
+it is not a part of this software distribution.
+However, we are distributing a set of updates to the 4.2 version of DBX;
+these updates were developed by Mark Linton and are in the public domain.
+.PP
+The updates to make DBX are in the directory called
+.I dbx.
+To generate a DBX that will work with Modula-2, copy the source files for the
+4.2 DBX into the directory.
+You should check that the sizes and version numbers of your source files agree
+with the sizes at the beginning of the file mkupdate.
+If they do not agree, then you do not have a 4.2 version of DBX, and
+you will have to integrate the changes by hand (Good luck!).
+If they agree, execute the csh command file
+.I mkupdate.
+.PP
+The csh command file mktests will create a set of test directories for dbx.
+You should then be able to create a new dbx by typing \*(lqmake install\*(rq.
+Dbx includes a set of regression tests which can be run before installing an
+updated version.
+To run these tests, type \*(lqmake test\*(rq.
+.I ManPage
+contains a new manual page for dbx.
+.NH 1
+DOCUMENTATION
+.PP
+A limited amount of documentation is available.
+For a description of the Modula-2 language, see
+N. Wirth,
+.I "Programming in Modula-2,"
+Springer-Verlag, New York, 1982.
+This installation guide plus manual pages for the
+.I mod
+and
+.I p2m2
+commands are in a directory call doc.
+There is also an overview of the compiler, and a document discussing interfacing
+Modula-2 to C and Pascal programs.
+.NH 1
+BENCHMARKS
+.PP
+The source for the benchmark program in various languages is supplied
+in a directory called bench.
+Compile and enjoy.
+Feel free to put your favorite compiler to the test.
+.NH 1
+TESTS
+.PP
+Some test programs are included
+in a directory called test.
+The Makefile has some comments about what they should do.
+.NH 1
+BUGS
+.PP
+If you send me a network address of an appropriate person,
+I will send out bug reports and fixes as my time permits.
+Comments on the compiler and distribution will be appreciated.
+In order that I have time to make enhancements to Modula-2 and do
+other things that you might benefit from, please resist the temptation
+to call me on the phone.
+Reasonable amounts of computer mail will be cheerfully, if not immediately,
+answered.
+.PP
+Mail to:
+.nf
+.in +1i
+Michael L. Powell
+Digital Equipment Corporation
+Western Research Laboratory
+4410 El Camino Real
+Los Altos, CA  94022
+
+decvax!decwrl!powell
+ucbvax!decwrl!powell
+powell@decwrl.csnet
+rhea::powell
+.in -1i
+.fi

@@ -1,0 +1,46 @@
+.\" SCCSID: @(#)deroff.1	8.1	9/11/90
+.TH deroff 1 
+.SH Name
+deroff \- remove formatting codes from text
+.SH Syntax
+.B deroff
+[\fB\-w\fR] \fIfile...\fR
+.SH Description
+.NXR "deroff interpreter"
+The
+.PN deroff
+command
+reads each file in sequence and removes all
+.PN nroff
+and
+.PN troff
+command lines, backslash constructions, macro definitions,
+.PN eqn
+constructs (between .EQ and .EN lines or between delimiters),
+and table descriptions and writes the remainder on the standard output.
+The
+.PN deroff
+command
+follows chains of included files (.so and .nx commands);
+if a file has already been included, the .so command is ignored and an .nx
+command terminates execution.  If no input file is given,
+.PN deroff
+reads from the standard input file.
+.SH Options
+.IP \fB\-w\fR 5
+Generates word list (one word per line).
+.SH Restrictions
+.NXR "deroff interpreter" "restricted"
+The
+.PN deroff
+command
+is not a complete
+.PN troff
+interpreter, so it can be confused by subtle constructs.
+Most errors result in too much rather than too little output.
+.PP
+The
+.B \-w 
+flag removes every one\- or two\-character word.
+.SH See Also
+diction(1), nroff(1)

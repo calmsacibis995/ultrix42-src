@@ -1,0 +1,86 @@
+.\" SCCSID: @(#)ln.4	3.1	11/24/87
+.TH ln 4 
+.SH Name
+ln \- Lance Ethernet interface
+.SH Syntax
+.nf
+\fBdevice ln0 at ibus? vector lnintr\fR
+.\"\fBdevice ln0 at vba0 csr 0x200e0000 vector lnintr\fR
+.\".fi
+.\".PP
+.\"The second line is used for busless small VAX processors.  Other
+.\"processors would use the first line. 
+.SH Description
+.NXR "ln interface" "Lance Ethernet interface"
+.NXR "Lance Ethernet interface"
+.NXR "Ethernet interface" "Lance Ethernet interface"
+The
+.PN ln 
+interface provides access to a 10 Mb/s Ethernet network through
+the Lance controller.
+.PP
+The host's Internet address is specified at boot time with
+an SIOCSIFADDR ioctl.
+The
+.PN ln 
+interface employs the address resolution protocol described in
+.MS arp 4p
+to map dynamically between Internet and Ethernet addresses on the local
+network.
+.PP
+The interface normally tries to use a trailer encapsulation
+to minimize copying data on input and output.  This can be
+disabled for an interface by setting the IFF_NOTRAILERS
+flag with an SIOCSIFFLAGS ioctl.
+Trailers are only used for packets destined for Internet hosts.
+.PP
+The SIOCSPHYSADDR ioctl can be used to change 
+the physical address of the Lance.  The
+SIOCRPHYSADDR ioctl can
+be used to read the physical address of the Lance.
+.PP
+The SIOCADDMULTI and SIOCDELMULTI ioctls can be used to add or delete
+multicast addresses.  
+The Lance recognizes a maximum of 12 multicast addresses.
+.PP
+The SIOCRDCTRS and SIOCRDZCTRS ioctls can be used to read or 
+``read and clear'' the Ethernet driver counters.
+The argument to these two ioctls is a pointer to a counter
+structure, 
+.PN ctrreq, 
+found in 
+.PN <net/if.h> .
+.PP
+The SIOCENABLBACK and SIOCDISABLBACK ioctls can be used to enable
+and disable the interface loopback mode respectively.
+.SH Diagnostics
+The diagnostic error messages contain relevant information provided
+by the Lance.
+.PP
+.B "ln%d: can't handle af%d"
+.br
+The interface was handed
+a message with addresses formated in an unsuitable address
+family, and the packet was dropped.
+.PP
+.B "ln%d: memory error (MERR)"
+.br
+A memory parity error has occurred.
+.PP
+.B "ln%d: lnalloc: cannot alloc memory ... "
+.br
+The 
+.PN ln
+driver was unable to allocate memory for internal data structures.
+.PP
+.B "ln%d: initialization error"
+.br
+The
+.PN ln
+driver was unable to initialize the network interface.
+.PP
+.B "ln%d: SIOCADDMULTI fail, multicast list full"
+.br
+Too many multicast requests have been made. 
+.SH See Also
+arp(4p), inet(4f), intro(4n)

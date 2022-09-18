@@ -1,0 +1,87 @@
+.\" SCCSID: @(#)tc.1	8.1	9/11/90
+.TH tc 1 "" "" Unsupported
+.SH Name
+tc \- phototypesetter simulator
+.SH Syntax
+.B tc
+[
+.B \-t
+]
+[
+.B \-s\fIN\fP
+]
+[
+.B \-p\fIL\fP
+]
+[
+.I file
+]
+.SH Description
+The
+.PN tc
+command interprets its
+input (standard input default)
+as device codes for a Graphic Systems phototypesetter (cat).
+The standard output of
+.PN tc
+is intended for a Tektronix 4015 (a 4014 terminal
+with ASCII and APL character sets).
+The sixteen typesetter sizes are mapped into the 4014's
+four sizes;
+the entire TROFF character set is drawn using the 4014's
+character generator,
+using overstruck combinations where necessary.
+Typical usage:
+.IP "" 15
+troff \-t file | tc
+.PP
+At the end of each page
+.I tc
+waits for a newline (empty line) from the keyboard before
+continuing on to the next page.
+In this wait state, the command
+.B e
+will suppress the screen erase before the next page;
+.B s\c
+N will cause the next N pages to be skipped;
+and
+.B !\c
+line will send line to the shell.
+.SH Options
+.TP 8
+.B  \-t
+Don't wait between pages; for directing output into a file.
+.TP 
+.BI \-s N
+Skip the first 
+.I N 
+pages.
+.TP 
+.BI \-p L
+Set page length to 
+.IR L .
+.I L 
+may include the scale factors
+.B p
+(points),
+.B i
+(inches),
+.B c
+(centimeters),
+and
+.B P
+(picas);
+default is picas.
+.TP
+.BI \(fm\- l\ w \(fm
+Multiply the default aspect ratio, 1.5, of a displayed page
+by
+.I l/w.
+.SH Restrictions
+Font distinctions are lost.
+.PP
+.PN tc 's
+character set is limited to ASCII in just one size.
+.SH See Also
+troff(1),
+plot(1g)

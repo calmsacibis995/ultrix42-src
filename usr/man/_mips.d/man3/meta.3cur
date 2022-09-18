@@ -1,0 +1,33 @@
+.TH meta 3cur 
+.SH Name
+meta \- force the number of significant bits on input
+.SH Syntax
+.B
+meta(win, bf)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+bool bf;
+.SH Description
+.NXR "meta subroutine"
+This function forces the user's terminal to return 7 or 8
+significant bits on input.
+To force 8 bits to be returned, 
+invoke 
+.PN meta
+with
+.PN bf
+as
+.PN TRUE .
+To force 7 bits to be returned,
+invoke
+.PN meta
+with
+.PN bf
+as
+.PN FALSE. 
+.PP
+The window argument is always ignored, but it must still be
+a valid window to avoid compiler errors.

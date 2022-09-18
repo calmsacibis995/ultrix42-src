@@ -1,0 +1,151 @@
+/*
+ * @(#)MCS.cod	4.1
+ *
+ * This file defines the MCS code as used by International UNIX.
+ *
+ * As more than one environment may be based on MCS this file is 
+ * given here for inclusion in the appropriate places.
+ */
+
+/*
+ * lower half of MCS is ISO 646
+ */
+#include "ISO646.inc"
+
+/*
+ * Giving name and property to the country spesific codes 2/3, 2/4, 4/0, 5/11, 
+ * 5/12, 5/13, 5/14, 6/0, 7/11, 7/12, 7/13 and 7/14
+ */
+numbsign = '#'	: MISCEL, PUNCT;	
+dollar = '$'	: CURENCY, PUNCT;
+comm_at = '@'	: MISCEL, PUNCT;
+l_sq_br = '['	: MISCEL, PUNCT;
+revsolidus = '\\' : MISCEL, PUNCT;
+r_sq_br = ']'	: MISCEL, PUNCT;
+circ = '^'	: MISCEL, PUNCT;
+grav_acc = '`'	: MISCEL, PUNCT;
+l_cur_br = '{'	: MISCEL, PUNCT;
+ver_line = '|'	: MISCEL, PUNCT;
+r_cur_br = '}'	: MISCEL, PUNCT;
+tilde = '~'	: MISCEL, PUNCT;
+
+/*
+ * supplementary control characters:
+ */
+sc00 = 0x80; sc01 = 0x81; sc02 = 0x82; sc03 = 0x83;
+sc04 = 0x84; sc05 = 0x85; sc06 = 0x86; sc07 = 0x87;
+sc08 = 0x88; sc09 = 0x89; sc0a = 0x8a; sc0b = 0x8b;
+sc0c = 0x8c; sc0d = 0x8d; sc0e = 0x8e; sc0f = 0x8f;
+
+sc10 = 0x90; sc11 = 0x91; sc12 = 0x92; sc13 = 0x93;
+sc14 = 0x94; sc15 = 0x95; sc16 = 0x96; sc17 = 0x97;
+sc18 = 0x98; sc19 = 0x99; sc1a = 0x9a; sc1b = 0x9b;
+sc1c = 0x9c; sc1d = 0x9d; sc1e = 0x9e; sc1f = 0x9f;
+
+/*
+ * extended characters
+ */
+nbsp = 10/0	: SPACE;		
+revexcl = 10/1	: PUNCT;
+cent = 10/2	: CURENCY, PUNCT;		
+pound = 10/3	: CURENCY, PUNCT;
+rsv1 = 10/4	: ILLEGAL;
+yen = 10/5	: CURENCY, PUNCT;
+rsv2 = 10/6	: ILLEGAL;
+section = 10/7	: MISCEL, PUNCT;
+gencur = 10/8	: CURENCY, PUNCT;	
+copyright = 10/9: MISCEL, PUNCT;
+fem_ord = 10/10	: MISCEL, PUNCT;	
+ang_q_l = 10/11	: PUNCT;
+rsv3 = 10/12 	: ILLEGAL;
+rsv4 = 10/13 	: ILLEGAL;
+rsv5 = 10/14 	: ILLEGAL;
+rsv6 = 10/15 	: ILLEGAL;
+
+degree = 11/0	: MISCEL, PUNCT;	
+plu_min = 11/1	: ARITH, PUNCT;
+sup_two = 11/2	: SUPSUB, PUNCT;		
+sup_three = 11/3: SUPSUB, PUNCT;
+rsv7 = 11/4  	: ILLEGAL;
+micro = 11/5	: MISCEL, PUNCT;
+pilcrow = 11/6	: MISCEL, PUNCT;	
+mid_dot = 11/7	: MISCEL, PUNCT;
+rsv8 = 11/8 	: ILLEGAL;
+sup_one = 11/9	: SUPSUB, PUNCT;
+mas_ord = 11/10	: MISCEL, PUNCT;	
+ang_q_r = 11/11	: PUNCT;
+o_quart = 11/12	: FRACTION, PUNCT;	
+half = 11/13	: FRACTION, PUNCT;
+rsv9 = 11/14	: ILLEGAL;
+revquest = 11/15: PUNCT;
+
+/*
+ * special characters for languages:
+ */
+GRAVE_A = 12/0	: UPPER;		
+ACUTE_A = 12/1	: UPPER;
+CIRC_A = 12/2	: UPPER;		
+TILDE_A = 12/3	: UPPER;
+DIA_A = 12/4	: UPPER;		
+RING_A = 12/5	: UPPER;
+AE = 12/6	: UPPER;		
+CEDIL_C = 12/7	: UPPER;
+GRAVE_E = 12/8	: UPPER;		
+ACUTE_E = 12/9	: UPPER;
+CIRC_E = 12/10	: UPPER;		
+DIA_E = 12/11	: UPPER;
+GRAVE_I = 12/12	: UPPER;		
+ACUTE_I = 12/13	: UPPER;
+CIRC_I = 12/14	: UPPER;		
+DIA_I = 12/15	: UPPER;
+
+rsv10 = 13/0	: ILLEGAL;
+TILDE_N = 13/1	: UPPER;
+GRAVE_O = 13/2	: UPPER;		
+ACUTE_O = 13/3	: UPPER;
+CIRC_O = 13/4	: UPPER;		
+TILDE_O = 13/5	: UPPER;
+DIA_O = 13/6	: UPPER;		
+OE = 13/7	: UPPER;
+SLASH_O = 13/8	: UPPER;		
+GRAVE_U = 13/9	: UPPER;
+ACUTE_U = 13/10	: UPPER;		
+CIRC_U = 13/11	: UPPER;
+DIA_U = 13/12	: UPPER;		
+DIA_Y = 13/13	: UPPER;
+rsv11 = 13/14	: ILLEGAL;
+sharp_s = 13/15	: LOWER;
+
+grave_a = 14/0	: LOWER;	 	
+acute_a = 14/1	: LOWER;
+circ_a = 14/2	: LOWER;		
+tilde_a = 14/3	: LOWER;
+dia_a = 14/4	: LOWER;		
+ring_a = 14/5	: LOWER;
+ae = 14/6	: LOWER;		
+cedil_c = 14/7	: LOWER;
+grave_e = 14/8	: LOWER;		
+acute_e = 14/9	: LOWER;
+circ_e = 14/10	: LOWER;		
+dia_e = 14/11	: LOWER;
+grave_i = 14/12	: LOWER;		
+acute_i = 14/13	: LOWER;
+circ_i = 14/14	: LOWER;		
+dia_i = 14/15	: LOWER;
+
+rsv12 = 15/0	: ILLEGAL;
+tilde_n = 15/1	: LOWER;
+grave_o = 15/2	: LOWER;		
+acute_o = 15/3	: LOWER;
+circ_o = 15/4	: LOWER;		
+tilde_o = 15/5	: LOWER;
+dia_o = 15/6	: LOWER;		
+oe = 15/7	: LOWER;
+slash_o = 15/8	: LOWER;		
+grave_u = 15/9	: LOWER;
+acute_u = 15/10	: LOWER;		
+circ_u = 15/11  : LOWER;
+dia_u = 15/12	: LOWER;		
+dia_y = 15/13	: LOWER;
+rsv13 = 15/14	: ILLEGAL;
+rsv14 = 15/15	: ILLEGAL;

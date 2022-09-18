@@ -1,0 +1,93 @@
+.\" SCCSID: @(#)trace.1	8.2	4/2/91
+.TH trace 1
+.SH Name
+trace \- trace system calls of programs
+.SH Syntax
+.B trace
+[\|\fIoptions\fR\|] \fIcmd args...\fR
+.SH Description
+.NXR "trace command (general)"
+.NXAM "close system call" "trace command (general)"
+.NXAM "open system call" "trace command (general)"
+.NXAM "ioctl system call" "trace command (general)"
+.NXAM "select system call" "trace command (general)"
+.NXAM "read system call" "trace command (general)"
+.NXR "system call tracer"
+.NXAM "system call tracer" "system call tracer device"
+The
+.PN trace
+command with no flag arguments traces for the given
+\fIcmd\fP and \fIargs\fP all system calls
+made and prints a time stamp,
+the PID, call and/or return values and arguments
+and puts its output in the file trace.dump.
+.SH Options
+.IP "\fB\-f\fI filename\fR" 8
+Puts dump in file \fIfilename\fP.
+.IP \fB\-z\fR 
+Echos arguments only.
+.PP
+Only one of the following option arguments can be specified at
+one time.
+.PP
+.IP \fB\-c\fI#\fR 8
+Traces given PIDs and their children.  Up to sixteen PIDs can
+be specified.
+.IP \fB\-g\fI#\fR 
+Traces given groups only.  Up to sixteen Group IDs can be
+specified.  
+.IP \fB\-p\fI#\fR 
+Traces given PIDs only.  Up to sixteen PIDs can be specified.
+.IP \fB\-s\fI#\fR 
+Traces given system calls only.  Up to sixteen PIDs can be
+specified.
+.IP \fB\-u\fI#\fR 
+Traces given UIDs only.  Up to sixteen PIDs can be specified.
+.SH Examples
+.EX
+trace \-f ls.dump ls \-l /dev >ls.out
+.EE
+runs the cmd ls \-l /dev and puts the trace in ls.dump
+and 
+.PN ls
+output in ls.out.
+.EX
+trace \-f csh.trace \-p $$ &
+.EE
+will trace your login shell in the background. To stop the trace
+just send it a termination signal (that is, kill \-TERM trace_pid).
+.SH Restrictions
+Due to security, no one,
+not even the super-user can trace anyone else's
+programs. This sort of negates some of the usefulness of the
+\fB-g\fP and \fB-u\fP flags.
+.PP
+The 
+.PN setuid 
+program cannot be traced.
+.PP
+Only 16 numbers
+can be given to the \fB\-c, \-p, \-g, \-u,\fP and \fB\-s\fP flags.
+.PP
+The kernel configuration file must contain the following:
+.EX
+options         SYS_TRACE
+pseudo-device   sys_trace
+.EE
+.PP
+In addition, the superuser must use the following command sequence to create the device:
+.EX
+cd /dev
+MAKEDEV trace
+.EE
+If both lines are not in the configuration file or if the device is not made,
+the message "Cannot open /dev/trace" appears.
+.SH Files
+.TP 15
+/dev/trace
+read only character special device for reading syscall data.
+.TP 15
+trace.dump
+default file for the system call trace data.
+.SH See Also
+open(2), close(2), ioctl(2), select(2), read(2), trace(5)

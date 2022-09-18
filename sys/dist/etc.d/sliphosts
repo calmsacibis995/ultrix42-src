@@ -1,0 +1,71 @@
+#	@(#)sliphosts	4.1 (ULTRIX) 7/2/90
+#
+# /etc/sliphosts contains information about Serial Line Internet Protocol 
+# hosts. Hosts come in numerous types but all are considered masters
+# or slaves depending on what is present in this file. Masters 
+# initiate the connection as:
+# 
+#	/usr/new/slattach host
+#
+# where host is the name to search for in /etc/hosts (the destination
+# found is eventually passed to an /etc/ifconfig). 
+# Slaves use /usr/new/slattach as their login shell (shell field of /etc/passwd)
+# and the login name is matched against the host field below.
+#
+# Slip requires a special line discipline in the kernel. To build
+# slip into a binary system, add the line "pseudo-device  sl" to your
+# configuration file, remove your machine directory, and rebuild
+# the kernel (config MACHINE; make depend; make vmunix). 
+#
+# The fields describing each connection are:
+#
+# host destination gateway netmask speed tty modemtype phonenum logininfo
+# 
+# Host is used to match the entry in this file.
+#
+# Destination is used an argument to ifconfig
+#
+# Gateway is usually the hostname of the system although it may be 
+# changed for specific routing cases. 
+#
+# Netmask depends on your network and is passed to
+# /etc/ifconfig. Speed is the speed at which the connection is to be
+# run (this may be "any" for slaves and the speed of the line will
+# not be modified). 
+#
+# The device is the line to use for this connection
+# (for masters this is the outgoing line to use and for slave /dev/tty
+# is usually specified). 
+#
+# Modemtype is specified as the type of modem
+# to use (name must match an entry in /etc/acucap or "hw" for hardwired
+# connections - Master only). 
+#
+# Phonenum is present if modemtype is not "hw" 
+# and is the phone number to use (Master only). 
+#
+# Logininfo is UUCP like info 
+# needed to negotiate the SLIP login at the remote host (Master only).
+#
+# Thus a sample Master might be:
+#
+# decvax decvax.dec.com test.fun netmask 19200 /dev/ttyd0 hayes-V 5-5555 ogin: Stest ssword: guess 
+#
+# (Notice "decvax.dec.com", "test.fun", "netmask" must be found in /etc/hosts,
+# /etc/networks or resolved by a name server as these are passed 
+# to /etc/ifconfig).
+#
+#
+# Master dec7 calling (on a hardwired line) slave cyclops:
+#
+cyclops	cyclops dec7.dec.com	255.255.255.0	19200	/dev/tty01 hw "" \r\c ogin: dec7 ssword: dec7
+#
+# What slave cyclops would have in its /etc/sliphosts file to allow the
+# connection. In addition, the dec7 would need to be present in the
+# password file with the shell set to "/usr/new/slattach"
+#
+dec7	dec7.dec.com cyclops	255.255.255.0	any	/dev/tty
+#
+# What Master dec7 calling (on a hayes 9600 baud modem) slave cyclops:
+#
+cyclops cyclops dec7.dec.com	255.255.255.0	19200 	/dev/ttyd0 hayes-V 10329 "" \r\c ogin: dec7 ssword: dec7

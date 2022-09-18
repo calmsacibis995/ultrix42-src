@@ -1,0 +1,27 @@
+.TH getyx 3cur 
+.SH Name
+getyx \- get cursor position
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B
+int getyx(win, y, x)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int y, x;
+.SH Description
+.NXR "getyx macro"
+The cursor coordinates of the window 
+are placed in the two integer variables 
+.PN y
+and 
+.PN x .
+This routine is implemented as a macro, 
+so no ampersand (&)
+is necessary before the variables.
+.SH Return Values
+No return value is defined for this function.

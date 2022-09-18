@@ -1,0 +1,79 @@
+.TH shexp 1 
+.SH Name
+shexp \- display password expiration information for a user
+.SH Syntax
+.B shexp
+[\fB\-q\fP]
+[\fIusername\fP]
+.SH Description
+.NXR "shexp command"
+.NXR "auth database" "examination"
+.NXR "auth database" "shexp command"
+The command
+.PN shexp
+is used to display a user's password expiration information.
+The specified 
+.IR username , 
+or logname if no 
+.I username 
+is supplied, is
+converted to a UID by searching through the passwd file.
+The UID is then used to look up the user's entry
+in the Auth Data Base.
+The password expiration information is then printed out in
+.PN ctime(3)
+format.
+.EX
+% shexp
+Expires Tue Dec  6 10:49:18 EST 1988
+.EE
+If the password has already expired the word \fIExpires\fP will be
+replaced with the word \fIExpired\fP. If password expiration is disabled
+for the particular user in question the output of
+.PN shexp
+will be \fINever expires\fP.
+.SH Options
+.IP \-q 5
+Instead of displaying the expiration date and time in
+.PN ctime(3)
+format, 
+.PN shexp
+outputs it as three
+decimal numbers: the minimum password lifetime, the maximum password
+lifetime, and the password modification time.
+All three numbers are displayed as they are found in the
+.PN auth
+database.
+.SH Restrictions
+Only the super-user may obtain information about
+users with UIDs other than the real UID of the invoking process.
+.SH Diagnostics
+.B "User not found in passwd data base."
+.br
+There is no entry in 
+.PN /etc/passwd
+for the specified 
+.IR username .
+.PP
+.B "Cannot stat auth file."
+.br
+The 
+.PN auth 
+database is missing (security features may not be enabled).
+.PP
+.B "Insufficient privilege."
+.br
+An insufficiently privileged user is asking for information about a
+.I username 
+with a UID different then their current real-UID.
+.PP
+An exit value of 0 indicates a successful operation,
+any other exit status indicates an error.
+.SH Files
+.PN /etc/auth.[pag,dir]
+.br
+.PN /etc/passwd
+.SH See Also
+passwd(1), getauthuid(3), auth(5)
+.br
+\fISecurity Guide for Users\fP

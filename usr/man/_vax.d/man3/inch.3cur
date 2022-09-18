@@ -1,0 +1,114 @@
+.TH inch 3cur 
+.SH Name
+inch, mvinch, mvwinch, winch \- return character from window
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+chtype inch()
+.PP
+.B
+chtype winch(win)
+.br
+.B
+WINDOW \(**win;
+.PP
+.B
+chtype mvinch(y, x)
+.br
+.B
+int y, x;
+.PP
+.B
+chtype mvwinch(win, y, x)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+int y, x;
+.SH Description
+.NXR "inch macro"
+.NXR "mvinch macro"
+.NXR "mvwinch macro"
+.NXR "winch macro"
+The
+.PN inch
+routine
+returns 
+the character 
+at the current cursor position in the default window.
+If any attributes are set for that character, 
+their values will be 
+.PN or- ed 
+into the value returned.
+.PP
+The routine
+.PN mvinch
+returns 
+the character 
+at the specified position in the default window.
+If any attributes are set for that position, 
+their values will be 
+.PN or- ed
+into the value returned.
+.PP
+The
+.PN winch 
+routine
+returns 
+the character 
+at the current position in the named window.
+If any attributes are set for that position, 
+their values will be 
+.PN or- ed
+into the value returned.
+.PP
+The
+.PN mvwinch
+routine
+returns 
+the character 
+at the specified position in the named window.
+If any attributes are set for that position, 
+their values will be 
+.PN or- ed
+into the value returned.
+.PP
+The following information applies to all the routines.
+.PP
+The predefined constants
+A_CHARTEXT
+and
+A_ATTRIBUTES,
+defined in 
+.PN <cursesX.h> ,
+can be used with the 
+.PN &
+(logical 
+.PN and )
+operator to extract the character or attributes alone.
+.PP
+The
+.PN inch, 
+.PN winch, 
+.PN mvinch
+and 
+.PN mvwinch
+routines
+are macros.
+.SH Return Values
+Upon successful completion, the
+.PN inch ,
+.PN mvinch ,
+.PN mvwinch
+and
+.PN winch
+functions return the character at the selected position.  Otherwise, the
+.PN mvinch
+and
+.PN mvwinch
+functions return ERR.

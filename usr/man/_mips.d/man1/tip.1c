@@ -1,0 +1,469 @@
+.\" SCCSID: @(#)tip.1c	8.1	9/11/90
+.TH tip 1c
+.SH Name
+tip, cu \- connect to a remote system
+.SH Syntax
+.B tip
+[\fB\-v\fR] [\fB\-\fIspeed\fR\|] \fIsystem-name\fR
+.br
+.B tip
+[\fB\-v\fR] [\fB\-\fIspeed\fR\|] \fIphone-number\fR
+.br
+.B cu
+\fIphone-number\fR
+[\fB\-t\fR] [\fB\-s\fI speed\fR\|] [\fB\-a\fI acu\fR\|] 
+[\fB\-l\fI line\fR\|] [\fB\-#\fR]
+.SH Description
+.NXR "tip command"
+.NXR "cu command"
+.NXR "logging in" "to remote system"
+.NXAM "remote file" "tip command"
+.NXA "tip command" "rlogin command"
+The
+.PN tip
+and
+.PN cu
+commands establish a full-duplex connection to another system,
+giving the appearance of being logged in directly on the
+remote cpu.
+Modems must be present on your system and configured into the
+.PN /etc/remote
+file in order for
+.PN tip
+and
+.PN cu
+to work.
+See 
+.MS uucpsetup 8
+for information on how to set up the modems.
+.PP
+You must have an account 
+on the system (or equivalent) into which you wish to log in. 
+The preferred interface is
+.PN tip .
+The
+.PN cu
+interface is included for those people attached to the
+``call UNIX'' command of version 7.
+This manual page describes only 
+.PN tip .
+.SH Options
+.IP \fB\-#\fR 0.3i
+Uses specified speed (#) as baud rate.  
+.IP \fB\-l\fR 0.3i
+Uses specified terminal line.  
+.IP \fB\-v\fR 0.3i
+Displays all variable settings.  
+.PP
+Typed characters are normally transmitted directly to the remote
+system,
+which does the echoing as well.
+A tilde (~') appearing
+as the first character of a line is an escape signal.
+.NXR "tip command" "tilde escapes"
+The tilde escapes are: 
+.IP \fB\~CTRL/D~.\fR 0.3i
+Drop the connection and exit (you may still be logged in on the remote machine).
+.IP "\fB\~c \fR [\fIname\fR]" o.3i
+Change directory to name (no argument causes a change to your home directory).
+.IP \fB\~!\fR 0.3i
+Escape to a shell (exiting the shell returns you to 
+.PN tip
+).
+.IP \fB\~>\fR 0.3i
+Copy file from local to remote.
+The
+.PN tip
+command prompts for the name of a local file to transmit.
+.IP \fB\~<\fR 0.3i
+Copy file from remote to local.
+The
+.PN tip
+command prompts first for the name of the file to be sent, then for
+a command to be executed on the remote system.
+.IP "\fB\~p \fR \fIfrom\fR [ \fIto\fR ]" 0.3i
+Send a file to a remote UNIX host.
+The 
+.B put 
+command causes the remote UNIX
+system to run the command string: 
+cat > to, while
+.PN tip
+sends it the 
+.I from
+file.
+If the 
+.I to 
+file is not specified the 
+.I from
+file name is used.
+This command is actually a UNIX specific version of the 
+.B ~>
+command.
+.IP \fB\~t\fP \fIfrom\fR [ \fIto\fR ]" 0.3i
+Take a file from a remote UNIX host. 
+As in the 
+.B put 
+command the 
+.I to 
+file defaults to the 
+.I from 
+file name if it isn't specified. 
+The remote host
+executes the command string 
+cat 'from';echo ^A
+to send the file to
+.PN tip .
+.IP \fB\~|\fR 0.3i
+Pipe the output from a remote command to a local UNIX process.
+The command string sent to the
+local UNIX system is processed by the shell.
+.IP \fB\~#\fR 0.3i
+Send a BREAK to the remote system. 
+For systems which don't support the
+necessary
+.PN ioctl
+call the break is simulated by a sequence of line speed changes
+and DEL characters.
+.IP \fB\~s\fR 0.3i
+Sets a variable.  See the discussion below.
+.IP \fB\~v\fR 0.3i
+Displays sets as they are made.  
+.IP \fB\~CTRL/Z\fR 0.3i
+Stop
+.PN tip
+(only available with job control).
+.IP \fB\~?\fR 0.3i
+Displays a summary of the tilde escapes
+.sp
+.PP
+The
+.PN tip
+utility uses the file 
+.PN /etc/remote
+to find how to reach a particular
+system and to find out how it should operate while talking
+to the system.
+Refer to 
+.MS remote 5
+for a full description.
+Each system has a default baud rate with which to
+establish a connection.
+If this value is not suitable,
+the baud rate to be used may be specified on the command line,
+for example,
+.B tip \-300 mds.
+.PP
+When
+.PN tip
+establishes a connection it sends out a
+connection message to the remote system; the default value, if any,
+is defined in 
+.PN /etc/remote .
+.PP
+When
+.PN tip
+prompts for an argument (for example, during setup of
+a file transfer) the line typed may be edited with the standard
+erase and kill characters.
+A null line in response to a prompt,
+or an interrupt, will abort the dialogue and return you to the
+remote system.
+.PP
+The
+.PN tip
+command
+guards against multiple users connecting to a remote system
+by opening modems and terminal lines with exclusive access,
+and by honoring the locking protocol used by 
+.MS uucp 1c .
+.PP
+During file transfers 
+.PN tip
+provides a running count of the number of lines transferred.
+When using the ~> and ~< commands, the 
+.I eofread and 
+.I eofwrite
+variables are used to recognize end-of-file when reading, and
+specify end-of-file when writing (see below).
+File transfers
+normally depend on tandem mode for flow control.
+If the remote
+system does not support tandem mode, 
+.I echocheck 
+may be set
+to indicate
+.PN tip
+should synchronize with the remote system on the echo of each
+transmitted character.
+.PP
+When
+.PN tip
+must dial a phone number to connect to a system it will print
+various messages indicating its actions.
+The
+.PN tip
+command supports two methods of dialing modems.
+Tailored subroutines built into 
+.PN tip
+support the DIGITAL DN-11, DF02, DF03, DF112, DF124,
+and DF224 modems, the
+Racal-Vadic 831 auto-call modem, the Ventel 212+ modem,
+Racal-Vadic 3451 modem, and the Bizcomp 1031 and 1032 
+integral call unit/modems.
+.PP
+A generic dialer interface provides an alternative 
+method to tailored subroutines
+for each type of modem. 
+The generic method uses entries similar to 
+.MS termcap 5
+to provide
+.PN tip
+with the information needed to activate some modem and place a call.
+The file used by the generic dialer is 
+.PN /etc/acucap 
+and the format of entries in this file are described in 
+.PN acucap 5.
+.PP
+Note that the generic dialer interface is used whenever the
+.IR AT
+field from an entry of 
+.PN /etc/remote
+matches the name field of an entry of 
+.PN /etc/acucap .
+If no match is found, then the tailored subroutine list is searched
+and will be used if that modem is supported there.
+.PP
+.NT Caution 
+When using a DIGITAL DF112 modem, disable the ``Interface Test Mode
+Indicate'' option (set switchpack2,
+switch 6 to the OFF position)..\" End
+.NE 
+.PP
+.SM
+.B VARIABLES
+.NXR "tip command" "variables"
+The
+.PN tip
+command maintains a set of
+.I variables
+which control its operation.
+Some of these variables are read-only to normal users (root is allowed
+to change anything of interest).
+Variables may be displayed and set through the 
+.I s 
+escape.
+The syntax for variables is patterned
+after 
+.MS vi 1
+and
+.MS mail 1 .
+Supplying 
+.I all
+as an argument to the 
+.B set 
+command displays all variables readable by the user.
+Alternatively, the user may request display of a particular
+variable by attaching a ? to the end.
+For example 
+.I escape?
+displays the current escape character.
+.PP
+Variables are numeric, string, character, or boolean values.
+Boolean variables are set merely by specifying their name;
+they may be reset by prepending a ! to the name.
+Other variable types are set by
+concatenating an = and the value.
+The entire assignment must not have any blanks in it.
+A single set command may be used to interrogate
+as well as set a number of variables.
+Variables may be initialized at run time by placing set commands
+(without the ~s prefix in a file .tiprc in one's home directory).
+The
+.B \-v
+option causes
+.PN tip
+to display the sets as they are made.
+Certain common variables have abbreviations. 
+The following is a list of common variables,
+their abbreviations, and their default values.
+.TP
+.B beautify
+.br
+(bool) Discard unprintable characters when a session is being scripted;
+abbreviated 
+.IR be .
+.TP
+.B baudrate
+.br
+(num) The baud rate at which the connection was established;
+abbreviated
+.IR ba .
+.TP
+.B dialtimeout
+.br
+(num) When dialing a phone number, the time (in seconds)
+to wait for a connection to be established; abbreviated
+.IR dial .
+.TP
+.B echocheck
+.br
+(bool) Synchronize with the remote host during file transfer by
+waiting for the echo of the last character transmitted;
+default is
+.IR off .
+.TP
+.B eofread
+.br
+(str) The set of characters which signify an end-of-transmission
+during a ~< file transfer command; abbreviated
+.IR eofr .
+.TP
+.B eofwrite
+.br
+(str) The string sent to indicate end-of-transmission during
+a ~> file transfer command; abbreviated
+.IR eofw .
+.TP
+.B eol
+.br
+(str) The set of characters which indicate an end-of-line.
+The
+.PN tip
+command will recognize escape characters only after an end-of-line.
+.TP
+.B escape
+.br
+(char) The command prefix (escape) character; abbreviated
+.IR es ;
+default value is ~.
+.TP
+.B exceptions
+.br
+(str) The set of characters which should not be discarded
+due to the beautification switch; abbreviated
+.IR ex ;
+default value is \et\en\ef\eb.
+.TP
+.B force
+.br
+(char) The character used to force literal data transmission;
+abbreviated
+.IR fo ;
+default value is ^P.
+.TP
+.B framesize
+.br
+(num) The amount of data (in bytes) to buffer between file system
+writes when receiving files; abbreviated
+.IR fr .
+.TP
+.B host
+.br
+(str) The name of the host to which you are connected; abbreviated
+.IR ho .
+.TP
+.B prompt
+.br
+(char) The character which indicates an end-of-line on the remote
+host; abbreviated
+.IR pr ;
+default value is \n.
+This value is used to synchronize during what data transfers.
+The count of lines transferred during a file transfer
+command is based on receipt of this character.
+.TP
+.B raise
+.br
+(bool) Upper case mapping mode; abbreviated 
+.IR ra ;
+default value is 
+.IR off .
+When this mode is enabled, all lower case letters will be mapped to
+upper case by
+.PN tip
+for transmission to the remote system.
+.TP
+.B raisechar
+.br
+(char) The input character used to toggle upper case mapping mode;
+abbreviated
+.IR rc ;
+default value is ^A.
+.TP
+.B record
+.br
+(str) The name of the file in which a session script is recorded;
+abbreviated
+.IR rec;
+default value is tip.record.
+.TP
+.B script
+.br
+(bool) Session scripting mode; abbreviated
+.IR sc ;
+default is 
+.IR off .
+When
+.I script
+is 
+.IR true ,
+.PN tip
+will record everything transmitted by the remote system in
+the script record file specified in
+.IR record .
+If the
+.I beautify
+switch is on, only printable ASCII characters will be included in
+the script file (those characters between 040 and 0177).
+The variable
+.I exceptions
+is used to indicate characters which are an exception to the normal
+beautification rules.
+.TP
+.B tabexpand
+.br
+(bool) Expand tabs to spaces during file transfers; abbreviated
+.IR tab ;
+default value is
+.IR false .
+Each tab is expanded to 8 spaces.
+.TP
+.B verbose
+.br
+(bool) Verbose mode; abbreviated
+.IR verb ;
+default is 
+.IR true .
+When verbose mode is enabled, 
+.PN tip
+prints messages while dialing, shows the current number
+of lines transferred during a file transfer operations,
+and more.
+.TP
+SHELL
+.br
+(str) The name of the shell to use for the ~! command; default
+value is /bin/sh.  
+.TP
+HOME
+.br
+(str) The home directory to use for the ~c command; default
+value is taken from the environment.
+.NXR "tip command" "variables"
+.PP
+.SH Diagnostics
+Diagnostics are self-explanatory.
+.SH Files
+.ta \w'/usr/spool/uucp/LCK..*   'u
+.nf
+/etc/remote	global system descriptions
+/etc/phones	global phone number data base
+/etc/acucap	shared autodial modem database
+${REMOTE}	private system descriptions
+${PHONES}	private phone numbers
+~/.tiprc	initialization file.
+/usr/spool/uucp/LCK..*	lock file to avoid conflicts with \fIuucp\fP
+.fi
+.SH See Also
+acucap(5), phones(5), remote(5), uucpsetup(8)

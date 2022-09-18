@@ -1,0 +1,130 @@
+.\" SCCSID: @(#)msgget.2	8.2	3/28/91
+.TH msgget 2
+.SH Name
+msgget \- get message queue
+.SH Syntax
+.nf
+.ft B
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+.PP
+.ft B
+int msgget (key, msgflg)
+key_t key;
+int msgflg;
+.fi
+.SH Description
+.NXR "msgget system call" 
+.NXA "msgget system call" "ftok subroutine"
+.NXA "msgget system call" "msgsnd system call"
+.NXR "message" "getting queue identifier"
+The
+.PN msgget
+system call
+returns the message queue identifier associated with
+.I key.
+.PP
+A message queue identifier and associated message queue and data
+structure 
+are created for
+.I key 
+if one of the following is true:
+.IP \(bu 5
+The
+.I key
+is equal to IPC_PRIVATE
+.IP \(bu 5
+The
+.I key
+does not already have a message queue identifier associated with it,
+and
+.IR (msgflg
+& IPC_CREAT)
+is true.
+For further information, see 
+.MS intro 2 . 
+.PP
+Upon creation, the data structure associated with the new message queue
+identifier is initialized as follows:
+.IP \(bu 5
+The
+.IR msg_perm.cuid,
+.IR msg_perm.uid,
+.I msg_perm.cgid
+and 
+.I msg_perm.gid
+members
+are set equal to the effective user ID and effective group ID,
+respectively, of the calling process.
+.IP \(bu 5
+The low-order nine bits of
+.I msg_perm.mode
+are set equal to the low-order nine bits of
+.I msgflg.
+.IP \(bu 5
+The
+.IR msg_qnum ,
+.IR msg_lspid ,
+.IR msg_lrpid ,
+.IR msg_stime ,
+and
+.I mgs_rtime
+members are set equal to 0.
+.IP \(bu 5
+The
+.I msg_ctime
+is set equal to the current time.
+.IP \(bu 5
+The
+.I msg_qbytes
+is set equal to the system limit.
+.SH Return Values
+Upon successful completion, a non-negative integer, which is a message
+queue identifier, is returned.  Otherwise, a value of \-1 is returned, and
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+.NXR "msgget system call" "diagnostics"
+The
+.PN msgget
+system call
+fails under the following conditions: 
+.TP 15
+[EACCES]
+A message queue identifier exists for
+.I key
+but operations permission, 
+as specified by the low-order nine bits of
+.I msgflg,
+would not be granted. 
+For further information, see 
+.MS intro 2 .
+.TP 15
+[ENOENT]
+A message queue identifier does not exist for
+.I key
+and the logical operation
+.IR (msgflg
+& IPC_CREAT)
+is false. 
+.TP 15
+[ENOSPC]
+A message queue identifier is to be created, but the system-imposed
+limit on the maximum number of allowed message queue
+identifiers system wide would be exceeded. 
+.TP 15
+[EEXIST]
+A message queue identifier exists for
+.I key
+but the logical operation 
+.RI (( msgflg
+&
+IPC_CREAT )
+&
+.RI ( msgflg
+& 
+IPC_EXCL ))
+is true. 
+.SH See Also
+msgctl(2), msgop(2), ftok(3)

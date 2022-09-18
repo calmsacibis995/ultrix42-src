@@ -1,0 +1,150 @@
+.TH t_optmgmt 3xti
+.SH Name
+t_optmgmt \- manage options for a transport endpoint 
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_optmgmt(\fIfd, req, ret\fB)
+.br
+.B int \fIfd\fB;
+.br
+.B struct t_optmgmt \fI*req\fB;
+.br
+.B struct t_optmgmt \fI*ret\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies a bound transport endpoint.
+.IP \fIreq\fR 10
+Points to a \fBt_optmgmt\fR structure. See also \fIret\fR argument.
+.IP \fIret\fR 10
+Points to a \fBt_optmgmt\fR structure containing the following members:
+.EX
+struct netbuf \fIopt\fP;
+long \fIflags\fR;
+.EE
+.IP 
+The meanings of the fields are as follows:
+.RS 10
+.IP  \fIopt\fP 
+Identifies protocol options.
+.IP \fIflags\fP	
+Specifies the action to take with these options.
+.RE
+.PP
+The options are represented by a \fBnetbuf\fR structure in a manner
+similar to the address in 
+.PN t_bind(). 
+The \fIreq\fR argument is
+used to request a specific action of the provider and to send options
+to the provider. The \fIlen\fR field specifies the number of bytes in the
+options. The \fIbuf\fR field points to the options buffer, and the
+\fImaxlen\fR field has no meaning for the \fIreq\fR argument. The
+transport provider can return options and flag values to the user
+through \fIret\fR. For \fIret\fR, \fImaxlen\fR specifies the maximum
+size of the options buffer,  and \fIbuf\fR points to the buffer where the
+options are to be placed. On return, \fIlen\fR specifies the number of
+bytes of options returned. The \fImaxlen\fR field has no meaning for
+the \fIreq\fR argument, but must be set in the \fIret\fR argument to
+specify the maximum number of bytes the option buffer can hold. The
+actual structure and content of the options is imposed by the transport
+provider.
+.PP
+The \fIflags\fR field of \fIreq\fR must specify one of the following
+actions:
+.RS 10
+.IP "T_NEGOTIATE" 16
+This action enables the user to negotiate the values of the options specified 
+in \fIreq\fP with the transport provider. The transport provider evaluates the 
+requested options and negotiates the values, returns the negotiated values 
+through \fIret\fP.
+.sp
+.IP "T_CHECK" 16
+This action enables the user to verify whether the options specified in \fIreq\fP 
+are supported by the transport provider. On return, the \fIflags\fP field of \fIret\fR 
+has either T_SUCCESS or T_FAILURE set to indicate to the user 
+whether options are supported. These \fIflags\fR are only meaningful for the 
+T_CHECK request.
+.IP "T_DEFAULT" 16
+This action enables a user to retrieve the default options supported by the transport 
+provider into the \fIopt\fP field of \fIret\fP. In \fIreq\fR, the \fIlen\fP field of 
+\fIopt\fP must be zero and the \fIbuf\fP field may be NULL.
+.RE
+.SH Description
+The 
+.PN t_optmgmt()
+function enables a transport user to receive,
+verify, or negotiate protocol options with the transport provider.
+.NXR "t_optmgmt system call"
+.NXR "transport user" "protocol options"
+.PP
+If issued as part of the connectionless-mode service,
+.PN t_optmgmt()
+may block due to flow control constraints. That is, the function does not complete until the 
+transport provider has processed all previously sent data units.
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+req->opt.maxlen@/@/
+req->opt.len@x@/
+req->opt.buf@x(x)@/
+req->flags@x@/
+ret->opt.maxlen@x@/
+ret->opt.len@/@x
+ret->opt.buf@x@(x)
+ret->flags@/@x
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, a value of 0 is returned. On failure,  a
+value of \-1 is returned, and \fBt_errno\fR is set to indicate the
+error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor  does not refer to a transport endpoint.
+.TP 20 
+[TOUTSTATE]
+The function was issued in the wrong sequence.
+.TP 20
+[TACCES]
+The user does not have permission to negotiate the specified options.
+.TP 20
+[TBADOPT]
+The specified protocol options were in an incorrect format or contained
+illegal information.
+.TP 20
+[TBADFLAG]
+An invalid flag was specified.
+.TP 20
+[TBUFOVFLW]
+The number of bytes allowed for an incoming argument is not sufficient
+to store the value of that argument. The information to be returned in
+\fIret\fR is discarded.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the current implementation of XTI.
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+.MS t_accept 3xti , 
+.MS t_alloc 3xti ,
+.MS t_connect 3xti ,
+.MS t_getinfo 3xti , 
+.MS t_listen 3xti , 
+.MS t_open 3xti ,
+.MS t_rcvconnect 3xti 

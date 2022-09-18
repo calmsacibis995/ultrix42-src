@@ -1,0 +1,443 @@
+.TH dxpresto 8
+.SH Name
+dxpresto \- graphically display Prestoserve state and statistics
+.SH Syntax
+\fB/usr/etc/dxpresto\fR [ \fIhostname\fR ] 
+.PP
+\fB/usr/etc/dxpresto\fR  \fIhostname\fR   \fIoptions\fR 
+.SH Description
+.NXR "dxpresto command"
+.NXR "Prestoserve" "dxpresto command"
+The 
+.PN dxpresto
+command is an 
+.B X 
+Window System application that
+graphically displays a machine's Prestoserve state and statistics.  
+The 
+.PN dxpresto
+command uses a Remote Procedure Call (RPC) protocol to communicate
+with the machine being monitored.  You use the 
+.PN dxpresto 
+command to provide general information about Prestoserve and to help
+manage Prestoserve.  Also, you can use the command to demonstrate the 
+efficacy of the Prestoserve software. 
+.PP
+Use the
+.IR hostname 
+variable to specify the machine that you want to monitor; the machine must be 
+running the Prestoserve software.  If
+.IR hostname 
+is not specified and options are not specified, then localhost, an alias for the 
+local machine that is running the Prestoserve software, is used.  You must specify
+.IR hostname
+if you want to use options.
+.NT
+The machine that you want to monitor must be running the 
+.PN prestoctl_svc
+daemon.  Also, if you want to be able to enable or
+disable Prestoserve on the machine, it must be running the 
+.PN prestoctl_svc 
+daemon with the 
+.PN \-n
+option.
+.NE
+.PP
+Because 
+.PN dxpresto
+is an 
+.B X
+Window System application, your DISPLAY environmental variable must be
+set to a machine that is an 
+.B X
+Server.  For more information, see 
+.MS X 1X .
+.PP
+The 
+.PN dxpresto
+window shows the following information:
+.IP \(bu 4
+The 
+.PN Host
+field shows the name of the host that you are monitoring.  You can type
+another host name in the field and hit the RETURN key to monitor that host.  
+.IP \(bu 4
+The 
+.PN "Presto State"
+buttons show the Prestoserve state, either Enabled (UP), Disabled (DOWN), or Error
+(ERROR).  If the machine being monitored is running the 
+.PN "prestoctl_svc"
+daemon with the 
+.PN \-n 
+option, you can change the machine's Prestoserve state to either
+Enabled (UP) or Disabled (DOWN) by clicking on the appropriate button.  
+You cannot click on the Error button; contact
+the server administrator or the server hardware Field Service representative 
+if the Error button is enabled.
+.IP \(bu 4
+The 
+.PN "Sample Interval"
+slider shows the interval of time between Prestoserve 
+queries, and it allows you to change that interval.  When you invoke the
+.PN dxpresto
+command, the default 
+.PN "Sample Interval"
+is 5; therefore Prestoserve information is gathered every five seconds.  
+For example, if you want Prestoserve queried more often, move the slider to 
+the left and click on MB1 until 2 appears;
+Prestoserve is then queried every two seconds.
+.IP \(bu 4
+The 
+.PN "Time since last Enable"
+field shows the time since Prestoserve was last enabled. The time is displayed in
+hours, minutes, and seconds.  The total number of seconds is also shown. 
+.IP \(bu 4
+The 
+.PN "Size"
+field displays the number of Kbytes of nonvolatile memory that the Prestoserve 
+cache is utilizing.  Note that Prestoserve can utilize less than the
+default maximum size of its Prestoserve cache if you changed the cache
+size with the 
+.PN "presto \-s"
+command.
+.IP \(bu 4
+The 
+.PN "Batteries"
+graphics show the state of the Prestoserve backup battery system.
+An intact battery icon with the word ok
+indicates that the battery has sufficient power.  An intact battery
+icon with the word
+low indicates that the battery's power is low.  A broken battery icon
+indicates that the battery is disabled.  Prestoserve goes into the ERROR state
+when the backup battery power falls below a minimum amount.  Contact
+the server administrator or the server hardware Field Service representative 
+if a battery is low or disabled.
+.IP \(bu 4
+The 
+.PN "Display Cache Utilization"
+buttons allow you to display or to not display graphs that demonstrate how the 
+Prestoserve cache is being utilized. 
+.IP \(bu 4
+The 
+.PN "Display Cache Statistics"
+buttons allow you to display or to not display the Prestoserve cache
+statistics table.  
+.IP \(bu 4
+The
+.PN Exit
+button allows you to exit from 
+.PN dxpresto .
+.IP \(bu 4
+The error bar displays error messages for both Prestoserve and the
+.PN dxpresto 
+command.  For example, if the 
+.PN "prestoctl_svc"
+daemon with the 
+.PN \-n 
+option is not running on the machine you are monitoring, then 
+a message is displayed indicating that changes to Prestoserve operation
+are not allowed.
+.IP
+Some error messages, such as those indicating RPC communication failure,
+are displayed on the terminal from which you invoked the 
+.PN dxpresto
+command.  
+.PP
+If you display the
+.PN "Display Cache Utilization" 
+graphs, the following is shown:
+.IP \(bu 4
+The 
+.PN "Presto buffers"
+bar graph shows how the Prestoserve cache operations are distributed among
+the four Prestoserve buffer states:  dirty, clean, inval, and active.
+The vertical axis shows the maximum number of objects or disk blocks 
+that the entire Prestoserve cache can contain.  The sum of the four bars is
+the total number of buffers used in the Prestoserve cache.  
+Note that the size of the Prestoserve cache can be changed by using the
+.PN "presto \-s"
+command.
+.IP \(bu 4
+The
+.PN "Writes per second"
+trend line graph shows a recent history of the average number of 
+writes per second over the time intervals that are determined by the
+.PN "Sample Interval"
+slider.   
+.IP
+Each point in the horizontal axis represents a sample time interval
+as determined by the 
+.PN "Sample Interval" 
+slider; the maximum number of samples that can be shown is 210.  
+When you reach the maximum number of samples, the graph shifts to the 
+left so you can see at least the last 105 samples, which is half the
+maximum number of samples.
+If you choose 5 in the 
+.PN "Sample Interval"
+slider, Prestoserve is queried every five seconds; therefore it takes
+1050 (5 x 210) seconds to obtain the maximum of 210 samples.
+.IP
+The vertical axis shows the average number of writes performed per
+second within the sample time interval as determined by the 
+.PN "Sample Interval"
+slider.
+.IP
+For example, if you choose 2 in the 
+.PN "Sample Interval" 
+slider, Prestoserve is queried every two seconds, and each point in the 
+graph shows the average number of writes performed within the interval
+of two seconds.  If the graph shows that an average of 5 writes per second were
+performed within two seconds, Prestoserve actually performed 10
+writes within those two seconds.  The calculation is:
+.EX
+ 5 writes
+---------- x 2 sec = 10 writes
+   sec
+.EE
+.IP
+If you change hosts, the 
+.PN "Writes per second"
+graph displays a vertical line of dashes to distinguish the new 
+host's information from the previous host's information.
+.IP \(bu 4
+The 
+.PN "Hits per second"
+trend line graph shows a recent history of the average number of 
+Prestoserve cache hits per second over the time intervals that 
+are determined by the
+.PN "Sample Interval"
+slider.  The Prestoserve cache hits represent the total number of 
+clean and dirty read and write hits (blocks that match blocks already
+in the cache).  
+.IP
+Each point in the horizontal axis represents a sample time interval
+as determined by the 
+.PN "Sample Interval" 
+slider; the maximum number of samples that can be shown is 210.  
+When you reach the maximum number of samples, the graph shifts to the 
+left so you can see at least the last 105 samples, which is half the
+maximum number of samples.
+If you choose 2 in the 
+.PN "Sample Interval"
+slider, Prestoserve is queried every two seconds; therefore it takes
+420 (2 x 210) seconds to obtain the maximum of 210 samples.
+.IP
+The vertical axis shows the average number of hits performed per
+second within the sample time interval as determined by the 
+.PN "Sample Interval"
+slider.
+.IP
+For example, if you choose 10 in the 
+.PN "Sample Interval" 
+slider, Prestoserve is queried every 10 seconds, and each point in the 
+graph shows the average number of hits performed within the interval
+of 10 seconds.  If the graph shows that an average of 2 hits per second were
+performed within 10 seconds, Prestoserve actually performed 20
+writes within those 10 seconds.  The calculation is:
+.EX
+  2 hits
+---------- x 10 sec = 20 hits
+   sec
+.EE
+.IP
+If you change hosts, the 
+.PN "Hits per second"
+graph displays a vertical line of dashes to distinguish the new host's 
+information from the previous host's information.
+.PP
+If you display the 
+.PN "Display Cache Statistics"
+table, the following is shown:
+.IP \(bu 4
+The Prestoserve statistics table is similar to the information that is
+displayed when you use the 
+.PN "presto \-p"
+command.  For each Prestoserve cache read or write operation, Prestoserve 
+increments an appropriate counter.  The table shows:
+.IP
+The clean hits counter, which is the number of hits on the clean
+buffers
+.IP
+The dirty hits counter, which is the number of hits on the
+dirty buffers (each dirty hit represents a physical 
+disk write that was avoided entirely)
+.IP
+The passes counter, which is the number of I/O operations that
+Prestoserve passed directly to the actual device driver
+.IP
+The count, which is the sum of the three previous counters
+.IP
+The hit rate percentage, which is the ratio of clean hits 
+and dirty hits to the total count
+.IP \(bu 4
+The
+.PN "Since last Enable"
+button allows you to display Prestoserve statistics since Prestoserve
+was last enabled.  This is useful when you want to determine how
+Prestoserve performs over a long period of time.
+.IP \(bu 4
+The
+.PN "Since last Sample"
+button allows you to display the Prestoserve statistics for each sample
+time interval as determined by the 
+.PN "Sample Interval"
+slider.  If no Prestoserve activity occurs during the time interval,
+the numbers in the statistics table are zero.  For example, if the 
+.PN "Sample Interval"
+slider is set to 5 and the 
+.PN "Since last Sample"
+button is enabled, the statistics table shows the Prestoserve
+statistics for each interval of five seconds.  
+.IP \(bu 4
+The 
+.PN "Since last Zero"
+button allows you to display Prestoserve statistics since you clicked
+on the 
+.PN Zero
+button. This button allows you to determine how
+Prestoserve performs over a specific period of time that you can set by using the 
+.PN Zero
+button.
+.IP \(bu 4
+The 
+.PN Zero
+button allows you to set a time reference for the Prestoserve statistics table.
+If you click on the 
+.PN Zero
+button and, at a later time, click on the 
+.PN "Since last Zero"
+button, the table displays the Prestoserve statistics since you clicked on the 
+.PN Zero 
+button.
+.SH Options
+.TP 20
+.B \-bd \fIcolor\fP
+Specifies the color of the window's border (color displays only).
+The default is black.
+.TP 20
+.B \-bg \fIcolor\fP
+Specifies the color of the window's background (color displays only).
+The default is white.
+.TP 20
+.B \-d \fIdispname\fP
+Specifies the display screen on which 
+.PN dxpresto 
+displays its window.  If the
+display option is not specified, 
+.PN dxpresto
+uses the display screen specified
+by your DISPLAY environment variable.  The display option has the format
+\fIhostname:number.\fP  Using two colons (::) instead of one (:) indicates that
+DECnet is to be used for transport.  The default is :0.  For more information,
+see 
+.MS X 1X .
+.TP 20
+.B \-display \fIdispname\fP
+This option is the same as the \fB\-d\fP option.
+.TP 20
+.B \-fg \fIcolor\fP
+Specifies the color of the text 
+(color displays only).
+The default is black.
+.TP 20
+.B \-geometry 
+Specifies the width, length, and location of
+the
+.PN dxpresto 
+window.
+If the geometry option is not specified,
+.PN dxpresto 
+uses default values.
+The geometry option has the format
+\fB=\fR[\fIwidth\fR][x\fIlength\fR][\fIx\fR][\fIy\fR].
+For more information about the screen coordinate system,
+see
+.MS X 1X .
+.SH X Defaults
+The
+.PN dxpresto
+application uses the values in the \fB.Xdefaults\fR file when you logged in
+and uses the appropriate resource specification to customize the appearance
+or characteristics of its displayed
+.PN dxpresto
+window.
+The format for a resource
+specification in the \fB.Xdefaults\fP file is:
+.IP "" 15
+[\^\fIname\fP*\^]\^\fIresource\fR\^:  \fIvalue\fR
+.IP \fIname\fR 1i
+Specifies the application name or
+the name string that restricts the resource assignment to
+that application or to a component of an application.
+If this argument is not specified,
+the resource assignment is globally available to all X applications.
+.IP \fIresource\fR 1i
+Specifies the resource.
+.IP \fIvalue\fR 1i
+Specifies the value that is to be assigned to the resource.
+.PP
+For more information,
+see
+.MS X 1X .
+.PP
+Because each toolkit-based application can consist of a combination of
+widgets (for example, push buttons and a scroll bar),
+you can form the name string
+by adding widget class and name identifiers
+to the string.
+For further information about adding class and name identifiers,
+see
+.MS X 1X .
+.PP
+For
+.PN dxpresto ,
+the available name identifiers are:
+.IP graph_parent 20
+The dialog box containing all of the graphs
+.IP dirty_graph
+The graph displaying dirty buffers
+.IP clean_graph
+The graph displaying clean buffers
+.IP inval_graph
+The graph displaying inval buffers
+.IP active_graph
+The graph displaying active buffers
+.IP write_graph
+The graph displaying cache write history
+.IP hit_graph
+The graph displaying cache hit history
+.SH Examples
+If you want to change the foreground and background colors of the 
+.PN dxpresto
+window and to customize the window's graphs, you can 
+add the following entries to your \fB.Xdefaults\fP file: 
+.EX
+dxpresto*background:                    darkslategray
+dxpresto*foreground:                    wheat
+dxpresto*borderColor:                   gold
+dxpresto*highlight:                     yellow
+dxpresto*graph_parent*borderColor:      firebrick
+dxpresto*dirty_graph*highlight:         gold
+dxpresto*dirty_graph*background:        black
+dxpresto*clean_graph*highlight:         gold
+dxpresto*clean_graph*background:        black
+dxpresto*inval_graph*highlight:         gold
+dxpresto*inval_graph*background:        black
+dxpresto*active_graph*highlight:        gold
+dxpresto*active_graph*background:       black
+dxpresto*write_graph*highlight:         gold
+dxpresto*write_graph*background:        black
+dxpresto*hit_graph*highlight:           gold
+dxpresto*hit_graph*background:          black
+.EE
+.SH Files
+.PN /usr/lib/X11/uid/dxpresto.uid 
+.br
+.PN ~/.Xdefaults
+.SH See Also
+presto(4),
+presto(8),
+prestoctl_svc(8),
+X(1X)
+.br
+\fIGuide to Prestoserve\fP

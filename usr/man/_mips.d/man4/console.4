@@ -1,0 +1,23 @@
+.\" SCCSID: @(#)console.4	3.1	11/24/87
+.TH console 4 RISC
+.SH Name
+console \- console interface
+.SH Description
+.NXR "console interface"
+Return to the monitor by halting the machine from the operating
+system or pressing the HALT button on the rear panel.  Type
+.PN help 
+at the prompt to receive a description of valid console
+commands.  For example:
+.PP
+.EX
+>>help
+.EE
+The 
+.PN /dev/console
+device is valid for all operating system accesses to the character
+tty device.
+.SH Files
+.PN /dev/console
+.SH See Also
+tty(4), MAKEDEV(8)

@@ -1,0 +1,20 @@
+.\" SCCSID: @(#)getdtablesize.2	8.1	9/11/90
+.TH getdtablesize 2
+.SH Name
+getdtablesize \- get descriptor table size
+.SH Syntax
+.nf
+\fInds\fP = getdtablesize()
+int \fInds\fP;
+.fi
+.SH Description
+.NXR "getdtablesize system call"
+.NXR "process reference table" "getting size"
+Each process has a fixed size descriptor table
+that is guaranteed to have at least 64 slots.  The entries in
+the descriptor table are numbered with small integers starting at 0.
+The
+.PN getdtablesize
+ call returns the size of this table.
+.SH See Also
+close(2), dup(2), open(2)

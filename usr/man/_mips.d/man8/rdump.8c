@@ -1,0 +1,219 @@
+.\" SCCSID: @(#)rdump.8c	2.4	8/20/87
+.TH rdump 8c
+.SH Name
+rdump \- file system dump across the network
+.SH Syntax
+.B /etc/rdump
+[ \-key [
+.I argument
+\&... ] \fIfilesystem\fP ]
+.SH Description
+.NXR "rdump command"
+.NXA "rdump command" "rmt program"
+.NXA "dump command" "rdump command"
+.NXR "file system" "copying across network"
+.NXM "rdump command" 
+The
+.PN rdump
+command
+copies to magnetic tapes, disks, or a dump image file all files
+changed after a certain date
+in the
+.I filesystem.
+The command is identical in operation to
+.MS dump 8
+except the 
+.B f
+key must be specified and the file
+supplied should be of the following form:
+.PP
+.I remote-system-name:device-or-file
+.PP
+The
+.PN rdump
+command
+initiates a remote server,
+.PN /etc/rmt ,
+on the remote system to access the remote
+device or file.
+.SH Options 
+With the
+.PN dump
+command, you specify a string of one or more of the
+options described below.  If no options 
+are specified, the key
+.B 9u
+is assumed.
+.TP 8 
+.B  0\-9
+This number is the ``dump level.''
+All files that were modified 
+since the last date stored
+in the file
+.PN /etc/dumpdates
+for the filesystem at lesser levels will be dumped.
+If no date is determined by the level,
+the beginning of time is assumed.
+Thus, the level 
+.B 0
+causes the entire filesystem to be dumped, a level 5 is used
+for a weekly backup and a level 9 for a daily backup.
+.TP 8
+.B B
+The next
+.I argument
+is a number that specifies the size, in 1024-byte blocks,
+of a storage medium, such as a diskette or a removable disk.
+See the first example.
+.TP 8
+.B d
+The density of the tape, expressed in bits per inch, is taken
+from the next
+.I argument.
+This density is used in calculating the amount of tape
+used per reel.  The default density is 1600 bpi.
+.TP 8 
+.B f
+Place the dump on the file or device specified by the next
+.I argument.
+This file is specified as remote-system-name:device-or-file.
+.TP 8
+.B n
+Notify, by means similar to a
+.MS wall 1
+command,
+all users in the group ``operator'' when
+.PN dump
+needs operator attention.
+.TP 8
+.B o
+Provides compatibility with non-ULTRIX or pre-ULTRIX Version 2.0 
+remote systems.
+.TP 8
+.B S
+Displays amount of space used by 
+.PN dump
+without performing the dump operation.  This is used
+for presizing either for file preallocation or to ensure
+the correct number of tapes or disks are on hand.
+.TP 8
+.B s
+The next
+.I argument
+specifies the size of the dump tape (in feet).  When
+the specified size is reached,
+.PN dump
+waits for the reel to be changed.  The default tape size
+is 2300 feet.
+.TP 8 
+.B u
+If the dump completes successfully,
+writes the date of the beginning of the dump to
+file
+.PN /etc/dumpdates .
+This file records a separate date for
+each filesystem and each dump level.
+The format of
+.PN /etc/dumpdates
+consists of one
+free format record per line:
+filesystem name, increment level
+and
+.MS ctime 3
+format dump date.  
+The superuser can carefully edit
+.PN /etc/dumpdates
+to change any of the fields.
+.TP 8 
+.B W
+The
+.PN dump
+utility tells the operator what file systems need to be dumped.
+This information is taken from the files
+.PN /etc/dumpdates
+and
+.PN /etc/fstab .
+The
+.PN W
+option causes
+.PN dump
+to print out, for each file system in
+.PN /etc/dumpdates ,
+the most recent dump date and level,
+and highlights those file systems that should be dumped.
+If the 
+.PN W
+option is used, all other options are ignored, and
+.PN dump
+exits immediately.
+.TP 8 
+.B w
+Unlike 
+.PN W , 
+.PN w 
+lists only those filesystems that need to be dumped.
+.SH Examples
+This example reports number of bytes to be output for a
+level 0 dump of the root file system.  Please note: the file
+.PN test 
+is not created.
+.EX
+rdump OSf system:test /
+.EE
+This example dumps the root(/) file system from the local
+system to a remote system named ``nihil''.  A level 0
+dump to tape is performed and the 
+.PN /etc/dumpdates 
+file is updated.
+.EX
+rdump 0uf nihil:/dev/rmt0h /
+.EE
+.PP
+This example dumps the user (/usr) file system from the local
+system to a remote system named ``dickens'' using the RX50
+device named 
+.PN /dev/rra1a 
+for output.  A level 0 dump is
+performed, but the 
+.PN /etc/dumpdates
+file is not updated.
+.EX
+rdump 0f dickens:/dev/rra1a /usr
+.EE
+.PP
+This example dumps the root file system to a non-ULTRIX or ULTRIX before
+Version 2.0 remote system.  A level 0 dump to a tape drive is performed
+and the
+.PN /etc/dumpdates
+file is updated.  
+.EX
+rdump 0ouf system:/dev/rmt0h /
+.EE
+.PP
+This example dumps the root file system to a non-ULTRIX or ULTRIX before
+Version 2.0 remote system.  A level 0 dump to the rx50 device is performed
+and the
+.PN /etc/dumpdates 
+file is updated.
+Note the specification of 400 as the device size in 1,024 byte blocks.
+.EX
+rdump 0ouBf 400 system:/dev/rra1a /
+.EE
+.PP
+If you want to use / and 
+.PN /usr ,
+you must have these entries
+in the 
+.PN /etc/fstab 
+file.
+.SH Diagnostics
+Same as 
+.MS dump 8
+with a few extra related to the network.
+.SH Files
+.TP 15
+.PN /dev/tt
+Required for user interface
+.SH See Also
+dump(8),
+rmt(8c)

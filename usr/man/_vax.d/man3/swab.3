@@ -1,0 +1,25 @@
+.\" SCCSID: @(#)swab.3	8.2	1/29/91
+.TH swab 3 
+.SH Name
+swab \- swap bytes
+.SH Syntax
+.nf
+.B void swab(from, to, nbytes)
+.B char *from, *to;
+.fi
+.SH Description
+.NXR "swab subroutine"
+.NXR "byte" "swapping with PDP-11s"
+The
+.PN swab
+subroutine copies
+.I nbytes
+bytes pointed to by
+.I from
+to the position pointed to by
+.I to,
+exchanging adjacent even and odd bytes.
+It is useful for carrying binary data between
+machines.  The
+.I nbytes
+should be even.

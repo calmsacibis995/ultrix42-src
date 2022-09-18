@@ -1,0 +1,36 @@
+.TH krb_slaves 5krb
+.SH Name
+krb_slaves \- a list of Kerberos slaves
+.SH Description
+.NXR "Kerberos files" "krb_slaves"
+The command
+.PN kprop(8krb)
+takes as a parameter the name of a file in which
+a list of Kerberos slave machines is stored.
+This file must be in
+.PN krb_slaves
+format.
+.PP
+Each line of a 
+.PN krb_slaves \-formatted
+file consists of 
+the machine name of a machine which is running a Kerberos
+secondary server.
+.PP
+If 
+.PN cactus.dec.com ,
+.PN dopey ,
+and
+.PN walrus.dec.com
+run a Kerberos
+secondary server, the 
+.PN krb_slaves
+file for the Kerberos
+primary is as follows:
+.EX
+cactus.dec.com
+dopey
+walrus.dec.com
+.EE
+.SH See Also
+kpropd(8krb), kprop(8krb)

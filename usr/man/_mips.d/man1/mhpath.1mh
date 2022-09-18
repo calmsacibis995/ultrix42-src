@@ -1,0 +1,116 @@
+.TH mhpath 1mh
+.SH Name
+mhpath \- print full pathnames of MH messages and folders
+.SH Syntax
+.B mhpath
+[
+.I +foldername
+] [
+.I msgs
+] [
+.B \-help
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "mhpath command"
+.NXR "display folders" "pathname"
+.PP
+Use the 
+.PN mhpath
+command to display the full pathname of the specified folder.
+If you do not specify a folder, 
+.PN mhpath 
+displays the pathname of the current folder.
+.PP
+If you specify a message with its message number,
+.PN mhpath 
+displays the pathname of the specified message.
+You can also specify a number of messages, or a range of messages.
+If the top of the range that you specify is greater than the last message in
+the folder, 
+.PN mhpath
+displays as much of the specified range as possible.
+.PP
+Additionally
+.PN mhpath 
+can take a keyword or a sequence name.  
+The following keywords are acceptable:
+.TP 10
+\f(CWfirst\fR
+The first message in the folder.
+.TP 10
+\f(CWlast\fR
+The last message in the folder.
+.TP 10
+\f(CWnew\fR
+The message after the last message in the folder.
+You cannot use \f(CWnew\fR as part of a message range.
+.TP 10
+\f(CWcur\fR
+The current message in the folder.
+.TP 10
+\f(CWprev\fR
+The message before the current message.
+.TP 10
+\f(CWnext\fR
+The message after the current message.
+.TP 10
+\f(CWall\fR  
+All of the messages in the folder.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-help" 10
+Prints a list of the valid options to this command.
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+In the following example, 
+.PN mhpath 
+displays message 3 in the folder 
+.PN +inbox :
+.EX
+% \f(CBmhpath +inbox 3\f(CW
+/r/phyl/Mail/inbox
+.EE
+.PP
+The following example displays the pathname of messages 2 to 5 
+in the current folder:
+.EX
+% \f(CBmhpath 2-5\f(CW
+/r/phyl/Mail/inbox/2
+/r/phyl/Mail/inbox/3
+/r/phyl/Mail/inbox/4
+/r/phyl/Mail/inbox/5
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine your Mail directory
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+folder(1mh)

@@ -1,0 +1,1321 @@
+.TH dbx 1 RISC
+.SH Name
+dbx \- source level debugger
+.SH Syntax
+\fBdbx \fR[\fB\-I \fIdir\fR] [\fB\-c \fIfile\fR] [\fB\-k\fR] [\fB\-i] [\fB\-r] [\fB\-pixie\fR] [\fIobject\fR [\fIcore\fR]]
+.SH Description
+The 
+.PN dbx
+command invokes a source-level debugger. Once you invoke 
+.PN dbx ,
+you issue
+.PN dbx
+commands that control the debugger. These commands allow you to examine source 
+files, control
+program execution, display the state of the program, and debug at the
+machine level.
+.PP
+.NXR "dbx command (RISC only)"
+.NXR "debugger" "dbx command"
+.NXR "debugger" "source-level"
+.PP
+You can use command options to modify some steps that 
+.PN dbx
+performs during startup. (For information on the available options, see
+Options.) Unless you specify the 
+.B \-r
+option, 
+.PN dbx
+prompts you for a command before it begins executing your program. The
+.PN dbx
+prompt appears as follows:
+.EX
+(dbx)
+.EE
+To leave 
+.PN dbx
+issue the
+.B quit 
+command.
+.SS Arguments
+On the command line, the \fIobject\fP argument names the object file
+that you want
+.PN dbx
+to read as input. For complete 
+.PN dbx
+support, the object file must contain extended symbol table information.
+The supported compilers each have a 
+.B \-g
+option that produces the symbol table information in the object file.
+.PP
+The extended symbol table contains the name of all
+the source files translated by the compiler to create the object file.
+This information allows you to look at all the source code that went
+into creating an object file during your debugging session. (The
+extended symbol table also contains other information.)
+.PP
+If your object file does not contain the extended symbol table
+information, use the commands described in Debugging at the Machine
+Level to debug your program.
+.PP
+If you omit the \fIobject\fP argument, 
+.PN dbx
+prompts you for the name of an object file. If you press the Return key,
+.PN dbx
+attempts to read a file named
+.PN a.out
+from the current directory. If no
+.PN a.out
+file exists, 
+.PN dbx 
+exits.
+.PP
+The \fIcore\fP argument names a core dump file. You can examine the
+core dump file to determine the state of the program when it failed. 
+.SS Initialization File
+During its startup,
+.PN dbx
+reads and executes the commands in an initialization file, if one is
+present. By default,
+.PN dbx 
+searches for the file
+.PN \&.dbxinit
+in the current directory. If no
+.PN \&.dbxinit
+file exists in the current directory,
+.PN dbx
+searches your home directory for the file. You can use the
+initialization file to issue setup commands automatically when
+you begin a 
+.PN dbx
+session.
+.PP
+.SS Debugger Expressions
+You specify
+.PN dbx
+expressions using the C or Pascal syntax for expressions. The debugger
+supports a subset of the expression syntax for both languages; that is,
+it supports the syntax that is common between the two languages.
+.PP
+In some cases, the debugger supports the syntax of either C or Pascal.
+For example, you can denote indirection using either an asterisk (*)
+as a prefix or a circumflex (^) as a suffix.
+You can use the field reference operator (.) with pointers
+as well as records or structures, making the C operator (->) unnecessary
+(although it is supported). 
+.PP
+You must enclose array expressions in brackets ([ ]). 
+.PP 
+You can also specify a register name in an expression.
+You denote registers by \fB$r\fIN\fR where \fIN\fR is the number of the register.
+.SS Debugger Name Resolution
+The debugger resolves names by searching for the name in the
+static scope of the current function.  If no name is defined in the
+static scope, the debugger searches the dynamic scope. If neither scope
+yields a defined name, the debugger chooses an arbitrary symbol and
+displays the following message:
+.EX
+[using\ \fIqualified\.name\fP]
+.EE
+The debugger substitutes the qualified name of the arbitrary symbol for
+\fIqualified.name\fP in the message.
+.PP
+You can override this name resolution procedure by qualifying 
+identifiers with a block name, as in \fImodule\fP.\fIvariable\fP. 
+For the C language, the debugger treats a source file as a module named
+from the filename without 
+.PN .c .
+.SH Options
+.PP
+.TP 15
+.B "\-c \fIfile\fR"
+Selects a command file other than 
+.PN \&.dbxinit .
+.TP 15
+.B "\-i"
+Invokes 
+.PN dbx
+in interactive mode.  This option causes the debugger to not treat
+source lines beginning with number signs (#) as comments.
+.TP 15
+\fB\-I \fIdir\fR 
+Adds \fIdir\fP to the list of directories that
+.PN dbx
+searches for source files. By default, 
+.PN dbx
+searches the current directory and the directory where \fIobject\fP is 
+located.
+You can specify multiple directories by using multiple
+.B \-I
+options.  
+.TP 15
+.B \-k
+Maps memory addresses. This option is useful for kernel debugging.
+.TP 15
+.B \-pixie
+Reads in output from the
+.PN pixie
+utility. The
+.PN pixie
+utility is a code profiler.
+.IP
+For this option to work, you must have executable 
+.PN pixie
+output and the 
+.PN nonpixie
+executable file in the same directory. The 
+.PN pixie
+output must be named
+.I filename.pixie,
+where \fIfilename\fP is the name of the executable file.
+.TP 15
+.B \-r
+Executes the object file immediately. If program execution terminates with an error,
+.PN dbx
+displays the message that describes the error. You can then either invoke
+the debugger or let the program continue exiting. The
+.PN dbx
+debugger reads from
+.PN /dev/tty
+when you specify the 
+.B \-r
+option and standard input is not a terminal. If the program executes
+successfully,
+.PN dbx
+prompts you for input.  
+.SH dbx Commands
+The debugger supplies a number of commands that you can issue at the
+dbx prompt. This section describes each command.
+.SS The Monitor
+The following commands control the 
+.PN dbx
+monitor:
+.TP 15
+\fB!\fIstring\fR
+.ns
+.TP 15
+\fB!\fIinteger\fR
+.ns
+.TP 15
+\fB!\fI\-integer\fR
+Executes a command from the history list. You can specify the command
+name in the \fIstring\fP argument. If you specify an integer, 
+.PN dbx
+executes the command having that number in the history list. If you specify
+\fI-integer\fP, the debugger executes the command that you issued
+\fIinteger\fP commands ago. For example, if you specify -3, the
+debugger issues the command you issued three commands ago. The debugger
+echoes the command on standard output before executing it. 
+.TP 15
+\fBhelp\fR [\fItopic\fR]
+With no argument, displays a list of topics for which help information is available. If
+you name a topic, the debugger displays help information on that topic.
+.TP 15
+.B history
+Displays a list of the previous commands you issued. By default, the debugger
+displays the previous 20 commands. You can change the number of commands
+.PN dbx
+keeps in the history list by using the
+.B set
+command to modify the 
+.B $lines 
+debugger variable.
+.TP 15
+\fBquit\fR
+Exit 
+.PN dbx . 
+.ne 4
+.SS Controlling dbx
+You can use the following commands to control the operation of the
+.PN dbx
+debugger:
+.TP 15
+\fBalias \fR[\fIname[(arg1,arg2,...)] "string"\fR]
+Lists all existing aliases or defines an alias. If you omit all arguments
+to the \fBalias\fP command, 
+.PN dbx
+displays a list of the existing aliases. 
+.IP
+You can supply arguments to define a new alias. If you specify
+a 
+.PN dbx
+command for \fIstring\fP, the debugger assigns \fIname\fP as an alias
+for that command. For example, to define an alias rr for the command
+\fBrerun\fP, issue the following command:
+.EX
+(dbx) \f(CBalias rr "rerun"\fR
+.EE
+If you specify parameters in the
+.B alias
+command, the debugger substitutes the values you supply on the command
+line when it executes the command. For example, to define halt as an
+alias that sets a stop at a particular line, issue the following
+command:
+.EX
+(dbx) \f(CBalias halt(x) "stop at x"\fR
+.EE
+Once you issue this command, 
+.PN dbx
+interprets the following commands the same:
+.EX
+(dbx) \f(CBhalt(12)\fP
+(dbx) \f(CBstop at 12\fP
+.EE
+Both commands set a breakpoint at source line 12.
+.IP
+To remove an alias, use the 
+.B unalias 
+command, as shown:
+.EX
+(dbx) \f(CBunalias halt\fP
+.EE
+.TP 15
+\fBdelete \fIevent-number, ...\fR 
+.ns
+.TP 15
+\fBdelete all\fR
+.ns
+.TP 15
+\fBdelete *\fR
+Deletes the specified breakpoint, trace event, or record 
+event from the status list.  The argument 
+.B all
+and the argument
+.B *
+delete all events from the status list.
+.TP 15
+\fBplayback input \fR[\fIfile\fR]
+Replays commands that were saved with the \fBrecord input\fR command in a 
+text file. If you omit \fIfile\fR, the debugger reads commands from the
+temporary file it creates by default when you issue the \fBrecord
+input\fR command.
+.TP 15
+\fBplayback output \fR[\fIfile\fR]
+Replays debugger output that was saved with the \fBrecord output\fR 
+command. If you omit \fIfile\fR, the debugger displays output stored in
+a temporary file it creates by default when you issue the \fBrecord
+output\fP command.
+.TP 15
+\fBrecord input \fR[\fIfile\fR]
+Records all commands you enter at the 
+.PN dbx
+prompt. If you omit \fIfile\fR, the debugger creates a temporary file
+that it deletes when you exit from the debugger.
+.IP
+The debugger associates an event number with each
+.B record
+command you issue.  You use the event number to turn off recording, as
+described with the
+.B delete 
+command.
+.TP 15
+\fBrecord output \fR[\fIfile\fR]
+Records all 
+.PN dbx
+output. If you omit \fIfile\fR, the debugger creates a temporary file
+that it deletes when you exit from the debugger.
+.IP
+The debugger associates an event number with each
+.B record
+command you issue.  You use the event number to turn off recording, as
+described with the
+.B delete 
+command.
+.TP 15
+\fBsource\fR \fIfile\fR
+Executes the 
+.PN dbx
+commands from the specified file. This command is an alias for the
+.B playback input
+command.
+.TP 15
+\fBstatus\fR
+Lists current breakpoints, record events, and trace events.
+.TP 15
+\fBset \fR[\fIvariable\fR \fB= \fIexpression\fR]
+Lists existing debugger variables and their values or defines a value
+for the named debugger variable. 
+.IP
+Some debugger variables contain either
+a zero or nonzero value that controls
+.PN dbx
+behavior. For example, when set to a nonzero value, the 
+.B $hexstrings 
+variable
+causes the debugger to display all strings in hexadecimal format. When
+set to zero, this variable causes the debugger to display strings in character
+format. You can set a variable like 
+.B $hexstrings 
+to a nonzero value as shown:
+.EX
+(dbx) \f(CBset $hexstrings = 1\fP
+.EE
+You can disable the variable using the 
+.B unset
+command, as shown:
+.EX
+(dbx) \f(CBunset $hexstrings\fP
+.EE
+.IP
+You can create a debugger variable using
+a name of your own.  A debugger variable name you create must not
+conflict with the name of any variable in the program you are
+debugging, and it must not begin with a dollar sign ($).
+For information on existing
+debugger variables, see Predefined Debugger
+Variables. (Use the
+.B assign
+command to change the value of variables in your program.)
+.TP 15
+\fBsetenv \fIname\fR \fB"\fIstring\fR\fB"\fR
+Sets the environment variable \fIname\fR to \fIstring\fR by changing
+the value of an existing environment variable or creating a new one.
+To reset the environment variable, specify a null string. The
+following example shows how to reset the EDITOR environment variable:
+.EX
+(dbx) \f(CBsetenv EDITOR ""\fP
+.EE
+.TP 15
+\fBsh \fR[\fIshell command\fR]\fI
+Calls a shell from 
+.PN dbx 
+or executes the specified shell command. 
+.TP 15
+\fBtagvalue \fR(\fItagname\fR)
+Returns the value of \fItagname\fR, where \fItagname\fP is a tag that
+marks a function or
+type definition in your program.  If the tag extends to more than
+one line or if it contains arguments, the debugger issues an error
+message. You can 
+use \fBtagvalue\fR in commands where you specify a procedure or function
+name. 
+.\"ADD BACK IN EXAMPLE WHEN TAGVALUE IS FIXED!!!
+.\"For
+.\"example, if a tag getline is associated with a function, the following
+.\"command is valid:
+.\".EX
+.\"(dbx) call tagvalue(getline) ()
+.\".EE
+.\"This command causes execution to begin at the location associated with
+.\"the getline tag.
+.IP
+You create tags using the
+.PN ctags
+command.  See the
+.MS ctags 1
+reference page for information. The debugger uses the file named in
+the 
+.B $tagfile 
+variable when resolving references to tags. 
+.TP 15
+\fBunalias \fIname\fR
+Removes the specified alias.
+.TP 15
+\fBunset \fIvariable\fR
+Removes the setting of a specified debugger variable.
+.SS Examining Source Code
+The following commands allow you to examine your source files during a
+debugging session:
+.TP 15
+.B "/\fIregular expression\fR"
+.ns
+.TP 15
+.B "?\fIregular expression\fR"
+Searches forward or backward in the source code for the regular expression.
+For information on forming regular expressions, see \fIThe Big Gray
+Book: The Next Step with ULTRIX\fP.
+.TP 15
+\fBedit \fR[\fIfile\fR]
+Invokes an editor on \fIfile\fP or the current source file if none is
+specified. By default,
+.PN dbx
+invokes the
+.PN vi
+editor. You can override the default setting by modifying the
+EDITOR environment variable.
+.TP 15
+\fBfile \fR[\fIfile\fR]
+Changes the current file to \fIfile\fP, or, if you omit \fIfile\fP,
+displays the name of the current file.
+.TP 15
+\fBfunc \fR[\fIexpression\fR] 
+.ns
+.TP 15
+\fBfunc \fR[\fIprocedure/function\fR]
+Changes the current procedure or function to the one you specify. If you omit
+\fIexpression\fR and \fIprocedure/function\fR, the debugger displays the name of the current procedure or function.
+.IP
+Changing the current function implicitly changes the current source file
+to the one that contains the procedure or function; it also changes the current
+scope used for name resolution.
+.TP 15
+\fBlist \fR[\fIsource-line-number\fR[:\fIinteger\fR]] 
+.ns
+.TP 15
+\fBlist \fR[\fIsource-line-number\fR[\fB,\fI source-line-number\fR]]
+.ns
+.TP 15
+\fBlist \fR[\fIprocedure/function\fR]
+Lists the lines in the current source file.
+.IP
+If you specify a source line number and an integer, 
+.PN dbx 
+lists beginning from
+\fIsource-line-number\fP and continuing for \fIinteger\fP number of
+lines. If you omit \fIinteger\fP, the debugger displays 10 lines, by
+default.
+.IP
+If you specify two source line numbers separated by a comma, 
+the debugger begins the display at the first source line number
+and continues through the second source line number. If you omit the
+second source line number, the debugger displays 10 lines, by default.
+.IP
+If you specify a procedure or function name, the debugger displays lines
+in that procedure or function. The debugger displays 10 lines be
+default.
+.IP
+If you omit all arguments, the debugger begins the display at the
+current line and displays 10 lines, by default.
+.IP
+The 
+.B $listwindow 
+debugger variable controls how many lines the debugger
+displays. The default value for 
+.B $listwindow 
+is 10.
+.TP 15
+\fBtag \fItagname\fR
+Sets the current source file or source line to the location specified by
+\fItagname\fR.
+.IP
+You create tags using the
+.PN ctags
+command. See the
+.MS ctags 1
+reference page for more information. The debugger uses the tag file
+named in the 
+.B $tagfile 
+debugger variable to resolve references to tags.
+.TP 15
+\fBuse \fR[\fIdirectory\fR...]
+Displays or sets the list of directories that 
+.PN dbx
+uses when searching for source files. If you issue the \fBuse\fP command
+without arguments, the debugger displays the list of directories it
+searches for source files. To change the directory list, specify the
+names of the directories you want on the list as arguments to the
+.B use
+command. The directories you specify replace any existing directory
+list.
+.TP 15
+\fBwhatis \fIvariable\fR
+Displays the type declaration for \fIvariable\fP.
+.TP 15
+\fBwhereis \fIvariable\fR
+Displays the fully qualified name of each occurrence of \fIvariable\fP.
+The order in which the debugger displays the qualified names is not
+meaningful.
+.TP 15
+\fBwhich \fIvariable\fR
+Displays the fully qualified name of \fIvariable\fP.
+.SS Preparing for Program Execution
+Before you execute your program under 
+.PN dbx
+control, you might want to perform setup tasks, such as changing the value of 
+program variables, specifying 
+what signals your program should recognize or ignore, and setting
+breakpoints.
+The following list describes the commands you use
+to perform these tasks:
+.TP 15
+.B "assign \fIvariable = expression\fR"
+Assigns the value of the specified expression to the specified program variable.
+(Use the 
+.B set
+command to set the value of debugger variables.)
+.TP 15
+.B "catch \fR[\fIsignal\fR]"
+Lists all signals that 
+.PN dbx
+catches, or, if you supply an argument, causes 
+.PN dbx
+to catch that signal. The signal you specify is added to the list of
+signals 
+.PN dbx
+catches, so the debugger continues to catch any signals that were
+already on its list. Some signals cannot be caught by any process. For a
+list of signals and information on which signals can be caught,
+see the 
+.MS signal 3
+reference page.
+.TP 15
+\fBignore \fR[\fIsignal\fR]
+Lists all signals that 
+.PN dbx
+ignores.  If you specify a signal,
+this command adds the signal to the list of signals the debugger
+ignores. Some signals cannot be ignored by any process. For a list of
+signals and information on which signals can be ignored, see the
+.MS signal 3
+reference page.
+.TP 15
+\fBstop \fIvariable\fR
+.ns
+.TP 15
+\fBstop \fR[\fIvariable\fR] \fBat \fIsource-line\fR [\fBif \fIcondition\fR]
+.ns
+.TP 15
+\fBstop \fR[\fIvariable\fR] \fBin \fIprocedure/function\fR \fR[\fBif \fIcondition\fR]
+.ns
+.TP 15
+\fBstop \fR[\fIvariable\fR] \fBif \fIcondition\fR 
+Stops execution when the specified variable changes value, the specified
+source line is reached, the specified procedure or function is called, or the
+specified condition is true. The condition must be a Boolean expression.
+.IP
+If you specify \fIvariable\fP with a source line number, the debugger
+stops execution when the source line number is reached and the variable
+changes value.  If you specify \fIvariable\fP with \fBin \fIprocedure/function\fR,
+the debugger stops execution when it is executing in the named procedure
+or function
+and the named variable changes value.  With \fBif \fIcondition\fR, the
+debugger stops execution when the condition is met and the variable
+changes value.
+.IP
+If you specify a condition with \fBat \fIsource-line\fR or \fBin \fIprocedure/function\fR,
+the debugger stops only if the condition is true.
+.IP
+The debugger associates an event number with each
+.B stop
+command you issue.  You use the event number to remove the breakpoint,
+as described with the
+.B delete 
+command.
+.TP 15
+\fBtrace\fR [\fBat\fR] \fIsource-line\fR
+.ns
+.TP 15
+\fBtrace\fR \fIprocedure/function\fR
+.ns
+.TP 15
+\fBtrace \fIvariable \fR[\fBat \fIsource-line\fR] [\fBif \fIcondition\fR]
+.ns
+.TP 15
+\fBtrace \fIvariable \fR[\fBin \fIprocedure/function\fR] [\fBif \fIcondition\fR]
+Displays tracing information during program execution.  The 
+.PN dbx
+debugger associates an event number with each 
+.B trace
+command you issue. You use the event number to turn off tracing, as described with the
+.B delete
+command.
+.IP
+The first argument to the 
+.B trace
+command specifies what the debugger traces.  You can specify a source
+line number, a procedure name, or a variable name.
+.IP
+If you specify a source line number, 
+.PN dbx
+displays the source line immediately prior to executing it. You can
+specify a source line number in a source file that is not the current
+one. To do so, precede the source line number with the source file name
+in quotation marks (" ") followed by a colon (:), as shown in the following 
+example:
+.EX
+(dbx) \f(CBtrace at "source_file.c":17\fP
+.EE
+The example specifies
+tracing line 17 in
+.PN source_file.c .
+.IP
+Specifying a procedure or function name causes 
+.PN dbx
+to display the name of the calling routine, the source line that
+contains the call, and the parameters that are passed to the called
+routine. In addition, 
+.PN dbx
+notes the return of the named procedure or function and displays the
+return value, if any.  The debugger displays this information each time
+the procedure or function is called.
+.IP
+Specifying a variable name causes
+.PN dbx
+to display the name and value of the variable each time it changes.
+Program execution is substantially slower during this form of tracing.
+.IP
+If you specify the \fBin\fI procedure/function\fR clause, 
+.PN dbx
+displays tracing information only while executing the specified
+procedure or function.
+.IP
+The \fIcondition\fP is a Boolean expression that
+.PN dbx
+evaluates prior to displaying any tracing information. The debugger
+displays tracing information only if the condition is true.
+.TP 15
+\fBwhen \fR[\fIvariable\fR] [\fBat\fI line\fR] \fB{\fIcommand_list\fB}
+.ns
+.TP 15
+\fBwhen \fR[\fIvariable\fR] [\fBin \fIprocedure/function\fR] \fB{\fIcommand_list\fB}
+Executes the specified 
+.PN dbx
+command list. You can separate the commands by commas (,) or
+semi-colons (;).
+.IP
+If you specify \fIvariable\fP, the debugger executes the command list
+when the value of the variable changes. Specify \fBat \fIline\fR or
+\fBin \fIprocedure\fR to control which occurrence of the variable causes
+the debugger to execute the command list.
+.SS Initiating Program Execution
+The following 
+.PN dbx
+commands allow you to control program execution:
+.TP 15
+\fBcall \fIprocedure/function \fB(\fR[\fIparameters\fR]\fB)
+Executes the object code associated with the named procedure or function.
+This command passes the specified parameters to the procedure or function.
+.TP 15
+\fR[\fIn\fR] \fBcont \fR[\fIsignal\fR]
+.ns
+.TP 15
+\fBcont \fR[\fIsignal\fR] \fBto \fIsource-line\fR
+.ns
+.TP 15
+\fBcont \fR[\fIsignal\fR] \fBin \fIprocedure/function\fR
+Continues execution from where it stopped.  If you specify an integer \fIn\fP, the
+debugger ignores that number of stops after it resumes program
+execution.
+If you specify \fIsignal\fR, the process continues as though it received
+the signal.  
+.IP
+If you specify \fBto \fIsource-line\fR, the debugger continues execution until
+it reaches the specified source line.
+.IP
+If you specify \fBin \fIprocedure/function\fR, the debugger resumes execution in
+the named procedure or function.
+./".TP 15
+./".B debug \fR[\fIobject \fR[\fIcore\fR]]
+./"Terminates the current debugging session and begins debugging
+./"\fIobject\fP or displays the name of the current program. If you specify
+./"\fIcore\fR, you can use the core file to determine the state of your
+./"program.
+./"When you use 
+./".B debug
+./"to begin a new debugging session, any options that you specified when you invoked 
+./".PN dbx
+./"remain in effect.  Similarly, any aliases,
+./".PN dbx 
+./"variables, or environment variables that were defined during the first
+./"session remain unchanged.
+./".IP
+./"If you omit arguments for this command, the debugger displays the name
+./"of the program you are currently debugging and that program's
+./"arguments.
+.TP 15
+\fBgoto \fIsource-line\fR
+Begins execution at the specified source line.
+.TP 15
+\fBnext \fR[\fIinteger\fR]
+Executes up to the next source line. If the source line that is executed
+contains a call to a procedure or function, the
+.B next
+command executes the entire procedure or function. Program execution
+stops following the return from the procedure or function; that is, execution stops
+prior to the source line that follows the call.
+.IP
+If you specify \fIinteger\fP, the debugger performs the specified number
+of 
+.B next
+commands.
+.TP 15
+\fBrerun \fR[\fIarg1, arg2,...\fR] [\fB<\fIfile1\fR][\fB>\fIfile2\fR]
+.ns
+.TP 15
+\fBrerun \fR[\fIarg1, arg2,...\fR] [\fB<\fIfile1][\fB>&\fIfile2\fR]
+Reruns the program, using the same arguments that were specified with the 
+\fBrun\fR command.  If you specify new arguments, \fBrerun\fR uses 
+those arguments.
+.IP
+You can use angle brackets (< or >) to redirect input or output in the
+usual manner.
+.TP 15
+\fBrun \fR[\fIarg1,arg2,...\fR] [\fB<\fIfile1\fR] [\fB>\fIfile2\fR]
+.ns
+.TP 15
+\fBrun \fR[\fIarg1,arg2,...\fR] [\fB<\fIfile1\fR] [\fB>&\fIfile2\fR]
+Runs the program, passing it the specified arguments.
+.IP
+You can use angle brackets (< or >) to redirect input or output in the
+usual manner.
+.TP 15
+\fBreturn \fR[\fIprocedure/function\fR]
+Executes until a return to \fIprocedure/function\fP is executed or until the
+current procedure or function returns if you omit
+\fIprocedure/function\fR.
+.TP 15
+\fBstep \fR[\fIinteger\fR]
+Executes one source line. If the source line contains a call to a
+procedure or function, the 
+.B step
+command stops at the first line of the procedure or function. (The
+debugger does not stop at the first line of a procedure or function if
+you compiled your program without using the
+.B \-g
+option.)
+.IP
+If you specify \fIinteger\fP, the debugger performs the specified number
+of
+.B step
+commands.
+.SS Examining Program State
+The following commands help you determine the state of your program:
+.TP 15
+\fBdump \fR[\fIprocedure/function\fR] [\fI\&.\fR]
+Displays variable information about the named procedure or function, or 
+the current procedure or function if you do not specify one.  If you
+specify dot (.),
+the debugger displays information on 
+all procedures or functions in the stack and their variables. 
+.TP 15
+\fBdown \fR[\fIexpression\fR]
+Moves the current function down \fIcount\fP activation levels in the stack.  The
+default is one level.
+.TP 15
+\fBup \fR[\fIexpression\fR]
+Moves the current function up \fIcount\fP activation levels on the stack.  The default
+is one level.
+.TP 15
+\fBprint \fIexpression1,expression2,\&.\&.\&.\fR
+Displays the value of the specified expression.
+.TP 15
+\fBprintf \fI"format", arg1,arg2,...\fR
+Formats a complex structure for display as specified. You use the same
+format specifiers for this command as for the
+.PN printf
+subroutine. For information on specifying the format, see
+.MS printf 3s .
+(The 
+.PN %s
+conversion specification is not supported.)
+.TP 15
+\fBprintregs\fR
+Displays all register values.
+.TP 15
+\fBwhere\fR [\fIn\fR]
+Displays a list of the active procedures and functions. If you specify
+\fIn\fR, the debugger displays only procedures and functions in the top \fIn\fP 
+levels of the stack.
+.SS Debugging at the Machine Level
+You can use machine level commands to debug any program, regardless of
+whether the program object file contains extended symbol table
+information.
+.PP
+You can specify symbolic addresses by preceding the name with an
+ampersand (&). You denote registers by \fB$r\fIN\fR, where \fIN\fR is the number of the
+register. Addresses may be expressions made up of other addresses and the
+operators plus (+), minus (-), and indirection (unary asterisk, *).
+.PP
+The following describes the
+.PN dbx
+machine level commands:
+.TP 15
+\fIaddress\fB/\fIcount\fR \fImode\fR
+.ns
+.TP
+\fIaddress\fB?\fIcount\fR \fImode\fR
+Searches forward (or backward, if you specify \fB?\fR) and displays
+the contents of \fIaddress\fR or 
+disassembles the code for the instruction \fIaddress\fR.
+The \fIcount\fR argument specifies the number of items that the debugger displays at the
+specified address.  The \fImode\fR determines how
+.PN dbx
+displays memory; if you omit it, the debugger uses the previous mode.
+The initial mode is X. You can specify the following modes:
+.sp 0
+b	Displays a byte in octal.
+.sp 0
+c	Displays a byte as a character.
+.sp 0
+d	Displays a short word in decimal.
+.sp 0
+D	Displays a long word in decimal.
+.sp 0
+f	Displays a single precision real number.
+.sp 0
+g	Displays a double precision real number.
+.sp 0
+i	Displays machine instructions.
+.sp 0
+n	Displays data in typed format.
+.sp 0
+o	Displays a short word in octal.
+.sp 0
+O	Displays a long word in octal.
+.sp 0
+s	Displays a string of characters that ends in a null.
+.sp 0
+x	Displays a short word in hexadecimal.
+.sp 0
+X	Displays a long word in hexadecimal.
+.IP
+The debugger maintains the next address to be displayed in dot (.). 
+To display the next address, you can use the
+following command:
+.EX
+(dbx) \f(CB./\fP
+.EE
+The debugger will display the next \fIcount\fP locations in the
+\fImode\fP specified in the previous command.
+.TP 15
+\fIaddress\fB/\fIcountL value mask\fR
+Searches for a 32-bit word that satisfies the mask. The debugger starts
+searching at the specified \fIaddress\fR.
+The \fIcount\fR argument specifies the number of words the debugger
+processes during the search.
+.IP
+The debugger masks the word stored at \fIaddress\fR 
+using the value specified in 
+\fImask\fR. If the masked value equals \fIvalue\fR, the debugger displays
+the address of the masked value. Otherwise, the debugger increments
+\fIaddress\fR and continues to search.
+.TP 15
+\fR[\fIn\fR] \fBconti \fR[\fIsignal\fR]
+.ns
+.TP 15
+\fBconti \fR[\fIsignal\fR] \fBto \fIaddress\fR
+.ns
+.TP 15
+\fBconti \fR[\fIsignal\fR] \fBin \fIprocedure/function\fR
+Continues execution of assembly code from where it stopped.  If you specify an integer \fIn\fP, the
+debugger ignores that number of stops after it resumes program
+execution.
+If you specify \fIsignal\fR, the process continues as though it received
+the signal.  
+.IP
+If you specify \fBto\fI address\fR, the debugger continues execution until
+it reaches the specified address.
+.IP
+If you specify \fBin \fIprocedure/function\fR, the debugger resumes execution in
+the named procedure or function.
+.TP 15
+\fBnexti \fR[\fIinteger\fR]
+Executes up to the next machine instruction. If the machine instruction
+that
+.PN dbx
+executes contains a call to a procedure or function, the debugger
+executes the entire procedure or function. Program execution stops
+following the return from the procedure; that is, execution stops prior
+to execution of the machine instruction that follows the call.
+.IP
+If you specify an integer, the debugger performs \fIinteger\fP 
+.B nexti
+instructions.
+.TP 15
+\fBstepi \fR[\fIinteger\fR]
+Executes the specified number of machine instructions.  If one of the
+machine instructions contains a call to a procedure or function, the
+debugger stops at the first line of the procedure or function.
+The default is to execute one instruction.
+.TP
+\fBstopi\fR \fIvariable\fR
+.ns
+.TP 15
+\fBstopi\fR \fR[\fIvariable\fR] [\fBat\fR \fIaddress\fR] [\fBif \fIcondition\fR]
+.ns
+.TP 15
+\fBstopi \fR[\fIvariable\fR] \fR[\fBin \fIprocedure/function\fR] \fR[\fBif \fIcondition\fR]
+Stops when the specified variable changes value, the specified address
+is reached, the specified condition is true, or the specified procedure
+or function is reached. 
+.IP
+By combining the arguments, you can cause the debugger to stop, for
+example, only when the occurrence of \fIvariable\fP at the specified
+address changes value and \fIcondition\fP is true.
+.TP 15
+\fBtracei \fIvariable\fR \fR[\fBat \fIaddress\fR] [\fBif \fIexpression\fR]
+.ns
+.TP 15
+\fBtracei \fIvariable\fR [\fBin \fIprocedure/function\fR] \fR[\fBat \fIaddress\fR] [\fBif \fIexpression\fR]
+.ns
+.TP 15
+\fBtracei \fIaddress\fR [\fBif \fIcondition\fR]
+Traces the value of \fIvariable\fP or the execution of a particular
+address. 
+.IP
+When you trace the value of a variable, you can use \fBat \fIaddress\fR,
+\fBin \fIprocedure/function\fR, and \fBif \fIcondition\fR to control the
+specific variable that is traced.
+.IP
+You can specify a condition when you trace the execution of an address.
+The debugger displays tracing information only when the condition is
+true.
+.TP 15
+\fBwheni \fR[\fIvariable\fR] [\fBat\fI address\fR] \fB{\fIcommand_list\fR\fB}
+.ns
+.TP 15
+\fBwheni \fR[\fIvariable\fR] [\fBin \fIprocedure/function\fR] \fB{\fIcommand_list\fR\fB}
+Executes the specified 
+.PN dbx
+machine command list. You can separate the commands by commas (,) or
+semi-colons (;).
+.IP
+If you specify \fIvariable\fP, the debugger executes the command list
+when the value of the variable changes. Specify \fBat \fIaddress\fR or
+\fBin \fIprocedure\fR to control which occurrence of the variable causes
+the debugger to execute the command list.
+.SS Predefined dbx Variables
+The debugger contains variables that control certain aspects of its
+operations. Some debugger variables are used internally by
+.PN dbx .
+You must not change the value of those variables. The debugger allows you
+to change the values of other variables using the
+.B set
+and
+.B unset
+commands. The following list describes the debugger variables you can
+control:
+.TP 15
+.B $addrfmt
+Specifies the format for addresses.  You can set this variable to any
+format that you can use with the
+.PN printf
+function, except %s because the
+.PN %s
+conversion specification is not supported by
+.PN dbx . 
+See the
+.MS printf 3s
+reference page for information on valid formats. By default, this
+variable is set to
+.PN 0x%x ,
+which specifies hexadecimal format.
+.TP 15
+.B $casesense
+When set to a nonzero value, specifies that uppercase and lowercase
+letters be treated as different characters during a search.  When set to zero,
+.PN dbx
+ignores the case of letters.  The default is zero.
+.TP 15
+.B $datacache
+Caches information from the data space so that 
+.PN dbx
+must access the data space only once. If this variable is set to zero, the
+debugger does not cache data space. If your program contains any data
+declared as 
+.PN volatile ,
+.PN dbx
+automatically sets this variable to zero. To debug the operating
+system, set this variable to zero; otherwise, set it to a 
+nonzero value.  The default is a nonzero value.
+.TP 15
+.B $dispix
+Causes the debugger to be in the correct mode to debug pixie code.  When set to zero, the debugger displays
+machine code while debugging.  When set to a nonzero value, the debugger displays pixie code.
+The default is zero.
+.TP 15
+.B $hexchars
+When set to a nonzero value, causes the debugger to display characters in hexadecimal format.
+.TP 15
+.B $hexin
+When set to a nonzero value, causes the debugger to interpret input constants as hexadecimal. When set, this variable overrides the 
+.B $octin 
+variable.
+.TP 15
+.B $hexints
+When set to a nonzero value, changes the default output constants
+to hexadecimal.  When set, this variable overrides the 
+.B $octints 
+variable.
+.TP 15
+.B $hexstrings
+When set to a nonzero value, causes the debugger to display all strings 
+in hexadecimal format. When set to zero, causes the debugger to display
+strings in character format.
+.TP 15
+.B $historyevent
+Stores the current history line.
+.TP 15
+.B $lines
+Determines how many lines the debugger stores in its history list.
+The default is 20 lines.
+.TP 15
+.B $listwindow
+Specifies how many lines the \fBlist\fR command displays.
+.TP 15
+.B $main
+Specifies the name of the procedure or function that 
+.PN dbx
+begins when running the process.  The debugger can begin a process at any procedure
+or function. By default, the debugger begins a process at a procedure
+named main.
+.TP 15
+.B $maxstrlen
+Specifies how many characters of a string 
+.PN dbx
+displays for pointers to strings.  The default is 128 characters.
+.TP 15
+.B $octin
+When set to a nonzero value, changes the default input constants to octal.
+When set, the 
+.B $hexin 
+variable overrides this variable.
+.TP 15
+.B $octints
+When set to a nonzero value, causes 
+.PN dbx
+to display integers in octal format. When set, the 
+.B $hexints 
+variable
+overrides this variable.
+.TP 15
+.B $page
+Specifies whether to page long information.  A nonzero value turns on paging;
+a zero turns it off.  The default is one.
+.TP 15
+.B $pagewindow
+Specifies how many lines the debugger displays when information runs longer than
+one screen.  You can change this variable to match the number of lines
+on any terminal.  If set to zero, this variable assumes one line.
+The default is 22, leaving space for a continuation query.
+.TP 15
+.B $printwhilestep
+Determines whether the debugger displays source lines or instructions
+when executing the 
+\fBstep\fR[\fIn\fR] and
+\fBstepi\fR[\fIn\fR] commands.
+When set to a nonzero value,  
+causes
+.PN dbx
+to display all \fIn\fR lines or
+instructions. When set to zero, causes 
+.PN dbx 
+to display only
+the last line or instruction.  The default
+is zero.
+.TP 15
+.B $pimode
+Displays input when used with the \fBplayback input\fR command.
+The default is zero.
+.TP 15
+.B $printdata
+When set to a nonzero value, causes the debugger to display the contents of 
+registers next to each 
+instruction it displays. The debugger displays the registers used by the
+instruction. The default is zero.
+.TP 15
+.B $printwide
+When set to a nonzero value, causes the debugger to display the contents of variables
+in a horizontal format. 
+The default is zero.
+.TP 15
+.B $prompt
+Sets the prompt for 
+.PN dbx .
+.TP 15
+.B $readtextfile
+When set to a nonzero value, 
+causes
+.PN dbx 
+to read instructions from the object file 
+rather than the process.  
+This variable should always be set to zero when the process being
+debugged copies in code during the debugging process.
+The default is a nonzero value. 
+.TP 15
+.B $regstyle
+When set to a nonzero value, causes the debugger to display registers during
+disassembly in their
+normal \fIr\fR format (r0,r1,\&.\&.\&.r31).   When set to zero, causes the
+debugger to display registers 
+in a special format (zero, at, v0, v1,...), which is commonly used in debugging
+programs written in assembly language. The default is a nonzero value.
+.IP
+Setting this variable does not affect how the debugger displays the
+names of register when you issue the
+.B printregs
+command. This variable affects the debugger's machine level commands.
+.TP 15
+.B $repeatmode
+When set to a nonzero value, 
+causes
+.PN dbx
+to repeat the previous command if you press the
+Return key at the 
+.PN dbx 
+prompt.
+The default is a nonzero value.
+.TP 15
+.B $rimode
+When set to a nonzero value, causes the debugger to record input while recording output.  
+The default is zero. 
+.TP 15
+.B $sigvec
+Tells 
+.PN dbx 
+the name of the code called by the system to invoke user 
+signal handlers.  This variable is set to \fRsigvec\fR on ULTRIX systems.
+.TP 15
+.B $symtotal
+Stores the number of symbols that
+.PN dbx
+loads for the process you are debugging.
+.TP 15
+.B $tagfile
+Names the file that contains tags for the current program. The
+.B tag
+and
+.B tagvalue
+commands search the named file to resolve references to tags. For more
+information on using tag files, see
+.MS ctags 1 .
+./".SS Predefined dbx Aliases
+./"The debugger has the following predefined aliases:
+./".TP 15
+./"\fB?\fR
+./"Prints a list of all 
+./".PN dbx
+./"commands.
+./".TP 15
+./"\fBa\fR
+./"Assigns a value to a program variable.
+./".TP 15
+./"\fBb\fR
+./"Sets a breakpoint at a specified line.
+./".TP 15
+./"\fBbp\fR
+./"Stops in a specified procedure or function.
+./".TP 15
+./"\fBc\fR
+./"Continues program execution after a breakpoint.
+./".TP 15
+./"\fBd\fR
+./"Deletes the specified item from the status list.
+./".TP 15
+./"\fBe\fR
+./"Looks at the specified file.
+./".TP 15
+./"\fBf\fR
+./"Moves to the specified activation level on the stack.
+./".TP 15
+./"\fBg\fR
+./"Goes to the specified line and begins executing the program there.
+./".TP 15
+./"\fBh\fR
+./"Lists all items currently on the history list.
+./".TP 15
+./"\fBj\fR
+./"Shows what items are on the status list.
+./".TP 15
+./"\fBl\fR
+./"Lists the next 10 lines of source code.
+./".TP 15
+./"\fBli\fR
+./"Lists the next 10 machine instructions.
+./".TP 15
+./"\fBn\fR or \fBS\fR
+./"Step over the specified number of lines without stepping into procedures
+./"or functions.
+./".TP 15
+./"\fBni\fR or \fRSi\fR
+./"Step over the specified number of assembly code instructions without 
+./"stepping into procedure calls.
+./".TP 15
+./"\fBp\fR
+./"Prints the value of the specified expression or variable.
+./".TP 15
+./"\fBpd\fR
+./"Prints the value of the specified expression or variable in decimal.
+./".TP 15
+./"\fBpi\fR
+./"Replays 
+./".PN dbx
+./"commands that were saved with the \fBrecord
+./"input\fR command.
+./".TP 15
+./"\fBpo\fR
+./"Prints the value of the specified expression or variable in octal.
+./".TP 15
+./"\fBpr\fR
+./"Prints values for all registers. 
+./".TP 15
+./"\fBpx\fR
+./"Prints the value for the specified variable or expression in hexadecimal.
+./".TP 15
+./"\fBq\fR
+./"Ends the debugging session.
+./".TP 15
+./"\fBr\fR
+./"Runs the program again with the same arguments that were specified with the
+./"\fBrun\fR command.
+./".TP 15
+./"\fBri\fR
+./"Records in a file every command typed.
+./".TP 15
+./"\fBro\fR
+./"Records all debugger output in the specified file.
+./".TP 15
+./"\fBs\fR
+./"Steps the next number of specified lines.
+./".TP 15
+./"\fBsi\fR
+./"Steps the next number of specified lines of assembly code instructions.
+./".TP 15
+./"\fBt\fR
+./"Does a stack trace.
+./".TP 15
+./"\fBu\fR
+./"Lists the previous 10 lines.
+./".TP 15
+./"\fBw\fR
+./"Lists the 5 lines preceding and following the current line.
+./".TP 15
+./"\fBW\fR
+./"Lists the 10 lines preceding and following the current line.
+./".TP 15
+./"\fBwi\fR
+./"Lists the 5 machine instructions preceding and following the 
+./"machine instruction.
+.SH Restrictions
+The \fBprintf\fR debugger command does not support the
+.PN %s 
+conversion specification.
+.PP
+The 
+.PN dbx
+debugger does not allow you to run a program you do not own unless
+you are logged in as root. If you are not root, the following message
+might be displayed on your screen when you issue the 
+.B run
+command:
+.EX
+cannot write to address \fIaddress\fP in process \fIproc-number\fP
+.EE
+In the message it displays,
+the debugger replaces \fIaddress\fR with the address to which it could
+not write and \fIproc-number\fR with the number of the process that contains
+that address.
+This message is displayed when the
+.PN dbx
+debugger tries to set breakpoints because of restrictions on the
+.PN ptrace
+system call. The
+.PN dbx
+debugger always tries to set a breakpoint on exit. If you repeat the 
+.PN run
+command, your program runs without breakpoints. 
+.SH Files
+.TP 15
+.PN a.out
+Object file
+.TP
+.PN core
+Core dump file
+.TP
+.PN \&.dbxinit
+Initialization file
+.SH See Also
+ac(1), cc(1), ctags(1), f77(1), pc(1), pcc(1), pixie(1), vi(1), signal(3),
+printf (3s)
+.br
+\fIGuide to Languages and Programming\fP

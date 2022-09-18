@@ -1,0 +1,50 @@
+.\" SCCSID: @(#)alarm.3	2.1	3/10/87
+.TH alarm 3 
+.SH Name
+alarm \- schedule signal after specified time
+.SH Syntax
+.nf
+.B #include <unistd.h>
+.PP
+.B unsigned alarm(\fIseconds\fP)
+.br
+.B unsigned \fIseconds\fP;
+.fi
+.SH Description
+.NXR "alarm subroutine (standard C)"
+.NXR "subroutine" "executing at specified time"
+.NXA "alarm subroutine (standard C)" "sleep subroutine (standard C)"
+The
+.PN alarm
+subroutine
+causes signal SIGALRM, see 
+.MS signal 3 ,
+to be sent to the invoking process
+in a number of seconds given by the argument.
+Unless caught or ignored, the signal terminates the process.
+.PP
+The 
+.PN alarm 
+requests are not stacked.  Successive calls reset the alarm clock.
+If the argument is 0, any 
+.PN alarm 
+request is canceled.
+Because of scheduling delays,
+resumption of execution of when the signal is
+caught may be delayed an arbitrary amount.
+The longest specifiable delay time is 100000000 seconds. Values larger
+than 100000000 will be silently rounded down to 100000000.
+.PP
+The return value is the amount of time
+previously remaining in the alarm clock.
+.SH Environment
+When your program is compiled using the System V environment,
+.PN alarm
+rounds up any positive fraction of a second to the next second. 
+.PP
+When your program is compiled using the POSIX environment,
+.PN alarm
+takes a parameter of type unsigned, and returns a value of type
+unsigned.
+.SH See Also
+getitimer(2), sigpause(2), sigvec(2), signal(3), sleep(3)

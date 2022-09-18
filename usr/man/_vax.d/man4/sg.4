@@ -1,0 +1,67 @@
+.\" SCCSID: @(#)sg.4	2.2	6/10/87
+.TH sg 4 VAX
+.SH Name
+sg \- Small VAX color video subsystem
+.SH Syntax
+.B "device sg0 at uba0 csr 0x3c000000 flags 0x0f  vector sgaint sgfint"
+.SH Description
+.NXS "sg interface" "color video subsystem"
+.NXR "color video subsystem"
+A small VAX color video subsystem
+provides a half-page or full-page, user-accessible bitmap
+display for graphics applications.
+The device consists of a 128-Kbyte block of dual port RAM,
+a VSXXX-AA mouse or VSXXX-AB tablet, and a 19-inch video monitor.
+.PP
+The subsystem device driver supports a hybrid terminal
+with three minor devices.
+The first device emulates a glass tty with a
+screen that appears as a 120-column
+by 80-row page that scrolls from the bottom.
+This device is capable of being configured as the system console.
+.PP
+The second minor device number is reserved for the mouse.
+This device is a source of mouse state changes.
+(A state change is defined as an X/Y
+axis mouse movement or button change.)
+When opened, the driver couples movements of the mouse with the cursor.
+Mouse position changes are filtered and translated into cursor position
+changes in an exponential manner.
+Rapid movements result in large cursor position changes.
+All cursor positions are range
+checked to ensure that the cursor remains on
+the display.
+.PP
+The third minor device is opened in the raw mode by default.
+Opening the third device makes the driver function like a pseudo-tty
+in that the output destined for the first minor device is channeled to
+the third instead.
+.PP
+If there is not a special cable (BCC08) on serial port 
+3 (printer port), the system
+will then use the color video as the system console.
+All input/output destined for 
+.PN /dev/console 
+will use the color video
+instead.  (This is done by overwriting the device switch tables.)
+There is a second set of device switch entries configured that may be
+used as an additional terminal, 
+.PN tip/uucp
+(hardwire, modem, or autodialer)
+connection, or user dial-up access. For further information, see 
+.MS ss 4 .
+.PP
+The Hold Screen key is supported. The Small VAX color driver treats this
+key as if CTRL/S or CTRL/Q is typed.
+Pressing the Hold Screen key suspends the output
+if it is not already suspended. The output
+will be resumed by pressing this key again
+(if the output was suspended).
+.SH Files
+.PN /dev/console
+.br
+.PN /dev/sg0
+.br
+.PN /dev/sgscreen
+.SH See Also
+ss(4), ttys(5), MAKEDEV(8)

@@ -1,0 +1,35 @@
+.\" SCCSID: @(#)exit.3f	8.1	9/11/90
+.TH exit 3f VAX "" Unsupported
+.SH Name
+exit \- terminate process with status
+.SH Syntax
+.B subroutine exit (status)
+.br
+.B integer status
+.SH Description
+.NXR "exit subroutine (FORTRAN)"
+.NXR "process" "terminating"
+The 
+.PN exit
+function flushes and closes all the process's 
+files, and notifies the parent process
+if it is executing a
+.PN wait .
+The low-order 8 bits of 
+.I status
+are available to the parent process.
+Therefore,
+.I status
+should be in the range 0 \- 255.
+.PP
+This call will never return.
+.PP
+The C function
+.PN exit
+may cause cleanup actions before the
+final `sys exit'.
+.SH Files
+.ie \nM /usr/ucb/lib/libF77.a
+.el /usr/lib/libF77.a
+.SH See Also
+exit(2), fork(2), wait(2), fork(3f), wait(3f)

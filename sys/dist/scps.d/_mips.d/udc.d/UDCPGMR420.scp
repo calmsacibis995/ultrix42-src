@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+#        @(#)UDCPGMR420.scp	4.1 (ULTRIX) 12/20/90
+#
+#	001	ovemran		12-Dec-90
+#		Updated to V4.2
+#
+#       000	jon		18-apr-1988
+#               first pass.
+#
+
+PATH="/bin:/usr/bin:/etc:/usr/ucb"
+export PATH
+
+# path dummies
+L=./lib
+
+case "$ACT" in
+POST_[AL])
+        # UPDATE LIBRARYS
+        # libc.a
+	mv $L/libc.a.crypt $L/libc.a
+	mv $L/libcP.a.crypt $L/libcP.a
+        exit 0
+        ;;
+
+*)      exit 0
+        ;;
+esac
+

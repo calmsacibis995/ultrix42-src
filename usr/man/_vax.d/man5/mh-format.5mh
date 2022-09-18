@@ -1,0 +1,496 @@
+.ds MA MH
+.TH mh-format 5mh
+.SH Name
+mh-format \- format file for \*(MA message system
+.SH Description
+.NXR "mh-format formatter"
+.NXR "MH system" "file formatter"
+Several \*(MA commands utilize either a 
+.PN format
+string or a
+.PN format
+file during their execution.
+For example,
+.MS scan 1mh
+uses a format string which specifies how 
+.PN scan 
+should generate the
+.PN scan 
+listing for each message;
+.MS repl 1mh
+uses a format file which directs it how to generate the
+reply to a message, and so on.
+.PP
+This reference page describes how to write new format commands or modify
+existing ones.  You should not attempt this unless you are an 
+experienced \*(MA user.
+.PP
+A format string is similar to a 
+.PN printf
+string, but uses multi-letter 
+escapes.
+The rest of this reference page assumes a knowledge of the 
+.PN printf
+routine.
+When specifying a string,
+the usual C backslash characters are honored:
+.PN \eb ,
+.PN \ef , 
+.PN \en , 
+.PN \er
+and 
+.PN \et .
+Continuation lines in format files end with 
+.PN \e
+followed by the newline
+character.
+.PP
+When an escape is interpreted and the result is immediately printed,
+you can specify an optional field width to print the field in exactly 
+a given number of characters.
+A numeric escape, such as
+.PN "%4(size)" ,
+will print at most 4 digits of the value. 
+Any overflow is marked by a 
+.PN ?
+in the first position, for example 
+.PN ?123 .
+A string escape, such as
+.PN "%4(me)" ,
+will print the first four characters of the string.
+In both cases, short fields are padded at the right, 
+usually with a blank.
+If the field width argument begins with a zero, for example
+.PN "%04(size)" ,
+the fill character is a zero.
+.PP
+The interpretation model is based on a simple machine with two registers,
+.PN num
+and 
+.PN str .
+The former contains an integer value, the latter a string value.
+When an escape is processed,
+if it requires an argument,
+it reads the current value of either 
+.PN num
+or 
+.PN str ;
+and,
+if it returns a value, it writes either 
+.PN num
+or 
+.PN str .
+.PP
+Escapes are of three types:
+.PN components ,
+.PN functions ,
+and 
+.PN control .
+.\"
+.\"
+.SS Component Escapes
+A component escape represents a header field 
+in the message being processed.
+It is written 
+.PN {name} ,
+where the name is the name of the header field.
+For example, 
+.PN {date}
+refers to the 
+.PN Date:
+field of the message.
+.PP
+The value of a component escape is the content of the 
+named field.
+This is always a string.
+For example, the header of an unsent message might look as follows:
+.EX
+To: smith@local
+cc: davis
+Subject: tomorrow's meeting
+.EE
+In this example, the value of the component escape
+.PN {subject}
+is the string 
+.PN "tomorrow's meeting" .
+.\"
+.\"
+.SS Control Escapes
+A control escape is one of: 
+.PN %< , 
+.PN %|
+and 
+.PN %> .
+These
+correspond to if-then-else constructs.
+.PP
+There are two syntaxes allowed by these control escapes.
+The first is:
+.EX
+%<(function)Command-string%>
+%<{component}Command-String%>
+.EE
+If the function or component is non-zero (for integer-valued escapes)
+or non-empty (for string-valued escapes),
+everything up to the corresponding 
+.PN %>
+is interpreted.
+Otherwise, skip to the next 
+.PN %> 
+and begin interpreting again.
+.PP
+The second form of syntax is as follows:
+.EX
+%<(function)Then-Command-String%|Else-Command-String%>
+%<{component}Then-Command-String%|Else-Command-String%>
+.EE
+If the function or component is non-zero or non-null, the
+.PN Then-Command-String 
+is interpreted.
+Otherwise, skip to 
+.PN %|
+and interpret the 
+.PN Else-Command-String .
+Only one string is ever interpreted; if the first string is interpreted,
+the system skips from the 
+.PN %|
+control escape to the
+.PN %>
+character.
+.\"
+.\" if 
+.\" .PN escape
+.\" is non-zero (for integer-valued escapes),
+.\" or non-empty (for string-valued escapes),
+.\" then everything up to 
+.\" .PN %|
+.\" or 
+.\" .PN %>
+.\" (whichever comes first) is interpreted;
+.\" else, then skip to 
+.\" .PN %|
+.\" or 
+.\" .PN %>
+.\" (whichever comes first)
+.\" and start interpreting again.
+.\"
+.\"
+.SS Function Escapes
+A function escape is specified as 
+.PN %(name) ,
+and is statically defined.  
+.PP
+Most functions expect an argument of a particular type.
+In the tables of functions that follow, these types are referred to:
+.TP 10
+.PN literal
+A literal number or string; for example,
+.PN %(func 1234)
+takes the number 1234 as its argument.
+.TP
+.PN comp
+Any header component; for example, 
+.PN %(func{from})
+takes the contents of the \f(CWFrom:\fR
+header field as an argument.
+.TP 
+.PN expr
+An optional component, function or string, perhaps nested.
+For example, 
+.PN %(func (func2{comp}))
+takes the return value of the function 
+.PN (func2{comp})
+as its argument.
+If no argument is provided, the function will read either the
+.PN num
+or the 
+.PN str
+register, as appropriate.
+.PP
+Functions return three types of values:
+.PN string ,
+.PN integer ,
+and, for those functions which return a true or false status,
+.PN boolean .
+In the tables that follow, 
+.PN str
+and
+.PN num
+represent the values stored in these registers.
+.PN arg
+represents the value of the argument supplied to the function.
+.PP
+The following table lists the function escapes:
+.PP
+.TS
+tab(+);
+l l l l
+l l l l.
+_
+.sp 6p
+Escape+Argument+Returns+Interpretation
+.sp 6p
+_
+.sp 6p
+msg+ +integer+message number
+cur+ +integer+message is current
+size+ +integer+size of message
+strlen+ +integer+length of \f(CWstr\fR
+width+ +integer+output buffer size in bytes
+charleft+integer+integer+space left in output buffer
+timenow+ +integer+seconds since the epoch
+me+ +string+the user's mailbox
+eq+literal+integer+\f(CWnum\fR =\|= \f(CWarg\fR
+ne+literal+integer+\f(CWnum\fR != \f(CWarg\fR
+gt+literal+integer+\f(CWnum\fR > \f(CWarg\fR
+match+literal+boolean+\f(CWstr\fR contains \f(CWarg\fR
+amatch+literal+boolean+\f(CWstr\fR starts with \f(CWarg\fR
+plus+ +integer+\f(CWarg\fR plus \f(CWnum\fR
+minus+ +integer+\f(CWarg\fR minus \f(CWnum\fR
+divide+literal+integer+\f(CWnum\fR divided by \f(CWarg\fR
+num+literal+integer+Set \f(CWnum\fR to \f(CWarg\fR
+lit+literal+integer+Set \f(CWstr\fR to \f(CWarg\fR
+nonzero+expr+integer+\f(CWnum\fR is non-zero
+zero+expr+integer+\f(CWnum\fR is zero
+null+expr+integer+\f(CWstr\fR is empty
+nonnull+expr+integer+\f(CWstr\fR is non-empty
+void+expr+ +Set \f(CWstr\fR or \f(CWnum\fR
+comp+comp+string+Set \f(CWstr\fR to component text
+compval+comp+integer+\f(CWnum\fR set to \f(CWatoi(str)\fR
+trim+expr+ +trim trailing white space from \f(CWstr\fR
+putstr+expr+ +print \f(CWstr\fR
+putstrf+expr+ +print \f(CWstr\fR in a fixed width
+putnum+expr+ +print \f(CWnum\fR
+putnum+expr+ +print \f(CWnum\fR in a fixed width
+.sp 6p
+_
+.TE
+.PP
+The following functions require a date component as an argument:
+.PP
+.TS
+l l l l 
+l l l l. 
+_
+.sp 6p
+Escape	Argument	Returns	Interpretation
+.sp 6p
+_
+.sp 6p
+sec	date	integer	seconds of the minute
+min	date	integer	minutes of the day
+hour	date	integer	hours of the day (24 hour clock)
+wday	date	integer	day of the week (Sunday=0)
+day	date	string	day of the week
+weekday	date	string	day of the week (long)
+sday	date	integer	day of the week known
+			1 for explicit in date
+			0 for implicit
+			\-1 for unknown
+mday	date	integer	day of the month
+yday	date	integer	day of the year
+mon	date	integer	month of the year
+month	date	string	month of the year (abbreviated)
+lmonth	date	string	month of the year (long form)
+year	date	integer	year of the century
+zone	date	integer	timezone in hours
+tzone	date	string	timezone as a string
+szone	date	integer	timezone explicit?
+			1 for explicit
+			0 for implicit
+			\-1 for unknown
+date2local	date		coerce date to local timezone
+date2gmt	date		coerce date to GMT
+dst	date	integer	daylight savings in effect?
+clock	date	integer	seconds since the epoch
+rclock	date	integer	seconds prior to current time
+tws	date	string	official RFC 822 rendering of the date
+pretty	date	string	a more user-friendly rendering
+nodate	date		\f(CWstr\fR could not be parsed as a date
+.sp 6p
+_
+.TE
+.PP
+The following functions require an address component as an argument.
+Some functions return a value based on 
+the first address in the field only.
+These are indicated by the note \f(CW(first only)\fR.
+.PP
+.TS
+l l l l
+l l l l.
+_
+.sp 6p
+Escape	Argument	Returns	Interpretation
+.sp 6p
+_
+.sp 6p
+proper	addr	string	official RFC 822 rendering 
+			of the address
+friendly	string	string	a more user-friendly 
+			rendering
+pers	addr	string	the personal name (first only)
+note	addr	string	commentary text (first only)
+mbox	addr	string	the local part of the address 
+			(first only)
+mymbox	addr		does the address refer to 
+			the user's mailbox?
+			(0=no, 1=yes)
+host	addr	string	the domain part of the address 
+			(first only)
+nohost	addr	integer	no host was present in the address 
+			(first only)
+type	addr	integer	the type of host
+			\-1 for uucp
+			0 for local
+			1 for network
+			2 for unknown
+path	addr	string	the route part of the address 
+			(first only)
+ingrp	addr	integer	the address appeared inside a group 
+			(first only)
+gname	addr	string	name of the group (first only)
+formataddr	expr		append \f(CWarg\fR to \f(CWstr\fR as
+			an address list
+putaddr	literal		print \f(CWstr\fR address list with \f(CWarg\fR
+			as an optional label; get line width 
+			from \f(CWnum\fR
+.sp 6p
+_
+.TE
+.PP
+Some functions that print their arguments can be controlled
+by giving field width arguments.
+The functions
+.PN (putnumf)
+and
+.PN (putstrf)
+print their arguments as specified by the field width arguments.
+So 
+.PN %06(putnumf(size))
+will print the message size in six digits, filled with leading zeros;
+.PN %14(putsrtf{from})
+will print the \f(CWFrom:\fR
+header field in 14 characters, with trailing spaces as required.
+With 
+.PN (putstrf) ,
+supplying a negative field width will cause the string to be
+right-justified within the field.
+The functions 
+.PN (putnum)
+and
+.PN (putstr)
+ignore any field width arguments,
+and print their arguments in the minimum number of characters required.
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+When the \f(CWfriendly\fR format for addresses is used,
+addresses longer than about 180 characters are truncated to an empty
+string.
+This means that such addresses will not appear in the 
+.PN scan
+display.
+.PP
+The function
+.PN (mymbox{comp})
+checks each of the addresses in the named header component 
+.PN {comp}
+against the user's mailbox name, and against any other mailboxes
+listed in the \f(CWAlternate-Mailboxes\fR
+entry in the user's 
+.PN \&.mh_profile .
+It returns true if any of the address matches.
+However, it also returns true if the named
+.PN {comp}
+header field is not present.
+If necessary, you can use the 
+.PN (null)
+or
+.PN (nonnull)
+functions to test explicitly for the presence of the field.
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+The default format string for 
+.PN scan
+follows.
+This has been divided into several pieces for readability.
+The first part is:
+.EX
+%4(msg)%<(cur)+%| %>%<{replied}-%| %>
+.EE
+This means that the message number should be printed in four digits;
+if the message is the current message then a 
+.PN +
+is printed.  
+If the message is not the current message, then a space is printed.  
+If a \f(CWReplied:\fR
+field is present, a 
+.PN \-
+is printed.  
+If no \f(CWReplied:\fR
+field is present, then a space is printed.
+Next:
+.EX
+%02(mon{date})/%02(mday{date})
+.EE
+The month and date are printed in two digits (zero filled).
+Next:
+.EX
+%<{date} %|*>
+.EE
+If no \f(CWDate:\fR
+field is present, then a 
+.PN *
+is printed, otherwise a space.
+Next:
+.EX
+%<(mymbox{from})To:%14(friendly{to})
+.EE
+If the message is from me,
+print \f(CWTo:\fR
+followed by a user-friendly rendering of the first address in the 
+\f(CWTo:\fR field.
+.EX
+%|%17(friendly{from})%>
+.EE
+If the message is not from me, then the \f(CWFrom:\fR
+address is printed.
+And finally:
+.EX
+%{subject}%<{body}<<%{body}%>
+.EE
+The subject and initial body are printed preceded by the string \f(CW<<\fR.
+.PP
+Although this seems complicated,
+this method is flexible enough to extract individual fields and 
+print them in any format the user desires.
+.PP
+If the 
+.B \-form 
+.I formatfile
+switch is given with the
+.PN scan
+command, it will treat each line in the named file 
+as a format string, and act accordingly.
+This lets the user develop template 
+.PN scan 
+listing formats.
+Some examples can be found in 
+.PN /usr/lib/mh/scan.time ,
+.PN /usr/lib/mh/scan.size , 
+and 
+.PN /usr/lib/mh/scan.timely .
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+scan(1mh),
+ap(8mh), 
+dp(8mh)

@@ -1,0 +1,31 @@
+.\" SCCSID: @(#)qsort.3	8.1	9/11/90
+.TH qsort 3 
+.SH Name
+qsort \- quicker sort
+.SH Syntax
+.nf
+.B #include <stdlib.h>
+.PP
+.B void qsort(\fIbase, nel, width, compar\fP)
+.B void *\fIbase\fP;
+.B size_t \fInel, width\fP;
+.B int (*\fIcompar\fP)\^()\^;
+.fi
+.SH Description
+.NXR "qsort subroutine (standard C)"
+.NXR "sort routine"
+The
+.PN qsort
+subroutine
+is an implementation of the quicker-sort algorithm.
+The first argument is a pointer to the base of the data;
+the second is the number of elements;
+the third is the width of an element in bytes;
+the last is the name of the comparison routine
+to be called with two arguments which are pointers
+to the elements being compared.
+The routine must return an integer less than, equal to, or greater than 0
+according as the first argument is to be considered
+less than, equal to, or greater than the second.
+.SH See Also
+sort\^(1)

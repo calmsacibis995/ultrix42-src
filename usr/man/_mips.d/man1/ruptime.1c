@@ -1,0 +1,100 @@
+.\" SCCSID: @(#)ruptime.1c	2.2	5/18/87
+.TH ruptime 1c
+.SH Name
+ruptime \- show host status of local machines
+.SH Syntax
+.B ruptime
+[ 
+.I options
+]
+[
+.I machinename
+] 
+.SH Description
+.NXR "ruptime command" "description"
+The
+.PN ruptime
+command
+gives a status line like 
+.MS uptime 1 
+for each machine on the local network.
+If a 
+.I machinename
+is given, the status of only the named machine is given.
+These status lines are formed from packets broadcast by each host
+on the network once a minute.
+.PP
+Machines for which no
+status report has been received for 5 minutes are shown as being down.
+.SH Options
+.IP \fB\-a\fR 5
+.NXR "ruptime command" "options"
+Users idle an hour or more are not counted unless this
+option is specified.
+.IP \fB\-d\fR 5
+Display only those hosts that are considered down.
+.IP \fB\-l\fR 5
+Sort the status list by load average.  If more than one sort
+option is given, 
+.PN ruptime
+uses the last one.
+.IP \fB\-r\fR 5
+Show only hosts that are up and running.
+.IP \fB\-t\fR 5 
+Sort the status list by uptime.  If more than one sort option
+is given,
+.PN ruptime
+uses the last one.
+.IP \fB\-u\fR 5
+Sort the status list by number of users.  If more than one sort
+option is given,
+.PN ruptime 
+uses the last one.
+.IP \fB\-\fInn\fR 5
+Show only those hosts with
+.I nn
+or more users.
+.SH Restrictions
+Because the 
+.NXR "ruptime command" "restrictions"
+.PN rwhod
+daemon sends its information in broadcast packets it generates
+a large amount of network traffic.  On large networks the extra
+traffic may be objectionable.  Therefore, the 
+.PN rwhod
+daemon is disabled by default.  To make use of the 
+.PN rwhod
+daemon for both the local and remote hosts,
+remove the comment symbols (#) from in front of the lines specifying
+.PN rwhod
+in the
+.PN /etc/rc
+file.
+.PP
+If the
+.PN rwhod
+daemon is not running on a remote machine, the machine
+may incorrectly appear to be down when you use the 
+.PN ruptime
+command to determine its status.  See the
+.MS rwhod 8
+reference page for more information.
+.PP
+If a system has more than 40 users logged in at once,
+the number of users displayed by the 
+.PN ruptime
+command is incorrect.
+Users who login to a machine after that point fail
+to increment the user count that appears in the output of the
+.PN ruptime
+command.
+This is due to the maximum size limit of an Ethernet packet,
+which is 1500 bytes, and the fact that the 
+.PN rwhod
+daemon must
+broadcast its information in a single packet.
+.SH Files
+.DT
+/usr/spool/rwho/whod.*	Information about other machines
+.SH See Also
+rwho(1c), rwhod(8c)

@@ -1,0 +1,129 @@
+.\" SCCSID: @(#)sin.3m	6.2	8/30/89
+.TH sin 3m VAX
+.SH Name
+sin, cos, tan, asin, acos, atan, atan2 \- trigonometric functions
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double sin(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double cos(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double tan(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double asin(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double acos(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double atan(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double atan2(\fIx,y\fP)
+.B double \fIx,y\fP;
+.fi
+.SH Description
+.NXR "sin subroutine (math)"
+.NXR "cos subroutine (math)"
+.NXR "tan subroutine (math)"
+.NXR "asin subroutine (math)"
+.NXR "acos subroutine (math)"
+.NXR "atan subroutine (math)"
+.NXR "atan2 subroutine (math)"
+.NXR "sine function"
+.NXR "cosine function"
+.NXR "arccosine function"
+.NXR "arcsine function"
+.NXR "arctangent function"
+The subroutines
+.PN sin ,
+.PN cos
+and
+.PN tan ,
+return trigonometric functions of radian arguments.
+The magnitude of the argument should be checked
+by the caller to make sure the result is meaningful.
+.PP
+The 
+.PN asin
+subroutine returns the arc sin in the range \-\(*p/2 to \(*p/2.
+.PP
+The 
+.PN acos
+subroutine returns the arc cosine in the range 0 to \(*p.
+.PP
+The 
+.PN atan
+subroutine returns the arc tangent of
+.I x
+in the range \-\(*p/2 to \(*p/2.
+.PP
+The 
+.PN atan2
+subroutine returns the arc tangent of
+.I x/y
+in the range \-\(*p to \(*p.
+.SH Restrictions
+.NXR "sin subroutine (math)" "restrictions"
+The value of
+.PN tan
+for arguments greater than about 2**31 is unreliable.
+.SH Return Values
+.NXR "sin subroutine (math)" "return value"
+Arguments of magnitude greater than 1 cause
+.PN asin
+and
+.PN acos
+to return zero and set
+.I errno
+to EDOM.
+.PP
+The
+.PN atan2
+function returns zero and sets
+.I errno
+to EDOM
+when
+.I x
+and
+.I y
+are both zero.
+.SH Environment
+.NXR "sin subroutine (math)" "System V and"
+When your program is compiled using the System V environment,
+.PN sin ,
+.PN cos
+and
+.PN tan
+lose accuracy when their argument is far from zero.
+For arguments sufficiently large, these functions return 0
+when there would otherwise be a complete loss of significance.
+In this case a message indicating TLOSS error is printed
+on the standard error output.  For less extreme arguments, a
+PLOSS error is generated but no message is printed.  In 
+both cases, \fIerrno\fP is set to ERANGE.
+.PP
+The
+.PN tan
+subroutine returns HUGE for
+an argument which is near an odd multiple of 
+\(*p/2 when the correct value would overflow, and sets 
+.I errno
+to ERANGE.
+.PP
+Arguments of magnitude greater than 1.0 cause
+.PN asin
+and 
+.PN acos 
+to return 0 and to set 
+.I errno
+to EDOM.  In addition, a message indicating DOMAIN
+error is printed on the standard error output.
+.PP
+These error-handling procedures may be changed with the function
+.MS matherr 3m .

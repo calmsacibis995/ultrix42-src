@@ -1,0 +1,88 @@
+.TH gentapes 8
+.SH Name
+gentapes \- produce distribution mag tape media
+.SH Syntax
+.B "/usr/sys/dist/gentapes [-{wv}] [\fIhostname\fP:]\fIproduct_code\fP special"
+.SH Description
+.NXR "gentapes utility"
+.NXR "media production"
+The 
+.PN gentapes
+utility is used to produce MT9 or TK50 mag tape distribution
+media.  The utility searches 
+.PN /etc/kitcap 
+for the 
+.I product_code 
+as provided
+by the user on the command line, plus the letters "TK" which is appended
+to the product code by the utility.  If a corresponding kit descriptor is
+found in 
+.PN /etc/kitcap ,
+the utility uses the information in the kit descriptor
+to copy files to the tape media mounted on tape drive special.  Once all
+files have been transferred, the tape is rewound and each file is verified
+by using the results of 
+.PN sum
+and comparing it to sums given in the kit
+image file.  The 
+.PN gentapes 
+utility can support multi-volume tape kits, and
+multiproduct tape kits.  See 
+.MS kitcap 5
+for information on how to set up
+these features.
+.PP
+The optional \fIhostname:\fP is the 
+name of a remote TCP/IP network machine that
+contains the kitcap file.  The utility will search 
+.PN /etc/kitcap 
+on the
+remote machine for the 
+.I product_code 
+and use it for creating the media. 
+The colon (:) is a required delimiter for TCP/IP networks, 
+and there is no space between the colon and the 
+.IR product_code .
+For example, if the product code was ULT-2.2-V-BW, and the kitcap file
+to be used was on node "mynode", the proper syntax for this option
+would be
+.EX
+	mynode:ULT-2.2-V-BW
+.EE
+.PP
+The 
+.I product_code 
+is a user defined code that is located in 
+.PN /etc/kitcap ,
+and describes the partition, directories, and subsets that make up a
+kitcap description.  It can be any set of numbers or letters and is
+usually formed in a way to have some meaning relative to the product that it
+describes.  For example, if the product name is MYPRODUCT and it is
+version 1, the
+.I product_code 
+might be MYP010.
+.PP
+The 
+.B special 
+argument is used to specify a special device such as /dev/nrmt?l.
+.SH Options
+.IP \-w
+Write only. 
+.IP \-v
+Verify only.
+.IP
+If neither option appears on the command line, the utility by default will 
+write and then verify the files in the kit descriptor.	
+.SH Restrictions
+You must be a superuser to run this program.  If the optional hostname
+is used, you must be able to access files on the remote host 
+as superuser.
+.SH Files
+.TP 20
+.PN /dev/nrmt?l
+ra device special files
+.TP
+.PN /etc/kitcap
+Kit descriptor database
+.SH See Also
+sum(1), kitcap(5), genra(8)

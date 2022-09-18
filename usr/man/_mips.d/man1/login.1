@@ -1,0 +1,255 @@
+.TH login 1
+.SH Name
+login \- log in to a system
+.SH Syntax
+.B login
+[\|\fIusername\fR\|]
+.SH Description
+.NXR "login command (general)"
+.NXR "logging in"
+.NXA "logging in" "password"
+The
+.PN login
+command
+is used when a user initially
+signs on, or it may be used at any time to change
+from one user to another.
+The latter case is the one summarized above and
+described here.
+To sign on initially,
+see the 
+\fIGuide to System Environment Setup\fP.
+.PP
+If
+.PN login
+is invoked without an argument,
+it asks for a user name, and, if
+appropriate, a password.
+Echoing is turned off (if possible) during the typing of the password,
+so it does not appear on the written record of the
+session.
+.PP
+After a successful login
+accounting files are updated,
+the user is informed of the
+existence of mail,
+the message of the day is printed, and
+the time of last successful login is displayed.
+The display of all this information can be prevented by creating
+the file
+.I \&.hushlogin
+in the accounts login directory. This is useful for accounts such as
+.I uucp.
+.PP
+If ULTRIX security features are enabled additional things may happen.
+These include the display of the number of failed login attempts since
+the last successful login and forcing the setting of a new password.
+See the 
+\fISecurity Guide for Users\fP and \fISecurity Guide for Administrators\fP for more
+information.
+.PP
+The
+.PN login
+command
+initializes the user and group IDs, the working directory,
+and the users audit information,
+then executes a command interpreter, usually 
+.MS sh 1 ,
+according to specifications found in a password file.
+Argument 0 of the command interpreter is \*(lq\-sh\*(rq, or
+more generally the name of the command interpreter with
+a leading dash (\*(lq\-\*(rq) prepended.
+.PP
+The 
+.PN login 
+command also initializes the
+environment 
+.MS environ 7
+with information specifying home directory,
+command interpreter, terminal
+type (if available) and user name.
+.PP
+When
+.PN login
+is used in conjunction with
+.MS getty 8
+it is the responsibility of the getty program to initialize the
+terminal attributes.  Specifically if a terminal is setup to 
+use 8-bit characters the 
+.PN getty
+program should use a 
+.MS gettytab 5 
+entry which specifies 8-bit characters.  If a terminal is setup in
+8-bit mode but fails to specify an 8-bit gettytab entry, then
+characters output by both 
+.PN login
+and
+.PN getty
+may appear as multinational characters.  
+.PP
+If the file 
+.PN /etc/nologin
+exists,
+.PN login
+prints its contents on the user's terminal and exits. This is
+used by 
+.MS shutdown 8
+to stop users logging in when the system is about to go down.
+.PP
+The
+.PN login 
+command is recognized by 
+.MS sh 1 
+and 
+.MS csh 1
+and executed directly (without forking).
+.PP
+If a root login is attempted and an invalid command
+interpreter is specified, the 
+.PN sh
+interpreter is used.
+.SH Options
+.IP \fB\-r\fR 20
+Used by the remote login server, 
+.MS rlogind 8c ,
+to force
+.PN login
+to enter into an initial connection protocol.
+.IP "\fB\-P \fI<programname>\fR" 20
+Causes
+.PN login
+to set it's standard input
+and output to be connected to the prompting program \fI<programname>\fR.
+.IP "\fB\-C \fIstring\fR" 20
+Allows the system to specify a command to be run using the
+user's shell.  This option causes a user shell
+.B \-c
+\fIstring\fR to be 
+.PN exec 'ed.
+.IP \fB\-e\fR 20
+Forces
+.PN login
+to use an extended protocol when communicating with a prompter
+program (see \-P).
+.SH Restrictions
+To provide flow control, CTRL/S and
+CTRL/Q are ignored and are
+therefore invalid characters in a 
+login name.  
+.SH Diagnostics
+.NXR "login command (general)" "diagnostics"
+.PP
+.B "Login incorrect"
+.br
+If the username and password are not a valid combination.
+.PP
+.B "Too many users logged on already. Try again later."
+.br
+The system has the maximum licensed number of users logged on already.
+.PP
+.B "License not valid for this version of ULTRIX."
+.br
+The PAK that has been registered is for an earlier version of ULTRIX.
+.PP
+.B "No valid license found for ULTRIX."
+.br
+There is either no ULTRIX PAK registered or the PAK that has
+been found is not valid, possibly because it has terminated.
+.PP
+.B "Requires secure terminal"
+.br
+An attempt was made to login as UID 0 on a line that is not marked
+as \fIsecure\fP in
+.PN /etc/ttys .
+.PP
+.B "No shell"
+.br
+The login shell specified for the account cannot be executed. Consult
+the system administrator.
+.PP
+.B "No directory! Logging in with home=/"
+.br
+The HOME directory for the account is inaccessible. This can happen
+if the directory resides on an NFS file system served by a host that
+is not currently available.
+.PP
+.B "You have too many processes running"
+.br
+Completion of login would exceed the maximum number of running processes
+allowed for the user.
+.PP
+.B "You have mail"
+.br
+You have a non-empty mail spool file.
+.PP
+If ULTRIX security features are enabled the following messages are
+also possible from login:
+.PP
+.PP
+.B "Your password has expired"
+.br
+The password for your account has not been changed recently enough.
+Consult your system administrator.
+.PP
+.B "Your password has expired, please change it"
+.br
+Your password has expired recently. You have to change it
+before you can proceed any further.
+.PP
+.B "Your password will expire very soon"
+.br
+Your password will expire in less than 24 hours.
+.PP
+.B "Your password will expire in %d days"
+.br
+The ``%d'' is replaced with the number of days until your
+password expires. You should consider changing your password now.
+.PP
+.B "This account is disabled"
+.br
+Consult your system administrator.
+.PP
+.B "Kerberos initialization failure"
+.br
+Consult your system administrator.
+.SH Files
+.PD 0
+.TP 20
+.PN /etc/utmp
+accounting
+.TP
+.PN /usr/adm/wtmp
+accounting
+.TP
+.PN /usr/spool/mail/*
+mail
+.TP
+.PN /etc/motd
+message-of-the-day
+.TP
+.PN /etc/auth.[pag,dir]
+authorization data base
+.TP
+.PN /etc/passwd
+password file
+.TP
+.PN /etc/nologin
+stops logins
+.TP
+.PN /etc/svc.conf
+sets I&A security level
+.TP
+.PN \&.hushlogin
+makes login quieter
+.TP
+.PN /etc/securetty
+lists ttys that root may log in on
+.SH See Also
+mail(1), passwd(1), yppasswd(1yp), passwd(5yp), environ(7),
+getty(8), init(8), rlogind(8c), shutdown(8)
+.br
+\fIGuide to System Environment Setup\fP
+.br
+\fISecurity Guide for Users\fP
+.br
+\fISecurity Guide for Administrators\fP

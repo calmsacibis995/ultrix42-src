@@ -1,0 +1,52 @@
+.\"	@(#)pfm_init.3ncs	8.1 of 9/11/90
+.TH pfm_init 3ncs
+.SH Name
+pfm_init \- initialize the PFM package
+.SH Syntax
+.nf
+#include <idl/c/base.h>
+#include <idl/c/pfm.h>
+
+void pfm_$init(\fIflags\fP)
+unsigned long \fIflags;\fR
+.fi
+.ig
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\".DE
+..
+.ig
+.SH Synopsis (fortran)
+..
+.SH Arguments
+.TP  
+\fIflags\fR 
+.RS
+.TP
+\fBpfm_init_signal_handlers\fR
+Currently the only valid flag value.  A flag's variable must be set to
+contain this value or the call will perform no initialization .  A call to 
+.B pfm_init_signal_handlers
+causes C signals to be intercepted and converted to PFM signals.  On
+ULTRIX and VMS systems, the signals intercepted are SIGINIT, SIGILL,
+SIGFPE, SIGTERM, SIGHUP, SIGQUIT, SIGTRAP, SIGBUS, SIGSEGV, and SIGSYS. 
+.RE
+.SH Description
+The call to
+.PN pfm_$init( )
+establishes a default set of signal handlers for the routine.  The call to
+.NXR "Fault Management" "pfm_init"
+.PN pfm_$init( )
+should be made prior to the application's use of all other runtime RPC
+routines. This enables the RPC runtime system to catch and report all
+fault and/or interrupt signals that may occur during normal operation. 
+Additionally, the user may provide a fault processing clean-up handler for
+application-specific exit handling.  
+.SH Files
+.PN /usr/include/idl/c/base.h
+.br
+.PN /usr/include/idl/base.idl
+.br
+.PN /usr/include/idl/c/pfm.h
+.SH See Also
+intro(3ncs), pfm_cleanup(3ncs)

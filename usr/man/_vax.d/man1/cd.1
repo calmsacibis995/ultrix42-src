@@ -1,0 +1,37 @@
+.\" SCCSID: @(#)cd.1	8.1	9/11/90
+.\" SCCSID: @(#)cd.1	8.1	9/11/90
+.TH cd 1
+.SH Name
+cd \- change current directory
+.SH Syntax
+.B cd
+\fIdirectory\fR
+.SH Description
+.NXR "cd command (csh)"
+.NXR "cd command (sh)"
+.NXR "cd command (System V)"
+.NXR "working directory" "changing"
+The
+.I directory
+becomes the new working directory.
+The process must have execute (search)
+permission in
+.I directory.
+.PP
+Because a new process is created to execute each command,
+.PN cd
+would be ineffective if it were written as a
+normal command.  It is therefore recognized and executed
+by the shells.
+In 
+.PN csh
+you may specify a list of directories in which
+.I directory
+is to be sought as a subdirectory if it is not
+a subdirectory of the current directory;
+see the description of the
+.I cdpath
+variable in
+.MS csh 1 .
+.SH See Also
+csh(1), pwd(1), sh(1), chdir(2)

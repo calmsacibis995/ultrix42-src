@@ -1,0 +1,93 @@
+/*        @(#)cpmac.lib_hc	4.1      7/2/90      */
+
+/* file: cpmac.lib
+ *
+ *	COPYRIGHT  (c)  DIGITAL  EQUIPMENT CORPORATION 1987,
+ *	1988, 1989.  ALL RIGHTS RESERVED.
+ *
+ *	THIS SOFTWARE IS FURNISHED UNDER A LICENSE AND MAY BE
+ *	USED AND COPIED ONLY IN ACCORDANCE  WITH THE TERMS OF
+ *	SUCH  LICENSE  AND  WITH  THE  INCLUSION OF THE ABOVE
+ *	COPYRIGHT  NOTICE.  THIS SOFTWARE OR ANY OTHER COPIES
+ *	THEREOF   MAY  NOT  BE  PROVIDED  OR  OTHERWISE  MADE
+ *	AVAILABLE  TO  ANY  OTHER  PERSON.  NO  TITLE  TO AND
+ *	OWNERSHIP  OF  THE  SOFTWARE  IS  HEREBY TRANSFERRED.
+ *
+ *	THE INFORMATION IN THIS SOFTWARE IS SUBJECT TO CHANGE
+ *	WITHOUT  NOTICE  AND SHOULD  NOT BE  CONSTRUED  AS A
+ *	COMMITMENT  BY  DIGITAL EQUIPMENT CORPORATION.
+ *
+ *	DIGITAL  ASSUMES  NO RESPONSIBILITY  FOR THE  USE  OR
+ *	RELIABILITY  OF ITS SOFTWARE ON EQUIPMENT THAT IS NOT
+ *	SUPPLIED BY DIGITAL.
+ *
+ */
+
+
+
+/*
+ *-----------------------------------------------------------
+ *
+ *   begin description
+ *
+ *   Filename:  cpmac.lib
+ *
+ *   This module contains the global parameterised macros.
+ *
+ *   end description
+ *
+ *-----------------------------------------------------------
+ */
+
+
+
+/*
+ *-----------------------------------------------------------
+ *
+ *  begin edit_history
+ *
+ *   4-DEC-1987 22:36 mhs
+ *      Original Version
+ *
+ *  24-FEB-1988 12:54 mhw
+ *	Change name of 7 & 8 bit macro 
+ *
+ *  12-MAR-1988 15:50 mhw
+ *	Changed CP_CREATE_WORD so shifts private flag by 7 bits
+ *	not 8.  Was shifting too far, out of the word	
+ *
+ *  16-MAR-1988 12:13 mhs
+ *      Add an extra level of parenthese to typecast macros to
+ *      remove contextual ambiguity of compilation.
+ *
+ *  12-MAY-1988 11:07 mhs
+ *	Remove CP_GET_DIGIT_MASK and CP_GET_7MASK as they are too context
+ *	dependent (with regards to signed vs. unsigned input, size of input, 
+ *	etc.) to be of any real use, and thus could cause more harm than good.
+ *	Rename CP_CREATE_WORD to CP_CREATE_PIF, as it is more descriptive
+ *	and as old name is incorrect anyway since it creates a UWORD.
+ *
+ *  end edit_history
+ *
+ *-----------------------------------------------------------
+ */
+
+
+
+/*-----------------------------------------------------------
+ * Macro to merge Private flag, Intermediate and Final for 
+ * Search Table parsing.
+ *-----------------------------------------------------------
+ */
+
+#define CP_CREATE_PIF(p,i,f) ((UWORD)((((p << 7) | i) << 8) | f))
+
+
+/*-----------------------------------------------------------
+ * Macro to pack decimal parameter digits, in order to avoid 
+ * wasteful gaps between digits.
+ *-----------------------------------------------------------
+ */
+
+#define CP_PACK_PARAM(p_old,p_new) ((WORD)((p_old * 10) + p_new))
+

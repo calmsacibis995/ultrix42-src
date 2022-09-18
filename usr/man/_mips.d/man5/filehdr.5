@@ -1,0 +1,54 @@
+.TH filehdr 5 RISC
+.SH Name
+filehdr \- file header for RISC object files
+.SH Syntax
+.B "#include < filehdr.h>"
+.SH Description
+Every RISC object file begins with a 20-byte header.  The following C
+struct declaration is used:
+.EX 0
+struct filehdr
+{
+   unsigned short  f_magic;     /* magic number */
+   unsigned short  f_nscns;     /* number of sections */
+   long            f_timdat;    /* time & date stamp */
+   long            f_symptr;    /* file pointer to symbolic header */
+   long            f_nsyms;     /* sizeof(symbolic header) */
+   unsigned short  f_opthdr;    /* sizeof(optional header) */
+   unsigned short  f_flags;     /* flags */
+};
+.EE
+.PP
+The byte offset into the file at which the symbolic header can be found is
+.I f_symptr.
+Its value can be used as the offset in
+.MS fseek 3s
+to position an I/O stream to the symbolic header.  The ULTRIX system optional
+header is 56 bytes.  The valid magic numbers are given below:
+.EX 0
+#define MIPSEBMAGIC 0x0160 /* objects for big-endian machines */
+#define MIPSELMAGIC 0x0162 /* objects for little-endian machines */
+#define MIPSEBUMAGIC 0x0180 /* ucode objects for big-endian machines */
+#define MIPSELUMAGIC 0x0182 /* ucode objects for little-endian machines */
+.EE
+RISC object files can be loaded and examined on machines differing from the
+object's target byte sex.  
+Therefore, for object file magic numbers, the byte-swapped 
+values have define constants associated with them:
+.EX 0
+#define SMIPSEBMAGIC 0x6001
+#define SMIPSELMAGIC 0x6201
+.EE
+The value in
+.I f_timdat
+is obtained from the
+.MS time 2
+system call.  Flag bits used in RISC objects are:
+.EX 0
+#define F_RELFLG 0000001  /* relocation entries stripped */
+#define F_EXEC   0000002  /* file is executable */
+#define F_LNNO   0000004  /* line numbers stripped */
+#define F_LSYMS  0000010  /* local symbols stripped */
+.EE
+.SH See Also
+time(2), fseek(3s), a.out(5)

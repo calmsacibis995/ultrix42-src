@@ -1,0 +1,142 @@
+.\" SCCSID: @(#)savecore.8	8.1	9/11/90
+.TH savecore 8
+.SH Name
+savecore \- save a core dump of the operating system
+.SH Syntax
+.B /etc/savecore
+[ \fIoptions\fR ]
+.I dirname
+[
+.I system
+]
+[
+.I corename
+]
+.SH Description
+.NXR "savecore command"
+.NXR "core dump" "saving"
+The 
+.PN savecore 
+command
+is meant to be called near the end of the 
+.PN /etc/rc.local  
+file.  The 
+.PN savecore
+command 
+saves the core dump of the system (assuming one was made) and
+writes a reboot message in the shutdown log.
+.PP
+The 
+.PN savecore
+command checks the core dump to be certain it corresponds with the
+current running ULTRIX.  If it does, it saves the core image in the file
+\fIdirname\f(CW/vmcore.\fIn\fR
+and saves the namelist in the file \fIdirname\f(CW/vmunix.\fIn\fR.
+The trailing \fI.n\fR in the pathnames is replaced by a number which
+increments each time
+.PN savecore
+is run in that directory.
+.PP
+After saving the core and namelist images, 
+.PN savecore
+will save the error logger buffer into a predetermined file.  The error
+logger buffer contains information about why the crash occurred.  After 
+.PN savecore
+completes, the 
+.PN elcsd 
+daemon will extract the error logger file and
+translate its contents into a form familiar to the 
+.MS uerf 8
+program.
+.PP
+Before 
+.PN savecore 
+writes out a core image, it reads a number from the file
+\fIdirname\f(CW/minfree\fR.
+If there are fewer free blocks on the filesystem
+that contains
+.I dirname
+than the number obtained from the 
+.PN minfree
+file, a core dump is not done.
+If the
+.PN minfree
+file does not exist, savecore always writes out the core
+file (assuming that a core dump was taken).
+.PP
+The 
+.PN savecore 
+command
+also writes a reboot message in the shut down log.
+If the system crashed
+as a result of a panic,
+.PN savecore
+also records the panic string in the shut down log.
+.PP
+For partial crash dumps,
+.PN savecore
+creates a sparse core image file in
+\fIdirname\f(CW/vmcore.\fIn\fR.
+If this sparse core image file is
+copied or moved to another location, the file expands to its true size
+which can take too much file system space.  Hence, to copy or move
+sparse core image files, you must use the
+.PN dd
+command. The
+.PN dd
+command has a conversion option to create sparse output files.
+.SH Options
+.IP \-c 5
+Clears the core dump.  
+This option is useful when the core
+dump is corrupted in a way that will not allow
+.PN savecore
+to save it safely.  Use the 
+.PN \-c
+option with caution, because once it clears the core dump, the core
+dump cannot be retrieved.
+.IP "\-d \fIdumpdev dumplo\fP"
+Specifies the dump device and the dump offset when running
+.PN savecore
+on a system image other than the currently running
+system image. 
+The 
+.PN savecore 
+program assumes that the running system image is
+.PN /vmunix
+and it reads the dump device and dump device offset are different 
+in the system image that crashed, the 
+.PN \-d
+option provides the 
+correct dump device and dump device offset.
+.IP \-e 
+Saves only the error logger buffer into a file.  If
+used, core or namelist images are not saved.
+.IP "\-f \fIcorename\fR"
+Takes the i
+.I corefile
+name as the file from which to extract the the crash dump data
+instead of the default dump device.  This option is used only for
+diskless workstations.
+.PP
+If the core dump was from a system other than \f(CW/vmunix\fR, the name
+of that system must be supplied as
+.IR system .
+The
+.PN savecore
+program assumes that the running image is
+.PN /vmunix .
+.PP
+After successful completion, the core dump is cleared.  Also, a message
+is written in the file 
+.PN /usr/adm/shutdownlog
+which tells whether the dump succeeded or failed.
+.SH Files
+.TP 20
+.PN /usr/adm/shutdownlog 
+Shut down log
+.TP 
+.PN /vmunix 
+Current running ULTRIX system
+.SH See Also
+dd(1), uerf(8)

@@ -1,0 +1,684 @@
+# @(#)oitem.db	4.6   (ULTRIX)   1/31/91
+
+oitem 
+id 1 
+name RHDR_HNAME 
+type ASCIZ 
+class CHARACTER 
+size 12 
+doc "Ascii host name"
+map NIL 
+
+oitem 
+id 2 
+name EVCLASS 
+type SHORT_INDEX 
+class CODED 
+size 2 
+doc "Raw to standard mapping event (subid_class) for eventclass"
+map 
+    100 EC$ERROR
+    101 EC$ERROR
+    102 EC$ERROR
+    103 EC$ERROR
+    104 EC$ERROR
+    105 EC$ERROR
+    106 EC$ERROR
+    107 EC$ERROR
+    108 EC$ERROR
+    109 EC$ERROR
+    110 EC$ERROR
+    111 EC$ERROR
+    112 EC$ERROR
+    113 EC$ERROR
+    114 EC$ERROR
+    115 EC$ERROR
+    116 EC$ERROR
+    117 EC$ERROR
+    118 EC$ERROR
+    119 EC$ERROR
+    120 EC$ERROR
+    121 EC$ERROR
+    130 EC$ERROR
+    131 EC$ERROR
+    132 EC$ERROR
+    133 EC$ERROR
+    134 EC$ERROR
+    135 EC$ERROR
+    136 EC$ERROR
+    137 EC$OPERATOR
+    138 EC$ERROR
+    200 EC$ERROR
+    201 EC$ERROR
+    202 EC$ERROR
+    251 EC$ERROR
+    252 EC$ERROR
+    300 EC$OPERATOR
+    301 EC$OPERATOR
+    250 EC$OPERATOR
+    310 EC$OPERATOR
+    350 EC$MAINTENANCE
+    351 EC$MAINTENANCE
+
+oitem 
+id 3 
+name CPUERR 
+type SHORT_INDEX 
+class CODED 
+size 2 
+doc "cpu type errors"
+map 
+    100 DC$CPU
+    107 DC$CPU
+    110 DC$CPU
+    111 DC$CPU
+    113 DC$CPU
+    114 DC$CPU
+    115 DC$CPU
+    116 DC$CPU
+    118 DC$CPU
+    251 DC$CPU
+    252 DC$CPU
+
+oitem 
+id 4 
+name MEMERR 
+type SHORT_INDEX 
+class CODED 
+size 2 
+doc "memory error class"
+map 
+    101 DC$MEMORY
+    108 DC$MEMORY
+
+oitem 
+id 5 
+name DSDISK 
+type TINY_INDEX 
+class CODED 
+size 1 
+doc "dsa disk errors"
+map 
+    1 DC$DSDISK
+    2 DC$DSDISK
+    3 DC$DSDISK
+    4 DC$DSDISK
+    5 DC$DSDISK
+    6 DC$DSDISK
+    7 DC$DSDISK
+    8 DC$DSDISK
+    9 DC$DSDISK
+    10 DC$DSDISK
+    11 DC$DSDISK
+    12 DC$DSDISK
+    13 DC$DSDISK
+    14 DC$DSDISK
+    15 DC$DSDISK
+    16 DC$DSDISK
+    17 DC$DSDISK
+    18 DC$DSDISK
+    19 DC$DSDISK
+    20 DC$DSDISK
+    21 DC$DSDISK
+    22 DC$DSDISK
+    23 DC$DSDISK
+    24 DC$DSDISK
+    25 DC$DSDISK
+    26 DC$DSDISK
+    27 DC$DSDISK
+    28 DC$DSDISK
+    29 DC$DSDISK
+    37 DC$DSDISK
+    40 DC$DSDISK
+
+oitem 
+id 6 
+name DSTAPE 
+type TINY_INDEX 
+class CODED 
+size 1 
+doc "dsa tapes"
+map 
+    1 DC$DSTAPE
+    2 DC$DSTAPE
+    3 DC$DSTAPE
+    4 DC$DSTAPE
+    5 DC$DSTAPE
+    6 DC$DSTAPE
+    7 DC$DSTAPE
+    8 DC$DSTAPE
+    9 DC$DSTAPE
+    10 DC$DSTAPE
+    11 DC$DSTAPE
+    12 DC$DSTAPE
+    13 DC$DSTAPE
+    14 DC$DSTAPE
+    15 DC$DSTAPE
+    16 DC$DSTAPE
+
+oitem 
+id 7 
+name BUSERR 
+type SHORT_INDEX 
+class CODED 
+size 2 
+doc "bus errors"
+map 
+    106 DC$BUS
+
+oitem 
+id 8 
+name ADAPERR 
+type SHORT_INDEX 
+class CODED 
+size 2 
+doc "adapter errors"
+map 
+    104 DC$ADAPTER
+    105 DC$ADAPTER
+
+oitem 
+id 13 
+name MCKSTK 
+type TINY_INDEX 
+class CODED 
+size 1 
+doc "Machine Check identifiers for coarsesyndrome"
+map 
+    100 MCK
+
+oitem 
+id 14 
+name BUSSYN 
+type TINY_INDEX 
+class CODED 
+size 1 
+doc "Bus Error ids for coarsesyndrome"
+map 
+    3 BIER
+    4 NMIBUS
+
+oitem 
+id 15 
+name ADPSYN 
+type TINY_INDEX 
+class CODED 
+size 1 
+doc "Adapter error ids for coarsesyndrome"
+map 
+    1 UBAADP
+    2 BUAADP
+    3 NMIADP
+    6 VME_CNTL
+    7 XBIPLUSADP
+    9 XJAADP
+
+oitem 
+id 16 
+name SISYN 
+type TINY_INDEX 
+class CODED 
+size 1 
+doc "Stray Interrupt types for coarsesyndrome"
+map 
+    1 SCBINT
+    2 UNIINT
+
+oitem 
+id 17 
+name EXPFLT 
+type TINY_INDEX 
+class CODED 
+size 1 
+doc "Panic/Exception Fault codes"
+map 
+    1 RAF
+    2 PIF
+    3 ROF
+    4 BPT
+    5 XFC
+    6 SYSCALL
+    7 ATFLT
+    8 ASTFLT
+    9 SEGFLT
+    10 PROTECT
+    11 TRACE
+    13 PGFLT
+    14 PGTFLT
+
+oitem 
+id 19 
+name MSG_ASC 
+type ASCIZ 
+class CHARACTER 
+size 256 
+doc "Ascii message for ascii message types"
+map NIL 
+
+oitem 
+id 20 
+name PNC_ASC 
+type ASCIZ 
+class CHARACTER 
+size 64 
+doc "Panic Ascii message"
+map NIL 
+
+oitem 
+id 22 
+name GEN_BV_6 
+type BYTE_VECTOR 
+class BYTES 
+size 6 
+doc "GENERIC BYTE VECTOR LENGTH 6"
+map NIL 
+
+oitem 
+id 23 
+name GEN_BV_8 
+type BYTE_VECTOR 
+class BYTES 
+size 8 
+doc "GENERIC BYTE VECTOR LEN 8"
+map NIL 
+
+oitem 
+id 26 
+name MSG_FMT 
+type TINY_INDEX 
+class CODED 
+size 1 
+doc "Format field of MSCP Error log packet"
+map 
+    0 CNTERR
+    1 HMEACC
+    2 DSKTRERR
+    3 SDIERR
+    4 SMDSKERR
+    5 TPTRERR
+    6 STICOMM
+    7 STIDRVERR
+    8 STIFMTERR
+    9 BDBLKREPL
+    11 IBMSENSE
+
+oitem 
+id 27 
+name SBIFLT 
+type INDEXED 
+class CODED 
+size 4 
+doc "SBI SPECIFIC FAULT"
+map 
+    0 SBI_ERR
+    1 SBI_WTIM
+    2 SBI_ALRT
+    3 SBI_FLT
+    4 SBI_FAIL
+
+oitem 
+id 30 
+name CTLSYN 
+type TINY_INDEX 
+class CODED 
+size 1 
+doc "ids coarsesyndrome from controller type errors"
+map 
+    1 CIATTN
+    2 CILPAKT
+    3 UQATTN
+    4 BLAERR
+    5 BVPERR
+    6 MSCPCTL
+    7 TMSCPCTL
+    8 MSIATTN
+    9 MSI_LPKT
+    11 XNA_CTLERR
+    10 SCSI_CTLERR
+    12 XNA_CTLERR
+    13 VME_CNTL
+    14 ELFZA
+
+oitem 
+id 31 
+name CI_LNAME 
+type ASCIZ 
+class CHARACTER 
+size 8 
+doc "CI LOGGED PKT LOCAL SYSTEM NODE NAME"
+map NIL 
+
+oitem 
+id 32 
+name CI_KNAME 
+type ASCIZ 
+class CHARACTER 
+size 6 
+doc "KNOWN SYSTEM NODE NAME"
+map NIL 
+
+oitem 
+id 35 
+name BLATYP 
+type TINY_INDEX 
+class CODED 
+size 1 
+doc "BLA type device controller"
+map 
+    4 DT$BLA
+
+oitem 
+id 40 
+name CI_RNAME 
+type ASCIZ 
+class CHARACTER 
+size 8 
+doc "Remote host node name"
+map NIL 
+
+oitem 
+id 43 
+name STARTUP_MSG 
+type ASCIZ 
+class CHARACTER 
+size 4400 
+doc "Startup Message"
+map NIL 
+
+oitem 
+id 44 
+name NMIFLT_SILO 
+type LONG_VECTOR 
+class INTEGER 
+size 256 
+doc "NMIFLT Silo Regs"
+map NIL 
+
+oitem 
+id 45 
+name SBIAWSILO 
+type LONG_VECTOR 
+class INTEGER 
+size 16 
+doc "SBI/Asynchr Write silo regs"
+map NIL 
+
+oitem 
+id 46 
+name SBIAWCSR 
+type LONG_VECTOR 
+class INTEGER 
+size 16 
+doc "SBI/Asynchr Write CSR regs"
+map NIL 
+
+oitem 
+id 53 
+name GEN_LONG 
+type LONG 
+class INTEGER 
+size 4 
+doc "GENERIC LONG"
+map NIL 
+
+oitem 
+id 54 
+name GEN_SHORT 
+type SHORT 
+class INTEGER 
+size 2 
+doc "GENERIC SHORT"
+map NIL 
+
+oitem 
+id 55 
+name GEN_TINY 
+type TINY 
+class INTEGER 
+size 1 
+doc "generig tiny"
+map NIL 
+
+oitem 
+id 56 
+name GEN_ACV 
+type ADDR_CNT_VECTOR 
+class INTEGER 
+size 136 
+doc "generic addr counted vector"
+map NIL 
+
+oitem 
+id 58 
+name RV_SVOL_SER 
+type BYTE_VECTOR 
+class BYTES 
+size 8 
+doc NIL
+map NIL 
+
+oitem 
+id 59 
+name CI_LPNAME 
+type ASCIZ 
+class CHARACTER 
+size 4 
+doc NIL
+map NIL 
+
+oitem 
+id 60 
+name GEN_ASC_4 
+type ASCIZ 
+class CHARACTER 
+size 4 
+doc "GENERIC"
+map NIL 
+
+oitem 
+id 61 
+name GEN_ASC_12 
+type ASCIZ 
+class CHARACTER 
+size 12 
+doc NIL
+map NIL 
+
+oitem 
+id 62 
+name GEN_BV_16 
+type BYTE_VECTOR 
+class BYTES 
+size 16 
+doc NIL
+map NIL 
+
+oitem 
+id 63 
+name CIERRCOD 
+type INDEXED 
+class CODED 
+size 4 
+doc "ERROR CODE GENERATED BY CI PORT"
+map 
+    536870913 PDI_1
+    536870914 PDI_2
+    536870915 PDI_3
+    536870916 PDI_4
+    536870917 PDI_5
+    536870918 PDI_6
+    536870919 PDI_7
+    536870920 PDI_8
+    553648129 PDW_1
+    553648130 PDW_2
+    553648131 PDW_3
+    553648132 PDW_4
+    553648133 PDW_5
+    2701131782 PDW_6
+    553648135 PDW_7
+    553648136 PDW_8
+    570425345 PDRE_1
+    587202561 PDE_1
+    587202562 PDE_2
+    587202563 PDE_3
+    587202564 PDE_4
+    587202565 PDE_5
+    587202566 PDE_6
+    603979777 PDSE_1
+    603979778 PDSE_2
+    603979779 PDSE_3
+    603979780 PDSE_4
+    603979781 PDSE_5
+    603979782 PDSE_6
+    603979783 PDSE_7
+    603979784 PDSE_8
+    603979785 PDSE_9
+    603979786 PDSE_A
+    603979787 PDSE_B
+    603979788 PDSE_C
+    603979789 PDSE_D
+    603979790 PDSE_E
+    603979791 PDSE_F
+    2751463440 PDSE_10
+    603979793 PDSE_11
+    603979794 PDSE_12
+    603979795 PDSE_13
+    603979796 PDSE_14
+    603979797 PDSE_15
+    603979798 PDSE_16
+    603979799 PDSE_17
+    603979800 PDSE_18
+    603979801 PDSE_19
+    603979802 PDSE_1A
+    603979803 PDSE_1B
+    603979804 PDSE_1C
+    603979805 PDSE_1D
+    603979806 PDSE_1E
+    603979807 PDSE_1F
+    603979808 PDSE_20
+    603979809 PDSE_21
+    603979810 PDSE_22
+    603979811 PDSE_23
+    2768240641 PDFE_1
+    2768240642 PDFE_2
+    2768240643 PDFE_3
+    2768240644 PDFE_4
+    2768240645 PDFE_5
+    2768240646 PDFE_6
+    2768240647 PDFE_7
+    2768240648 PDFE_8
+    2768240649 PDFE_9
+    2768240650 PDFE_A
+    2768240651 PDFE_B
+    2768240652 PDFE_C
+    1610612737 PPDI_1
+    1627389953 PPDW_1
+    3774873602 PPDW_2
+    1627389955 PPDW_3
+    1627389956 PPDW_4
+    1644167169 PPDRE_1
+    1644167170 PPDRE_2
+    1644167171 PPDRE_3
+    1660944385 PPDE_1
+    1660944386 PPDE_2
+    1660944387 PPDE_3
+    1660944388 PPDE_4
+    1660944389 PPDE_5
+    1660944390 PPDE_6
+    1677721601 PPDSE_1
+    1677721602 PPDSE_2
+    1677721603 PPDSE_3
+    1677721604 PPDSE_4
+    1677721605 PPDSE_5
+    50331648 SCSE_1
+    50331649 SCSE_2
+    67108865 SCSSE_1
+    67108866 SCSSE_2
+    67108867 SCSSE_3
+    67108868 SCSSE_4
+    67108869 SCSSE_5
+    67108870 SCSSE_6
+
+oitem 
+id 50 
+name GEN_BV_12 
+type BYTE_VECTOR 
+class BYTES 
+size 12 
+doc "GENERIC BYTE VECTOR 12 LONG"
+map NIL 
+
+oitem 
+id 51 
+name MSI_ERRCODE 
+type INDEXED 
+class CODED 
+size 4 
+doc NIL
+map 
+    536870913 PDI01
+    536870914 PDI02
+    570425345 PDRE01
+    587202561 PDE01
+    587202562 PDE02
+    587202563 PDE03
+    603979777 PDSE01
+    603979778 PDSE02
+    603979779 PDSE03
+    603979780 PDSE04
+    603979781 PDSE05
+    603979782 PDSE06
+    603979783 PDSE07
+    603979784 PDSE08
+    603979785 PDSE09
+    603979786 PDSE0A
+    603979787 PDSE0B
+    603979788 PDSE0C
+    2768240641 PDFE01
+    2768240642 PDFE02
+    2768240643 PDFE03
+
+oitem 
+id 52 
+name SCS_ERRCODE 
+type INDEXED 
+class CODED 
+size 4 
+doc NIL
+map 
+    1 SCSI01
+    2 SCSI02
+    16777217 SCSW01
+    16777218 SCSW02
+    16777219 SCSW03
+    16777220 SCSW04
+    16777221 SCSW05
+    16777222 SCSW06
+    16777223 SCSW07
+    50331649 SCSE01
+    50331650 SCSE02
+    67108865 SCSSE01
+    67108866 SCSSE02
+    67108867 SCSSE03
+    67108868 SCSSE04
+    67108869 SCSSE05
+    67108870 SCSSE06
+
+oitem 
+id 41 
+name GEN_ASC_16 
+type ASCIZ 
+class CHARACTER 
+size 16 
+doc "generic ascii with 16 bytes"
+map NIL 
+
+oitem 
+id 48 
+name GEN_CNTVECL 
+type COUNTED_LONG_VECTOR 
+class INTEGER 
+size 32 
+doc "generic counted long vector type"
+map NIL 
+

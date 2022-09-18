@@ -1,0 +1,48 @@
+.TH sqrt 3m RISC
+.ds up \fIulp\fR
+.ds nn \fINaN\fR
+.SH Name
+cbrt, sqrt \- cube root, square root
+.SH Syntax
+.nf
+.B #include <math.h>
+.PP
+.B double cbrt(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B double sqrt(\fIx\fP)
+.B double \fIx\fP;
+.PP
+.B float fsqrt(float \fIx\fP)
+.B float \fIx\fP;
+.fi
+.SH Description
+The 
+.PN cbrt
+function returns the cube root of \fIx\fP.
+.PP
+The 
+.PN sqrt 
+and
+.PN fsqrt
+functions return the square root of \fIx\fP for double and float
+data types respectively.
+.SS "Error Due to Roundoff and Other Reasons"
+The 
+.PN cbrt
+function is accurate to within 0.7 \*(ups.
+.PP
+The 
+.PN sqrt
+function on this machine conforms to IEEE 754 and is correctly rounded
+in accordance with the rounding mode in force; the error is less than
+half an \*(up in the default mode (round\-to\-nearest).
+An \*(up is one \fIU\fRnit in the \fIL\fRast \fIP\fRlace carried.
+.SH Diagnostics
+The 
+.PN sqrt
+function returns the default quiet \*(nn when 
+.I x\^
+is negative indicating the invalid operation.
+.SH See Also
+math(3m)

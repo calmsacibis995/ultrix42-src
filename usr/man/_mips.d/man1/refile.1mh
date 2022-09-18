@@ -1,0 +1,186 @@
+.TH refile 1mh
+.SH Name
+refile \- file message in other folders
+.SH Syntax
+.B refile 
+[
+.I msgs
+] [
+.I +folder
+] [ 
+.I options
+]
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "refile command"
+.NXR "messages" "filing in other folders"
+Use the 
+.PN refile
+command to move the specified message from the current folder 
+to another folder.
+You can refile messages in more than one folder
+by giving multiple folder names as arguments.
+.PP
+If you do not specify a message, the current message is refiled.  
+You can refile a message other than the current message
+by giving its number as a 
+.I msgs 
+argument.
+You can also refile more than one message at a time 
+by specifying more than one message number,
+or a range of message numbers,
+or a message sequence.
+See 
+.MS mark 1mh
+for more information on sequences.
+.PP
+The current folder remains the same unless the
+.B \-src
+option is specified; in that case, 
+the source folder becomes current.
+Normally, the last message specified becomes the current message.
+However, if the
+.B \-link
+option is used, the current message is not changed.
+.PP
+If the \f(CWPrevious-Sequence:\fR entry is set in the
+.PN \&.mh_profile
+file, in addition to defining the named sequences from the source folder,
+.PN refile
+will also define those sequences for the destination folders.
+See 
+.MS mh_profile 5mh
+for information concerning the previous sequence.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-draft" 10
+Refiles the draft message, or the current message in your 
+.PN +drafts
+folder, if you have one set up.
+You cannot give a 
+.I msgs
+argument when you use this option.
+.\"
+.IP "\-file \fIfilename\fB" 10
+Moves a file into a folder.
+This option takes a file from its directory 
+and places it in the named folder,
+as the next message in the folder.
+The file must be formatted as a legal mail message.
+This means that the message must have
+the minimum header fields separated
+from the body of the message
+by a blank line or a line of dashes.
+.\"
+.IP \-help 10
+Prints a list of the valid options to this command.
+.\"
+.IP \-link 10
+.PD 0
+.IP \-nolink 10
+.PD
+Keeps a copy of the message in the source folder.
+Normally, 
+.PN refile 
+removes the messages from the original folder 
+when it refiles them.
+The
+.B \-link
+option keeps a copy in the original folder, 
+as well as filing a copy in the new folder.
+.\"
+.IP \-preserve 10
+.PD 0
+.IP \-nopreserve 10
+.PD 
+Preserves the number of a message in the new folder.
+Normally, when a message is refiled in to another folder,
+it is set to the next available number in that folder.
+The
+.B \-preserve
+option keeps the number of the message the same 
+in the new folder as it had been in the old.
+.IP
+You cannot have two messages with the same number 
+in one folder, so you should use this option with care.
+.\"
+.IP "\-src \fI+folder\fB" 10
+Specifies the source folder to take messages from.
+Normally, messages are refiled from the current folder
+into another folder.
+However, you can take messages from a different folder
+by using the 
+.B \-src
+.I +folder
+option to specify the alternative source folder.
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+The following example refiles messages 3 and 5 in the folder
+.PN +records :
+.EX
+% \f(CBrefile 3 5 +records\f(CW
+.EE
+.PP
+The next example files the current message into two folders:
+.EX
+% \f(CBrefile +jones +map\f(CW
+.EE
+.PP
+The next example takes message 13 in the current folder 
+and refiles it in the 
+.PN +test
+folder.  
+The message remains in the current folder 
+as well as appearing in the 
+.PN +test
+folder.
+.EX
+% \f(CBrefile \-link 13 +test\f(CW
+.EE
+.PP
+The next example takes a message from the folder 
+.PN +test
+when it is not the current folder,
+and places it in the folder
+.PN +outbox :
+.EX
+% \f(CBrefile 3 \-src +test +outbox\f(CW
+.EE
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS 
+tab(+);
+l l.
+Path:+To determine your Mail directory
+Folder-Protect:+To set protections when creating a new folder
+rmmproc:+Program to delete the message
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+folder(1mh), mark(1mh), mh_profile(5mh)

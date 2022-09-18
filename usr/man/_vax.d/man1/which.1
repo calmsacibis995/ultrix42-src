@@ -1,0 +1,27 @@
+.\" SCCSID: @(#)which.1	8.1	9/11/90
+.TH which 1
+.SH Name
+which \- locate program file 
+.SH Syntax
+.B which
+[\fI\|name...\fR\|] 
+.SH Description
+.NXR "which command (csh)"
+.NXR "file" "finding executable"
+The
+.PN which
+command
+takes a list of names and looks for the files which would be
+executed had these names been given as commands.
+Each argument is expanded if it is aliased,
+and searched for along the user's path.
+Both aliases and path are taken from the user's .cshrc file.
+.SH Restrictions
+Must be executed by a csh, since only csh's know about aliases.
+.SH Diagnostics
+A diagnostic is given for names which are aliased to more than a single
+word, or if an executable file with the
+argument name was not found in the path.
+.SH Files
+.ta 1i
+~/\&.cshrc	source of aliases and path values

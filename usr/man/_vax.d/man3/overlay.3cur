@@ -1,0 +1,48 @@
+.TH overlay 3cur 
+.SH Name
+overlay, overwrite \- overlay windows
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int overlay(srcwin, dstwin)
+.br
+.B
+WINDOW \(**srcwin, \(**dstwin;
+.PP
+.B
+int overwrite(srcwin, dstwin)
+.br
+.B
+WINDOW \(**srcwin, \(**dstwin;
+.SH Description
+.NXR "overlay subroutine"
+.NXR "overwrite subroutine"
+The 
+.PN overlay
+routine copies all the text from the source window
+.PN srcwin
+on top of the destination window
+.PN dstwin .
+The two windows are not required to be the same size.
+The copy starts at (0, 0) on both windows.
+The copy is non-destructive, 
+so blanks are not copied.
+.PP
+The 
+.PN overwrite 
+routine copies all of 
+.PN srcwin
+on top of 
+.PN destwin .
+The copy starts at (0, 0) on both windows.
+This is a destructive copy as blanks are copied.
+.SH Return Values
+The 
+.PN overlay
+and
+.PN overwrite
+functions return OK on success and ERR on error.

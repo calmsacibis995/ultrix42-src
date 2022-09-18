@@ -1,0 +1,51 @@
+.TH CDA 5
+.SH Name
+CDA \- Compound Document Architecture
+.SH Description
+.NXR "CDA (Compound Document Architecture)"
+Digital's CDA architecture for compound documents is an open 
+architecture that establishes a framework for the interchange of many 
+types of data in a multivendor environment.  Utilizing CDA converters, 
+compound revisable 
+format data can be handled much the same as ASCII text.  With CDA
+converters, you can 
+write applications that handle compound documents, regardless of the 
+environment in which you or application users are working.
+.PP
+CDA includes the Digital Document Interchange Format (DDIF), the 
+Data Object Transport Syntax (DOTS), and the 
+Digital Table Interchange Format (DTIF).  Each of these formats 
+is encoded using the Digital Data Interchange Syntax (DDIS). 
+Using these representations, 
+CDA provides a method for manipulating files that contain a number 
+of integrated components.
+.PP
+The tools associated with CDA include the CDA Toolkit (libddif.a),
+the CDA Converter (the main converter is 
+.MS cdoc 1 ),
+and the CDA Viewers.
+The CDA Toolkit
+is a collection of routines that support the creation of CDA applications.
+The CDA Converter converts files
+of a specified input format to a specified output format.  The CDA
+Viewers are used to display CDA-encoded files on a 
+workstation display or character cell terminal.
+.PP
+All of the following products support CDA-encoded files.  If you only
+intend to manipulate CDA files, and do not have an interest in the
+particulars of the file format,  you can use any one of these 
+products to manipulate a CDA-encoded file:
+.sp
+.nf
+CDA Converters
+CDA Viewers (dxvdoc, vdoc)
+dxcardfiler          
+dxmail
+dxpaint              
+PrintScreen
+.fi
+.sp
+.SH See Also
+cdoc(1), vdoc(1), DDIF(5), DDIS(5), DOTS(5), DTIF(5)
+.br
+.I Compound Document Architecture Manual

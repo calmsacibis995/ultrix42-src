@@ -1,0 +1,74 @@
+#
+# @(#)remote	4.1 (ULTRIX) 7/2/90
+# General dialer definitions used below
+#
+#
+# *** NOTE ***
+# Do not change the following three entries, they are meant to be setup
+# using /usr/lib/uucp/addmodems. This command is indirectly
+# called when "/etc/uucpsetup -a" is run to setup uucp, or may be called
+# directly by /etc/uucpsetup -m".  
+# Only one type of device (DF112, DF03, etc) may be used per baud
+# rate, however any number of them may be used (for example, three df112's).
+# See comment at bottom of file for the reason why.
+#
+dial2400|2400 Baud attributes:\
+	:dv=:br#2400:at=:du:
+dial1200|1200 Baud DF03 attributes:\
+	:dv=:br#1200:at=:du:
+dial300|300 Baud DF03 attributes:\
+	:dv=:br#300:at=:du:
+#
+# UNIX system definitions
+#
+UNIX-2400|2400 Baud dial-out to another UNIX system:\
+	:el=^U^C^R^O^D^S^Q@:ie=#%$:oe=^D:tc=dial2400:
+UNIX-1200|1200 Baud dial-out to another UNIX system:\
+	:el=^U^C^R^O^D^S^Q@:ie=#%$:oe=^D:tc=dial1200:
+UNIX-300|300 Baud dial-out to another UNIX system:\
+	:el=^U^C^R^O^D^S^Q@:ie=#%$:oe=^D:tc=dial300:
+#
+# tip -SPEED phone_number ==> tipSPEED entry
+# 
+# tip phone_number ==> tip0 entry
+#
+tip0|tip1200:tc=UNIX-1200:
+tip300:tc=UNIX-300:
+tip2400:tc=UNIX-2400:
+cu0|cu300:tc=UNIX-300:
+cu1200:tc=UNIX-1200:
+cu2400:tc=UNIX-2400
+
+#dialer:dv=/dev/cul0:br#1200:
+#arpa:pn=2-7750:tc=UNIX-1200:
+#--------------------------------------------------------------------
+#The attributes are:
+#
+#dv	device to use for the tty
+#el	EOL marks (default is NULL)
+#du	make a call flag (dial up)
+#pn	phone numbers (@ =>'s search phones file; possibly taken from
+#			      PHONES environment variable)
+#at	ACU type
+#ie	input EOF marks	(default is NULL)
+#oe	output EOF string (default is NULL)
+#cu	call unit (default is dv)
+#br	baud rate (defaults to 300)
+#fs	frame size (default is BUFSIZ) -- used in buffering writes
+#	  on receive operations
+#tc	to continue a capability
+#
+#=======================================================================
+# 
+#   COMMENT:
+# 
+#   It is a restriction in tip(1) that only one modem type may appear
+#   in a "leaf" entry (an entry without a continuation: tc=xxx), and
+#   that multiple device entries are possible.  This allows a rotary
+#   to be achieved only if all modems are of the same type.  Since 
+#   different type modems that run at the same speed can talk to each
+#   other (assuming they adhere to the same protocol), it would be nice
+#   if you could say something like ":dv=/dev/ttyd3,/dev/ttyd4:at=df112,df03".
+#   Until we add such a feature we have to settle for grouping the modems
+#   into same type classes to achieve the rotary. 
+#

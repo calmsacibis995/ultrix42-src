@@ -1,0 +1,31 @@
+(*#@(#)math.def	4.1	Ultrix	7/17/90 *)
+(* $Header: math.def,v 1.5 84/05/19 11:39:48 powell Exp $ *)
+
+(* This defines an interface to the C math library. *)
+(* Real operations are done by the C double routines after padding *)
+(* with a zero.  Longreal operations simply change the name of the *)
+(* procedure *)
+
+DEFINITION MODULE math;
+EXPORT QUALIFIED sin, cos, atan, atan2, exp, sqrt, log, ldexp,
+  longsin, longcos, longatan, longatan2, longexp, longsqrt, longlog, longldexp;
+
+PROCEDURE sin(x : REAL) : REAL;
+PROCEDURE cos(x : REAL) : REAL;
+PROCEDURE atan(x : REAL) : REAL;
+PROCEDURE atan2(x, y : REAL) : REAL;
+PROCEDURE exp(x : REAL) : REAL;
+PROCEDURE sqrt(x : REAL) : REAL;
+PROCEDURE log(x : REAL) : REAL;
+PROCEDURE ldexp(x : REAL; exp : INTEGER) : REAL;
+
+PROCEDURE longsin(x : LONGREAL) : LONGREAL;
+PROCEDURE longcos(x : LONGREAL) : LONGREAL;
+PROCEDURE longatan(x : LONGREAL) : LONGREAL;
+PROCEDURE longatan2(x, y : LONGREAL) : LONGREAL;
+PROCEDURE longexp(x : LONGREAL) : LONGREAL;
+PROCEDURE longsqrt(x : LONGREAL) : LONGREAL;
+PROCEDURE longlog(x : LONGREAL) : LONGREAL;
+PROCEDURE longldexp(x : LONGREAL; exp : INTEGER) : LONGREAL;
+
+END math.

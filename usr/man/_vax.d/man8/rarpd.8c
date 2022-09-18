@@ -1,0 +1,155 @@
+.TH rarpd 8c
+.SH Name
+rarpd \- reverse address resolution protocol (RARP) daemon
+.SH Syntax
+.B /usr/etc/rarpd 
+[
+.I interface 
+]
+[
+.B \-v
+]
+[
+.B \-n
+]
+[
+.B \-f
+.I filename
+]
+.\"
+.SH Description
+.NXR "rarpd program" "description"
+.NXR "Reverse Address Resolution Protocol Daemon" "rarpd program"
+The 
+.PN rarpd
+daemon maps the Ethernet address of a machine
+to the machine's Internet Protocol (IP) address.
+.PP
+When 
+.PN rarpd
+is invoked, it reads the 
+.PN /etc/ethers
+file (by default) and waits to process a RARP request.
+The 
+.PN /etc/ethers
+file is checked every ten minutes for any changes.  If the file
+has been modified, 
+.PN rarpd
+reads it again. You can disable this feature
+with the
+.PN \-n
+option. You can force a scan of the 
+.PN /etc/ethers 
+file by sending the 
+.PN rarpd
+daemon a SIGHUP signal.  See
+.MS signal 3 
+for more information on SIGHUP.
+.PP
+The format of the 
+.PN /etc/ethers
+file is described in
+.MS ethers 5 .
+You can specify a file other than 
+.PN /etc/ethers
+with the
+.PN \-f 
+option.  The 
+.I interface 
+is the network interface on
+which the 
+.PN rarpd
+daemon should listen. The command
+.PN "netstat \-i"
+shows the correct interface or interfaces for your system.
+The 
+.PN rarpd
+daemon uses the first interface it finds, if you do not specify
+an interface.  See the 
+.MS netstat 1
+reference page for more information.
+.PP
+Because the 
+.PN rarpd
+daemon has been implemented with the Ethernet Packet Filter (see
+.MS packetfilter 4 ),
+you must configure your kernel
+with the packet filter option in order for 
+.PN rarpd
+to function properly.
+The packet filter detects RARP broadcast packets and passes
+them to
+.PN rarpd
+for processing. The filter priority
+for rarpd is set to 28. 
+.PP
+All messages from the 
+.PN rarpd
+daemon are directed to
+.PN  syslog .
+.SH Options
+.NXR "rarpd program" "options"
+.IP \fIinterface\fR 15
+Specifies the system's network interface.
+.IP \-v 15
+Causes 
+.PN rarpd 
+to operate in verbose mode. This option logs details of RARP
+to 
+.PN syslog .
+The instance of a RARP request and its response are
+also logged.
+.IP \-n 15
+Disables checking of the
+.MS ethers 5
+file.  By default, 
+.PN rarpd
+checks the
+.PN  ethers
+file 
+once every ten minutes, and, if the file was modified,
+.PN rarpd
+rereads the file.
+If you specify the
+.PN \-n
+option 
+.PN rarpd
+scans the 
+.PN /etc/ethers 
+file once at startup time.
+.IP "\-f \fIfilename\fR" 15
+Reads an alternate Ethernet address file. 
+.SH Restrictions
+The 
+.PN rarpd
+ignores all ARP requests sent encapsulated
+within a RARP packet. You should make all ARP request using the
+.PN arp 
+command.
+.PP
+The machine for which an IP address is being requested must
+be present in the server's 
+.PN /etc/hosts 
+file.
+.SH Diagnostics
+The following message is logged to 
+.PN syslog
+if the Packet Filter is not configured in your kernel:
+.EX
+Packet Filter is not configured in /vmunix
+.EE
+The following messages are printed to your screen if the
+Packet Filter is not configured in your kernel:
+.EX
+rarpd: cannot find symbol Pfilt_read in /vmunix
+option PACKETFILTER does not appear to be configured in 
+       your kernel.
+.EE
+.SH Files
+.TP 20
+.PN /etc/ethers
+Database that maps Ethernet addresses to hostnames
+.SH See Also
+ethers(3n), packetfilter(4), ethers(5), hosts(5), arp(8c), ifconfig(8c), syslog(8c)
+.br
+.I "The Packet Filter: An Efficient Mechanism for User-Level Network Code"

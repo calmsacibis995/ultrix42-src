@@ -1,0 +1,50 @@
+.TH error_c_text 3ncs
+.SH Name
+error_c_text \- return an error message for a status code
+.SH Syntax
+.nf
+void error_$c_text(\fIstatus, message, messagemax\fP)
+status_$t \fIstatus\fP;
+char *\fImessage\fP;
+int \fImessagemax\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS\" \fB%include '/usr/include/idl/pas/[].ins.pas'\fR
+.\"\fBprocedure error_$c_text(\fR
+.\"	\fBin \fIstatus\fB: status_$t;\fR
+.\"	\fBout \fImessage\fB: univ char;\fR
+.\"	\fBin \fImessagemax\fB: integer32);\fR
+.\".DE
+.SH Arguments
+.TP 15
+\fIstatus\fR
+A status code in \fBstatus_$t\fR format.
+.TP 15
+\fImessage\fR
+A character string.
+The error message represented by the status code.
+.TP 15
+\fImessagemax\fR
+The maximum number of bytes to be returned in \fImessage\fR.
+.SH Description
+The 
+.PN error_$c_text
+routine returns a null terminated error message
+for reporting the completion status of a routine.
+.NXR "error_c_text"
+The error message is composed from predefined text strings that describe
+the subsystem, the module, and the error represented by the status code.
+See the
+.MS intro 3ncs
+reference page which lists all of the possible diagnostics that could be
+returned in
+.PN status\&.all . 
+.SH Files
+.PN /usr/lib/stcode.db
+.ig
+.SH Examples
+.EX
+.EE
+..
+.SH See Also
+intro(3ncs)

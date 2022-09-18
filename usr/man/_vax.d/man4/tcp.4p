@@ -1,0 +1,105 @@
+.\" SCCSID: @(#)tcp.4p	8.1	9/11/90
+.TH tcp 4p
+.SH Name
+tcp \- Internet Transmission Control Protocol
+.SH Syntax
+.B #include <sys/socket.h>
+.br
+.B #include <netinet/in.h>
+.PP
+.B s = socket(AF_INET, SOCK_STREAM, 0);
+.SH Description
+.NXR "TCP protocol"
+.NXS "network protocol" "TCP protocol"
+.NXS "Transmission Control Protocol" "TCP protocol"
+The TCP protocol provides reliable, flow-controlled, two-way
+transmission of data.  It is a byte-stream protocol used to
+support the SOCK_STREAM abstraction.  TCP uses the standard
+Internet address format and, in addition, provides a per-host
+collection of ``port addresses''.  Thus, each address is composed
+of an Internet address specifying the host and network, with
+a specific TCP port on the host identifying the peer entity.
+.PP
+Sockets utilizing the TCP protocol are either ``active'' or
+``passive''.  Active sockets initiate connections to passive
+sockets.  By default TCP sockets are created active; to create a
+passive socket the 
+.MS listen 2 
+system call must be used
+after binding the socket with the 
+.MS bind 2
+system call.  Only passive sockets can use the 
+.MS accept 2
+call to accept incoming connections.  Only active sockets can use the 
+.MS connect 2
+call to initiate connections.
+.PP
+Passive sockets can ``underspecify'' their location to match
+incoming connection requests from multiple networks.  This
+technique, termed ``wildcard addressing'', allows a single
+server to provide service to clients on multiple networks.
+.NXR "wildcard addressing" "defined"
+To create a socket that listens on all networks, the Internet
+address INADDR_ANY
+must be bound.  The TCP port can still be specified
+at this time.  If the port is not specified,  the system will assign one.
+Once a connection has been established,  the socket's address is
+fixed by the peer entity's location.   The address assigned the
+socket is the address associated with the network interface
+through which packets are being transmitted and received.  Normally,
+this address corresponds to the peer entity's network.
+.PP
+TCP supports one socket option that is set with
+.MS setsockopt 2
+and tested with
+.MS getsockopt 2 .
+Under most circumstances, TCP sends data when it is presented;
+when outstanding data has not yet been acknowledged, it gathers
+small amounts of output to be sent in a single packet, once
+an acknowledgement is received.
+For a small number of clients, such as window systems
+that send a stream of mouse events that receive no replies,
+this packetization may cause significant delays.
+Therefore, TCP provides a Boolean option, TCP_NODELAY (from
+.PN <netinet/tcp.h> ,
+to defeat this algorithm.
+The option level for the
+.PN setsockopt
+call is the protocol number for TCP,
+available from
+.MS getprotobyname 3n .
+.SH Diagnostics
+A socket operation may fail with one of the following errors returned:
+.TP 20
+[EISCONN]
+Try to establish a connection on a socket which
+already has one.
+.TP 20
+[ENOBUFS]
+The system runs out of memory for
+an internal data structure.
+.TP 20
+[ETIMEDOUT]
+A connection was dropped
+due to excessive retransmissions.
+.TP 20
+[ECONNRESET]
+The remote peer
+forces the connection to be closed.
+.TP 20
+[ECONNREFUSED]
+The remote
+peer actively refuses connection establishment (usually because
+no process is listening to the port).
+.TP 20
+[EADDRINUSE]
+An attempt
+is made to create a socket with a port that has already been
+allocated.
+.TP 20
+[EADDRNOTAVAIL]
+An attempt is made to create a 
+socket with a network address for which no network interface
+exists.
+.SH See Also
+getsockopt(2), socket(2), inet(4f), intro(4n), ip(4p)

@@ -1,0 +1,49 @@
+.TH mkconsole 8 VAX
+.SH Name
+mkconsole \- a program to build or update boot console command files
+.SH Syntax
+\fB/etc/mkconsole\fR [\fIkernel_image_name\fR]
+.SH Description
+.NXR "mkconsole program"
+.NXR "shell script" "mkconsole shell script"
+.NXR "console disk" "updating"
+.NXR "console disk" "building"
+The
+.PN mkconsole 
+shell script is used to either build or update console
+storage media, as necessary, depending on the processor type.
+It uses the 
+.MS sizer 8 
+program to sense the
+processor type and accordingly, builds two boot command
+procedures required to boot the currently booted system disk.
+The VAX 11/780, VAX 11/785, VAX 11/730, VAX 8600 and VAX 8650 are the
+only supported processor types.
+After the console media is built or updated, you can 
+boot the system using the 
+.B b
+or 
+.B b ask 
+commands from the console mode prompt.
+.PP
+If a 
+.I kernel_image_name
+is given as an argument, that file will be treated as
+the running kernel file and opened by the sizer program.
+The default kernel image name is /vmunix.
+.SH Files
+.PN /usr/sys/730cons/askboo.cmd
+.br
+.PN /usr/sys/780cons/askboo.cmd
+.br
+.PN /usr/sys/8600cons/askboo.com
+.br
+.PN /usr/sys/730cons/defboo.cmd
+.br
+.PN /usr/sys/780cons/defboo.cmd
+.br
+.PN /usr/sys/8600cons/defboo.com
+.SH See Also
+sizer(8)
+.br
+.I "Guide to Shutdown and Startup"

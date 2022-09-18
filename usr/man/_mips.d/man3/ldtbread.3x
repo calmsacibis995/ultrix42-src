@@ -1,0 +1,60 @@
+.TH ldtbread 3x RISC
+.SH Name
+ldtbread \- read an indexed symbol table entry of a common object file
+.SH Syntax
+.ta \w'\s-1LDFILE\s+1\ \ \ 'u
+.nf
+.B #include <stdio.h>
+.B #include <filehdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h> 
+.PP
+.BR "int ldtbread (" "ldptr, symindex, symbol" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR long " symindex" ;
+.BR "\s-1pSYMR\s+1 \(**" symbol ;
+.fi
+.DT
+.SH Description
+The
+.PN ldtbread
+reads the symbol table entry specified by
+.I symindex
+of the common object file
+currently associated with
+.I ldptr
+into the area of memory beginning at
+.IR symbol .
+.PP
+.PN ldtbread
+returns success or failure.
+If 
+.I symindex
+is greater than the number of symbols in the object file
+or if it cannot read the specified symbol table entry,
+.PN ldtbread
+fails.
+.PP
+The local and external symbols are concatenated into a linear list.
+Symbols are accessible from symnum zero
+to 
+.IR SYMHEADER(ldptr).isymMax + SYMHEADER(ldptr).iextMax. 
+The index and iss
+fields of the SYMR are made absolute (rather than file relative) so that
+routines 
+.MS ldgetname 3x , 
+.MS ldgetaux 3x , 
+and 
+.PN ldtbread 
+proceed normally given those indices.  Only the sym part of externals is
+returned.
+.PP
+Note that the first symbol in the symbol table has an index of
+.IR zero .
+.SH See Also
+ldclose(3x),
+ldgetname(3x),
+ldopen(3x),
+ldtbseek(3x),
+ldgetname(3x),
+ldfcn(5)

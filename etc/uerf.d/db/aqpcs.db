@@ -1,0 +1,2719 @@
+# @(#)aqpcs.db	4.2   (ULTRIX)   12/20/90
+
+sseg
+id cds
+name aqpcs_cds
+label 'pcs exception'
+elements
+	aqpcs_format_byte aqpcs_idreg aqpcs_xcpid_pem aqpcs_xcpid_ric
+	aqpcs_severity
+
+sseg
+id ads
+name aqpcs_ads
+label 'additional info'
+elements
+	aqpcs_rsreg
+	aqpcs_rsreg_o1 aqpcs_rsreg_o2 aqpcs_rsreg_o3 aqpcs_rsreg_o4
+	aqpcs_rsreg_o5 aqpcs_rsreg_o6 aqpcs_rsreg_o7 aqpcs_rsreg_o8
+	aqpcs_rsreg_n1 aqpcs_rsreg_n2 aqpcs_rsreg_n3 aqpcs_rsreg_n4
+	aqpcs_rsreg_n5 aqpcs_rsreg_n6 aqpcs_rsreg_n7 aqpcs_rsreg_n8
+	aqpcs_asdreg
+	aqpcs_pasdrsb
+	aqpcs_asdreg_1 aqpcs_asdreg_2 aqpcs_asdreg_3 aqpcs_asdreg_4
+	aqpcs_hwsrega
+	aqpcs_hwsrega_1 aqpcs_hwsrega_2 aqpcs_hwsrega_3 aqpcs_hwsrega_4
+	aqpcs_hwsrega_5 aqpcs_hwsrega_6 aqpcs_hwsrega_7 aqpcs_hwsrega_8
+	aqpcs_hwsregb
+	aqpcs_hwsregb_1 aqpcs_hwsregb_2 aqpcs_hwsregb_3 aqpcs_hwsregb_4
+	aqpcs_hwsregb_5 aqpcs_hwsregb_6 aqpcs_hwsregb_7 aqpcs_hwsregb_8
+	aqpcs_hwsregc
+	aqpcs_hwsregc_1 aqpcs_hwsregc_2 aqpcs_hwsregc_3 aqpcs_hwsregc_4
+	aqpcs_hwsregc_5 aqpcs_hwsregc_6 aqpcs_hwsregc_7 aqpcs_hwsregc_8
+	aqpcs_hwsregd
+	aqpcs_hwsregd_1 aqpcs_hwsregd_2 aqpcs_hwsregd_3 aqpcs_hwsregd_4
+	aqpcs_hwsregd_5 aqpcs_hwsregd_6 aqpcs_hwsregd_7 aqpcs_hwsregd_8
+	aqpcs_hwsrege aqpcs_hwsregf
+	aqpcs_pfreg
+	aqpcs_pfreg_1 aqpcs_pfreg_2 aqpcs_pfreg_3 aqpcs_pfreg_4
+	aqpcs_pfreg_5 aqpcs_pfreg_6 aqpcs_pfreg_7 aqpcs_pfreg_8
+	aqpcs_pfreg_9 aqpcs_pfreg_10
+	aqpcs_scsreg aqpcs_rcreg aqpcs_mgnreg
+	aqpcs_measure aqpcs_measure_1
+	aqpcs_low aqpcs_low_1
+	aqpcs_high aqpcs_high_1
+	aqpcs_reg0cur aqpcs_reg0cur_1
+	aqpcs_reg1cur aqpcs_reg1cur_1
+	aqpcs_reg2cur aqpcs_reg2cur_1
+	aqpcs_reg3cur aqpcs_reg3cur_1
+	aqpcs_reg4cur aqpcs_reg4cur_1
+	aqpcs_tempa aqpcs_tempa_1
+	aqpcs_tempb aqpcs_tempb_1
+	aqpcs_yellowa aqpcs_yellowa_1
+	aqpcs_reda aqpcs_reda_1
+	aqpcs_yellowb aqpcs_yellowb_1
+	aqpcs_redb aqpcs_redb_1
+	aqpcs_open aqpcs_open_1
+	aqpcs_shortsensor aqpcs_shortsensor_1
+	aqpcs_psreg
+	aqpcs_psreg_1 aqpcs_psreg_2 aqpcs_psreg_3 aqpcs_psreg_4
+	aqpcs_psreg_5 aqpcs_psreg_6 aqpcs_psreg_7 aqpcs_psreg_8
+	aqpcs_psreg_9 aqpcs_psreg_10 aqpcs_psreg_11 aqpcs_psreg_12
+	aqpcs_psreg_13 aqpcs_psreg_14 aqpcs_psreg_15 aqpcs_psreg_16
+	aqpcs_pwr1reg_a aqpcs_pwr1reg_b
+	aqpcs_pwr2reg_a aqpcs_pwr2reg_b
+	aqpcs_stcreg aqpcs_connreg
+	aqpcs_keyabreg_aq aqpcs_keyabreg_ar
+	aqpcs_keybcreg_aq aqpcs_keybcreg_ar
+	aqpcs_ricavarsb_1 aqpcs_ricavarsb_2 aqpcs_ricavarsb_3
+	aqpcs_ricavarsb_4 aqpcs_ricavarsb_5 aqpcs_ricavarsb_6
+	aqpcs_ricavarsb_7 aqpcs_ricavarsb_8 aqpcs_ricavarsb_9
+	aqpcs_ricavarsb_10 aqpcs_ricavarsb_11 aqpcs_ricavarsb_12
+	aqpcs_ricavarsb_13 aqpcs_ricavarsb_14 aqpcs_ricavarsb_15
+	aqpcs_ricavarsb_16 aqpcs_ricavarsb_17 aqpcs_ricavarsb_18
+	aqpcs_bbureg aqpcs_ocpswreg aqpcs_ocpdisreg
+	aqpcs_bscreg_aq aqpcs_bscreg_ar
+
+sitem
+name aqpcs_format_byte
+size 1
+class integer
+type short
+display decimal
+label 'FORMAT'
+
+sitem
+name aqpcs_idreg
+size 1
+class composite
+type register
+display nil
+label 'ID REG'
+map
+	field
+size 8
+class coded
+map
+	00	"PEM - T1060-00"
+	17	"-5.2V RIC - VAX 9000-400 BUS B"
+	18	"-5.2V RIC - VAX 9000-400 BUS J"
+	19	"-5.2V RIC - VAX 9000-400 BUS M"
+	20	"-5.2V RIC - VAX 9000-200 BUS D"
+	21	"-5.2V RIC - VAX 9000-200 BUS F"
+	33	"-3.4V RIC - VAX 9000-400 BUS C"
+	34	"-3.4V RIC - VAX 9000-400 BUS K"
+	35	"-3.4V RIC - VAX 9000-400 BUS N"
+	36	"-3.4V RIC - VAX 9000-200 BUS C"
+	37	"-3.4V RIC - VAX 9000-200 BUS E"
+	49	"+5.0V RIC - VAX 9000-400 BUS D"
+	50	"+5.0V RIC - VAX 9000-200 BUS A"
+	51	"+5.0V BBU RIC - VAX 9000-400 BUS A"
+	52	"+5.0V BBU RIC - VAX 9000-200 BUS B"
+	81	"IORIC - VAX 9000-400 IOA CAB"
+	82	"IORIC - VAX 9000-400 IOB CAB"
+	83	"IORIC - VAX 9000-200 IOA CAB"
+	84	"IORIC - VAX 9000-200 IOB CAB"
+	
+
+sitem
+name aqpcs_xcpid_pem
+size 1
+class composite
+type register
+display nil
+label 'EXCEPTION ID'
+map
+	field
+size 8
+class coded
+map
+	0 "VAX 9000-400 RICBUS A EXCEPTION"
+	1 "VAX 9000-400 RICBUS A EXCEPTION"
+	2 "VAX 9000-400 RICBUS A EXCEPTION"
+	3 "VAX 9000-200 RICBUS B EXCEPTION"
+	4 "VAX 9000-200 RICBUS B2 EXCEPTION"
+	5 "VAX 9000-200 RICBUS A EXCEPTION"
+	6 "BBU AVAILABILITY EXCEPTION"
+	7 "BBU STATUS EXCEPTION"
+	8 "OCP KEYSWITCH EXCEPTION"
+	9 "BIAS OK EXCEPTION"
+
+sitem
+name aqpcs_xcpid_ric
+size 1
+class composite
+type register
+display nil
+label 'EXCEPTION ID'
+map
+	field
+size 8
+class coded
+map
+	0 "BUS VOLTAGE EXCEPTION"
+	1 "BUS STATUS EXCEPTION"
+	2 "MOD OK EXCEPTION"
+	3 "BIAS OK EXCEPTION"
+	4 "AIR TEMP EXCEPTION"
+	5 "WATER TEMP EXCEPTION"
+	6 "AIRFLOW EXCEPTION"
+	12 "THERM WARNING EXCEPTION"
+	13 "PHASE LOSS EXCEPTION"
+	14 "OUTPUT CURRENT EXCEPTION"
+	15 "280V BUS LO EXCEPTION"
+	16 "WCU EXCEPTION"
+	17 "WCU WATER LEVEL EXCEPTION"
+	18 "WCU PRESS/FLOW EXCEPTION"
+	19 "UPC ATTENTION EXCEPTION"
+	20 "H7214/15 MOD OK EXCEPTION"
+	21 "XMI/WCU AIRFLOW EXCEPTION"
+	22 "DRIP PAN EXCEPTION"
+	23 "PHASE ROT FAULT EXCEPTION"
+	24 "IORIC BIAS OK EXCEPTION"
+	25 "IORIC BI CAB A EXCEPTION"
+	26 "IORIC BI CAB B EXCEPTION"
+
+
+
+
+sitem
+name aqpcs_severity
+size 1
+class composite
+type register
+display nil
+label 'EXCEPTION SEVERITY'
+map
+	field
+size 8
+class coded
+map
+	0 "TRANSITIONED TO NORMAL STATE"
+	1 "TRANSITIONED TO WARNING STATE"
+	2 "TRANSITIONED TO ASD STATE"
+
+sitem
+name aqpcs_rsreg
+size 1
+class integer
+type short
+display hex
+label 'RIC STATE'
+
+sitem
+name aqpcs_rsreg_o1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_o2
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_o3
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_o4
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_o5
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_o6
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_o7
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_o8
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_n1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_n2
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_n3
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_n4
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_n5
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_n6
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_n7
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_rsreg_n8
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_asdreg
+size 1
+class integer
+type short
+display hex
+label 'AUTO SHUTDOWN REG'
+
+sitem
+name aqpcs_pasdrsb
+size 17
+class bytes
+type byte_vector
+display nil
+label 'AUTO SHUTDOWN REGS'
+
+sitem
+name aqpcs_asdreg_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_asdreg_2
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_asdreg_3
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_asdreg_4
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsrega
+size 1
+class integer
+type short
+display hex
+label 'HARDWARE STATUS A'
+
+sitem
+name aqpcs_hwsrega_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsrega_2
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsrega_3
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsrega_4
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsrega_5
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsrega_6
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsrega_7
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsrega_8
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregb
+size 1
+class integer
+type short
+display hex
+label 'HARDWARE STATUS B'
+
+sitem
+name aqpcs_hwsregb_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregb_2
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregb_3
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregb_4
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregb_5
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregb_6
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregb_7
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregb_8
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregc
+size 1
+class integer
+type short
+display hex
+label 'HARDWARE STATUS C'
+
+sitem
+name aqpcs_hwsregc_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregc_2
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregc_3
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregc_4
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregc_5
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregc_6
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregc_7
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregc_8
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregd
+size 1
+class integer
+type short
+display hex
+label 'HARDWARE STATUS D'
+
+sitem
+name aqpcs_hwsregd_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregd_2
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregd_3
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregd_4
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregd_5
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregd_6
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregd_7
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsregd_8
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_hwsrege
+size 1
+class integer
+type short
+display hex
+label 'HARDWARE STATUS E'
+
+sitem
+name aqpcs_hwsregf
+size 1
+class integer
+type short
+display hex
+label 'HARDWARE STATUS F'
+
+sitem
+name aqpcs_pfreg
+size 1
+class integer
+type short
+display hex
+label 'POWER FAIL REG'
+
+sitem
+name aqpcs_pfreg_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_pfreg_2
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_pfreg_3
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_pfreg_4
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_pfreg_5
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_pfreg_6
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_pfreg_7
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_pfreg_8
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_pfreg_9
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_pfreg_10
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_scsreg
+class composite
+type register
+size 1
+display nil
+label 'SOFTW CTRL/STATUS'
+map
+	field
+class coded
+size 1
+map
+	1 'EXCEPTION MODE ENABLED'
+	field
+class filler
+size 2
+	field
+class coded
+size 1
+map
+	0 'PROGRAM MEMORY EPROM SELECTED'
+	1 'PROGRAM MEMORY EEPROM SELECTED'
+	field
+class coded
+size 1
+map
+	1 'NO MASTER CLOCK'
+
+sitem
+name aqpcs_rcreg
+size 1
+class composite
+type register
+display nil
+label 'REGULATOR CONFIG'
+map
+	field
+size 1
+class coded
+map
+	1 "REGULATOR #0 INSTALLED"
+	field
+size 1
+class coded
+map
+	1 "REGULATOR #1 INSTALLED"
+	field
+size 1
+class coded
+map
+	1 "REGULATOR #2 INSTALLED"
+	field
+size 1
+class coded
+map
+	1 "REGULATOR #3 INSTALLED"
+	field
+size 1
+class coded
+map
+	1 "REGULATOR #4 INSTALLED"
+
+sitem
+name aqpcs_mgnreg
+class composite
+type register
+size 1
+display nil
+label 'MARGIN REGISTER'
+map
+	field
+size 2
+class coded
+map
+	0 'VOLTAGE MARGINS DISABLED'
+	2 'VOLTAGE MARGINS DISABLED'
+	1 'LOW VOLTAGE MARGINS SET'
+	3 'HIGH VOLTAGE MARGINS SET'
+
+sitem
+name aqpcs_measure
+size 1
+class integer
+type short
+display hex
+label 'MEASUREMENT REG'
+
+sitem
+name aqpcs_measure_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_low
+size 1
+class integer
+type short
+display HEX
+label 'LOW LIMIT'
+
+sitem
+name aqpcs_low_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_high
+size 1
+class integer
+type short
+display hex
+label 'HIGH LIMIT'
+
+sitem
+name aqpcs_high_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_reg0cur
+size 1
+class integer
+type short
+display hex
+label 'REGULATOR 0'
+
+sitem
+name aqpcs_reg0cur_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_reg1cur
+size 1
+class integer
+type short
+display hex
+label 'REGULATOR 1'
+
+sitem
+name aqpcs_reg1cur_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_reg2cur
+size 1
+class integer
+type short
+display hex
+label 'REGULATOR 2'
+
+sitem
+name aqpcs_reg2cur_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_reg3cur
+size 1
+class integer
+type short
+display hex
+label 'REGULATOR 3'
+
+sitem
+name aqpcs_reg3cur_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_reg4cur
+size 1
+class integer
+type short
+display hex
+label 'REGULATOR 4'
+
+sitem
+name aqpcs_reg4cur_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_tempa
+size 1
+class integer
+type short
+display hex
+label 'TEMPERATURE A'
+
+sitem
+name aqpcs_tempa_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_tempb
+size 1
+class integer
+type short
+display hex
+label 'TEMPERATURE B'
+
+sitem
+name aqpcs_tempb_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_yellowa
+size 1
+class integer
+type short
+display hex
+label 'YELLOW ZONE A'
+
+sitem
+name aqpcs_yellowa_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_reda
+size 1
+class integer
+type short
+display hex
+label 'RED ZONE A'
+
+sitem
+name aqpcs_reda_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_yellowb
+size 1
+class integer
+type short
+display hex
+label 'YELLOW ZONE B'
+
+sitem
+name aqpcs_yellowb_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_redb
+size 1
+class integer
+type short
+display hex
+label 'RED ZONE B'
+
+sitem
+name aqpcs_redb_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_open
+size 1
+class integer
+type short
+display hex
+label 'OPEN VALUE'
+
+sitem
+name aqpcs_open_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_shortsensor
+size 1
+class integer
+type short
+display hex
+label 'SHORTED VALUE'
+
+sitem
+name aqpcs_shortsensor_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg
+size 1
+class integer
+type short
+display hex
+label 'PEM STATE'
+
+sitem
+name aqpcs_psreg_1
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_2
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_3
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_4
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_5
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_6
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_7
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_8
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_9
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_10
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_11
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_12
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_13
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_14
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_15
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_psreg_16
+size 36
+class character
+type string
+display nil
+
+sitem
+name aqpcs_pwr1reg_a
+size 1
+class composite
+type register
+display nil
+label 'POWER 1 REG'
+map
+	field
+size 1
+class coded
+map
+	1 "TEST POWER FAIL SET"
+	field
+size 1
+class coded
+map
+	0 "TEST TOTAL OFF SET"
+	field
+size 1
+class coded
+map
+	1 "BUS LOW FROM PWR CAB #1"
+	field
+size 1
+class coded
+map
+	1 "BUS LOW FROM PWR CAB #2"
+	field
+size 1
+class coded
+map
+	1 "GROUP LOW FOR RIC BUS A"
+	field
+size 1
+class coded
+map
+	1 "GROUP LOW FOR RIC BUS B"
+	field
+size 1
+class coded
+map
+	1 "GROUP LOW FOR RIC BUS C"
+	field
+size 1
+class coded
+map
+	1 "GROUP LOW FOR BBU REGULATORS"
+
+sitem
+name aqpcs_pwr1reg_b
+size 1
+class composite
+type register
+display nil
+label 'POWER 1 REG'
+map
+	field
+size 1
+class coded
+map
+	1 "TEST POWER FAIL SET"
+	field
+size 1
+class coded
+map
+	0 "TEST TOTAL OFF SET"
+	field
+size 1
+class coded
+map
+	1 "BUS LOW FROM PWR CAB #1"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "GROUP LOW FOR RIC BUS A"
+	field
+size 1
+class coded
+map
+	1 "GROUP LOW FOR RIC BUS B"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "GROUP LOW FOR BBU REGULATORS"
+
+sitem
+name aqpcs_pwr2reg_a
+size 1
+class composite
+type register
+display nil
+label 'POWER 2 REG'
+map
+	field
+size 1
+class coded
+map
+	1 "DC LOW FROM PWR CAB #1"
+	field
+size 1
+class coded
+map
+	1 "DC LOW FROM PWR CAB #2"
+	field
+size 1
+class coded
+map
+	1 "LATCHED DC LOW FROM PWR CAB #1"
+	field
+size 1
+class coded
+map
+	1 "LATCHED DC LOW FROM PWR CAB #2"
+	field
+size 1
+class coded
+map
+	1 "LATCHED AC LOW FROM PWR CAB #1"
+	field
+size 1
+class coded
+map
+	1 "LATCHED AC LOW FROM PWR CAB #2"
+	field
+size 1
+class coded
+map
+	1 "AC LOW FROM PWR CAB #1"
+	field
+size 1
+class coded
+map
+	1 "AC LOW FROM PWR CAB #2"
+
+sitem
+name aqpcs_pwr2reg_b
+size 1
+class composite
+type register
+display nil
+label 'POWER 2 REG'
+map
+	field
+size 1
+class coded
+map
+	1 "DC LOW FROM PWR CAB #1"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "LATCHED DC LOW FROM PWR CAB #1"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "LATCHED AC LOW FROM PWR CAB #1"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1 "AC LOW FROM PWR CAB #1"
+
+sitem
+name aqpcs_stcreg
+size 1
+class composite
+type register
+display nil
+label 'SYSTEM TYPE/CONFIG'
+map
+	field
+size 2
+class coded
+map
+	1 "SOME RICS AVAILABLE IN IOB CAB"
+	2 "RESERVED RIC AVAILABILITY CODE"
+	3 "ALL RICS AVAILABLE IN IOB CAB"
+	field
+size 2
+class coded
+map
+	1 "SOME RICS AVAILABLE IN CPB CAB"
+	2 "RESERVED RIC AVAILABILITY CODE"
+	3 "ALL RICS AVAILABLE IN CPB CAB"
+	field
+size 2
+class coded
+map
+	0 "NO RICS AVAILABLE IN IOA CAB"
+	1 "SOME RICS AVAILABLE IN IOA CAB"
+	2 "RESERVED RIC AVAILABILITY CODE"
+	3 "ALL RICS AVAILABLE IN IOA CAB"
+	field
+size 2
+class coded
+map
+	0 "NO RICS AVAILABLE IN CPA CAB"
+	1 "SOME RICS AVAILABLE IN CPA CAB"
+	2 "RESERVED RIC AVAILABILITY CODE"
+	3 "ALL RICS AVAILABLE IN CPA CAB"
+	field
+size 2
+class coded
+map
+	0 "NO RICS AVAILABLE IN SCU CAB"
+	1 "SOME RICS AVAILABLE IN SCU CAB"
+	2 "RESERVED RIC AVAILABILITY CODE"
+	3 "ALL RICS AVAILABLE IN SCU CAB"
+	field
+size 4
+class coded
+map
+	0 "AQUARIUS SYSTEM TYPE"
+	1 "ARIDUS SYSTEM TYPE"
+	field
+size 2
+class coded
+map
+	1 "RESERVED BIT(S) SET"
+	2 "RESERVED BIT(S) SET"
+	3 "RESERVED BIT(S) SET"
+
+sitem
+name aqpcs_connreg
+size 1
+class composite
+type register
+display nil
+label 'CONNECTOR REG'
+map
+	field
+size 1
+class coded
+map
+	1 "PEM CABLE C2 TO SIP J16 FAULT"
+	field
+size 1
+class coded
+map
+	1 "PEM CABLE D1 TO SIP J17 FAULT"
+	field
+size 1
+class coded
+map
+	1 "PEM CABLE D2 TO SIP J18 FAULT"
+	field
+size 1
+class coded
+map
+	1 "PEM CABLE E1 TO SIP J19 FAULT"
+	field
+size 1
+class coded
+map
+	1 "PEM CABLE E2 TO SIP J20 FAULT"
+
+sitem
+name aqpcs_keyabreg_aq
+size 1
+class composite
+type register
+display nil
+label 'KEYING A/B REG'
+map
+	field
+size 1
+class coded
+map
+	0 "RIC 12 INSTALLED ON RICBUS A"
+	field
+size 1
+class coded
+map
+	0 "RIC 22 INSTALLED ON RICBUS A"
+	field
+size 1
+class coded
+map
+	0 "RIC 51 INSTALLED ON RICBUS A"
+	field
+size 2
+class filler
+	field
+size 1
+class coded
+map
+	0 "RIC 41 INSTALLED ON RICBUS B"
+	field
+size 1
+class coded
+map
+	0 "RIC 11 INSTALLED ON RICBUS B"
+	field
+size 1
+class coded
+map
+	0 "RIC 21 INSTALLED ON RICBUS B"
+
+sitem
+name aqpcs_keyabreg_ar
+size 1
+class composite
+type register
+display nil
+label 'KEYING A/B REG'
+map
+	field
+size 1
+class coded
+map
+	0 "RIC 15 INSTALLED ON RICBUS A"
+	field
+size 1
+class coded
+map
+	0 "RIC 25 INSTALLED ON RICBUS A"
+	field
+size 1
+class coded
+map
+	0 "RIC 54 INSTALLED ON RICBUS A"
+	field
+size 2
+class filler
+	field
+size 1
+class coded
+map
+	0 "RIC 42 INSTALLED ON RICBUS B"
+	field
+size 1
+class coded
+map
+	0 "RIC 32 INSTALLED ON RICBUS B"
+	field
+size 1
+class coded
+map
+	0 "RIC 53 INSTALLED ON RICBUS B"
+
+sitem
+name aqpcs_keybcreg_aq
+size 1
+class composite
+type register
+display nil
+label 'KEYING B/C REG'
+map
+	field
+size 1
+class coded
+map
+	0 "RIC 31 INSTALLED ON RICBUS B"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	0 "RIC 13 INSTALLED ON RICBUS C"
+	field
+size 1
+class coded
+map
+	0 "RIC 23 INSTALLED ON RICBUS C"
+	field
+size 1
+class coded
+map
+	0 "RIC 52 INSTALLED ON RICBUS C"
+
+sitem
+name aqpcs_keybcreg_ar
+size 1
+class composite
+type register
+display nil
+label 'KEYING B/C REG'
+map
+	field
+size 1
+class coded
+map
+	0 "RIC 14 INSTALLED ON RICBUS B"
+	field
+size 1
+class coded
+map
+	0 "RIC 31 INSTALLED ON RICBUS B"
+
+sitem
+name aqpcs_ricavarsb_1
+size 1
+class composite
+type register
+display nil
+label 'RIC 11 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_2
+size 1
+class composite
+type register
+display nil
+label 'RIC 12 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_3
+size 1
+class composite
+type register
+display nil
+label 'RIC 13 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_4
+size 1
+class composite
+type register
+display nil
+label 'RIC 21 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_5
+size 1
+class composite
+type register
+display nil
+label 'RIC 22 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_6
+size 1
+class composite
+type register
+display nil
+label 'RIC 23 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_7
+size 1
+class composite
+type register
+display nil
+label 'RIC 31 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_8
+size 1
+class composite
+type register
+display nil
+label 'RIC 41 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_9
+size 1
+class composite
+type register
+display nil
+label 'RIC 51 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_10
+size 1
+class composite
+type register
+display nil
+label 'RIC 52 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_11
+size 1
+class composite
+type register
+display nil
+label 'RIC 14 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_12
+size 1
+class composite
+type register
+display nil
+label 'RIC 15 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_13
+size 1
+class composite
+type register
+display nil
+label 'RIC 24 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_14
+size 1
+class composite
+type register
+display nil
+label 'RIC 25 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_15
+size 1
+class composite
+type register
+display nil
+label 'RIC 32 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_16
+size 1
+class composite
+type register
+display nil
+label 'RIC 42 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_17
+size 1
+class composite
+type register
+display nil
+label 'RIC 53 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_ricavarsb_18
+size 1
+class composite
+type register
+display nil
+label 'RIC 54 STATUS'
+map
+	field
+size 8
+class coded
+map
+	0 "ALL BISTS PASSED"
+	1 "EPROM CHECKSUM ERROR"
+	2 "CLOCK TEST - LOW RANGE FAILURE"
+	3 "CLOCK TEST - MID RANGE FAILURE"
+	4 "CLOCK TEST - HIGH RANGE FAILURE"
+	8 "INVALID XXNET ADDRESS - RIC ID"
+	16 "A/D CONVERTER TIMEOUT"
+	32 "A/D CONVERTER OFFSET TO BIG"
+	48 "A/D CONVERTER TEST LOW FAILURE"
+	64 "A/D CONVERTER TEST HIGH FAILURE"
+	80 "D/A CONVERTER TEST LOW FAILURE"
+	96 "D/A CONVERTER TEST HIGH FAILURE"
+	112 "UNABLE TO ADJUST VREF - TOO HIGH"
+	128 "UNABLE TO ADJUST VREF - TOO LOW"
+	field
+size 4
+class coded
+map
+	0 "NO RUNTIME ERRORS"
+	1 "RUNTIME ERROR - PC = 0"
+	2 "RUNTIME ERROR - UNEXPECTED INTR."
+	3 "RUNTIME ERROR - XXNET COLLISIONS"
+	field
+size 1
+class coded
+map
+	1 "RIC HAS ENABLED POWER SUPPLIES"
+	field
+size 1
+class coded
+map
+	1 "ASD PENDING"
+	field
+size 2
+class coded
+map
+	0 "RIC AVAILABLE NO ERRORS"
+	1 "RIC AVAILABLE - RUN TIME ERROR"
+	2 "RIC OFFLINE - COLLISION ERRORS"
+	3 "RIC NOT RESPONDING"
+
+sitem
+name aqpcs_bbureg
+size 1
+class composite
+type register
+display nil
+label 'BBU REG'
+map
+	field
+size 1
+class coded
+map
+	0 "BBU #1 NOT AVAILABLE"
+	1 "BBU #1 AVAILABLE"
+	field
+size 1
+class coded
+map
+	0 "BBU #2 NOT AVAILABLE"
+	1 "BBU #2 AVAILABLE"
+	field
+size 2
+class coded
+map
+	0 "BBU #1 FULLY CHARGED"
+	1 "BBU #1 CHARGING"
+	2 "BBU #1 OFF"
+	3 "BBU #1 OPERATING"
+	field
+size 2
+class coded
+map
+	0 "BBU #2 FULLY CHARGED"
+	1 "BBU #2 CHARGING"
+	2 "BBU #2 OFF"
+	3 "BBU #2 OPERATING"
+	field
+size 1
+class coded
+map
+	1 "RESERVED BIT SET"
+	field
+size 1
+class coded
+map
+	1 "BBU ENABLED"
+
+sitem
+name aqpcs_ocpswreg
+size 1
+class composite
+type register
+display nil
+label 'OCP KEYSWITCH'
+map
+	field
+size 1
+class coded
+map
+	0 "REMOTE PORT DIS - CNTRL-P LOCKED"
+	field
+size 1
+class coded
+map
+	0 "REMOTE PORT DIS - CNTRL-P ENABLED"
+	field
+size 1
+class coded
+map
+	0 "REMOTE PORT ENA - CNTRL-P LOCKED"
+	field
+size 1
+class coded
+map
+	0 "REMOTE PORT ENA - CNTRL-P ENABLED"
+	field
+size 4
+class filler
+map
+	field
+size 1
+class coded
+map
+	0 "HALT ON POWER UP"
+	field
+size 1
+class coded
+map
+	0 "WARM RESTART/HALT ON POWER UP"
+	field
+size 1
+class coded
+map
+	0 "WARM RESTART/BOOT ON POWER UP"
+	field
+size 1
+class coded
+map
+	0 "BOOT ON POWER UP"
+	field
+size 1
+class coded
+map
+	1 "LATCHED BBU TEST SWITCH"
+	field
+size 1
+class coded
+map
+	1 "LATCHED TOTAL OFF SWITCH"
+	field
+size 2
+class filler
+map
+
+sitem
+name aqpcs_ocpdisreg
+size 6
+class character
+type string
+display nil
+label 'OCP FAULT CODE'
+
+sitem
+name aqpcs_bscreg_aq
+size 1
+class composite
+type register
+display nil
+label 'BIAS/SYS CONTEXT'
+	field
+size 2
+class filler
+	field
+size 1
+class coded
+map
+	0 "SPU H7214 MOD OK"
+	1 "SPU H7214 MOD NOT OK"
+	field
+size 1
+class coded
+map
+	0 "SPU H7215 MOD OK"
+	1 "SPU H7215 MOD NOT OK"
+	field
+size 4
+class coded
+map
+	0 "BIAS SUPPLY PSE NOT MOD OK"
+	1 "BIAS SUPPLY PSE NOT MOD OK"
+	2 "BIAS SUPPLY PSE NOT MOD OK"
+	3 "BIAS SUPPLY PSE NOT MOD OK"
+	4 "BIAS SUPPLY PSE NOT MOD OK"
+	5 "BIAS SUPPLY PSE NOT MOD OK"
+	6 "BIAS SUPPLY PSE NOT MOD OK"
+	7 "BIAS SUPPLY PSE NOT MOD OK"
+	8 "BIAS SUPPLY PSE NOT MOD OK"
+	9 "BIAS SUPPLY PSE NOT MOD OK"
+	10 "BIAS SUPPLY PSE NOT MOD OK"
+	11 "BIAS SUPPLY PSE NOT MOD OK"
+	12 "BIAS SUPPLY PSE NOT MOD OK"
+	13 "BIAS SUPPLY PSE NOT MOD OK"
+	14 "BIAS SUPPLY PSE NOT MOD OK"
+	15 "BIAS SUPPLY PSE MOD OK"
+
+sitem
+name aqpcs_bscreg_ar
+size 1
+class composite
+type register
+display nil
+label 'BIAS/SYS CONTEXT'
+	field
+size 2
+class filler
+	field
+size 1
+class coded
+map
+	0 "SPU H7214 MOD OK"
+	1 "SPU H7214 MOD NOT OK"
+	field
+size 1
+class coded
+map
+	0 "SPU H7215 MOD OK"
+	1 "SPU H7215 MOD NOT OK"
+	field
+size 4
+class coded
+map
+	0 "BIAS SUPPLY PSA NOT MOD OK"
+	1 "BIAS SUPPLY PSA NOT MOD OK"
+	2 "BIAS SUPPLY PSA NOT MOD OK"
+	3 "BIAS SUPPLY PSA NOT MOD OK"
+	4 "BIAS SUPPLY PSA NOT MOD OK"
+	5 "BIAS SUPPLY PSA NOT MOD OK"
+	6 "BIAS SUPPLY PSA NOT MOD OK"
+	7 "BIAS SUPPLY PSA NOT MOD OK"
+	8 "BIAS SUPPLY PSA NOT MOD OK"
+	9 "BIAS SUPPLY PSA NOT MOD OK"
+	10 "BIAS SUPPLY PSA NOT MOD OK"
+	11 "BIAS SUPPLY PSA NOT MOD OK"
+	12 "BIAS SUPPLY PSA NOT MOD OK"
+	13 "BIAS SUPPLY PSA NOT MOD OK"
+	14 "BIAS SUPPLY PSA NOT MOD OK"
+	15 "BIAS SUPPLY PSA MOD OK"
+

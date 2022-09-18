@@ -1,0 +1,31 @@
+.TH hes_resolve 3
+.SH Name
+hesiod \- C Language Hesiod name server Interface Library
+.SH Syntax
+.nf
+.B #include <hesiod.h>
+.PP
+.B char **hes_resolve(\fIname, HesiodNameType\fR)
+.B char *\fIname, *HesiodNameType\fR;
+.PP
+.B int hes_error( )
+.fi
+.SH Description
+The
+.NXR "hes_resolve library"
+.PN hes_resolve
+library is the primary interface to the Hesiod name
+server.  The library routine takes two arguments, a name
+to be resolved and a string, known as a 
+.PN HesiodNameType .
+It returns a NULL terminated vector of strings for each
+resource record containing Hesiod data, or NULL if there 
+is any error.
+.PP
+In the event of an error, you can call the
+.PN hes_error
+routine to determine the source of the error.
+.SH Files
+.PN /usr/include/hesiod.h
+.br
+.PN /etc/hesiod.conf

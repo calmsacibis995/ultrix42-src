@@ -1,0 +1,160 @@
+.\" SCCSID: @(#)rwhod.8c	2.2	5/5/87
+.TH rwhod 8c
+.SH Name
+rwhod \- system status server
+.SH Syntax
+.B "/etc/rwhod [ \-b ] [ \-l ]"
+.SH Description
+.NXR "rwhod server"
+.NXR "system status server" "rwhod server"
+.NXR "rwho command" "and the rwhod server"
+.NXR "ruptime command" "and the rwhod server"
+The
+.PN rwhod
+command is the server which maintains the database used by the 
+.MS rwho 1c 
+and 
+.MS ruptime 1c 
+programs.  Its operation is predicated on the ability to
+broadcast messages on a network.
+.PP
+The
+.PN rwhod
+command
+operates as both a producer and consumer of status information.
+As a producer of information it periodically
+queries the state of the system and constructs
+status messages which are broadcast on a network.
+.PP
+As a consumer of information, 
+.PN rwhod 
+listens for the status messages of the other
+.PN rwhod
+servers, validating them, then recording
+them in a collection of files located in the directory
+.PN /usr/spool/rwho .
+.PP
+The
+.PN rwho
+server transmits and receives messages at the port indicated
+in the rwho service specification. For more information, see 
+.MS services 5 .
+The messages sent and received, take the following form:
+.NXR "rwhod server" "message format"
+.EX
+struct  outmp {
+        char    out_line[8];       /* tty name */
+        char    out_name[8];       /* user id */
+        long    out_time;          /* time on */
+};
+struct  whod {
+        char    wd_vers;
+        char    wd_type;
+        char    wd_fill[2];
+        int     wd_sendtime;
+        int     wd_recvtime;
+        char    wd_hostname[32];
+        int     wd_loadav[3];
+        int     wd_boottime;
+        struct  whoent {
+                struct  outmp we_utmp;
+                int     we_idle;
+        } wd_we[1024 / sizeof (struct whoent)];
+};
+.EE
+All fields are converted to network byte order prior to
+transmission.  The load averages are calculated by the
+.MS w 1 
+program and represent load averages over the 5, 10, and 15 minute 
+intervals prior to a server's transmission.
+They are multiplied by 100 for representation as an integer.
+The host name included is the name returned by the 
+.MS gethostname 2 
+system call, with any trailing domain name omitted.
+The array at the end of the message contains information about
+the users logged in to the sending machine.  This information 
+includes the contents of the 
+.MS utmp 5 
+entry for each active terminal line and a value indicating the
+time since a character was last received on the terminal line.
+.PP
+Messages received by the
+.PN rwho
+server are discarded unless they originated at a
+.PN rwho
+server's port.  In addition, if the host's name, as specified
+in the message, contains any unprintable ASCII characters, the
+message is discarded.  Valid messages received by
+.PN rwhod
+are placed in files named 
+\f(CWwhod.f\Ihostname\fR
+in the directory 
+.PN /usr/spool/rwho .
+These files contain only the most recent message in the
+format previously described.
+.PP
+Status messages are generated approximately once every
+3 minutes.  
+The
+.PN rwhod
+command performs an 
+.MS nlist 3 
+on 
+.PN /vmunix 
+every 30 minutes to guard against
+the possibility that this file is not the system
+image currently operating.
+.SH Options
+.IP \-b 5
+Sets the broadcast only mode. Sends outgoing 
+.PN rwho
+packets, but ignores incoming ones.
+.IP \-l
+Sets the listen only mode. Collects incoming
+.PN rwho
+packets from the network, but does not broadcast
+.PN rwho
+data.
+.SH Restrictions
+Because the
+.PN rwhod
+daemon sends its information in broadcast packets it generates
+a large amount of network traffic.  On large networks the extra
+traffic may be objectionable.  Therefore, the
+.PN rwhod
+daemon is disabled by default.  To make use of the
+.PN rwhod
+daemon for both the local and remote hosts,
+remove the comment symbols (#) from in front of the lines specifying
+.PN rwhod
+in the
+.PN /etc/rc
+file.
+.PP
+If the
+.PN rwhod
+daemon is not running on a remote machine, the machine
+may incorrectly appear to be down when you use the
+.PN ruptime
+command to determine its status.  See the
+.MS ruptime 1c
+reference page for more information.
+.PP
+If a system has more than 40 users logged in at once, the number
+of users displayed by the
+.MS ruptime 1c 
+and 
+.MS rwho 1c 
+commands is incorrect.
+Users who login after the fortieth user, will fail to appear 
+in the output of the 
+.MS ruptime 1c 
+and 
+.MS rwho 1c 
+commands. This is because the maximum size limit of an Ethernet packet
+is 1500 bytes, and the 
+.PN rwhod 
+daemon must
+broadcast its information in a single packet.
+.SH See Also
+ruptime(1c), rwho(1c)

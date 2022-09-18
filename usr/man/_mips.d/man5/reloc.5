@@ -1,0 +1,133 @@
+.TH reloc 5 RISC
+.SH Name
+reloc \- relocation information for a MIPS object file
+.SH Syntax
+.B #include  <reloc.h>
+.SH Description
+Object files have one relocation entry for each relocatable
+reference in the text or data.  If relocation information is
+present, it will be in the following format:
+.PP
+.EX
+struct   reloc
+{
+   long      r_vaddr ;          /* (virtual) address of reference */
+   long      r_symndx ;         /* index into symbol table */
+   ushort    r_type ;           /* relocation type */
+   unsigned  r_symndx:24,       /* index into symbol table */
+             r_reserved:3,
+             r_type:4,          /* relocation type */
+             r_extern:1;        /* if 1 symndx is an index into the 
+                                   external symbol table, else symndx 
+                                   is a section # */
+} ;
+.EE
+.PP
+.EX
+/* Relocation types */
+
+#define  R_ABS       0
+#define  R_REFHALF   1
+#define  R_REFWORD   2
+#define  R_JMPADDR   3
+#define  R_REFHI     4
+#define  R_REFLO     5
+#define  R_GPREL     6
+#define  R_LITERAL   7
+.EE
+.PP
+.EX
+/* Section numbers */
+
+#define  R_SN_NULL   0
+#define  R_SN_TEXT   1
+#define  R_SN_RDATA  2
+#define  R_SN_DATA   3
+#define  R_SN_SDATA  4
+#define  R_SN_SBSS   5
+#define  R_SN_BSS    6
+#define  R_SN_INIT   7
+#define  R_SN_LIT8   8
+#define  R_SN_LIT4   9
+.EE
+.PP
+The link editor reads each input section and performs
+relocation.  The relocation entries direct how references
+found within the input section are treated.
+.PP
+If 
+.PN r_extern 
+is zero, it is a local relocation entry and
+then 
+.PN r_symndex 
+is a section number (R_SN_*).  For these
+entries, the starting address for the section referenced by
+the section number is used in place of an external symbol
+table entry's value.  The assembler and loader always use
+local relocation entries if the item to be relocated is
+defined in the object file.
+.PP
+For every external relocation (except R_ABS) a signed
+constant is added to the symbol's virtual address that the
+relocation entry refers to.  This constant is assembled at
+the address being relocated.
+.TP 15
+R_ABS
+The reference is absolute and no
+relocation is necessary.  The entry will
+be ignored.
+.TP 15
+R_REFHALF
+A 16-bit reference to the symbol's virtual
+address.
+.TP 15
+R_REFWORD
+A 32-bit reference to the symbol's virtual
+address.
+.TP 15
+R_JMPADDR
+A 26-bit jump instruction reference to the
+symbol's virtual address.
+.TP 15
+R_REFHI
+A reference to the high 16 bits of the
+symbol's virtual address.  The next
+relocation entry must be the corresponding
+R_REFLO entry, so the proper value of the
+constant to be added to the symbol's
+virtual address can be reconstructed.
+.TP 15
+R_REFLO
+A reference to low 16 bits to the symbol's
+virtual address.
+.TP 15
+R_GPREL
+A 16-bit offset to the symbol's virtual
+address from the global pointer register.
+.TP 15
+R_LITERAL
+A 16-bit offset to the literal's virtual
+address from the global pointer register.
+.PP
+Relocation entries are generated automatically by the
+assembler and automatically used by the link editor.  Link
+editor options exist for both preserving and removing the
+relocation entries from object files.
+.PP
+The number of relocation entries for a section is found in
+the 
+.PN s_nreloc 
+field of the section header.  This field is a
+C language short and can overflow with large objects.  If
+this field overflows, the section header 
+.PN s_flags 
+field has
+the S_NRELOC_OVFL bit set.  In this case, the true number of
+relocation entries is found in the 
+.PN r_vaddr 
+field of the
+first relocation entry for that section.  That relocation
+entry has a type of R_ABS, so it is ignored when the
+relocation takes place. 
+.SH See Also
+as(1), ld(1), a.out(5), syms(5), scnhdr(5)

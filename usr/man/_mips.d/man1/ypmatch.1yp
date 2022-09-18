@@ -1,0 +1,144 @@
+.\" SCCSID: @(#)ypmatch.1yp	8.3	11/21/90
+.TH ypmatch 1yp
+.SH Name
+ypmatch \- print the value of one or more keys from a yp map
+.SH Syntax
+.B ypmatch 
+[\fB\-d\fI domain\fR\|] [\fB\-k\fR] [\fB\-t\fR] \fIkey...\fR \fImname\fR
+.br
+.B ypmatch 
+.B \-x
+.SH Description
+.NXR "ypmatch command"
+.NXR "YP map" "printing key values"
+.PP
+The
+.PN ypmatch 
+command prints the values associated with one or more keys from the 
+yellow pages (YP) map (database) specified by a
+.I mname,
+which may be either a
+.I mapname
+or a map 
+.I nickname.
+.PP
+Multiple keys can be specified.
+After the key values and the map name have been specified, 
+.PN ypmatch 
+searches the map for all of the specified keys.
+The specified keys must be exact values in terms of capitalization
+and length.
+The
+.PN ypmatch 
+command
+does not have a pattern matching capability.
+If
+.PN ypmatch
+cannot match a key, it produces a diagnostic message.
+.PP
+The default list of mapnames served by YP is as follows:
+.PN passwd.byname ,
+.PN passwd.byuid ,
+.PN group.byname ,
+.PN group.byuid ,
+.PN hosts.byname ,
+.PN hosts.byaddr ,
+.PN networks.byname ,
+.PN networks.byaddr ,
+.PN services.byname_proto ,
+.PN services.byport ,
+.PN services.byname ,
+.PN rpc.bynumber ,
+.PN protocols.byname ,
+.PN protocols.bynumber ,
+.PN netgroup.byuser ,
+.PN netgroup.byhost ,
+.PN mail.alias .
+.PP
+Note that the YP server must be running ULTRIX Version 4.2 or higher
+for the 
+.PN services.byname_proto
+and
+.PN services.byport
+maps to exist.  Also note that the 
+.PN services.byname
+map is accessed with port numbers, not service names.  Use the
+.PN service.byname_proto
+map to access services by name.  The 
+.PN services.byname
+map remains for compatibility.  See the Examples section for sample
+command lines that illustrate how to access information in each of the maps.
+.SH Options
+.IP \fB\-d\fR 0.3i
+Displays key values for specified domain.
+.IP \fB\-k\fR 0.3i
+Displays key, followed by a colon (:), before displaying value of the key.  
+This is useful if the keys are not duplicated in the returned
+values, or if the number of specified keys is so large that the output is
+confusing.
+.IP \fB\-t\fR 0.3i
+Inhibits translation of nickname to mapname.
+For example,
+.EX
+ypmatch \-t zippy passwd 
+.EE
+fails because there is no map named
+.I passwd,
+while
+.EX
+ypmatch zippy passwd 
+.EE
+succeeds because
+.PN ypmatch 
+translates it to
+.EX
+ypmatch zippy passwd.byname.
+.EE
+.IP \fB\-x\fR 0.3i
+Displays map nickname table.
+This option tells
+.PN ypmatch 
+to list the nicknames (\fImnames\fR\|)
+with their associated
+.I mapnames.
+.SH Examples
+The following are sample command lines that illustrate how to use the 
+.PN ypmatch 
+command to access information in each of the maps:
+.PP
+.TS
+tab(@);
+lfHB lfHB 
+lfR  lfR  
+lfR  lfR  
+lfR  lfR .
+_
+.sp 4p
+Mapname@Sample command
+.sp 4p
+_
+.sp 6p
+\f(CWpasswd.byname\fP@\f(CBypmatch user1 passwd.byname\fP
+\f(CWpasswd.byuid\fP@\f(CBypmatch uid1 passwd.byuid\fP
+\f(CWgroup.byname\fP@\f(CBypmatch group1 group.byname\fP
+\f(CWgroup.byuid\fP@\f(CBypmatch gid1 group.bygid\fP
+\f(CWhosts.byname\fP@\f(CBypmatch host1 host.byname\fP
+\f(CWhosts.byaddr\fP@\f(CBypmatch hostaddr1 hosts.byaddr\fP
+\f(CWnetworks.byname\fP@\f(CBypmatch network1 networks.byname\fP
+\f(CWnetworks.byaddr\fP@\f(CBypmatch netaddr1 networks.byaddr\fP
+\f(CWservices.byname_proto\fP@\f(CBypmatch service1/udp services.byname_proto\fP
+\f(CWservices.byport\fP@\f(CBypmatch servport/tcp service.byport\fP
+\f(CWservices.byname\fP@\f(CBypmatch servport/tcp services.byname\fP
+\f(CWrpc.bynumber\fP@\f(CBypmatch rpcnum rpc.bynumber\fP
+\f(CWprotocols.byname\fP@\f(CBypmatch proto1 protocols.byname\fP
+\f(CWprotocols.bynumber\fP@\f(CBypmatch protonum1 protocols.bynumber\fP
+\f(CWnetgroup.byuser\fP@\f(CBypmatch user1 netgroup.byuser\fP
+\f(CWnetgroup.byhost\fP@\f(CBypmatch host1 netgroup.byhost\fP
+\f(CWmail.alias\fP@\f(CBypmatch mailgroup1 mail.alias\fP
+.sp 6p
+_
+.TE
+.SH See Also
+ypfiles(5yp), ypcat(1yp)
+.br
+\fIGuide to the Yellow Pages Service\fP

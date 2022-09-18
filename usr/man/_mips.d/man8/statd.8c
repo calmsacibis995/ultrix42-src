@@ -1,0 +1,30 @@
+.TH statd 8c
+.SH Name
+statd \- network status monitor daemon
+.SH Syntax
+.B /usr/etc/statd
+.SH Description
+.NXR " network status daemon"
+.NXR "statd" "network status daemon"
+The
+.PN statd 
+daemon monitors the status of the client and server sites
+in response to a request made by the local
+.PN lockd
+daemon.
+When a site failure is detected,
+.PN statd
+notifies the local
+.PN lockd
+daemon, which then processes the recovery of the locked files or file
+regions.
+.SH Restrictions
+The crash of a site is only detected on its recovery.
+.SH Files
+.PN /etc/sm
+.br
+.PN /etc/sm.back
+.br
+.PN /etc/state
+.SH See Also
+statmon(5), lockd(8c)

@@ -1,0 +1,38 @@
+.\" SCCSID: @(#)mesg.1	8.1	9/11/90
+.TH mesg 1
+.SH Name
+mesg \- allow or disallow messages
+.SH Syntax
+.B mesg
+[\|\fBn\fR\|] [\|\fBy\fR\|]
+.SH Description
+.NXR "mesg command"
+.NXA "write command" "mesg command"
+.NXA "talk program" "mesg command"
+.NXA "wall command" "mesg command"
+.NXR "message" "prohibiting"
+The
+.PN mesg
+command with argument
+.B n
+forbids messages via
+.PN write
+and 
+.PN talk
+by revoking non-user
+write permission on the user's terminal.
+The
+.PN mesg
+command with argument
+.B y
+reinstates permission.
+All by itself,
+.PN mesg
+reports the current state without changing it.
+.SH Diagnostics
+Exit status is 0 if messages are receivable,
+1 if not, 2 on error.
+.SH Files
+/dev/tty*
+.SH See Also
+talk(1), write(1)

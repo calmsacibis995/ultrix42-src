@@ -1,0 +1,43 @@
+.\" SCCSID: @(#)lisp.1	8.1	9/11/90
+.TH lisp 1 VAX "" Unsupported
+.SH Name
+lisp \- lisp interpreter
+.SH Syntax
+.B lisp
+.SH Description
+The
+.PN lisp
+interpreter is for a dialect which
+closely resembles MIT's M\s-2ACLISP\s0.
+This lisp, known as F\s-2RANZ\s0\ L\s-2ISP\s0, features
+an I/O facility which allows the user to change the input
+and output syntax, add
+macro characters, and maintain compatibility with upper-case
+only lisp systems;
+infinite precision integer arithmetic, and
+an error facility which allows the user to trap system errors in 
+many different ways.
+Interpreted functions may be mixed with code compiled by
+.IR liszt (1)
+and both may be debugged using the
+``Joseph Lister'' trace package.
+A
+.PN lisp
+containing compiled and interpreted code may be dumped into
+a file for later use.
+.PP
+There are too many functions to list here; one should refer to the
+manuals listed below.
+.SH Files
+.ta 2.4i
+/usr/lib/lisp/trace.l	Joseph Lister trace package
+.br
+/usr/lib/lisp/toplevel.l	top level read-eval-print loop
+.SH See Also
+liszt(1), 
+lxref(1)
+.br
+`F\s-2RANZ\s0\ L\s-2ISP\s0  Manual, Version 1'
+by John K. Foderaro
+.br
+M\s-2ACLISP\s0 Manual

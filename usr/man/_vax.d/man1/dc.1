@@ -1,0 +1,220 @@
+.\" SCCSID: @(#)dc.1	8.1	9/11/90
+.TH dc 1 
+.SH Name
+dc \- desktop calculator
+.SH Syntax
+.B dc
+[\|\fIfile\fR\|]
+.SH Description
+.NXR "dc program"
+.NXA "dc program" "bc language"
+.NXS "arithmetic package" "dc program"
+The
+.PN dc
+command is an arbitrary precision arithmetic package.
+Ordinarily it operates on decimal integers,
+but you can specify an input base, output base,
+and a number of fractional digits to be maintained.
+The overall structure of
+.PN dc
+is a stacking (reverse Polish) calculator.
+If an argument is given,
+input is taken from that file until its end,
+then from the standard input.
+The following constructions are recognized:
+.TP 8
+number
+The value of the number is pushed on the stack.
+A number is an unbroken string of the digits 0-9.
+It may be preceded by an underscore _ to input a
+negative number.
+Numbers may contain decimal points.
+.TP
+.nf
++  \- /  *  %  ^
+.fi
+The
+top two values on the stack are added
+(+),
+subtracted
+(\-),
+multiplied (*),
+divided (/),
+remaindered (%),
+or exponentiated (^).
+The two entries are popped off the stack;
+the result is pushed on the stack in their place.
+Any fractional part of an exponent is ignored.
+.TP
+.BI s x
+The
+top of the stack is popped and stored into
+a register named
+.I x,
+where
+.I x
+may be any character.
+If
+the
+.B s
+is capitalized,
+.I x
+is treated as a stack and the value is pushed on it.
+.TP
+.BI l x
+The
+value in register
+.I x
+is pushed on the stack.
+The register
+.I x
+is not altered.
+All registers start with zero value.
+If the
+.B l
+is capitalized,
+register
+.I x
+is treated as a stack and its top value is popped onto the main stack.
+.TP
+.B  d
+The
+top value on the stack is duplicated.
+.TP
+.B  p
+The top value on the stack is printed.
+The top value remains unchanged.
+.B P
+interprets the top of the stack as an ascii string,
+removes it, and prints it.
+.TP
+.B  f
+All values on the stack are printed.
+.TP
+.B  q
+Exits the program.
+If executing a string, the recursion level is
+popped by two.
+If
+.B q
+is capitalized,
+the top value on the stack is popped and the string execution level is popped
+by that value.
+.TP
+.B  x
+Treats the top element of the stack as a character string
+and executes it as a string of 
+.PN dc
+commands.
+.TP
+.B  X
+Replaces the number on the top of the stack with its scale factor.
+.TP
+.B  "[ ... ]"
+Puts the bracketed ascii string onto the top of the stack.
+.TP
+.nf
+.I  "<x  >x  =x"
+.fi
+The
+top two elements of the stack are popped and compared.
+Register
+.I x
+is executed if they obey the stated
+relation.
+.TP
+.B  v
+Replaces the top element on the stack by its square root.
+Any existing fractional part of the argument is taken
+into account, but otherwise the scale factor is ignored.
+.TP
+.B  !
+Interprets the rest of the line as a UNIX command.
+.TP
+.B  c
+All values on the stack are popped.
+.TP
+.B  i
+The top value on the stack is popped and used as the
+number radix for further input.  When the base (number radix) is
+re-set, all subsequent numbers are interpreted in the new base.
+.sp
+For example, if the
+command is issued twice, first to set the base to base 2, then to
+reset it back to base 10, the new base value must be given in the base
+originally set (that is, `2 i' will set the base to base 2, after which
+`1010 i' will set it back to base 10).
+.TP
+.B I
+Pushes the input base on the top of the stack.
+.TP
+.B  o
+The top value on the stack is popped and used as the
+number radix for further output.
+.TP
+.SM
+.B O
+Pushes the output base on the top of the stack.
+.TP
+.B  k
+The top of the stack is popped, and that value is used as
+a non-negative scale factor:
+the appropriate number of places
+are printed on output,
+and maintained during multiplication, division, and exponentiation.
+The interaction of scale factor,
+input base, and output base will be reasonable if all are changed
+together.
+.TP
+.B  z
+The stack level is pushed onto the stack.
+.TP
+.SM
+.B  Z
+Replaces the number on the top of the stack with its length.
+.TP
+.B  ?
+A line of input is taken from the input source (usually the terminal)
+and executed.
+.TP
+.B "; :"
+Used by 
+.PN bc
+for array operations.
+.PP
+An example which prints the first ten values of n! is the
+following:
+.EX
+.nf
+[la1+dsa*pla10>y]sy
+0sa1
+lyx
+.fi
+.EE
+.SH Diagnostics
+.NXR "dc program" "diagnostics"
+"\fBx is unimplemented\fR"
+.br
+x is an octal number.
+.PP
+"\fBstack empty\fR"
+.br
+Not enough elements on the stack to do what was asked.
+.PP
+"\fBOut of space\fR"
+.br
+The free list is exhausted (too many digits).
+.PP
+"\fBOut of headers\fR"
+.br
+Too many numbers being kept around.
+.PP
+"\fBOut of pushdown\fR"
+.br
+Too many items on the stack.
+.PP
+"\fBNesting Depth\fR"
+.br
+Too many levels of nested execution.
+.SH See Also
+bc(1)

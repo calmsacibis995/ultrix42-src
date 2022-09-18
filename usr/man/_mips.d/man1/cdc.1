@@ -1,0 +1,229 @@
+.\" SCCSID: @(#)cdc.1	8.1	9/11/90
+.nr f 0
+.de SP
+.if n .ul
+\%[\fB\-\\$1\fR\\c
+.if n .ul 0
+\\$2\\$3
+..
+.de C1
+.if \\nf \{ \
+.    RE
+.    nr f 0 \}
+.PP
+.RS 5
+.TP 15
+\\$1
+\\$2 \\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.nr f 1
+..
+.de A1
+.if \\nf \{ \
+.    RE
+.    nr f 0 \}
+.PP
+.RS 5
+.TP 15
+\fB\-\\$1\fR[\fI\\$2\^\fR]
+\\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.nr f 1
+..
+.de A2
+.if \\nf \{ \
+.    RE
+.    nr f 0 \}
+.PP
+.RS 5
+.TP 15
+\fB\-\\$1\fR\fI\\$2\^\fR
+\\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.nr f 1
+..
+.ds W) \fI\s-1Restrictions\s+1\^\fR
+.ds X) \fI\s-1Examples\s+1\^\fR
+.ds M) \fB\s-1MR\s+1\fR
+.ds S) \s-1SCCS\s+1
+.ds I) \fI\s-1SID\s+1\fR
+.TH cdc 1
+.SH Name
+cdc \- change delta commentary of an SCCS file
+.SH Syntax   
+.B cdc
+\fB\-r\fISID\fR [\fB\-m\fR[\fImrlist\fR\|]\|]  [\fB\-y\fR[\fIcomment\fR\|]\|] 
+\fIfiles\fR
+.SH Description
+.NXR "cdc command (sccs)"
+.NXR "SCCS file" "changing delta commentary"
+.NXR "delta command (sccs)" "cdc command (sccs)"
+The
+.PN cdc
+command changes the delta commentary of each named
+SCCS file,
+for the \*(I) specified by the
+.B \-r
+option.
+.PP
+The
+delta commentary
+is defined to be the Modification Request (MR) and comment
+information usually specified by the
+.PN delta 
+command
+.RB ( \-m
+and
+.B \-y
+options).
+.PP
+The 
+.PN delta
+commentary may consist of one or
+more lines, terminated by a dot in
+column one of a new line.
+.PP
+If a directory is named,
+.PN cdc
+behaves as though each file in the directory were
+specified as a named file,
+except non-\*(S) files
+(last component of the path name does not begin with \fBs.\fR)
+and unreadable files,
+which are silently ignored.
+If a name of
+.B \-
+is given, the standard input is read (see RESTRICTIONS).
+Each line of the standard input is taken to be the name of an \*(S) file
+to be processed.
+.PP
+Arguments to
+.PN cdc ,
+which may appear in any order, consist of
+option arguments, and file names.
+.PP
+All the described
+option arguments apply independently to each named file.
+.SH Options
+.IP "\-m\fR[\fImrlist\fR]" 15
+Adds or deletes modification numbers.  If the SCCS file has the 
+v flag set then a
+list of MR numbers to be added and/or deleted in
+the delta commentary of
+the \*(I) specified by the
+.B \-r
+option may be supplied.
+For further information, see 
+.MS admin 1 .
+A null MR list has no effect.
+.IP
+MR entries are added to the list of MRs in the same manner as that of
+.MS delta 1 .
+In order to delete an MR, precede the MR number
+with the character \fB!\fR (see 
+Examples).
+If the MR to be deleted is currently in the list of MRs, it is
+removed
+and changed into a comment line.
+A list of all deleted MRs is placed in the comment section
+of the delta commentary and is preceded by a comment line stating
+that they were deleted.
+.IP
+If
+.B \-m
+is not used and the standard input is a terminal, the prompt
+.B \s-1MR\s+1s?
+is issued on the standard output before the standard input
+is read.  If the standard input is not a terminal, no prompt is issued.
+The \fB\s-1MR\s+1s?\fR prompt always precedes the \fBcomments?\fR prompt
+(see
+.B \-y
+option).
+.br
+MRs in a list are separated by blanks and/or tab characters.
+An unescaped new-line character terminates the
+MR
+list.
+.IP
+Note that if the
+.B v
+flag has a value
+it is taken to be the name of a program (or shell procedure) which validates
+the correctness of the MR numbers.
+For further information, see 
+.MS admin 1 .
+If a nonzero exit status is returned from the MR number validation program,
+.PN cdc
+terminates
+and the delta commentary remains unchanged.
+.IP "\-r\fISID\fR"
+Specifies the SCCS Identification string of a delta for
+which the delta commentary is to be changed.
+.IP "\-y\fR[\fIcomment\fR]"
+Replaces existing commentary
+for the delta specified by the
+.B \-r
+option.
+The previous comments are kept and preceded by a comment
+line stating that they were changed.
+A null \fIcomment\^\fR has no effect.
+.IP
+If
+.B \-y
+is not specified and the standard input is a terminal, the
+prompt \fBcomments?\fR is issued on the standard output before
+the standard input is read;
+if the standard input is not a terminal, no prompt is issued.
+A dot in column one of a new line terminates the
+.I comment
+text.
+.PP
+Certain permissions are necessary to modify the \*(S) file;
+generally, however, if you made the delta, you can
+change its delta commentary, and 
+if you own the file and directory you can modify the delta commentary.
+.SH Examples
+.NXR "cdc command (sccs)"
+This example shows how to add
+bl78-12345 and bl79-00001 to the MR list, remove bl77-54321
+from the MR list, and add the comment 
+\fB``trouble''\fR to delta 1\fB.\fR6
+of s\fB.\fRfile.
+.EX
+sccscdc \-r1.6 \-m"bl78-12345 !bl77-54321 bl79-00001" \-ytrouble .file
+.EE
+.PP
+This example does the same thing.
+.EX
+sccscdc \-r1.6 .file
+
+\-MRs? !bl77-54321 bl78-12345 bl79-00001
+
+comments? trouble
+.EE
+.SH Restrictions 
+.NXR "cdc command (sccs)" "restricted"
+If \*(S) file names are supplied to the
+.PN cdc
+command via the standard input
+(\fB\-\fR on the command line),
+then the
+.B \-m
+and
+.B \-y
+options must also be used.
+.SH Diagnostics 
+See
+.MS sccshelp 1
+for explanations.
+.SH Files
+.TP 10
+.PN x-file
+For more information, see
+.MS delta 1
+.TP
+.PN z-file
+For more information, see
+.MS delta 1
+.SH See Also
+admin(1), delta(1), get(1), help(1), prs(1),
+sccs(1), sccsfile(5)
+.br
+\fIGuide to the Source Code Control System\fP

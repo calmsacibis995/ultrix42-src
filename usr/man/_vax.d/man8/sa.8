@@ -1,0 +1,135 @@
+.\" SCCSID: @(#)sa.8	8.2	4/9/91
+.TH sa 8
+.SH Name
+sa, accton \- print process accounting statistics
+.SH Syntax
+.B /etc/sa
+[
+.I options
+] [ 
+.I file 
+]
+.PP
+.B /etc/accton 
+[ 
+.I file 
+]
+.SH Arguments
+.IP \fIfile\fR 8
+With an argument naming an existing
+.I file,
+.PN accton
+causes system accounting information for
+every process executed to be placed at the end of the file.
+If no argument is given, accounting is turned off.
+.SH Description
+.NXR "sa command"
+.NXR "accton command"
+.NXR "accounting file" "maintaining"
+.PP
+The
+.PN sa
+command
+reports on, cleans up, and generally maintains accounting files.
+.PP
+The
+.PN sa
+is able to condense the information in 
+.PN /usr/adm/acct
+into a summary file 
+.PN /usr/adm/savacct ,
+which contains a count of the
+number of times each command was called and the time resources consumed.
+This condensation is desirable because on a large system
+.PN /usr/adm/acct 
+can grow by 100 blocks per day.
+The summary file is normally read before the accounting file,
+so the reports include all available information.
+.PP
+If a file name is given as the last argument, that file will be treated
+as the accounting file.  The file 
+.PN /usr/adm/acct 
+is the default.
+.PP
+Output fields are labeled: \*(lqcpu\*(rq for the sum of user+system time
+(in cpu seconds), \*(lqre\*(rq for real time (also in cpu seconds),
+\*(lqk\*(rq for cpu-time averaged core usage (in 1k units),
+\*(lqavio\*(rq for average number of I/O operations per execution.
+With options fields labeled \*(lqtio\*(rq for total I/O operations,
+\*(lqk*sec\*(rq for cpu storage integral (kilo-core seconds), \*(lqu\*(rq and \*(lqs\*(rq
+for user and system cpu time alone (both in cpu seconds) will sometimes appear.
+.SH Options
+.NXR "sa command" "options"
+.IP \-a 8
+List all command names including those containing unprintable characters and 
+those used only once. By default,
+.PN sa
+places all command names containing unprintable characters and those used only once
+under the name `***other.'
+.IP \-b
+Sort output by sum of user and system time divided by number of calls.
+Default sort is by sum of user and system times.
+.IP \-c
+Besides total user, system, and real time for each command, print percentage
+of total time over all commands.
+.IP \-d
+Sort by average number of disk I/O operations.
+.IP \-D
+Print and sort by total number of disk I/O operations.
+.IP \-f
+Force no interactive threshold compression with 
+.PN \-v 
+option.
+.IP \-i
+Do not read in summary file.
+.IP \-j
+Instead of total minutes for each category, give seconds per call.
+.IP \-k
+Sort by cpu-time average memory usage.
+.IP \-K
+Print and sort by cpu-storage integral.
+.IP \-l
+Separate system and user time; normally they are combined.
+.IP \-m
+Print number of processes and number of CPU minutes for each user.
+.IP \-n
+Sort by number of calls.
+.IP \-r
+Reverse order of sort.
+.IP \-s
+Merge accounting file into summary file
+.PN /usr/adm/savacct
+when done.
+.IP \-t
+For each command, report ratio of real time 
+to the sum of user and system times. 
+If the sum of user and system times is 
+too small to report, `*ignore*' appears in this field. 
+.IP \-u
+Superseding all other flags, print for each command in the accounting file the
+user ID and command name.
+.IP \-v
+Followed by a number
+.I n,
+types the name of each command used
+.I n
+times or fewer.
+Await a reply from the terminal; if it begins with `y', add the command to
+the category `**junk**.' This is used to strip out garbage.
+.dt
+.SH Restrictions
+Accounting is suspended when there is less than 2% free
+space on disk.  Accounting resumes when free space rises
+above 4%.
+.SH Files
+.TP 17
+.PN /usr/adm/acct
+Raw accounting
+.TP
+.PN /usr/adm/savacct
+Summary
+.TP
+.PN /usr/adm/usracct
+Per-user summary
+.SH See Also
+acct(2), ac(8)

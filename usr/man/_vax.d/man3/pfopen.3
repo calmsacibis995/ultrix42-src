@@ -1,0 +1,61 @@
+.\" SCCSID: @(#)pfopen.3	3.2	6/2/88
+.TH pfopen 3
+.SH Name
+pfopen \- open a packet filter file
+.SH Syntax
+.B pfopen(ifname, flags)
+.br
+.B char *ifname;
+.br
+.B int flags;
+.SH Description
+.NXR "packetfilter" "pfopen subroutine" 
+.NXR "pfopen subroutine"
+The packet filter (see
+.MS packetfilter 4 
+)
+provides raw access to Ethernets and similar network data link layers.
+The routine 
+.PN pfopen
+is used to open a packet filter file descriptor.  The routine hides various
+details about the way packet filter files are opened and named.
+.PP
+The
+.I ifname
+argument is a pointer to a null-terminated string containing the name
+of the interface for which the application is opening the packet filter.
+This name may be the name of an actual interface on the system
+(for example, ``de0'', ``qe2'') or it may be a pseudo-interface name of the
+form
+.RI ``pf n '',
+used to specify the
+.IR n th
+interface attached to the system.  For example, ``pf0'' specifies the
+first such interface.  If
+.I ifname
+is NULL, the default interface (``pf0'') is used.
+.PP
+The
+.I flags
+argument has the same meaning as the corresponding argument to the
+.MS open 2
+system call.
+.PP
+The file descriptor returned by
+.PN pfopen
+is otherwise identical to one returned by
+.MS open 2 .
+.SH Diagnostics
+The
+.PN pfopen
+routine returns a negative integer if the file could not be opened.
+This may be because of resource limitations, or because the specified
+interface does not exist.
+.PP
+If there are a lot of packet filter applications in use, the 
+.PN pfopen
+routine might take a while.
+.SH See Also
+open(2), packetfilter(4)
+.br
+.I "The Packet Filter:  An Efficient Mechanism for User Level Network Code"

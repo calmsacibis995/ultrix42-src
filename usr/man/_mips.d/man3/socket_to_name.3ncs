@@ -1,0 +1,74 @@
+.TH socket_to_name 3ncs
+.SH Name
+socket_to_name \- convert a socket address to a name and port number
+.SH Syntax
+#include <idl/c/socket.h>
+
+void socket_$to_name(\fIsockaddr, slength, name, nlength, port, status\fP)
+.nf
+socket_$addr_t *\fIsockaddr\fP;
+unsigned long \fIslength\fP;
+socket_$string_t \fIname\fP;
+unsigned long *\fInlength\fP;
+unsigned long *\fIport\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/socket.ins.pas'\fR
+.\"
+.\"\fBprocedure socket_$to_name(\fR
+.\"	\fBin \fIsockaddr\fB: socket_$addr_t;\fR
+.\"	\fBin \fIslength\fB: unsigned32;\fR
+.\"	\fBout \fIname\fB: socket_$string_t;\fR
+.\"	\fBin out \fInlength\fB: unsigned32;\fR
+.\"	\fBout \fIport\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fIsockaddr\fR
+A socket address.
+The socket address is the structure returned by either
+.PN rpc_$use_family
+or
+.PN rpc_$use_family_wk .
+.TP 20
+\fIslength\fR
+The length, in bytes, of \fIsockaddr\fR.
+.TP 20
+\fIname\fR
+A string in the format \fIfamily:host[port]\fR,
+where \fIfamily\fR is the address family and \fIhost\fR is the host name; 
+\fIhost\fR may be in the standard numeric form
+(for example, #192.1.2.3)
+if a textual host name cannot be obtained.  Currently, only 
+.B ip
+is supported for 
+.I family.
+.TP 20
+\fInlength\fR
+On input, the maximum length, in bytes, of the name to be returned.
+On output, the actual length of the name returned.
+.TP 20
+\fIport\fR
+The port number.
+.TP 20
+\fIstatus\fR
+The completion status. If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN socket_$to_name
+routine converts a socket address to a textual address family, host
+name, and port number.
+.NXR "Operations on Socket Addresses" "socket_to_name"
+.SH Files
+.PN /usr/include/idl/socket.idl
+.br
+.PN /usr/include/idl/c/socket.h
+.SH See Also
+intro(3ncs), socket_family_to_name(3ncs), socket_from_name(3ncs), socket_to_numeric_name(3ncs)

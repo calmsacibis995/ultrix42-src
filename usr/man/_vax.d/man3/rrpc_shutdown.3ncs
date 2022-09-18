@@ -1,0 +1,93 @@
+.TH rrpc_shutdown 3ncs
+.SH Name
+rrpc_shutdown \- shut down a server
+.SH Syntax
+#include <idl/c/rrpc.h>
+
+void rrpc_$shutdown(\fIhandle, status\fP)
+.nf
+handle_t \fIhandle\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rrpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rrpc_$shutdown(\fR
+.\"	\fBin \fIhandle\fB: handle_t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP
+\fIhandle\fR
+A remote procedure call (RPC) handle.
+.TP
+\fIstatus\fR
+The completion status.  
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN rrpc_$shutdown
+routine shuts down a server, if the server allows it.
+A server can use the 
+.PN rpc_$allow_remote_shutdown
+routine to allow or disallow remote shutdown.
+.NXR "Remote Remote Procedure Call Interface" "rrpc_shutdown"   
+.SH Diagnostics
+This section lists status codes for errors returned by this 
+.PN rrpc_$
+routine in
+.PN status\&.all .
+.TP
+.B rrpc_$shutdown_not_allowd
+You send an
+.PN rrpc_shutdown
+request to a server that has not issued an
+.PN rpc_allow_remote_shutdown
+call.
+.SH Restrictions
+On the client side, because of the way the
+.PN rrpc_
+calls are defined and implemented
+in the run-time library
+.PN libnck.a ,
+you must explicitly call
+into the entry point vector table for the
+.PN rrpc_
+interface to
+send an
+.PN rrpc_
+request across the network. The
+following is an example of a call that works
+as desired:
+.EX
+(*rrpc_$client_epv.rrpc_$shutdown)(handle, &status);
+.EE
+.PP
+The server side stub routine calls the entry point
+.PN rrpc_$shutdown
+on behalf of the client.  The results of the call are then
+passed back to the client.
+.PP
+Before making the shutdown call, the server must have
+previously
+executed the following call:
+.EX
+rpc_$allow_remote_shutdown((unsigned long) TRUE,NULL,&status);
+.EE
+.PP
+If the server has not allowed remote shutdown, the
+.PN rrpc_$shutdown
+call returns an
+.PN operation\0not\0implemented
+status code.
+.SH Files
+.PN /usr/include/idl/c/rrpc.h
+.br
+.PN /usr/include/idl/rrpc.idl
+.SH See Also
+intro(3ncs), rpc_allow_remote_shutdown(3ncs), rpc_shutdown(3ncs)

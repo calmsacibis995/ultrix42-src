@@ -1,0 +1,808 @@
+# @(#)xja.db	4.2   (ULTRIX)   12/20/90
+
+sseg
+id cds
+name xja_cds
+label "XJA INFO"
+elements
+	xja_xdev xja_xber xja_xfadra xja_xfadrb xja_aosts
+	xja_sernum xja_errs xja_fcmd xja_ipintrsrc xja_diag
+	xja_dmafaddr xja_dmafcmd xja_errintr xja_cnf xja_xbiida
+	xja_xbiidb xja_errscb
+
+sitem
+name xja_xdev
+size 1
+class composite
+type register
+display nil
+label		"device register"
+doc		"device register"
+map
+	field
+size 16
+class integer
+display hex
+label "DTYPE"
+	field
+size 16
+class integer
+display hex
+label "DEVICE REVISION"
+
+sitem
+name xja_xber
+size 1
+class composite
+type register
+display nil
+doc		"bus error register"
+map
+	field
+size 1
+class coded
+map
+	1	"xmi reserved bit set"
+	field
+size 1
+class coded
+map
+	1	"more protocol enabled"
+	field
+size 1
+class coded
+map
+	1	"xmi timeouts disabled"
+	field
+size 1
+class coded
+map
+	1	"hexaword writes enabled"
+	field
+size 2
+class integer
+display decimal
+label "cmd sub id"
+	field
+size 4
+class integer
+display decimal
+label "xmi node id"
+	field
+size 1
+class coded
+map
+	1	"self test fail"
+	field
+size 1
+class coded
+map
+	1	"extended test fail"
+	field
+size 1
+class coded
+map
+	1	"node specific error summary bit"
+	field
+size 1
+class coded
+map
+	1	"transaction timeout"
+	field
+size 1
+class coded
+map
+	1	"xmi reserved bit set"
+	field
+size 1
+class coded
+map
+	1	"command no ack"
+	field
+size 1
+class coded
+map
+	1	"read error response"
+	field
+size 1
+class coded
+map
+	1	"read sequence error"
+	field
+size 1
+class coded
+map
+	1	"no read response"
+	field
+size 1
+class coded
+map
+	1	"corrected read data"
+	field
+size 1
+class coded
+map
+	1	"write data no ack"
+	field
+size 1
+class coded
+map
+	1	"read data noack"
+	field
+size 1
+class coded
+map
+	1	"write sequence error"
+	field
+size 1
+class coded
+map
+	1	"parity error"
+	field
+size 1
+class coded
+map
+	1	"inconsistent parity error"
+	field
+size 1
+class coded
+map
+	1	"write error interrupt"
+	field
+size 1
+class coded
+map
+	1	"xmi fault"
+	field
+size 1
+class coded
+map
+	1	"corrected confirmation"
+	field
+size 1
+class coded
+map
+	1	"xmi bad"
+	field
+size 1
+class coded
+map
+	1	"node halt"
+	field
+size 1
+class coded
+map
+	1	"node reset"
+	field
+size 1
+class coded
+map
+	1	"error summary"
+
+
+sitem
+name xja_xfadra
+size 1
+class integer
+type long
+display hex
+label "failing addr reg lw0"
+doc		"failing address register lw0"
+
+sitem
+name xja_xfadrb
+size 1
+class composite
+type register
+display nil
+label "failing addr reg lw1"
+doc		"failing address register lw1"
+map
+	field
+size 16
+class integer
+display hex
+label "MASK[15:0] = "
+	field
+size 10
+class integer
+display hex
+label "XMI ADDR[38:29] = "
+	field
+size 2
+class filler
+	field
+size 4
+class integer
+display hex
+label "CMD = "
+
+sitem
+name xja_aosts
+size 1
+class composite
+type register
+display hex
+label "XJA AOST STATUS"
+doc		"xja aost status register"
+map
+	field
+size 4
+class integer
+display decimal
+label "xja failed subtest "
+	field
+size 4
+class integer
+display decimal
+label "xja failed test "
+	field
+size 4
+class integer
+display decimal
+label "xja selftest version (minor)"
+	field
+size 4
+class integer
+display decimal
+label "xja selftest version (major)"
+	field
+size 16
+class integer
+display hex
+label "pc of error call"
+
+sitem
+name xja_sernum
+size 1
+class composite
+type register
+display nil
+label "XJA SERIAL NUMBER"
+doc		"xja serial number register"
+map
+	field
+size 29
+class integer
+display hex
+label "SERIAL NUMBER"
+	field
+size 3
+class coded
+label "plant"
+map
+	0	"ASO"
+	1	"COM"
+	2	"BTO"
+
+sitem
+name xja_errs
+size 1
+class composite
+type register
+display nil
+label "xja error summary"
+doc		"xja error summary register"
+map
+	field
+size 2
+class integer
+display decimal
+label "xmi subnode id "
+	field
+size 4
+class integer
+display decimal
+label "xmi node id "
+	field
+size 11
+class filler
+	field
+size 1
+class coded
+map
+	1	"xmi par err on D<31:00>"
+	field
+size 1
+class coded
+map
+	1	"xmi par err on D<63:32>"
+	field
+size 1
+class coded
+map
+	1	"xmi par err on F<3:0> or ID<5:0>"
+	field
+size 1
+class coded
+map
+	1	"xmi power up"
+	field
+size 1
+class coded
+map
+	1	"xmi power fail"
+	field
+size 1
+class coded
+map
+	1	"xmi arb timeout"
+	field
+size 1
+class coded
+map
+	1	"cbi parity error"
+	field
+size 1
+class coded
+map
+	1	"jxdi command/length error"
+	field
+size 1
+class coded
+map
+	1	"jxdi receive buffer overrun"
+	field
+size 1
+class coded
+map
+	1	"cpu request overrun"
+	field
+size 1
+class coded
+map
+	1	"icu buffer count error"
+	field
+size 1
+class coded
+map
+	1	"xce transmit machine error"
+	field
+size 1
+class coded
+map
+	1	"multiple jxdi parity errors"
+	field
+size 1
+class coded
+map
+	1	"jxdi parity error bits 7:0"
+	field
+size 1
+class coded
+map
+	1	"jxdi parity error bits 15:8"
+
+sitem
+name xja_fcmd
+size 1
+class composite
+type register
+label "xja force command"
+display nil
+doc		"xja force command register"
+map
+	field
+size 26
+class integer
+display hex
+label "xmi address"
+	field
+size 4
+class coded
+label "command"
+map
+	1	"force xmi read command"
+	2	"force xmi read lock command"
+	6	"force xmi write command"
+	7	"force xmi write unlock command"
+	8	"force xmi interrupt command"
+	9	"force xmi ident command"
+	15	"force xmi read lock command"
+	field
+size 2
+class coded
+label "length"
+map
+	0	"hexaword size transaction"
+	1	"longword size transaction"
+	2	"quadword size transaction"
+	3	"octaword size transaction"
+
+sitem
+name xja_ipintrsrc
+size 1
+class composite
+type register
+display nil
+doc	"xja ipintr source register"
+map
+	field
+size 16
+class integer
+display hex
+label "ipintr source mask"
+
+sitem
+name xja_diag
+size 1
+class composite
+type register
+display nil
+doc		"xja diagnostic control"
+map
+	field
+size 4
+class coded
+map
+	0	"normal operation mode"
+	1	"force par err xci_p[0] c/a cycle"
+	2	"force par err xci_p[1] c/a cycle"
+	3	"force par err xci_p[2] c/a cycle"
+	4	"force par err xci_p[0] data cycle"
+	5	"force par err xci_p[1] data cycle"
+	6	"force par err xci_p[2] data cycle"
+	7	"reserved command type"
+	8	"force par err jxdi_p[0] cycle 0,1"
+	9	"force par err jxdi_p[1] cycle 0,1"
+	10	"force par err jxdi_p[0] cycle 2+"
+	11	"force par err jxdi_p[1] cycle 2+"
+	12	"reserved command type"
+	13	"reserved command type"
+	14	"reserved command type"
+	15	"reserved command type"
+	field
+size 4
+class integer
+display hex
+label "force buff busy mask"
+	field
+size 3
+class integer
+display hex
+label "diag longword select"
+	field
+size 2
+class coded
+map
+	0	"FORCE GRDxx response to all reads"
+	1	"FORCE CRDxx response to all reads"
+	2	"FORCE locked response to all reads"
+	3	"FORCE read err resp to all reads"
+	field
+size 1
+class coded
+map
+	1	"force confirmation error"
+	field
+size 1
+class coded
+map
+	1	"force arbitration timeout"
+	field
+size 1
+class coded
+map
+	1	"force receive buffer overrun"
+	field
+size 1
+class coded
+map
+	1	"force cbi parity error"
+	field
+size 1
+class coded
+map
+	1	"force buff busy mask"
+	field
+size 11
+class filler
+	field
+size 1
+class coded
+map
+	1	"diagnostic mode"
+	field
+size 1
+class coded
+map
+	1	"flip address bit [29]"
+	field
+size 1
+class coded
+map
+	1	"force local xja register access"
+
+sitem
+name xja_dmafaddr
+size 1
+class composite
+type register
+display nil
+label "xja dma failing addr"
+doc		"xja dma failing address reg"
+map
+	field
+size 29
+class integer
+display hex
+label "dma fail adr[28:0]"
+	field
+size 1
+class integer
+display hex
+label "dma fail adr[39]"
+	field
+size 2
+class coded
+map
+	0	"hexaword size transaction"
+	1	"longword size transaction"
+	2	"quadword size transaction"
+	3	"octaword size transaction"
+
+sitem
+name xja_dmafcmd
+size 1
+class composite
+type register
+display nil
+label "xja dma failing cmd"
+map
+	field
+size 16
+class integer
+display hex
+label "failing address mask"
+	field
+size 10
+class integer
+display hex
+label "dma fail adr[38:29]"
+	field
+size 2
+class filler
+	field
+size 4
+class coded
+map
+	0	"reserved transaction type"
+	1	"read transaction"
+	2	"interlock read transaction"
+	3	"reserved transaction type"
+	4	"reserved transaction type"
+	5	"reserved transaction type"
+	6	"unlock write masked transaction"
+	7	"write masked transaction"
+	8	"interrupt transaction"
+	9	"ident transaction"
+	10	"reserved transaction type"
+	11	"reserved transaction type"
+	12	"reserved transaction type"
+	13	"reserved transaction type"
+	14	"reserved transaction type"
+	15	"implied vector interrupt trans."
+
+sitem
+name xja_errintr
+size 1
+class composite
+type register
+display nil
+doc		"xja error interrupt control"
+map
+	field
+size 1
+class coded
+map
+	1	"intr on xmi arb timeout"
+	field
+size 1
+class coded
+map
+	1	"intr on jxdi bus parity error"
+	field
+size 11
+class filler
+	field
+size 1
+class coded
+map
+	1	"intr on transaction timeout"
+	field
+size 1
+class filler
+	field
+size 1
+class coded
+map
+	1	"intr on command no ack"
+	field
+size 1
+class coded
+map
+	1	"intr on read error response"
+	field
+size 1
+class coded
+map
+	1	"intr on read sequence error"
+	field
+size 1
+class coded
+map
+	1	"intr on re-attempt timeout"
+	field
+size 1
+class coded
+map
+	1	"intr on corrected read data"
+	field
+size 1
+class coded
+map
+	1	"intr on write data no ack"
+	field
+size 1
+class coded
+map
+	1	"intr on read/ident data no ack"
+	field
+size 1
+class coded
+map
+	1	"intr on write sequence error"
+	field
+size 1
+class coded
+map
+	1	"intr on parity error"
+	field
+size 3
+class filler
+	field
+size 1
+class coded
+map
+	1	"intr on corrected confirmation"
+	field
+size 4
+class filler
+
+sitem
+name xja_cnf
+size 1
+class composite
+type register
+display nil
+label "xja config reg"
+doc		"xja configuration register"
+map
+	field
+size 10
+class filler
+	field
+size 2
+class integer
+display decimal
+label "xja number on sys"
+	field
+size 4
+class integer
+display decimal
+label "xja xmi node id"
+	field
+size 8
+class integer
+display hex
+label "memory size(64MB increments)"
+	field
+size 8
+class integer
+display hex
+label "mem start addr(64MB increments)"
+
+sitem
+name xja_xbiida
+size 1
+class composite
+type register
+display nil
+label "xja xbi id a reg"
+doc		"xja xbi id a register"
+map
+	field
+size 4
+display decimal
+class integer
+label "xbi 0 - xmi node id"
+	field
+size 4
+display decimal
+class integer
+label "xbi 1 - xmi node id"
+	field
+size 4
+display decimal
+class integer
+label "xbi 2 - xmi node id"
+	field
+size 4
+display decimal
+class integer
+label "xbi 3 - xmi node id"
+	field
+size 4
+display decimal
+class integer
+label "xbi 4 - xmi node id"
+	field
+size 4
+display decimal
+class integer
+label "xbi 5 - xmi node id"
+	field
+size 4
+display decimal
+class integer
+label "xbi 6 - xmi node id"
+	field
+size 4
+display decimal
+class integer
+label "xbi 7 - xmi node id"
+
+sitem
+name xja_xbiidb
+size 1
+class composite
+type register
+display nil
+label "xja xbi id b reg"
+doc		"xja xbi id b register"
+map
+	field
+size 4
+display decimal
+class integer
+label "xbi 8 - xmi node id"
+	field
+size 4
+display decimal
+class integer
+label "xbi 9 - xmi node id"
+	field
+size 4
+display decimal
+class integer
+label "xbi A - xmi node id"
+	field
+size 4
+display decimal
+class integer
+label "xbi B - xmi node id"
+	field
+size 4
+display decimal
+class integer
+label "xbi C - xmi node id"
+	field
+size 4
+display decimal
+class integer
+label "xbi D - xmi node id"
+
+sitem
+name xja_errscb
+size 1
+class composite
+type register
+display nil
+doc		"xja error scb offset"
+map
+	field
+size 16
+class integer
+display hex
+label "xja error scb offset"
+

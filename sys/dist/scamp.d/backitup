@@ -1,0 +1,513 @@
+#!/bin/sh5
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)backitup	4.2	(ULTRIX)	8/5/90"
+#
+#	000	Jonathan Wallace	1-Jun-1990
+#
+#
+#	001	James C. Overman	05-Aug-1990
+#	    Moved references to /tmp to /usr/tmp 
+#	    
+########################################################################
+#
+#
+#############################################
+# Set variables, constants, and environment #
+#############################################
+set -h
+trap 'Cleanup_Routine; exit 1' 0 1 2 3 18
+LL="
+"
+
+
+########################################################################
+# Subroutines #
+###############
+#####################################
+: Cleanup_Routine - Remove usr/tmp files
+#####################################
+Cleanup_Routine()
+{
+	rm -f /usr/tmp/DEV.list /usr/tmp/DEV.menu 
+	rm -f /usr/tmp/MFS.list /usr/tmp/MFS.menu
+}
+
+
+#####################################################################
+: Select_Device_Routine
+#
+#	RETURN CODES
+#		0 - Successful 
+#		1 - Error that warrants termination of program
+#		3 - Input error (call function again)
+#		5 - User Termination (selected "none of the above")
+#
+#####################################################################
+Select_Device_Routine()
+{
+	[ -s /usr/tmp/DEV.menu ] ||
+	{
+		clear
+		echo "${LL}*** SYSTEM BACKUP PROCEDURE ***"
+		echo "	Working ... `date` \c"
+        	echo "
+*** SYSTEM BACKUP PROCEDURE ***
+
+Select the backup device from the menu below: ${LL}" >/usr/tmp/DEV.menu
+		X=0
+		FOUNDFLAG=0
+		for K in /dev/rmt*
+		do
+			FI=`file $K`
+			FI=`expr "$FI" : '\(.*\)tape'`
+			FI=`expr "$FI" : '.*[#][0-9][0-9]*\(.*\)'`
+			case $? in
+			0 )
+				X=`expr $X + 1`
+				case $X in
+				[0-9])
+					X=" $X"
+					;;
+				esac
+				FOUNDFLAG=1
+				echo "$K" >>/usr/tmp/DEV.list
+				echo "	${X} - $K$FI Tape" >>/usr/tmp/DEV.menu
+				;;
+			esac
+		done
+
+		case $FOUNDFLAG in
+		1 )
+			NODEV=`expr $X + 1`
+			case $NODEV in
+			[0-9])
+				NODEV=" $NODEV"
+				;;
+			esac
+			echo "	${NODEV} - None of the above" >>/usr/tmp/DEV.menu
+			;;
+		* )
+			clear
+			echo "
+*** SYSTEM BACKUP PROCEDURE ***
+
+No valid backup devices found on this machine.  Check to make sure a
+backup device is actually connected to the machine, or contact your
+system administrator.
+
+Press <RETURN> to continue: \c"
+			read resp
+			return 1
+			;;
+		esac
+	}
+
+
+	clear
+        more /usr/tmp/DEV.menu
+        echo "${LL}Enter your choice [1]: \c"
+        read DEVNUM
+        case $DEVNUM in
+        "" )
+                DEVNUM=1
+		return 0
+                ;;
+	[0-9] | [0-9][0-9] | [0-9][0-9][0-9] )
+		[ $DEVNUM -eq $NODEV ] && return 5
+                [ $DEVNUM -gt $NODEV ] &&
+		{
+			echo "${LL}Invalid Choice: $I (out of range)"
+			echo "Press <RETURN> to continue: \c"
+			read resp
+			return 3
+		}
+		return 0
+		;;
+        * )
+		return 3
+                ;;
+        esac
+}
+
+
+#######################################################
+: Get_Device_Routine -
+#######################################################
+Get_Device_Routine()
+{
+	X=0
+	set - `cat /usr/tmp/DEV.list`
+	while [ $# -gt 0 ]
+	do
+		X=`expr $X + 1`
+		case $X in
+		$DEVNUM )
+			DEVICE=$1
+			return 0
+			;;
+		* )
+			shift
+			;;
+		esac
+	done
+
+	return 1
+}
+
+
+#####################################################################
+: Select_FS_Routine
+#
+#	RETURN CODES
+#		0 - Successful 
+#		1 - Error that warrants termination of program
+#		3 - Input error (call function again)
+#		5 - User Termination (selected "none of the above")
+#
+#####################################################################
+Select_FS_Routine()
+{
+	[ -s /usr/tmp/MFS.menu ] ||
+	{
+		clear
+		echo "${LL}*** SYSTEM BACKUP PROCEDURE ***"
+		echo "	Working ... `date` \c"
+		echo "
+*** SYSTEM BACKUP PROCEDURE ***
+
+Select the file system(s) you want to backup from the menu below: 
+
+ Selection	Device			File System
+ -----------------------------------------------------------------------------" >/usr/tmp/MFS.menu
+	        X=0
+		SP="                                     "
+		FW="................"
+		MENNUM=
+		FOUNDFLAG=0
+		mount | grep "^\/dev" >/usr/tmp/MFS.list
+		set xxx `cat /usr/tmp/MFS.list`
+		while [ $# -gt 0 ]
+		do
+			case $1 in
+			/dev* )
+				X=`expr $X + 1`
+				MENNUM="$MENNUM $X"
+				case $X in
+				[0-9])
+					X=" $X"
+					;;
+				esac
+				FOUNDFLAG=1
+				FORMAT="$1$SP"
+				FORMAT=`expr "$FORMAT" : '\('$FW'\).*'`
+				echo "    $X		$FORMAT	$3" >>/usr/tmp/MFS.menu
+				shift
+				;;
+			* )
+				shift
+				;;
+			esac
+		done
+	
+		case $FOUNDFLAG in
+		1 )
+			ALLNUM=`expr $X + 1`
+			NONUM=`expr $ALLNUM + 1`
+			case $ALLNUM in
+			[0-9])
+				ALLMEN=" $ALLNUM"
+				;;
+			* )
+				ALLMEN=$ALLNUM
+				;;
+			esac
+			case $NONUM in
+			[0-9])
+				NOMEN=" $NONUM"
+				;;
+			* )
+				NOMEN=$NONUM
+			esac
+
+			echo "
+    ${ALLMEN}		All of the above
+    ${NOMEN}		None of the above
+ -----------------------------------------------------------------------------" >>/usr/tmp/MFS.menu
+			;;
+		* )
+			clear
+			echo "
+*** SYSTEM BACKUP PROCEDURE ***
+
+No locally mounted file systems found on this machine.  This procedure
+does not support backups of remotely mounted file systems.  Read the
+Guide to Backup and Restore for information about backing up remotely
+mounted file systems, or contact your system administrator.
+
+Press <RETURN> to continue: \c"
+			read resp
+			return 1
+			;;
+		esac
+	}
+
+	clear
+	more /usr/tmp/MFS.menu
+	echo "${LL}Enter your choice(s), for example, 1 2 : \c"
+	read FS_SELECTIONS
+	case $FS_SELECTIONS in
+	"" )
+		return 3
+		;;
+	$NONUM )
+		return 5
+		;;
+	* )
+		return 0
+		;;
+	esac
+}
+
+
+############################################
+: Sort_Routine - Sort the input by the user
+#
+#	RETURN CODES
+#		0 - Successfull 
+#		1 - Error
+#
+############################################
+Sort_Routine()
+{
+	NONE=$1
+	SORTED=
+	set - $FS_SELECTIONS
+	for I in $FS_SELECTIONS
+	do
+		# is it a number?
+		J=`expr $I : '\([0-9][0-9]*\)'`
+
+		case $I in
+		$J)	;;
+		*)	echo "${LL}Invalid choice: $I (not a number)"
+			return 1
+			;;
+		esac
+
+		# is it in range?
+		[ $I -gt $NONE ] &&
+		{
+			echo "${LL}Invalid Choice: $I (out of range)"
+			return 1
+		}
+
+		HI=$SORTED LO=
+		# insert # into sorted list...
+		for J in $SORTED
+		{
+			case "$I" in
+			$J)	I=
+				break
+				;;
+			esac
+			if [ $I -gt $J ]
+			then
+				LO="$LO $J"
+				set xx $HI
+				shift;shift
+				HI=$*
+			else
+				break
+			fi
+		}
+		SORTED="$LO $I $HI"
+	done
+}
+
+
+###############################
+: Verify_Choice_Routine
+###############################
+Verify_Choice_Routine()
+{
+	clear
+	BACKUPLIST=
+	case $FS_SELECTIONS in
+	$ALLNUM )
+		SORTED=$MENNUM
+		;;
+	esac
+		
+	echo "
+You want to backup the following filesystems:
+
+	Device		 File System
+------------------------------------------------------------------------------"
+	for K in $SORTED
+	do
+		X=0
+		set xxx `cat /usr/tmp/MFS.list`
+		while [ $# -gt 0 ]
+		do
+			case $1 in
+			/dev* )
+				X=`expr $X + 1`
+				case $K in
+				$X )
+					BACKUPLIST="$BACKUPLIST $1 $3"
+					FORMAT="$1$SP"
+					FORMAT=`expr "$FORMAT" : '\('$FW'\).*'`
+					echo "	$FORMAT $3" 
+					continue 2
+					;;
+				* )
+					shift
+					;;
+				esac
+				;;
+			* )
+				shift
+				;;
+			esac
+		done
+	done
+	echo "------------------------------------------------------------------------------"
+	echo "${LL}Is this correct? (y/n) [y]: \c"
+	read resp
+	case $resp in
+	"" | [Yy]* )
+		return 0
+		;;
+	[Nn]* )
+		return 1
+		;;
+	* )
+		Verify_Choice_Routine
+		;;
+	esac
+}
+
+###########################################
+: Backup_Routine - Do the actual backup
+###########################################
+Backup_Routine()
+{
+	set - $BACKUPLIST
+	while [ $# -gt 0 ]
+	do
+		clear
+		echo "
+*** SYSTEM BACKUP PROCEDURE ***
+
+Backing up $2, mounted on $1
+
+Please put a backup tape in $DEVICE, then make sure that the
+tape is write enabled, and that the tape drive is on-line.  Press
+<RETURN> when ready: \c"
+		read resp
+		echo
+		dump 0uf $DEVICE $1
+		case $? in
+		1 )
+			echo "${LL}Press <RETURN> to continue: \c"
+			read resp
+			shift 2
+			continue
+			;;
+		* )
+			echo "
+*** SYSTEM BACKUP PROCEDURE ***
+
+An error has occured while attempting to backup file system
+
+	$2
+
+located on device $1.  Check the Guide to System Backup and
+Restore for more information on system backup procedures, or
+contact your system administrator. 
+
+Press <RETURN> to continue: \c"
+			read resp
+			return 1
+			;;
+		esac
+	done
+
+	return 0
+}
+
+
+###########################################
+# Program Procedure Routine
+###########################################
+while :
+do
+	Select_Device_Routine
+	case $? in
+	0 ) 
+		Get_Device_Routine
+		break
+		;;
+	1 ) exit 1 ;;
+	3 ) continue ;;
+	5 ) exit 0 ;;
+	esac
+done
+
+while :
+do
+	Select_FS_Routine
+	case $? in
+	0 ) 
+		Sort_Routine $NONUM
+		case $? in
+		1 )
+			echo "${LL}Press <RETURN> to re-enter choice(s): \c"
+			read resp
+			continue
+			;;
+		esac
+		Verify_Choice_Routine
+		case $? in
+		0 )
+			break
+			;;
+		1 )
+			continue
+			;;
+		esac
+		;;
+	1 ) exit 1 ;;
+	3 ) continue ;;
+	5 ) exit 0 ;;
+	esac
+done
+
+Backup_Routine
+case $? in
+0 )
+	exit 0
+	;;
+1 )
+	exit 1
+	;;
+esac

@@ -1,0 +1,40 @@
+#!/bin/sh
+# @(#)uucp.day	4.1	(ULTRIX) 7/2/90 
+umask 022
+L=/usr/spool/uucp/LOG.shells
+uulib=/usr/var/uucp
+spool=/usr/spool/uucp
+PATH="/bin:/usr/bin:$uulib:/etc:" ; export PATH
+
+trap ':' 1
+
+cd $spool
+echo "day:$$: saving logfiles `date`" >>$L
+cp LOGFILE LOGFILE.yesterday
+cp SYSLOG SYSLOG.yesterday
+cp /dev/null LOGFILE
+cp /dev/null SYSLOG
+
+echo "day:$$: starting uuclean's `date`" >>$L
+$uulib/uuclean -p -n5 -d/usr/spool/uucp/TM.
+$uulib/uuclean  -pLTMP. -pLOG.  -n4 -d/usr/spool/uucp
+
+if (test -f $uulib/LIST.DAY)
+then
+	for i in `sed -e 's/#.*//' $uulib/LIST.DAY`
+	do
+	echo "day:$$: starting uucico for $i `date`" >>$L
+	#
+	# Create a dummy file so that future uucico's 
+	# poll if this attempt fails.
+	#
+	if test -d /usr/spool/uucp/sys/$i/C.
+	then
+		touch /usr/spool/uucp/sys/$i/C./C.${i}Q0000
+	else
+		touch /usr/spool/uucp/sys/DEFAULT/C./C.${i}Q0000
+	fi
+	$uulib/uucico -f -r1 -s$i
+	done
+fi
+echo "day:$$:     complete `date`" >>$L

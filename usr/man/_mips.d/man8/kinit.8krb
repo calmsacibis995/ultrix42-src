@@ -1,0 +1,87 @@
+.TH kinit 8krb
+.SH Name
+kinit \- Kerberos login utility
+.SH Syntax
+.B /usr/bin/kinit
+[
+.B \-irv
+]
+.SH Description
+.NXR "Kerberos routines" "kinit"
+You use the
+.PN kinit
+command to log into the Kerberos authentication and authorization
+system. 
+You also use the 
+.PN kinit
+command when your original tickets have expired.
+When you use the 
+.PN kinit
+command without options, the utility prompts for a username and a Kerberos
+password and attempts to authenticate to the local Kerberos
+server.
+.PP
+If Kerberos authenticates you correctly,
+.PN kinit
+retrieves your initial ticket and 
+puts it in the ticket file specified
+by the KRBTKFILE environment variable.  If you have not defined this
+variable, the ticket is 
+stored in the file
+.PN /var/dss/kerberos/tkt/tkt\[\fIuid\fP] .
+.PP
+Make sure you use the 
+.PN kdestroy(8krb) 
+command to destroy any active tickets before ending your login
+session.  You may want to put the 
+.PN kdestroy 
+command in a 
+.PN \&.logout
+file so that all tickets are destroyed
+automatically when you log out.
+Only registered Kerberos users can use the Kerberos
+system.
+.SH Options
+.TP 7
+.B \-i
+Causes
+.PN kinit
+to prompt you for a Kerberos instance.
+.TP
+.B \-r
+Causes
+.PN kinit
+to prompt you for a Kerberos realm.  This option lets you authenticate
+yourself with a remote Kerberos server.
+.TP
+.B \-v
+Initiates verbose mode.   This causes
+.PN kinit
+to print the name of the ticket file used and a status message
+indicating the success or failure of your login attempt.
+.SH Restrictions
+Although user-level authentication is not supported,
+.PN kinit
+is useful for testing the installation of Kerberos functionality,
+by determining if a newly installed principal can obtain a
+ticket-granting ticket.  For example, to determine if the
+.PN named
+running on machine X can obtain its ticket-granting ticket,
+you can run
+.PN kinit ,
+input the principal name,
+.PN named , 
+the instance, X, and the password of
+.PN named .
+If
+.PN kinit
+succeeds, then Kerberos is correctly installed on machine X.
+.PP
+The
+.PN \-r
+option has not been fully implemented.
+.SH Files
+.TP
+.PN /var/dss/kerberos/tkt/tkt\[\fIuid\fP]
+.SH See Also
+kdestroy(8krb), klist(8krb)

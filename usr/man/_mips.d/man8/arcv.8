@@ -1,0 +1,29 @@
+.\" SCCSID: @(#)arcv.8	8.2	12/4/90
+.TH arcv 8 "" "" Unsupported
+.SH Name
+arcv \- convert archives to new format
+.SH Syntax
+.B /etc/arcv
+.I file ...
+.SH Description
+.NXR "arcv command"
+.NXR "archive file" "converting to portable format"
+The
+.PN arcv
+command converts archive files
+from 32v and Third Berkeley editions to a new portable format.
+For further information, see 
+.MS ar 1
+and
+.MS ar 5 .
+The conversion is done in place, and the command
+refuses to alter a file not in old archive format.
+.PP
+Old archives are marked with a magic number of 0177545 at the start.
+New archives have ``!<arch>'' as their first line.
+.SH Files
+.TP 15
+.PN /tmp/v*
+Temporary copy
+.SH See Also
+ar(1), ar(5)

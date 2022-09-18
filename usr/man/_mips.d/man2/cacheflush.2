@@ -1,0 +1,53 @@
+.TH cacheflush 2 RISC
+.UC 4
+.SH Name
+cacheflush \- flush the instruction cache, data cache, or both
+.SH Syntax
+.ft B
+.nf
+#include <mips/cachectl.h>
+.sp
+cacheflush(addr, nbytes, cache)
+char *addr;
+int nbytes, cache;
+.fi
+.ft R
+.SH Description
+Flushes contents of indicated caches for
+user addresses in the range of
+.I addr
+to
+.RI ( addr + nbytes \-1).
+The
+.I cache
+parameter is one of the following:
+.TP 15
+ICACHE
+Flush only the instruction cache.
+.TP 15
+DCACHE
+Flush only the data cache.
+.TP 15
+BCACHE
+Flush both the instruction and data caches.
+.SH Return Values
+The 
+.PN cacheflush
+system call returns 0 when errors are not detected.  If errors are detected,
+the 
+.PN cacheflush
+system call returns \-1 with the error cause indicated in
+.IR errno.
+.SH Diagnostics
+.TP 15
+[EFAULT]
+Some or all of the address range in the
+.I addr
+to
+.RI ( addr + nbytes \-1)
+are not accessible.
+.TP 15
+[EINVAL]
+The 
+.I cache
+parameter is not ICACHE, DCACHE, or BCACHE.

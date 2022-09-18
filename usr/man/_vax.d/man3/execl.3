@@ -1,0 +1,200 @@
+.\" SCCSID: @(#)execl.3	2.1	3/10/87
+.TH execl 3 VAX
+.SH Name
+execl, execv, execle, execlp, execvp, exect, environ \- execute a file
+.SH Syntax
+.nf
+.B "execl(\fIname, arg0, arg1, ..., argn, (char *)0\fP)"
+.B char *\fIname, *arg0, *arg1, ..., *argn\fP;
+.PP
+.B execv(\fIname, argv\fP)
+.B char *\fIname, *argv[]\fP;
+.PP
+.B "execle(\fIname, arg0, arg1, ..., argn, (char *)0, envp\fP)"
+.B "char *\fIname, *arg0, *arg1, ..., *argn, *envp[]\fP;"
+.PP
+.B "execlp(\fIfile, arg0, arg1, ..., argn, (char *)0\fP)"
+.B "char *\fIfile, *arg0, *arg1, ..., *argn\fP;"
+.PP
+.B "execvp(\fIfile,argv\fP)"
+.B "char *\fIfile, *argv[]\fP;"
+.PP
+.B "exect(\fIname, argv, envp\fP)
+.B "char *\fIname, *argv[], *envp[]\fP;
+.PP
+.B extern \fIchar **environ\fP;
+.fi
+.SH Description
+.NXR "execl subroutine"
+.NXR "execv subroutine"
+.NXR "execle subroutine"
+.NXR "execlp subroutine"
+.NXR "execvp subroutine"
+.NXR "exect subroutine"
+.NXR "environ subroutine"
+.NXA "ptrace system call" "exect subroutine"
+.NXA "execve system call" "execl subroutine"
+.NXR "file" "executing"
+These routines provide various interfaces to the
+.PN execve 
+system call.  Refer to 
+.MS execve 2
+for a description of their properties; only
+brief descriptions are provided here.
+.PP
+In all their forms, these calls
+overlay the calling process with the named file, then
+transfer to the
+entry point of the core image of the file.
+There can be no return from a successful exec.  
+The calling core image is lost.  
+.PP 
+The
+.I name
+argument
+is a pointer to the name of the file
+to be executed.
+The pointers
+.IR arg [ 0 ],
+.IR arg [ 1 "] ..."
+address null-terminated strings.
+Conventionally
+.IR arg [ 0 ]
+is the name of the
+file.
+.PP
+Two interfaces are available.
+.PN execl
+is useful when a known file with known arguments is
+being called;
+the arguments to 
+.PN execl
+are the character strings
+constituting the file and the arguments;
+the first argument is conventionally
+the same as the file name (or its last component).
+A 0 argument must end the argument list.
+.PP
+The
+.PN execv
+version is useful when the number of arguments is unknown
+in advance.
+The arguments to
+.PN execv
+are the name of the file to be
+executed and a vector of strings containing
+the arguments.
+The last argument string must be followed
+by a 0 pointer.
+.PP
+The
+.PN exect
+version is used when the executed file is to be
+manipulated with 
+.MS ptrace 2 .
+The program is forced to single step a single
+instruction giving the parent an opportunity to
+manipulate its state.  On the VAX-11 this is done
+by setting the trace bit in the process status
+longword.
+.PP
+When a C program is executed,
+it is called as follows:
+.EX
+	main(argc, argv, envp)
+	int argc;
+	char **argv, **envp;
+.EE
+where
+.I argc
+is the argument count
+and
+.I argv 
+is an array of character pointers
+to the arguments themselves.
+As indicated,
+.I argc
+is conventionally at least one
+and the first member of the array points to a
+string containing the name of the file.
+.PP
+The
+.I argv
+is directly usable in another
+.PN execv
+because
+.IR argv [ argc ]
+is 0.
+.PP
+The
+.I envp
+is a pointer to an array of strings that constitute
+the
+.I environment
+of the process.
+Each string consists of a name, an \*(lq=\*(rq, and a null-terminated value.
+The array of pointers is terminated by a null pointer.
+The shell 
+.MS sh 1
+passes an environment entry for each global shell variable
+defined when the program is called.
+See 
+.MS environ 7
+for some conventionally used names.
+The C run-time start-off routine places a copy of
+.I envp
+in the global cell
+.PN environ ,
+which is used
+by
+.PN execv
+and
+.PN execl
+to pass the environment to any subprograms executed by the
+current program.
+.PP
+The
+.PN execlp
+and
+.PN execvp
+routines
+are called with the same arguments as
+.PN execl
+and
+.PN execv ,
+but duplicate the shell's actions in searching for an executable
+file in a list of directories.
+The directory list is obtained from the environment.
+.SH Restrictions
+.NXR "execvp subroutine" "restrictions"
+If
+.PN execvp
+is called to execute a file that turns out to be a shell
+command file,
+and if it is impossible to execute the shell,
+the values of
+.I argv[0]
+and
+.I argv[\-1]
+will be modified before return.
+.SH Diagnostics
+.NXR "execvp subroutine" "diagnostics"
+If the file cannot be found,
+if it is not executable,
+if it does not start with a valid magic number,
+if maximum memory is exceeded,
+or if the arguments require too much space,
+a return
+constitutes the diagnostic;
+the return value is \-1.
+For further information, see 
+.MS a.out 5 .
+Even for the super-user,
+at least one of the execute-permission bits must be set for
+a file to be executed.
+.SH Files
+.IP /bin/sh 1i
+Shell, invoked if command file found
+by execlp or execvp
+.SH See Also
+csh(1), execve(2), fork(2), environ(7)

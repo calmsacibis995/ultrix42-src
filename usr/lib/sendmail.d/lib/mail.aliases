@@ -1,0 +1,37 @@
+#
+#	7/2/90 (ULTRIX) @(#)mail.aliases	4.1
+#
+#	Sample mail.aliases  source file for sendmail YP mapping 
+#
+# NOTE: COMMENTS ARE TO BE DISCOURAGED IN THIS FILE.
+#	THEY BECOME PART OF THE MAP.   ALL  SPACES  AND  TABS USED
+#	IN AN ALIAS DEFINITION ARE SIGNIFICANT AND WILL BECOME PART
+#	OF THE ALIAS NAME. DO NOT USE THEM AS HARMLESS WHITE SPACE.
+#
+#########################################################################
+# FORMAT OF ENTRIES:
+#	
+#	The alias name begins in column one of the file followed by a
+#	trailing space which serves to terminate the alias name being
+#	defined.
+#
+#	The entry list of user names belonging to this alias are comma
+#	separated and continuation to another line is indicated by a
+#	trailing backslash character.
+#
+#	A new aliase definition, or a blank line, terminates the list of
+#	users belonging to the current alias definition.
+#
+#	The file is intended to be processed by the "makedbm" utility
+#	program for Yellow Pages.
+#
+#########################################################################
+#
+# Sample alias definitions
+
+sample1 user1,user2,\
+user3,\
+
+sample2 user4,user5
+
+

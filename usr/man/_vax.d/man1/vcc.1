@@ -1,0 +1,420 @@
+.\" SCCSID: @(#)vcc.1	2.4	6/8/87
+.TH vcc 1 VAX
+.SH Name
+vcc \- VAX C compiler
+.SH Syntax
+.B vcc
+[\|\fIoption\fR...\|] \fIfile\fR...
+.SH Description
+.NXR "vcc compiler"
+.NXR "VAX C" "vcc compiler"
+The
+.PN vcc
+command invokes
+the VAX C compiler for ULTRIX and
+accepts the following types of arguments:
+.IP \(bu 5
+Arguments whose names end with .c.  These arguments are
+treated as
+C source programs. The source code is compiled and the
+resulting object code is left in a file
+whose name is the same as the source except with a .o file extension.
+If you choose to compile and load a single program in one
+step, the 
+.PN vcc
+command program deletes the intermediate object code file.
+.IP \(bu 5
+Arguments whose names end with .s.  These arguments are
+treated as 
+assembly source programs and are passed to the assembler,
+which creates an output file with a .o extension.
+.IP \(bu 5
+Arguments whose names end in something other
+than .c or .s.  These arguments are treated
+as either compiler or linker
+option arguments or C-compatible object
+programs that were produced during an earlier
+.PN vcc
+compilation or were extracted from the libraries of C-compatible routines.
+.SH Options
+The VAX C compiler for ULTRIX can produce two types of object files: the
+standard BSD .o format used by 
+.MS ld 1 ,
+or an object format that can be read only by 
+.MS lk 1 .
+The object file format, and the linker used is controlled by the 
+\fB\-V\fR 
+lkobject option. By default, the compiler produces standard BSD .o format.
+.NXR "vcc compiler" "options"
+.PP
+The following options are accepted by the
+.PN vcc
+command.  See 
+.MS lk 1
+or
+.MS ld 1 
+for load-time options.
+.TP 20 
+\fB\-b\fR 
+Does not pass the 
+.B \-lc
+library to the linker 
+by default.
+.TP 20
+\fB\-B\fIstring\fR
+Finds substitute compiler, preprocessor, assembler, and linker in the files 
+named by \fIstring\fR. If \fIstring\fR is empty, uses a standard backup
+version.
+.TP 20 
+\fB\-c\fR 
+Suppresses the loading phase of the compilation and forces
+an object file to be produced even if only one program is compiled.
+.TP 20 
+\fB\-D\fIname=def\fR 
+.br
+.ns
+.TP 20 
+\fB\-D\fIname\fR 
+Defines \fIname\fR to the preprocessor. This functions
+as if an additional #define preprocessor directive were embedded
+in the source code.
+If no definition is given, the name is defined as 1.
+.TP 20 
+\fB\-E\fR 
+Runs only the macro preprocessor on the named C programs and
+sends the result to the standard output.
+.TP 20 
+\fB\-Em\fR 
+Runs only the macro preprocessor on the named C programs and
+produces the makefile dependencies.
+.TP 20 
+\fB\-f\fR 
+Uses single-precision rather than double-precision floating point
+representation.
+Procedure
+arguments are still promoted to double-precision floating
+point format.  Programs with a
+large number of single-precision computations run faster
+with this option. However, a slight loss in precision may
+result since intermediate results are saved using a
+single-precision representation rather than the default double-precision
+representation.
+.TP 20 
+\fB\-g\fR 
+Generates additional symbol table information
+for 
+.MS dbx 1 .
+This also passes the
+.B \-lg
+flag to 
+the linker. 
+.TP 20 
+\fB\-I\fIdir\fR 
+Seeks \fH#include\fR files whose names do not begin with a directory
+specification in the following directories:
+first, in the directory of the \fIfile\fR
+argument; second, in directories named in \fB\-I\fR options;
+finally, in directories in a standard list.
+.TP 20  
+\fB\-l\fIx 
+Uses the specified library.
+This option lists an abbreviation for the library name
+.PN /lib/lib\fIx\fR.a\fR ,
+where \fIx\fR is a
+string.  If the library is not found,
+the linker 
+tries 
+.PN /usr/lib/lib\fIx\fR.a\fR .
+If that does not exist,
+the linker 
+tries 
+.PN /usr/local/lib/lib\fIx\fR.a\fR.  
+A search for a library starts
+when the library name is encountered, so the placement of a \fB\-l\fR
+within the compilation or the linker command line is significant.
+.TP 20 
+\fB\-Md\fR 
+Specifies DFLOAT (the default) double-precision floating
+point type and passes the \fB\-lc\fR flag
+to 
+the linker.
+.TP 20 
+\fB\-Mg\fR 
+Specifies GFLOAT double precision floating point type
+and passes the \fB\-lcg\fR flag to 
+the linker.
+This option uses the GFLOAT version of \fBlibc\fR.  If the math
+library is used with code compiled with the \fB\-Mg\fR flag, the
+GFLOAT version is linked by specifying \fB\-lmg\fR to
+the
+.PN vcc 
+or
+the linker 
+command.
+.TP 20 
+\fB\-o \fIoutput\fR
+Names the final output file \fIoutput\fR.  If this option is
+used, the file a.out
+is left undisturbed.  If the named file has a .o or .a
+file extension, the following error message is displayed: \fB\-o would
+overwrite\fR.
+.TP 20 
+\fB\-O\fR 
+Invokes the object-code improver. This option is on by default and has no
+effect.
+.TP 20 
+\fB\-p\fR 
+Produces code
+that counts the number of times each routine is called.
+If loading takes place, it replaces the standard startup
+routine with one that initially calls 
+.PN monitor 
+and writes out a
+mon.out
+file upon normal termination of program execution.  The
+.PN prof 
+command is then used to generate an execution profile.
+.TP 20 
+\fB\-pg\fR 
+Produces counting code similar to that generated by 
+.B \-p,
+but invokes a run-time recording mechanism that keeps more
+extensive statistics and produces a 
+gmon.out
+file upon normal termination.
+In addition, a profiling library is searched instead of
+the standard C library.  The
+.PN gprof 
+command is then used to generate an execution profile.
+.TP 20 
+\fB\-t\fR [\|\fBp0al\fR\|]
+Finds only the designated preprocessor, compiler, assembler, and linker
+in the files whose names are constructed by a \fB\-B\fP option.  
+.TP 20 
+\fB\-U\fIname\fR 
+Removes any initial definition of \fIname\fR.
+.TP 20 
+\fB\-v \fIfile\fR 
+Produces a listing in \fIfile\fR,
+complete with cross-reference and machine
+code listing sections.
+.TP 20 
+\fB\-V \fIarg\fR 
+Compiles the source code using vendor specific options. The available
+options are described in detail in the
+\fIGuide to VAX C for ULTRIX\fP.
+.IP
+The following is a list of the available options:
+.RS 20
+.IP cross_reference 20
+Generates a cross reference listing section
+.IP debug
+Generates a loadable module for use with dbx
+.IP define
+Assigns a specified value to a name
+.IP g_float
+Uses the G_floating point type
+.IP list
+Generates a list file
+.IP lkobject
+Generates object files in lk format, instead of BSD .o format
+and uses the lk linker
+.IP machine_code     
+Generates the machine code listing section
+.IP object           
+Generates an object file with a specific name
+.IP optimize         
+Selects code optimization
+.IP show             
+Includes symbol and intermediate expansions
+.IP standard         
+Selects portability mode
+.IP undefine         
+Revokes the assignment of a value to a name
+.IP warnings         
+Disables warning or informational messages
+.RE
+.TP 20
+\fB\-w\fR 
+Suppresses warning diagnostics.
+.TP
+\fB\-Y\fI[option]\fR 
+Compiles a file for one of the following options:
+.sp 
+.nf
+SYSTEM_FIVE
+.sp
+BSD
+.sp
+POSIX
+.fi
+.PP
+If no \fB\-Y\fP option is specified, 
+.PN vcc 
+searches for the PROG_ENV 
+variable to be defined. If PROG_ENV is set to SYSTEM_FIVE or POSIX, 
+the effect is the same as \fB\-YSYSTEM_FIVE\fP or \fB\-YPOSIX\fP.
+If PROG_ENV is not set to either SYSTEM_FIVE or POSIX, the effect is
+the same as \fB\-YBSD\fP.
+.PP
+If no option is specified with \fB\-Y\fP, the default is \fB\-YSYSTEM_FIVE\fP.
+If an option other than SYSTEM_FIVE, BSD, or POSIX is specified, a warning 
+message is printed and \fB\-Y\fP is ignored.  If there are multiple 
+\fB\-Y\fP options, only the last one takes effect.
+.PP
+If \fB\-YSYSTEM_FIVE\fP is explicitly specified, the \fB\-YSYSTEM_FIVE\fP
+parameter is added to the 
+linker 
+call.  In addition, the following occurs:
+.RS 5
+.IP \(bu 5
+\fB\-DSYSTEM_FIVE\fP is added to the 
+.PN vaxc 
+command (or 
+.PN cpp 
+command if \fB\-E\fP is specified).
+.IP \(bu 5
+The 
+linker 
+parameters \fB\-lc\fP, \fB\-lcg\fP, or \fB\-lc_p\fP are preceded with 
+\fB\-lcV\fP, \fB\-lcVg\fP, or \fB\-lcV_p\fP (if not suppressed by \fB\-b\fP).
+.IP \(bu 5
+The 
+linker 
+parameters \fB\-lm\fP, \fB\-lmg\fP, or \fB\-lmp\fP are changed to 
+\fB\-lmV\fP, \fB\-lmVg\fP, or \fB\-lmV_p\fP (if present).
+.RE
+.PP 
+If \fB\-YBSD\fP is specified, then the parameter \fB\-YBSD\fP is added 
+to the 
+.PN lk 
+call.
+.PP 
+If \fB\-YPOSIX\fP is specified, then the parameter \fB\-DPOSIX\fP
+is added to the 
+.PN vaxc 
+call. 
+Also, 
+the parameter \fB\-YPOSIX\fP is added to the 
+linker 
+call.
+.PP
+If \fB\-Y\fP does not exist and PROG_ENV is not defined, the default is 
+\fB\-YSYSTEM_FIVE\fP.
+.NXR "cc compiler" "options"
+.SH Default Symbols And Macros
+.NXR "vcc compiler" "default symbols"
+.NXR "vcc compiler" "default macros"
+The VAX C compiler recognizes the following predefined
+symbols. The symbols are all assigned the value
+one (1). You can use these symbols to separate
+portable and nonportable code within your VAX C programs:
+.PP
+.nf
+.ta 1.5i
+vaxc	VAXC
+vax11c	VAX11
+vax	VAX
+.fi
+.PP
+In addition to the VAX symbols definitions, listed above, the
+VAX C compiler for ULTRIX provides the following default symbols:
+.PP
+.nf
+.ta 1.5i
+unix	Any UNIX system
+bsd4_2	Berkeley UNIX Version 4.2
+ultrix	ULTRIX only
+vax	VAX processor only 
+.fi
+.PP
+The VAX C compiler recognizes the following predefined macros:
+.PP
+.nf
+.ta 1.5i
+__DATE__	Evaluates to a string, specifying the compilation date
+__FILE__	Evaluates to a string, specifying the current source file
+__LINE__	Evaluates to an integer, specifying the line containing the 
+		macro reference.
+__TIME__	Evaluates to a string, specifying the compilation time
+.fi
+.RE
+.SH Restrictions
+.NXR "vcc compiler" "restricted"
+The compiler treats the register keyword as a suggestion, attaching the 
+register keyword to a variable declaration does not guarantee that the 
+variable will be allocated to a register.
+.PP
+If the
+.B \-Mg
+flag is used to produce GFLOAT code,
+it must be used when compiling
+all of the modules to be linked.
+Use the
+.B \-Mg
+flag if 
+you use the 
+.PN vcc
+command to invoke 
+the linker 
+indirectly to link the modules.  If you invoke
+the linker 
+directly, use the
+.B \-lcg
+flag rather than
+.B \-lc flag.
+If the math library is used, specify the
+.B \-lmg
+flag rather than the
+.B \-lm
+flag in order to use the GFLOAT version.	
+.PP 
+The compiler and the linker,
+cannot detect the use of mixed double floating
+point types.  If you use them, your program's
+results may be erroneous. 
+.SH Diagnostics
+The diagnostics produced by VAX C are self-explanatory.
+Occasional messages are produced by the assembler
+or loader.
+.SH Files
+.NXR "vcc compiler" "files"
+.ta 1.5i 
+file.c	input file
+.br
+file.o	object file
+.br
+a.out	loaded output
+.br
+/usr/bin/vcc	command program
+.br
+/lib/cpp	preprocessor
+.br
+/usr/lib/cerrfile	error message file
+.br
+/usr/lib/vaxc	compiler
+.br
+/lib/crt0.o	runtime startoff
+.br
+/lib/mcrt0.o	startoff for profiling
+.br
+/usr/lib/gcrt0.o	startoff for gprof-profiling
+.br
+/lib/libc.a	standard library 
+.br
+/usr/libcg.a	GFLOAT
+version of the standard library 
+.br
+/usr/lib/libc_p.a	profiling library 
+.br
+/usr/include	standard directory for \fH#include\fR files
+.br
+/usr/man/man1/vcc.1	manual page
+.br
+mon.out	file produced for analysis by prof(1)
+.br
+gmon.out	file produced for analysis by gprof(1)
+.SH See Also
+adb(1), as(1), dbx(1), gprof(1), ld(1), lk(1), prof(1), monitor(3) 
+.br
+\fIGuide to VAX C for ULTRIX\fP

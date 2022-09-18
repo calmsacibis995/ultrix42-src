@@ -1,0 +1,284 @@
+.\" SCCSID: @(#)sccsfile.5	8.1	9/11/90
+.tr ~
+.bd S B 3
+.ds K)  \fB\s-1DATA KEYWORDS\s+1\fR
+.ds D)  \fB\s-1DDDDD\s+1\fR
+.ds M)  \fB\s-1MR\s+1\fR
+.ds S)  \s-1SCCS\s+1
+.ds I)  \s-1SID\s+1
+.TH sccsfile 5
+.SH Name
+sccsfile \- format of SCCS file
+.SH Description
+.NXR "sccs keyword"
+.NXB "SCCS file" "format"
+An SCCS file is an ASCII file that
+consists of six logical parts.  These six parts include checksum,
+delta table (contains information about each delta),
+user names (contains login names and/or numerical group 
+\s-1ID\s+1s of users who may add deltas),
+flags (contains definitions of internal keywords),
+comments (contains arbitrary descriptive information about the file),
+and body (contains the actual text lines intermixed with control lines).
+.PP
+Throughout an SCCS file there are lines that begin with the
+.B ASCII SOH 
+(start of heading) character (octal 001).
+This character is hereafter referred to as the
+.I control character
+and will be represented graphically as @.
+Any line described that is not shown beginning with
+the control character is prevented from beginning
+with the control character.
+.PP
+Entries of the form
+.PN DDDDD
+represent a 5-digit string number between 00000 and 99999.
+.PP
+The logical parts of an SCCS file, described in detail, are: 
+.TP
+.I Checksum\^
+The checksum is the first line of an SCCS file.
+The form of the line is:
+.EX
+@hDDDDD
+.EE
+.IP
+The value of the checksum is the sum of all characters, except
+those of the first line.
+The 
+.PN @h
+provides a
+.I "magic number"\^
+of (octal) 064001.
+.TP
+.I "Delta table"\^
+The delta table consists of a variable number of entries of the form:
+.EX
+@s DDDDD/DDDDD/DDDDD
+@d <type> <SCCS ID> yr/mo/da hr:mi:se <pgmr> DDDDD DDDDD
+@i DDDDD ...
+@x DDDDD ...
+@g DDDDD ...
+@m <MR number>
+  .
+  .
+  .
+@c <comment> ...
+  .
+  .
+  .
+@e
+.EE
+.PP
+The first line
+.Pn (@s)
+contains the number of lines
+inserted/deleted/unchanged, respectively.
+The second line
+.Pn (@d)
+contains the type of the delta
+(normal: 
+.PN D
+and removed:
+.PN R ),
+the SCCS ID of the delta,
+the date and time of creation of the delta,
+the login name corresponding to the real user ID
+at the time the delta was created,
+and the serial numbers of the delta and its predecessor,
+respectively.
+.sp
+The 
+.PN @i , 
+.PN @x , 
+and 
+.PN @g
+lines contain the serial numbers of deltas
+included, excluded, and ignored, respectively.
+These lines are optional.
+The 
+.PN @m 
+lines (optional) each contain one 
+.PN MR 
+number associated with the delta.
+The 
+.PN @c
+lines contain comments associated with the delta.
+.PP
+The 
+.PN @e
+line ends the delta table entry.
+.TP
+.I "User names"\^
+The list of login names and numerical group ID of users who may 
+add deltas to the file, separated by newlines.
+The lines containing these login names and numerical group ID are surrounded
+by the bracketing lines 
+.PN @u 
+and 
+.PN @U .
+An empty list allows anyone
+to make a delta.
+.TP
+.I Flags\^~~~~~
+Keywords used internally.
+See 
+.MS admin 1 
+for more information on their use.
+Each flag line takes the form:
+.sp
+.B @f <flag>	<optional text>
+.br
+.sp
+The following flags are defined:
+.EX
+@f t	<type of program>
+@f v	<program name>
+@f i
+@f b
+@f m	<module name>
+@f f	<floor>
+@f c	<ceiling>
+@f d	<default-sid>
+@f n
+@f j
+@f l	<lock-releases>
+@f q	<user defined>
+@f z	<reserved for use in interfaces>
+.EE
+.PP
+The
+.PN t
+flag defines the replacement for the 
+.PN \%%Y\%% 
+identification keyword.
+.PP
+The
+.PN v
+flag controls prompting for 
+.PN MR 
+numbers, in addition to comments.
+If the optional text is present, it defines an 
+.PN MR
+number-validity checking program.
+.PP
+The
+.PN i
+flag controls the warning/error
+aspect of the ``No id keywords'' message.
+When the
+.PN i
+flag is not present,
+this message is only a warning;
+when the
+.PN i
+flag is present,
+this message will cause a fatal error
+(the file will not be retrieved or the delta will not be made).
+.PP
+When the
+.PN b
+flag is present,
+the
+.PN \-b
+option can be specified with the
+.PN get
+command to cause a branch in the delta tree.
+.PP
+The
+.PN m
+flag defines the first choice for the replacement text of the 
+.PN \%%M\%%
+identification keyword.
+.PP
+The
+.PN f
+flag defines the ``floor'' release:
+the release below which no deltas may be added.
+.PP
+The
+.PN c
+flag defines the ``ceiling'' release:
+the release above which no deltas may be added.
+.PP
+The
+.PN d
+flag defines the default SID to be used
+when none is specified on a
+.PN get
+command.
+.PP
+The
+.PN n
+flag causes
+.I delta\^
+to insert a null delta (a delta that applies
+.I no\^
+changes)
+in those releases that are skipped when a delta is made in a
+.I new\^
+release. For example, when delta 5.1 is made 
+after delta 2.7, releases 3 and
+4 are skipped.
+The absence of the
+.PN n
+flag causes skipped releases to be completely empty.
+.PP
+The
+.PN j
+flag causes
+.PN get
+to allow
+concurrent edits of the same base I.
+.PP
+The
+.PN l
+flag defines a list of releases that are locked against editing
+.PN get
+with the
+.PN \-e
+option.
+.PP
+The
+.PN q
+flag defines the replacement for the 
+.PN \%%Q\%%
+identification keyword.
+.PP
+The
+.PN z
+flag is used in certain specialized interface programs.
+.TP
+.I Comments\^
+Arbitrary text surrounded by the bracketing lines 
+.PN @t
+and 
+.PN @T .
+The comments section typically contains a description of the file's purpose.
+.TP
+.I Body~~~~~\^
+The body consists of text lines and control lines.
+Text lines do not begin with the control character;
+control lines do.
+There are three kinds of control lines:
+.IR insert , ~delete ,
+and
+.IR end ,
+represented by the following:
+.EX
+@I DDDDD
+@D DDDDD
+@E DDDDD
+.EE
+.PP
+The digit string is the serial number corresponding to the delta for the
+control line.
+.SH See Also
+(1), delta(1), get(1), prs(1), sccs(1)
+.br
+.I An Introduction to the Source Code Control System,
+.br
+Eric Allman, Supplementary Documentation, Vol. II.
+.tr ~~
+.NXE "SCCS file" "format"

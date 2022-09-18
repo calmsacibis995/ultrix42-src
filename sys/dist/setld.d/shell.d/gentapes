@@ -1,0 +1,2112 @@
+#!/bin/sh5
+
+#   DO *NOT* EDIT: FILE CREATED BY MAKE Fri Nov 10 16:08:56 EST 1989
+
+#!/bin/sh5
+#
+# @(#)gentapes	4.1	(ULTRIX)	7/2/90
+#
+#    gentapes.sh5 - sh5 script for generic remote tape production
+#	OR
+#    gentapes.sh5 - sh5 routines  for generic remote tape production
+#
+#			Copyright (c) 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#								
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#								
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#								
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+GENTAPES_USAGE="Usage: gentapes [-verify] [-write] [remhost:[:]]kitcode device
+	-verify	verify only
+	-write	write only
+	-check_only
+		Check that each subset that needs to be written to a
+		kit exists in on of the kit directories.  Implies
+		-write.  In other words, this option inhibits anything
+		being written out to tape.
+
+	remhost	TCP or DECnet hostname where kit files reside
+	device	magtape output device
+
+	DECnet remhost (not yet implemented) should contain two colons, network
+	access information can be included, example:
+		remhost/username/password::ULT-4.0-V-BW
+	"
+
+GENTAPES_SCCSID="@(#)gentapes	4.1 (ULTRIX online dist) 7/2/90"
+readonly GENTAPES_SCCSID
+
+case "$GENTAPES_NO_EXECUTE" in
+    "")
+	PROG=`basename $0`
+	echo "$PROG: $GENTAPES_SCCSID"
+	PATH=/usr/5bin:/bin:/etc:/usr/bin:/usr/ucb:/usr/hosts
+	export PATH
+
+	ME=`whoami`
+	if [ $ME != "root" -a $ME != "tarsa" ]
+	then
+	    echo 1>&2 "?${PROG}: You must be root to run this script"
+	    exit 1
+	fi
+
+esac
+
+set -h	# hash subroutine references
+
+
+_KitManip_included="yes"
+
+_K_Interpret_Kitcap()
+{(
+FUNC=_K_Interpret_Kitcap NUMARGS=2
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+case "$#" in
+    ${NUMARGS})	# right number of args, perform search
+        KITTYPE="$1"
+	KITCAP="$2"
+	;;
+
+    *)		# wrong number of args, error
+	echo 1>&2 "$FUNC($# args): Must have ${NUMARGS} arguments"
+	exit 1
+	;;
+esac
+
+K_NAME= NEWIMAGE= KITDESC= PRODLIST= KITDIRS= SUBSETLIST= NVOLS=0
+
+KITCODE=`expr $KITTYPE : '\(.*\)..'`
+DEVTYPE=`expr $KITTYPE : '.*\(..\)'`
+
+KITDESC=`grep "^$KITTYPE[:|]" $KITCAP ` ||
+    {
+    ERRFLG=0
+    if [ "$DEVTYPE" = "MT" ]
+    then
+	KITDESC=`grep "^${KITCODE}TK[:|]" $KITCAP ` ||
+	    {
+	    echo 1>&2 "\07$FUNC: can't find either $KITTYPE or" \
+	    	      "${KITCODE}TK kit descriptors in kitcap."
+	    ERRFLG=1
+	    }
+    else
+	echo 1>&2 "\07$FUNC: can't find $KITTYPE kit descriptor in kitcap."
+	ERRFLG=1
+    fi
+
+    if [ $ERRFLG -ne 0 ]
+    then
+	(
+	echo "\nRecognized kit codes are as follows:"
+	grep '^[A-Z0-9]' $LCL_KITCAP |
+		sed -e '/^ULTTEST/d' \
+		    -e 's/:.*$//' \
+		    -e 's/[MT][TK][:|].*//' |
+		sort -u |
+		    pr -3 -t -l20 -o4
+	) | more 1>&2
+	echo 1>&2
+	exit 1
+    fi
+    }
+
+NEWIMAGE=`expr $KITCODE : '\([A-Z0-9][A-Z0-9][A-Z0-9]\)'`
+
+OFS="$IFS"
+IFS=:
+set $KITDESC
+RAW_NAME="$1"	# save raw name field
+shift		# shift past the kitname
+IFS="$OFS"
+
+for K in $*
+do
+    case $K in
+    *TK | *MT)		# entries ending in "TK" or "MT" are product codes
+	PRODCODE=`expr $K : '\(.*\)[TM][KT]'`
+	PRODLIST="$PRODLIST $PRODCODE"
+	;;
+
+    /* | ./* )		# entry starting with slash is the dir path, save it.
+	KITDIRS="$KITDIRS $K"
+	;;
+
+    %%*)		# entries starting with %% are volume numbers.
+	SUBSETLIST="$SUBSETLIST $K"
+
+	VOL=`expr $K : '%%\(.*\)'`
+
+	if [ $VOL -gt $NVOLS ]
+	then
+	    NVOLS=$VOL
+	fi
+	;;
+
+    * )			# All others are regular subsets, add them to the list.
+
+	SUBSETLIST="$SUBSETLIST $K"
+	;;
+    esac
+done
+
+OFS="$IFS"
+IFS='|'
+set $RAW_NAME
+IFS="$OFS"
+
+case $# in
+    1)			# no K_NAME if no '|'
+        K_NAME=
+	;;
+    2)			# K_NAME is second sub-field
+	K_NAME=$2
+	;;
+    *)
+	K_NAME=$2
+	echo 1>&2 "?$FUNC: WARNING: multiple synonyms in name field: $*"
+	echo 1>&2 " Using $K_NAME"
+	;;
+esac
+
+echo K_NAME='"'$K_NAME'"'
+echo NEWIMAGE='"'$NEWIMAGE'"'
+echo KITDESC='"'$KITDESC'"'
+echo PRODLIST='"'$PRODLIST'"'
+echo KITDIRS='"'$KITDIRS'"'
+echo SUBSETLIST='"'$SUBSETLIST'"'
+echo NVOLS='"'$NVOLS'"'
+)}
+_K_Get_Local_Kitcap()
+{(
+NUMARGS=4 FUNC=_K_Get_Local_Kitcap
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+case "$#" in
+    3|${NUMARGS})	# right number of args, perform search
+        HOST="$1"
+	REMKITCAP="$2"
+	LCLKITCAP="$3"
+	KIT_ROOT="$4"	# will be null if only 3 args
+	;;
+
+    *)		# wrong number of args, error
+	echo 1>&2 "$FUNC($# args): Must have ${NUMARGS} arguments"
+	exit 1
+	;;
+esac
+
+KITROOT_TOKEN=${KITCAP_KITROOT_TOKEN-"%%KITROOT%%"}
+
+_U_Remote_Copy $HOST ${REMKITCAP} /usr/tmp/tmpkitcap$$ ||
+    {
+    DISPHOST=`echo $HOST | sed 's=\(.*/.*\)/.*=\1/password:='`
+    echo 1>&2 "\07$FUNC: Cannot copy ${DISPHOST}:${REMKITCAP}"
+    return 1
+    }
+
+cat <<- '-EOFsedfile' > /usr/tmp/tmpkitcap.sed$$
+    0s** save the kitcap version line *
+    /@(#)/b
+    /^#/d;			0s**	delete comment lines *
+    /^[ 	]*$/d;		0s**	delete blank lines *
+    /:#/s/:#[^:]*//g;		0s**	delete in-line comments *
+
+    0s**---------------------------------------------------- *
+    0s** Combine all lines ending with backslash             *
+    0s** When there are no more backslashes, jump to comprss *
+    0s**---------------------------------------------------- *
+    :combine
+    /\\$/!bcomprss
+
+    s/\\$//;			0s**	remove continuation character *
+    N;				0s**	Append next line w/newline *
+    s/[ 	]*\n[ 	]*//;	0s**	remove newline & assoc whitespace *
+
+    bcombine
+
+    0s**----------------------------------------------- *
+    0s** Remove duplicates that arise out of prettyness *
+    0s**----------------------------------------------- *
+    :comprss
+
+    s/[ 	]*:[ 	]/:/g;	0s**	remove spaces around colons *
+    s/:::*/:/g;			0s**	change 2 or more colons into 1 colon *
+    s/[ 	]*|[ 	]/|/g;	0s**	remove spaces around vertical bars *
+
+    0s**	kitcap now consists of single lines *
+
+    /:#/s/:#[^:]*//g;		0s**	delete in-line comments *
+    s/:$//;			0s**	strip trailing colon *
+-EOFsedfile
+echo "    /${KITROOT_TOKEN}/s==${KIT_ROOT}=g" >> /usr/tmp/tmpkitcap.sed$$
+
+sed -f /usr/tmp/tmpkitcap.sed$$ /usr/tmp/tmpkitcap$$ > ${LCLKITCAP} ||
+	{
+	echo 1>&2 "\07$FUNC: Internal error: cannot filter local kitcap file."
+	return 1
+	}
+
+rm /usr/tmp/tmpkitcap$$ /usr/tmp/tmpkitcap.sed$$
+
+)}
+_K_Unpack_Instctrls()
+{(
+    NUMARGS=5 FUNC=_K_Unpack_Instctrls
+    test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+    case "$#" in
+	${NUMARGS})	# right number of args, set values
+	    HOST="$1"
+	    KITCODE="$2"
+	    KITCAP="$3"
+	    DEVTYPE="$4"
+	    PRODLIST="$5"
+	    ;;
+
+	*)		# wrong number of args, error
+	    echo 1>&2 "$FUNC($# args): Needs ${NUMARGS} arguments"
+	    exit 1
+	    ;;
+    esac
+
+    DIRELIST=
+
+    echo 1>&2 "\nCreating component list for $KITCODE\c"
+
+    set $PRODLIST
+    case $# in
+	1)  ;;
+	*)
+	    echo 1>&2 " by merging entries for $PRODLIST\c"
+	    ;;
+    esac
+
+    echo 1>&2 ".\n"
+
+    for PROD in $PRODLIST
+    do
+
+	KITDESC=`grep "^${PROD}${DEVTYPE}[:|]" $KITCAP` ||
+	    {
+	    if [ "$DEVTYPE" = "MT" ]
+	    then
+		KITDESC=`grep "^${PROD}TK[:|]" $KITCAP ` ||
+		    {
+		    echo 1>&2 "\07$FUNC: neither MT nor TK versions of $PROD" \
+			      "exists in kitcap."
+		    exit 1
+		    }
+	    else
+		echo 1>&2 "\07$FUNC: Product $PROD does not exist in $KITCAP"
+		exit 1
+	    fi
+	    }
+
+	OFS="$IFS"
+	IFS=:
+	set $KITDESC
+	IFS="$OFS"
+
+	for K in $*
+	do
+	    case $K in
+	    /* | ./* )	# only process kit data directories.
+		status=`_U_Dir_Exists $HOST "$K"`
+		case $status in
+		    false)
+			 echo 1>&2 "$FUNC:" \
+			      "\07Kitcap error: Directory $K does not exist."
+			exit 1
+			;;
+		    true)
+			;;
+		    *)	# Error message
+			echo 1>&2 "$FUNC: $status"
+			exit 1
+			;;
+		esac
+
+		DIRELIST="$DIRELIST $K"
+		;;
+	    esac
+	done
+    done
+
+    echo 1>&2 "Copying $PRODLIST control files into working directory \n"
+
+    for DIR in $DIRELIST
+    do
+	(cd $WORKDIR; _U_Remote_Tar_xpf $HOST $DIR/INSTCTRL) ||
+	    {
+	    DISPHOST=`echo $HOST | sed 's=\(.*/.*\)/.*=\1/password:='`
+	    echo 1>&2 "$FUNC: IRREGULARITY: Unable to unpack" \
+	    		"$DISPHOST:$DIR/$INSTCTRL"
+	    eval `_U_Prompt "Do you wish to continue anyway?" \
+			RESP "y yes n no" "no" "
+		You should only choose to continue if you desire a
+		potentially irregular kit.
+
+		If you are not sure what to do, then report this to
+		your supervisor immediately as a kit buiding problem."`
+
+	    case $RESP in
+		n*)
+		    echo 1>&2 "Kit build halted due to irregularity."
+		    exit 1
+		    ;;
+		y*)
+		    echo 1>&2 "Kit build continuing.  Expect problems."
+		    ;;
+	    esac
+	    }
+    done
+
+    echo DIRELIST='"'$DIRELIST'"'
+)}
+
+_K_Image_Merge()
+{(
+    NUMARGS=2 FUNC=_K_Image_Merge
+    test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+    case "$#" in
+	${NUMARGS})	# right number of args, set values
+	    NEWIMAGENAME="$1"
+	    SUBSETLIST="$2"
+	    ;;
+
+	*)		# wrong number of args, error
+	    echo 1>&2 "$FUNC($# args): Needs ${NUMARGS} arguments"
+	    exit 1
+	    ;;
+    esac
+
+    echo 1>&2 "Creating new merged image file.\n"
+
+    rm -f $MERGEDIR/INSTCTRL $MERGEDIR/*.image $MERGEDIR/*.comp
+
+    for K in $SUBSETLIST
+    do
+	case $K in
+	    %%*)	# volume changes, skip these
+	        continue
+		;;
+
+	    *"|"*)	# blocking information, remove.
+		OFS="$IFS"
+		IFS="|"
+		set $K
+		IFS="$OFS"
+		case $# in
+		    1) ;;
+		    *) K=$1 ;;
+		esac
+		;;
+	esac
+
+	if [ "$K" != "ROOT" ]
+	then	
+	    test -f ${WORKDIR}/${K}.ctrl || continue
+
+	    OLDIMAGE=`expr $K : '\([A-Z0-9][A-Z0-9][A-Z0-9]\)'`
+	    VERSCODE=`expr $K : '.*\([0-9][0-9][0-9]\)'`
+
+	    test -f $MERGEDIR/$OLDIMAGE$VERSCODE.comp ||
+		touch $MERGEDIR/$OLDIMAGE$VERSCODE.comp
+	fi
+
+	test -f $MERGEDIR/$NEWIMAGE.image ||
+	    touch $MERGEDIR/$NEWIMAGE.image
+
+	FOUND=0
+	for IMAGEFILE in $WORKDIR/*.image
+	do
+	    SUBSETINFO=`grep $K $IMAGEFILE` && FOUND=1
+
+	    if [ "$SUBSETINFO" ]
+	    then
+		DUPINFO=`grep "$K" $MERGEDIR/$NEWIMAGE.image`
+
+		if [ "$DUPINFO" != "$SUBSETINFO" ]
+		then
+		    if [ "$DUPINFO"]
+		    then
+			echo 1>&2 "?$FUNC: Fatal error. Cannot merge" \
+				  "image files."
+			echo 1>&2 " Multiple, different entries exist for $K."
+			return 1
+		    else
+			echo "$SUBSETINFO" >> $MERGEDIR/$NEWIMAGE.image
+		    fi
+		fi
+	    fi
+	done
+
+	if [ $FOUND -eq 0 ]
+	then
+	     echo 1>&2 "$FUNC: Cannot find image file entry for $K in any of"
+	     echo 1>&2 " the following image files: " $WORKDIR/*.image
+	     return 1
+	fi
+    done
+)}
+	
+_K_Product_Merge()
+{(
+    NUMARGS=3 FUNC=_K_Product_Merge
+    test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+    case "$#" in
+	${NUMARGS})	# right number of args, set values
+	    IMAGENAME="$1"
+	    KITNAME="$2"
+	    SUBSETLIST="$3"
+	    ;;
+
+	*)		# wrong number of args, error
+	    echo 1>&2 "$FUNC($# args): Needs ${NUMARGS} arguments"
+	    exit 1
+	    ;;
+    esac
+
+    SIGN="-"		# 1st LOCNUM-1 files are negative
+    TAPEVOL=1
+    LOCNUM=4
+    TAPELOC= 
+
+    echo 1>&2 "Merging subset control files.\n"
+
+    (cd $MERGEDIR && tar c${TARVERIFY}pf INSTCTRL $IMAGENAME.image) || return 1
+
+    for K in $MERGEDIR/*.comp
+    do
+	{
+	K=`basename $K`
+	if [ -f $WORKDIR/$K ]
+	then
+	    (cd $WORKDIR &&
+	        tar r${TARVERIFY}pf $MERGEDIR/INSTCTRL $K) || return 1
+	else
+	    echo 1>&2 "$FUNC: WARNING: Cannot find $WORKDIR/$K to add to $MERGEDIR/INSTCTRL"
+	fi
+	}
+    done
+
+    for K in $SUBSETLIST
+    do
+	if [ "$SIGN" = "-" ]
+	then
+	    LOCNUM=`expr $LOCNUM - 1`
+	    if [ "$LOCNUM" = "0" ]
+	    then
+		SIGN=
+		TAPELOC="$TAPEVOL:$LOCNUM"
+	    else
+		TAPELOC="$TAPEVOL:$SIGN$LOCNUM"
+	    fi
+	else
+	    LOCNUM=`expr $LOCNUM + 1`
+	    TAPELOC="$TAPEVOL:$LOCNUM"
+	fi
+	
+	case $K in
+	    %%*)		# new volume, reset position values
+		TAPEVOL=`expr $K : '%%\(.*\)'`
+		SIGN=-
+		LOCNUM=4
+		continue
+		;;
+
+	    *)			# check for existence of ctrl file
+		OFS="$IFS"
+		IFS="|"
+		set $K
+		IFS="$OFS"
+		case $# in
+		    1) ;;
+		    *) K=$1 ;;
+		esac
+
+		test -f ${WORKDIR}/${K}.ctrl ||
+		    {
+		    case $K in
+			SPACE | INSTCTRL | ROOT | *TK50*)
+			    ;;
+
+			* )	# other missing files are irregularities.
+			    echo 1>&2 "$FUNC: IRREGULARITY: No control file" \
+			    	      "for $K."
+			    eval `_U_Prompt "Do you wish to continue anyway?" \
+			    		RESP "y yes n no" "no" "
+			You should only choose to continue if you desire an
+			irregular kit.
+
+			If you are not sure what to do, then report this to
+			your supervisor immediately as a kit buiding
+			problem."`
+
+			    case $RESP in
+				n*)
+				    echo 1>&2 "Kit build halted due to" \
+				    	      "irregularity"
+				    exit 1
+				    ;;
+				y*)
+				    echo 1>&2 "Kit build continuing.  Expect" \
+				    	 "to see warnings about missing" \
+					 "checksum entries."
+				    ;;
+			    esac
+			    ;;
+		    esac
+		    continue
+		    }
+		;;
+	esac
+
+	if [ "$KITNAME" ]
+	then
+	    sed	-e "/^NAME=/s.*NAME='$KITNAME $K'" \
+		    -e "/^MTLOC=/s.*MTLOC=$TAPELOC" \
+			    ${WORKDIR}/$K.ctrl > ${LCL_DIR}/ctrl.$$
+	else
+	    sed	-e "/^MTLOC=/s.*MTLOC=$TAPELOC" \
+			    ${WORKDIR}/$K.ctrl > ${LCL_DIR}/ctrl.$$
+	fi && 
+	    {
+	    if test "$UTIL_DEBUG"
+	    then
+		echo "\noriginal file:" | cat - ${WORKDIR}/$K.ctrl
+		echo "\nnew file:" | cat - ${LCL_DIR}/ctrl.$$
+	    fi
+
+	    mv ${LCL_DIR}/ctrl.$$ ${WORKDIR}/$K.ctrl
+	    }
+
+	(cd $WORKDIR; tar r${TARVERIFY}pf $MERGEDIR/INSTCTRL $K.*)
+    done
+
+    echo 1>&2 "\nMerge process for $KITCODE complete. \n\n"
+)}
+
+
+ _Utility_included="yes"	
+dls()
+{(
+FUNC=dls
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+TIMEOUT_MSG="Connect failed, no response from object"
+ERR=/usr/tmp/dlserr$$
+OUT=/usr/tmp/dlsout$$
+MAXCOUNT=5
+COUNT=0
+
+while : true
+do
+    /usr/bin/dls $* 2> $ERR > $OUT
+    STATUS=$?
+
+    if [ $UTIL_DEBUG ]
+    then
+	echo "DEBUG: Status: $STATUS; Retry is: $COUNT of $MAXCOUNT" > /dev/tty
+	echo "DEBUG: ERR=`cat $ERR`" > /dev/tty
+	echo "DEBUG: OUT=`cat $OUT`" > /dev/tty
+    fi
+
+    if [ $STATUS -eq 0 ]
+    then
+	break
+    fi
+
+    if grep -s "$TIMEOUT_MSG" $ERR
+    then
+	COUNT=`expr $COUNT + 1`
+
+	SLEEPTIME=`expr  $COUNT \* 5`
+	sleep $SLEEPTIME
+
+	if [ $COUNT -ge $MAXCOUNT ]
+	then
+	    break
+	fi
+    else
+	break
+    fi
+done
+
+cat $OUT
+cat 1>&2 $ERR
+rm -f $ERR $OUT
+
+return $STATUS
+)}
+
+_U_Get_Hostname()
+{(
+FUNC=_U_Get_Hostname NUMARGS=1
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+case "$#" in
+    ${NUMARGS})	# right number of args, continue
+	ARG="$1"
+	;;
+
+    *)		# wrong number of args, error
+	echo 1>&2 "$FUNC($# args): Needs ${NUMARGS} argument"
+	return 1
+	;;
+esac
+
+HOST="local"	#default HOST is "local"
+
+DNET_SUFFIX=""
+case "$ARG" in
+    *::*)
+	DNET_SUFFIX=":"
+	;;
+esac
+
+OFS="$IFS"
+IFS=:
+set -- xxx $ARG
+shift
+IFS="$OFS"
+
+case "$#" in
+    2)
+	HOST=$1$DNET_SUFFIX
+	shift
+	;;
+
+    3)	# better be a DECnet node with a gateway
+	if [ "$DNET_SUFFIX" ]
+	then
+	    HOST=$1::$2$DNET_SUFFIX
+	    shift
+	    shift
+	else
+	    echo 1>&2 "?Only DECnet node names can contain a gateway-- $ARG"
+	    return 1
+	fi
+	;;
+esac
+
+echo HOST='"'"$HOST"'"'
+echo REMAINDER='"'"$1"'"'
+)}
+_U_Get_Dnet_Acc()
+{(
+FUNC=_U_Get_Dnet_Acc NUMARGS=3
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+case "$#" in
+    ${NUMARGS})	# right number of args, continue
+	HOST="$1"
+	DEFUSER="$2"
+	DEFPWD="$3"
+	;;
+
+    *)		# wrong number of args, error
+	echo 1>&2 "$FUNC($# args): Needs ${NUMARGS} argument"
+	return 1
+	;;
+esac
+
+if echo "$HOST" | grep -s ':$'
+then
+    HOST=`expr $HOST : '\(.*\):$'`
+else
+    echo HOST='"'$HOST'"'
+    return 0
+fi
+
+
+OFS="$IFS"
+IFS="/"
+set -- xxx $HOST
+shift
+IFS="$OFS"
+
+case "$#" in
+    0)
+	echo 1>&2 "?${FUNC}: null DECnet name found."
+	return 1
+	;;
+
+    *)
+	RAWHOST="$1"
+	USERNAME="$2"
+	PASSWORD="$3"
+	;;
+esac
+
+if [ ! "$USERNAME" ]
+then
+    eval `_U_Prompt "Username to use on Software Host $RAWHOST" USERNAME \
+    		"" "$DEFUSER" "
+	The Software Host Username is the name of the login account on
+	the remote software host where the kit data is located.
+
+	Usually the default is the correct value for this account.  In any
+	case your registration document should contain the proper user name.
+	"`
+fi
+
+if [ ! "$PASSWORD" ]
+then
+    if [ "$DEFPWD" ]
+    then
+	DEFAULT="$DEFPWD"
+    else
+	DEFAULT="no default"
+    fi
+    stty -echo > /dev/tty
+    echo "Password for $RAWHOST/${USERNAME}:: [$DEFAULT] ?\c" > /dev/tty
+    read password < /dev/tty; echo > /dev/tty
+    stty echo > /dev/tty
+
+    if [ "$password" ]
+    then
+	PASSWORD="$password"
+    else
+	PASSWORD="$DEFAULT"
+    fi
+fi
+
+HOST="${RAWHOST}/${USERNAME}/${PASSWORD}:"
+
+echo HOST='"'"$HOST"'"'
+)}
+_U_Machine_Type()
+{(
+FUNC=_U_Machine_Type NUMARGS=0
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+case "$#" in
+    ${NUMARGS})	# right number of args, continue
+	;;
+
+    *)		# wrong number of args, error
+	echo 1>&2 "$FUNC($# args): Needs ${NUMARGS} arguments"
+	return 1
+	;;
+esac
+
+if [ -f /bin/machine ]
+then
+    /bin/machine
+else
+    if [ -f /bin/vax ]
+    then
+	echo "unknown"
+    else
+	echo "vax"
+    fi
+fi
+)}
+
+_U_Dir_Exists()
+{(
+FUNC=_U_Dir_Exists NUMARGS=2
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+ 	case $- in
+		*x*) _TRACE=1; set +x ;;
+		*)   _TRACE=0 ;;
+	esac
+exec 2>&1	# put all errors to stdout
+
+case "$#" in
+    ${NUMARGS})
+        case $1 in
+	    local|`hostname`)
+		if [ -d $2 ]
+		then
+		    echo "true"
+		else
+		    echo "false"
+		fi
+		;;
+
+	    *:)
+	    dls $1:$2/. > /dev/null 2>&1
+	    case $? in
+		66)
+		    echo "false"
+		    ;;
+		*)
+		    echo "true"
+		    ;;
+	    esac
+	    ;;
+
+	    *)
+	        isdir=`rsh $1 -n "test -d $2 || echo 'no'"`dir
+		if [ "$isdir" = "dir" ]
+		then
+		    echo "true"
+		else
+		    echo "false"
+		fi
+		;;
+	esac
+	;;
+    *)
+	echo "$FUNC($# args): Must have exactly ${NUMARGS} arguments"
+	return 1
+	;;
+esac
+case $_TRACE in		# re-activate the trace if it was off.
+    on) set -x ;;
+esac
+)}
+
+_U_File_Exists()
+{(
+FUNC=_U_File_Exists NUMARGS=2
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+	case $- in
+		*x*) _TRACE=1; set +x ;;
+		*)   _TRACE=0 ;;
+	esac
+exec 2>&1	# put all errors to stdout
+
+case "$#" in
+    ${NUMARGS})
+	case $1 in
+	    local|`hostname`)
+		if [ -f $2 -a -r $2 ]
+		then
+		    echo "true"
+		else
+		    echo "false"
+		fi
+		;;
+
+	    *:)
+	        if dls -l $1:$2 > /tmp/FEdls$$ 2> /dev/null
+		then
+		    case `cat /tmp/FEdls$$` in
+		        d) RETURN="false" ;;
+			*) RETURN="true" ;;
+		    esac
+		    rm /tmp/FEdls$$
+		    echo "$RETURN"
+		else
+		    echo "false"
+		fi
+		;;
+
+	    *)  # TCP nodes
+	        is_rfile=`rsh $1 -n "test -f $2 -a -r $2" || echo 'no'"`good
+		if [ "$is_rfile" = "good" ]
+		then
+		    echo "true"
+		else
+		    echo "false"
+		fi
+		;;
+	esac
+	;;
+    *)
+	echo "$FUNC($# args): Must have exactly ${NUMARGS} arguments"
+	return 1
+	;;
+esac
+    
+case $_TRACE in
+    on) set -x ;;
+esac
+)}
+
+_U_Is_Space()
+{(
+FUNC=_U_Is_Space NUMARGS=2
+test $UTIL_DEBUG && echo 1>&2 "$DEBUG: $FUNC($*)"
+	case $- in
+		*x*) _TRACE=1; set +x ;;
+		*)   _TRACE=0 ;;
+	esac
+exec 2>&1	# put all errors to stdout
+
+case "$#" in
+    ${NUMARGS})
+	DIRECTORY="$1"
+	NEEDED="$2"
+	;;
+    *)
+	echo "$FUNC($# args): Must have exactly ${NUMARGS} arguments"
+	return 1
+	;;
+esac
+
+set xxx `df $DIRECTORY | tail -1`; shift
+if [ "$#" -ge 4 ]
+then
+    if [ "$4" -ge "$NEEDED" ]
+    then
+	echo "true"
+    else
+	echo "false"
+    fi
+else
+    echo "$FUNC: strange number of arguments from df call: $*"
+fi    
+
+case $_TRACE in
+    on) set -x ;;
+esac
+)}
+
+_U_Remote_Tar_xpf()
+{(
+FUNC=_U_Remote_Tar_xpf NUMARGS=2
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+ERRFILE=RTXerr$$
+case "$#" in
+    ${NUMARGS})	case $1 in
+		local|`hostname`)
+		    tar x${TARVERIFY}pf $2
+		    return $?
+		    ;;
+
+		*:)
+		    dcp -i $1:$2 - 2> $ERRFILE | tar x${TARVERIFY}pf -
+		    if [ -s $ERRFILE ]
+		    then
+			cat 1>&2 $ERRFILE
+			rm $ERRFILE
+			return 1
+		    else
+			rm $ERRFILE
+			return 0
+		    fi
+		    ;;
+
+		*)
+		    rsh $1 -n "cat $2" 2> $ERRFILE | tar x${TARVERIFY}pf -
+		    if [ -s $ERRFILE ]
+		    then
+			cat 1>&2 $ERRFILE
+			rm $ERRFILE
+			return 1
+		    else
+			rm $ERRFILE
+			return 0
+		    fi
+		    ;;
+	esac
+	;;
+    *)
+	echo 1>&2 "$FUNC($# args): Must have exactly ${NUMARGS} arguments"
+	return 1
+	;;
+esac
+)}
+
+_U_Remote_Copy()
+{(
+FUNC=_U_Remote_Copy NUMARGS=3
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+case "$#" in
+    ${NUMARGS})	case $1 in
+		local|`hostname`)
+		    cp $2 $3
+		    ;;
+
+		*:)
+		    dcp -i $1:$2 $3
+		    ;;
+
+		*)  # TCP nodes
+		    rcp $1:$2 $3
+		    ;;
+	esac
+	;;
+    *)
+	 echo 1>&2 "$FUNC($# args): Must have exactly ${NUMARG} arguments"
+	 return 1
+	;;
+esac
+)}
+
+_U_Remote_dd()
+{(
+FUNC=_U_Remote_dd NUMARGS=4
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+case "$#" in
+    ${NUMARGS})
+	HOST="$1"
+	INFILE="$2"
+	OUTFILE="$3"
+	OPTIONS="$4"
+	;;
+
+    *)
+	 echo 1>&2 "$FUNC($# args): Must have exactly ${NUMARGS} arguments"
+	 return 1
+	;;
+esac
+
+case $OUTFILE in
+    "")			# let output go to default stdin
+	OUTPARAM=""
+	;;
+    *)			# put output to output parameter
+	OUTPARAM="of=$OUTFILE"
+	;;
+esac
+
+ERRFILE=/tmp/error$$
+
+case $HOST in
+    local|`hostname`)
+	dd if=$INFILE $OUTPARAM $OPTIONS
+	return $?
+	;;
+
+    *:)
+	dcp -i $HOST:$INFILE - 2> $ERRFILE | dd $OUTPARAM $OPTIONS
+	if [ -s $ERRFILE ]
+	then
+	    cat 1>&2 $ERRFILE
+	    rm $ERRFILE
+	    return 1
+	else
+	    rm $ERRFILE
+	    return 0
+	fi
+	;;
+
+    *)
+	rsh $HOST -n dd if=$INFILE ibs=10k obs=2k 2> $ERRFILE |
+		dd $OUTPARAM $OPTIONS
+	if grep -s ":" $ERRFILE
+	then
+	    cat 1>&2 $ERRFILE
+	    rm $ERRFILE
+	    return 1
+	else
+	    rm $ERRFILE
+	    return 0
+	fi
+
+	;;
+esac
+)}
+_U_Remote_ls()
+{(
+FUNC=_U_Remote_ls
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+case "$#" in
+    1|2)
+	HOST="$1"
+	FILEPAT="$2"
+	;;
+
+    *)
+	 echo 1>&2 "$FUNC($# args): Must have 1 or 2 arguments" \
+	 	' (2nd can be specified as "", if null desired)'
+	 return 1
+	;;
+esac
+
+case $HOST in
+    local|`hostname`)
+	ls "$FILEPAT"
+	;;
+
+    *:)
+	dls $HOST:"$FILEPAT" | sed 's=^.*/=='
+	;;
+
+    *)
+	rsh $HOST -n ls "$FILEPAT"
+	;;
+esac
+)}
+_U_Find_Dir()
+{(
+FUNC=_U_Find_Dir NUMARGS=3
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+case "$#" in
+    ${NUMARGS})	# right number of args, perform search
+        HOST="$1"
+	FILENAME="$2"
+	DIRLIST="$3"
+	;;
+
+    *)		# wrong number of args, error
+	echo 1>&2 "$FUNC($# args): Needs ${NUMARGS} arguments"
+	return 1
+	;;
+esac
+
+FILEFOUND=0	# assume not found
+
+for FILEDIR in $DIRLIST
+do
+    case $HOST in
+	local|`hostname`)
+	    if [ -f $FILEDIR/$FILENAME -o -d $FILEDIR/$FILENAME ]
+	    then
+		FILEFOUND=1
+		break
+	    fi
+	    ;;
+
+	*:)
+	    if dls -l $HOST:$FILEDIR/$FILENAME > /dev/null 2>> /tmp/fderr$$
+	    then
+		FILEFOUND=1
+		break
+	    fi
+	    ;;
+
+	*)  # TCP nodes
+	    result=`rsh $HOST -n "test -f $FILEDIR/$FILENAME \
+	    			-o -d $FILEDIR/$FILENAME || echo 'not'"`found
+	    if [ "$result" = "found" ]
+	    then
+		FILEFOUND=1
+		break
+	    fi
+	    ;;
+    esac
+done
+
+if [ $FILEFOUND = "1" ]
+then
+    echo FILEDIR='"'"$FILEDIR"'"'
+else
+    if [ -r /tmp/fderr$$ ]
+    then
+	uniq 1>&2 /tmp/fderr$$
+	rm /tmp/fderr$$
+    fi
+    echo FILEDIR='""'
+fi
+)}
+
+_U_Prompt()
+{(
+FUNC=_U_Prompt NUMARGS=5
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+case "$#" in
+    ${NUMARGS})	# right number of args, perform search
+        PROMPT="$1"
+	ITEM="$2"
+	OPTIONS="$3"
+	DEFAULT="$4"
+	HELPMSG="$5"
+	;;
+
+    *)		# wrong number of args, error
+	echo 1>&2 "$FUNC($# args): Needs ${NUMARGS} arguments"
+	exit 1
+	;;
+esac
+
+if [ "$DEFAULT" ]
+then
+    DEFAULT_TEXT="$DEFAULT"
+else
+    DEFAULT_TEXT="no default"
+fi
+
+if [ "$OPTIONS" ]
+then
+    OPTION_TEXT="($OPTIONS ?)"
+else
+    OPTION_TEXT=""
+fi
+
+while : true
+do
+    echo 1>&2 "${PROMPT}${OPTION_TEXT}[${DEFAULT_TEXT}]: \c"
+
+    read INPUT
+
+    if [ "$INPUT" = "?" ]
+    then
+	echo "${HELPMSG}\n" > /tmp/help$$
+	more 1>&2 /tmp/help$$
+	rm /tmp/help$$
+    else
+	if [ "$INPUT" ]
+	then
+	    if [ "$OPTIONS" ]
+	    then
+		for OPT in $OPTIONS
+		do
+		    if [ "$OPT" = "$INPUT" ]
+		    then
+			echo $ITEM'="'$INPUT'"'
+			break 2
+		    fi
+		done
+		echo 1>&2 "?Invalid option.  Must be one of: $OPTIONS"
+		echo 1>&2 " or ? for help"
+	    else
+		echo $ITEM'="'$INPUT'"'
+		break
+	    fi
+	else
+	    if [ "$DEFAULT" ]
+	    then
+		echo $ITEM'="'$DEFAULT'"'
+		break
+	    else
+		echo 1>&2 "%Type '?' for HELP"
+	    fi
+	fi
+    fi
+done
+)}
+_U_Request_Device_Load()
+{(
+FUNC=_U_Request_Device_Load NUMARGS=4
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+case "$#" in
+    ${NUMARGS})	# right number of args, perform search
+        DEV="$1"
+	TYPE="$2"
+	PROMPT="$3"
+	ACCESS="$4"
+	;;
+
+    *)		# wrong number of args, error
+	echo 1>&2 "$FUNC($# args): Needs ${NUMARGS} arguments"
+	return 1
+	;;
+esac
+
+case $TYPE in
+    tape | t* | disk | d* | unknown | u* ) ;;
+    *)
+	echo 1>&2 "?$FUNC: Invalid device type: '$TYPE', must be one of:"
+	echo 1>&2 "        disk tape unknown"
+	return 1
+	;;
+esac
+    
+case $ACCESS in
+    read | r* | write | w* ) ;;
+    *)
+	echo 1>&2 "?$FUNC: Invalid access: '$ACCESS', must be one of:"
+	echo 1>&2 "        read write"
+	return 1
+	;;
+esac
+
+while : true
+do
+    echo 1>&2 "$PROMPT"
+    echo 1>&2 "Press RETURN when ready, 'q' to quit: \c"
+    read TAPEREADY
+    case $TAPEREADY in
+	q)
+	    return 1
+	    ;;
+
+	"")
+	    case "$TYPE" in
+		t*)
+		    mt -f $DEV rew || continue
+
+		    if _U_Check_Device $DEV $ACCESS
+		    then
+			mt -f $DEV rew && break
+		    fi
+		    ;;
+
+		d* | u* )
+		    if _U_Check_Device $DEV $ACCESS
+		    then
+		        break
+		    fi
+		    ;;
+	    esac
+	    ;;
+	*)
+	    echo 1>&2 "\n?Invalid response '$TAPEREADY'.\n"
+	    continue
+	    ;;
+    esac
+done
+return 0
+)}
+_U_Check_Device()
+{(
+FUNC=_U_Check_Device NUMARGS=2
+test $UTIL_DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+case "$#" in
+    ${NUMARGS})	# right number of args, perform search
+        DEV="$1"
+	ACCESS="$2"
+	;;
+
+    *)		# wrong number of args, error
+	echo 1>&2 "$FUNC($# args): Needs ${NUMARGS} arguments"
+	return 1
+	;;
+esac
+
+case $ACCESS in
+    read | r* | write | w* | R* | W*) ;;
+    *)
+	echo 1>&2 "?$FUNC: Invalid access: '$ACCESS', must be one of:"
+	echo 1>&2 "        read write READ WRITE"
+	return 1
+	;;
+esac
+
+case $ACCESS in
+    w* | W* )
+	if [ "$UTIL_DEBUG" ]
+	then
+	    echo "echo 'Writeable?' | dd of=$DEV bs=1b conv=sync" >/tmp/RTLDD$$
+	else
+	    echo "	\c" > /tmp/RTLDD$$
+	fi
+
+	if echo "Writeable?" | dd of=$DEV bs=1b conv=sync 2>> /tmp/RTLDD$$
+	then
+	    rm -f /tmp/RTLDD$$
+	    return 0
+	else
+	    echo 1>&2 "Cannot write to $DEV:"
+	    cat 1>&2 /tmp/RTLDD$$; echo 1>&2 " "
+	    rm -f /tmp/RTLDD$$
+	    return 1
+	fi
+	;;
+
+    *)
+	if [ "$UTIL_DEBUG" ]
+	then
+	    echo "dd if=$DEV of=/dev/null bs=1b count=1" > /tmp/RTLDD$$
+	else
+	    echo "	\c" > /tmp/RTLDD$$
+	fi
+	if dd if=$DEV of=/dev/null bs=1b count=1 2>> /tmp/RTLDD$$
+	then
+	    rm -f /tmp/RTLDD$$
+	    return 0
+	else
+	    echo 1>&2 "Cannot read from $DEV:"
+	    cat 1>&2 /tmp/RTLDD$$; echo 1>&2 " "
+	    rm -f /tmp/RTLDD$$
+	    return 1
+	fi
+	;;
+esac
+
+echo 1>&2 "?$FUNC: Unexpected return."
+return 1
+)}
+
+GT_Get_Arguments()
+{(
+FUNC=GT_Get_Arguments
+test $DEBUG && echo 1>&2 "DEBUG: $FUNC($*)"
+
+WRITE=0 VFY=0 CHECK_ONLY=0 HOST= KITCODE= DEV= DEVTYPE= STAT=
+
+while : true
+do
+    case "$1" in
+	-verify|-v*)
+	    VFY=1
+	    shift
+	    ;;
+
+	-write|-w*)
+	    WRITE=1
+	    shift
+	    ;;
+
+	-check_only|-c*)
+	    CHECK_ONLY=1
+	    shift
+	    ;;
+
+	-help|-h*)
+	    echo "${GENTAPES_USAGE}" | more 1>&2
+	    return 1
+	    ;;
+
+	-*)
+	    (echo "$PROG.$FUNC: Invalid flag-- '$1'\n"
+	     echo "${GENTAPES_USAGE}") | more 1>&2
+	    return 1
+	    ;;
+
+	*)
+	    break
+	    ;;
+    esac
+done
+
+case "$WRITE$VFY" in
+    00)
+	WRITE=1 VFY=1
+	;;
+esac
+
+if [ $CHECK_ONLY -ne 0 ]
+then
+	WRITE=1 VFY=0
+fi
+
+case $# in
+    2)	
+        DEV=$2
+
+	if file $DEV | grep -s "TK.*" > /dev/null || test "$DEV" = "/dev/null"
+	then
+	    DEVTYPE="TK"
+	else
+	    DEVTYPE="MT"
+	fi
+
+	test "$DEBUG" && echo 1>&2 "DEBUG: DEVTYPE=$DEVTYPE"
+
+	eval `_U_Get_Hostname "$1"` || return 1
+
+	KITCODE="$REMAINDER"
+	;;
+
+    *)  (echo "?Invalid number of arguments ($#): $*\n"
+	 echo 1>&2 "${GENTAPES_USAGE}" ) | more 1>&2
+	return 1
+	;;
+esac
+
+echo WRITE='"'$WRITE'"' VFY='"'$VFY'"' CHECK_ONLY='"'$CHECK_ONLY'"' \
+	HOST='"'$HOST'"' KITCODE='"'$KITCODE'"'\
+	 DEV='"'$DEV'"' DEVTYPE='"'$DEVTYPE'"'
+return 0
+)}
+
+GT_Create_Kit()
+    {
+    (test $DEBUG && echo 1>&2 "DEBUG: GT_Create_Kit($*)")
+
+    VERIFYLIST=
+
+    OPNAME="Generating"
+    if [ $CHECK_ONLY -ne 0 ]
+    then
+	OPNAME="Checking"
+    fi	
+
+    DISPHOST=`echo $HOST | sed 's=\(.*/.*\)/.*=\1/password::='`
+    case $THISVOL in
+	"" | 0)
+	    echo 1>&2 "$OPNAME $KITCODE kit from $DISPHOST on $DEV"
+	    ;;
+	*)
+	    echo 1>&2 "$OPNAME volume $THISVOL of $KITCODE from $DISPHOST on $DEV"
+	    ;;
+    esac
+
+    if [ $CHECK_ONLY -ne 0 ]
+    then
+	echo 1>&2 "Note: component existence check only. No kit will be made."
+    fi
+
+    if test ! "$DEV" = /dev/null
+    then
+	mt -f $DEV rew &
+	echo 1>&2 rewind.
+    fi
+
+    if [ $CHECK_ONLY -eq 0 ]
+    then
+        echo 1>&2 "Write."
+    fi
+
+    PREVSUBSET=
+    for K in $SUBSETLIST
+    do
+	case $K in
+	    %%*)		# volume change
+		if [ "$VFY" -ne 0 ]
+		then
+		    NEXTVOL=`expr $K : '%%\(.*\)'`
+		    THISVOL=`expr $NEXTVOL - 1`
+		    GT_Verify_Tape
+		fi
+
+		VERIFYLIST=
+		_U_Request_Device_Load $DEV "tape" \
+		       "Mount $KITCODE volume $NEXTVOL on $DEV" write || exit 1
+		echo 1>&2 "Generating volume $NEXTVOL of $KITCODE" \
+			"from $DISPHOST on $DEV"
+		continue
+		;;
+	esac
+
+	if [ $CHECK_ONLY -ne 0 ]
+	then
+	    if [ "$PREVSUBSET" = "$K" ]
+	    then
+	        PREVSUBSET="$K"
+		continue
+	    fi
+
+	    PREVSUBSET="$K"
+	fi
+
+	OFS="$IFS"
+	IFS='|'
+	set $K
+	IFS="$OFS"
+
+	IMAGE=$1
+
+	case "$2" in
+	   "")	BS=20
+		;;
+	    *)  BS=$2
+		;;
+	esac
+
+	echo 1>&2 "Image $IMAGE...\c"
+	VERIFYLIST="$VERIFYLIST $K"
+	wait
+
+	case $PRODLIST in
+	    "" )
+		;;
+
+	    * )
+		case $IMAGE in
+		    INSTCTRL )
+			FILEDIR=$MERGEDIR
+			;;
+		    * )
+			eval `_U_Find_Dir $HOST $IMAGE "$DIRELIST"`
+
+			case $FILEDIR in
+			    "")
+				echo 1>&2 "Cannot find $IMAGE in any of the" \
+					  "following directories:"
+				echo 1>&2 "$DIRELIST"
+
+				case $HOST in
+				    *:) ;;
+				    *) exit 1
+				esac
+				echo 1>&2 "\nTrying again. . ."
+
+				eval `_U_Find_Dir $HOST $IMAGE "$DIRELIST"`
+
+				case $FILEDIR in
+				    "")
+					echo 1>&2 "\07 $IMAGE not found in" \
+						  "any of the following" \
+						  "directories:"
+					echo 1>&2 "$DIRELIST"
+					exit 1
+					;;
+				esac
+
+				;;
+			esac
+			;;
+		esac
+		;;
+	esac
+
+	if [ $CHECK_ONLY -eq 0 ]
+	then
+	    if [ "$FILEDIR" = "$MERGEDIR" ]
+	    then
+		echo "dd if=$FILEDIR/$IMAGE of=$DEV bs=${BS}b" > $DD_ERRS
+		dd if=$FILEDIR/$IMAGE of=$DEV bs=${BS}b 2>> $DD_ERRS
+	    else
+		for try in 1 2 3 4 0
+		do
+		    echo "_U_Remote_dd $DISPHOST $FILEDIR/$IMAGE" \
+			    " $DEV 'obs=${BS}b'" > $DD_ERRS
+		    _U_Remote_dd $HOST $FILEDIR/$IMAGE \
+			    $DEV "obs=${BS}b" 2>> $DD_ERRS ||
+			{
+			echo 1>&2 "\nError on copy:"
+			sed 1>&2 's/^/    /' $DD_ERRS
+
+			if [ ! "$DEV" = /dev/null ]
+			then
+			    mt -f $DEV bsf
+			    mt -f $DEV fsf
+			    echo 1>&2 "\nRepositioning tape to retry write."
+			fi
+			if [ $try -ne 0 ]
+			then
+			   sleep `expr $try \* 5`
+			   echo 1>&2 "Retrying $IMAGE...\c"
+			else
+			    try="error"
+			    echo 1>&2 "giving up."
+			fi
+			continue
+			}
+		    break
+		done
+		test "$try" != "error"
+	    fi ||
+		{
+		echo 1>&2 "\07Failed:"
+		sed 1>&2 's/^/	/' $DD_ERRS
+		rm $DD_ERRS
+		exit 1
+		}
+
+	    if [ "$DEBUG" ]
+	    then
+		cat $DD_ERRS
+	    fi
+
+	    rm $DD_ERRS
+	    echo 1>&2 "done.\n"
+	else
+	    echo 1>&2 "exists.\n"
+	fi
+    done
+
+    THISVOL=$NEXTVOL		# Done with this volume
+    STAT=0
+    }
+
+GT_Verify_Tape()
+    {
+    (test $DEBUG && echo 1>&2 "DEBUG: GT_Verify_Tape($*)")
+
+    if [ "$VERIFYLIST" = "" ]
+    then
+	return 0
+    fi
+    DISPHOST=`echo $HOST | sed 's=\(.*/.*\)/.*=\1/password::='`
+    case $THISVOL in
+	"" | 0)
+	    echo 1>&2 "Verifying $KITCODE kit from $DISPHOST on $DEV"
+	    ;;
+	*)
+	    echo 1>&2 "Verifying volume $THISVOL of $KITCODE from $DISPHOST on $DEV"
+	    ;;
+    esac
+
+    if test ! "$DEV" = "/dev/null"
+    then
+	mt -f $DEV rew &
+	echo 1>&2 rewind.
+    fi
+
+    STAT=1	# reset to failure, will set to success at end
+
+    case $PRODLIST in
+	"")
+	    FILELOC=$HOST
+	    ;;
+	* )
+	    FILEDIR=$MERGEDIR
+	    FILELOC=local
+	    ;;
+    esac
+
+
+    CODE=`expr $KITCODE : '\([A-Z0-9][A-Z0-9][A-Z0-9]\)'`
+
+    _U_Remote_Copy $FILELOC $FILEDIR/$CODE.image \
+	    $LCL_DIR/lcl_$CODE.image$$ ||
+	{
+	echo 1>&2 "\07$PROG: error accessing checksum file."
+	exit 1
+	}
+
+    for V in $VERIFYLIST
+    do
+	case $V in
+	    %%*)		# volume change
+		NEXTVOL=`expr $V : '%%\(.*\)'`
+		THISVOL=`expr $NEXTVOL - 1`
+		_U_Request_Device_Load $DEV "tape" \
+			"Mount $KITCODE volume $NEXTVOL on $DEV" read || exit 1
+		echo 1>&2 "Verifying volume $THISVOL of $KITCODE" \
+			"from $DISPHOST on $DEV"
+		continue
+		;;
+	esac
+
+	OFS="$IFS"
+	IFS='|'
+	set $V
+	IFS="$OFS"
+
+	IMAGE=$1
+
+	case "$2" in
+	    "") BS=20
+		;;
+	    *)  BS=$2
+		;;
+	esac
+
+	echo 1>&2 "Image $IMAGE...\c"
+	wait
+
+	case $IMAGE in
+	    *TK50* )
+		case $PRODLIST in
+		    "") ;;
+		    * )
+			eval `_U_Find_Dir $HOST $IMAGE "$DIRELIST"`\
+							 2> $LCL_DIR/finderrs$$
+			;;
+		esac
+
+		case $FILEDIR in
+		    "" )
+			echo 1>&2 "\n$PROG: source ${IMAGE} not found. Reason:"
+			sed 's/^/    /' $LCL_DIR/finderrs$$
+			rm $LCL_DIR/finderrs$$
+			if test ! "$DEV" = "/dev/null"
+			then
+			    mt -f $DEV fsf ||
+				{
+				echo 1>&2 "\07Tape positioning error."
+				exit 1
+				}
+			fi
+			;;
+
+		    * )
+			rm $LCL_DIR/finderrs$$
+
+			SUM1=$LCL_DIR/sum_a$$
+			SUM2=$LCL_DIR/sum_b$$
+
+			echo "dd if=$DEV bs=${BS}b" > ${DD_ERRS}-b
+			dd if=$DEV bs=${BS}b 2>> ${DD_ERRS}-b |
+				sum > $SUM2 &
+
+			for try in 1 2 3 4 0
+			do
+			    echo "_U_Remote_dd $DISPHOST $FILEDIR/$IMAGE" \
+				 "obs=${BS}b" > $DD_ERRS
+			    _U_Remote_dd $HOST $FILEDIR/$IMAGE "" \
+				    "obs=${BS}b" 2>> $DD_ERRS |
+				sum > $SUM1 &
+
+			    if grep "dcp:" $DD_ERRS
+			    then
+			        echo 1>&2 "\nError in checksum calculation:"
+				sed 1>&2 's/^/    /' $SUM1 $DD_ERRS
+				if [ $try -ne 0 ]
+				then
+				    sleep `expr $try \* 5`
+				    echo 1>&2 "Retrying calculation. . ."
+				else
+				    try="error"
+				    echo 1>&2 "giving up."
+				    break
+				fi
+				continue
+			    else
+			        break # checksum is correct
+			    fi
+			done
+
+			wait
+
+
+			if [ "$DEBUG" ]
+			then
+			    echo "IMAGE DD_ERRS:"
+			    cat $DD_ERRS
+			    echo "\nDEV DD_ERRS:"
+			    cat $DD_ERRS-b
+			fi
+			    
+			set -- xxx `cat $SUM1`
+			shift
+			ISUM=$1 ISIZE=$2
+
+			set -- xxx `cat $SUM2`
+			shift
+			DSUM=$1 DSIZE=$2
+
+			case "$ISUM$ISIZE" in
+			    $DSUM$DSIZE)
+				;;
+			    *)
+				echo 1>&2 "\n\07$PROG: Image $IMAGE checksum" \
+					  "does not match device checksum:\n" \
+					  "    $ISUM != $DSUM or\n" \
+					  "    $ISIZE != $DSIZE"
+				echo 1>&2 "Verify failed!!\nExtra info:" \
+					  "\nImage:"
+				sed 1>&2 's/^/    /' $DD_ERRS
+				echo 1>&2 "\nDevice:"
+				sed 1>&2 's/^/    /' ${DD_ERRS}-b
+
+				rm $DD_ERRS ${DD_ERRS}-b $SUM1 $SUM2
+				exit 1
+				;;
+			esac
+
+			rm $DD_ERRS ${DD_ERRS}-b $SUM1 $SUM2
+			;;
+		esac
+		echo 1>&2 "done."
+		continue
+		;;
+	esac
+
+	grep $V $LCL_DIR/lcl_$CODE.image$$ > $LCL_DIR/sum$V$$ ||
+	    {
+	    case $V in
+		ROOT | [A-Z0-9][A-Z0-9][A-Z0-9]*[0-9][0-9][0-9])
+		    echo 1>&2 "\nWarning: No checksum entry found for" \
+		    		"subset $V"
+		    ;;
+	    esac
+
+	    if test ! "$DEV" = "/dev/null"
+	    then
+		mt -f $DEV fsf ||
+		    {
+		    echo 1>&2 "\n\07Tape positioning error."
+		    exit
+		    }
+	    fi
+	    echo 1>&2 "done."
+	    continue
+	    }
+
+
+	set XXX `cat $LCL_DIR/sum$V$$`
+	shift
+
+	SUM=$1
+	SIZE=$2
+
+	dd if=$DEV bs=${BS}b rbuf=0 2> $DD_ERRS |
+	    sum > $LCL_DIR/SUM$$ ||
+		{
+		echo 1>&2 "\n\07$PROG: checksum error image $V."
+		cat 1>&2 $DD_ERRS
+		rm $DD_ERRS
+		exit
+		}
+
+        test "$DEBUG" &&
+	    {
+	    echo "\nDD_ERRS$$ file:"
+	    cat $DD_ERRS
+	    echo "\nDEBUG: kit sum file, $LCL_DIR/sum$V$$ is:"
+	    cat $LCL_DIR/sum$V$$
+	    echo "DEBUG: sum file, $LCL_DIR/SUM$$ is:"
+	    cat $LCL_DIR/SUM$$
+	    }
+
+	rm $DD_ERRS
+
+	set XXX `cat $LCL_DIR/SUM$$`
+	shift
+	DEVSUM=$1 DEVSIZE=$2
+
+	case "$DEVSUM$DEVSIZE" in
+	$SUM$SIZE)
+		;;
+	*)
+		echo 1>&2 "\n\07$PROG: Image file checksum for $IMAGE does" \
+			  "not match device checksum:\n" \
+			  "    $SUM != $DEVSUM or\n" \
+			  "    $SIZE != $DEVSIZE"
+		exit
+	esac
+
+	rm -f $LCL_DIR/sum$V$$
+	rm -f $LCL_DIR/SUM$$
+	echo 1>&2 "done.\n"
+    done
+
+    echo 1>&2 rewind.
+    if test ! "$DEV" = "/dev/null"
+    then
+	mt -f $DEV rew
+    fi
+
+    STAT=0	# Successful, conclusion
+    }
+
+
+Gentapes_Mainline()
+{
+PROG=`basename $0`
+umask 022	# allow no group or world write access
+STAT=1		# assume failure, unless explicitly set to success
+
+TAPEDEV="mt"	# for DEC: production
+
+THISVOL=0 NEXTVOL=
+
+LCL_DIR=/usr/tmp
+LCL_KITCAP=$LCL_DIR/lcl_kitcap$$
+DD_ERRS=$LCL_DIR/dd_errors$$
+
+MERGEDIR=${GENTAPE_MERGEDIR:-"/usr/tmp/merge"$$}
+WORKDIR=${GENTAPE_WORKDIR:-"$MERGEDIR/instctrl"}
+REM_KITCAP=${KITCAP_LOCATION:-"/etc/kitcap"}
+KITROOT=${KITCAP_KITROOT:-""}
+
+DEBUG=${GENTAPE_DEBUG-""}
+
+COMPLIST=
+PRODLIST=
+PRODCODE=
+DIRELIST=
+SUBSETLIST=
+
+STAT=1	# assume failure
+
+trap '	exit $STAT' 0 1 2 3 15
+
+WRITE=0 VFY=0 HOST= KITCODE= DEV= DEVTYPE=
+
+eval `GT_Get_Arguments $*` || exit 1	# exit on failure
+
+trap '  echo 1>&2 "Cleaning up. . ."
+	rm -rf $MERGEDIR $WORKDIR $LCL_DIR/*$$
+	case $STAT in
+	    0)
+		echo 1>&2 "Operation successfully concluded"
+		;;
+	    *)
+		echo 1>&2 "Error during operation"
+		;;
+	esac
+	exit $STAT' 0 1 2 3 15
+_K_Get_Local_Kitcap $HOST $REM_KITCAP $LCL_KITCAP $KITROOT || exit 1
+
+test -w $DEV ||
+    {
+    echo 1>&2 "\07No write access to $DEV"
+    exit 1
+    }
+
+case $DEV in
+    /dev/null) ;;
+    *)
+	UD=`expr $DEV : '.*'${TAPEDEV}'\([0-9][0-9]*.*\)'`
+	DEV=/dev/nr${TAPEDEV}$UD
+        ;;
+esac
+
+test $DEBUG && echo 1>&2 "DEBUG: UD=$UD DEV=$DEV"
+
+if [ "$WRITE" -eq 1 ]
+then
+    echo "Writeable?" | dd of=$DEV bs=1b conv=sync 2> /dev/null ||
+	{
+	_U_Request_Device_Load $DEV "tape" \
+		"\nPlease mount a write-enabled volume 1 of $KITCODE on $DEV" \
+		write || exit 1
+	}
+else
+    dd if=$DEV of=/dev/null bs=1b 2> /dev/null ||
+	{
+	_U_Request_Device_Load $DEV "tape" \
+		"\nPlease mount volume 1 of $KITCODE on $DEV" read || exit 1
+	}
+fi
+
+K_NAME= NEWIMAGE= KITDESC= PRODLIST= KITDIRS= SUBSETLIST= NVOLS=
+eval `_K_Interpret_Kitcap "${KITCODE}${DEVTYPE}" "$LCL_KITCAP"` || exit 1
+
+set xxx $PRODLIST
+case $# in
+    1 )
+	test $DEBUG && echo 1>&2 "DEBUG: we are a single product"
+
+	PRODLIST=$KITCODE
+	;;
+    * )
+	test $DEBUG && echo 1>&2 "DEBUG: we are a multiple products"
+	;;
+esac
+
+mkdir $MERGEDIR
+mkdir $WORKDIR
+
+cd $WORKDIR
+
+DIRELIST=
+
+if eval `_K_Unpack_Instctrls $HOST $KITCODE $LCL_KITCAP $DEVTYPE "$PRODLIST"`
+then
+    if test "$DIRELIST"
+    then
+	_K_Image_Merge $NEWIMAGE "$SUBSETLIST" || exit 1
+    else
+	echo 1>&2 "$PROG: DIRELIST is null.  Internal error."
+	exit 1
+    fi
+else
+    exit 1
+fi
+
+case $WRITE$VFY in
+    01 )		# Verify only, set VERIFYLIST to all subsets
+	VERIFYLIST=$SUBSETLIST
+	GT_Verify_Tape || exit 1
+	;;
+
+    10)			# Create only, skip verify pass
+	_K_Product_Merge $NEWIMAGE "$K_NAME" "$SUBSETLIST" || exit 1
+	GT_Create_Kit || exit 1
+	;;
+
+    11)			# Create & Verify, verify the current VERIFYLIST only
+	_K_Product_Merge $NEWIMAGE "$K_NAME" "$SUBSETLIST" || exit 1
+	GT_Create_Kit || exit 1
+	GT_Verify_Tape || exit 1
+	;;
+
+    *)
+	echo 1>&2 "$PROG: Internal error. " \
+		"Unexpected values for WRITE (=$WRITE) and/or VFY (=$VFY)"
+	exit 1
+	;;
+esac
+
+if [ $CHECK_ONLY -ne 0 ]
+then
+    echo 1>&2 "Check of \c"
+fi
+echo 1>&2 "\07Kit $KITCODE done."
+exit $STAT
+}
+case $GENTAPES_NO_EXECUTE in
+    "") Gentapes_Mainline $* ;;
+esac

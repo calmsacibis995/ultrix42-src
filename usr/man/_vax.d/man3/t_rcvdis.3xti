@@ -1,0 +1,115 @@
+.TH t_rcvdis 3xti
+.SH Name
+t_rcvdis \- retrieve information from disconnect
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_rcvdis(\fIfd, discon\fB)
+.br
+.B int \fIfd\fB;
+.br
+.B struct t_discon \fI*discon\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the local transport endpoint. 
+.IP \fIdiscon\fR 10
+Points to a \fBt_discon\fR structure containing the following members:
+.EX
+struct netbuf \fIudata\fP;
+int \fIreason\fP;
+int \fIsequence\fR:
+.EE
+.IP
+The members of the \fIt_discon\fR struct have the following meanings:
+.RS 10
+.IP \fIudata\fR 12
+Identifies any user data that was sent with the disconnect.
+.IP \fIreason\fR
+Specifies the reason for the disconnect through a protocol-dependent reason code.
+.IP \fIsequence\fR
+Identifies an outstanding connect indication with which the connection is 
+associated. The \fIsequence\fR field is only meaningful when 
+.PN t_rcvdis()
+is issued by a passive transport user who has executed 
+one or more 
+.Pn t_listen()
+functions and is processing the resulting 
+connect indications. If a disconnect indication occurs, \fIsequence\fP can 
+be used to identify which of the outstanding connect indications is associated
+with the disconnect.
+.RE
+.SH Description
+This function is used to identify the cause of a disconnect and to
+retrieve any user data sent with the disconnect.
+.NXR "t_rcvdis system call"
+.NXR "disconnect" "retrieving information"
+.PP
+If a user does not care if there is incoming data and does not need to
+know the value of \fIreason\fR or \fIsequence\fR, \fIdiscon\fR may be
+NULL and any user data associated with the disconnect is discarded.
+However, if a user has retrieved more than one outstanding connect
+indication, by means of 
+.PN t_listen()
+and \fIdiscon\fR is NULL, the user will be unable to identify with which connect indication the
+disconnect is associated.
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+discon->udata.maxlen@x@/
+discon->udata.len@/@x
+discon->udata.buf@x@(?)
+discon->reason@/@x
+discon->sequence@/@?
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, a value of 0 is returned. On failure, a
+value of \-1 is returned, and 
+.PN t_errno()
+is set to indicate the error.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor \fIfd\fR  does not refer to a
+transport endpoint.
+.TP 20 
+[TOUTSTATE]
+The function was issued in the wrong sequence on the transport endpoint
+referenced by \fIfd\fR.
+.TP 20
+[TNODIS]
+No disconnect indication currently exists on the specified transport
+endpoint.
+.TP 20
+[TBUFOVFLW]
+The number of bytes allocated for incoming data is not sufficient to
+store the data. If \fIfd\fR is a passive endpoint with \fIocnt\fR > 1,
+it remains in state T_INCON; otherwise, the endpoint state is
+set to T_IDLE. The disconnect indication information to be
+returned in \fIdiscon\fR will be discarded.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the underlying transport provider. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+t_alloc(3xti),
+t_connect(3xti), 
+t_listen(3xti), 
+t_open(3xti),
+t_snddis(3xti) 

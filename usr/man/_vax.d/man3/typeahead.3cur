@@ -1,0 +1,49 @@
+.TH typeahead 3cur 
+.SH Name
+typeahead \- check for typeahead
+.SH Syntax
+.br
+.B
+int typeahead(fd)
+.br
+.B
+int fd;
+.SH Description
+.NXR "typeahead subroutine"
+If
+.PN typeahead 
+is enabled,
+the
+.PN curses 
+program looks for
+typeahead input periodically while updating the screen.
+If input is found, the current update will be postponed until 
+.PN refresh 
+or 
+.PN doupdate 
+is called again.
+This allows faster response to commands typed in advance.
+.PP
+Normally, the input FILE 
+pointer passed to 
+the
+.PN newterm 
+routine,
+will be used to do this typeahead checking.
+If the routine 
+.PN initscr 
+was called, the input FILE pointer is passed to
+.PN stdin .
+.PP
+The 
+.PN typeahead 
+routine specifies that the file descriptor 
+.PN fd
+is to be used to check for typeahead.
+If 
+.PN fd
+is \-1, then typeahead is disabled.
+.SH Return Values
+No return values are defined for this function.
+.SH See Also
+doupdate(3cur), initscr(3cur), newterm(3cur), refresh(3cur)

@@ -1,0 +1,175 @@
+(*#@(#)symtab.def	4.1	Ultrix	7/17/90 *)
+(****************************************************************************
+ *									    *
+ *  Copyright (c) 1984 by						    *
+ *  DIGITAL EQUIPMENT CORPORATION, Maynard, Massachusetts.		    *
+ *  All rights reserved.						    *
+ * 									    *
+ *  This software is furnished under a license and may be used and copied   *
+ *  only in  accordance with  the  terms  of  such  license  and with the   *
+ *  inclusion of the above copyright notice. This software or  any  other   *
+ *  copies thereof may not be provided or otherwise made available to any   *
+ *  other person.  No title to and ownership of  the  software is  hereby   *
+ *  transferred.							    *
+ * 									    *
+ *  The information in this software is  subject to change without notice   *
+ *  and  should  not  be  construed as  a commitment by DIGITAL EQUIPMENT   *
+ *  CORPORATION.							    *
+ * 									    *
+ *  DIGITAL assumes no responsibility for the use  or  reliability of its   *
+ *  software on equipment which is not supplied by DIGITAL.		    *
+ * 									    *
+$Header: symtab.def,v 1.4 84/05/19 11:35:07 powell Exp $
+ ****************************************************************************)
+definition module symtab;
+from stringtab import String;
+from list import List;
+export qualified DataType, BlockNumber, Scope,
+    Symbol, SymbolKind, LookUpSymbol, DefineSymbol, NewScope,
+    TypeNode, EnumNode, FieldNode, currScope, DumpSymTab,
+    ModuleNode, PortNode, ConstNode, SetValue, ParamNode, ParamKind,
+    builtinScope, moduleScope, globalScope, traceSymtab;
+const
+    MAXBLOCKNUMBER = 1000;
+    MAXSETSIZE = 1024;
+type
+    BlockNumber = [0..MAXBLOCKNUMBER];
+    TypeNumber = cardinal;
+    SymbolCase = (ONECASE,ANYCASE,SCOPECASE);
+    MemoryOffset = cardinal;
+    CheckKind = (CHECKPTRPASCAL, CHECKPTRMODULA, CHECKPTRNIL, CHECKPTRNONE,
+	    CHECKRANGE, CHECKVARIANT, CHECKSUBSCR, CHECKSUBSCROPEN, CHECKCASE);
+
+(* pointers to things.  Defining them here reduces ordering constraints *)
+type
+    Scope = BlockNumber;
+    Symbol = pointer to SymbolRec;
+    ConstNode = pointer to ConstNodeRec;
+    TypeNode = pointer to TypeNodeRec;
+    VarNode = pointer to VarNodeRec;
+    FieldNode = pointer to FieldNodeRec;
+    ModuleNode = pointer to ModuleNodeRec;
+    EnumNode = pointer to EnumNodeRec;
+    ParamNode = pointer to ParamNodeRec;
+    SetValue = pointer to SetValueRec;
+    ConstSetNode = pointer to ConstSetNodeRec;
+    PortNode = pointer to PortNodeRec;
+
+    SymbolKind = (SYMNULL, SYMVAR, SYMCONST, SYMPROC, SYMTYPE, SYMMODULE);
+    SymbolRec = record
+	next : Symbol;
+	name : String;
+	symCase : SymbolCase;
+	nextInTable : Symbol;
+	block : BlockNumber;
+	case kind : SymbolKind of
+	| SYMMODULE: symModule : ModuleNode;
+	else
+	    imported : List;
+	    exported : PortNode;
+	    homeModule : ModuleNode;
+	end;
+    end;
+
+    PortNodeRec = record
+	next : PortNode;
+	name : String;
+	refModule : ModuleNode;
+	extern : boolean;
+	case kind : SymbolKind of
+	    | SYMCONST : symConst : ConstNode;
+	    | SYMTYPE : symType : TypeNode;
+	    | SYMVAR : symVar : TypeNode;
+	    | SYMPROC : symProc : TypeNode;
+	end;
+    end;
+
+    DataType = (DTNULL, DTPOINTER, DTRECORD, DTARRAY, DTINTEGER, DTBOOLEAN,
+		DTCHAR, DTRENAME, DTSTRING, DTREAL, DTSET, DTCARDINAL, DTBYTE,
+		DTSUBRANGE, DTENUMERATION, DTPROC, DTWORD, DTANY, DTLONGREAL,
+		DTOPAQUE, DTPROCESS, DTADDRESS, DTFILE);
+
+    ConstNodeRec = record
+	next : ConstNode;
+	case kind : DataType of
+	    | DTSTRING : strVal : String;
+	    | DTCHAR : charVal : cardinal;
+	    | DTINTEGER, DTCARDINAL : cardVal : cardinal;
+	    | DTBOOLEAN : boolVal : cardinal;
+	    | DTREAL, DTLONGREAL : realVal : String;
+	    | DTSET : setVal : SetValue;
+	    | DTENUMERATION : enumVal : EnumNode;
+	end;
+    end;
+
+    TypeNodeRec = record
+	size : cardinal;
+	case kind : DataType of
+	    | DTPOINTER : toType : TypeNode;
+	    | DTRECORD : fieldList : List;
+	    | DTSET : setRange : TypeNode;
+	    | DTARRAY : indexType : TypeNode; elementType : TypeNode;
+	    | DTSUBRANGE : subMinOrd, subMaxOrd : integer; baseType : TypeNode;
+	    | DTENUMERATION : enumCount : cardinal; enumList : List;
+	    | DTOPAQUE : opaqueName : String;
+	    | DTPROC : numParams : integer; paramList : List;
+		    retType : TypeNode;
+	end;
+    end;
+
+    FieldNodeRec = record
+	next : FieldNode;
+	name : String;
+	fieldType : TypeNode;
+	offset, size : MemoryOffset;
+    end;
+
+    EnumNodeRec = record
+	next : EnumNode;
+	name : String;
+	enumType : TypeNode;
+	enumOrd : cardinal;
+    end;
+
+    ParamKind = (PARAMVAR, PARAMVALUE, PARAMARRAYVAR, PARAMARRAYVALUE);
+    ParamNodeRec = record
+	next : ParamNode;
+	name : String;
+	paramType : TypeNode;
+	kind : ParamKind;
+    end;
+
+    SetValueRec = record
+	next : SetValue;
+	setType : TypeNode;
+	size : cardinal;
+	value : String;
+    end;
+
+    ConstSetNodeRec = record
+	next : ConstSetNode;
+	lower, upper : ConstNode;
+    end;
+
+    ModuleNodeRec = record
+	next : ModuleNode;
+	name : String;
+	scope : Scope;
+	exports : List;
+	defined, outOfDate, watchErrors, ignoreErrors, named, builtin : boolean;
+	fileName : cardinal;
+    end;
+
+var
+    currScope, moduleScope, builtinScope, globalScope : Scope;
+    traceSymtab : boolean;
+
+procedure DumpSymTab();
+
+procedure NewScope() : Scope;
+
+procedure DefineSymbol(var sym : Symbol; name : String; scope : Scope):boolean;
+
+procedure LookUpSymbol(name : String; scope : Scope) : Symbol;
+
+end symtab.

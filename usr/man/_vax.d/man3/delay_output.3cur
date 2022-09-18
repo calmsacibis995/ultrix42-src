@@ -1,0 +1,22 @@
+.TH delay_output 3cur 
+.SH Name
+delay_output \- cause short delay
+.SH Syntax
+.B
+int delay_output(ms)
+.br
+.B
+int ms;
+.SH Description
+.NXR "delay_output subroutine"
+Insert 10 x
+.PN ms
+millisecond pause in output.
+The largest number allowed for 
+.PN ms
+is 0.5 seconds 
+(500 milliseconds).
+.SH Return Values
+The
+.PN delay_output 
+function returns OK on success and ERR on error.

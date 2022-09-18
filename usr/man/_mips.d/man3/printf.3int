@@ -1,0 +1,184 @@
+.TH printf 3int
+.SH Name 
+printf, fprintf, sprintf \- print formatted output
+.SH Syntax 
+.B #include <stdio.h>
+.PP
+.B int printf (
+.I format 
+[, 
+.I arg
+] ...
+.B )
+.br
+char 
+.IR *format ;
+.PP
+.B int fprintf (
+.IR stream , 
+.IR format 
+[, 
+.I arg
+] ...
+.B )
+.br
+.B FILE 
+.IR *stream ;
+.br
+.B char 
+.IR *format ;
+.PP
+.B int sprintf (
+.IR s , 
+.I format
+[, 
+.I arg
+] ...
+.B )
+.br
+.B char 
+.IR *s , 
+.IR *format ;
+.SH Description 
+.NXR "printf subroutine"
+.NXR "fprintf subroutine"
+.NXR "sprintf subroutine"
+The international functions
+.PN printf ,
+.PN fprintf ,
+and
+.PN sprintf 
+are similar to the 
+.PN printf
+standard I/O functions. The difference is that the international
+functions allow you to use the 
+.I %digit$ 
+conversion character in place of the 
+.I % 
+character you use in the standard I/O functions. The 
+.I digit
+is a decimal digit
+.I n
+from 1 to 9.  The international functions apply 
+conversions to the
+.I n
+th argument in the argument list, rather than to the next unused argument.
+.PP
+You can use the
+.I %
+conversion character in the international functions.  However, you cannot
+mix the 
+.I %
+conversion character with the
+.I %digit$
+conversion character in a single call.
+.PP
+You can indicate a field width or precision by an asterisk (*) instead of a
+digit string in format strings containing the
+.I %
+conversion character. If you use an asterisk, you can supply an integer
+.I arg
+that specifies the field width or precision. In format strings containing the
+.I %digit$
+conversion character, you can indicate field width or precision 
+by the sequence
+.I *digit$.
+You use a decimal digit from 1 to 9 to indicate which argument
+contains an integer that specifies the field width or precision.
+.PP
+The conversion characters and their meanings are identical to
+.PN printf .
+.PP
+You must use each 
+.I digit
+argument at least once.
+.PP
+In all cases, the radix character 
+.PN printf
+uses is defined by the last successful call to
+.PN setlocale
+category
+.PN LC_NUMERIC .
+If
+.PN setlocale
+category
+.PN LC_NUMERIC
+has not been called successfully or if the radix character is undefined,
+the radix character defaults to a period (.).
+.SS International Environment
+.IP LC_NUMERIC 15
+If this environment is set and valid, 
+.PN printf
+uses the international language database named in the definition to
+determine radix character rules.
+.IP LANG 15
+If this environment variable is set and valid 
+.PN printf
+uses the international language database named in the definition to
+determine collation and character classification rules.  If
+.PN LC_NUMERIC 
+is defined, its definition supercedes the definition of
+LANG.
+.SH Examples 
+The following example illustrates using an argument to specify field width:
+.EX 0
+printf ("%1$d:%2$.*3$d:%4$.*3$d\\n",
+				hour, min, precision, sec);
+.EE
+The format string \fI*3$\fP indicates that the third argument, which
+is named precision, contains the integer field width specification.
+.PP
+To print the language independent date and time format use the following
+.PN printf
+statement:
+.EX
+printf (format, weekday, month, day, hour, min);
+.EE
+For American use,
+.I format
+could be a pointer to the following string:
+.EX
+"%1$s,  %2$s %3$d, %4$d:%5$.2d\\n"
+.EE
+This 
+string gives the following date format:
+.EX
+Sunday, July 3, 10:02
+.EE
+For use in a German environment, 
+.I format
+could be a pointer to the following string:
+.EX
+"%1$s, %3$d. %2$s, %4$d:%5$.2d\\n"
+.EE
+This
+string gives the following date format:
+.EX
+Sonntag, 3. Juli, 10:02
+.EE
+.SH Return Values
+.NXR "printf subroutine" "System V and"
+.PN printf 
+and 
+.PN fprintf 
+return zero for success and EOF for failure.  
+The
+.PN sprintf 
+subroutine returns its first 
+argument for success and EOF for failure.
+.PP
+In the System V and POSIX environments, 
+.PN printf ,
+.PN fprintf, 
+and
+.PN sprintf
+return the number of characters transmitted for success.  The
+.PN sprintf
+function ignores the null terminator (\\0) when calculating the number
+of characters transmitted.  If an output error occurs, these routines
+return a negative value.
+.SH See Also 
+intro(3int), setlocale(3), scanf(3int), printf(3s), putc(3s), scanf(3s), 
+stdio(3s)
+.br 
+.I Guide to Developing International Software

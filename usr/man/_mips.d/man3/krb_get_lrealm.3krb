@@ -1,0 +1,144 @@
+.TH krb_get_lrealm 3krb
+.SH Name
+krb_get_lrealm \- Host/realm identification routines.
+.SH Syntax
+.nf
+.nj
+ \fB#include <krb.h>
+ #include <des.h>
+.PP
+ \fBkrb_get_lrealm\fP (\fIrealm, n\fP)
+ \fBchar\fP \fI*realm\fP;
+ \fBint\fP  \fIn\fP;
+.ig ++
+#include <netinet/in.h>\fP
+.PP
+ \fBchar *krb_realmofhost\fP (\fIhost\fP)
+ \fBchar\fP \fI*host\fP;
+.++
+.PP
+ \fBchar *krb_get_phost\fP (\fIalias\fP)
+ \fBchar\fP \fI*alias\fP;
+.ig ++
+.PP
+ \fBkrb_get_krbhst\fP (\fIhost, realm, n\fP)
+ \fBchar\fP \fI*host\fP;
+ \fBchar\fP \fI*realm\fP;
+ \fBint\fP \fIn\fP;
+.PP
+ \fBkrb_get_admhst\fP (\fIhost, realm, n\fP)
+ \fBchar\fP \fI*host\fP;
+ \fBchar\fP \fI*realm\fP;
+ \fBint\fP  \fIn\fP;
+.++
+.PP
+.fi
+.SH Arguments
+.ig ++
+.TP 9
+.I host
+Identifies a host for a particular realm.
+.++
+.TP
+.I alias
+Identifies a host whose name is to be converted to an instance name.
+The \fIalias\fP string is overwritten with the instance 
+name.  The \fIalias\fP string must be stored in a buffer of at least
+INST_SZ characters. 
+.TP
+.I realm
+Identifies a specific realm.
+.TP
+.I n
+Specifies a specific position in a series of Kerberos hosts; must be set to 0.
+.SH Description
+.NXR "Kerberos routines" "krb_get_lrealm"
+.NXR "Kerberos routines" "krb_get_phost"
+The routines of
+.ig ++
+.PN krb_realmofhost
+.++
+.PN krb_get_lrealm
+allow an application to obtain information on host/realm
+relationships in a Kerberos network.  The routines of this library are:
+.ig ++
+.IP krb_realmofhost
+Returns the Kerberos realm of the host identified by the pointer
+\fI*host\fP as determined by the translation file \f(CWkrb_realms\fP.
+The name you enter for host should be the fully qualified domain-style
+primary host name of the host.  To prevent security attacks,
+this routine must already know the realm of the
+host or obtain this information securely.
+.IP
+The format of the translation file is described in the 
+.PN krb.realms(5krb)
+reference page.  If \fIhost\fP matches either a \fIhost_name\fP line or
+a \fIdomain_name\fP line of the \f(CWkrb.realms\fP file, then the
+corresponding realm is returned.
+.br
+.ne 4
+.++
+.IP krb_get_phost
+Converts the hostname pointed to by \fIalias\fP, which can be either an
+official name or an alias, into the instance name to be used in
+obtaining Kerberos tickets.
+.ig ++
+.IP krb_get_krbhst
+Initializes \fIhost\fP with the hostname of the \fIn\fPth host running
+a Kerberos key distribution center (KDC) for the realm pointed to by
+\fIrealm\fP. The host configuration file is described by the file
+.PN krb.conf .
+If 
+.PN krb_get_krbhst 
+successfully initializes
+\fIhost\fP, the routine returns KSUCCESS. 
+.IP
+If the configuration file cannot be opened, and \fIn\fP equals 1, then
+.PN krb_get_krbhst
+initializes \fIhost\fP with the value of the
+constant \fBKRB_HOST\fP (defined in 
+.PN krb.h ) 
+and returns
+KSUCCESS.  If there are fewer that \fIn\fP hosts running a Kerberos KDC
+for the requested realm, or the configuration file is damaged, then
+.PN krb_get_krbhst
+returns KFAILURE. 
+.IP krb_get_admhst
+Initializes \fIhost\fP with the hostname of the \fIn\fPth host running
+a Kerberos KDC database administration server for the realm pointed to
+by \fIrealm\fP as specified in the configuration file 
+.PN krb.conf .
+If 
+.PN krb_get_admhst
+cannot open the configuration file or finds
+that the file is damaged, it returns KFAILURE.
+.IP
+Note that the character arrays used as return values of the
+.PN krb_get_krbhst
+and
+.PN krb_get_admhst
+routines should be
+large enough to hold the maximum host name.
+determined by the constant
+MAXHOSTNAMLEN, which is defined in the
+.PN param.h
+file.
+.++
+.IP krb_get_lrealm
+Initializes \fIrealm\fP with the \fIn\fPth realm of the local host. The
+argument \fIrealm\fP should be large enough to contain the maximum
+realm name determined by the constant REALM_SZ.  The local realm name is
+stored in the
+.PN /etc/krb.conf
+file.  See the 
+.PN krb.conf(5krb)
+reference page.
+.SH Files
+.ig ++
+.TP
+.PN krb.realms
+.++
+.TP
+.PN /etc/krb.conf
+.SH See Also
+kerberos(3krb), krb.conf(5krb)

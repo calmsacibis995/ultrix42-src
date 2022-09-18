@@ -1,0 +1,152 @@
+.\" SCCSID: @(#)monitor.3	8.2	1/28/91
+.TH monitor 3 VAX
+.SH Name
+monitor, monstartup, moncontrol \- prepare execution profile
+.SH Syntax
+.nf
+.B void monitor(lowpc, highpc, buffer, bufsize, nfunc)
+.B int (*lowpc)(), (*highpc)();
+.B short buffer[];
+.sp
+.B void monstartup(lowpc, highpc)
+.B int (*lowpc)(), (*highpc)();
+.sp
+.B void moncontrol(mode)
+.fi
+.SH Description
+.NXR "monitor subroutine"
+.NXR "monstartup subroutine"
+.NXR "moncontrol subroutine"
+.NXR "program" "profiling"
+There are two different forms of monitoring available:
+An executable program created by:
+.EX 
+cc \-p . . .
+.EE
+.PP
+automatically includes calls for the 
+.MS prof 1
+monitor and includes an initial call to its start-up routine
+.PN monstartup
+with default parameters;
+.PN monitor
+need not be called explicitly except to gain fine control over profil 
+buffer allocation.
+An executable program created by:
+.EX
+cc \-pg . . .
+.EE
+.PP
+automatically includes calls for the 
+.MS gprof 1
+monitor.
+.PP
+The
+.PN monstartup
+is a high level interface to 
+.MS profil 2 .
+The
+.I lowpc
+and
+.I highpc
+specify the address range that is to be sampled; the lowest address sampled
+is that of
+.I lowpc
+and the highest is just below
+.IR highpc .
+The
+.PN monstartup
+subroutine allocates space using 
+.MS sbrk 2
+and passes it to
+.PN monitor
+(see below) to record a histogram of periodically sampled values of
+the program counter,
+and of counts of calls of certain functions, in the buffer.
+Only calls of functions compiled with the profiling option
+.B \-p
+of 
+.MS cc 1
+are recorded.
+.PP
+To profile the entire program, it is sufficient to use
+.EX
+extern etext();
+. . .
+monstartup((int) 2, etext);
+.EE
+The
+.I etext
+lies just above all the program text, see end(3).
+.PP
+To stop execution monitoring and write the results on the file
+.PN mon.out ,
+use
+.EX
+monitor(0);
+.EE
+then 
+.MS prof 1
+can be used to examine the results.
+.PP
+The
+.PN moncontrol
+subroutine is used to selectively control profiling within a program.
+This works with either 
+.MS prof 1 
+or 
+.MS gprof 1
+type profiling.
+When the program starts, profiling begins.
+To stop the collection of histogram ticks and call counts use
+moncontrol(0);
+to resume the collection of histogram ticks and call counts use
+moncontrol(1).
+This allows the cost of particular operations to be measured.
+Note that an output file will be produced upon program exit
+regardless of the state of 
+.PN moncontrol .
+.PP
+The
+.PN monitor
+subroutine
+is a low level interface to 
+.MS profil 2 .
+The
+.I lowpc
+and
+.I highpc
+are the addresses of two functions;
+.I buffer
+is the address of a (user supplied) array of
+.I bufsize
+short integers.  At most
+.I nfunc
+call counts can be kept.
+For the results to be significant,
+especially where there are small, heavily
+used routines, it is suggested that the buffer be no more
+than a few times smaller than the range of locations sampled.
+The
+.PN monitor
+subroutine
+divides the buffer into space to record the histogram
+of program counter samples over the range
+.I lowpc
+to
+.IR highpc ,
+and space to record call counts of functions compiled with the 
+.B \-p
+option to 
+.MS cc 1 .
+.PP
+To profile the entire program, it is sufficient to use
+.EX
+extern etext();
+. . .
+monitor((int) 2, etext, buf, bufsize, nfunc);
+.EE
+.SH Files
+mon.out
+.SH See Also
+cc(1), gprof(1), prof(1), profil(2), sbrk(2)

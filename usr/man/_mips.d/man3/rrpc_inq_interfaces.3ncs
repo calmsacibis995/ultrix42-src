@@ -1,0 +1,81 @@
+.TH rrpc_inq_interfaces 3ncs
+.SH Name
+rrpc_inq_interfaces \- obtain a list of the interfaces that a server exports
+.SH Syntax
+#include <idl/c/rrpc.h>
+
+void rrpc_$inq_interfaces(\fIhandle, max_ifs, ifs, l_if, status\fP)
+.nf
+handle_t \fIhandle\fP;
+unsigned long \fImax_ifs\fP;
+rrpc_$interface_vec_t \fIifs[]\fP;
+unsigned long *\fIl_if\fP;
+status_$t *\fIstatus\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/rrpc.ins.pas'\fR
+.\"
+.\"\fBprocedure rrpc_$inq_interfaces(\fR
+.\"	\fBin \fIhandle\fB: handle_t;\fR
+.\"	\fBin \fImax_ifs\fB: unsigned32;\fR
+.\"	\fBout \fIifs\fB: univ rrpc_$interface_vec_t;\fR
+.\"	\fBout \fIl_if\fB: unsigned32;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 15 
+\fIhandle\fR
+An RPC handle.
+.TP 15
+\fImax_ifs\fR
+The maximum number of elements in the array of interface specifiers.
+.TP 15
+\fIifs\fR
+An array of \fBrpc_$if_spec_t\fR.
+.TP 15 
+\fIl_if\fR
+The index of the last element in the returned array.
+.TP 15
+\fIstatus\fR
+The completion status.  
+If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.RE
+.SH Description
+The 
+.PN rrpc_$inq_interfaces
+routine returns an array of RPC interface specifiers.
+.NXR "Remote Remote Procedure Call Interface" "rrpc_inq_interface"
+.NXR "rrpc_inq_interface" "Remote Remote Procedure Call Interface"
+.SH Restrictions
+On the client side, because of the way the
+.PN rrpc_
+calls are defined and implemented
+in the run-time library
+.PN libnck.a ,
+you must explicitly call
+into the entry point vector table for the
+.PN rrpc_
+interface to
+send an
+.PN rrpc_
+request across the network. The
+following is an example of a call that works
+.EX
+  (*rrpc_$client_epv.rrpc_$inq_interfaces)(handle,
+             (unsigned long) max_ifs, ifs, &l_if, &status);
+.EE
+The server side stub routines call the entry point
+.PN rrpc_$inq_interfaces
+on behalf of the client.  The results of the call are then
+passed back to the client.
+.SH Files
+.PN /usr/include/idl/c/rrpc.h
+.br
+.PN /usr/include/idl/rrpc.idl
+.SH See Also
+intro(3ncs)

@@ -1,0 +1,60 @@
+(*#@(#)README	4.1	Ultrix	7/17/90 *)
+(****************************************************************************
+ *									    *
+ *  Copyright (c) 1984 by						    *
+ *  DIGITAL EQUIPMENT CORPORATION, Maynard, Massachusetts.		    *
+ *  All rights reserved.						    *
+ * 									    *
+ *  This software is furnished under a license and may be used and copied   *
+ *  only in  accordance with  the  terms  of  such  license  and with the   *
+ *  inclusion of the above copyright notice. This software or  any  other   *
+ *  copies thereof may not be provided or otherwise made available to any   *
+ *  other person.  No title to and ownership of  the  software is  hereby   *
+ *  transferred.							    *
+ * 									    *
+ *  The information in this software is  subject to change without notice   *
+ *  and  should  not  be  construed as  a commitment by DIGITAL EQUIPMENT   *
+ *  CORPORATION.							    *
+ * 									    *
+ *  DIGITAL assumes no responsibility for the use  or  reliability of its   *
+ *  software on equipment which is not supplied by DIGITAL.		    *
+ * 									    *
+ ****************************************************************************)
+
+This Modula-2 compiler is not a supported product but is made available as a
+courtesy by DEC Western Research Laboratory.  Direct comments, questions, and
+bug reports to:
+		Michael L. Powell
+		Digital Equipment Corporation
+		Western Research Laboratory
+		4410 El Camino Real
+		Los Altos, California  94022
+
+		UUCP: {ucbvax,decvax}!decwrl!powell
+		CSNET: powell@decwrl.csnet
+		DEC ENET: rhea::powell
+
+See the installation guide (nroff -ms doc/installation) for installation
+procedures.
+
+The directories and their contents are as follows:
+
+doc	manual pages and installation guide
+
+mod	command to invoke phases of compiler
+
+mod2	first phase of compiler
+
+xlate	second phase of compiler
+
+imc	intermodule checker
+
+lib	standard definition modules and library
+
+dbx	updates to 4.2BSD dbx command for Modula-2
+
+p2m2	Pascal to Modula-2 conversion tool
+
+bench	The benchmark program in Pascal, C, Modula-2, Bliss, etc.
+
+test	Some test Modula-2 programs

@@ -1,0 +1,50 @@
+ident		"NOWAY"
+machine		vax
+cpu		"VAX3900"
+maxusers	32
+processors	1
+maxuprc		50
+physmem		16
+timezone	5 dst 1
+
+options		QUOTA
+options		INET
+options		NFS
+options		RPC
+options		EMULFLT	
+options		UFS
+options		LAT
+options		UWS
+options		DLI
+options		DECNET
+
+config	vmunix	root on ra0a  swap on ra0b and ra1b    dumps on ra0b  
+
+adapter        uba0      at  nexus ?   
+controller     uda0      at  uba0      
+controller     uq0       at  uda0      csr 0172150   vector uqintr  
+disk           ra0       at  uq0       drive 0
+controller     klesiu0   at  uba0      
+controller     uq16      at  klesiu0   csr 0174500   vector uqintr  
+tape           tms0      at  uq16      drive 0
+device         qd0       at  uba0      csr 0177400   flags 0x0f   vector qddint  qdaint  qdiint  
+device         qe0       at  uba0      csr 0174440   vector qeintr  
+controller     uda1      at  uba0      
+controller     uq17      at  uda1      csr 0160334   vector uqintr  
+disk           ra1       at  uq17      drive 1
+device         dhu0      at  uba0      csr 0160500   flags 0xffff   vector dhurint  dhuxint  
+device         dz0       at  uba0      csr 0160100   flags 0xff   vector dzrint  dzxint  
+scs_sysid	1
+
+pseudo-device	nfs
+pseudo-device	rpc
+pseudo-device 	pty
+pseudo-device	loop
+pseudo-device	ether 
+pseudo-device	ufs 
+pseudo-device	inet 
+
+pseudo-device	lat
+pseudo-device	lta
+pseudo-device	dli
+pseudo-device	decnet

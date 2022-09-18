@@ -1,0 +1,89 @@
+.\" SCCSID: @(#)ln.4	3.1	11/24/87
+.TH fza 4 
+.SH Name
+fza \- DEFZA FDDI Network Interface
+.SH Syntax
+.B device fza0 at ibus? vector fzaintr
+.SH Description
+.NXR "fza interface" "DEFZA FDDI Network interface"
+.NXR "DEFZA FDDI Network interface"
+.NXR "FDDI interface" "DEFZA FDDI Network interface"
+The
+.PN fza 
+interface is a high speed TURBOchannel bus to a 100 Mbit/second 
+Fiber Distributed Data Interface (FDDI) timed token ring network adapter.
+The 
+.PN fza 
+interface allows the host system to be an FDDI single attachment station.
+.PP
+The host's Internet address is specified at boot time with
+an SIOCSIFADDR ioctl.
+The
+.PN fza 
+interface employs the address resolution protocol described in
+.MS arp 4p
+to map dynamically between Internet and FDDI addresses on the local
+network.
+.PP
+The maximum frame size for the 
+.PN fza 
+interface is 4500 bytes, which is substantially larger that
+the 1500 bytes maximum packet size of the Ethernet 
+interfaces. The
+.PN fza
+interface does not support the BSD trailer encapsulation, which 
+is specific to the VAX architecture.
+.PP
+The SIOCRPHYSADDR ioctl can
+be used to read the physical address of the DEFZA adapter. The physical address
+of the DEFZA adapter can not be changed.
+.PP
+The SIOCADDMULTI and SIOCDELMULTI ioctls can be used to add or delete
+multicast addresses.  
+The DEFZA supports up to 64 multicast addresses.
+.PP
+The SIOCRDCTRS ioctl can be used to read the FDDI driver counters.
+The DEFZA adapter status and characteristics can also be read through this
+ioctl by providing a FDDI_STATUS flag . The argument to this ioctl is a 
+pointer to a counter or status structure, 
+.PN ctrreq ,
+found in 
+.BR <net/if.h> .
+.PP
+The SIOCENABLBACK and SIOCDISABLBACK ioctls can be used to enable
+and disable the interface loopback mode, respectively.
+.PP
+The SIOCEEUPDATE ioctl can be used to update the adapter's firmware.
+.PP
+The SIOCIFRESET ioctl can be used to reset the adapter.   
+.SH Diagnostics 
+Diagnostic error messages contain information provided by the 
+.PN fza
+driver. For example:
+.PP
+.EX
+fza%d: fzaprobe selftest failed 
+.EE
+The DEFZA adapter did not pass the power-up selftest during
+autoconfiguration.
+.EX
+fza%d: port init failed 
+.EE
+The DEFZA adapter cannot be initialized.
+.EX
+fza%d: port in the Halt State -> CNS hardware fault
+.EE
+The DEFZA adapter went to the Halt state because of an adapter firmware
+fault.
+.EX
+fza%d: LINK unavailable
+.EE
+The network link went down which means that the station is not on
+the FDDI ring.
+.EX
+fza%d: Ring Init Received
+.EE
+A Ring Initialization unsolicited event has been received from 
+the fza%d interface. 
+.SH See Also
+arp(4p), inet(4f), intro(4n)

@@ -1,0 +1,23 @@
+.TH machine 1
+.SH Name
+machine \- return architecture type of machine
+.SH Syntax
+.B machine
+.SH Description
+.NXR "machine command"
+The
+.PN machine
+command prints on the standard output the architecture of the machine.
+Legal values are either
+.PN mips
+or
+.PN vax
+depending upon your hardware.
+The 
+.PN machine
+command is used within shell procedures to tailor the results to
+a specific architecture.
+.PP
+The exit value of 
+.PN machine 
+is always zero.

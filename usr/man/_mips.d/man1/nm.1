@@ -1,0 +1,185 @@
+.TH nm 1 RISC
+.SH Name
+nm \- name list dump of RISC object files
+.SH Syntax
+.B "nm [-adefghnopruvxABTV] [ file1 ... filen ]"
+.SH Description
+The 
+.B nm
+command prints listings formats for the symbol and external sections
+of the symbol table.
+A 
+.I file
+can be an object or an archive.  If you do not specify a file,
+this command assumes 
+.B a.out.
+.SH Options
+The
+.B \-A
+and
+.B \-B
+options specify AT&T System V style output or Berkeley (4.3  BSD) 
+style output, respectively.  The default is Berkeley (4.3 BSD).
+.NT
+Some options can change the version-specific defaults. These options 
+change the meaning of overloaded flags after -A or -B is specified.
+.NE
+.PP
+A normal Berkeley system produces the
+.I address 
+or 
+.I value
+field followed by a 
+.I letter
+showing what section the symbol or external is in and the 
+.I name
+of the symbol or external.
+.PP
+These section letters describe the information that 
+.B nm 
+generates:
+.TP 5
+.B N
+nil storage class, compiler internal usage
+.TP 5
+.B T
+external text
+.TP 5
+.B t
+local text
+.TP 5
+.B D
+external initialized data
+.TP 5
+.B d
+local initialized data
+.TP 5
+.B B
+external zeroed data
+.TP 5
+.B b
+local zeroed data
+.TP 5
+.B A
+external absolute
+.TP 5
+.B a
+local absolute
+.TP 5
+.B U
+external undefined
+.TP 5
+.B G
+external small initialized data
+.TP 5
+.B g
+local small initialized data
+.TP 5
+.B S
+external small zeroed data
+.TP 5
+.B s
+local small zeroed data
+.TP 5
+.B R
+external read only
+.TP 5
+.B r
+local read only
+.TP 5
+.B C
+common
+.TP 5
+.B E
+small common
+.TP 5
+.B V
+external small undefined
+.PP
+The standard  System V format and the
+.B \-a
+specified Berkeley format provide an expanded listing with these
+columns:
+.TP 8
+.B Name
+the symbol or external name
+.TP 8
+.B Value
+the value field for the symbol or external, usually an address or
+interesting debugging information
+.TP 8
+.B Class
+the symbol type
+.TP 8
+.B Type
+the symbol's language declaration
+.TP 8
+.B Size
+unused
+.TP 8
+.B Index
+the symbol's index field
+.TP 8
+.B Section
+the symbol's storage class
+.NT
+Every effort was made to map the field's functionality into System V
+nomenclature.
+.NE
+The 
+.B nm
+command accepts these options:
+.TP 5
+.B -a
+prints debugging information, effectively turning Berkeley into System V format
+.TP 5
+.B -b
+prints the value field in octal
+.TP 5
+.B -d
+prints the value field in decimal (the System V default)
+.TP 5
+.B -e
+prints external and statics only
+.TP 5
+.B -f
+produces full output\(em\fBnm\fR still accepts this old option, but ignores
+it
+.TP 5
+.B -h
+does not print headers
+.TP 5
+.B -n
+for System V, sorts external symbols by name (default for Berkeley), and
+for Berkeley, sorts all symbols by value
+.TP 5
+.B -o
+for System V, prints the value field in octal, and
+for Berkeley prepends the filename to each symbol\(emgood for 
+grepping through \fBnm\fR
+of libraries
+.TP 5
+.B -p
+prints symbols as they are found in the file (the System V default)
+.TP 5
+.B -r
+reverses the sense of a value or name sort
+.TP 5
+.B -u
+prints only undefined symbols
+.TP 5
+.B -v
+sorts external symbols by value
+.TP 5
+.B -x
+prints value field in hexadecimal (Berkeley default)
+.TP 5
+.B -T
+truncates long names, inserting an asterisk (*) as the last printed character
+.TP 5
+.B -V
+prints version information on stderr
+
+
+
+

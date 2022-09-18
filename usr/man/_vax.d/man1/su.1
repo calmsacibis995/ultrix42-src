@@ -1,0 +1,103 @@
+.\" SCCSID: @(#)su.1	6.5	1/16/90
+.TH su 1
+.SH Name
+su \- substitute a user ID 
+.SH Syntax
+.B su
+[\|\fIusername\fR\|]
+.PP
+.B su \-
+[\|\fIusername\fR\|]
+.PP
+.B su \-f
+[\|\fIusername\fR\|]
+.SH Description
+.NXR "su command"
+.NXR "user ID" "changing temporarily"
+The 
+.PN su
+command requests the password of the specified
+.IR username .
+If the correct password is given,
+.PN su
+changes to that 
+.I username
+without changing the current directory.
+The user environment
+is unchanged except for HOME and SHELL
+which are taken from the password file entry
+for 
+.I username.
+The shell that is run is also taken from the password file entry
+for 
+.I username.
+The new user ID stays in force until the shell exits.
+.PP
+If no 
+.I username
+is specified, `root' is assumed.
+To remind the superuser of his responsibilities,
+the shell substitutes `#' for its usual prompt.
+.SH Options
+.IP \fB\-f\fR 5
+Prevents
+.MS csh 1
+from executing the .cshrc file, making
+.PN su
+start up faster.
+.IP \fB\-\fR
+Simulates a full login.
+.SH Diagnostics
+.IP "Sorry" 5n
+.br
+An invalid password was supplied for the specified
+.IR username .
+.IP "Unknown login: username" 5n
+.br
+The specified
+.I username
+was not found in the passwd database.
+.IP "No directory" 5n
+.br
+The home directory for the
+.I username
+is not accessible at this time (only
+with ``\-'' argument).
+.IP "No shell" 5n
+.br
+The shell specified in the passwd database entry for
+.I username
+could not be executed.
+.IP "Kerberos initialization failure" 5n
+.br
+Consult your system administrator.
+.PP
+If enhanced security features are enabled the following error
+messages are also possible:
+.PP
+.IP "Requires secure terminal" 5n
+.br
+Attempt to su to UID 0 on a line that is not marked \fIsecure\fP in
+.PN /etc/ttys .
+.IP "User's password has expired" 5n
+.br
+Access is denied because the password for
+.I username
+is expired.
+.IP "This account is disabled" 5n
+.br
+Access is denied because the auth entry corresponding to
+.I username
+is marked disabled.
+.SH Files
+.TP 17
+.PN /usr/adm/sulog
+Log file of anyone who became
+.BR root ,
+with a date mark.
+.SH See Also
+csh(1), sh(1), passwd(5yp), environ(7), edauth(8)
+.br
+\fISecurity Guide for Administrators\fP
+.br
+\fISecurity Guide for Users\fP

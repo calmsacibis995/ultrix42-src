@@ -1,0 +1,23 @@
+.\" SCCSID: @(#)print.1	8.1	9/11/90
+.TH print 1
+.SH Name
+print \- pr to the line printer
+.SH Syntax
+.B print
+\fIfile\fR...
+.SH Description
+.NXR "print command (general)"
+.NXA "pr command" "print command (general)"
+.NXA "lpr command" "print command (general)"
+.NXR "file" "printing at line printer"
+The
+.PN print
+command uses
+.PN pr
+to print a copy of each named file on the line printer.
+It is a one line shell script:
+.EX
+lpr \-p $*
+.EE
+.SH See Also
+lpr(1), pr(1)

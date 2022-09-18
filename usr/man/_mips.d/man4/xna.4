@@ -1,0 +1,109 @@
+.\" SCCSID: @(#)xna.4	6.2	7/28/89
+.TH xna 4
+.SH Name
+xna \- DEBNI and DEMNA Ethernet interfaces
+.SH Syntax
+.nf
+\fBdevice xna0 at vaxbi? node? vector xnaintr\fP (DEBNI)
+\fBdevice xna0 at xmi? node? vector xnaintr\fP (DEMNA)
+.fi
+.SH Description
+.NXR "xna interface" "DEBNI interface and DEMNA interface"
+.NXR "DEBNI interface and DEMNA interface"
+.NXR "Ethernet address" "mapping to Internet address"
+.NXR "Internet address" "mapping to Ethernet address"
+The
+.PN xna
+driver provides access to a 10 Mbytes Ethernet network through
+the DEBNI and DEMNA adapters.  The DEBNI is an Ethernet to BI bus.
+The DEMNA is an Ethernet to XMI adapter.
+.PP
+The host's Internet address is specified at boot time with an 
+SIOCSIFADDR ioctl.  The
+.PN xna
+driver employs the Address Resolution Protocol, as described in
+.MS arp 4p ,
+to map dynamically between Internet and Ethernet addresses on the local
+network.
+.PP
+The 
+.PN xna
+driver normally tries to use a trailer encapsulation
+to minimize copying data on input and output.  This can be
+disabled for an interface by setting the IFF_NOTRAILERS
+flag with an SIOCSIFFLAGS ioctl.
+Trailers are used only for packets destined for Internet hosts.
+.PP
+The SIOCSPHYSADDR ioctl can be used to change the physical address
+of the adapter and SIOCRPHYSADDR can
+be used to read its physical address.  SIOCADDMULTI 
+and SIOCDELMULTI can be used to add or delete multicast addresses.  
+The 
+.PN xna 
+driver supports a maximum of 12 multicast 
+addresses. The argument 
+to the latter ioctls is a pointer to an ``ifreq'' structure found in 
+.PN <net/if.h> .
+.PP
+SIOCRDCTRS and SIOCRDZCTRS ioctls can be used to read or 
+read and clear network counters. The argument to the latter 
+two ioctls is a pointer to a counter structure ``ctrreq'' found in 
+.PN <net/if.h> .
+.PP
+The ioctls SIOCENABLBACK and SIOCDISABLBACK can be used to enable
+and disable the interface loopback mode.
+.SH Restrictions
+The PUP protocol family is not supported. 
+.SH Diagnostics
+.sp
+.B xna%d: port self-test failed:\<\fIregister list\fP\>
+.br
+Adapter did not pass the power-up self-test during autoconfiguration 
+time. The port attachment fails.
+.PP 
+.B xna%d: couldn't allocate...
+.br
+The
+.PN xna
+driver was unable to allocate memory for adapter data structures. 
+The port attachment fails.
+.PP
+.B xna%d: port probe failed:\<\fIregister list\fP\>
+.br
+The
+.PN xna
+driver was unable to bring the adapter into the initialized state. 
+The port attachment fails.
+.PP 
+.B xna%d: port init failed:\<\fIregister list\fP\>
+.br
+The
+.PN xna
+driver failed to prepare the adapter for runtime use.
+.PP 
+.B xna%d: port state changed, resetting:\<\fIregister list\fP\>
+.br
+The adapter issued a port state change interrupt. The port state is reset.
+.PP 
+.B xna%d: port reset failed
+.br
+The
+.PN xna
+driver was unable to bring the adapter into the 
+initialized state during a port reset. 
+.PP 
+.B xna%d: command failed, error code:\<\fIerror code\fP\>
+.br
+The adapter port command failed. The
+.I error code 
+gives reason for failure.
+.PP 
+.B xna%d: couldn't handle af%d
+.br
+A packet with an undefined protocol type has been sent to the adapter.
+.PP 
+.B xna%d: addmulti failed, multicast list full
+.br
+Too many multicast requests have been made.
+.SH See Also
+arp(4p), inet(4f), intro(4n)

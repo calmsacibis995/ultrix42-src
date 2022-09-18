@@ -1,0 +1,519 @@
+#!/bin/sh5
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)scamp	1.2	(ULTRIX)	8/5/90"
+#
+#	000	Jonathan Wallace	1-Jun-1990
+#
+########################################################################
+#
+#
+# make sure the user is root
+WHOAMI=${WHOAMI:=`whoami`}
+[ "$WHOAMI" = root ] ||
+{
+	echo "
+Sorry, superuser privileges are required to use Quik_Start.
+"
+	exit 1
+}
+
+################################
+# Set Environment and Constants
+################################
+PATH=.:/usr/etc/scampdir:/etc:/bin:/usr/etc:/usr/bin:/usr/ucb
+TMPDIR=/usr/tmp
+TEXTDIR=/usr/etc/scampdir/text_info
+SCAMPDIR=/usr/etc/scampdir
+export PATH TMPDIR SCAMPDIR
+LL="
+"					# Line Feed
+set -h
+
+
+#################
+# FUNCTIONS
+#################
+################################################
+: Modem_Routine - Set up a Modem Line
+################################################
+Modem_Routine()
+{
+	while :
+	do
+		clear
+		echo "
+			***********************
+			 MODEM LINE SETUP MENU
+			***********************
+
+			1 - Add a Modem Line
+			2 - Remove a Modem Line
+			3 - Additional Information
+
+			0 - Return to Main Menu
+
+			Enter your choice: \c"
+		read resp
+		case $resp in
+		0 )
+			break
+			;;
+		1 )
+			modemsetup -A ttyd0
+			;;
+		2 )
+			modemsetup -R ttyd0
+			;;
+		3 )
+			clear
+			echo "
+*** Modem Line Setup Information *** ${LL}"
+			more $TEXTDIR/modem.txt
+			echo "${LL}Press <RETURN> to continue: \c"
+			read resp
+			;;
+		* )
+			echo ""
+			;;
+		esac
+	done
+}
+
+
+################################################
+: Terminal_Routine - Set up Terminal
+################################################
+Terminal_Routine()
+{
+	while :
+	do
+		clear
+		echo "
+			**************************
+			 TERMINAL LINE SETUP MENU
+			**************************
+
+			1 - Add a Terminal Line
+			2 - Remove a Terminal Line
+			3 - Additional Information
+
+			0 - Return to Main Menu
+
+			Enter your choice: \c"
+		read resp
+		case $resp in
+		0 )
+			break
+			;;
+		1 )
+			termsetup -A tty00
+			;;
+		2 )
+			termsetup -R tty00
+			;;
+		3 )
+			clear
+			echo "
+*** Terminal Line Setup Information *** ${LL}"
+			more $TEXTDIR/term.txt
+			echo "${LL}Press <RETURN> to continue: \c"
+			read resp
+			;;
+		* )
+			echo ""
+			;;
+		esac
+	done
+}
+
+
+################################################
+: LMF_Routine - PAK registration, removal, etc.
+################################################
+LMF_Routine()
+{
+	while :
+	do
+		clear
+		echo "
+			**********************************
+		    	 LICENSE MANAGEMENT FACILITY MENU
+		    	**********************************
+
+			1 - Register a PAK
+			2 - Remove a PAK
+			3 - List Installed PAKs
+			4 - Additional Information
+
+			0 - Return to Main Menu
+
+			Enter your choice: \c"
+
+		read resp
+		case $resp in
+		0 )
+			break
+			;;
+		1 )
+			LMF -R
+			;;
+		2 )
+			LMF -D
+			;;
+		3 )
+			LMF -L
+			;;
+		4 )
+			clear
+			echo "
+*** License Management Facility Information *** ${LL}"
+			more $TEXTDIR/lmf.txt
+			echo "${LL}Press <RETURN> to continue: \c"
+			read resp
+			;;
+		* )
+			echo ""
+			;;
+		esac
+	done
+}
+
+
+#############################################
+: System_Manage_Routine - System Maintenance
+#############################################
+System_Manage_Routine()
+{
+	while :
+	do
+		clear
+		echo "
+			*********************************
+		    	 SYSTEM MANAGEMENT SERVICES MENU
+		    	*********************************
+
+			1 - System Backup
+			2 - System Reboot 
+			3 - System Shutdown 
+			4 - Set Date and Time
+
+			0 - Return to Main Menu
+
+			Enter your choice: \c"
+
+		read resp
+		case $resp in
+		0 )
+			break
+			;;
+		1 )
+			backitup
+			;;
+		2 )
+			shut_down -r
+			;;
+		3 )
+			shut_down -h
+			;;
+		4 )
+			datetime
+			;;
+		* )
+			echo ""
+			;;
+		esac
+	done
+}
+
+
+#########################################
+: User_Account_Routine - User Account Utilities
+#########################################
+User_Account_Routine()
+{
+	while :
+	do
+		trap 'continue' 1 2 3 18
+		clear 
+		echo "
+			******************************
+			 USER ACCOUNT MANAGEMENT MENU 
+			******************************
+
+			1 - Add a new user account
+			2 - Remove a user account
+			3 - Display /etc/passwd file
+
+			0 - Return to Main Menu
+
+			Enter your choice: \c"
+
+		read resp
+		case $resp in
+		0 )
+			break
+			;;
+		1 )
+			while :
+			do 
+				trap 'continue 2' 1 2 3 18
+				clear
+				echo "${LL}*** Creating User Accounts ***"
+				add_user -g -p -s -o
+				echo "
+Do you want to add another user? (y/n) [n]: \c"
+				read resp
+				case $resp in
+				"" | [Nn]* )
+					break
+					;;
+				esac
+			done
+			;;
+		2 )
+			while :
+			do
+				trap 'continue 2' 1 2 3 18
+				clear
+				echo "${LL}*** Removing User Accounts ***"
+				rm_user
+				echo "
+Do you want to remove another user? (y/n) [n]: \c"
+				read resp
+				case $resp in
+				"" | [Nn]* )
+					break
+					;;
+				esac
+			done
+			;;
+		3 )
+			while :
+			do
+				trap 'continue 2' 1 2 3 18
+				clear
+				more /etc/passwd
+				echo "
+Press <RETURN> to return to previous menu, or
+type any letter to review /etc/passwd again: \c"
+				read resp
+				case $resp in
+				"" )
+					break
+					;;
+				esac
+			done
+			;;
+		* )
+			echo ""
+			;;
+		esac
+	done
+}
+
+
+#############################################################
+: Subset_Routine - Install or Remove Subsets from the system
+#############################################################
+Subset_Routine()
+{
+	while :
+	do
+		clear
+		echo "
+			**************************
+			 SOFTWARE MANAGEMENT MENU
+			**************************
+
+			1 - Install Additional Subsets
+			2 - Remove Software Subsets
+			3 - List Subsets and Sizes
+
+			0 - Return to Main Menu
+
+			Enter your choice: \c"
+
+		read resp
+
+		case $resp in 
+		0 )
+			break
+			;;
+		1 )
+			SSINS
+			;;
+		2 )
+			SSREM
+			;;
+		3 )
+			SSSIZ
+			;;
+		* )
+			echo ""
+			;;
+		esac
+	done
+}
+
+
+####################################################
+: Network_Routine - Set up Network
+####################################################
+Network_Routine()
+{
+	clear
+	more $TEXTDIR/network.txt
+	echo "${LL}Press Return to Continue: \c"
+	read resp
+}
+
+
+####################################################
+: Printer_Setup_Routine - setup printer
+####################################################
+Printer_Setup_Routine()
+{
+	while :
+	do
+		clear
+		echo "
+			********************
+			 PRINTER SETUP MENU
+			********************
+
+			1 - Add a Printer Line
+			2 - Remove a Printer Line
+			3 - Additional Information
+
+			0 - Return to Main Menu
+
+			Enter your choice: \c"
+
+		read resp
+		case $resp in
+		0 )
+			break
+			;;
+		1 )
+			printsetup -A tty01
+			;;
+		2 )
+			printsetup -R tty01
+			;;
+		3 )
+			clear
+			echo "
+*** Printer Line Setup Information *** ${LL}"
+			more $TEXTDIR/print.txt
+			echo "${LL}Press <RETURN> to continue: \c"
+			read resp
+			;;
+		* )
+			;;
+		esac
+	done
+}
+
+
+#####################
+: Mail_Routine
+#################
+Mail_Routine()
+{
+	clear
+	echo "
+*** Mail Setup Procedure ***
+
+The MAIL routine is being worked on, and will be
+available as future functionality.
+
+Press <RETURN> to continue \c"
+	read resp
+	return
+}
+
+
+################################
+# PROGRAM EXECUTION STARTS HERE
+################################
+
+clear
+cat $TEXTDIR/welcome.txt
+echo "${LL}${LL}	To see the Main Menu, press the RETURN key: \c"
+read resp
+
+while :
+do
+	trap 'continue' 1 2 3 18
+	clear
+	echo "
+			*****************************
+			  ULTRIX  SCAMP  MAIN  MENU
+			*****************************
+
+			1 - User Account Management
+			2 - Network Setup Information
+			3 - Terminal Setup 
+			4 - Modem Setup 
+			5 - Printer Setup 
+			6 - Install/Remove Software Subsets
+			7 - License Management Facility - LMF
+			8 - System Management Services
+
+			0 - Exit
+
+			Enter your choice: \c"
+	read resp
+
+	case $resp in
+	0 )
+		exit 0
+		;;
+	1 )
+		User_Account_Routine
+		;;
+	2 )
+		Network_Routine
+		;;
+	3 )
+		Terminal_Routine
+		;;
+	4 )
+		Modem_Routine
+		;;
+	5 )
+		Printer_Setup_Routine
+		;;
+	6 )
+		Subset_Routine
+		;;
+	7 )
+		LMF_Routine
+		;;
+	8 )
+		System_Manage_Routine
+		;;
+	* )
+		echo ""
+		;;
+	esac
+done

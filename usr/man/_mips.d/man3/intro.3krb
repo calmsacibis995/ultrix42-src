@@ -1,0 +1,219 @@
+.TH intro 3krb
+.SH Name
+intro \- introduction to the Kerberos subroutines
+.SH Syntax
+.nf
+.nj
+ \fB#include <krb.h>\fP
+.PP
+ \fB#include <des.h>\fP
+.PP
+ \fBcc [ \fIoptions\fP ] \fIfiles\fP \-lkrb \-lknet\fP
+.br
+ \fB \-ldes \-lacl [ \fIlibraries\fP ]\fP
+.fi
+.SH Description
+.NXR "Kerberos files" "intro.3krb"
+The Kerberos subroutines
+can provide for the authentication of and 
+protection against the unauthorized modification of every message sent
+across a TCP/IP network from one application to another.  In addition,
+they provide a means to provide for the creation of access control
+lists (ACL) which an application can use with Kerberos
+authentication,
+to determine if another application is authorized to perform a
+particular action.
+.PP
+The 
+.PN krb_svc_int(3krb)
+routines are designed to initialize the Kerberos
+libraries so that the other Kerberos routines can function
+properly. The
+.PN krb_svc_init
+routines are used to contact a
+Kerberos server to obtain a ticket-granting ticket that
+can be used by the 
+.PN kerberos(3krb) , 
+.PN krb_sendmutual(3krb) ,
+and
+.PN krb_sendauth(3krb)
+routines.
+They also initialize pieces of Kerberos library
+data.  To use these routines, the libraries 
+.PN libkrb.a ,
+.PN libknet.a ,
+and
+.PN libdes.a
+must be linked with your application in the
+order listed.
+.PP
+The
+.PN kerberos(3krb)
+routines 
+.PN krb_mk_req
+and 
+.PN krb_rd_req
+are designed
+to provide for the initial authentication of an application to
+another.  They are designed to be used with applications that
+support "on-the-wire" protocols in which authentication information
+can be placed.  The 
+.PN kerberos(3krb)
+routines
+.PN krb_mk_safe
+and
+.PN krb_rd_safe
+are designed to provide for the authentication of and protection
+against the modification of every message sent between two
+applications after the initial authentication message.  To
+use these routines, the libraries
+.PN libkrb.a ,
+.PN libknet.a ,
+and
+.PN libdes.a
+must be linked with your application in the order listed.
+.PP
+The 
+.PN krb_sendmutual(3krb)
+routines are designed to provide for the
+mutual authentication of two applications after the initial
+authentication of one application, X to another, Y.  To provide
+mutual authentication, Y's identity is proven by the 
+.PN krb_sendmutual
+routines to X.  To use these routines, the libraries
+.PN libkrb.a ,
+.PN libknet.a ,
+and
+.PN libdes.a
+must be linked with your
+application in the order listed.
+.PP
+The 
+.PN krb_sendauth(3krb)
+routines are designed to provide both the
+initial authentication that 
+.PN krb_mk_req
+and
+.PN krb_rd_req
+provide, as well as
+the mutual authentication of the 
+.PN krb_sendmutual
+routines.  The
+.PN krb_sendauth
+routines are designed to be used with applications
+that do not have room in the protocols they support for
+authentication information.  To use these routines, the
+libraries
+.PN libkrb.a ,
+.PN libknet.a ,
+and
+.PN libdes.a
+must be linked with your
+application in the order listed.
+.PP
+The 
+.PN krb_get_lrealm(3krb)
+routines are designed to provide information
+to the user about the Kerberos environment.  To use these
+routines, the 
+library
+.PN libkrb.a
+must be linked with your application.
+.PP
+The 
+.PN des_crypt(3krb)
+routines are designed to provide support for
+the above routines with	respect to Data Encryption Standard (DES)
+keys.  The 
+.PN des_quad_cksum
+routine can be used to provide
+support for the authentication of and protection against the
+modification of every message sent between two applications after
+the initial authentication message.  It is designed to be used
+only with applications that have room in their "on-the-wire"
+protocol for authentication information.  To use these
+routines, the library
+.PN libdes.a
+must be linked with your application.
+.PP
+The 
+.PN krb_set_tkt_string(3krb)
+routines are designed allow the user
+of the Kerberos libraries to modify some of the default settings
+of the Kerberos libraries.  To use these routines, the
+library
+.PN libkrb.a
+must be linked with your application.
+.PP
+The 
+.PN acl_check(3krb)
+routines are designed to provide for the
+creation and use of access control lists (ACL).  After an 
+application, X, correctly authenticates the identity of
+another, Y, the application X has the ability to assign access
+rights to Y, based on Y's identity.  The routines above provide for
+the authentication of applications while the 
+.PN acl_check(3krb)
+routines
+provide the ability to store the access rights associated with
+each application.  To use these routines, the
+library
+.PN libacl.a
+must be linked with your application.
+.SH Files
+.TP
+.PN /usr/lib/libkrb.a
+.TP
+.PN /usr/lib/libknet.a
+.TP
+.PN /usr/lib/libdes.a
+.TP
+.PN /usr/lib/libacl.a
+.SH See Also
+All the other Kerberos reference pages:
+.PP
+acl_check(3krb)
+.br
+des_crypt(3krb)
+.br
+kerberos(3krb)
+.br
+krb_get_lrealm(3krb)
+.br
+krb_sendauth(3krb)
+.br
+krb_sendmutual(3krb)
+.br
+krb_set_tkt_string(3krb)
+.br
+krb_svc_init(3krb)
+.br
+krb.conf(5krb)
+.br
+krb_slaves(5krb)
+.br
+krb_dbase(5krb)
+.br
+ext_srvtab(8krb)
+.br
+kdb_destroy(8krb)
+.br
+kdb_edit(8krb)
+.br
+kdb_init(8krb)
+.br
+kdb_util(8krb)
+.br
+kdestroy(8krb)
+.br
+kerberos(8krb)
+.br
+kinit(8krb)
+.br
+klist(8krb)
+.br
+kprop(8krb)
+.br
+kpropd(8krb)
+.br
+kstash(8krb)

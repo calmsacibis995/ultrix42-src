@@ -1,0 +1,692 @@
+#!/bin/sh5
+#
+#  @(#)adduser.sh	2.9 (ULTRIX) 3/12/90
+#
+# 			Copyright (c) 1984, 1989, 1990 by				
+# 		Digital Equipment Corporation, Maynard, MA		
+# 			All rights reserved.				
+# 									
+#    This software is furnished under a license and may be used and	
+#    copied  only  in accordance with the terms of such license and	
+#    with the  inclusion  of  the  above  copyright  notice.   This	
+#    software  or  any  other copies thereof may not be provided or	
+#    otherwise made available to any other person.  No title to and	
+#    ownership of the software is hereby transferred.			
+# 									
+#    The information in this software is subject to change  without	
+#    notice  and should not be construed as a commitment by Digital	
+#    Equipment Corporation.						
+# 									
+#    Digital assumes no responsibility for the use  or  reliability	
+#    of its software on equipment which is not supplied by Digital.	
+#
+# Purpose:	To add new users to the group and passwd file
+# Usage:	adduser
+# 
+# Remarks:
+#	Interactive adduser script to ease the process of adding accounts.
+#
+########################################################################
+#
+# History
+#
+# 30-Apr-1990	Jon Wallace
+#		added command line argument code for fis
+#
+#
+#	001	James C. Overman	05-Aug-1990
+#	    Moved references to /tmp to /usr/tmp 
+#	    
+########################################################################
+LL="
+"
+UIDFLG=0
+USERFLG=0
+NAMEFLG=0
+SHELLFLG=0
+LOGGRPFLG=0
+OTHGRPFLG=0
+PARENTFLG=0
+
+# The maximum uid should really be read from /usr/include/limits.h 
+
+UID_MAX=32000
+umask 022
+
+if test ! -w /etc/passwd
+then
+    echo "Please su to root first."
+    exit 1
+fi
+
+# Trap signals
+
+trap '/etc/unlockpw ; exit 1' 1 2 3 18
+
+# Lock the passwd and group files
+
+/etc/lockpw
+exstat="$?"
+if test $exstat -ne 0
+then
+    exit $exstat
+else
+    trap '/etc/unlockpw ; exit 0' 0
+fi
+
+#
+# See if this system is a Yellow Pages client.
+#
+tail -1 /etc/passwd | grep "^[+-]:" > /dev/null
+yp_used="$?"
+tail -1 /etc/group | grep "^[+-]:" > /dev/null
+if [ $? -eq 0 ] || [ $yp_used -eq 0 ]
+then
+	/etc/unlockpw
+	echo "
+This system makes use of the Yellow Pages service for
+user account administration.  Please add the new user
+by following the steps given in the Overview of Yellow
+Pages chapter of the Network Management Guide."
+	exit 5
+fi
+
+##############################################################
+#
+# Get any command line arguments and set the variables
+#
+while [ $# -gt 0 ]
+do
+	case $1 in
+	-l )					# Login Name
+		USER=$2
+		USERFLG=1
+		shift;shift
+		;;
+	-u )					# UID number
+		UIDFLG=1
+		case $2 in
+		"" | -* )
+			shift
+			;;
+		* )
+			UID=$2
+			shift;shift
+			;;
+		esac
+		;;
+	-r )					# Users Real Name
+		NAME=$2
+		NAMEFLG=1
+		shift;shift
+		;;
+	-g )					# Group Name
+		LOGGRPFLG=1
+		case $2 in
+		"" | -* )
+			shift
+			;;
+		* )
+			LOGGROUP=$2
+			shift;shift
+			;;
+		esac
+		;;
+	-p )					# Parent Directory
+		PARENTFLG=1
+		case $2 in
+		"" | -* )
+			shift
+			;;
+		* )
+			PARENT=$2
+			shift;shift
+			;;
+		esac
+		;;
+	-s )					# Shell Choice
+		SHELLFLG=1
+		case $2 in
+		"" | -* )
+			shift
+			;;
+		* )
+			LSHELL=$2
+			shift;shift
+			;;
+		esac
+		;;
+	-o )
+		OTHGRPFLG=1
+		case $2 in
+		"" | -* )
+			shift
+			;;
+		* )
+			OTHGRP="$*"
+			shift;shift
+			;;
+		esac
+		;;
+	* )
+		echo "adduser: Bad option. Usage: adduser -[lurgpso]"
+		exit 1
+		;;
+	esac
+done
+
+########################################################################
+# Get new user's login name
+#
+while true
+do
+	case $USERFLG in
+	0 )
+    		echo "
+Enter login name for new user (initials, first or last name): \c"
+    		read USER
+		;;
+	esac
+
+	case "${USER}" in
+	'')
+		USERFLG=0
+		;;
+	*:*)
+		echo 'Error, login name cannot contain colons.'
+		USERFLG=0
+		;;
+	?????????*)
+		echo 'Error, login name cannot be longer than 8 characters.'
+		USERFLG=0
+		;;
+	*)
+		# See if user already exists in passwd file, if so exit.
+		if grep -s "^${USER}:" /etc/passwd
+  		then
+    			/etc/unlockpw
+    			echo "User ${USER} already in /etc/passwd file."
+    			exit 5
+		fi
+		break
+		;;
+	esac
+done
+
+# Get the user ID for the new user.  Sort the passwd file on uid,
+# get the largest uid, validity check it as a valid number, then
+# add one to it to get the new uid.
+
+DEF_UID=`sort -nt: +2 -3 /etc/passwd | tail -1 | cut -d: -f3 | sed -n '/[0-9][0-9]*/p'`
+
+if test ! "${DEF_UID}"			# Check for valid ${UID}
+then
+	echo ''
+	echo "The password file (/etc/passwd) may be corrupt!"
+	echo "Exiting ${0} script.  New entry not created!"
+	/etc/unlockpw
+	exit 1
+fi
+
+if test "${DEF_UID}" -gt ${UID_MAX}
+then
+    echo ''
+    echo "A uid greater than the maximum allowed," ${UID_MAX} "was found."
+    echo "Exiting ${0} script.  New entry not created!"
+    /etc/unlockpw
+    exit 1
+fi
+
+DEF_UID=`expr "${DEF_UID}" + 1`
+
+# Verfify UID
+while true
+do
+	case $UIDFLG in
+	0 )
+    		echo "${LL}Enter uid for new user [${DEF_UID}]: " \\c
+    		read UID
+		;;
+	esac
+
+	case "$UID" in
+	'')
+		UID=$DEF_UID
+		break
+		;;
+	*)
+		TEST=`expr "$UID" : '\([0-9][0-9]*\)'`
+		case $TEST in
+		$UID )
+			if [ $UID -gt $UID_MAX ]
+		      	then
+				echo "UID must be less than ${UID_MAX}"
+				UIDFLG=0
+		    	else
+				if grep -s "^[^:]*:[^:]*:${UID}:" /etc/passwd
+			  	then
+			    		echo "
+There is another account with uid ${UID}, is this ok [yes]? " \\c
+			    		read Y
+					case "${Y}" in
+				    	[yY]*|'')
+						;;
+				    	*)
+						UIDFLG=0
+						continue
+						;;
+					esac
+			    	fi
+			fi
+			break
+			;;
+		* )
+			echo "Bad value for UID, must be an integer"
+			UIDFLG=0
+			;;
+		esac
+		;;
+	esac
+done
+
+###########################################################################
+# Get new user's real name
+#
+while true
+do
+	case $NAMEFLG in
+	0 )
+    		echo "${LL}Enter full name for new user: \c"
+    		read NAME
+		;;
+	esac
+
+	case "${NAME}" in
+	*:*)
+		echo 'Error, name may not contain colons.'
+		NAMEFLG=0
+		;;
+	'')
+		NAMEFLG=0
+		;;
+	*)
+		break
+		;;
+	esac
+done
+
+###########################################################################
+# Get the login group for the new user.
+#
+while true
+do
+	case $LOGGRPFLG in
+	0 )
+    		echo "${LL}What login group should $USER go into? [users]: \c"
+    		read LOGGROUP
+		;;
+	esac
+
+	case "${LOGGROUP}" in
+	*:*)
+		echo 'Error, group name may not contain colons.'
+		LOGGRPFLG=0
+		continue
+		;;
+	'')
+		LOGGROUP=users
+		;;
+	*)
+		;;
+	esac
+
+	LOGGID=`grep "^${LOGGROUP}:" /etc/group | cut -d: -f3`
+	if test ! "${LOGGID}"
+	then
+		echo
+		echo "Unknown group: ${LOGGROUP}. Known groups are:"
+		echo
+		cut -d: -f1 < /etc/group | pr -t -l1 -4
+		while true
+		do
+			echo "
+Do you want to add group ${LOGGROUP} to the /etc/group file? [yes]: " \\c
+			read ADDGROUP
+			case "${ADDGROUP}" in
+			[yY]*|'')
+				echo "
+Adding new group to /etc/group file..."
+				addgroup "${LOGGROUP}"
+				LOGGID=${?}
+				break 2
+				;;
+			[nN]*)
+				LOGGRPFLG=0
+				break
+				;;
+			* )
+				echo '
+Invalid response, you must answer yes or no.'
+				;;
+			esac
+		done
+	else
+		break
+	fi
+done
+
+#########################################################################
+# Get other groups if this user is to be part of any others
+#
+
+while true
+do
+	case $OTHGRPFLG in
+	0 )
+    		echo "
+Enter any other group(s) that '${USER}' should be a member of
+(<RETURN> only if none): " \\c
+		read OTHGRP
+		OTHGRP=`echo $OTHGRP`
+		;;
+	esac
+
+	case $OTHGRP in
+	"" )
+		break
+		;;
+	* )
+		for K in $OTHGRP
+		do
+			case $K in
+	    		*:*)
+				echo 'Error: group name may not contain colons.'
+				echo "Cannot add '${USER}' to group '${K}'."
+				OTHGRPFLG=0
+				;;
+	    		*)
+				OTH_GROUP="$OTH_GROUP $K"
+				;;
+			esac
+		done
+		;;
+	esac
+
+	case $OTHGRPFLG in
+	1 )
+		break
+		;;
+	esac
+done
+
+#########################################################################
+#   Get the group ID for the new user
+#
+
+for K in $OTH_GROUP
+do
+    	GID=`grep "^${K}:" /etc/group | cut -d: -f3`
+    	if test ! "${GID}"
+      	then
+		echo
+		echo "Unknown group: ${K}. Known groups are:"
+		echo
+		cut -d: -f1 < /etc/group | pr -t -l1 -4
+		while true
+	  	do
+	    		echo "
+Do you want to add group ${K} to the /etc/group file [yes]? " \\c
+	    		read ADDGROUP
+			case "${ADDGROUP}" in
+		    	[yY]*|'')
+				echo ''
+				echo 'Adding new group to /etc/group file...'
+				addgroup "${K}"
+				break
+				;;
+		    	[nN]*)
+				continue 2
+				;;
+		    	*)
+				echo '
+Error, invalid response, you must answer yes or no.'
+				;;
+			esac
+		done
+	fi
+
+	# Add the user to each group as it is specified 
+	grep "^${K}:" /etc/group | cut -d: -f4 | grep -s "${USER}"
+	case $? in
+	0 )
+	    	echo ""
+	    	echo "User ${USER} is already a member of group ${K}."
+		;;
+	* )
+	    	rm -f /usr/tmp/group > /dev/null
+	    	cp /etc/group /usr/tmp/group
+	    	ed /usr/tmp/group > /dev/null << EOF
+	    	/^${K}:/s/\$/,${USER}/
+	    	g/:,/s//:/
+	    	w
+	    	q
+EOF
+	    	mv /usr/tmp/group /etc/group
+		;;
+	esac
+done
+
+########################################################################
+# Get the parent directory for the user
+#
+
+while true
+do
+    	case $PARENTFLG in
+    	0 )
+		echo "
+Enter parent directory for ${USER} [/usr/users]: " \\c
+    		read PARENT
+		;;
+	esac
+
+	case "${PARENT}" in
+	'')
+		PARENT=/usr/users
+		;;
+	esac
+
+	if [ -d "${PARENT}" ]
+	then
+		break
+	else
+		while true
+	  	do
+	    		echo "
+${PARENT} not found, do you want to create it? [yes]: " \\c
+	    		read ADDDIR
+			case "${ADDDIR}" in
+		    	[yY]*|'')
+				if mkdir "${PARENT}"
+			  	then
+			    		chmod 755 "${PARENT}"
+			    		chgrp "${LOGGROUP}" "${PARENT}"
+			    		break 2
+				else
+			    		echo "Unable to create ${PARENT}."
+					PARENTFLG=0
+			    		break
+				fi
+				;;
+		    	nN*)
+				PARENTFLG=0
+				break
+				;;
+		    	*)
+				echo 'Error, you must answer either yes or no.'
+				;;
+			esac
+		done
+	fi
+done
+
+########################################################################
+# Get the users login shell.
+#
+
+while true
+do
+	case $SHELLFLG in
+	0 )
+		echo "${LL}The shells are:"
+		echo
+		pr -4 -t /etc/shells
+		echo
+		echo 'Enter the users login shell name [/bin/csh]: ' \\c
+		read LSHELL
+		;;
+	esac
+
+	case "${LSHELL}" in
+	'' )
+		LSHELL=/bin/csh
+		break
+		;;
+	*/* )
+		;;
+	* )
+		X=`grep "/${LSHELL}$" /etc/shells`
+		if [ -n "${X}" ]
+		then
+			LSHELL="${X}"
+			break
+		else
+			SHELLFLG=0
+		fi
+		;;
+	esac
+done
+
+echo "${LL}Adding new user..."
+
+# Make sure parent directories for everything exist.
+
+if test \! -d /usr/spool
+then
+    mkdir /usr/spool
+fi
+if test \! -d /usr/spool/mail
+then
+    mkdir /usr/spool/mail
+fi
+
+# Add the user to the password file.
+
+echo "${USER}:Nologin:${UID}:${LOGGID}:${NAME}:${PARENT}/${USER}:${LSHELL}" >> /etc/passwd
+if [ -f /usr/etc/mkpasswd -a -f /etc/passwd.pag ]
+  then
+    echo 'Rebuilding the passwd data base...'
+    ( cd /etc ; /usr/etc/mkpasswd -u passwd )
+fi
+
+# Add the user to the auth file
+
+if test -f /etc/auth.pag -a -f /usr/etc/sec/setauth
+  then
+
+DEFPASSMAXLIFE=60
+DEFPASSMINLIFE=0
+    echo "Enter maximum password lifetime in days [${DEFPASSMAXLIFE}]: " \\c
+    read MAXPASSLIFE
+    if test ! "${MAXPASSLIFE}"
+      then
+	MAXPASSLIFE=${DEFPASSMAXLIFE}
+    fi
+    MAXPASSLIFE=`expr "${MAXPASSLIFE}" \* 24 \* 60 \* 60`
+#
+    echo "Enter minimum password lifetime in days [${DEFPASSMINLIFE}]: " \\c
+    read MINPASSLIFE
+    if test ! "${MINPASSLIFE}"
+      then
+	MINPASSLIFE=${DEFPASSMINLIFE}
+    fi
+    MINPASSLIFE=`expr "${MINPASSLIFE}" \* 24 \* 60 \* 60`
+#
+    echo 'Will machine generated passwords be required [no]? ' \\c
+    if read X
+      then
+	case "${X}"
+	  in
+	    [Yy]*)
+		AUTHMASK=03
+		;;
+	    *)
+		AUTHMASK=07
+		;;
+	esac
+    fi
+    echo "${UID}:Nologin:1:${MINPASSLIFE}:${MAXPASSLIFE}:${AUTHMASK}:0:${UID}:00:00:00" \
+        | /usr/etc/sec/setauth
+    echo 'Do you wish to edit the auth file entry for this user [no]? ' \\c
+    if read X
+      then
+	case "${X}"
+	  in
+	    [yY]*)
+		/usr/etc/sec/edauth "${USER}"
+		;;
+	esac
+    fi
+fi
+
+# Create home and bin directories, and set-up files
+
+echo 'Creating home directory...'
+cd "${PARENT}"
+if [ "${?}" -ne 0 ]
+  then
+    echo "Unable to cd to parent directory ${PARENT}"
+    exit 1
+fi
+for I in "${USER}" "${USER}/bin"
+  do
+    if [ -d "${I}" ]
+      then
+	echo "${PARENT}/${I} already exists."
+    else
+	mkdir "${I}"
+	chmod 0751 "${I}"
+	/etc/chown "${USER}" "${I}"
+	chgrp "${LOGGROUP}" "${I}"
+    fi
+done
+for I in .profile .login .cshrc
+  do
+    if [ -s "${USER}/${I}" ]
+      then
+	echo "${PARENT}/${USER}/${I} already exists."
+    else
+	cp /usr/skel/${I} "${USER}/${I}"
+	chmod 0751 "${USER}/${I}"
+	/etc/chown "${USER}" "${USER}/${I}"
+	chgrp "${LOGGROUP}" "${USER}/${I}"
+    fi
+done
+
+# Unlock the password and group files
+
+/etc/unlockpw
+
+# Set a password
+
+echo "
+You must set a password for the newly created user account."
+
+while true
+  do
+    if passwd "${USER}"
+      then
+	break
+    fi
+done
+exit 0

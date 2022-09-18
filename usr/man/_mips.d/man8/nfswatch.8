@@ -1,0 +1,458 @@
+.TH nfswatch 8 "" "" Unsupported
+.SH Name
+nfswatch \- monitor an NFS server
+.SH Syntax
+.B /usr/etc/nfswatch
+[
+.B \-dst
+.I dsthost
+] [
+.B \-src
+.I srchost
+] [
+.B \-dev
+.I device
+] [
+.B \-allif
+] [
+.B \-f
+.I filelist
+] [
+.B \-lf
+.I logfile
+]
+.br
+[
+.B \-sf
+.I snapshotfile
+] [
+.B \-t
+.I timeout
+] [
+.B \-fs
+] [
+.B \-if
+] [
+.B \-procs
+] [
+.B \-clients
+] [
+.B \-all
+] [
+.B \-usage
+] [
+.B \-l
+]
+.SH Description
+.NXR "nfswatch command"
+The
+.PN nfswatch
+command monitors all incoming ethernet traffic to an NFS file server and
+divides it into several categories.
+The number and percentage of packets received in each category is
+displayed on the screen in a continuously updated display.
+The screen is updated every ten seconds by default;
+this time period is called an
+.IR interval .
+.PP
+.B "On SunOS" :
+You must be the super-user to invoke
+.PN nfswatch
+or it must be installed setuid to ``root.''
+.B "On ULTRIX" :
+Any user can invoke
+.PN nfswatch
+once the super-user has enabled promiscuous-mode operation using
+.MS pfconfig 8c
+or (less desirable)
+.MS ifconfig 8c .
+.PP
+By default,
+.PN nfswatch
+monitors all packets destined for the current host.
+An alternate destination host to watch for may be specified using the
+.B \-dst
+argument.
+If a source host is specified with the
+.B \-src
+argument,
+then only packets arriving at the destination host which were sent by the
+source host are monitored.
+If the
+.B \-all
+argument is given,
+then all NFS traffic on the network is monitored.
+.PP
+The
+.PN nfswatch
+screen is divided into three parts.
+The first part,
+at the top of the screen,
+is made up of three lines.
+The first line displays the name of the host being monitored,
+the current date and time,
+and the time elapsed since the start of monitoring.
+The second line displays the total number of packets received during
+the most recent interval,
+and the third line displays the total number of packets received since
+monitoring started.
+These two lines display three numbers each:
+the total number of packets on the network,
+the total number of packets received by the destination host (possibly
+subject to being only from the specified source host),
+and the number of packets dropped by the monitoring interface due to
+buffer space limitations.
+Dropped packets are not included in the packet monitoring totals.
+.PP
+The second part of the screen divides the received packets into 16
+categories.
+Each category is displayed with three numbers:
+the number of packets received this interval,
+the percentage this represents of all packets received by the host
+during this interval,
+and the total number of packets received since monitoring started.
+The packet categories are not mutually exclusive;
+some packets may be counted in more than one category (for example,
+NFS packets are also UDP packets).
+The categories in this section and their meanings are:
+.IP "\s-1ND\s0 Read"
+Sun Network Disk read requests.
+Only servers which serve clients running SunOS 3.5 or less should
+display non-zero counts in this section.
+.IP "\s-1ND\s0 Write"
+Sun Network Disk write requests.
+Only servers which serve clients running SunOS 3.5 or less should
+display non-zero counts in this section.
+.IP "NFS Read"
+NFS requests which primarily result in a file system read being performed
+(for example, read file, read directory).
+.IP "NFS Write"
+NFS requests which primarily result in a file system write being performed
+(for example, write file, rename file, create file, delete file).
+.IP "NFS Mount"
+NFS mount requests.
+.IP "Yellow Pages/NIS"
+Sun Yellow Pages (NIS) requests.
+.IP "RPC Authorization"
+All RPC reply packets fall into this category,
+because RPC replies do not contain the protocol number,
+and thus cannot be classified as anything else.
+(If the
+.B \-all
+argument is given,
+then you will see all the RPC replies on the network in this category.)
+.IP "Other RPC Packets"
+All RPC requests which do not fall into one of the above categories.
+.IP "\s-1TCP\s0 Packets"
+Packets sent using the Transmission Control Protocol.
+.IP "\s-1UDP\s0 Packets"
+Packets sent using the User Datagram Protocol.
+.IP "\s-1ICMP\s0 Packets"
+Packets sent using the Internet Control Message Protocol.
+.IP "Routing Control"
+Routing Information Protocol (\s-1RIP\s0) packets.
+.IP "Address Resolution"
+Address Resolution Protocol (\s-1ARP\s0) packets.
+.IP "Reverse Addr Resol"
+Reverse Address Resolution Protocol (\s-1RARP\s0) packets.
+.IP "Ethernet Broadcast"
+Ethernet broadcast packets.
+These packets are destined for and received by all hosts on the local
+ethernet.
+.IP "Other Packets"
+A catch-all for any packets not counted in any of the above
+categories.
+.PP
+The third part of the display shows the mounted file systems exported by the
+file server for mounting through NFS.
+If
+.PN nfswatch
+is monitoring the same host it is being run on,
+these file systems are listed by path name.
+Otherwise,
+the program attempts to decode the server's major and minor device numbers
+for the file system,
+and displays them in parentheses.
+(If the
+.B \-all
+argument is given,
+the name of the server is also shown.)
+With each file system,
+three numbers are displayed:
+the number of NFS requests for this file system received during the
+interval,
+the percentage this represents of all NFS requests received by the host,
+and the total number of NFS requests for this file system received since
+monitoring started.
+Up to 256 file systems are monitored by
+.PN nfswatch
+and recorded in the log file,
+but only as many as will fit (2 * (\s-1LINES\s0 \- 16)) are
+displayed on the screen.
+.PP
+If the
+.B \-f
+.I filelist
+option is specified,
+a list of file names (one per line) is read from
+.IR filelist ,
+and the traffic to these individual files is also monitored.
+The files must reside in file systems exported by the file server.
+When this option is specified,
+the third section of the screen will display counters for these files,
+instead of for the mounted file systems.
+Up to 256 individual files are monitored by
+.PN nfswatch
+and recorded in the log file,
+but only as many as will fit (2 * (\s-1LINES\s0 \- 16)) are
+displayed on the screen.
+.PP
+If the
+.B \-procs
+option is specified, then instead of showing per-file or per-file system
+statistics,
+.PN nfswatch
+shows the frequency of each NFS procedure (RPC call) (or as many as will
+fit on the screen).
+.PP
+If the
+.B \-clients
+option is specified, then instead of showing per-file or per-file system
+statistics,
+.PN nfswatch
+shows the operation rate of each NFS client of the specified
+server(s) (or as many as will
+fit on the screen).
+.PP
+Note that only NFS
+.IR requests ,
+made by client machines,
+are counted in the NFS packet monitoring area.
+The NFS traffic generated
+.I "by the server"
+in response to these requests is not counted.
+.SH Options
+The
+.PN nfswatch
+command can usually be run without arguments and obtains useful results.
+However,
+for those occasions when the defaults are not good enough,
+the following options are provided:
+.IP "\fB\-dst\fP \fIdsthost\fP"
+Monitors packets destined for
+.I dsthost
+instead of the local host.
+.IP "\fB\-src\fP \fIsrchost\fP"
+Restricts packets being counted to those sent by
+.IR srchost .
+.IP "\fB\-all\fP"
+Monitors packets to and from all NFS servers on the local network.
+.IP "\fB\-dev\fP \fIdevice\fP"
+.B "On SunOS" :
+Uses network interface device
+.I device
+to read packets from.
+By default,
+.PN nfswatch
+uses the system's default network device for an Internet datagram.
+.B "On ULTRIX" :
+.I device
+specifies the packet filter interface from which to read packets.
+You can specify interfaces either by their actual names (such as
+.PN ln0 )
+or by their generic packet filter interface names (
+.PN pf \fIN\fR)
+for
+.I N
+a small integer).
+By default,
+.PN pf0
+(the first configured interface that supports the packet filter)
+is used.
+.IP "\fB\-allif\fP"
+Read packets from all configured network interfaces,
+instead of a single device.
+.B "On SunOS" :
+The first five
+.PN le
+(0-4) and the first five
+.PN ie
+(0-4) devices (a total of ten devices) are checked,
+and if configured, are monitored.
+.B "On ULTRIX" :
+The first ten
+.PN pf
+devices (0-9) are checked,
+and if configured, are monitored.
+.IP "\fB\-f\fP \fIfilelist\fP"
+Reads a list of file names (one per line) from
+.I filelist
+and monitors the NFS traffic to these files in addition to the
+normal monitoring of exported file systems.
+.IP "\fB\-lf\fP \fIlogfile\fP"
+When logging,
+writes information to the file
+.IR logfile .
+The default is
+.PN nfswatch.log .
+.IP "\fB\-sf\fP \fIsnapshotfile\fP"
+Writes snapshots to the file
+.IR snapshotfile .
+The default is
+.PN nfswatch.snap .
+.IP "\fB\-t\fP \fItimeout\fP"
+Sets the cycle time (interval length) to
+.I timeout
+seconds.
+The default is 10.
+The cycle time may also be adjusted from the command prompt.
+.IP "\fB\-fs\fP"
+Displays the file system NFS monitoring data instead of the individual
+file data.
+This option is only meaningful if the
+.B \-f
+.I filelist
+option was specified.
+The display may also be controlled from the command prompt.
+.IP "\fB\-if\fP"
+Displays the individual file NFS monitoring data instead of the file
+system data.
+This option is only meaningful if the
+.B \-f
+.I filelist
+option was specified.
+The display may also be controlled from the command prompt.
+.IP "\fB\-procs\fP"
+Displays statistics on NFS procedures (RPC calls) instead of
+per-file or per-filesystem data.
+.IP "\fB\-client\fP"
+Displays statistics on NFS client operation rates instead of
+per-file or per-filesystem data.
+.IP "\fB\-usage\fP"
+Sets file system, procedure, or client
+display to be sorted in declining order of percent usage.
+By default,
+the display is sorted alphabetically.
+This may also be toggled from the command prompt.
+.IP "\fB\-l\fP
+Turns logging on at startup time.
+Logging is turned off by default,
+but may be enabled from the command prompt.
+.SH Restrictions
+To monitor NFS traffic to files and file systems,
+.PN nfswatch
+must extract information from the NFS file handle.
+The file handle is a server-specific item,
+and its contents vary from vendor to vendor and operating system to
+operating system.
+Unfortunately,
+there is no machine-independent way to extract information from a file
+handle.  The 
+.PN nfswatch
+command understands the file handle format used by SunOS 4.1 SPARC and 
+ULTRIX systems (depending on how it was compiled);
+the program must be modified to understand other formats.
+.PP
+The 
+.PN nfswatch
+command uses the Network Interface Tap under SunOS 4.\fIx\fP,
+and the Packet Filter (
+.MS packetfilter 4 ) 
+under ULTRIX 4.0 or later.  To run on other systems,
+including pre-4.\fIx\fP SunOS,
+code must be written to read packets from the network in
+promiscuous mode.
+.SH Logfile
+When logging is on,
+.PN nfswatch
+writes one entry to the log file each interval.
+The information printed to the log file is easily readable,
+and basically contains a copy of all information on the screen.
+Additionally,
+any NFS traffic to file systems or individual files which was not
+printed on the screen (due to space limitations) is printed in the
+log file.  Finally,
+in the log file,
+the NFS traffic to file systems and individual files is further broken
+down into counts of how many times each specific NFS procedure was
+called.
+.PP
+The information in the
+.PN nfswatch
+log file can be summarized easily using the
+.MS nfslogsum 8
+program.
+.SH Commands
+The
+.PN nfswatch
+command
+also allows a small set of commands to be entered at its prompt during
+execution.
+The prompt is displayed on the last line of the screen.
+For most commands,
+feedback describing the effect of the command is printed on the same
+line as the prompt.
+The commands are:
+.IP \fB^L\fP
+Clears and redraws the screen.
+.IP \fBc\fP
+Switches the display to show statistics on
+NFS client hosts instead of per-file or
+per-filesystem information.
+.IP \fBf\fP
+Toggles the display of mounted file systems and the display of individual files
+in the NFS packet monitoring area.
+This command is only meaningful if the
+.B \-f
+.I filelist
+option was specified on the command line.
+(If the display is showing NFS procedures or clients,
+then this command switches the display to show file systems.)
+.IP \fBp\fP
+Switches the display to show statistics on
+NFS procedures instead of per-file or
+per-filesystem information.
+.IP \fBl\fP
+Toggles the logging feature.
+If logging is off it is (re)started;
+if logging is on,
+it is turned off.
+.IP \fBs\fP
+Takes a ``snapshot'' of the current screen and saves it to a file.
+This is useful to record occasional copies of the data when the
+logfile is not needed.
+.IP \fBu\fP
+Toggles the sort key for the display of mounted file systems in the
+NFS packet monitoring area.
+By default,
+these are sorted by file system name,
+but they can also be sorted in declining order of percent usage.
+.IP \fB\-\fP
+Decreases the cycle time (interval length) by ten seconds.
+This takes effect after the next screen update.
+.IP \fB+\fP
+Increases the cycle time (interval length) by ten seconds.
+This takes effect after the next screen update.
+.IP \fB<\fP
+Decreases the cycle time (interval length) by one second.
+This takes effect after the next screen update.
+.IP \fB>\fP
+Increases the cycle time (interval length) by one second.
+This takes effect after the next screen update.
+.IP \fB]\fP
+Scrolls forward through the bottom part of the display, if there
+are files/file systems/clients/procedures not being displayed
+due to lack of space.
+.IP \fB[\fP
+Scrolls back.
+.IP \fBq\fP
+Exits
+.PN nfswatch .
+Using the interrupt key also causes
+.PN nfswatch
+to exit.
+.PP
+Typing any other character causes a help screen to be displayed.
+.SH See Also
+nfslogsum(8),
+packetfilter(4)

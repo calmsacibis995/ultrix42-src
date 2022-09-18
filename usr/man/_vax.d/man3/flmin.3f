@@ -1,0 +1,55 @@
+.\" SCCSID: @(#)flmin.3f	8.1	9/11/90
+.TH flmin 3f VAX "" Unsupported
+.SH Name
+flmin, flmax, ffrac, dflmin, dflmax, dffrac, inmax \- return extreme values
+.SH Syntax
+.B function flmin()
+.sp 1
+.B function flmax()
+.sp 1
+.B function ffrac()
+.sp 1
+.B double precision function dflmin()
+.sp 1
+.B double precision function dflmax()
+.sp 1
+.B double precision function dffrac()
+.sp 1
+.B function inmax()
+.SH Description
+.NXR "flmin subroutine (FORTRAN)"
+.NXR "flmax subroutine (FORTRAN)"
+.NXR "ffrac subroutine (FORTRAN)"
+.NXR "dflmin subroutine (FORTRAN)"
+.NXR "dflmax subroutine (FORTRAN)"
+.NXR "dffrac subroutine (FORTRAN)"
+.NXR "inmax subroutine (FORTRAN)"
+.NXR "floating point arithmetic"
+.NXAM "arithmetic" "floating point arithmetic"
+Functions
+.PN flmin
+and
+.PN flmax
+return the minimum and maximum positive floating point values respectively.
+Functions
+.PN dflmin
+and
+.PN dflmax
+return the minimum and maximum positive double precision floating point values.
+Function
+.PN inmax
+returns the maximum positive integer value.
+.PP
+The functions
+.PN ffrac
+and
+.PN dffrac
+return the fractional accuracy of single and double precision
+floating point numbers respectively.
+These are the smallest numbers that can be added to 1.0 without being lost.
+.PP
+These functions can be used by programs that must scale algorithms
+to the numerical range of the processor.
+.SH Files
+.ie \nM /usr/ucb/lib/libF77.a
+.el /usr/lib/libF77.a

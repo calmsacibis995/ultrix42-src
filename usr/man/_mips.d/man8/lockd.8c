@@ -1,0 +1,73 @@
+.TH lockd 8c
+.SH Name
+lockd \- network lock daemon
+.SH Syntax
+.B /usr/etc/lockd 
+[
+.B \-t
+.I timeout
+] 
+[
+.B \-g
+.I graceperiod
+]
+.NXR "lock" "daemon"
+.NXR "network" "lock daemon"
+.SH Description
+The
+.PN lockd
+daemon processes lock requests that are either
+sent locally by the kernel or remotely by another lock daemon.
+The NFS locking service makes this advisory locking support
+possible by using the
+.PN fcntl
+system call and the
+.PN lockf
+subroutine.
+The
+.PN lockd 
+daemon forwards lock requests for remote data to the server site's 
+lock daemon.
+The
+.PN lockd 
+daemon then requests the status monitor daemon,
+.PN statd ,
+for monitor service.
+The reply to the lock request is not sent 
+to the kernel until 
+the status daemon and the server site's
+lock daemon have replied.
+.PP
+If either the 
+status monitor or server site's lock daemon is unavailable,
+the reply to a lock request for remote data 
+is delayed until all daemons become available. 
+.PP
+When a server recovers, it waits for a grace period for all client site
+.PN lockd
+daemons to submit reclaim requests.  Client site
+.PN lockd
+daemons are notified by
+.PN statd
+of the server recovery and promptly resubmit previously
+granted lock requests.  If a client site's
+.PN lockd
+daemon fails to secure previously granted locks at the server site, the
+.PN lockd
+daemon sends the signal SIGLOST  
+to all the processes that were previously holding locks 
+and cannot reclaim them.
+.SH Options
+.IP "\fB\-t \fItimeout\fR" 16
+The
+.PN lockd
+daemon uses \fItimeout\fP (in seconds) as the interval 
+instead of the default value of 15 seconds to retransmit a lock
+request to the remote server.
+.IP "\fB\-g \fIgraceperiod\fR"
+The
+.PN lockd
+daemon uses \fIgraceperiod\fP (in seconds) as the grace period duration
+instead of the default value of 45 seconds.
+.SH See Also
+fcntl(2), lockf(3), signal(3), statd(8c)

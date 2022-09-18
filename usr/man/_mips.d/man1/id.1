@@ -1,0 +1,66 @@
+.TH id 1
+.SH Name
+id \- print user and group ID and names
+.SH Syntax
+.B id
+[
+.I \-gnru
+]
+.SH Description
+.NXR "id command"
+The
+.PN id
+command writes a message on the standard output
+giving the user and group ID and the corresponding names
+of the invoking process.
+If the effective and real IDs do not match, both
+are printed.
+.PP
+If multiple groups are supported by the underlying system, the
+supplementary group affiliations of the invoking process are also
+written.
+.PP
+When no options are specified, the standard format of
+output produced by
+.PN id
+is
+.B "uid=%d(%s) gid=%d(%s)\\n", 
+.B <real user id>, <user-name>, 
+.B <real group id>, <group-name>
+.SH Options
+.IP \-g
+Outputs only the group ID. The default format is 
+\fB%d\\n\fP.
+This may be modified by the 
+.B \-n 
+option. The default group ID is the effective group ID; this may be
+modified by the 
+.B \-r 
+option.
+.IP \-n
+Outputs the name in the format 
+\fB%s\\n\fP
+instead of the numeric ID when the 
+.B \-u 
+or 
+.B \-g 
+options are used.
+.IP \-r
+Outputs the real ID instead of the effective ID when the
+.B \-u
+or
+.B \-g
+options are used.
+There is no
+option to produce a list of supplementary group IDs alone.
+.IP \-u
+Outputs only the user ID. The default output format is
+.BR \fB%d\\n\fP .
+This may be modified with the
+.B \-n
+option. The default user ID is the effective user ID; 
+this may be modified by the
+.B \-r 
+option.
+.SH See Also
+logname(1), getuid(2) 

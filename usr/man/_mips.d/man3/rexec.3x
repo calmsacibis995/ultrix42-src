@@ -1,0 +1,69 @@
+.\" SCCSID: @(#)rexec.3x	8.1	9/11/90
+.TH rexec 3x
+.SH Name
+rexec \- return stream to a remote command
+.SH Syntax
+.nf
+.B "rem = rexec(ahost, inport, user, passwd, cmd, fd2p);"
+.B char **ahost;
+.B u_short inport;
+.B "char *user, *passwd, *cmd;"
+.B int *fd2p;
+.fi
+.SH Description
+.NXR "rexec subroutine"
+.NXAM "rmt program" "rexec subroutine"
+.NXR "stream" "returning to remote command"
+The
+.PN rexec
+subroutine looks up the host
+.I *ahost
+using
+.PN gethostbyname ,
+returning \-1 if the host does not exist.
+For further information, see 
+.MS gethostent 3n .
+Otherwise
+.I *ahost
+is set to the standard name of the host.
+If a username and password are both specified, then these
+are used to authenticate to the foreign host.
+If all this fails, the user is prompted for the information.
+.PP
+The port
+.I inport
+specifies which well-known DARPA Internet port to use for
+the connection; it will normally be the value returned from
+the call ``getservbyname("exec", "tcp")''.  For further
+information, see 
+.MS getservent 3n .
+The protocol for connection is described in detail in
+.MS rexecd 8c .
+.PP
+If the call succeeds, a socket of type SOCK_STREAM is returned to
+the caller and given to the remote command as
+.B stdin
+and
+.BR stdout .
+If
+.I fd2p
+is nonzero, then an auxiliary channel to a control
+process will be set up, and a descriptor for it will be placed
+in
+.IR *fd2p .
+The control process will return diagnostic
+output from the command (unit 2) on this channel and will also
+accept bytes on this channel as being UNIX signal numbers, to be
+forwarded to the process group of the command.
+If
+.I fd2p
+is 0, then the 
+.B stderr
+(unit 2 of the remote
+command) will be made the same as the 
+.B stdout
+and no
+provision is made for sending arbitrary signals to the remote process,
+although you may be able to get its attention by using out-of-band data.
+.SH See Also
+gethostent(3n), getservent(3n), rcmd(3x), rexecd(8c)

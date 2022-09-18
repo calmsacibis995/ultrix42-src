@@ -1,0 +1,30 @@
+.\" SCCSID: @(#)unlink.3f	8.1	9/11/90
+.TH unlink 3f VAX "" Unsupported
+.SH Name
+unlink \- remove a directory entry
+.SH Syntax
+.B integer function unlink (name)
+.br
+.B character*(*) name
+.SH Description
+.NXR "unlink subroutine (FORTRAN)"
+.NXR "file" "unlinking"
+The
+.PN unlink
+subroutine causes the directory entry specified by pathname
+.I name
+to be removed.
+If this was the last link to the file,
+the contents of the file are lost.
+.SH Restrictions
+Pathnames can be no longer than MAXPATHLEN as defined 
+in <sys/param.h>.
+.SH Return Values
+The returned value will be zero if successful;
+a system error code otherwise.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+unlink(2), link(3f), perror(3f)
+.\" removed filsys.5 from see also's because I couldn't locate it.

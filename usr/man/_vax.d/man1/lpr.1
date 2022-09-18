@@ -1,0 +1,512 @@
+.\" V4.0 source updated for V4.Titanium
+.\"
+.\" Updated on 26.10.90 by Karen Campbell, OSCR-Europe
+.\"
+.\" Submitted for FT 9-Nov-90.
+.\"
+.\" Print this document on a PostScript printer using the command line
+.\"     tbl filename | ditroff \-Tps \-man | devps | lpr
+.\"
+.TH lpr 1
+.SH Name
+lpr \- print files
+.SH Syntax
+.B lpr
+[
+.I options
+]
+[
+.I file...
+]
+.SH Description
+.NXR "lpr command"
+.NXA "lpr command" "lpq command"
+.NXA "lpr command" "print command (general)"
+.NXA "lpr command" "lprm command"
+.NXR "file" "printing"
+The
+.PN lpr
+command puts files in the spooling area used by
+.PN lpd .
+The files are printed by
+.PN lpd
+when the printer is available.
+If no file names are specified, the standard input is used.
+.PP
+If options are specified which would cause a conflicting
+action,
+the last option specified is the one used.
+For example, in the command:
+.EX
+lpr \-h \-Jjob
+.EE
+the \fB\-J\fR option overrides the \fB\-h\fR option.
+.SH Options
+.IP \fB\-C\fIclass\fR .3i
+Print the argument \fIclass\fR as the job classification on the banner
+page.
+If this option is not used, the name of the node from where the
+.PN lpr
+command was issued is printed.
+.IP \fB\-h\fR .3i
+Do not print the banner page.
+.IP \fB\-i\fIn\fR .3i
+Indent the printed output by \fIn\fR spaces.
+An argument must be supplied with this option.
+You should note that this is not compatible to previous versions of
+.PN lpr .
+.IP \fB\-J\fIjob\fR .3i
+Print the argument \fIjob\fR, as the job name on the banner page.
+If this option is not used, the job name is the name of the first file
+specified in the
+.PN lpr
+command.
+If no file name is specified, the job name ``stdin'' is used.
+.IP \fB\-m\fR .3i
+Send a mail note to yourself when the job has been completed.
+.IP \fB\-p\fR .3i
+Print numbered pages.
+For PrintServers this option is effective for ANSI and ASCII data types 
+only; it has no effect for any others.
+.IP \fB\-P\fIprinter\fR .3i
+Send the output to the spool queue for the \fIprinter\fR specified.
+If this option is not used, the output is sent to the spool queue defined
+by the PRINTER environment variable.
+If a queue is not defined by the PRINTER environment variable, the output
+is sent to the default printer.
+.IP \fB\-s\fR
+Use the
+.PN symlink
+system call to link data files, rather than trying to copy them.
+This can be used if the file size exceeds the spool directory limit.
+Refer to the \fBmx\fR capability in
+.MS printcap 5 .
+Note that the files should not be modified or removed until they have
+been printed.
+.IP \fB\-T\fItitle\fR .3i
+Print the argument \fItitle\fR at the head of each page.
+If a title is not specified, the name of the file 
+is used.
+If no file name is specified, then the title part of the header is left
+blank.
+The \fB\-T\fR option is only meaningful with the \fB\-p\fR option.
+.IP \fB\-w\fIn\fR .3i
+Print the job using a page width of \fIn\fR characters.
+If this option is not used, the page width is taken from the
+.PN printcap
+file.
+If there is no entry in the
+.PN printcap
+file, the page width used is 132 characters.
+.IP \fB\-z\fIn\fR .3i
+Print the job using a page length of \fIn\fR lines.
+If this option is not used, the page length  is taken from the
+.PN printcap
+file.
+If there is no entry in the
+.PN printcap
+file, the page length used is 66 lines.
+.IP \fB\-1\fIfont\fR
+.IP \fB\-2\fIfont\fR
+.IP \fB\-3\fIfont\fR
+.IP \fB\-4\fIfont\fR .3i
+Use the font file specified by \fIfont\fR in font position \fB1\fR, \fB2\fR, \fB3\fR or
+\fB4\fR.
+These options can only be used with troff, ditroff and TeX files (the
+\fB\-n\fR, \fB\-t\fR, and \fB\-d\fR options respectively).
+.IP \fB\-#\fIn\fR .3i
+Print \fIn\fR copies of the specified file(s).
+.PP
+.PP
+.SS "Options for Use with PrintServers"
+The following options are for use with the Digital family of PrintServers.
+For more information, see
+.MS lpd 8 .
+Each option requires one argument.
+The arguments can be abbreviated as long as the abbreviations are unique
+for each option.
+.IP \fB\-D\fIdatatype\fR .3i
+Define the data type to the print daemon,
+.PN lpd .
+The 
+.PN lprsetup
+provides ASCII as the default data type in the
+.PN printcap 
+file.
+If you do not use the \fB\-D\fR option, the data type is taken from the
+.PN printcap
+file.
+If no entry for the data type is found here, the
+.PN lpd 
+default data type, PostScript is used and the print job is sent to the 
+printer without translation.
+The following are valid arguments for the \fB\-D\fR option.
+.PP
+.TS
+tab(@);
+lw(.1i) lw(.6i) lw(4i).
+ @\fIansi\fR@ANSI data 
+ @\fIascii\fR@ASCII data
+ @\fIpostscript\fR@PostScript data
+ @\fIregis\fR@REGIS data
+ @\fItek4014\fR@Tektronix 4014
+ @\fIxyz\fR@T{
+You can specify other data types, but you must write an
+appropriate translator, refer to
+.MS xlator_call 8 .
+T}
+.TE
+.PP
+If the \fIdatatype\fR argument is misspelled, or an unsupported data type
+is specified, the job fails and the message "translator not found" is 
+reported to the error log.
+In addition, a single sheet is printed to report the error.
+.IP \fB\-F\fIpagesize\fR .3i
+Select the size of the pages to be printed.
+The page size is the text intended to be printed on a single sheet.
+If the \fB\-F\fR option is not used, the page size used is the same as the
+sheet size; refer to option \fB\-S\fR.
+If the sheet size is not specified, the value is taken from the
+.PN printcap
+file.
+If there is no entry in the
+.PN printcap
+file, the page size is LETTER (8.5 x 11 inches).
+The \fB\-F\fR option is ignored if the data type is PostScript. 
+The following are valid arguments for the \fB\-F\fR option.
+.PP
+.TS
+tab(@);
+lw(.1i) lw(1.6i) lw(3i).
+ @\fIletter \fRor\fI a\fR@8.5 x 11 inches, 216 x 279 mm
+ @\fIledger \fRor\fI b\fR@11 x 17 inches, 279 x 432 mm
+ @\fIlegal\fR@8.5 x 14 inches, 216 x 356 mm
+ @\fIexecutive\fR@7.5 x 10.5 inches, 191 x 254 mm
+ @\fIa5\fR@5.8 x 8.3 inches, 148 x 210 mm
+ @\fIa4\fR@8.3 x 11.7 inches, 210 x 297 mm
+ @\fIa3\fR@11.7 x 16.5 inches, 297 x 420 mm
+ @\fIb5\fR@7.2 x 10.1 inches, 176 x 250 mm
+ @\fIb4\fR@10.1 x 14.3 inches, 250 x 353 mm
+.TE
+.PP
+.IP \fB\-I\fItray\fR .3i
+Select the input paper tray that supplies paper for the print job.
+The tray name is given by the argument as follows:
+.PP
+.TS
+tab(@);
+lw(.1i) lw(1.6i) lw(3i).
+ @\fItop\fR@T{
+The upper 250-sheet input tray.
+T}
+ @\fImiddle\fR@T{
+The middle 250-sheet input tray.
+T}
+ @\fIbottom \fRor\fI lcit\fR@T{
+The large capacity input tray.
+T}
+.TE
+.PP
+.IP \& .3i
+If the \fB\-I\fR option is not used, the \fB\-S\fR option selects the
+input tray.
+If the \fB\-I\fR option and the \fB\-S\fR option are both specified, the
+input tray must contain the required paper size.
+If the \fB\-I\fR option is not specified, the value for the output paper
+tray is taken from the
+.PN printcap
+file.
+If no entry is present there, the default paper tray for the printer is
+used.
+.IP \fB\-K\fIsides\fR .3i
+Print the pages of the job on sheets in the way specified by
+\fIsides\fR.
+The valid arguments are:
+.PP
+.TS
+tab(@);
+lw(.1i) lw(2.2i) lw(2.4i).
+ @\fI1 \fRor\fI one_sided_simplex\fR@T{
+Print on one side of the sheet only.
+T}
+ @\fI2 \fRor\fI two_sided_duplex\fR@T{
+Print on both sides of the sheet; the second side is reached by
+flipping the sheet about its left edge, as in the binding of a book.
+T}
+ @\fItumble \fRor\fI two_sided_tumble\fR@T{
+Print on both sides of the sheet, but print the opposite way up on each
+side, so the second side can be read by flipping the sheet along its
+top axis.
+T}
+ @\fIone_sided_duplex\fR@T{
+Print on one side of the paper only, but retain the page layout intended
+for \fItwo_sided_duplex\fR printing. 
+The layout refers to such things as where the margins are, and where the
+page numbers are.
+T}
+ @\fIone_sided_tumble\fR@T{
+Print on one side of the paper only, but retain the page layout intended
+for tumble printing.
+T}
+ @\fItwo_sided_simplex\fR@T{
+Print on two sides of the paper, but retain the page layout
+intended for \fIone_sided_simplex\fR.
+T}
+.TE
+.PP
+.IP \fB\-L\fIfilename\fR .3i
+Use the commands in the layup definition file, specified by \fIfilename\fR,
+to alter the appearance of the printed output.
+For example, layup files may be found in the
+.PN /usr/examples/print/layup
+directory.
+If \fIfilename\fR does not begin with /, the current directory is
+searched, followed by
+.PN /usr/lib/lpdfilters .
+This is the ideal location for your system administrator to store site 
+specific layup files.
+Refer to the documentation for your printer for commands available.
+.IP \fB\-M\fImessage\fR .3i
+Use the messages generated by the print job in the way specified by
+\fImessage\fR.
+If the \fB\-M\fR option is not used, messages are not recorded, unless
+indicated by an entry in the
+.PN printcap
+file.
+.PP
+.TS
+tab(@);
+lw(.1i) lw(1.6i) lw(3i).
+ @\fIkeep\fR@T{
+Record the messages in the message file and mail the file to you.
+T}
+ @\fIignore\fR@T{
+Do not record messages.
+T}
+.TE
+.PP
+.IP \fB\-N\fIn\fR .3i
+Print \fIn\fR pages on a single sheet.
+The number must be in the range 0 to 100.
+If you specify \f(CWlpr \-N0\fR the
+.PN /etc/printcap
+entry is overridden and the default layup file is not used.
+If you specify \f(CWlpr \-N1\fR the pages are printed ``1-up'' but with a
+border; if the \fB\-N\fR option is not used, one page is printed on 
+one sheet.
+.IP \fB\-o\fItray\fR .3i
+Select the output tray where the printed job is be deposited.
+The tray name is given by the argument as follows:
+.PP
+.TS
+tab(@);
+lw(.1i) lw(.6i) lw(4i).
+ @\fItop\fR@T{
+Top tray, with face-down stacking.
+T}
+ @\fIside\fR@T{
+Side tray, with face-down stacking.
+T}
+ @\fIface-up\fR@T{
+Side tray, with face-up stacking.
+T}
+ @\fIupper\fR@T{
+Upper tray if there are two trays on top of the printer.
+T}
+ @\fIlower\fR@T{
+Lower tray if there are two trays on top of the printer.
+T}
+ @\fIlcos\fR@T{
+Large capacity output stacker
+T}
+.TE
+.PP
+.IP \& .3i
+If the \fB\-o\fR option is not specified, the value for the input paper
+tray is taken from the
+.PN printcap
+file, and if no entry is present there, from the printer.
+.IP \fB\-O\fIorientation\fR .3i
+Print the page in the way specified by \fIorientation\fR.
+The orientation is given by the argument as follows:
+.PP
+.TS
+tab(@);
+lw(.1i) lw(.6i) lw(4i).
+ @\fIportrait\fR@T{
+The printed output is parallel to the short side of the page.
+T}
+ @\fIlandscape\fR@T{
+The printed output is parallel to the long side of the page.
+T}
+.TE
+.PP
+.IP \& .3i
+If the \fB\-O\fR option is not specified, the value orientation
+is taken from the
+.PN printcap
+file, and if no entry is present there, it defaults to \fIportrait\fR. 
+.IP
+For ASCII data type the format is controlled by width and length
+values supplied to the filter.
+For more information, see
+.MS ln03rof 8 .
+If the width is greater than 80 columns \fIlandscape\fR mode is selected.
+If you specify the
+.PN lpr 
+.PN \-O
+option, or a default has been set for the
+.PN :Or=orientation:
+parameter in the
+.PN /etc/printcap
+file, fixed values of width and length are used.
+These are as follows:
+.PP
+.TS
+tab(@);
+lw(.1i) lw(.6i) lw(4i).
+ @\fIportrait\fR@80 columns and 66 lines
+ @\fIorientation\fR@132 columns and 66 lines
+.TE 
+.IP \& .3i
+To set \fIportrait\fR as the default for ASCII data type, your system
+administrator should add
+.PN :Or=portrait:
+to the 
+.PN /etc/printcap
+entry.  Without it, ASCII data type uses the 
+.PN lpd
+defaults of 132 columns and 66 lines which print in landscape mode.
+.PP
+You can use 
+.PN \-O
+.PN landscape
+or
+.PN \-O
+.PN portrait
+to select the fixed values already described.
+But if you specify width and or length using the
+.PN lpr 
+.PN \-w
+and the
+.PN lpr 
+.PN \-z
+options you can override the default set in the
+.PN /etc/printcap
+file.
+.IP \fB\-S\fIpagesize\fR .3i
+Select the physical size of the sheets to be printed.
+If the \fB\-S\fR option is not used the sheet size used is the same as the
+page size; refer to option \fB\-F\fR.
+If the page size is not specified, the value is taken from the
+.PN printcap
+file.
+If there is no entry in the
+.PN printcap
+file, the sheet size is LETTER (8.5 x 11 inches).
+The valid arguments for the \fB\-S\fR option are the same as
+for the \fB\-F\fR option.
+.IP \fB\-X\fIn\fR .3i
+Print each page \fIn\fR times.
+The number must be in the range 1 to 100.
+The output is uncollated; for a collated output use the \fB\-#\fR option.
+If the \fB\-X\fR option is not used, each page is printed once.
+.IP \fB\-Z\fIlowlim,uplim\fR .3i
+Print the pages of the job between \fIlowlim\fR and \fIuplim\fR.
+If \fIlowlim\fR is not specified, the first page printed is the first page
+of the job.
+If \fIuplim\fR is not specified, the last page printed is the last page
+of the job.
+The maximum value which can be specified for \fIuplim\fR is 10000.
+Banner pages are not included in the count.
+Note that these limits apply to the entire print job, not to individual
+files within a multi-file job.
+.PP
+The following options are used to notify the spooling daemon for the
+printer that the files are not standard text files.
+Any of these options override the \fB\-D\fR option regardless of the
+order in which they appear.
+The
+.PN lpd
+print daemon uses the appropriate filters to ensure the files are printed
+correctly.
+.IP \fB\-g\fR .3i
+Assume the files contain standard plot data produced by the
+.PN plot
+routines.
+.IP \fB\-l\fR .3i
+Print the files using a filter which prints the control characters and
+suppresses the page breaks.
+.IP \fB\-t\fR .3i
+Assume the files contain data produced by troff.
+.IP \fB\-x\fR .3i
+Assume the files do not require filtering before printing.
+.PP
+The following options also notify the spooling daemon for the printer
+that the files are not standard text files.
+The
+.PN lpd
+filters for the following options are not supplied as part of the
+standard ULTRIX operating system.
+.IP \fB\-c\fR .3i
+Assume the files contain data produced by cifplot.
+.IP \fB\-d\fR .3i
+Assume the files contain data produced by TeX (DVI output 
+from Stanford).
+.IP \fB\-f\fR .3i
+Interpret the first character of each line as a standard FORTRAN
+carriage control character.
+.IP \fB\-n\fR .3i
+Assume the files contain data produced by device independent troff
+(ditroff).
+.IP \fB\-v\fR .3i
+Assume the files contain a raster image for devices like Versatec.
+.SH Restrictions
+Fonts for troff and TeX reside on the host with the printer.
+It is not possible to use local font libraries.
+.SH Diagnostics
+Files with more than \fIx\fR bytes are truncated to \fIx\fR bytes.
+The default value for \fIx\fR is 1025024 bytes, but this can be changed 
+by using the \fBmx\fR capability in the
+.PN /etc/printcap
+file.
+The 
+.PN lpr
+command
+does not print files which appear to be in
+.PN a.out
+or
+.PN ar
+format.
+If a user other than root prints a file and spooling is disabled,
+.PN lpr
+prints a disabled message and does not put jobs in the queue.
+If a connection to
+.PN lpd
+on the local machine cannot be made,
+.PN lpr
+informs you that the daemon cannot be started.
+.SH Files
+.TP 25
+.PN /etc/passwd
+Personal identification
+.TP
+.PN /etc/printcap
+Printer capabilities data base
+.TP
+.PN /usr/lib/lpd
+Line printer daemon
+.TP
+.PN /usr/spool/*
+Directories used for spooling
+.TP
+.PN /usr/spool/*/cf*
+Daemon control files
+.TP
+.PN /usr/spool/*/df*
+Data files specified in ``cf'' files
+.TP
+.PN /usr/spool/*/tf*
+Temporary copies of ``cf'' files
+.SH See Also
+lpq(1), lprm(1), pr(1), symlink(2), printcap(5), lpc(8), lpd(8)

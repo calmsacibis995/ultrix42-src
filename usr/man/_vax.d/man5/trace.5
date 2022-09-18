@@ -1,0 +1,95 @@
+.\" SCCSID: @(#)trace.5	8.1	9/11/90
+.TH trace 5
+.SH Name
+trace \- system call tracer device
+.SH Description
+.NXR "trace file"
+.NXR "system call tracer device"
+.NXAM "open system call" "trace file"
+.NXAM "close system call" "trace file"
+.NXAM "read system call" "trace file"
+.NXAM "ioctl system call" "trace file"
+.NXAM "select system call" "trace file"
+The file
+.PN /dev/trace
+is the system call trace device. It supports the following system calls:
+.PN open ,
+.PN close ,
+.PN read ,
+.PN ioctl ,
+and
+.PN select .
+The device supports 16 (configurable in 
+.PN sys/systrace.h
+as TR_USRS)
+simultaneous users. It uses an 8192-byte buffer for trace records.
+The choice of which system calls to trace is
+done with the 
+.PN ioctl
+system
+call. The 
+.PN select
+call is used for efficient reading of the device.
+The
+.PN select
+call
+uses an 8192-byte buffer and returns
+when the buffer is 60% full.
+It is required that the user use a buffer the same size
+as the system buffer
+size defined in 
+.PN sys/systrace.h
+as TR_BUFSIZE.
+All 
+.PN ioctl
+operations are defined in the header 
+file, 
+.PN sys/systrace.h .
+The 
+.PN ioctl
+calls are:
+.PP
+.TS
+tab (@) ;
+lfHB lfHB
+lfR lfR .
+_
+.sp 4p
+ioctl@arg (pointer to)
+.sp 4p
+_
+.sp 6p
+IOTR_GETOFF@int a
+IOTR_GETON@int a
+IOTR_GETALL@int a
+IOTR_GETPIDS@int a[10]
+IOTR_GETUIDS@int a[10]
+IOTR_GETSYSC@int a[10]
+IOTR_GETPGRP@int a[10]
+IOTR_SETOFF@int a
+IOTR_SETON@int a
+IOTR_SETALL@int a
+IOTR_SETPIDS@int a[10]
+IOTR_SETUIDS@int a[10]
+IOTR_SETSYSC@int a[10]
+IOTR_SETPGRP@int a[10]
+.sp 6p
+_
+.TE
+.PP
+.SH Examples
+A prototype example (with missing parts):
+.EX 0
+char cmd[BUFSIZ],buf[TR_BUFSIZ];
+int pgrp[10],i;
+fd = open("/dev/trace",0);      /* open the device */
+pgrp[0] = dofork(cmd);          /* fork the command to trace */
+for (i=1;i<TR_PGRP;i++)         /* dofork sleeps 2 seconds while */
+        pgrp[i] = 0;            /* we set up to do the trace */
+i = ioctl(fd,IOTR_SETPGRP,pgrp);/* set up for the trace */
+/* select code goes here */
+read(fd,buf,sizeof(buf));
+.EE
+.ad
+.SH See Also
+trace(1), close(2), ioctl(2), open(2), read(2), select(2) 

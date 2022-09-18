@@ -1,0 +1,19 @@
+.\" SCCSID: @(#)null.4	8.1	9/11/90
+.\" SCCSID: @(#)null.4	8.1	9/11/90
+.TH null 4
+.SH Name
+null \- data sink
+.SH Description
+.NXR "null file"
+.NXR "data sink"
+Data written on a 
+.PN null 
+special file is discarded.
+.PP
+Reads from a 
+.PN null 
+special file always return 0 bytes.
+.SH Files
+.PN /dev/null
+.SH See Also
+MAKEDEV(8)

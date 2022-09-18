@@ -1,0 +1,156 @@
+.\" SCCSID: @(#)ccr.8	8.1	9/11/90
+.TH ccr 8
+.SH Name
+ccr \- remote console carrier requester
+.SH Syntax
+.B ccr 
+[
+.I options
+]
+.I node
+.SH Description
+.NXB "ccr command"
+.NXB "console carrier requester" "establishing remote connection"
+The 
+.PN ccr
+command establishes a logical connection between
+your ULTRIX system and the console carrier server on a
+remote system.
+.PN ccr 
+enables your terminal to act as the console for a
+remote unattended system.  For example, your terminal can act as
+the console for a Digital Ethernet Communications Server (DECSA)
+and its resident software.
+The
+.I node 
+is the name or address of the target node.  A node name
+consists of from one to six alphanumeric characters.
+A node address consist of two decimal integers (n.n), 
+where the first indicates the network number (1-63), 
+and the second indicates the node address (1-1023).
+.PP
+You can use 
+.PN ccr
+to force a crash if a server node becomes unresponsive.  To
+determine how to force a crash, see the documentation for 
+the respective server product. 
+.PP
+The requirements for using 
+.PN ccr 
+are as follows:
+.PP
+.IP \(bu 4
+The host node (that is, your local ULTRIX node) and
+the remote node must be on the same Ethernet.
+.IP \(bu 4
+If your server product is a 
+DECSA, the console carrier server image (plutocc.sys) 
+and its loader file (plutowl.sys) must be located in 
+.PN /usr/lib/dnet 
+on your ULTRIX node. The pluocc.sys and plutowl.sys
+files are not need, nor is any loading done for other servers.
+For more details, see the installation
+guide for the particular server product.
+.RE
+.PP
+<CTRL/D> exits from console carrier mode and terminates 
+.PN ccr .
+.SH Options
+.NXR "ccr command" "options"
+.TP 5
+.B \-c  
+Uses the specified circuit to connect to the target node.
+.TP 5
+.B \-h
+Uses the specified address (next argument) as the Ethernet
+address of the target node.
+.TP 5
+.B \-n   
+Uses the next argument as the target node ID.
+.TP 5
+.B \-p
+Uses the specified service password (next arguments)
+in accessing the target node.
+.SH Examples
+.EX
+# /etc/ccr \-c qna\-0 \-n dallas <RET>
+ccr: Remote console reserved
+	.
+	.
+	.
+<CTRL/D> 
+ccr: Remote console released
+#
+.EE
+.SH Restrictions
+.NXR "ccr command" "restricted"
+You must have superuser privileges to run 
+.PN ccr .
+.SH Diagnostics
+.NXR "ccr command" "diagnostics"
+The
+.PN ccr
+command can return the following diagnostic messages:
+.PP
+.B "ccr: Remote console reserved"
+.br
+The
+.PN ccr 
+command
+has successfully connected to the remote console server and your 
+terminal is now capable of acting as a console for the remote node.
+.PP
+.B "ccr: Remote console released"
+.br
+Your connection with the remote console server has been terminated and 
+you are no longer in console carrier mode.
+.PP
+.B "ccr: Remote console already in use"
+.br
+The remote console server that you are attempting to connect to is 
+already reserved by another user.
+.PP
+.B "ccr: Permission denied"
+.br
+You do not have the necessary privileges to run 
+.PN ccr.  
+(You must be a superuser.)
+.PP
+.B "ccr: Hardware address required"
+.br
+The
+.PN ccr 
+command
+is unable to locate the hardware address of the remote node to which 
+you are attempting to connect.  A remote node's hardware address must 
+be defined either in the 
+.PN ccr 
+command line, or in its nodes database entry.  (Nodes database entries 
+are defined with the 
+.PN addnode 
+command.)
+.PP
+.B "ccr: No node entry in database"
+.br
+The 
+.PN ccr 
+command does not recognize the remote node to which you are 
+attempting to connect, since the 
+.I node-id 
+that you specified is not defined in the nodes database.
+(Nodes database entries are defined with the 
+.PN addnode 
+command.)
+.SH Files
+.TP 22
+.PN/usr/lib/dnet/plutocc.sys 
+Console carrier server image
+.TP
+.PN /usr/lib/dnet/plutowl.sys 
+Console carrier server loader
+.SH See Also
+addnode(8), getnode(8), load(8), remnode(8), trigger(8) 
+.br
+.I "Guide to Local Transport Servers"
+.NXE "ccr command"
+.NXE "console carrier requester" "establishing remote connection"

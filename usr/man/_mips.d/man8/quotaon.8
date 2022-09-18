@@ -1,0 +1,70 @@
+.\" SCCSID: @(#)quotaon.8	8.1	9/11/90
+.TH quotaon 8 
+.SH Name
+quotaon, quotaoff \- turn file system quotas on and off
+.SH Syntax
+/etc/quotaon
+[ \fIoption\fR ... ] [ \fIfilesystem\fR ]
+.PP
+/etc/quotaoff
+[ \fIoption\fR ... ] [ \fIfilesystem\fR ]
+.SH Description
+.NXR "quotaon command"
+.NXR "quotaoff command"
+.NXR "disk quota" "enabling for file system"
+The
+.PN quotaon
+command
+informs the system that disc quotas should be enabled
+on one or more file systems.
+Specified file systems must have entries
+in 
+.PN /etc/fstab 
+and be mounted.
+Quota files must be present in the root
+directory of the specified file systems and be named
+.I quotas.
+The quotas file is created with 
+.MS quotacheck 8 .
+The quota file is updated by
+.MS edquota 8 .
+.SH Options
+The option
+.PN \-v
+causes
+.PN quotaon
+to print a message for each file system whose quotas are enabled.
+The
+.PN \-a
+argument may be used in stead of a list of file systems. It 
+causes
+.PN quotaon
+to enable quotas on all
+file systems in 
+.PN /etc/fstab
+marked read-write. 
+This option is normally used at
+boot time to enable quotas.
+.PP
+The
+.PN quotaoff
+command
+informs the system that disc quotas should be disabled on one or more
+file systems.
+The
+.PN \-v
+option forces a verbose message for each file system affected. 
+The 
+.PN \-a
+option forces all file systems in 
+.PN /etc/fstab 
+to have their quotas disabled.
+.SH Files
+.TP 15
+.PN /etc/fstab
+File system table
+.SH See Also
+setquota(2), fstab(5), edquota(8)
+.br
+``Disk Quotas in a UNIX Environment,''
+.I "ULTRIX Supplementary Documents, Volume 3: System Manager"

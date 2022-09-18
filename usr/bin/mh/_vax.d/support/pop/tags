@@ -1,0 +1,79 @@
+Mpopaka	popaka.c	/^main (argc, argv)$/
+Mpopd	popd.c	/^main (argc, argv, envp)$/
+Mpopwrd	popwrd.c	/^main (argc, argv)$/
+ack2	popser.c	/^static int  ack2 (vec)$/
+any	popser.c	/^static	any(ch, str)$/
+arginit	popd.c	/^static	arginit (vec)$/
+chldser	popd.c	/^static int chldser (sig, code, sc)$/
+closelog	syslog.c	/^closelog()$/
+command	popsbr.c	/^static int  command (fmt, a, b, c, d)$/
+compar	popwrd.c	/^#define	compar(s,t)	(strcmp (s, t) ? s : "")$/
+delete	popser.c	/^static int  delete (vec)$/
+envinit	popd.c	/^static  envinit () {$/
+fold	popser.c	/^static int  fold (vec)$/
+getbbaux	popser.c	/^static struct bboard *getbbaux (s)$/
+getbbmax	popser.c	/^static  getbbmax (bb)$/
+getline	popsbr.c	/^static int  getline (s, n, iop)$/
+getvector	popser.c	/^static struct vector   *getvector (bp, vec)$/
+helo	popser.c	/^static int  helo (vec)		\/* sort of "user" and "pas/
+isguest	popser.c	/^static  isguest () {$/
+last	popser.c	/^static int  last (vec)  $/
+list	popser.c	/^static int  list (vec)$/
+m_gMsgs	popser.c	/^static m_gMsgs (n)$/
+multiend	popser.c	/^static  multiend () {$/
+multiline	popsbr.c	/^static int  multiline () {$/
+openlog	syslog.c	/^openlog(ident, logstat)$/
+p_cmatch	popser.c	/^static	p_cmatch(str, temp)$/
+p_copy	popser.c	/^p_copy(str1, str2)$/
+p_copyin	popser.c	/^p_copyin(src, space)$/
+p_isdate	popser.c	/^static	p_isdate(date)$/
+p_ishead	popser.c	/^static	p_ishead(buffer)$/
+p_nextword	popser.c	/^p_nextword(wp, wbuf)$/
+p_parse	popser.c	/^static	p_parse(line, hl, pbuf)$/
+padios	popd.c	/^void	padios (what, fmt, a, b, c, d, e, f, g, h, i,/
+padvise	popd.c	/^void	padvise (what, code, fmt, a, b, c, d, e, f, g/
+pass	popser.c	/^static int  pass (vec)$/
+pipeser	popser.c	/^static int pipeser (sig, code, sc)$/
+pmbx_read	popser.c	/^static	int	pmbx_read (fp, pos, drops, noisy)$/
+pmbx_size	popser.c	/^static int  pmbx_size (m)$/
+pop	popser.c	/^pop (in, out, priv, rhost)$/
+pop_dele	popsbr.c	/^int     pop_dele (msgno)$/
+pop_done	popsbr.c	/^int     pop_done () {$/
+pop_fd	popsbr.c	/^int	pop_fd (in, out)$/
+pop_init	popsbr.c	/^int     pop_init (host, user, pass, snoop)$/
+pop_list	popsbr.c	/^int     pop_list (msgno, nmsgs, msgs, bytes)$/
+pop_noop	popsbr.c	/^int     pop_noop () {$/
+pop_quit	popsbr.c	/^int     pop_quit () {$/
+pop_retr	popsbr.c	/^int     pop_retr (msgno, action)$/
+pop_rset	popsbr.c	/^int     pop_rset () {$/
+pop_set	popsbr.c	/^int	pop_set (in, out, snoop)$/
+pop_stat	popsbr.c	/^int     pop_stat (nmsgs, nbytes)$/
+pop_top	popsbr.c	/^int     pop_top (msgno, lines, action)$/
+pop_xtnd	popsbr.c	/^int	pop_xtnd (action, fmt, a, b, c, d)$/
+popassert	popser.c	/^popassert () {$/
+popinit	popser.c	/^popinit () {$/
+process	popaka.c	/^static  process (bb)$/
+putline	popsbr.c	/^static  putline (s, iop)$/
+quit	popser.c	/^static int  quit (vec)$/
+quitaux	popser.c	/^static int  quitaux (vec)$/
+quitfile	popser.c	/^static int  quitfile (vec)$/
+rdp2	popser.c	/^static int  rdp2 (vec)		\/* always returns OK *\/$/
+read_file	popser.c	/^static int  read_file (pos, msgp)$/
+read_map	popser.c	/^static int  read_map (file, pos)$/
+reset	popser.c	/^static int  reset (vec)$/
+respond	popser.c	/^static int  respond (code, fmt, a, b, c, d)$/
+retrieve	popser.c	/^static int  retrieve (vec)$/
+rpop	popser.c	/^static int rpop (vec)$/
+server	popd.c	/^static	server (fd, sin)$/
+setup	popser.c	/^static int setup (pw, guest)$/
+setupaux	popser.c	/^static int  setupaux (readonly)$/
+sizeof	popd.c	/^static int  nbits = ((sizeof (int)) * 8);$/
+status	popser.c	/^static int  status (vec)$/
+syslog	syslog.c	/^syslog(pri, fmt, p0, p1, p2, p3, p4)$/
+tail	popwrd.c	/^char   *tail (s)$/
+top	popser.c	/^static int  top (vec)$/
+traverse	popsbr.c	/^static int  traverse (action, fmt, a, b, c, d)$/
+user	popser.c	/^static int  user (vec)$/
+xtnd	popser.c	/^static int  xtnd (vec)$/
+xtnd1	popser.c	/^static int  xtnd1 (vec)$/
+xtnd2	popser.c	/^static int  xtnd2 (vec)$/

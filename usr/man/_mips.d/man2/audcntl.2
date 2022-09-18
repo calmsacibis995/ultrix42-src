@@ -1,0 +1,168 @@
+.\" SCCSID: @(#)audcntl.2 x.x    10/01/90
+.TH audcntl 2
+.SH Name
+audcntl \- audit control
+.SH Syntax
+.nf
+.B #include <sys/audit.h>
+.PP
+.B audcntl(request, argp, len, flag, audit_id)
+.B int request;
+.B char *argp;
+.B int len;
+.B int flag;
+.B audit_ID_t audit_id;
+.fi
+.SH Description
+.NXR "audcntl system call" 
+.NXR "audit control"
+The 
+.PN audcntl
+system call provides control over options offered by the audit 
+subsystem. All requests, except where noted otherwise, are privileged.
+The following list describes the requests: 
+.TP
+.B GET_SYS_AMASK and SET_SYS_AMASK 
+The system auditmask determines which system events are logged.
+GET_SYS_AMASK copies the system auditmask into a buffer 
+pointed at by
+.I argp.
+SET_SYS_AMASK copies from a buffer pointed at by
+.I argp
+into the system auditmask.  Each of these operations
+returns the number of bytes transferred between the user's
+buffer and the auditmask.
+.I Len 
+is the size of the user's buffer. The amount of data moved between
+the auditmask and the user's buffer is the smaller of the auditmask size
+and the buffer size.
+.TP
+.B GET_TRUSTED_AMASK and SET_TRUSTED_AMASK
+The trusted auditmask determines which trusted events are logged.
+GET_TRUSTED_AMASK copies the trusted auditmask into a buffer 
+pointed at by 
+.I argp.
+SET_TRUSTED_AMASK copies from a buffer pointed at by
+.I argp
+into the trusted auditmask. Each of these operations
+returns the number of bytes transferred between 
+the user's buffer and the auditmask.
+.I Len 
+is the size of the user's buffer.  The amount of data moved between
+the auditmask and the user's buffer is the smaller of the auditmask size
+and the buffer size.
+.TP
+.B GET_PROC_AMASK and SET_PROC_AMASK
+The process auditmask determines (along with the system masks) which
+system events and trusted events are logged for the current process. 
+GET_PROC_AMASK copies the process auditmask into a buffer pointed at by
+.I argp.
+The size of the process auditmask is SYSCALL_MASK_LEN+TRUSTED_MASK_LEN, 
+and contains a syscall mask followed by a trusted event mask.
+SET_PROC_AMASK copies the values from a buffer pointed at by
+.I argp
+into the process auditmask. Each of these operations
+returns the number of bytes transferred between the user's 
+buffer and the auditmask.
+.I Len 
+is the size of the user's buffer. The amount of data moved between
+the auditmask and the user's buffer is the smaller of the auditmask size
+and the buffer size.
+.TP
+.B GET_PROC_ACNTL and SET_PROC_ACNTL
+GET_PROC_ACNTL
+returns the audit control flags (the audcntl byte) of the current 
+process (see
+.PN audit.h
+).
+Audit control flags determine whether auditing for the process 
+is on or off, and if on, how the auditmasks are combined.  A value of
+AUDIT_OFF indicates audit is off for that process.  A value of AUDIT_AND 
+or AUDIT_OR indicates the process auditmask is logically AND'ed or OR'ed 
+with the system auditmask.  A value of AUDIT_USR indicates the process 
+auditmask is used for that process; the system auditmask is ignored.
+SET_PROC_ACNTL
+assigns the values of the audit control flags from
+.I flag
+and returns the previous values of the flags.
+.TP
+.B GET_AUDSWITCH and SET_AUDSWITCH
+GET_AUDSWITCH
+returns the value of the system audit switch.  
+A return value of 1 indicates auditing is turned on.
+A value of zero indicates auditing is turned off.
+SET_AUDSWITCH
+assigns the value of 
+.I flag 
+to the system audit switch and
+returns the previous audit switch value.
+A value of 1 turns auditing on.
+A value of zero turns auditing off.
+.TP
+.B FLUSH_AUD_BUF
+Flushes the kernel audit buffer out to 
+.PN /dev/audit .
+.TP
+.B GETPAID and SETPAID
+GETPAID returns the audit ID of the calling process.  The GETPAID request 
+does not require privilege.
+SETPAID assigns the value of 
+.I audit_id 
+to the process audit ID.
+SETPAID is effective only if 
+.I audit_id 
+is greater than 0.
+.TP
+.B GET_AUDSTYLE and SET_AUDSTYLE
+The system auditing style supports two options to control how much 
+additional information is recorded on exec operations.  GET_AUDSTYLE 
+returns the current value of the system audstyle flag.  SET_AUDSTYLE sets 
+the system audstyle flag to the value of
+.I flag,
+and returns the previous value of the audstyle flag.  A flag value of
+AUD_EXEC_ARGP enables the auditing of the argument list to an execv or 
+execve syscall.  A flag value of AUD_EXEC_ENVP enables the auditing of the 
+environment strings to an execv or execve syscall.  Flag values may be 
+OR'ed together.
+.SH Return Values
+.NXR "audcntl system call" "return value"
+.PP
+The values returned for successful calls can be found under the
+description of the specific call request.
+.PP
+If a call fails, a -1 is returned.
+.SH Diagnostics
+.PP
+The 
+.PN audcntl
+call fails under the following conditions:
+.TP 15
+[EFAULT]
+The 
+.I argp
+argument contains an invalid address.
+.TP 15
+[EACCES]
+The user does not have the privileges needed to perform this operation.
+.TP 15
+[EINVAL]
+The value of the
+.I len
+or
+.I request
+or
+.I audit_id
+argument is invalid.
+.TP 15
+[EPERM]
+The user is not privileged to get or set the audit ID, or the user attempted
+to get the audit ID when it was not set.
+.TP 15
+[EOPNOTSUPP]
+The 
+.I request
+argument contains an unsupported operation.
+.SH See Also
+\fISecurity Guide for Administrators\fP
+.br
+ \fIGuide to Languages and Programming\fP

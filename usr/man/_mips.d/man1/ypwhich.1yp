@@ -1,0 +1,77 @@
+.\" SCCSID: @(#)ypwhich.1yp	8.1	9/11/90
+.TH ypwhich 1yp
+.SH Name
+ypwhich \- determine which host is the current YP server or map master.
+.SH Syntax
+.B ypwhich
+[\fB\-d\fI domain\fR\|] [\fB\-V1\fR] [\fB\-V2\fR] [\|\fIhostname\fR\|]
+.br
+.B ypwhich
+[\fB\-d\fI domain\fR\|] [\fB\-m\fI mname\fR\|]\|[\fB\-t\fR]\|]
+.br
+.B "ypwhich \-x"
+.SH Description
+.NXR "ypwhich command"
+.NXAM "ypserv daemon" "ypwhich command"
+.NXR "YP server" "determining"
+The
+.PN ypwhich
+command identifies the YP server that currently supplies yellow pages
+services to a YP client.  It also identifies which YP server is the
+master for a map.  If invoked without arguments, 
+.PN ypwhich
+returns the host name of the YP server for the local machine.  If
+.I hostname
+is specified, 
+.PN ypwhich
+checks that machine 
+to find out which YP master it is using.
+.PP
+Refer to 
+.MS ypfiles 5yp
+and
+.MS ypserv 8yp
+for an overview of the yellow
+pages.
+.SH Options
+.IP \fB\-V1\fR 0.3i
+Identifies which server is serving
+v.1 YP protocol-speaking client processes.
+.IP \fB\-V2\fR 0.3i
+Identifies which server is serving
+v.2 YP protocol-speaking client processes.
+.IP
+If neither version is specified, 
+.PN ypwhich
+attempts to locate the server that supplies the
+current v.2 services.  If there is no v.2 server currently
+bound, 
+.PN ypwhich
+attempts to locate the server supplying the v.1 services.
+Since YP servers and YP clients are both backward compatible,
+the user need seldom be concerned about which version is currently in 
+use.
+.IP \fB\-d\fR 0.3i
+Uses
+.I domain
+instead of the current domain.
+.IP "\fB\-m\fI mname\fR" 0.3i
+Finds the master YP server for a map.  No
+.I hostname
+can be specified with
+.B \-m.
+The
+.I mname
+argument can be a mapname, or a nickname for a map.  
+.IP \fB\-t\fR 0.3i
+Inhibits nickname translation and is useful if there is a mapname
+identical to a nickname.
+.IP \fB\-x\fR 0.3i
+Displays the map nickname table.
+This option lists the nicknames (\fImnames\fR\|)
+that the command knows of, and indicates the
+.I mapname
+associated with each
+nickname.
+.SH See Also
+ypfiles(5yp), rpcinfo(8nfs), ypserv(8yp), ypsetup(8yp) 

@@ -1,0 +1,990 @@
+
+
+
+   MH                                                               MH-GEN(8)
+
+
+
+   NAME
+     mh-gen - generating the MH system
+
+   READ THIS
+     This documentation describes how to configure, generate, and install the
+     UCI version of the RAND _M_H system.  Be certain to read this document
+     completely before you begin.  You probably will also want to familiarize
+     yourself with the _M_H Administrator's Guide before you install _M_H.
+
+   DISCLAIMER
+     Although the _M_H system was originally developed by the RAND Corporation,
+     and is now in the public domain, the RAND Corporation assumes no respon-
+     sibility for _M_H or this particular modification of _M_H.
+
+     In addition, the Regents of the University of California issue the fol-
+     lowing disclaimer in regard to the UCI version of _M_H:
+          "Although each program has been tested by its contributor, no war-
+          ranty, express or implied, is made by the contributor or the
+          University of California, as to the accuracy and functioning of the
+          program and related program material, nor shall the fact of distri-
+          bution constitute any such warranty, and no responsibility is
+          assumed by the contributor or the University of California in con-
+          nection herewith."
+
+     This version of _M_H is in the public domain, and as such, there are no
+     real restrictions on its use.  The _M_H source code and documentation have
+     no licensing restrictions whatsoever.  As a courtesy, the authors ask
+     only that you provide appropriate credit to the RAND Corporation and the
+     University of California for having developed the software.
+
+   GETTING HELP
+     _M_H is a software package that is neither supported by the RAND Corpora-
+     tion nor the University of California.  However, since we do use the
+     software ourselves and plan to continue using (and improving) _M_H, bug
+     reports and their associated fixes should be reported back to us so that
+     we may include them in future releases.  The current computer mailbox
+     for _M_H is Bug-MH@ICS.UCI.EDU (in the ARPA Internet), and
+     ...!ucbvax!ucivax!bug-mh (UUCP).
+
+     Presently, there are two Internet discussion groups,
+     MH-Users@ICS.UCI.EDU and MH-Workers@ICS.UCI.EDU.  MH-Workers is for peo-
+     ple discussing code changes to _M_H.  MH-Users is for general discussion
+     about how to use _M_H.  MH-Users is bi-directionally gatewayed into USENET
+     as comp.mail.mh.
+
+   HOW TO GET MH
+     Since you probably already have _M_H, you may not need to read this unless
+     you suspect you have an old version.  There are two ways to get the
+     latest release:
+
+     1.  If you can FTP to the ARPA Internet, use anonymous FTP to
+     ics.uci.edu [128.195.1.1] and retrieve the file pub/mh/mh-6.7.tar.Z.
+     This is a tar image after being run through the compress program
+
+
+   [mh.6]                                                                   1
+
+
+
+
+
+
+   MH-GEN(8)                                                               MH
+
+
+     (approximately 1.5MB).  There should also be a README file in that
+     directory which tells what the current release of _M_H is, and how to get
+     updates.
+
+     This tar file is also available on louie.udel.edu [128.175.1.3] in
+     portal/mh-6.7.tar.Z.  You may also find MH on various other hosts; to
+     make sure you get the latest version and don't waste your time re-fixing
+     bugs, it's best to get it from either ics.uci.edu or louie.udel.edu.
+
+     2.  You can send $75 US to the address below.  This covers the cost of a
+     6250 BPI 9-track magtape, handling, and shipping.  In addition, you'll
+     get a laser-printed hard-copy of the entire MH documentation set.  Be
+     sure to include your USPS address with your check.  Checks must be drawn
+     on U.S. funds and should be made payable to:
+
+               Regents of the University of California
+
+     The distribution address is:
+
+               Computing Support Group
+               Attn: MH distribution
+               Department of Information and Computer Science
+               University of California, Irvine
+               Irvine, CA  92717
+
+               714/856-7554
+
+     Sadly, if you just want the hard-copies of the documentation, you still
+     have to pay the $75.  The tar image has the documentation source (the
+     manual is in roff format, but the rest are in TeX format).  Postscript
+     formatted versions of the TeX papers are available, as are crude tty-
+     conversions of those papers.
+
+   SYNOPSIS
+     MAKE
+
+   DESCRIPTION
+     This is a description of how one can bring up an _M_H system.  It is
+     assumed that you have super-user privileges in order to (re-)install _M_H.
+     Super-user privileges are not required to configure or generate _M_H.
+
+     Become the super-user and create a new directory under /usr/src/local/
+     (or whatever) for the _M_H area.  Traditionally, the directory's name
+     should be mh/.  The distribution tape contains the hierarchy for the
+     mh.6/ directory.  Bring the sources on-line:
+
+     # mkdir /usr/src/local/mh
+     % cd /usr/src/local/mh
+     % tar xv
+
+   CONFIGURATION
+     First, go to the conf/ directory.
+
+     % cd conf/
+
+
+   2                                                                   [mh.6]
+
+
+
+
+
+
+   MH                                                               MH-GEN(8)
+
+
+
+     This directory contains files that will produce source files tailored
+     for your choice of _M_H configuration.  You should edit only the file MH.
+     This file contains configuration directives.  These configuration direc-
+     tives are read by the _m_h_c_o_n_f_i_g program to produce customized files.  For
+     examples of various configurations, look in the directory
+     conf/examples/.  The file MH provided in conf/ is a reasonable default.
+
+     Here are the _M_H configuration options available:
+     bin: /usr/local
+          The directory where user-invoked programs go (see manual section
+          1).
+
+     debug: off
+          Support for debug mode of _M_H.  Don't use this unless you know what
+          you're doing, which isn't likely if you're reading this document!
+
+     etc: /usr/local/lib/mh
+          The directory where pgm-invoked programs go (see manual section 8).
+
+     mail: /usr/spool/mail
+          The directory where the maildrops are stored.  If this pathname is
+          absolute (i.e., begins with a / ), then the user's maildrop is a
+          file called $USER in this directory.  If the pathname is not abso-
+          lute, then the user's maildrop is in the user's home directory
+          under the given name.
+
+     mailgroup: off
+          If set, _i_n_c is made set-group-id to this group name.  Some SYS5
+          systems want this to be set to "mail".
+
+     mandir: /usr/man
+          The parent directory of the manual entries.
+
+     manuals: standard
+          Where manual entries should be installed, relative to the directory
+          given with "mandir".  Either "local" to install manual entries
+          under manl/, or "new" to install manual entries under mann/, or
+          "old" to install manual entries under mano/, or "standard" to
+          install manual entries under man?/, or "gen" to generate but not
+          install them, or "none" to neither generate nor install them.  For
+          example, to install manual entries under /usr/man/u_man/man?, use
+          "standard" and /usr/man/u_man for "mandir".
+
+     chown: /etc/chown
+          The location of the _c_h_o_w_n (8) on your system.  If _c_h_o_w_n is in your
+          search path, just use the value of "chown".  On SYS5 systems, this
+          should probably be "/bin/chown".
+
+     editor: prompter
+          The default editor for _M_H.
+
+     remove: mv -f
+          How _M_H should backup existing files when installing a new file.
+
+
+   [mh.6]                                                                   3
+
+
+
+
+
+
+   MH-GEN(8)                                                               MH
+
+
+     mts: sendmail
+          Which message transport system to use.  Either "mmdf" to use _M_M_D_F
+          as the transport system, "mmdf2" to use _M_M_D_F-_I_I as the transport
+          system, "sendmail" to have _S_e_n_d_M_a_i_l as the transport system, or,
+          "mh" to have _M_H as the transport system.
+
+          On UNIX systems supporting TCP/IP networking via sockets you can
+          add the suffix "/smtp" to the mts setting.  This often yields a
+          superior interface as _M_H will post mail with the local _S_M_T_P server
+          instead of interacting directly with _M_M_D_F or _S_e_n_d_M_a_i_l.  Hence, for
+          TCP/IP UNIX systems, the "/smtp" suffix to either "sendmail" or
+          "mmdf2" is the preferred MTS configuration.  The "/smtp" suffix is
+          described in detail in the _A_d_m_i_n_i_s_t_r_a_t_o_r'_s _G_u_i_d_e; be sure to set
+          "servers:" as described in _m_h-_t_a_i_l_o_r (8) if you use this option.
+
+     bboards: off
+          If "on", include support for the UCI BBoards facility.  BBoards may
+          be enabled with any mts setting.  If "off", the BBoard reading pro-
+          gram _b_b_c will not be installed.  If "nntp", include support for the
+          UCI BBoards facility to read the Network News via the NNTP.  If
+          "pop" (formerly "popbboards: on"), include support for the UCI
+          BBoards facility via the POP3 service; this setting requires
+          "pop: on".
+
+     bbdelivery: off
+          If "off", the BBoards delivery agent and library files will not be
+          installed.  If "on", and you set "bboards:" to something besides
+          "off", then the BBoards delivery agent and library files will be
+          installed in the _b_b_h_o_m_e directory (see below).  To read remote
+          BBoards, the usual configuration would have _b_b_c talk to a _P_O_P_3 or
+          _N_N_T_P server.  However, it may be useful to set this to "off" if you
+          NFS mount the _b_b_h_o_m_e directory from another host and want to use
+          _b_b_c to read those files directly.
+
+     bbhome: /usr/spool/bboards
+          The home directory for the BBoards user.
+
+     mf: off
+          Support for mail filtering on those systems in which the message
+          transport system isn't integrated with _U_U_C_P This option is strictly
+          for an _M_H system using either _M_M_D_F-_I as its transport system or one
+          using "stand-alone delivery".
+
+     pop: off
+          Support for POP service.  This allows local delivery for non-local
+          users (a major win).  See support/pop/pop.rfc for more information
+          on the POP.  This option currently works only on UNIX systems with
+          TCP/IP sockets.  (It doesn't hurt to enable this option regardless
+          of whether or not you intend to use POP.) If POP is enabled, there
+          are three additional options which are of interest: "RPOP", "DPOP"
+          and "POP2".  The first indicates that support for the UNIX variant
+          of POP, RPOP, which uses privileged sockets for authentication be
+          enabled.  This peacefully co-exists with the standard POP.  The
+          "DPOP" option indicates that POP subscribers do not have entries in
+
+
+   4                                                                   [mh.6]
+
+
+
+
+
+
+   MH                                                               MH-GEN(8)
+
+
+          the _p_a_s_s_w_d (5) file, and instead have their own separate database
+          (another major win).  The "POP2" option indicates that the _M_H POP
+          daemon should speak the older POP2 protocol in addition to the _M_H
+          POP3 protocol - a major win.  All of these options can be enabled
+          via an "options" directive in the _M_H configuration file.
+
+     options:
+          `-D' options to _c_c (1).  If you don't know what an option does, it
+          probably doesn't apply to you.
+
+          ALTOS
+               Use on XENIX/v7 systems.  Also, be sure to use "options V7".
+
+          ATHENA
+               Makes _r_e_p_l `-nocc all' the default instead of `-cc all'.  You
+               may want to enable this if you're using _x_m_h.
+
+          ATZ
+               Directs _M_H to use alpha-timezones whenever possible.
+
+          BANG
+               Directs _M_H to favor `!' over `@' in addressing.
+
+          BERK
+               Optional for for 4.{2,3}BSD sites running SendMail.  Disables
+               nearly all of the RFC822 address and header-parsing routines
+               in favor of recognizing such formats as ASCnet, and so on.  If
+               you don't need to disable the parser for this reason, you
+               probably want to use "options DUMB" instead.
+
+          BIND
+               If you are running with the BIND code on UNIX systems with
+               TCP/IP sockets (e.g. 4.{2,3}BSD), be sure to define this.
+
+          BSD41A
+               Use on 4.1a Berkeley UNIX systems.
+
+          BSD42
+               Use on Berkeley UNIX systems on or after 4.2BSD.
+
+          BSD43
+               Use on 4.3 Berkeley UNIX systems.  Also, be sure to use
+               "options BSD42".  If _o_p_e_n_l_o_g (3) (see "man 3 syslog") takes
+               three arguments instead of two, and your _w_r_i_t_e (1) command is
+               set-group-id to group "tty", use this option.  If only one of
+               these conditions is true, you lose.
+
+          COMPAT
+               If you previously ran a version of _M_H earlier than mh.4 use
+               this option.  After a short grace period, remove it and re-
+               {configure,generate,install} everything.
+
+          DBM
+               Use this option if your _g_e_t_p_w_e_n_t (3) routines read a dbm
+
+
+   [mh.6]                                                                   5
+
+
+
+
+
+
+   MH-GEN(8)                                                               MH
+
+
+               database (such as with Yellow Pages) instead of doing a
+               sequential read of /etc/passwd.  Without DBM the entire passwd
+               file is read into memory one entry at a time for alias expan-
+               sion.  This is a performance improvement when reading a stan-
+               dard /etc/passwd file, but is _v_e_r_y slow on systems with a dbm
+               database.  At one site that runs YP on a large passwd file, it
+               showed a 6:1 performance improvement.
+
+          DPOP
+               Enables the POP database, useful only if POP service is
+               enabled.
+
+          DUMB
+               Directs _M_H not to try and rewrite addresses to their "offi-
+               cial" form.
+
+          FOLDPROT
+               Defines the octal value for default folder-protection.  For
+               example, FOLDPROT='"0700"'.  The default is "0711".
+
+          ISI
+               When using "repl -ccme", only "cc:" the first address found
+               which belongs to the user; any other _A_l_t_e_r_n_a_t_e-_M_a_i_l_b_o_x_e_s do
+               not receive "cc:"s.
+
+          LINK
+               Defines the filename for alternate file name for _d_i_s_t and
+               _r_e_p_l.  For example, LINK='"\\043"' to use the pound-sign char-
+               acter.  The default is "@".
+
+          locname
+               Hard-wires the local name for the host _M_H is running on.  For
+               example, locname='"PICKLE"'.  It's probably better to either
+               let UNIX tell _M_H this information, or to put the information
+               in the host specific mtstailor file.
+
+          MHE
+               Enables crude support for Brien Reid's MHE interface.  Recom-
+               mended for use with the GNU Emacs mh-e package.
+
+          MHRC
+               Enables _M_H to recognize the _C_S_h_e_l_l's `~'-construct.  This is
+               useful for sites that run with a ~/.mhrc for their users.
+
+          MORE
+               Defines  the location of the _m_o_r_e (1) program.  For example,
+               on ALTOS and DUAL systems, MORE='"/usr/bin/more"'.  The
+               default is "/usr/ucb/more".
+
+          MSGPROT
+               Defines the octal value for default folder-protection For
+               example, MSGPROT='"0600"'.  The default is "0644".
+
+          NDIR
+
+
+   6                                                                   [mh.6]
+
+
+
+
+
+
+   MH                                                               MH-GEN(8)
+
+
+               For non-Berkeley UNIX systems, this _M_H will try to find the
+               new directory access mechanism by looking in <ndir.h> if this
+               option is given.  Otherwise, _M_H will try <ndir.h>.  If you
+               still can't get this to work on your system, edit h/local.h as
+               appropriate.
+
+          NFS
+               Tells _M_H to hack around a problem in the NFS C library.  If
+               you get an undefined symbol "ruserpass" when compiling _M_H, you
+               need this option.
+
+          NOIOCTLH
+               Tells _M_H not to include the file <sys/ioctl.h>.  To be used on
+               systems where this file is not present.
+
+          NOMHSEQ
+               Directs _M_H to make private sequences the default.
+
+          NTOHLSWAP
+               Tells _M_H to use the ntohl() macro when processing _m_s_h binary
+               map files.  _M_H can use this macro on systems with the include
+               file netinet/in.h, to byte-swap the binary information in
+               these map files.  If you're using the same map files on
+               machines of different architectures, enable this option.
+
+          OVERHEAD
+               Enable _M_H commands to read profile/context from open fd:s
+               without doing an open(); see mh-profile(5) for the details.
+
+          POP2
+               Have the POP daemon understand the older POP2 protocol as well
+               as the _M_H POP3 protocol - a major win.  The POP daemon auto-
+               magically determines which POP protocol your client is using.
+               If you're enabling POP service, there's no reason not to
+               enable this option as well.  See also _P_O_P_S_E_R_V_I_C_E.
+
+          POPSERVICE
+               The port name the _M_H POP will use.  For historical reasons,
+               this defaults to "pop".  In 1987, the _M_H POP protocol (POP
+               version 3) was published as RFC1081 and was assigned its own
+               port number (110), which differs from the original POP (ver-
+               sion 1 and 2) port number (109).  To have _M_H POP use the new
+               assigned port number, set POPSERVICE='"pop3"', and be sure
+               that this service name is listed in your /etc/services file on
+               both POP client and server hosts as "110/tcp".  If you enable
+               _P_O_P_2, you can safely leave this undefined unless you are using
+               POP3 clients besides _M_H.
+
+          RPATHS
+               Directs _i_n_c to note UNIX "From " lines as Return-Path: info.
+
+          RPOP
+               Enables the RPOP variant of POP, useful only if POP service is
+               enabled.
+
+
+   [mh.6]                                                                   7
+
+
+
+
+
+
+   MH-GEN(8)                                                               MH
+
+
+          SBACKUP
+               Defines the prefix string for backup file names.  For example,
+               SBACKUP='"\\043"'.  The default is ",".
+
+          SENDMAILBUG
+               Causes SMTP reply code 451 (failure) to be considered the same
+               as code 250 (OK).  Enable this if you know that your SendMail
+               will return this code even when it doesn't mean to indicate a
+               failure.
+
+          SHADOW
+               Indicates that the encrypted passwords can be found in the
+               /etc/shadow file (and not in the /etc/passwd file).  This
+               option should only be used for some (newer) SYSTEM 5 systems.
+
+          SOCKETS
+               Indicates the availability of a socket interface for TCP/IP
+               networking that is compatible with 4.{2,3}BSD UNIX.  It is not
+               necessary to define this when BSD42 is already defined, but it
+               might be useful for SYSTEM 5 or HPUX systems with TCP/IP sock-
+               ets.
+
+          SUN40
+               Use on Sun OS 4.0 (and later?) systems.  You probably also
+               want "options BSD42", "options BSD43", and "options
+               TYPESIG=void".
+
+          SYS5
+               Use on AT&T SYSTEM 5 R3 (and newer?) UNIX systems.  See also
+               _m_a_i_l_g_r_o_u_p.
+
+          SYS5DIR
+               Define this if your system uses "struct dirent" instead of
+               "struct direct".  This is true of System V Release 3.0 and
+               later.  Uses include file <dirent.h> and the routines _m_k_d_i_r,
+               _r_m_d_i_r and _g_e_t_c_w_d.
+
+          TTYD
+               Support for TTYD.  This is no longer in wide use, and is not
+               recommended.
+
+          TYPESIG
+               Defines the base type (int or void) of the functions being
+               parameter/return value of _s_i_g_n_a_l (2).  The default is int.
+               Set TYPESIG='void' on systems which use this type (e.g., SYS-
+               TEM 5 V3.0 and later or Sun OS 4.0).
+
+          TZNAME
+               Use time zone names from the _t_z_n_a_m_e variable, set via _t_z_s_e_t.
+               Only applicable on SYSTEM 5 systems and only effective when
+               you have asked for alpha-timezones (see the ATZ option).  See
+               also ZONEINFO.
+
+          UCI
+
+
+   8                                                                   [mh.6]
+
+
+
+
+
+
+   MH                                                               MH-GEN(8)
+
+
+               First, "_" and "#" are recognized as the prefixes for scratch
+               files.  Second, support for the UCI group-leadership mechanism
+               is enabled in _c_o_n_f_l_i_c_t.  Third, the file $HOME/.signature is
+               considered to contain a single line of text which is used as
+               the _F_u_l_l _N_a_m_e part of your "From:" header.  This may conflict
+               with the interpretation of this file by _N_e_w_s.  If you're not
+               at UCI, you probably don't want this option.
+
+          UK
+               Directs the _s_c_a_n program to generate UK-style dates.
+
+          V7
+               Use on V7 UNIX systems.  Also, be sure to use "options
+               void=int".
+
+          WP
+               Enables the White Pages service.  Contact wpp-manager@psi.com
+               for more information.
+
+          WHATNOW
+               Enable certain _M_H commands to act differently when $mhdraft
+               set.
+
+          ZONEINFO
+               Specify this if you have a BSD43 based system that keeps time
+               zone information /etc/zoneinfo or /usr/lib/zoneinfo (SunOS).
+               With this fix the GMT offset specified in outgoing mail will
+               be corrected when the TZ enviornment variable is set to a dif-
+               ferent time zone.  See also TZNAME.
+
+     cc:
+          The name of your C compiler, if not "cc".
+
+     ccoptions: -O
+          Options given directly to _c_c (1).  The most common is "-M" if
+          you're running _M_H on an ALTOS.  This defaults to "-O".  If you
+          define this and want to keep "-O", be sure to include it expli-
+          citly.
+
+     curses: -lcurses -ltermlib
+          This should be the loader option required to load the _t_e_r_m_c_a_p (3)
+          and _c_u_r_s_e_s (3) libraries on your system.  On SYS5 systems, it prob-
+          ably should be just "-lcurses".  Some sites have reported that both
+          "-lcurses" and "-ltermlib" are necessary.
+
+     ldoptions:
+          Options given directly to _l_d (1) (via _c_c ) at the beginning of the
+          command line.  Useful for machines which require arguments to tell
+          _l_d to increase the stack space (e.g. the Gould, which uses "-m 8").
+          Usually, "-s" is a good choice in any event.
+
+     ldoptlibs:
+          Options given directly to _l_d (1) (via _c_c ) at the end of the com-
+          mand line.  The two most common are: "-ldbm" if you're running MMDF
+
+
+   [mh.6]                                                                   9
+
+
+
+
+
+
+   MH-GEN(8)                                                               MH
+
+
+          with the _d_b_m package; and, "-lndir" if you are generating _M_H on a
+          system which does not load the new directory access mechanism by
+          default (e.g., 4.1BSD, SYS5).  If you don't have _l_i_b_n_d_i_r on your
+          system, the sources are in miscellany/libndir/.
+
+     lex: lex -nt
+          Alternative version of _l_e_x.  Used in zotnet/tws/.
+
+     sprintf: int
+          The return value of the _s_p_r_i_n_t_f library routine.  This defaults to
+          "char *".  Set this to "int" if you have an older version of SYSTEM
+          5 which has this routine return an "int" type.
+
+     sharedlib: off
+          Makes libmh.a into a shared library (only for SunOS 4.0 and later).
+          If you enable this, be sure to use "options SUN40".
+
+     slibdir: /usr/local/lib
+          The directory where the MH shared library should go.  You'll need
+          to manually run _l_d_c_o_n_f_i_g (8) whenever a new shared object is
+          installed on the system.
+
+          If you want to put it somewhere other than /usr/lib or
+          /usr/local/lib (not advisable), you'll probably have to run _l_d_c_o_n_-
+          _f_i_g (8) on that directory, or alter the environment variable
+          LD_LIBRARY_PATH for each user wishing to use the MH system (this is
+          messy). See _l_d (1) for more information about how to do this.
+
+     oldload: off
+          Support for the ALTOS loader if "on".  Support for loaders not han-
+          dling `-x -r' correctly if "none".
+
+     ranlib: on
+          Support for systems with _r_a_n_l_i_b (1).  For SYSTEM 5 systems, this
+          should be "off" which tells _M_H to use _l_o_r_d_e_r and _t_s_o_r_t instead.
+          Some SYSTEM 5 sites reported that running this isn't always suffi-
+          cient.  If this is the case, then you should edit
+          conf/makefiles/uip to include ../sbr/libmh.a and ../zotnet/libzot.a
+          twice in the LIBES variable.
+
+     tma: off
+          Support for the TTI _t_r_u_s_t_e_d _m_a_i_l _a_g_e_n_t (TMA).  Although the TTI TMA
+          is not in the public domain, the _M_H support for the TTI TMA is in
+          the public domain.  You should enable this option only if you are
+          licensed to run the TMA software (otherwise, you don't have the
+          software in your _M_H source tree).
+
+     Now edit conf/config/mtstailor, depending on your choice of the setting
+     for mts in the _M_H configuration file.  for an mts setting of "mh", look
+     at the file conf/tailor/mhmts; for an mts setting of "sendmail",
+     "sendmail/smtp", "mmdf/smtp", or "mmdf2/smtp", look at the file
+     conf/tailor/sendmts; and, for an mts setting of "mmdf", or  "mmdf2",
+     look at the file conf/tailor/mmdf.
+
+
+
+   10                                                                  [mh.6]
+
+
+
+
+
+
+   MH                                                               MH-GEN(8)
+
+
+     Now install the configured files into the source areas.  (On SYSTEM 5
+     systems you may need to use "make sys5" to compile mhconfig.)
+
+     % make
+     % ./mhconfig MH
+
+     You now proceed based on your choice of a transport system (the setting
+     for mts above).  The best interface is achieved with "sendmail" followed
+     by "mmdf" or ("mmdf2"), and then "mh" (stand-alone delivery, not recom-
+     mended).
+
+     SENDMAIL
+
+     If you want _S_e_n_d_M_a_i_l to transport messages for _M_H, then go to the
+     mts/sendmail/ directory.
+
+     % cd ../mts/sendmail/
+
+     This directory contains files whose definitions correspond to the confi-
+     guration of your _S_e_n_d_M_a_i_l system.  If you have enabled BBoards or POP
+     service, then you will need to re-configure _S_e_n_d_M_a_i_l.  First, in the
+     "local info" section of your site's _S_e_n_d_M_a_i_l configuration file, choose
+     a free macro/class (B is used in this distribution), and add these
+     lines:
+
+          # BBoards support
+          DBbboards
+          CBbboards
+
+     Second, immediately after the inclusion of the zerobase file, in the
+     "machine dependent part of ruleset zero" section, add these lines:
+
+          # resolve names for the BBoards system
+          R$+<@$=B>      $#bboards$@$2$:$1        topic@bboards
+
+     Be sure to use tabs when separating these fields.  Third, add the line
+
+          include(bboardsMH.m4)
+
+     after the line
+
+          include(localm.m4)
+
+     in your site's _S_e_n_d_M_a_i_l configuration file.  Finally, you should link
+     the file mts/sendmail/bboardsMH.m4 into your _S_e_n_d_M_a_i_l cf/ directory and
+     re-configure _S_e_n_d_M_a_i_l.
+
+     If you have enabled POP service, a similar procedure must be used on the
+     POP service host, to re-configure _S_e_n_d_M_a_i_l.  First, in the "local info"
+     section of your site's _S_e_n_d_M_a_i_l configuration file, choose a free
+     macro/class (P is used in this distribution), and add these lines:
+
+          # POP support
+          DPpop
+
+
+   [mh.6]                                                                  11
+
+
+
+
+
+
+   MH-GEN(8)                                                               MH
+
+
+          CPpop
+
+     Second, immediately after the inclusion of the zerobase file, in the
+     "machine dependent part of ruleset zero" section, add these lines:
+
+          # resolve names for the POP system
+          R$+<@$=P>      $#pop$@$2$:$1            subscriber@pop
+
+     Be sure to use tabs when separating these fields.  Third, add the line
+
+          include(popMH.m4)
+
+     after the line
+
+          include(localm.m4)
+
+     in your site's _S_e_n_d_M_a_i_l configuration file.  Finally, you should link
+     the file mts/sendmail/popMH.m4 into your _S_e_n_d_M_a_i_l cf/ directory and
+     re-configure _S_e_n_d_M_a_i_l.
+
+     MMDF
+
+     If you want _M_M_D_F to be your transport service, and have NOT specified
+     "mmdf/smtp" (or "mmdf2/smtp") as your mts setting, then go to the mmdf/
+     directory.  (If you're using "mmdf/smtp" or "mmdf2/smtp" as your mts
+     setting, then skip to the next section.)
+
+     % cd ../mts/mmdf/
+
+     This directory contains files whose definitions correspond to the confi-
+     guration of your _M_M_D_F system.
+
+     If you're running _M_M_D_F-_I, then copy the following files from wherever
+     you keep the _M_M_D_F sources to this directory: mmdf/h/ch.h, mmdf/h/conf.h,
+     utildir/conf_util.h, utildir/ll_log.h, mmdf/h/mmdf.h, utildir/util.h,
+     mmdf/mmdf_lib.a, and utildir/util_lib.a.
+
+     If you're running _M_M_D_F-_I_I, then copy the following files from where you
+     keep the _M_M_D_F sources to this directory: h/ch.h, h/conf.h, h/dm.h,
+     h/ll_log.h, h/mmdf.h, h/util.h, and lib/libmmdf.a
+
+     If you have enabled bboards, then the directories support/bboards/mmdfI
+     and support/bboards/mmdfII contain information you'll need to put a UCI
+     BBoards channel in your _M_M_D_F configuration.  Similarly, if you have
+     enabled option "mf" and are running _M_M_D_F-_I, then the zotnet/mf/mmdfI/
+     directory contains information you'll need to put a _U_U_C_P channel in your
+     _M_M_D_F-_I configuration.  Finally, the directory support/pop/mmdfII con-
+     tains information you'll need to put a POP channel in your _M_M_D_F-_I_I con-
+     figuration.
+
+     Note that _M_M_D_F-_I_I is distributed with the BBoards channel, although the
+     version in the _M_H distribution might be more current, the version in the
+     _M_M_D_F-_I_I distribution has been tested with that revision of _M_M_D_F.
+
+
+
+   12                                                                  [mh.6]
+
+
+
+
+
+
+   MH                                                               MH-GEN(8)
+
+
+     MMDF/SMTP
+
+     If you are using "mmdf/smtp" as your mts setting, then no further
+     MTS-specific action is required on your part!
+
+     MMDF2/SMTP
+
+     If you are using "mmdf2/smtp" as your mts setting, then no futher
+     MTS-specific action is required on your part!
+
+     STAND-ALONE DELIVERY
+
+     If, instead, you want _M_H to handle its own mail delivery, then no futher
+     MTS-specific action is required on your part!
+
+   GENERATION
+     Go to the mh.6/ directory and generate the system.
+
+     % cd ../; make
+
+     This will cause a complete generation of the _M_H system.  If all goes
+     well, proceed with installation.  If not, complain, as there "should be
+     no problems" at this step.
+
+   INSTALLATION
+     If the directories you chose for the user-programs and support-programs
+     ("bin" and "etc" in the conf/MH file) don't exist, you should create
+     them at this point.
+
+     Before proceeding, you should familiarize yourself with the
+     _A_d_m_i_n_i_s_t_r_a_t_o_r'_s _G_u_i_d_e.  To generate an _n_r_o_f_f version, go to the doc/
+     directory and type:
+
+     % (cd doc/; make ADMIN.doc)
+
+     To generate a _t_r_o_f_f version, type
+
+     % (cd doc/; make guide)
+
+     instead.
+
+     If you're already running _M_H at your site, you should also read the _m_h._6
+     changes documents.  The sources are in papers/mh6.5/ and papers/mh6.7/.
+
+     Next, if you enabled support for the UCI BBoards facility, then create a
+     login called "bboards" with the following characteristics: home direc-
+     tory is /usr/spool/bboards/ with mode 755 (actually, use the value for
+     "bbhome" given in the _M_H configuration file), login shell is /bin/csh
+     (or /bin/sh), and, encrypted password field is "*".  The "bboards" login
+     should own the /usr/spool/bboards/ directory.  In addition to creating
+     /usr/spool/bboards/, also create /usr/spool/bboards/etc/ and
+     /usr/spool/bboards/archive/.  These directories should also be owned by
+     the "bboards" login.
+
+
+
+   [mh.6]                                                                  13
+
+
+
+
+
+
+   MH-GEN(8)                                                               MH
+
+
+     If you enabled support for POP, then on the POP service host, create a
+     login called "pop" with the following characteristics: home directory is
+     /usr/spool/pop/ with mode 755, login shell is /bin/csh, and, encrypted
+     password field is "*".  If you don't have /bin/csh on your system (V7),
+     then /bin/sh is just fine.  The "pop" login should own the
+     /usr/spool/pop/ directory.  You'll also need to add a line to the
+     /etc/services file and the /etc/rc.local file, see the _A_d_m_i_n_i_s_t_r_a_t_o_r'_s
+     _G_u_i_d_e  for more details.
+
+     If this is not the first time you have installed _M_H, these files will
+     need particular attention:
+
+          _D_i_r_e_c_t_o_r_y                 _F_i_l_e_s
+          "etc/"                    MailAliases, BBoardAliases, mtstailor
+          /usr/spool/bboards/       BBoards, .cshrc, .mh_profile
+          /usr/spool/bboards/etc/   *
+
+     The MailAliases, BBoardAliases, mtstailor and BBoards files will not be
+     installed over existing copies; you will need to edit these by hand and
+     merge in any changes from your previous _M_H release.  The other files
+     under /usr/spool/bboards/ will be overwritten if they exist.  You may
+     wish to preserve your old versions of these before installing _M_H.
+
+     As the super-user, and from the mh.6/ directory, install the system.
+
+     # make inst-all
+
+     This will cause the _M_H processes and files to be transferred to the
+     appropriate areas with the appropriate attributes.
+
+   TAILORING
+     See the _A_d_m_i_n_i_s_t_r_a_t_o_r'_s _G_u_i_d_e for information on tailoring _M_H for the
+     MTS, BBoards, and POP.
+
+   DOCUMENTATION
+     In addition to this document, the administrator's guide, and the user's
+     manual, there are several documents referenced by the user's manual
+     which may be useful.  The sources for all of these can be found under
+     the papers/ directory.
+
+   OTHER THINGS
+     Consult the directory miscellany/ for the sources to a number of things
+     which aren't part of the mainstream _M_H distribution, but which are still
+     quite useful.
+
+   FILES
+     Too numerous to mention.  Really.
+
+   SEE ALSO
+     make(1)
+
+
+
+
+
+
+   14                                                                  [mh.6]
+
+
+
+
+
+
+   MH                                                               MH-GEN(8)
+
+
+   BUGS
+     The _m_h_c_o_n_f_i_g program should be smarter.
+
+     The Makefiles should know when _m_h_c_o_n_f_i_g has been run and force "make
+     clean" behavior.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   [mh.6]                                                                  15
+
+
+99

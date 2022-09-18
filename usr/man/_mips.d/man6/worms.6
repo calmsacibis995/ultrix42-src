@@ -1,0 +1,34 @@
+.TH worms 6 "" "" Unsupported
+.SH Name
+worms \- animate worms on a display terminal
+.SH Syntax
+.B /usr/games/worms
+[
+.B \-field
+] [
+.B \-length
+# ] [
+.B \-number
+# ] [
+.B \-trail
+]
+.SH Description
+.NXR "worms game"
+.NXA "snake game" "worms game"
+The
+.PN worms
+program is based on the
+.I TOPS-20
+program on the DEC-2136 machine called
+.IR WORM .
+.PP
+.B \-field
+makes a "field" for the worm(s) to eat;
+.B \-trail
+causes each worm to leave a trail behind it.  You can figure
+out the rest by yourself.
+.SH Restrictions
+The lower-right-hand character position will not be updated properly
+on a terminal that wraps at the right margin.
+.SH Files
+.PN /etc/termcap

@@ -1,0 +1,83 @@
+.TH t_look 3xti
+.SH Name
+t_look \- look at the current event on a transport endpoint
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B int t_look(\fIfd\fB)
+.br
+.B int \fIfd\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Identifies the transport endpoint where the current event is returned.
+.SH Description
+This function returns the current event on the transport endpoint
+specified by \fIfd\fR. This function enables a transport provider to
+notify a transport user of an asynchronous event when the user is
+issuing functions in synchronous mode. Certain events require immediate
+notification of the user and are indicated by a specific error,
+[TLOOK], on the current or next function to be executed.
+.NXR "t_look system call" 
+.NXR "transport endpoint" "returning current event"
+.NXR "transport endpoint" "polling for asynchronous events"
+.PP
+This function also enables a transport user to poll a transport endpoint
+periodically for asynchronous events.
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 6p
+Parameters@Before Call@After Call
+.sp 6p
+_
+.sp 6p
+fd@x@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, 
+.PN t_look() 
+returns a value that indicates
+which of the allowable events has occurred or returns zero if no event
+exists. One of the following events is returned:
+.RS 10
+.IP T_LISTEN 18 
+Connection indication received
+.IP T_CONNECT 18
+Connect confirmation received
+.IP T_DATA 18
+Normal data received
+.IP T_EXDATA 18
+Expedited data received
+.IP T_DISCONNECT 18
+Disconnect received
+.IP T_UDERR 18
+Datagram error indication
+.IP T_ORDREL 18
+Orderly release indication
+.IP T_GODATA 18
+Flow control restrictions on normal data flow have been lifted. Normal data can be sent again.
+.IP T_GOEXDATA 18
+Flow control restrictions on expedited data flow have been lifted. Expedited data can be sent again.
+.RE
+.PP
+On failure, \-1 is returned, and \fBt_errno\fR is set to indicate the error.
+.SH Diagnostics
+On failure, \fBt_errno \fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.SH See Also
+t_open(3xti),
+t_snd(3xti), 
+t_sndudata(3xti) 

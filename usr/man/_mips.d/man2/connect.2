@@ -1,0 +1,122 @@
+.\" SCCSID: @(#)connect.2	4.1	12/9/88
+.TH connect 2
+.SH Name
+connect \- initiate a connection on a socket
+.SH Syntax
+.nf
+.ft B
+#include <sys/types.h>
+#include <sys/socket.h>
+.PP
+.ft B
+connect(s, name, namelen)
+int s;
+struct sockaddr *name;
+int namelen;
+.fi
+.SH Description
+.NXR "connect system call"
+.NXA "connect system call" "shutdown system call"
+.NXR "socket" "initiating a connection"
+The
+.PN connect 
+call initiates a connection on a socket.
+The parameter
+.I s
+is a socket.
+If the socket is of type SOCK_DGRAM,
+this call permanently specifies the peer to which
+datagrams are sent.
+If it is of type SOCK_STREAM,
+this call attempts to make a connection to
+another socket.
+The other socket is specified by
+.I name,
+which is an address in the communications space of the socket.
+Each communications space interprets the
+.I name
+parameter in its own way.
+The size of the structure 
+.I sockaddr 
+is
+.I namelen.
+.SH Return Values
+If the connection or binding succeeds, then 0 is returned.
+Otherwise, a \-1 is returned, and a more specific error
+code is stored in \fIerrno\fP.
+.SH Diagnostics
+The call fails under the following conditions:
+.TP 15
+[EBADF]
+The
+.I s
+is not a valid descriptor.
+.TP 15
+[ENOTSOCK]
+The
+.I s
+is a descriptor for a file, not a socket.
+.TP 15
+[EADDRNOTAVAIL]
+The specified address is not available on this machine.
+.TP 15
+[EAFNOSUPPORT]
+Addresses in the specified address family cannot be used with this socket.
+.TP 15
+[EINPROGRESS]
+The connection is requested on a socket with FNDELAY set
+(using
+.MS fcntl 2 ).
+.TP 15
+[EISCONN]
+The socket is already connected.
+.TP 15
+[ETIMEDOUT]
+Connection establishment timed out without establishing a connection.
+.TP 15
+[ECONNREFUSED]
+The attempt to connect was forcefully rejected.
+.TP 15
+[ENETUNREACH]
+The network is not reachable from this host.
+.TP 15
+[EADDRINUSE]
+The address is already in use.
+.TP 15
+[EFAULT]
+The \fIname\fP parameter specifies an area outside
+the process address space.
+.br
+.ne 3
+.TP 15
+[EWOULDBLOCK]
+The socket is nonblocking, and the
+connection cannot
+be completed immediately.
+You can select the socket for writing by using the
+.PN select
+system call
+while it is connecting.
+.PP
+The following errors are specific to connecting names in the
+ULTRIX domain:
+.TP 15
+[ENOTDIR]
+A component of the path prefix is not a directory.
+.TP 15
+[ENAMETOOLONG]
+A component of a pathname exceeded 255 characters, or an
+entire path name exceeded 1023 characters.
+.TP 15
+[ENOENT]
+The named socket does not exist.
+.TP 15
+[EACCES]
+Search permission is denied for a component of the path
+prefix.
+.TP 15
+[ELOOP]
+Too many symbolic links were encountered in translating
+the pathname.
+.SH See Also
+accept(2), fcntl(2), getsockname(2), select(2), shutdown(2), socket(2)

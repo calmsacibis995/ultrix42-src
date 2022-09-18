@@ -1,0 +1,111 @@
+./" new manpage created 28-feb-90 (JM)
+./"
+.TH named-xfer 8
+.SH Name
+named-xfer \- pull BIND/Hesiod zones from another server
+.SH Syntax
+.B /usr/etc/named-xfer 
+.B \-z 
+.I zone_to_transfer 
+.B \-f 
+.I db_file 
+.B \-s 
+.I serial_no
+[
+.B \-d 
+.I debug_level
+] 
+[
+.B \-l 
+.I debug_log_file
+] 
+[
+.B \-t 
+.I trace_file
+] 
+[
+.B \-p 
+.I port
+]
+[
+.B \-n
+] 
+[
+.B \-a 
+.I auth_type.auth_ver
+] 
+.I servers...
+.SH Description
+.NXR "named-xfer" "named transfer daemon"
+The 
+.PN named 
+transfer daemon, 
+.PN /usr/etc/named-xfer , 
+is a server that
+is usually run by the 
+.PN named 
+daemon, 
+.PN /usr/etc/named , 
+but it can also
+be run manually with the given arguments.  The 
+.PN named 
+transfer daemon
+runs on a BIND/Hesiod secondary server and pulls BIND/Hesiod zones
+from a primary server. 
+This daemon is not run by default, nor can it be started up from
+.MS inetd 8c .  
+.SH Options
+.NXR "named-xfer transfer daemon" "options"
+.IP  "\-z \fIzone_to_transfer\fR"  19
+This option is required to pull a zone.  The
+\fIzone_to_transfer\fR argument specifies the name of the BIND/Hesiod zone
+that the 
+.PN named-xfer 
+daemon will transfer, for example, dec.com.
+.IP "\-f \fIdb_file\fR" 19
+This option is  required to pull a zone.  The
+\fIdb_file\fR argument specifies the name of the file into which the pulled
+zone information is placed.
+.IP "\-s \fIserial_no\fR" 19
+This option is required to pull a zone.  The
+\fIserial_no\fR argument should be set to the current serial number of
+the SOA record for the zone \fIzone_to_transfer\fR.  If 
+\fIserial_no\fR is set to 0, the zone is always pulled.
+.IP "\-d \fIdebug_level\fR" 19
+The \fIdebug_level\fR argument sets the debug level and determines the amount of
+debug information to be displayed.
+.IP "\-l \fIdebug_log_file\fR" 19
+The \fIdebug_log_file\fR argument specifies the file that will contain any 
+debug messages from the zone pull.
+.IP "\-t \fItrace_file\fR" 19
+The \fItrace_file\fR argument specifies the file that 
+will contain a trace from the zone pull.
+.IP "\-p \fIport\fR" 19
+The \fIport\fR argument specifies the port that will be used instead of the 
+default nameserver port listed in 
+.PN /etc/services .
+.IP \-n 19
+This option must be used when the 
+.PN named 
+daemon is running in the network safe mode.  It indicates that the
+zone pull must be authenticated.
+.IP "\-a  \fIauth_type.auth_ver\fR" 19
+This option must be used if the 
+.PN named 
+daemon is running in the network safe mode.  The \fIauth_type\fR
+argument indicates what type of authentication to use
+and the \fIauth_ver\fR argument indicates what version of the
+authentication type to use.  Currently, the \fIauth_type\fR
+must be "kerberos" and the auth_ver must be "one".
+.IP \fIservers...\fR  19
+The servers argument is a list of Internet addresses
+from which to pull a zone.  If the first host cannot be
+ddreached, the 
+.PN named 
+transfer daemon will try to pull the zone from the next host listed.
+.SH See Also
+services(5), named(8), kerberos(8krb)
+.br
+.I "Guide to the BIND/Hesiod Service"
+.br
+.I "Guide to Kerberos"

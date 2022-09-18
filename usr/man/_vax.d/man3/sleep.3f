@@ -1,0 +1,23 @@
+.\" SCCSID: @(#)sleep.3f	8.1	9/11/90
+.TH sleep 3f VAX "" Unsupported
+.SH Name
+sleep \- suspend execution for an interval
+.SH Syntax
+.B subroutine sleep (itime)
+.SH Description
+.NXR "sleep subroutine (FORTRAN)"
+.NXR "process" "suspending"
+The
+.PN sleep
+subroutine
+causes the calling process to be suspended for
+.I itime
+seconds.
+The actual time can be up to 1 second less than
+.I itime
+due to granularity in system timekeeping.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+sleep(3)

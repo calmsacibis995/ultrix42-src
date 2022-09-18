@@ -1,0 +1,34 @@
+.TH ldohseek 3x RISC
+.SH Name
+ldohseek \- seek to the optional file header of a common object file
+.SH Syntax
+.ft B
+.nf
+.ta \w'\s-1LDFILE\s+1\ \ \ 'u
+.B #include <stdio.h>
+.B #include <filehdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h> \}
+.PP
+.BR "int ldohseek (" ldptr )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.fi
+.DT
+.SH Description
+The
+.PN ldohseek
+function seeks to the optional file header 
+of the common object file
+currently associated with
+.IR ldptr .
+.PP
+.PN ldohseek
+function returns success or failure. If the object file does not have an
+optional header or if it cannot seek to the optional header, 
+.PN ldohseek
+fails.
+.PP
+The program must be loaded with the object file access routine library
+.BR libmld.a .
+.SH See Also
+ldclose(3x), ldopen(3x), ldfhread(3x), ldfcn(5)

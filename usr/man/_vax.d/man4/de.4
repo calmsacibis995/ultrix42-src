@@ -1,0 +1,101 @@
+.\" SCCSID: @(#)de.4	8.1	9/11/90
+.\" SCCSID: @(#)de.4	8.1	9/11/90
+.TH de 4 VAX
+.SH Name
+de \- DEUNA/DELUA Ethernet interface
+.SH Syntax
+.B "device de0 at uba0 csr 0174510 vector deintr"
+.SH Description
+.NXS "de interface" "DEUNA Ethernet interface"
+.NXS "de interface" "DELUA Ethernet interface" 
+.NXR "DEUNA Ethernet interface"
+.NXR "DELUA Ethernet interface"
+.NXS "Ethernet interface" "DEUNA Ethernet interface"
+.NXS "Ethernet interface" "DELUA Ethernet interface"
+.NXAM "network facilities" "DEUNA Ethernet interface"
+.NXAM "network facilities" "DELUA Ethernet interface"
+.NXA "DEUNA Ethernet interface" "Address Resolution Protocol"
+.NXA "DELUA Ethernet interface" "Address Resolution Protocol"
+The
+.PN de
+interface provides access to a 10 Mb/s Ethernet network through
+a DEUNA/DELUA controller.
+.PP
+The host's Internet address is specified at boot time with an 
+SIOCSIFADDR ioctl.  The
+.PN de
+interface employs the address resolution protocol described in
+.MS arp 4p
+to dynamically map between Internet and Ethernet addresses on the local
+network.
+.PP
+The interface normally tries to use a ``trailer'' encapsulation
+to minimize copying data on input and output.  This can be
+disabled for an interface by setting the IFF_NOTRAILERS
+flag with an SIOCSIFFLAGS ioctl.
+Trailers are only used for packets destined for Internet hosts.
+.PP
+The SIOCSPHYSADDR ioctl can be used to change and SIOCRPHYSADDR can
+be used to read the physical address of the board.  
+.PP
+SIOCADDMULTI 
+and SIOCDELMULTI can be used to add  or delete multicast addresses.  
+The board recognizes, at most, 10 multicast addresses. The argument 
+to these ioctls is a pointer to an ifreq structure found in 
+.PN <net/if.h> .
+.PP
+SIOCRDCTRS and SIOCRDZCTRS ioctls can be used to read or 
+``read and clear'' the board counters. The argument to these 
+two ioctls is a pointer to a counter structure ``ctrreq'' found in 
+.PN <net/if.h> .
+.PP
+The ioctls SIOCENABLBACK and SIOCDISABLBACK can be used to enable
+and disable the interface loopback mode.
+.SH Restrictions
+The PUP protocol family is not supported.
+.SH Diagnostics
+.B "de%d: command failed, csr0=%b csr1=%b"
+.br
+Here,
+.B command
+is one of \fBreset\fR, \fBpcbb\fR, \fBrdphyad\fR, \fBwtring\fR, or
+\fBwtmode\fR.  This message is printed if
+there is an error on device initialization.
+The following command failures can occur during ioctl requests:
+.PP
+.B "wtphyadd"
+.br
+An attempt to change the physical address failed.
+.PP
+.B "rdphyadd"
+.br
+An attempt to read the physical address failed.
+.PP
+.B "wtmulti"
+.br
+An attempt to add a new multicast address failed.
+.PP
+.B "mtmulti failed, multicast list full"
+.br
+An attempt to add
+a new multicast address failed because the maximum number of 
+multicast addresses has been reached.
+.PP
+.B "rdcnts"
+.br
+An attempt to read the board counters failed.
+.PP
+The following messages occur while transmitting or receiving packets:
+.PP
+.B "de%d: buffer unavailable"
+.br
+Packets are being received by
+the interface faster than they can be serviced by the driver.
+.PP
+.B "de%d: can't handle af%d"
+.br
+The interface was handed
+a message with addresses formatted in an unsuitable address
+family; the packet was dropped.
+.SH See Also
+arp(4p), inet(4f), intro(4n)

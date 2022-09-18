@@ -1,0 +1,90 @@
+.\" SCCSID: @(#)plock.2	8.1	9/11/90
+.TH plock 2
+.SH Name
+plock \- lock or unlock process, text, or data in memory
+.SH Syntax
+.B #include <sys/lock.h>
+.PP
+.B int plock (op)
+.br
+.B int op;
+.SH Description
+.NXR "plock system call"
+The
+.PN plock
+call allows the calling process to lock its text segment (text lock),
+its data segment (data lock),
+or both its text and data segments (process lock)
+into memory.
+Locked segments are immune to page outs, and the process is immune
+to swap outs.  The
+.PN plock
+call also unlocks these segments.
+.PP
+The
+.I op
+argument specifies the following:
+.IP PROCLOCK 1i
+Lock text and data segments into memory (process lock)
+.IP TXTLOCK 1i
+Lock text segment into memory (text lock)
+.IP DATLOCK 1i
+Lock data segment into memory (data lock)
+.IP UNLOCK 1i 
+Remove locks
+.SH Return Values
+Upon successful completion, a value of 0 is returned to the
+calling process.  Otherwise, a value of \-1 is returned, and
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+The
+.PN plock 
+call fails under the following conditions:
+.TP 15 
+[EPERM]
+The effective user ID of the calling process is not superuser.
+.TP 15 
+[EINVAL]
+The
+.I op
+argument is equal to PROCLOCK, and a process lock,
+a text lock, or a data lock already exists on the
+calling process.
+.TP 15 
+[EINVAL]
+The
+.I op 
+argument is equal to TXTLOCK, and a text lock
+or a process lock already exists on the calling process.
+.TP 15 
+[EINVAL]
+The
+.I op
+argument is equal to DATLOCK, and a data lock or a process
+lock already exists on the calling process.
+.TP 15 
+[EINVAL]
+The 
+.I op
+argument is equal to UNLOCK, and no type of lock exists
+on the calling process.
+.SH Restrictions 
+.NXR "plock system call" "restricted"
+The effective user ID of the calling process must be superuser to
+use this call.
+.PP
+Both 
+PROCLOCK 
+and 
+TXTLOCK 
+lock the text segment of a process, and a locked
+text segment
+is locked for all sharing processes.
+.PP
+Because the effective user ID of the calling process is superuser,
+take care not to lock more virtual pages 
+than can be contained in physical memory.
+A deadlock can result.
+.SH See Also
+execve(2), exit(2), fork(2), shmctl(2)

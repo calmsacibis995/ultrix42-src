@@ -1,0 +1,27 @@
+.TH remove 3
+.SH Name
+remove \- removes files
+.SH Syntax
+.\" .B #include <stdio.h>
+.\"  Not sure were to put it, stdio or libc 
+.B remove (\fIpath\fR)
+.br
+.B char  *path;
+.SH Arguments
+.IP \fIpath\fR 15
+Provides the specification for a file or directory.
+.SH Description
+The 
+.PN remove 
+library function removes a file. If the \fIpath\fP does not 
+name a directory then \fIremove(path)\fP is equivalent to \fIunlink(path)\fP. 
+If the \fIpath\fP does name a directory then \fIremove(path)\fP is equivalent 
+to \fIrmdir(path)\fP.
+.NXR "remove" "files"
+.NXR "remove files"
+.NXR "files" "remove"
+.SH Return Values
+A 0 is returned if the remove succeeds; otherwise a \-1 is returned
+and an error code is stored in the global location \fIerrno\fP.
+.SH See Also
+errno(2), rmdir(2), unlink(2)

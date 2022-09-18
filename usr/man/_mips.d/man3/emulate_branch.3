@@ -1,0 +1,62 @@
+.TH emulate_branch 3 RISC
+.SH Name
+emulate_branch, execute_branch \- branch emulation
+.SH Syntax
+.nf
+.B #include <signal.h>
+.PP
+.B emulate_branch(\fIscp, branch_instruction\fP)
+.B struct sigcontext *\fIscp\fP;
+.B unsigned long \fIbranch_instruction\fP;
+.PP
+.B execute_branch(\fIbranch_instruction\fP)
+.B unsigned long \fIbranch_instruction\fP;
+.fi
+.SH Description
+The
+.PN emulate_branch 
+function is passed a signal context structure and a
+branch instruction.  It emulates the branch based on the
+register values in the signal context structure.  It
+modifies the value of the program counter in the signal
+context structure
+.RI ( sc_pc )
+to the target of the \fIbranch_instruction\fP.  
+The program counter must initially be pointing
+at the branch and the register values must be those at the
+time of the branch.  If the branch is not taken the program
+counter is advanced to point to the instruction after the
+delay slot
+.RI ( sc_pc
++= 8).
+.PP
+If the branch instruction is a 
+`branch on coprocessor 2' or `branch on coprocessor 3'
+instruction,
+.PN emulate_branch
+calls
+.PN execute_branch 
+to execute the branch in data space to
+determine if it is taken or not.
+.SH Return Values
+The
+.PN emulate_branch
+function returns a 0 if the branch was emulated
+successfully.  A non-zero value indicates the value passed
+as a branch instruction was not a branch instruction.
+.PP
+The
+.PN execute_branch
+function returns non-zero on taken branches and zero
+on non-taken branches.
+.SH Restrictions
+Since 
+.PN execute_branch 
+is only intended to be used by
+.PN emulate_branch 
+it does not check its parameter to see if in
+fact it is a branch instruction.  It is really a stop gap in
+case a coprocessor is added without the kernel fully
+supporting it (which is unlikely).
+.SH See Also
+cacheflush(2), sigvec(2), signal(3)

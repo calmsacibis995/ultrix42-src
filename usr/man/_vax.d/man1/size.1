@@ -1,0 +1,21 @@
+.\" SCCSID: @(#)size.1	8.1	9/11/90
+.TH size 1 VAX
+.SH Name
+size \- print program's sizes
+.SH Syntax
+.B size
+[\|\fIobject...\fR\|]
+.SH Description
+.NXR "size command (general)"
+.NXR "object file" "printing size"
+The
+.PN size
+command
+prints the (decimal) number of bytes required by the text, data, and
+bss portions, and their sum in hex and decimal,
+of each object-file argument.
+If no file is specified,
+.PN a.out
+is used.
+.SH See Also
+a.out(5)

@@ -1,0 +1,22 @@
+/*
+ * @(#)ISO646.cod	4.1
+ *
+ * In ISO646 the meaning of the codes 2/3, 2/4, 4/0, 5/11, 5/12, 5/13, 5/14, 
+ * 6/0, 7/11, 7/12, 7/13 and 7/14 can be different for different languages.
+ * In this table I will use the International Reference Version (IRV)
+ */
+
+#include "ISO646.inc"
+
+numbsign = '#'	: MISCEL, PUNCT;	
+currency = 2/4	: CURENCY, PUNCT;
+comm_at = '@'	: MISCEL, PUNCT;
+l_sq_br = '['	: MISCEL, PUNCT;
+revsolidus = '\\' : MISCEL, PUNCT;
+r_sq_br = ']'	: MISCEL, PUNCT;
+circ = '^'	: MISCEL, PUNCT;
+grav_acc = '`'	: MISCEL, PUNCT;
+l_cur_br = '{'	: MISCEL, PUNCT;
+ver_line = '|'	: MISCEL, PUNCT;
+r_cur_br = '}'	: MISCEL, PUNCT;
+overline = '~'	: MISCEL, PUNCT ;

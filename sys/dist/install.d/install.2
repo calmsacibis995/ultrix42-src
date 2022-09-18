@@ -1,0 +1,83 @@
+#!/bin/sh
+# 
+# @(#)install.2	4.2	(ULTRIX)	9/4/90
+#
+# install.2: for installation only
+#-------------------------------------------------------------------
+# Modification History
+# ~~~~~~~~~~~~~~~~~~~~
+#
+# 005 - Aug 31, 1990 - Jon Wallace
+#	Put in fix to remove embedded spaces when doing a read
+#
+# 004 - July 22, 1987 - Tungning Cherng
+#	Pulled out the passwd from install.2 and split the install.2 into 
+#		install.2 and install.3
+#
+# 003 - April,  1987 - Tungning Cherng
+#	Changes for V2.2
+#	* Get the sysname and timezone from 'doconfig' program.
+#	* append to log file install.log
+#	* append to log file install.log
+#
+# 002 - August 6, 1986 - Bob Fontaine
+#	Added console update functionality for 730, 780, and 8600.
+#
+# 001 - June, 1986     - John William & Tungning Cherng
+#		Added the network installation.
+#
+# 000 - April 11, 1986 - Tungning Cherng created
+#
+#       Prompt edits - September 16, 1986, by Al Wojtas
+
+PATH=.:/install.tmp:/bin:/etc:/usr/bin:/usr/ucb:/usr/etc
+HOME=/
+export PATH HOME
+
+LL="
+"
+trap '
+while :
+do	
+	echo -n "
+Do you want to stop the installation? (y/n) []: "
+	read ans 
+	ans=`echo $ans`
+	case $ans in
+	[yY]*)
+		echo "
+Begin your installation again by following the instructions in your
+installation guide."
+		trap '' 1 2 3
+		exit 1
+		;;
+	[nN]* )
+		break 
+		;;
+	* )
+		continue
+		;;
+	esac
+done ' 1 2 3
+
+# setnametime
+# Get the system name, loop until a correct one is entered.
+# sysname holds that name.
+#
+rm -f vmunix.sas sysupd .updprofile	# To gain back some space.
+cd /install.tmp  			# doconfig needs to see dd command.
+case $remoteflag in
+y )
+    realsysname=`/bin/hostname`
+    sysname=`echo ${realsysname} | dd conv=ucase 2>/dev/null`
+    echo "
+The system name assigned to your processor is $realsysname."
+	doconfig -t 	#set system time and date
+	;;
+* )
+	doconfig -n  	#set system name
+	doconfig -t  	#set system time and date
+	;;
+esac
+
+exit 0

@@ -1,0 +1,78 @@
+.\" SCCSID: @(#)whereis.1	8.1	9/11/90
+.TH whereis 1
+.SH Name
+whereis \- locate source, binary, and or manual for program
+.SH Syntax
+.B whereis
+[\fB\-sbm\fR] [\fB\-u\fR] [\fB\-SBM\fI dir... \fB\-f\fR\|] \fIname...\fR
+.SH Description
+.NXR "whereis command"
+.NXR "program" "locating source"
+.NXR "program" "locating binary"
+.NXR "program" "locating manual"
+.NXR "command" "locating online information"
+The
+.PN whereis
+command
+locates source/binary and manuals sections for specified files.
+The supplied names are first stripped of leading pathname components
+and any (single) trailing extension of the form ``.ext'', for
+example,``.c''.
+Prefixes of ``s.'' resulting from use of source code control are also
+dealt with.
+The
+.PN whereis
+command then attempts to locate the
+desired program in a list of standard places.
+.SH Options
+.IP "\fB\-S dir\fR" 0.3i
+Search for source files in specified directory.  
+.IP "\fB\-B dir\fR" 0.3i
+Search for binary files in given directory.  
+.IP "\fB\-M dir\fR" 0.3i
+Search for manual section files in given directory.  
+.IP \fB\-b\fR 0.3i
+Searches only for binary files.  
+.IP \fB\-f\fR 0.3i
+Terminates last directory list created from use of \fB\-S\fR,
+\fB\-B\fR or \fB\-M\fR flags and signals
+the start of file names.  
+.IP \fB\-m\fR 0.3i
+Searches only for manual section files.  
+.IP \fB\-s\fR 0.3i
+Searches only for source files.  
+.IP \fB\-u\fR 0.3i
+Searches for files that do not have one 
+of binary, source or manual section files.
+A file is said to be unusual if it does not have one entry of
+each requested type.
+Thus ``whereis \-m \-u *'' asks for those files in the current
+directory which have no documentation.
+.SH Examples
+.NXR "whereis command" "example"
+The following finds all the files in 
+.PN /usr/ucb
+which are not documented
+in 
+.PN /usr/man/man1
+with source in
+.PN /usr/src/cmd:
+.EX
+cd /usr/ucb
+whereis \-u \-M /usr/man/man1 \-S /usr/src/cmd \-f *
+.EE
+.SH Restrictions
+Since the program uses
+.MS chdir 2
+to run faster, pathnames given with the
+.B \-M
+.B \-S
+and
+.B \-B
+must be full.  That is, they must begin with a ``/''.
+.SH Files
+/usr/src/*
+.br
+/usr/{doc,man}/*
+.br
+/lib, /etc, /usr/{lib,bin,ucb,old,new,local}

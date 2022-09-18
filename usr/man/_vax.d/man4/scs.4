@@ -1,0 +1,24 @@
+.\" SCCSID: @(#)scs.4	3.1	11/24/87
+.TH scs 4
+.SH Name
+scs \- Systems Communications Services network interface.
+.SH Syntax
+.B "pseudo device scsnet"
+.SH Description
+.NXS "scs interface" "Systems Communications Services interface"
+.NXR  "Systems Communications Services interface"
+.NXAM "network facilities"  "Systems Communications Services interface"
+The
+.PN scs
+interface provides network access to any network device supported by
+the System Communications Services subsystem (SCS).   Currently, the only 
+network device available is the Computer Interconnect (CI).
+.PP
+The host's Internet address is specified at boot time with an 
+SIOCSIFADDR ioctl.  
+.PP
+.SH Restrictions
+Only the Internet protocol family (TCP/IP/UDP) is supported.
+The host numbers must be between 1 and 15 inclusive.  Zero is reserved.
+.SH See Also
+inet(4f), intro(4n)

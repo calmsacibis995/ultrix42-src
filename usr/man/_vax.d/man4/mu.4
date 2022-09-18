@@ -1,0 +1,59 @@
+.\" SCCSID: @(#)mu.4	8.1	9/11/90
+.TH mu 4 VAX
+.SH Name
+mu \- TM78/TU78/9 magnetic tape interface
+.SH Syntax
+.B master mt0 at mba? drive ?
+.br
+.B tape mu0 at mt0 slave 0
+.SH Description
+.NXR "TM78 magnetic tape interface"
+.NXR "TU78 magnetic tape interface"
+.NXS "mu interface" "TM78 magnetic tape interface"
+.NXS "mu interface" "TU78 magnetic tape interface"
+.NXS "mt file" "TM78 magnetic tape interface"
+.NXS "mt file" "TU78 magnetic tape interface"
+Prior to Version 2.0, this device was referenced by 
+.MS mt 4 .
+.PP
+The TM78/TU78/9 combination provides a standard tape drive
+interface as described in
+.MS mtio 4 .
+Only 1600 and 6250 bpi are supported; the
+TU78/9 runs at 125 ips and autoloads tapes.
+.SH Restrictions
+Only the raw tape is supported.
+.SH Diagnostics
+\fBmu%d: no write ring\fR.
+.br
+An attempt was made to write on the tape drive when no write ring
+was present.
+.PP
+\fBmu%d: not on line\fR.
+.br
+An attempt was made to access the tape while it
+was off line.
+.PP
+\fBmu%d: hard error bn%d\fR.
+.br
+A tape error occurred at block \fIbn\fR.
+When possible, the driver will have retried
+the operation that failed several times before reporting the error.
+Additional register information may be gathered from the system
+error log file,
+.PN /usr/adm/syserr/syserr.<hostname>.
+.PP
+\fBmu%d: blank tape\fP.
+.br
+An attempt was made to read a blank tape (a tape without even
+end-of-file marks).
+.PP
+\fBmu%d: off line\fP.
+.br
+During an I/O operation, the device was set off line.
+.SH Files
+/dev/rmt???
+.br
+/dev/nrmt???
+.SH See Also
+mtio(4), nbuf(4), MAKEDEV(8), uerf(8)

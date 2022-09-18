@@ -1,0 +1,32 @@
+.\" SCCSID: @(#)rmail.1	8.1	9/11/90
+.TH rmail 1
+.SH Name
+rmail \- route mail to users on remote systems
+.SH Syntax
+.B rmail
+\fIuser...\fR
+.SH Description
+.NXAM "daemon" "sendmail daemon" "rmail command"
+.NXA "uucp utility" "rmail command"
+.NXR "rmail command"
+.NXR "mail" "processing for sendmail daemon"
+The
+.PN rmail
+command
+interprets incoming mail received via
+.MS uucp 1c ,
+collapsing ``From'' lines in the form generated
+by 
+.MS binmail 1
+into a single line of the form ``return-path!sender'',
+and passing the processed mail on to
+.MS sendmail 8 .
+.PP
+The
+.PN rmail
+is explicitly designed for use with 
+.PN uucp
+and
+.PN sendmail .
+.SH See Also
+binmail(1), uucp(1c), sendmail(8)

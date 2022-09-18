@@ -1,0 +1,112 @@
+.TH invcutter 1
+.SH Name
+invcutter \- generate subset inventory files
+.SH Syntax
+.B /usr/sys/dist/invcutter 
+[
+.B \-d
+]
+[
+.B \-f
+.I root-path
+]
+[
+.B \-f
+.I version-code
+]
+.SH Description
+The
+.PN invcutter
+command reads master inventory records from standard input.
+.NX R "invcutter command"
+.NX R "Software kits" "producing inventory records for"
+A subset inventory record is written to standard output for
+every record read from the input. The information contained
+in the output record is derived from the
+input record and the
+file attribute information in the file hierarchy rooted
+in the current directory.
+.SH Options
+.IP \-d 20
+Enable debugging. No useful diagnostics are printed.
+.IP "\-f \fIroot-path\fP"
+Specify an alternate root path for finding file attribute
+information.
+.IP "\-v version-code"
+Specify a 3-digit version code for use in the version
+field of the output records. The default version code is
+.I 010.
+.SH Restrictions
+All input records must be sorted in ascending order on the
+pathname field.
+.PP
+Files described in an input record which exist as sockets
+in the file hierarchy are not processable.
+.PP
+If a file is described in an input record has a link count
+greater than 1, all other links to the file must be represented
+in the input.
+.SH Examples
+The following command will generate inventory records for the
+master inventory entries in
+.I PDS020.mi
+containing version fields
+set to
+.I 020:
+.EX
+    invcutter \-v 020 < PDS020.mi
+.EE
+.SH Return Values
+An exit status of 0 is returned if all goes well. An exit status
+of 1 is returned if an error occurs. See Diagnostics.
+.SH Diagnostics
+"\fBcannot chdir to \fIpathname\fP (\fIerror-message\fP)\fR"
+.br
+The program cannot change directories to the
+.I pathname
+directory specified with the
+.B \-f
+option. The
+.I error-message
+will provide additional information.
+.PP
+"\fBsort error, record #\fIn\fR"
+.br
+The \fIn\fRth input record is
+not in the correct sort order. All input records must be
+in ascending ASCII colating sequence on the pathname field.
+.PP
+"\fBcannot stat \fIfilename\fP (\fIerror-message\fP)\fR"
+.br
+An error has occurred attempting to read the attributes of
+.I filename.
+The
+.I error-message
+explains exactly what happened.
+.PP
+"\fIpathname\fB: illegal file type code 0140000\fR"
+.br
+The file
+.I pathname
+is a socket. Sockets are not supported as valid file types for
+distribution.
+.PP
+"\fBunresolved nlink\fI n: pathname\fR"
+.br
+This indicates that file
+.I pathname
+in the master inventory is linked to
+.I n
+files which do not appear in the master inventory. Check inventory
+for validity with the
+.PN newinv
+program.
+.PP
+"\fIn\fB unresolved hard links\fR"
+.br
+This is an informational message stating how many files
+were detected in the input inventory which had unresolved links.
+.SH See Also
+newinv(1), stl_inv(5), stl_mi(5)
+.br
+\fIGuide to Preparing Software for Distribution on ULTRIX Systems\fP

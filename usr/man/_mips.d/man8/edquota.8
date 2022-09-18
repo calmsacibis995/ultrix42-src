@@ -1,0 +1,70 @@
+.\" SCCSID: @(#)edquota.8	8.1	9/11/90
+.TH edquota 8
+.SH Name
+edquota \- edit user quotas
+.SH Syntax
+.B edquota
+[
+.B \-p
+.I proto-user
+]
+.IR users ...
+.SH Description
+.NXR "edquota editor"
+.NXR "disk quota" "editing"
+.NXA "quotacheck command" "edquota editor"
+The
+.PN edquota
+command is a quota editor.  You can specify one or more users
+on the command line.
+For each user,
+.PN edquota
+creates  a temporary file 
+with an ASCII representation of the current
+disc quotas for that user and an editor is
+then invoked on the file.  You can then modify 
+the quotas, add new quotas, and so forth. 
+Upon leaving the editor,
+.PN edquota
+reads the temporary file and modifies the binary
+quota files to reflect the changes made.
+.PP
+If a valid quota file does not exist,
+.PN edquota
+refers the user to 
+.MS quotacheck 8 .
+The user then has the option of either
+supplying the command
+.PN "quotacheck \-f filesystem" ,
+which automatically creates the
+necessary quota file, or creating
+an empty quota file by various other means.
+.PP
+If the 
+.PN \-p
+option is specified,
+.PN edquota
+duplicates for each user, the quotas of the prototypical user
+specified. This is the usual mechanism used to initialize 
+quotas for groups of users.
+.PP
+The editor invoked is 
+.MS vi 1 ,
+unless the environment variable EDITOR specifies otherwise.
+.PP
+Only the superuser can edit quotas.
+.SH Diagnostics
+Various messages about inaccessible files. Other
+messages are self-explanatory.
+.SH Files
+.TP 15
+.I quotas
+At the root of each file system with quotas
+.TP
+.PN /etc/fstab
+Used to find file system names and locations
+.SH See Also
+quota(1), quota(2), quotacheck(8), quotaon(8), repquota(8)
+.br
+``Disk Quotas in a UNIX Environment,'' 
+.I "ULTRIX Supplementary Documents, Volume 3: System Manager"

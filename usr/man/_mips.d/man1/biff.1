@@ -1,0 +1,51 @@
+.\" SCCSID: @(#)biff.1	8.1	9/11/90
+.TH biff 1
+.SH Name
+biff \- be notified if mail arrives and who it is from
+.SH Syntax
+.B biff
+[\|\fBy|n\fR\|]
+.SH Description
+.NXR "biff command"
+.NXA "mail program" "biff command"
+.NXR "mail" "reporting incoming"
+The
+.PN biff
+command informs the system whether you want to be notified when mail arrives
+during the current terminal session.
+The command,
+.PN biff 
+\fBy\fR, enables notification; the command,
+.PN biff 
+\fBn\fR, disables it.  The 
+.PN biff
+command with no options displays 
+the current status of 
+.PN biff .
+.PP
+When mail notification is enabled, the header and first few lines of
+the message will be printed on your screen whenever mail arrives.
+A 
+.PN biff
+.B y
+command is often included in the file .login 
+or .profile to be executed at each login.
+.PP
+The
+.PN biff
+command operates asynchronously.
+For synchronous notification use the MAIL variable of
+.MS sh 1
+or the
+.PN mail
+variable of
+.MS csh 1 .
+.SH Options
+.TP 5
+.B n
+Disables notification that mail has arrived.
+.TP
+.B y
+Enables notification that mail has arrived.
+.SH See Also
+csh(1), mail(1), sh(1), comsat(8c)

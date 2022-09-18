@@ -1,0 +1,91 @@
+.TH vdoc 1
+.SH Name
+vdoc \- invokes CDA Viewer for character-cell displays
+.SH Syntax
+.B vdoc
+[ \-f \fIformat\fP ] [ \-O \fIoptions_file\fP ]  [\-r] 
+[-w \fIpaper_width\fP] [-h \fIpaper_height\fP] [-p] \fIinputfile\fP
+.SH Description
+.NXR "vdoc command"
+The 
+.PN vdoc
+command invokes the CDA Viewer that enables you to view the 
+\fIinputfile\fP on a character-cell terminal.
+If \fIinputfile\fP is not specified,
+.PN vdoc
+reads from standard input.
+.SH Options
+.TP 20
+.B \-f \fIformat\fP
+Specifies the format of \fIinputfile\fP and invokes an appropriate input
+converter as part of CDA. The ddif, dtif and text input
+converters are provided in the base system kit. Additional converters can
+be added by the CDA Converter Library and other layered products.
+Contact your system manager for a complete list of the input formats
+supported on your system. The default format is ddif.
+.TP 20
+.B \-O \fIoptions_file\fP
+Names the file passed to the input converter to control specific processing
+options in that converter. Refer to your documentation set for
+a description of converter options.
+.IP "" 20
+The options file has a default file type of .cda_options. Each line of the
+options file specifies a format name that can optionally be followed by
+_input or _output to restrict the option to either an input or output
+converter. The second word is a valid option preceded by one or more spaces, 
+tabs, or a slash (/) and can contain upper- and lowercase letters, numbers, 
+dollar signs, and underlines. The case of letters is not significant. If an 
+option requires a value, then spaces, tabs, or an equal sign can separate the
+option from the value. 
+.IP "" 20
+Each line can optionally be preceded by spaces and tabs and can be
+terminated by any character other than those that can be used to specify
+the format names and options. The syntax and interpretation of
+the text that follows the format name is specified by the supplier of the
+front and back end converters for the specified format. 
+.IP "" 20
+To specify several options for the same input or output format, specify one
+option on a line. If an invalid option for an input or output format or an
+invalid value for an option is specified, the option may be ignored or an
+error message may be returned. Each input or output format that supports
+processing options specifies any restrictions or special formats required
+when specifying options. 
+.IP "" 20
+By default, any messages that occur during processing of the options file 
+are written to the system \fIstandard error location\fP.  For those
+input formats that support a LOG option, messages can be directed to a
+log file.
+.TP 20
+.B \-r
+Specifies that the CDA Viewer is to override the format of the document. If
+the \-r qualifier is not specified, the CDA Viewer retains the formatting
+information stored in the document. 
+.TP 20
+.B \-w \fIpaper_width\fP
+Specifies the paper width in units of characters. The \-w qualifier always
+specifies the fallback formatted document page width to be used when the \-r
+(override format) qualifier is specified or when the document has no
+inherent format. When used with the \-p (page mode) qualifier, the display
+page width is determined from the terminal and is unrelated to the
+formatted page width. In nonpage mode, the specified \-w value is used for
+both fallback document page width and the display page width. If the \-w
+qualifier is not specified, the default width is 80 characters.
+.TP 20
+.B \-h \fIpaper_height\fP
+Specifies the paper height in units of characters.
+The \-h qualifier always specifies the fallback formatted
+document page height to be used when the \-r (override format) qualifier is
+specified or when the document has no inherent format. When used with the
+-p (page mode) qualifier, the display page height is determined from the
+terminal and is unrelated to the formatted page height. In nonpage mode,
+the specified \-h value is used for both fallback document page height and
+the display page height. If the \-h qualifier is not specified, the default
+height is dependent on the document.
+.TP 20
+.B \-p
+Specifies that the CDA Viewer is to pause after displaying each page. The
+user can also page backward and go directly to the top or bottom of the
+document. If the \-p qualifier is not specified, the CDA Viewer displays
+each page without pausing.
+.SH See Also
+cdoc(1), dxvdoc(1X), DDIF(5), DTIF(5), CDA(5), DOTS(5)

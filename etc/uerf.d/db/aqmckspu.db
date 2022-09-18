@@ -1,0 +1,189 @@
+# @(#)aqmckspu.db	4.2   (ULTRIX)   12/20/90
+
+sseg
+id CDS
+name mck9000spu_cds
+label "MCK INFO"
+doc '9000 spu machine check info'
+elements
+	mck9000spu_len mcuv2summ mc1vap mc1int pc psl
+	mck9000spu_smc0 mck9000spu_smc1 mck9000spu_smc2 mck9000spu_smc3
+	mck9000spu_sscbto bidevreg bicsr ber bci3_csr
+
+sitem
+name mck9000spu_len
+class integer
+type long
+size 4
+display hex
+label 'Mcheck length'
+doc 'Machine Check Length'
+
+sitem
+name mck9000spu_smc0
+class composite
+type register
+size 4
+display nil
+label 'SMC CSR Register 0'
+doc 'Machine Check Length'
+map
+	field
+class coded
+size 2
+map
+	0	'4Mbitx1x1bank =16Mbytes'
+	1	'1Mbitx1x1bank =04Mbytes'
+	2	'1Mbitx1x2banks=08Mbytes'
+	3	'1Mbitx1x4banks=16Mbytes'
+	field
+class filler
+size 4
+	field
+class coded
+size 1
+label 'Read Lock = '
+display decimal
+doc 'Lock Bit'
+	field
+class filler
+size 13
+	field
+class integer
+size 9
+label 'Base Address Field = '
+display hex
+doc 'Memory Base Address'
+	field
+class filler
+size 2
+	field
+class coded
+size 1
+map
+	0 'Base Address Not Valid'
+	1 'Base Address Valid'
+
+
+sitem
+name mck9000spu_smc1
+class composite
+type register
+size 4
+display nil
+label 'SMC CSR Register 1'
+map
+	field
+size 7
+class integer
+label 'ERROR SYNDROME = '
+display hex
+	field
+size 2
+class filler
+	field
+size 20
+class integer
+label 'BAD PAGE ADDR = '
+display hex
+	field
+size 1
+class coded
+map
+	1 'CRD ERR BIT SET'
+	field
+size 1
+class coded
+map
+  1 'MULTI RDS BIT SET'
+	field
+size 1
+class coded
+map
+  1 'RDS ERROR BIT SET'
+
+
+sitem
+name mck9000spu_smc2
+class composite
+type register
+size 4
+display nil
+label 'SMC CSR Register 2'
+map
+	field
+size 7
+label 'Check Bits = '
+display hex
+class integer
+	field
+size 1
+class coded
+doc 'Diagnostic Mode Enable'
+map
+ 0 'Normal Mode'
+ 1 'Diagnostic Mode'
+	field
+size 2
+class filler
+	field
+size 1
+doc 'Disable Correction'
+class coded
+map
+ 0 'ECC Enabled'
+ 1 'ECC Disabled'
+	field
+size 20
+class filler
+	field
+size 1
+class coded
+doc 'Disable Refresh'
+map
+ 0 'Refresh Enabled'
+ 1 'Refresh Disabled'
+
+sitem
+name mck9000spu_smc3
+class composite
+type register
+size 4
+display nil
+label 'SMC CSR Register 3'
+map
+	field
+size 2
+class filler
+	field
+size 27
+class integer
+label 'Locking Address = '
+display hex
+	field
+size 3
+class filler
+
+sitem
+name mck9000spu_sscbto
+class composite
+type register
+size 4
+display nil
+label "SSC Bus Timeout"
+map
+	field
+size 24
+class integer
+display hex
+label 'BTO Timeout = '
+	field
+size 7
+class filler
+	field
+size 1
+class coded
+map
+	0 "No BTO Occured"
+	1 "BTO Occured"
+

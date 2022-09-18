@@ -1,0 +1,87 @@
+.TH lpf 8
+.SH Name
+lpf \- general purpose line printer filter
+.SH Syntax
+/usr/lib/lpdfilters/lpf [\fB\-c\fP] [\fB\-n\fP\fIlogin\fP] [\fB\-h\fP\fIhost\fP] [\fB\-w\fP\fIwidth\fP] [\fB\-l\fP\fInum\fP] [\fB\-i\fP\fIindent\fP]  [\fBaccounting file\fP]
+.SH Description
+The 
+.PN lpf
+filter handles text data destined for impact printers: LP25, LP26, LP27,
+LA50, LA75, LA100, LA120, LA210, LG01.
+The filter regulates the device dependencies of the printers and
+performs accounting functions. 
+When the print job is done, 
+.PN lpf
+writes accounting records to the file specified by
+the \fBaf\fP field in /etc/printcap.
+.PP
+The filter can handle plain ASCII files as well as files that have been
+preprocessed by nroff. 
+However, it ignores escape sequences requesting superscripting and subscripting.
+.PP
+You can specify the 
+.PN lpf
+filter in both the \fBof\fP and the \fBif\fP fields of the
+.PN /etc/printcap
+file. 
+For further information, see 
+.MS printcap 5 .
+When you specify both fields, the \fBof\fP filter 
+prints the banner page only, then stops.  The \fBif\fP filter then
+gains access to the printer. The
+\fBif\fP filter maintains accounting information.
+.PP
+If you specify the \fBof\fP field only, it prints the
+banner page then stops and restarts to maintain accounting information.
+.PP
+If you specify the \fBif\fP field only, it sends the banner page directly to
+the printer.  This is not a problem for most impact printers.
+.PP
+For a more detailed discussion on filters see the 
+``Line Printer Spooler Manual'' in the
+.I "ULTRIX Supplementary Documents, Volume 2: Programmer."
+.PP
+.PP OPTIONS
+The arguments passed to the filter depend on its use.
+The \fBof\fP filter is called with the
+following arguments:
+.IP "lpf \fB\-w\fP\fIwidth\fP \fB\-l\fP\fIlength\fP"
+The \fIwidth\fP and \fIlength\fP values come from the \fBpw\fP
+and \fBpl\fP fields in the 
+.PN /etc/printcap
+database. The \fBif\fP (or restart \fBof\fP) filter is passed
+the following arguments:
+.IP "lpf \fB\-c\fP \fB\-n\fP\fIlogin\fP \fB\-h\fP\fIhost\fP \fB\-w\fP\fIwidth\fP \fB\-l\fP\fInum\fP \fB\-i\fP\fIindent\fP  \fBaccounting file\fP"
+.PP
+The \fB\-c\fP flag is optional and supplied only when control characters 
+are to be printed; when the \fB\-l\fP option of 
+.MS lpr 1
+is used to print the file. The \fB\-w\fP and \fB\-l\fP arguments are 
+the same as for the \fBof\fP filter, however, they may have
+different values if the \fB\-w\fP and/or
+\fB\-z\fP options of 
+.MS lpr 1
+were used to print the file.  The \fB\-n\fP and \fB\-h\fP arguments 
+specify the login name and host name of the job owner. These
+arguments are used to record
+accounting information. The \fB\-i\fP option specifies 
+the amount of indentation to be used. The last argument is
+the name of the accounting file 
+specified from the \fBaf\fP field in the 
+.PN /etc/printcap
+database.
+.SH Diagnostics
+The \fBlf\fP field (default /dev/null) in the 
+.PN /etc/printcap 
+database specifies error logging file name.
+.SH Files
+.TP 15
+.PN /etc/printcap
+Printer capabilities database
+.TP
+.PN /dev/lp?
+.SH See Also
+lpr(1), pr(1), printcap(5), lpd(8), MAKEDEV(8), pac(8)
+.br
+``Line Printer Spooler Manual,''
+.I "ULTRIX Supplementary Documents, Volume 2: Programmer"

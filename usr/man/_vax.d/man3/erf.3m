@@ -1,0 +1,103 @@
+.\" SCCSID: @(#)erf.3m	8.2	3/28/91
+'\" e
+.TH erf 3m VAX
+.SH Name
+erf, erfc \- error function and complementary error function
+.SH Syntax
+.B #include <math.h>
+.PP
+.B double erf (x)
+.br
+.B double x;
+.PP
+.B double erfc (x)
+.br
+.B double x;
+.SH Description
+.if t .ig
+.PP
+NOTE: Your terminal may not be able to accurately display 
+the special math symbols in this reference page. See the 
+.I ULTRIX Programmer's Manual, Unsupported
+for a complete description of the math symbols. 
+..
+.NXR "erf subroutine"
+.NXR "erfc subroutine" 
+.NXR "error function"
+.PP
+The
+.PN erf
+function 
+returns the error function of
+.IR x ,
+defined as
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "\f12\fP
+.ds 12 "\(*p
+.nr 12 \w'\s10\*(12'
+.ds 12 \v'0u'\e\L'-40u'\l'\n(12u'\v'40u'\h'-\n(12u'\*(12
+.nr 11 \w'\s10\*(11'
+.nr 12 \w'\s10\*(12'
+.nr 13 \n(11
+.if \n(12>\n(13 .nr 13 \n(12
+.ds 11 \v'40u'\h'\n(13u-\n(12u/2u'\*(12\
+\h'-\n(12u-\n(11u/2u'\v'-60u'\*(11\
+\h'-\n(13u-\n(11u-2u/2u'\v'0u'\l'\n(13u'\v'20u'
+.ds 12 \(is
+.ds 13 "\f10\fP
+.ds 14 "x
+.nr 12 \w'\s10\*(12'
+.nr 15 \n(12
+.nr 13 \w'\s7\*(13'
+.if \n(13>\n(15 .nr 15 \n(13
+.nr 14 \w'\s7\*(14'
+.if \n(14>\n(15 .nr 15 \n(14
+.ds 15 \v'40u'\h'\n(15u-\n(13u/2u'\s7\*(13\s10\h'-\n(15u-\n(13u/2u'\v'-40u'\
+\h'\n(15u-\n(12u/2u'\*(12\h'\n(15u-\n(12u+2u/2u'\
+\v'-40u'\h'-\n(15u-\n(14u/2u'\s7\*(14\s10\h'\n(15u-\n(14u/2u'\v'40u'\
+
+.as 11 "\*(15
+.ds 12 "e
+.ds 13 "\(mi
+.ds 14 "t
+.ds 15 "\f12\fP
+.as 14 \v'-20u'\*(15\v'20u'
+.as 13 "\|\*(14
+.as 12 \v'-20u'\*(13\v'20u'
+.as 11 "\*(12
+.ds 12 "dt
+.as 11 "\|\*(12
+.ds 12 ".
+.as 11 "\*(12
+.ds 11 \x'0'\x'0-20u'\f1\s10\*(11\s\n(99\f\n(98\x'20u'
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 120>\n(.v .ne 120u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.PP
+The
+.PN erfc
+function,
+which returns 1.0 \-
+.IR erf(x) ,
+is provided because of the
+extreme loss of relative accuracy if
+.I erf(x)
+is called for large
+.I x
+and the result subtracted
+from 1.0 (e.g. for
+.I x
+= 5, 12 places are lost).
+.SH See Also
+exp(3m)
+.br
+.I ULTRIX Programmer's Manual, Unsupported

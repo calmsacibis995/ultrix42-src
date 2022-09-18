@@ -1,0 +1,65 @@
+.\" SCCSID: @(#)sccshelp.1	8.1	9/11/90
+.TH sccshelp 1
+.SH Name
+sccshelp \- display SCCS help information
+.SH Syntax 
+\fBsccs help\fR [\|\fIargs\fR\|]
+.br
+\fBsccshelp\fR [\|\fIargs\fR\|]
+.SH Description
+.NXR "sccshelp command"
+.NXA "sccs preprocessor" "sccshelp command"
+The
+.PN sccshelp 
+command 
+explains the use of a sccs command or provides additional
+information on sccs-generated messages.
+Zero or more arguments may be supplied to help.
+If no arguments are given,
+.PN sccshelp
+will prompt for one.
+.PP
+The arguments may be either
+message numbers (which normally appear in parentheses 
+following messages),
+command names,
+or one of the following types:
+.PP
+.RS 
+.TP
+type 1
+Begins with nonnumerics, ends in numerics.
+The nonnumeric prefix is usually an abbreviation for the program or
+set of routines which produced the message
+(For example, \fBge6\fP, for message 6 from the
+.B get\^
+command).
+.PP
+.RE 
+.RS 
+.TP 
+type 2
+Does not contain numerics 
+(For example, \fBget\fR, a command name)
+.PP
+.RE 
+.RS 
+.TP
+type 3
+Is all numeric (For example, 212)
+.RE
+.PP
+When all else fails, try 
+.EX
+sccs help stuck.
+.EE
+.SH Files
+.PP
+.TP .5i 
+/usr/lib/sccs.help
+Directory containing files of message text
+.PP
+.TP .5i 
+/usr/lib/sccs.help/helploc
+File containing locations of help files not in 
+.PN /usr/lib/help .

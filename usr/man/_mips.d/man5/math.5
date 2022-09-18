@@ -1,0 +1,85 @@
+.TH math 5 RISC
+.SH Name
+math \- math functions and constants
+.SH Syntax
+.B #include <math.h>
+.SH Description
+This file contains declarations of all the functions in the
+Math Library (described in Section 3m),
+as well as various functions in the C Library (Section 3c)
+that return floating-point values.
+.P
+It defines the structure and constants used by the
+.MS matherr 3m
+error-handling mechanisms, including the following constant used as an
+error-return value:
+.P
+.TP 15
+.SM
+HUGE
+The maximum value of a single-precision floating-point number.
+.PP
+The following mathematical constants are defined for user convenience:
+.P
+.TP 15
+.SM
+M_E
+The base of natural logarithms
+.RI ( e ).
+.TP
+.SM
+M_LOG2E
+The base-2 logarithm of
+.IR e .
+.TP
+.SM
+M_LOG10E
+The base-10 logarithm of
+.IR e .
+.TP 
+.SM
+M_LN2
+The natural logarithm of 2.
+.TP 
+.SM
+M_LN10
+The natural logarithm of 10.
+.TP 
+.SM
+M_PI
+\(*p, the ratio of the circumference of a circle to its diameter.
+.TP 
+.SM
+M_PI_2
+\(*p/2.
+.TP 
+.SM
+M_PI_4
+\(*p/4.
+.TP 
+.SM
+M_1_PI
+1/\(*p.
+.TP 
+.SM
+M_2_PI
+2/\(*p.
+.TP 
+.SM
+M_2_SQRTPI
+2/\(sr\(*p.
+.TP 
+.SM
+M_SQRT2
+The positive square root of 2.
+.TP 
+.SM
+M_SQRT1_2
+The positive square root of 1/2.
+.PP
+For the definitions of various machine-dependent constants,
+see the description of the
+.I <values.h>
+header file.
+.SH See Also
+intro(3), values(5)

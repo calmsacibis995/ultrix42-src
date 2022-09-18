@@ -1,0 +1,121 @@
+(cd _vax.b; s5make   INCLUDEVARS=/new.pool/Makevars_vax.mk  MAKERULE=install INCLUDERULES=/new.pool/Makerules.mk  -f ../Makelocal.mk install)
+cd ../include/_vax.b
+s5make INCLUDEVARS=/new.pool/Makevars_vax.mk MAKERULE=install INCLUDERULES=/new.pool/Makerules.mk -f ../Makelocal.mk install
+cd ../adm/_vax.b
+s5make INCLUDEVARS=/new.pool/Makevars_vax.mk MAKERULE=install INCLUDERULES=/new.pool/Makerules.mk -f ../Makelocal.mk install
+cd ../lib/_vax.b
+s5make INCLUDEVARS=/new.pool/Makevars_vax.mk MAKERULE=install INCLUDERULES=/new.pool/Makerules.mk -f ../Makelocal.mk install
+cd ../src/_vax.b
+s5make INCLUDEVARS=/new.pool/Makevars_vax.mk MAKERULE=install INCLUDERULES=/new.pool/Makerules.mk -f ../Makelocal.mk install
+	install -c -s  sendmail /new.pool/Ultrix/usr/lib/sendmail
+cd ../aux/_vax.b
+s5make INCLUDEVARS=/new.pool/Makevars_vax.mk MAKERULE=install INCLUDERULES=/new.pool/Makerules.mk -f ../Makelocal.mk install
+cd ../md/_vax.b
+s5make INCLUDEVARS=/new.pool/Makevars_vax.mk MAKERULE=install INCLUDERULES=/new.pool/Makerules.mk -f ../Makelocal.mk install
+cd ../cf/_vax.b
+s5make INCLUDEVARS=/new.pool/Makevars_vax.mk MAKERULE=install INCLUDERULES=/new.pool/Makerules.mk -f ../Makelocal.mk install
+	if [ ! -d /new.pool/Ultrix/usr/src ]; then\
+		mkdir /new.pool/Ultrix/usr/src; \
+		/etc/chown root /new.pool/Ultrix/usr/src; \
+		chgrp system /new.pool/Ultrix/usr/src; \
+	else true; \
+	fi
+	if [ ! -d /new.pool/Ultrix/usr/src/usr.lib ]; then\
+		mkdir /new.pool/Ultrix/usr/src/usr.lib ; \
+		/etc/chown root /new.pool/Ultrix/usr/src/usr.lib ; \
+		chgrp system /new.pool/Ultrix/usr/src/usr.lib ; \
+	else true; \
+	fi
+	if [ ! -d /new.pool/Ultrix/usr/src/usr.lib/sendmail ]; then\
+		mkdir /new.pool/Ultrix/usr/src/usr.lib/sendmail ; \
+		/etc/chown root /new.pool/Ultrix/usr/src/usr.lib/sendmail ; \
+		chgrp system /new.pool/Ultrix/usr/src/usr.lib/sendmail ; \
+	else true; \
+	fi
+	if [ ! -d /new.pool/Ultrix/usr/src/usr.lib/sendmail/cf ]; then\
+		mkdir /new.pool/Ultrix/usr/src/usr.lib/sendmail/cf ; \
+		/etc/chown root /new.pool/Ultrix/usr/src/usr.lib/sendmail/cf ; \
+		chgrp system /new.pool/Ultrix/usr/src/usr.lib/sendmail/cf ; \
+	else true; \
+	fi
+	if [ ! -d /new.pool/Ultrix/usr/spool/mqueue ]; then\
+		mkdir /new.pool/Ultrix/usr/spool/mqueue ; \
+	else true; \
+	fi
+	/etc/chown daemon /new.pool/Ultrix/usr/spool/mqueue
+/new.pool/Ultrix/usr/spool/mqueue: Not owner
+*** Error code 1 (ignored)
+	chgrp system /new.pool/Ultrix/usr/spool/mqueue
+You are not a member of the system group.
+*** Error code 2 (ignored)
+	chmod 755 /new.pool/Ultrix/usr/spool/mqueue 
+	if [ ! -d /new.pool/Ultrix/usr/spool/mail ]; then\
+		mkdir /new.pool/Ultrix/usr/spool/mail ; \
+	else true; \
+	fi
+	/etc/chown root /new.pool/Ultrix/usr/spool/mail
+/new.pool/Ultrix/usr/spool/mail: Not owner
+*** Error code 1 (ignored)
+	chgrp system /new.pool/Ultrix/usr/spool/mail
+You are not a member of the system group.
+*** Error code 2 (ignored)
+	chmod 777 /new.pool/Ultrix/usr/spool/mail 
+	chmod +t /new.pool/Ultrix/usr/spool/mail 
+	for i in generic.cf exampleuucp.cf exampleether.cf ; do \
+		install -c $i /new.pool/Ultrix/usr/src/usr.lib/sendmail/cf/$i; \
+	done
+	for i in generic.mc base.m4 generic.mc localbase.m4 localm.m4 tcpm.m4 uucpm.m4  version.m4 umc.m4 xm.m4 zerobase.m4 ; do \
+		install -c ../$i /new.pool/Ultrix/usr/src/usr.lib/sendmail/cf/$i; \
+	done
+	install -c ../Makefile.dist /new.pool/Ultrix/usr/src/usr.lib/sendmail/cf/Makefile 
+	cp generic.cf /new.pool/Ultrix/usr/lib/sendmail.cf
+cd ../doc/_vax.b
+s5make INCLUDEVARS=/new.pool/Makevars_vax.mk MAKERULE=install INCLUDERULES=/new.pool/Makerules.mk -f ../Makelocal.mk install
+cd ../adb/_vax.b
+s5make INCLUDEVARS=/new.pool/Makevars_vax.mk MAKERULE=install INCLUDERULES=/new.pool/Makerules.mk -f ../Makelocal.mk install
+cd ../test/_vax.b
+s5make INCLUDEVARS=/new.pool/Makevars_vax.mk MAKERULE=install INCLUDERULES=/new.pool/Makerules.mk -f ../Makelocal.mk install
+	install -c -s -o daemon ../aux/_vax.b/syslog /new.pool/Ultrix/usr/etc/syslog
+	rm -f /new.pool/Ultrix/etc/syslog
+	ln -s ../usr/etc/syslog	/new.pool/Ultrix/etc/syslog
+	install -c -o daemon -m 644 ../aux/syslog.conf /new.pool/Ultrix/etc/syslog.conf
+	rm -f /new.pool/Ultrix/usr/lib/syslog.conf
+	ln -s ../../etc/syslog.conf /new.pool/Ultrix/usr/lib/syslog.conf
+	install -c -o daemon -m 644 /dev/null /new.pool/Ultrix/etc/syslog.pid
+	rm -f /new.pool/Ultrix/usr/lib/syslog.pid
+	ln -s ../../etc/syslog.pid /new.pool/Ultrix/usr/lib/syslog.pid
+	install -c -o daemon -m 644 /dev/null /new.pool/Ultrix/usr/var/spool/mqueue/syslog
+	for i in 0 1 2 3 4 5 6 7; do \
+		install -c -o daemon -m 644 /dev/null /new.pool/Ultrix/usr/var/spool/mqueue/syslog.$i; \
+	done
+	install -c -o daemon ../lib/newsyslog.sh /new.pool/Ultrix/usr/var/adm/newsyslog
+	install -c ../lib/aliases /new.pool/Ultrix/etc/aliases 
+	rm -f /new.pool/Ultrix/usr/lib/aliases
+	ln -s ../../etc/aliases	/new.pool/Ultrix/usr/lib/aliases
+	install -c ../lib/aliases.dir /new.pool/Ultrix/etc/aliases.dir
+	rm -f /new.pool/Ultrix/usr/lib/aliases.dir
+	ln -s ../../etc/aliases.dir	/new.pool/Ultrix/usr/lib/aliases.dir
+	install -c ../lib/aliases.pag /new.pool/Ultrix/etc/aliases.pag	
+	rm -f /new.pool/Ultrix/usr/lib/aliases.pag
+	ln -s ../../etc/aliases.pag	/new.pool/Ultrix/usr/lib/aliases.pag
+	install -c ../lib/mail.aliases /new.pool/Ultrix/etc/mail.aliases
+	rm -f /new.pool/Ultrix/usr/lib/mail.aliases
+	ln -s ../../etc/mail.aliases	/new.pool/Ultrix/usr/lib/mail.aliases
+	install -c -s -m 4755 ../src/_vax.b/sendmail	/new.pool/Ultrix/usr/lib/sendmail
+	install -c -m 644 ../lib/sendmail.hf	/new.pool/Ultrix/etc/sendmail.hf
+	rm -f /new.pool/Ultrix/usr/lib/sendmail.hf
+	ln -s ../../etc/sendmail.hf	/new.pool/Ultrix/usr/lib/sendmail.hf
+	install -c -m 644	/dev/null	/new.pool/Ultrix/etc/sendmail.st
+	rm -f /new.pool/Ultrix/usr/lib/sendmail.st
+	ln -s ../../etc/sendmail.st	/new.pool/Ultrix/usr/lib/sendmail.st
+	install -c -m 600	/dev/null	/new.pool/Ultrix/etc/sendmail.fc
+	rm -f /new.pool/Ultrix/usr/lib/sendmail.fc
+	ln -s ../../etc/sendmail.fc	/new.pool/Ultrix/usr/lib/sendmail.fc
+	install -c -m 644 ../cf/_vax.b/exampleether.cf	/new.pool/Ultrix/etc/sendmail.cf
+	rm -f /new.pool/Ultrix/usr/lib/sendmail.cf
+	ln -s ../../etc/sendmail.cf	/new.pool/Ultrix/usr/lib/sendmail.cf
+	rm -f /new.pool/Ultrix/usr/ucb/newaliases
+	ln -s ../../usr/lib/sendmail /new.pool/Ultrix/usr/ucb/newaliases
+	rm -f /new.pool/Ultrix/usr/ucb/mailq
+	ln -s ../../usr/lib/sendmail /new.pool/Ultrix/usr/ucb/mailq
+	#(cd cf; s5make DESTROOT=/new.pool/Ultrix install)

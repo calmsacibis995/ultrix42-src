@@ -1,0 +1,103 @@
+.\" SCCSID: @(#)stc.4	8.2	3/28/91
+.\" SCCSID: @(#)stc.4	8.2	3/28/91
+.TH stc 4 VAX
+.SH Name
+stc \- TZK50 (VAXstation TK50) magnetic tape interface
+.SH Syntax
+.B "controller stc0 at uba0 csr 0x200c0080 vector stintr"
+.br
+.B "tape st0 at stc0 drive 0"
+.SH Description
+.NXS "stc interface" "TZK50 magnetic tape interface" 
+.NXS "TK50 magnetic tape interface" "TZK50 magnetic tape interface"
+.NXR "TK50 magnetic tape interface"
+The TZK50/TK50 combination
+provides a standard tape drive interface,
+as described in 
+.MS mtio 4 .
+The TZK50 is supported only on the VAXstation 2000 
+and the MicroVAX 2000.
+This driver also supports n-buffered reads and writes to
+the raw tape interface (used with streaming tape drives).
+See 
+.MS nbuf 4 
+for further details.
+.SH Diagnostics
+The following messages are printed at the console:
+.PP
+.B "st0: arbitration failed after %d tries"
+.br
+After the indicated number of tries, the system gives
+up trying to arbitrate for the TK50 bus.
+.PP
+.B "st0: device failed to select"
+.br
+The host was not able to select the TK50
+device on the bus.
+.PP
+.B "st0: device failed to reselect"
+.br
+The host was not able to reselect the
+TK50 device on the bus.
+.PP
+.B "st0: parity error"
+.br
+A parity error was encountered as part of a command or status
+packet.
+.PP
+.B "st0: bus reset"
+.br
+The TK50 bus has just been reset.
+.PP
+.B "st0: buffer too large"
+.br
+A read or write was requested that exceeds the 16K maximum supported
+block size of this driver.
+.PP
+.B "st0: aborting transfer"
+.br
+An error has occurred, and the request to the driver is
+being aborted.
+.PP
+.B "st0: request sense data: %x %x %x %x %x %x %x %x %x %x"
+.br
+When an error occurs, the request sense data is the last command's
+status sent from the TZK50 controller.
+.PP
+.B "st0: software error"
+.br
+The software has sent an illegal request to the drive.
+.PP
+.B "st0: controller failed selftest"
+.br
+The TZK50 controller failed power on selftest.  The drive is unusable.
+.PP
+.B "st0: drive failed selftest, code = 0x%x "
+.br
+The TZK50 tape drive failed power on selftest.  The drive is unusable.  
+The drive error code is reported in hexadecimal.
+.PP
+.B "st0: controller firmware revision %d not supported"
+.br
+The indicated controller firmware revision is not supported by ULTRIX.  
+.PP
+.B "st0: soft error, sense key = 0x%x"
+.br
+A nonfatal error has occurred.  The sense key is part of 
+the request sense data returned from the TZK50 controller.
+.PP
+.B "st0: hard error, sense key = 0x%x"
+.br
+A fatal error has occurred.  The sense key is part of the
+request sense data returned from the TZK50 controller.
+.PP
+.SH Restrictions
+The maximum block size supported by the stc driver is 16K bytes.  Block sizes
+greater than 16,384 bytes produce the error message 
+.B st0: buffer too large.
+.SH Files
+.PN /dev/rmt???
+.br
+.PN /dev/nrmt???
+.SH See Also
+mtio(4), nbuf(4), MAKEDEV(8), uerf(8)

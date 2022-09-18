@@ -1,0 +1,249 @@
+.TH diff 1
+.SH Name
+diff \- differential file comparator
+.SH Syntax
+\fBdiff\fP [\fIoptions\fR] \fIdir1 dir2\fR
+.br
+\fBdiff\fP [\fIoptions\fR] \fIfile1 file2\fR
+.SH Description
+.NXR "diff command"
+.NXR "file" "comparing"
+.NXR "directory" "comparing"
+The 
+.PN diff
+command compares the contents of files or groups of files, 
+and lists any differences it finds. When run on regular files, 
+and when comparing text files that differ
+during directory comparison,
+.PN diff
+tells what lines must be changed
+in the files to bring them into agreement.
+Except in rare circumstances,
+.PN diff
+finds a smallest sufficient set of file differences.
+If neither
+.I file1
+nor
+.I file2
+is a directory, then either
+can be specified as `\-', in which case the standard input is used.
+If
+.I file1
+is a directory,
+then a file in that directory whose
+filename is the same as the filename of
+.I file2
+is used and likewise if 
+.I file2
+is a directory.
+.PP
+If both arguments are directories,
+.PN diff
+sorts the contents of the directories by name, and then runs the
+regular file
+.PN diff
+algorithm on text files that are different.
+Binary files that differ,
+common subdirectories, and files that appear in only one directory
+are listed.
+.SH Options
+The following options are used when comparing directories:
+.IP \-l 10
+Displays the output in long format.  Each text file
+is piped through
+.MS pr 1
+to paginate it;
+other differences are summarized
+after all text file differences are reported.
+.IP \-n
+Produces a script similar to that of
+.B \-e,
+but in reverse order and with a count of changed lines
+on each insert or delete command.
+.IP \-r
+Recursively checks files in common subdirectories.
+.IP \-s
+Displays names of files that are the same.  
+.IP \-S\fIname\fR
+Starts a directory in the middle beginning with the specified file.
+.PP
+Except for the
+.B \-b, i, t, and w
+options,
+which may be given with any of the others,
+the following formatting options are mutually exclusive:
+.IP \-b 10 
+Ignores trailing blanks and other
+strings of blanks and treats such portions as equal.
+.IP \-c
+Displays three context lines with each output line.  
+For backwards compatibility, \fB\-c\fIn\fR
+causes \fBn\fR number of context lines.
+.IP \-C\fI\ n\fR 
+Displays specified number of context lines with each output line.  
+With
+.B \-c
+or
+.B \-C
+the output format is modified slightly:
+the output begins with identification of the files involved and
+their creation dates and then each change is separated
+by a line with a dozen asterisks (*).
+The lines removed from
+.I file1
+are marked with minus sign (-); those added to
+.I file2
+are marked plus sign (+).  Lines that are changed from one
+file to the other are marked in both files with an exclamation 
+point (!).
+.IP
+Changes within 
+.I n
+context lines of each other are grouped
+together in the output.  This results in output that is usually 
+much easier to interpret.
+.IP \-D\fIstring\fR 
+Causes
+.PN diff
+to create a merged version of
+.I file1
+and
+.I file2
+on the standard output.  With C preprocessor controls included,  
+a compilation of the result without defining \fIstring\fR is equivalent
+to compiling
+.I file1,
+while defining
+.I string
+will yield
+.I file2.
+.IP \-e 
+Writes output to an 
+.PN ed 
+script.  
+In connection with
+.BR \-e ,
+the following shell program can help maintain
+multiple versions of a file.
+Only an ancestral file ($1) and a chain of 
+version-to-version
+.PN ed
+scripts ($2,$3,...) made by
+.PN diff
+need be available.
+A latest version message appears on
+the standard output.
+.EX
+ (shift; cat $*; echo \'1,$p\') \(bv ed \- $1
+.EE
+If you specify 
+.B \-e
+when comparing directories 
+the result is a 
+.MS sh 1 
+script for converting text files that are common 
+to the two directories from their state in
+.I dir1
+to their state in
+.I dir2.
+.IP \-f 
+Writes the output in reverse order to a script.  
+.IP \-h 
+Makes a hasty comparison.  
+It works only when changed portions are short
+and well separated,
+but does work on files of unlimited length.
+.IP \-i
+Ignores the case of letters.  For example 'A' will compare 
+equal to `a'.
+.IP \-t
+Expand tabs in output lines.  Normal or
+.B \-c
+output adds character(s) to the front of each line which may affect 
+the indentation of the original source lines and make the 
+output listing difficult to interpret.  This option will 
+preserves the original indentation.
+.IP \-w
+Causes whitespace (blanks and tabs) to be totally ignored.  
+For example, `if\ (\ a\ ==\ b\ )' will compare equal to `if(a==b)'.
+.PP
+There are several options for output format;
+the default output format contains lines of these forms:
+.IP "" 5
+.I n1
+a
+.I n3,n4
+.br
+.I n1,n2
+d
+.I n3
+.br
+.I n1,n2
+c
+.I n3,n4
+.PP
+These lines resemble
+.PN ed
+commands to convert
+.I file1
+into
+.IR file2 .
+The numbers after the letters pertain to
+.IR file2 .
+In fact, by exchanging `a' for `d' and reading backward
+you can tell how to convert 
+.I file2
+into
+.IR file1 .
+As in 
+.PN ed ,
+identical pairs where
+.I n1
+=
+.I n2
+or
+.I n3
+=
+.I n4
+are abbreviated as a single number.
+.PP
+Following each of these lines come all the lines that are
+affected in the first file flagged by a left angle bracket (<).
+Then all the lines that are affected in the second file are listed,
+flagged by a right angle bracket (>).
+.SH Restrictions
+.NXR "diff command" "restricted"
+Editing scripts produced under the
+.B \-e 
+or
+.B \-f 
+option have trouble
+creating lines consisting of a single period (.).
+.PP
+When comparing directories with the
+.B \-b, i, t, or w
+options specified,
+.PN diff
+first compares the files as
+.PN cmp
+does, and then runs the
+.PN diff
+algorithm if they are not equal.
+If the only differences are in the blank strings,
+.PN diff
+may report these as differences. 
+.SH Diagnostics
+.NXR "diff command" "diagnostics"
+Exit status is 0 for no differences, 1 for some differences,and 2
+if the specified file cannot be found.
+.SH Files
+.TP 20
+.PN /tmp/d?????
+.TP
+.PN/usr/lib/diffh 
+for 
+.B \-h
+.TP
+.PN /bin/pr
+.SH See Also
+cc(1), cmp(1), comm(1), diff3(1), ed(1)

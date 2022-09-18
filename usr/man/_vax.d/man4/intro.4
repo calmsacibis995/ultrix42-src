@@ -1,0 +1,38 @@
+.\" SCCSID: @(#)intro.4	3.1	11/24/87
+.TH intro 4
+.SH Name
+intro \- introduction to special files
+.SH Description
+Section 4 describes the special files, related driver functions,
+and networking support available in the system.
+In this part of the manual, the Syntax heading of
+each configurable device gives a sample specification
+for use in constructing a system description for the
+.MS config 8
+program.
+The Diagnostics heading lists messages that may appear on the console
+and in the system error log 
+file 
+.PN /usr/adm/syserr/syserr.<hostname>
+due to errors in device operation.
+.PP
+This section contains descriptions of both 
+configurable devices, 4 entries,
+and network-related device information,
+4n, 4p, and 4f entries.
+The networking support is introduced in
+.MS intro 4n .
+Software support for these devices comes in two forms.
+A hardware device may be supported with a character or block
+``device driver'',
+or it may be used within the networking subsystem and have a
+``network interface driver''.
+.PP
+There are some devices that have fixed input/output space
+CSR addresses and
+interrupt vector addresses. There are no address switches or jumpers
+that need to be set up by the customer or Field Service.
+.SH Files
+.PN /dev/*
+.SH See Also
+intro(4n), MAKEDEV(8)

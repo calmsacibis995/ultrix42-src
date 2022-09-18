@@ -1,0 +1,70 @@
+.\" SCCSID: @(#)pix.1	8.1	9/11/90
+.TH pix 1 VAX
+.SH Name
+pix \- Pascal interpreter and executor
+.SH Syntax
+.B pix
+[\fB\-blnpstuwz\fR] [\fB\-i\fI name...] \fIname.p\fR [\|\fIargument...\fR]
+.SH Description
+.NXR "pix command"
+.NXR "Pascal program" "interpreting"
+.NXS "Pascal interpreter and executer" "pix command"
+.NXS "Pascal interpreter code translator" "pix command"
+.NXA "pix command" "px command"
+The
+.PN pix
+command is a `load and go' version of Pascal which combines
+the functions of the interpreter code translator
+.PN pi
+and the executor
+.PN px .
+It uses
+.PN pi
+to translate the program in the file name.p
+and, if there were no fatal errors during translation,
+causes the resulting interpreter code
+to be executed by
+.PN px
+with the specified arguments.
+A temporary file is used for the object code.
+The file
+.I obj
+is neither created nor destroyed.
+.SH Options
+.IP \fB\-b\fR 8
+Block buffers the output.
+.IP \fB\-i\fIname\fR 
+Enables the listing for any specified procedures
+and functions, and while processing any specified
+include files.
+.IP \fB\-l\fR 
+Creates a program listing while translating source.
+.IP \fB\-n\fR 
+Begins each listed include file on a new
+page and with a banner line.
+.IP \fB\-p\fR 
+Suppresses control flow backtraces on error.
+.IP \fB\-s\fR 
+Accepts standard Pascal only.
+.IP \fB\-t\fR 
+Suppresses runtime test of subrange variables.
+.IP \fB\-u\fR 
+Runs in card image mode.
+.IP \fB\-w\fR 
+Suppresses all warning diagnostics.
+.IP \fB\-z\fR 
+Enables execution profiling.
+.SH Files
+.ta 2i
+/usr/ucb/pi	Pascal translator
+.br
+/usr/ucb/px	Pascal executor
+.br
+/tmp/pix*	temporary
+.br
+/usr/lib/how_pix	basic explanation
+.SH See\ Also
+pi(1), px(1)
+.br
+"Berkeley Pascal User's Manual,"
+\fISupplementary Documents, Volume 2: Programmer\fP

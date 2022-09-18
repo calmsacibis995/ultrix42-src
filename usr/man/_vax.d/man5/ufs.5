@@ -1,0 +1,22 @@
+.\" SCCSID: @(#)ufs.5	8.1	9/11/90
+.TH ufs 5
+.SH Name
+ufs \- ULTRIX local file system
+.SH Description
+.NXR "UFS file" 
+.NXA "gfsi file" "UFS file"
+.NXR "file system" "reorganized"
+The ULTRIX file system is a local file system implemented under the
+Generic File System Interface, GFSI, which is described in
+.MS gfsi 5 .
+UFS is a reorganization of the file system that is always supplied
+with ULTRIX.
+.PP
+Aside from the difference in mounting and unmounting file systems, there
+are no observable differences in the file system compared
+to earlier
+releases.  ULTRIX file system disks are completely transportable between
+releases of ULTRIX.
+.SH See Also
+getmnt(2), getdirentries(2), mount(2), fstab(5), nfs(5nfs), fsck(8),
+mount(8)

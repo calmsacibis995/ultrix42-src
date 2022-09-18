@@ -1,0 +1,38 @@
+.TH leaveok 3cur 
+.SH Name
+leaveok \- enable non-tracking cursor
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+int leaveok(win, bf)
+.br
+.B
+WINDOW \(**win;
+.br
+.B
+bool bf;
+.SH Description
+.NXR "leaveok subroutine"
+This option allows the cursor to be left 
+wherever the update happens to leave it.
+Normally, the cursor is left at the 
+current location (y, x) of the window 
+being refreshed.
+This routine is useful for applications where the cursor is not used, 
+since it reduces the need for cursor motions.
+If possible, the cursor is made invisible when this option is enabled.
+.PP
+This option is initially disabled, and is not enabled until the value of 
+.PN bf
+is changed from 
+.PN FALSE
+to
+.PN TRUE .
+.SH Return Values
+The 
+.PN leaveok
+function returns OK on success and ERR on error.

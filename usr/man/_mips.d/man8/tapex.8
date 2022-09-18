@@ -1,0 +1,432 @@
+.TH tapex 8
+.SH Name
+tapex \- tape exerciser program
+.SH Syntax
+.B tapex
+[
+.I option(s)
+]
+[
+.I parameter(s)
+]
+.SH Description
+The
+.PN tapex
+program tests tape driver functionality.
+.NXR "tapex program"
+These tests provide more comprehensive functional coverage than the
+.PN mtx
+utility which does simple start/stop oriented read/write testing.
+Functions that are tested include:
+.RS 3
+.IP \(bu 4 
+Writing records onto a tape and verifying the records
+.IP \(bu  
+Using records in a range of sizes
+.IP \(bu  
+Record-length testing
+.IP \(bu 
+Random record-size testing
+.IP \(bu 
+Positioning tests for records and files
+.IP \(bu 
+Writing and reading past the end of media
+.IP \(bu 
+End-of-file testing
+.IP \(bu 
+n-buffered I/O testing
+.IP \(bu 
+Tape-transportability testing
+.IP \(bu 
+Bandwidth performance analysis
+.IP \(bu 
+Media loader testing
+.IP \(bu 
+Reporting of tape contents
+.RE
+.PP
+When 
+.PN tapex
+is run, a writable tape must be loaded in the drive being 
+tested, and the drive must be online.
+
+.SH Options
+Some
+.PN tapex
+options cause specific tests to be performed, for example, an 
+end-of-media test.  Other options modify the tests, 
+for example, enabling caching.  The 
+.PN tapex 
+options are as follows:
+.NXR "tapex program" "options"
+.IP \-a 5
+Performance measurement test that calculates the tape transfer bandwidth
+for writes and reads to the tape by timing data transfers.
+.IP \-b 5
+Continuously runs the write/read tests until the process is killed.
+This flag can be used in conjunction with the 
+.PN \-r
+or 
+.PN \-g 
+flag.
+.IP \-c 5
+Enables caching on the device, where supported.  This does not
+specifically test caching, but it enables the use of caching on
+a tape device while running the other tests.
+.IP \-C 5
+Disables caching on TMSCP tape devices.  If the tape device is
+a TMSCP unit, then caching is the default mode of test operation.
+This flag causes the tests to be run in noncaching mode.
+.IP \-d 5
+Tests the ability to append to the media.  First, the test
+writes records to the tape.  Then, it repositions back one
+record and appends additional records. Finally, the test does a 
+read verification. This test simulates the behavior
+of the 
+.PN "tar r"
+switch.
+.IP \-e 5
+End-of-media test.  This test first writes
+data to fill up a tape, which may take a long time for long tapes.
+It then does reads and writes past the end of media, 
+which should fail.  
+Next it enables writing past end of media, writes to the tape, and reads
+back the records for validation.
+.IP \-E 5
+Runs an extensive series of tests in sequential order.  
+Due to the large number of tests, this option takes a long 
+time to complete.  Depending on tape 
+type and cpu type, this series of tests can take up to 
+10 hours to complete.
+.IP "\-f \f(CW/dev/rmt#\fI?\FP" 5
+Specifies the name of the device special file that 
+corresponds to the tape unit being tested.
+The number sign (#) symbol represents the unit number. 
+The question mark (?) argument can be the
+letter 
+.PN h 
+for the high density device or the letter
+.PN l 
+for the low density device.  The default tape device is 
+.PN /dev/rmt0h .
+.IP \-F 5
+File-positioning tests.  First, files are written to the tape and
+verified.  Next, every other file on the tape is read. Then, the
+previously unread files are read by traversing the tape backwards.  
+Finally, random numbers are generated; the tape is positioned to those
+locations, and the data is verified.  Each file uses a
+different record size.
+.IP \-G 5
+File-positioning tests on already-written tape.  This flag
+can be used in conjunction with the 
+.PN \-F 
+flag to run the file position tests on a tape that has already been
+written to by a previous version of the 
+.PN \-F 
+test.  For this to work, the same test parameters,
+for example record size and number of files, must be used as when the
+the tape was written.  No other data should have been written to
+the tape since the previous 
+.PN \-F 
+test.
+.IP \-g 5
+Random record-size tests.  This test writes records of random sizes.
+It reads in the tape, specifying a large read size; however, only
+the amount of data in the randomly-sized record should be returned.
+This test only checks return values and does not validate record
+contents.
+.IP \-h 5
+Displays a help message describing the tape exerciser.
+.IP \-i 5
+Interactive mode. Under this mode, the user is prompted
+for various test parameters.  Typical parameters include the record
+size and the number of records to write.
+The following scaling factors are allowed:
+.RS
+.IP "k \fRor\fP K" 10
+for kilobyte (1024 * n)
+.IP "b \fRor\fP B" 10
+for block (512 * n)
+.IP "m \fRor\fP M" 10
+for megabyte (1024 * 1024 * n)
+.RE
+.PP
+For example, 10k would specify 10240 bytes.
+.IP \-j 5
+Write phase of the tape-transportability tests.  This test writes
+a number of files to the tape, and then verifies the tape.  After
+a successful verification, the tape is brought offline to be
+moved to another tape unit and read in with the 
+.PN \-k
+option.
+The purpose of this test is to prove that a tape can be written
+on one drive and read by another drive.  Note that the test
+parameters for the 
+.PN \-k 
+phase of the transportability test must
+match the parameters of the 
+.PN \-j 
+test.  Any changes of test parameters from the defaults should 
+also be changed during the 
+.PN \-k 
+test.
+.IP \-k 5
+Read phase of the tape-transportability tests.  This test reads
+a tape that was written by the 
+.PN \-j 
+test and verifies that the expected
+data is read from the tape.  Success of this test proves that a tape
+can be written on one drive and read on another.  As
+stated in the the description of the 
+.PN \-j 
+option, any parameters changed in the 
+.PN \-j 
+test must also be changed in the 
+.PN \-k 
+test.
+.IP \-L 5
+Media loader test.  For sequential
+stack loaders, the media is loaded, written to, and verified.  Then 
+the media is unloaded, and the test repeats on the next piece of
+media.  This verifies that all the media in the input deck 
+is writable.  To run this test in read-only mode, also specify the 
+.PN \-w 
+option.
+.IP \-l 5
+End-of-file test. This test verifies that a zero byte count is
+returned when a tape mark is read and that another read will
+fetch the first record of the next tape file.
+.IP \-m 5
+Displays tape contents. This is not a test; it reads the tape
+sequentially and prints out 
+the number of files on the tape, the number of
+records in each file, and the size of the records within the file.  The
+contents of the tape records are not examined. 
+.IP \-N 5
+Disables the usage of n-buffered I/O on tests that support its usage.
+(See 
+.MS nbuf 4
+for a description of n-buffered I/O.)
+.IP "\-o \fIfilename\fP" 5
+.br
+Sends output to the specified filename.  The default is to not create an
+output file and send output to the terminal. 
+.IP \-p 5
+Runs both the record and file positioning tests. (See the 
+.PN \-R 
+and 
+.PN \-F 
+options.)
+.IP \-q 5
+Command timeout test.  This test verifies that the driver
+allows enough time for completion of long operations.  The test
+consists of writing files to fill up the tape.  Next a rewind is
+performed followed by a forward skip out to the last file.  The
+test is successful if the forward skip operation completes without
+error.
+.IP \-r 5
+Record-size test.
+A number of records are written to the tape and then verified.
+This process is repeated over a range of record sizes.
+.IP \-R 5
+Record-positioning test.  First, records are written to the tape and
+verified.  Next, every other record on the tape is read. Then, the
+other records are read by traversing the tape backwards.  Finally,
+random numbers are generated; the tape is positioned to those
+locations, and the data is verified.
+.IP \-s 5
+Record-size behavior test.  Verifies that a record read will return
+at most one record or the read size, whichever is less.
+.IP \-S 5
+Single record size test.  This option modifies the record-size test (
+.PN \-r 
+option).
+.IP \-T 5
+Copies output to standard output.  This flag is useful if
+you want to log output to a file with the 
+.PN \-o 
+option and also have the output displayed on standard output.  
+This flag must be specified after the 
+.PN \-o 
+flag in the command line.
+.IP \-v 5
+Verbose mode.  This option causes more detailed terminal output of
+what the tape exerciser is doing.  For example, it lists
+operations the exerciser is performing, such as record counts,
+and more detailed error information.
+.IP \-V 5
+Very verbose mode.  This option causes more output to be
+generated than either the default mode or the 
+.PN \-v 
+flag.  The output consists of additional status information on exerciser
+operation. 
+.IP \-w 5
+Opens the tape as read-only.  This mode is only useful for tests
+that do not write to the media.  For example, it allows the 
+.PN \-m 
+test to be run on a write-protected media.
+.IP \-Z 5
+Initializes read buffer to the nonzero value 0130.
+This may be useful for debugging purposes.  If the 
+.PN \-Z 
+flag is not specified, all elements of the read 
+buffer will be initialized to 0. Many of the tests first 
+initialize their read buffer and then perform
+the read operation.  After reading a record from the tape, some tests
+validate that the unused portions of the read buffer 
+remain at the value to which they were initialized.  
+As a debugging tool, it may in some cases be
+useful to have this initialized value set to be nonzero. In those cases,
+the arbitrary character 0130 can be used. 
+.SH Parameters
+.NXR "tapex program" "parameters"
+You can change the default test parameters either by using the 
+.PN \-i 
+option described previously or by specifying the parameters in the command
+line. This section describes the parameters you can set in the command
+line, listed with the associated test. 
+.PP
+To specify a value, type the parameter name followed by a space
+and then the number.  For example 
+.PN \-min_rs 
+512 specifies a minimum record size of 512 blocks.
+The following scaling factors are allowed:
+.RS 5
+.IP "k \fRor\fP K" 10
+for kilobyte (1024 * n)
+.IP "b \fRor\fP B" 10
+for block (512 * n)
+.IP "m \fRor\fP M" 10
+for megabyte (1024 * 1024 * n)
+.RE
+.PP
+For example, 10K would specify 10240 bytes.
+
+These parameters are associated with the option 
+.PN \-a :
+.IP \-perf_num 10
+The number of records to write and read.
+.IP \-perf_rs 10
+The size of records.
+
+.PP
+These parameters are associated with the option 
+.PN \-d :
+.IP \-tar_num 10
+The number of additional and appended records.
+.IP \-tar_size 10
+The record size for all records written in this test.
+
+.PP
+These parameters are associated with the option 
+.PN \-e .
+.PP
+Note that specifying too much data to be written past EOM could cause
+a reel-to-reel tape to go off the end.
+.IP \-end_num 10
+The number or records written past EOM.
+.IP \-end_rs 10
+The record size.
+
+.PP
+These parameters are associated with the option 
+.PN \-F :
+.IP \-num_fi 10
+The number of files.
+.IP \-pos_ra 10
+The number of random repositions.
+.IP \-pos_rs 10
+The record size.
+.IP \-rec_fi 10
+The number of records per file.
+.PP
+This parameter is associated with the option
+.PN \-g :
+.IP \-rand_num 12
+The number of records to write and read.
+.PP
+These parameters are associated with the options 
+.PN \-j 
+and 
+.PN \-k :
+.IP \-tran_file 10
+The number of files to write or read.
+.IP \-tran_rec 10
+The number of records contained in each file.
+.IP \-tran_rs 10
+The size of each record.
+.PP
+These parameters are associated with the option 
+.PN \-R :
+.IP \-pos_num 10
+The number of records.
+.IP \-pos_ra 10
+The number of random repositions.
+.IP \-pos_rs 10
+The record size.
+.PP
+These parameters are associated with the options 
+.PN \-r 
+and 
+.PN \-S :
+.IP \-inc 10
+The record increment factor.
+.IP \-max_rs 10
+The maximum record size.
+.IP \-min_rs 10
+The minimum record size.
+.IP \-num_rec 10
+The number of records.
+.IP \-t 10
+Sets a time limit in minutes on how long to run the record-size test (
+.PN \-r
+option).  The default is to run the test to completion.
+.PP
+These parameters are associated with the option 
+.PN \-s :
+.IP \-num_rec 10
+The number of records.
+.IP \-size_rec 10
+The record size.
+.PP
+This parameter is used in any test which supports n-buffered I/O:
+.IP \-num_nbuf 12
+The number of buffers to use.
+.PP
+This parameter is associated with all tests:
+.IP \-err_lines 10
+The threshold on error printouts.
+.SH Examples
+This example runs a series of tests on tape device 
+.PN rmt1h 
+and sends all output to a file called 
+.PN tapex.out .
+.EX
+tapex \-f /dev/rmt1h \-E \-o tapex.out
+.EE
+This example runs the end-of-media test on tape device 
+.PN rmt4h .  
+Verbose mode is specified, which causes additional output.  
+By default, output is directed to the terminal.
+.EX
+tapex \-f /dev/rmt4h \-v \-e
+.EE
+This example performs read/write record testing. 
+By default, this test runs on the default tape device 
+.PN /dev/rmt0h 
+and output is sent to the terminal. 
+.EX
+tapex \-r
+.EE
+This example performs read/write record testing 
+using record sizes in the range 10k to a maximum record size of 20k.  
+By default, this test runs on the default tape device 
+.PN /dev/rmt0h 
+and output is sent to the terminal.
+.EX
+tapex \-r \-min_rs 10k \-max_rs 20k
+.EE
+.SH See Also
+mtx(8)
+.br
+.I "Guide to System Exercisers"

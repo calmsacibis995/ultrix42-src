@@ -1,0 +1,443 @@
+.TH send 1mh
+.SH Name
+send \- send a message
+.SH Syntax
+.B send
+[
+.I options 
+] [
+.I "file ..."
+]
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.\" .SH Arguments
+.\" .IP \fIfile 10
+.\" The file that is sent.
+.\" Use this argument to send a named file; 
+.\" you can send an existing mail message by using the
+.\" .B \-draftfolder
+.\" and
+.\" .B \-draftmessage
+.\" options.
+.\" If you do specify a named file, it must be formatted as 
+.\" a legal mail message.
+.\" If you do not specify an absolute pathname 
+.\" (one beginning with / or \&./ or \&.\&./ )
+.\" .PN send
+.\" assumes that the named file is in your Mail directory.
+.\" ***END OF COMMENT
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "send command"
+Use
+.PN send
+to send the draft message to the specified recipients. 
+You normally choose
+.PN send
+as one of the options from the
+.PN whatnow
+program.  
+However, you can use
+.PN send
+just like any other MH command.
+.PP
+If you do not have a draft folder set up,
+messages are created in a file called
+.PN draft 
+in your Mail directory.  
+The draft message remains in the file
+.PN draft
+until it is either sent or deleted.
+This means that you can only have one draft message at a time.
+If you do have a draft folder set up, 
+or if you have specified one using the 
+.B \-draftfolder
+option, the draft message is created in this folder,
+which enables you to store multiple draft messages.
+For more information, see
+.MS comp 1mh .
+.PP
+The command
+.PN send
+will normally search for the draft message in the file
+.PN draft 
+or in your draft folder and cause it to be delivered to 
+each of the destinations in the \f(CWTo:\fR, \f(CWcc:\fR, 
+\f(CWBcc:\fR, and \f(CWFcc:\fR fields of the message.  
+If 
+.PN send
+is redistributing a message, as invoked from 
+.PN dist ,
+the corresponding 
+\f(CWResent\-xxx\fR
+.R
+fields are examined instead.
+The delivery is carried out using
+.MS post 8mh .
+.\"
+.\" ***Info from old Arguments section
+.PP
+If you wish to send a named file instead of an existing
+draft message, you can specify the file as the 
+.I file
+argument.
+If you do not give an absolute pathname
+(one beginning with / or \&./ or \&.\&./ )
+.PN send
+assumes that the named file is in your Mail directory.
+Note that the file must be formatted as a legal mail message.
+If you want to send an existing mail message rather than 
+a named file, you should use the 
+.B \-draftfolder
+or
+.B \-draftmessage
+option.
+.\"
+.\" ***End of old Arguments stuff
+.\"
+.PP
+Once the transport system has successfully received the message,
+the mail system will rename the file with a leading comma.
+This allows it to be retrieved until the next draft message is sent.
+If there are errors in the formatting of the message, 
+.PN send
+will abort and issue an error message.
+.PP
+If the environment variable \f(CW$SIGNATURE\fR is set,
+then its value is used as your personal name when
+constructing the \f(CWFrom:\fR line of the message.
+If this variable is not set, then 
+.PN send
+will consult the profile entry \f(CWSignature:\fR
+for this information.
+.PP
+If 
+.PN send
+is redistributing a message
+(when invoked by 
+.PN dist ),
+then the mail system will prepend \f(CWResent\-\fR
+to each of these fields:
+\f(CWFrom\fP, \f(CWDate\fP, and \f(CWMessage\-ID\fP.
+If the message already contains a \f(CWFrom:\fR
+field, then the mail system will add a
+\f(CWSender: user@local\fR
+field add as well.
+.PP
+If an \f(CWFcc:\fR field is encountered, 
+the mail system copies the message to the specified folder 
+for the sender in the format in which it appears
+to any normal recipients of the message.
+That is, it includes the fields appended by the mail system,
+and the fields are re-formatted.
+The \f(CWFcc:\fR fields are removed 
+from all outgoing copies of the message.
+.PP
+If the message includes a \f(CWBcc:\fR field, 
+recipients in this field receive a new copy of the message, which 
+includes the body text of the original message.
+The new message has a minimal set of headers.
+The \f(CWBcc:\fR field does not appear on copies of the message 
+sent to recipients in the \f(CWTo:\fR and \f(CWcc:\fR fields.
+.PP
+Prior to sending the message, 
+the mail system appends 
+\f(CWDate:\fP and
+\f(CWFrom:\fP
+to the headers in the message, for example:
+.EX
+Date: Wed, 07 June 89 11:18:00 WET
+From: rabb@hostname
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-alias \fIaliasfile\fR" 10
+Directs
+.PN send
+to consult the named files for alias definitions.
+More than one file, each  preceded by \fB\-alias\fR, 
+can be named.
+See 
+.MS mh-alias 5mh
+for more information.
+.\"
+.\"
+.IP \-draft
+Specifies that the current draft is the message to be sent.
+If you do not give a 
+.I file
+argument,
+.PN send
+will query whether the current draft is the file that you intend to send.
+You can suppress this question by using this option.
+.\"
+.\"
+.IP \-draftfolder\ \fI+foldername\fR
+.PD 0
+.IP \-nodraftfolder
+.PD
+Specifies the draft folder from which the draft message is taken.
+.PN send
+will search the specified folder for the draft message 
+and will deliver it to the specified recipients.  
+The current message in the named folder is used.
+If you wish to use another message, you can use the 
+.B \-draftmessage
+option with \fB\-draftfolder\fR.
+If there is no current draft message in the specified folder,
+.PN send 
+will display an error message.  
+.\"
+.\"
+.IP \-draftmessage\ \fImsg\fR
+Specifies the draft message to be used.
+If you specify a folder with the
+.B \-draftfolder
+option, the
+.B \-draftmessage
+option takes the number of a message in that folder.
+If you do not specify a folder,
+.B \-draftmessage
+takes the name of a file.
+If you do not give an absolute pathname (one beginning with
+/ or \&./ or \&.\&./ ),
+.B \-draftmessage
+assumes that the file is located in your Mail directory.
+.\"
+.\"
+.IP "\-filter \fIfilterfile\fR" 10
+.PD 0
+.IP \-nofilter 10
+.PD
+Filters (re-formats) messages sent to blind copy recipients.
+Recipients named in the \f(CWBcc:\fR field usually receive
+a new message which includes a copy of a message sent to 
+the other recipients.
+If this option is given, this copy of the message is filtered 
+according to the instructions in the named file.
+The default is \fB\-nofilter\fR.
+.\"
+.\"
+.IP \-format 10
+.PD 0
+.IP \-noformat 10
+.PD
+Replaces each of the entries in the \f(CWTo:\fP
+and \f(CWcc:\fP fields with standard format entries.
+This standard format is designed to be usable by all of the 
+message handlers on the various systems around the Internet.
+If 
+.B \-noformat
+is given, then headers are output exactly as they appear 
+in the message draft.
+The default is \fB\-format\fR.
+.\"
+.\"
+.IP \-forward 10
+.PD 0
+.IP \-noforward 10
+.PD
+Forwards a copy of a draft message that cannot be sent 
+to the sender.
+This option can only be used with the 
+.B \-push
+option.
+If you have specified 
+.B \-push
+and the draft message cannot be sent, a failure notice 
+is generated and sent to you.
+If you also give this option, a copy of the problem message
+is forwarded with the failure notice.
+This differs from putting
+.PN send
+in the background, because the output is
+trapped and analyzed by MH.
+This is the default behavior. 
+It can be suppressed by specifying the 
+.B \-noforward
+option.
+.\"
+.\"
+.IP \-help
+Prints a list of the valid options to this command.
+.\"
+.\"
+.IP \-msgid 10
+.PD 0
+.IP \-nomsgid 10
+.PD
+Adds a \f(CWMessage\-ID:\fR field to the message.
+.\"
+.\"
+.\" ***COMMENTED OUT
+.ig
+.IP \-mts\ \fImtsname\fR
+Specifies whether to send the
+draft message to X.400 or non-X.400 users.
+The
+.I mtsname
+argument takes one of two forms:
+.B \-mts\ x400
+sends the draft message over X.400 mail;
+.B \-mts\ smtp
+sends it over the non-X.400 system.
+You can use upper- or lower-case letters, or 
+a mixture of the two, for these options.
+You cannot send a single message to both X.400 and 
+non-X.400 users simultaneously; you must choose one or the other.
+A message sent to X.400 users must contain valid X.400 addresses.
+If the draft message contains an entry in the
+\f(CWX-mts:\fR
+.R
+header field, this overrides any 
+.B \-mts 
+option in the command line.
+If no 
+.B \-mts
+option or
+\f(CWX-mts:\fR
+.R
+field is specified,
+.PN send
+assumes that the message is sent over non-X.400 transport.
+See
+.MS comp 1mh
+.R
+for more information.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.IP "\-mts smtp"
+Specifies the mail system over which mail is sent.
+The only value allowed is \fBsmtp\fR,
+which is the standard ULTRIX mail system.
+Additional values are supported only for use with other
+mail systems.
+.\"
+.\"
+.IP \-push 10
+.PD 0
+.IP \-nopush
+.PD
+Instructs
+.PN send
+to perform its actions in the background.
+If a draft fails to be sent, 
+a failure notice is generated and sent to the sender
+of the problem message.
+If you also specify the 
+.B \-forward
+option, the message is forwarded with the failure notice.
+.\"
+.\"
+.IP \-verbose 10
+.PD 0
+.IP \-noverbose 10
+.PD
+Informs the user of each step of the sending process,
+prior to actual delivery.
+.\"
+.\"
+.IP \-watch 10
+.PD 0
+.IP \-nowatch 10
+.PD
+Monitors the delivery of local and network mail.  
+A large amount of information can be gathered
+about each step of the message's entry 
+into the transport system by specifyiing both this and the 
+.B \-verbose
+option.
+.\"
+.\"
+.IP \-width\ \fIcolumns\fR
+Specifies the length of header lines containing addresses.
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.PP
+The defaults for the 
+.PN send
+command are:
+.IP
+.I file
+defaults to 
+.PN <mh\-dir>/draft
+.br
+.B "\-alias /usr/lib/mh/MailAliases"
+.br
+.B \-nodraftfolder
+.br
+.B \-nofilter
+.br
+.B \-format
+.br
+.B \-forward
+.br
+.B \-nomsgid
+.br
+.B "\-mts smtp"
+.br
+.B \-nopush
+.br
+.B \-noverbose
+.br
+.B \-nowatch
+.br
+.B "\-width 72"
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+For this version, the 
+.B \-mts
+option only supports the value \fBsmtp\fR.
+Additional values are supported for use only with 
+other mail systems.
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine the user's MH directory
+Draft-Folder:+To determine the default draft folder
+Signature:+To determine the user's mail signature
+mailproc:+Program to post failure notices
+postproc:+Program to post the message
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/\&.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+comp(1mh), dist(1mh), forw(1mh), repl(1mh), mh-alias(5mh), post(8mh)

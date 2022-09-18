@@ -1,0 +1,39 @@
+.\" SCCSID: @(#)getlogin.3	8.1	9/11/90
+.TH getlogin 3 
+.SH Name
+getlogin \- get login name
+.SH Syntax
+.B char *getlogin()
+.SH Description
+.NXR "getlogin subroutine"
+.NXR "login name" "getting"
+The
+.PN getlogin
+subroutine
+returns a pointer to the login name as found in 
+.PN /etc/utmp .
+It may be used in conjunction with
+.PN getpwnam
+to locate the correct password file entry when the same userid
+is shared by several login names.
+.PP
+If
+.PN getlogin
+is called within a process that is not attached to a
+typewriter, it returns NULL.
+The correct procedure for determining the login name is to first call
+.PN getlogin
+and if it fails, to call
+.PN getpw 
+( 
+.PN getuid
+).
+.SH Restrictions
+The return values point to static data
+whose content is overwritten by each call.
+.SH Return Values
+Returns NULL (0) if name not found.
+.SH Files
+/etc/utmp
+.SH See Also
+getgrent(3), getpw(3), getpwent(3), utmp(5)

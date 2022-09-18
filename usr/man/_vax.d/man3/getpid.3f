@@ -1,0 +1,18 @@
+.\" SCCSID: @(#)getpid.3f	8.1	9/11/90
+.TH getpid 3f VAX "" Unsupported
+.SH Name
+getpid \- get process ID
+.SH Syntax
+.B integer function getpid()
+.SH Description
+.NXR "getpid subroutine (FORTRAN)"
+.NXR "process ID" "getting"
+The
+.PN getpid
+subroutine
+returns the process ID number of the current process.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+getpid(2)

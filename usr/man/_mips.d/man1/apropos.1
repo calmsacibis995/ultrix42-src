@@ -1,0 +1,48 @@
+.\" SCCSID: @(#)apropos.1	8.1	9/11/90
+.\" SCCSID: @(#)apropos.1	8.1	9/11/90
+.TH apropos 1
+.SH Name
+apropos \- locate commands by keyword lookup
+.SH Syntax
+.B apropos
+\fIkeyword...\fR
+.SH Description
+.NXR "apropos command"
+.NXA "man command" "apropos command"
+.NXR "online information" "accessing"
+The
+.PN apropos
+command
+shows which manual sections contain instances of any of the given
+keywords in their title.
+Each word is considered separately and the case of letters is ignored.
+Words that are part of other words are listed.  Thus, looking for
+the word compile hits all instances of `compiler' also.
+.PP
+If the line starts `name(section) ...' you can do
+`man section name' to get the documentation for it.
+The following command line lists all commands that have to
+do with formatting:
+.EX
+apropos format
+.EE
+.PP  
+To then access the reference page for the
+.I printf
+subroutine that you see listed, type:
+.EX
+man 3s printf
+.EE
+.PP
+The
+.PN apropos
+command is actually just the
+.B \-k
+option to the
+.PN man
+command.
+.SH Files
+.DT
+/usr/lib/whatis		data base
+.SH See Also
+man(1), whatis(1), catman(8)

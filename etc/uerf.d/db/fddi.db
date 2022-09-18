@@ -1,0 +1,614 @@
+# @(#)fddi.db	4.1   (ULTRIX)   9/11/90
+
+sseg
+id CDS 69
+name fddi_cds
+doc "FZA port registers"
+label "FZA PORT REGISTERS"
+elements
+    fza_id fza_rcnt fza_tsmp_hi fza_tsmp_lo fza_w_cnt fza_int fza_ext fza_cmd_np fza_cmd_nc fza_dma_nrp fza_dma_nrd fza_dma_nro fza_dma_nhp fza_dma_nhd fza_lmgr_np fza_lmgr_nd fza_smt_npp fza_smt_npd fza_smt_ntp fza_smt_ntd fza_pm_csr fza_int_68k fza_int_68k_msk fza_port_int fza_port_cntl_a fza_port_cntl_a_msk fza_port_cntl_b fza_port_st fza_ram_rom fza_phy_csr fza_dma_done fza_dma_err fza_dma_s_lo fza_dma_s_hi fza_rmc_cmd fza_rmc_mode fza_rmc_rcv_pg fza_rmc_rcv_par fza_rmc_xmt_pg fza_rmc_xmt_par fza_rmc_intr fza_rmc_int_m fza_rmc_chan fza_mac_rcv_ctl fza_mac_xmt_ctl fza_mac_int_a fza_mac_int_b fza_mac_rcv fza_mac_xmt fza_mac_mla_a fza_mac_mla_b fza_mac_mla_c fza_mac_t_req fza_mac_tvx fza_crc
+
+sitem 
+id 999 
+name fza_id
+type short
+class integer 
+size 2
+label "ID"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_rcnt
+type short
+class integer 
+size 2
+label "RESET COUNT"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_tsmp_hi
+type long
+class integer 
+size 4
+label "TIME STAMP HI"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_tsmp_lo
+type short
+class integer 
+size 2
+label "TIME STAMP LO"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_w_cnt
+type short
+class integer 
+size 2
+label "WRITE COUNT"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_int
+type short
+class integer 
+size 2
+label "INT REASON"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_ext
+type short
+class integer 
+size 2
+label "EXT REASON"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_cmd_np
+type long
+class integer 
+size 4
+label "CMD NEXT PTR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_cmd_nc
+type long
+class integer 
+size 4
+label "CMD NEXT CMD"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_dma_nrp
+type long
+class integer 
+size 4
+label "DMA NEXT RMC PTR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_dma_nrd
+type long
+class integer 
+size 4
+label "DMA NEXT RMC DESCR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_dma_nro
+type long
+class integer 
+size 4
+label "DMA NEXT RMC OWN"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_dma_nhp
+type long
+class integer 
+size 4
+label "DMA NEXT HOST PTR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_dma_nhd
+type long
+class integer 
+size 4
+label "DMA NEXT HOST DESCR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_lmgr_np
+type long
+class integer 
+size 4
+label "LMGR NEXT PTR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_lmgr_nd
+type long
+class integer 
+size 4
+label "LMGR NEXT DESCR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_smt_npp
+type long
+class integer 
+size 4
+label "SMT NEXT PUT PTR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_smt_npd
+type long
+class integer 
+size 4
+label "SMT NEXT PUT DESCR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_smt_ntp
+type long
+class integer 
+size 4
+label "SMT NEXT TAKE PTR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_smt_ntd
+type long
+class integer 
+size 4
+label "SMT NEXT TAKE DESCR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_pm_csr
+type short
+class integer 
+size 2
+label "PM CSR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_int_68k
+type short
+class integer 
+size 2
+label "INT 68K PRESENT"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_int_68k_msk
+type short
+class integer 
+size 2
+label "INT 68K MASK"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_port_int
+type short
+class integer 
+size 2
+label "PORT INT EVENT"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_port_cntl_a
+type short
+class integer 
+size 2
+label "PORT CNTL A"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_port_cntl_a_msk
+type short
+class integer 
+size 2
+label "PORT CNTL A MASK"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_port_cntl_b
+type short
+class integer 
+size 2
+label "PORT CNTL B"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_port_st
+type short
+class integer 
+size 2
+label "PORT STATUS"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_ram_rom
+type short
+class integer 
+size 2
+label "RAM ROM MAP"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_phy_csr
+type short
+class integer 
+size 2
+label "PHY CSR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_dma_done
+type short
+class integer 
+size 2
+label "DMA DONE"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_dma_err
+type short
+class integer 
+size 2
+label "DMA ERROR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_dma_s_lo
+type short
+class integer 
+size 2
+label "DMA START LO"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_dma_s_hi
+type short
+class integer 
+size 2
+label "DMA START HI"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_rmc_cmd
+type short
+class integer 
+size 2
+label "RMC CMD"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_rmc_mode
+type short
+class integer 
+size 2
+label "RMC MODE"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_rmc_rcv_pg
+type short
+class integer 
+size 2
+label "RMC RCV PAGE"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_rmc_rcv_par
+type short
+class integer 
+size 2
+label "RMC RCV PARAMS"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_rmc_xmt_pg
+type short
+class integer 
+size 2
+label "RMC XMT PAGE"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_rmc_xmt_par
+type short
+class integer 
+size 2
+label "RMC XMT PARAMS"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_rmc_intr
+type short
+class integer 
+size 2
+label "RMC INTR"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_rmc_int_m
+type short
+class integer 
+size 2
+label "RMC INT MASK"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_rmc_chan
+type short
+class integer 
+size 2
+label "RMC CHAN"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_mac_rcv_ctl
+type short
+class integer 
+size 2
+label "MAC RCV CNTL"
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_mac_xmt_ctl
+type short
+class integer 
+size 2
+label "MAC XMT CNTL" 
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_mac_int_a
+type short
+class integer 
+size 2
+label "MAC INT A" 
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_mac_int_b
+type short
+class integer 
+size 2
+label "MAC INT B" 
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_mac_rcv
+type short
+class integer 
+size 2
+label "MAC RCV" 
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_mac_xmt
+type short
+class integer 
+size 2
+label "MAC XMT" 
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_mac_mla_a
+type short
+class integer 
+size 2
+label "MAC MLA A" 
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_mac_mla_b
+type short
+class integer 
+size 2
+label "MAC MLA B" 
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_mac_mla_c
+type short
+class integer 
+size 2
+label "MAC MLA C" 
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_mac_t_req
+type short
+class integer 
+size 2 
+label "MAC T REQ" 
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_mac_tvx
+type short
+class integer 
+size 2 
+label "MAC TVX VAL" 
+display hex 
+doc nil
+map nil 
+
+sitem 
+id 999 
+name fza_crc
+type long 
+class integer 
+size 4 
+label "CRC" 
+display hex 
+doc nil
+map nil 

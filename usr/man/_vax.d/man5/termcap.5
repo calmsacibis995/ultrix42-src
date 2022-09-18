@@ -1,0 +1,706 @@
+.\" SCCSID: @(#)termcap.5	R2.4	7/10/87
+.tr ||
+.TH termcap 5
+.SH Name
+termcap \- terminal capability data base
+.SH Syntax
+/etc/termcap
+.SH Description
+.NXB "termcap file" "format"
+.NXB "terminal" "creating capability data base"
+.NXA "termcap file" "printcap file"
+.NXA "termcap file" "gettytab file"
+The
+.PN termcap
+file is a data base describing terminals used,
+for example, by 
+.MS vi 1
+and
+.MS curses 3x .
+Terminals are described in
+.PN termcap
+by giving a set of capabilities which they have and by describing
+how operations are performed.
+Padding requirements and initialization sequences
+are included in
+.PN termcap .
+.PP
+Entries in
+.PN termcap
+consist of a number of fields separated by colons (:).
+The first entry for each terminal gives
+the names which are known for the
+terminal, separated by vertical bars (|).
+The first name is always 2 characters
+long and is used by older Version 6
+systems, which store the terminal type
+in a 16-bit word in a system-wide data base.
+The second name given is the most
+common abbreviation for the terminal, and the
+last name given should be a long name fully identifying the terminal.
+The second name should contain no blanks. 
+The last name may contain
+blanks for readability.
+.SH Capabilities
+.nf
+(P) indicates padding is commonly needed for these strings.
+(P*) indicates that padding may be based on the number of lines affected.
+
+.ta \w'k0-k9  'u +\w'Type  'u +\w'Pad?  'u
+\fBName	Type	Pad?	Description\fR
+.sp
+ae	str	(P)	End alternate character set.
+al	str	(P*)	Add new blank line.
+am	bool		Terminal has automatic margins.
+as	str	(P)	Start alternate character set.
+bc	str		Backspace, if not CTRL/H.
+bl	str		Audible bell character.
+bs	bool		Terminal can backspace with CTRL/H.
+bt	str	(P)	Back tab.
+bw	bool		Backspace wraps from column 0 to last column.
+CC	str		Command character in prototype, if terminal-settable.
+ca	bool		Cursor addressable.
+cd	str	(P*)	Clear to end of display.
+ce	str	(P)	Clear to end of line.
+ch	str	(P)	Like \f(CWcm\fP, but horizontal motion only; line stays the same.
+cl	str	(P*)	Clear screen.
+cm	str	(P)	Cursor motion.
+co	num		Number of columns in a line.
+cr	str	(P*)	Carriage return (default CTRL/M).
+cs	str	(P)	Change scrolling region (VT100); like \f(CWcm\fP.
+ct 	str		Clear all tab stops.
+cv	str	(P)	Like \f(CWch\fP, but vertical only.
+da	bool		Display may be retained above.
+dB	num		Number of millisec of \f(CWbs\fP delay needed.
+db	bool		Display may be retained below.
+dC	num		Number of millisec of \f(CWcr\fP delay needed.
+dc	str	(P*)	Delete character.
+dF	num		Number of millisec of \f(CWff\fP delay needed.
+dl	str	(P*)	Delete line.
+dm	str		Delete mode (enter).
+dN	num		Number of millisec of \f(CWnl\fP delay needed.
+do	str		Move down one line.
+ds 	str		Clear host writable status line.
+dT	num		Number of millisec of \f(CWta\fP delay needed.
+ed	str		End delete mode.
+ei	str		End insert mode; give ``:ei=:'' if \f(CWic\fP.
+eo	str		Can erase overstrikes with a blank.
+es	bool		Standout mode allowed on host writable status line.
+ff	str	(P*)	Hard-copy terminal page eject (default CTRL/L).
+fs	str		Close host writable status line to writing.
+gt	bool		Gtty indicates tabs.
+hc	bool		Hard-copy terminal.
+hd	str		Half-line down (forward 1/2 linefeed).
+ho	str		Home cursor (if no \f(CWcm\fR).
+hs	bool		Host writable status line capabilities.
+hu	str		Half-line up (reverse 1/2 linefeed).
+hz	str		Hazeltine; cannot print tildes (~).
+ic	str	(P)	Insert character.
+if	str		Name of file containing \f(CWis\fR.
+im	str		Insert mode (enter); give ``:im=:'' if \f(CWic\fR.
+in	bool		Insert mode distinguishes nulls on display.
+ip	str	(P*)	Insert pad after character inserted.
+is	str		Terminal initialization string.
+k0-k9	str		Sent by \*(lqother\*(rq function keys 0-9.
+kb	str		Sent by backspace key.
+kd	str		Sent by terminal down arrow key.
+ke	str		Out of \*(lqkeypad transmit\*(rq mode.
+kh	str		Sent by home key.
+kl	str		Sent by terminal left arrow key.
+kn	num		Number of \*(lqother\*(rq keys.
+ko	str		Termcap entries for other nonfunction keys.
+kr	str		Sent by terminal right arrow key.
+ks	str		Put terminal in \*(lqkeypad transmit\*(rq mode.
+ku	str		Sent by terminal up arrow key.
+l0-l9	str		Labels on \*(lqother\*(rq function keys.
+le	str		Move cursor left one place.
+li	num		Number of lines on screen or page.
+ll	str		Last line, first column (if no \f(CWcm\fR).
+ma	str		Arrow key map, used by \f(CWvi\fP Version 2 only.
+mb	str		Turn on blinking.
+md	str		Enter bold (extra-bright) mode.
+me	str		Turn off all attributes, normal mode.
+mh	str		Enter dim (half-bright) mode.
+mi	bool		Safe to move while in insert mode.
+ml	str		Memory lock on above cursor.
+mr	str		Enter reverse mode.
+ms	bool		Safe to move while in standout and underline mode.
+mu	str		Memory unlock (turn off memory lock).
+nc	bool		No correctly working carriage return (DM2500,H2000).
+nd	str		Nondestructive space (cursor right).
+nl	str	(P*)	Newline character (default \f(CW\en\fR).
+ns	bool		Terminal is a CRT, but does not scroll.
+os	bool		Terminal overstrikes.
+pc	str		Pad character (rather than null).
+pt	bool		Has hardware tabs (may need to be set with \f(CWis\fR).
+rc	str		Recover from last save cursor (\f(CWsc\fP).
+rf	str		Reset file, like initialization file (\f(CWif\fP) but for reset.
+rs	str		Reset string, like initialization string (\f(CWis\fP) but for reset.
+sc 	str		Save cursor.
+se	str		End stand out mode.
+sf	str	(P)	Scroll forwards.
+sg	num		Number of blank chars left by \f(CWso\fP or \f(CWse\fP.
+so	str		Begin stand out mode.
+sr	str	(P)	Scroll reverse (backwards).
+st	str		Save cursor.
+ta	str	(P)	Tab (other than CTRL/I or with padding).
+tc	str		Entry of similar terminal \- must be last.
+te	str		String to end programs that use \f(CWcm\fP.
+ti	str		String to begin programs that use \f(CWcm\fR.
+ts	str		Open host writable status line to writing.[jA.
+uc	str		Underscore one char and move past it.
+ue	str		End underscore mode.
+ug	num		Number of blank chars left by \f(CWus\fP or \f(CWue\fP.
+ul	bool		Terminal underlines even though it does not overstrike.
+up	str		Upline (cursor up).
+us	str		Start underscore mode.
+vb	str		Visible bell (may not move cursor).
+ve	str		Sequence to end open/visual mode.
+vs	str		Sequence to start open/visual mode.
+vt	num		Virtual terminal number.
+xb	bool		Beehive (f1=escape, f2=CTRL/C).
+xn	bool		A newline is ignored after a wrap (Concept).
+xr	bool		Return acts like \f(CWce\fP \er \en (Delta Data).
+xs	bool		Standout not erased by writing over it (HP 264?).
+xt	bool		Tabs are destructive, magic so char (Teleray 1061).
+.fi
+.PP
+.B A Sample Entry
+.PP
+The following entry, which describes the Concept\-100, is among the more
+complex entries in the
+.PN termcap
+file as of this writing.
+This particular `Concept' entry is outdated
+and is used as an example only:
+.PP
+.EX 0
+c1\||\|c100\||\|concept100:is=\eEU\eEf\eE7\eE5\eE8\eEl\eENH\eEK\eE\e200\eEo&\e200:\e
+	:al=3*\eE^R:am:bs:cd=16*\eE^C:ce=16\eE^S:cl=2*^L:cm=\eEa%+ %+:\e
+	:co#80:dc=16\eE^A:dl=3*\eE^B:ei=\eE\e200:eo:im=\eE^P:in:\e
+	:ip=16*:li#24:mi:nd=\eE=:se=\eEd\eEe:so=\eED\eEE:ta=8\et:\e
+	:ul:up=\eE;:vb=\eEk\eEK:xn:
+.EE
+.PP
+Entries can continue onto multiple lines by giving a backslash (\\) as the last
+character of a line. Empty fields
+can be included for readability (here between the last field on a line
+and the first field on the next).
+.PP
+.B Types of Capabilities
+.PP
+Capabilities in
+.PN termcap
+are of three types:
+Boolean capabilities that indicate that the terminal has
+some particular feature; numeric capabilities giving
+the size of the terminal
+or the size of particular delays; and string
+capabilities, which give a sequence
+that can be used to perform particular
+terminal operations.
+.PP
+All capabilities have 2-letter codes.  For instance, the fact that
+the Concept has \*(lqautomatic margins\*(rq 
+(that is, an automatic return and linefeed
+when the end of a line is reached) is indicated
+by the capability \f(CWam\fR.
+Hence, the description of the Concept includes \f(CWam\fR.
+Numeric capabilities are followed by
+the number sign (#) and then the value.
+Thus, \f(CWco\fR, which indicates the number of columns the terminal has,
+gives the value `80' for the Concept.
+.PP
+Finally, string-valued capabilities,
+such as \f(CWce\fR (clear to end-of-line
+sequence), are given by the 2-character code: an equal sign (=)
+and then a string ending at the next following colon (:).
+A delay in milliseconds may appear after the equal sign (=)
+in such a capability. Padding characters are supplied by the
+editor after the remainder of the string is sent to provide this delay.
+The delay can be either an integer, 
+for example, ``20'', or an integer followed by an asterisk (*), 
+for example ``3*''.  An asterisk (*)
+indicates that the padding required is proportional
+to the number of lines affected by the
+operation, and the amount given is
+the per-affected-unit padding required.
+When an asterisk (*) is specified,
+it is sometimes useful to give a delay of the form ``3.5'' to 
+specify a delay per unit to tenths of milliseconds.
+.PP
+A number of escape sequences are provided
+in the string-valued capabilities
+for easy encoding of characters there.  
+A \f(CW\eE\fR maps to an ESCAPE
+character, \f(CWO^x\fR maps to a
+CTRL/x for any appropriate x, and the sequences
+\f(CW\en \er \et \eb \ef\fR give a newline,
+return, tab, backspace and formfeed.
+Finally, characters may be given as three octal digits after a backslash (\\),
+and the characters circumflex (^) and backslash (\\) may
+be given as \f(CW\e^\fR and \f(CW\e\e\fR.
+If it is necessary to place a colon (:) in a
+capability, it must be escaped in
+octal as \f(CW\e072\fR.
+If it is necessary to place a null character in a string capability, it
+must be encoded as \f(CW\e200\fR.  The routines that deal with
+.PN termcap
+use C strings and strip the high bits of the output very late so that
+a \f(CW\e200\fR comes out as a \f(CW\e000\fR would.
+.br
+.ne 5
+.PP
+.B Preparing Descriptions
+.PP
+This section outlines how to prepare descriptions of terminals.
+The most effective way to prepare a terminal description is by imitating
+the description of a similar terminal in
+.PN termcap
+and to build up a description gradually, using partial descriptions
+with
+.PN ex
+to check that they are correct.
+Be aware that a very unusual terminal may expose deficiencies in
+the ability of the
+.PN termcap
+file to describe it
+or bugs in
+.PN ex .
+To easily test a new terminal description,
+you can set the environment variable
+TERMCAP to a pathname of a file
+containing the description you are working
+on and the editor will look there rather than in 
+.PN /etc/termcap .
+TERMCAP can also be set to the termcap entry itself
+to avoid reading the file when starting up the editor.
+This only works on Version 7 systems.
+.PP
+.B Basic Capabilities
+.PP
+The number of columns on each line for the terminal is given by the
+\f(CWco\fR numeric capability.  If the terminal is a CRT, the
+number of lines on the screen is given by the \f(CWli\fR capability.
+If the terminal wraps around to the beginning of the next line when
+it reaches the right margin, it
+should have the \f(CWam\fR capability.
+If the terminal can clear its screen, this is given by the
+\f(CWcl\fR string capability.  If the terminal can backspace, it
+should have the \f(CWbs\fR capability, unless a backspace is accomplished
+by a character other than ^H, in which case you should give
+this character as the \f(CWbc\fR string capability.  If it overstrikes,
+rather than clearing a position when a character is struck over,
+it should have the \f(CWos\fR capability.
+.PP
+A very important point here is that the local cursor motions encoded
+in
+.PN termcap
+are undefined at the left and top edges of a CRT terminal.
+The editor will never attempt to backspace around the left edge, nor
+will it attempt to go up locally off the top.  The editor assumes that
+feeding off the bottom of the screen will cause the screen to scroll up,
+and the \f(CWam\fR capability tells whether the cursor sticks at the right
+edge of the screen.
+If the terminal has switch-selectable automatic margins,
+the
+.PN termcap
+file usually assumes that this is on, that is, \f(CWam\fR.
+.PP
+These capabilities suffice to describe
+hard-copy and \*(lqglass-tty\*(rq terminals.
+Thus, the model 33 teletype is described as:
+.EX
+t3\||\|33\||\|tty33:co#72:os
+.EE
+.PP
+The Lear Siegler ADM\-3 is described as:
+.EX
+cl\||\|adm3|3|lsi adm3:am:bs:cl=^Z:li#24:co#80
+.EE
+.PP
+.B Cursor Addressing
+.PP
+Cursor addressing in the terminal is described by a
+\f(CWcm\fR string capability, with 
+.MS printf 3s
+types of escapes such as \f(CW%x\fR in it.
+These substitute to encodings of the current line or column position,
+while other characters are passed through unchanged.
+If the \f(CWcm\fR string is thought of as being a function, its
+arguments are the line and then the column to which motion is desired,
+and the \f(CW%\fR encodings have the following meanings:
+.PP
+.DT
+.nf
+%d	As in \fIprintf\fR, 0 origin
+%2	Like %2d
+%3	Like %3d
+%.	Like %c
+%+x	Adds \fIx\fR to value, then %.
+%>xy	If value > x adds y, no output.
+%r	Reverses order of line and column, no output
+%i	Increments line/column (for 1 origin)
+%%	Gives a single %
+%n	Exclusive or row and column with 0140 (DM2500)
+%B	BCD (16*(x/10)) + (x%10), no output.
+%D	Reverse coding (x-2*(x%16)), no output. (Delta Data).
+.fi
+.PP
+Consider the HP2645, which, to get to row 3 and column 12, needs
+to be sent \eE&a12c03Y padded for 6 milliseconds.  Note that the order
+of the rows and columns is inverted here, and that the row and column
+are printed as 2 digits.
+Thus, its \f(CWcm\fR capability is ``cm=6\eE&%r%2c%2Y''.
+The Microterm 2ACT-IV needs the current row and column sent
+preceded by a ^T, 
+with the row and column simply encoded in binary,
+``cm=^T%.%.''.
+Terminals that use ``%.'' need to be able to
+backspace the cursor (\f(CWbs\fR or \f(CWbc\fR),
+and to move the cursor up
+one line on the screen (\f(CWup\fR introduced in the following section).
+This is necessary
+because it is not always safe to transmit \f(CW\et\fR, \f(CW\en\fR
+\f(CW^D\fR, and \f(CW\er\fR, as the system may change or discard them.
+.PP
+A final example is the LSI ADM-3a, which uses row and column
+offset by a blank character; thus \*(lqcm=\eE=%+ %+ \*(rq.
+.PP
+.B Cursor Motions
+.PP
+If the terminal can move the cursor one position to the right, leaving
+the character at the current position unchanged,
+this sequence should
+be given as \f(CWnd\fR (non-destructive space).  If it can move the cursor
+up a line
+on the screen in the same column, this should be given as \f(CWup\fR.
+If the terminal has no cursor addressing capability,
+but can home the cursor
+(to very upper left corner of screen), this can be given as
+\f(CWho\fR. Similarly a fast way of getting to the lower left hand corner
+can be given as \f(CWll\fR. This may involve going up with \f(CWup\fR
+from the home position,
+but the editor will never do
+this itself, unless \f(CWll\fR does, because it
+makes no assumption about the effect of
+moving up from the home position.
+.PP
+.B Area Clears
+.PP
+If the terminal can clear from the current position to the end of the
+line, leaving the cursor where it is, this should be given as \f(CWce\fR.
+If the terminal can clear from the current position to the end of the
+display, this should be given as \f(CWcd\fR.
+The editor only uses
+\f(CWcd\fR from the first column of a line.
+.PP
+.B Insert/Delete Line
+.PP
+If the terminal can open a new
+blank line before the line where the cursor
+is, this should be given as \f(CWal\fR; this is done only from the first
+position of a line.
+The cursor must then appear on the newly blank line.
+If the terminal can delete the line which the cursor is on, this
+should be given as \f(CWdl\fR.
+This is done only from the first position on
+the line to be deleted.
+If the terminal can scroll
+the screen backwards, this can be given as
+\f(CWsb\fR, but just \f(CWal\fR suffices.
+If the terminal can retain display memory above, the
+\f(CWda\fR capability should be given; if display memory can be retained
+below, \f(CWdb\fR should be given.  These let the editor understand
+that deleting a line on the
+screen may bring nonblank lines up from below
+or that scrolling back with \f(CWsb\fR may bring down nonblank lines.
+.PP
+.B Insert/Delete Character
+.PP
+There are two basic kinds of intelligent terminals with respect to
+the insert/delete character that can be described using
+.PN termcap .
+The most common insert/delete character
+operations affect only the characters
+on the current line and shift
+characters off the end of the line rigidly.
+Other terminals, such as the Concept 100 and the Perkin Elmer Owl, make
+a distinction between typed and untyped blanks on the screen, shifting
+upon an insert or delete only to an untyped blank on the screen which is
+either eliminated, or expanded to 2 untyped blanks.  You can find out
+which kind of terminal you have by clearing the screen and typing
+text separated by cursor motions.
+Type \*(lqabc\ \ \ \ def\*(rq using local
+cursor motions (not spaces) between
+the \*(lqabc\*(rq and the \*(lqdef\*(rq.
+Then, position the cursor before
+the \*(lqabc\*(rq and put the terminal in insert
+mode.  If typing characters causes the rest of the line to shift
+rigidly and characters to fall off the end, your terminal does
+not distinguish between blanks and untyped
+positions.  If the \*(lqabc\*(rq
+shifts over to the \*(lqdef\*(rq
+and then moves with it around the end of the
+current line and onto
+the next line as you insert, you have the second type of
+terminal, and should give the capability \f(CWin\fR, which stands for
+\*(lqinsert null\*(rq.
+If your terminal does something different and unusual,
+you may have to modify the editor to get it to use the insert
+mode your terminal defines.
+Virtually all terminals that have an insert
+mode fall into one of these two classes.
+.PP
+The editor can handle both terminals 
+that have an insert mode and terminals
+that send a simple sequence
+to open a blank position on the current line.
+Give as \f(CWim\fR the sequence to get into insert mode, or give it an
+empty value if your terminal uses a sequence to insert a blank position.
+Give as \f(CWei\fR the sequence to leave insert mode (give this with
+an empty value also, if you gave \f(CWim\fR so).
+Give as \f(CWic\fR any sequence needed to be sent just before sending
+the character to be inserted.  Most terminals with a true insert mode
+will not give \f(CWic\fR.  Terminals that send a sequence to open a screen
+position should give it here.
+(Insert mode is preferable to the sequence
+to open a position on the screen, if your terminal has both.)
+If post insert padding is needed, give this as a number of milliseconds
+in \f(CWip\fR (a string option).  Any other sequence that may need to be
+sent after an insert of a single
+character can also be given in \f(CWip\fR.
+.PP
+It is occasionally necessary to move around while in insert mode
+to delete characters on the same line (for example, if there is a tab after
+the insertion position).  If your terminal allows motion while in
+insert mode, you can give the capability \f(CWmi\fR to speed up inserting
+in this case.
+Omitting \f(CWmi\fR affects only speed.   Some terminals
+(notably Datamedia's) must not have \f(CWmi\fR because of the way their
+insert mode works.
+.PP
+Finally, you can specify delete mode by giving \f(CWdm\fR and \f(CWed\fR
+to enter and exit delete mode, and \f(CWdc\fR to delete a single character
+while in delete mode.
+.PP
+.B "Highlighting, Underlining, and Visible Bells"
+.PP
+If your terminal has sequences to enter and exit standout mode, these
+can be given as \f(CWso\fR and \f(CWse\fR, respectively.
+If there are several kinds of standout mode,
+such as inverse video, blinking, or underlining.
+Half-bright is not usually an acceptable \*(lqstandout\*(rq mode,
+unless the terminal is in inverse video mode constantly.
+The preferred mode is inverse video by itself.
+If the code to change into or out of standout
+mode leaves 1 or even 2 blank spaces on the screen,
+as the TVI 912 and Teleray 1061 do,
+\f(CWug\fR should be given to tell how many spaces are left.
+.PP
+Codes to begin underlining and end underlining can be given as \f(CWus\fR
+and \f(CWue\fR, respectively.
+If the terminal has a code to underline the current character and move
+the cursor one space to the right, 
+such as the Microterm Mime,
+this can be given as \f(CWuc\fR.
+(If the underline code does not move the cursor to the right,
+give the code followed by a nondestructive space.)
+.PP
+Many terminals, such as the HP 2621, automatically leave standout
+mode when they move to a new line or the cursor is addressed.
+Programs using standout mode should exit standout mode before
+moving the cursor or sending a newline.
+.PP
+If the terminal has
+a way of flashing the screen to indicate
+an error quietly (a bell replacement),
+this can be given as \f(CWvb\fR; it must not move the cursor.
+If the terminal should be placed in a different mode during
+open and visual modes of
+.PN ex ,
+this can be given as
+\f(CWvs\fR and \f(CWve\fR, sent at the start and end of these modes
+respectively.  These can be used to change, for example, from an underline
+to a block cursor and back.
+.PP
+If the terminal needs to be in a special mode when running
+a program that addresses the cursor,
+the codes to enter and exit
+this mode can be given as \f(CWti\fR and \f(CWte\fR.
+This arises, for example, from terminals like the Concept with more than
+one page of memory.
+If the terminal has only memory-relative cursor addressing 
+and not screen-relative cursor addressing, 
+a one-screen sized window must be fixed into
+the terminal for cursor addressing to work properly.
+.PP
+If your terminal correctly generates underlined characters,
+with no special codes needed,
+even though it does not overstrike,
+you should give the capability \f(CWul\fR.
+If overstrikes are erasable with a blank,
+this should be indicated by giving \f(CWeo\fR.
+.PP
+.B Keypad
+.PP
+If the terminal has a keypad that
+transmits codes when the keys are pressed,
+this information can be given. Note that it is not possible to handle
+terminals where the keypad only
+works in local (this applies, for example,
+to the unshifted HP 2621 keys).
+If the keypad can be set to transmit or not transmit,
+give these codes as \f(CWks\fR and \f(CWke\fR.
+Otherwise, the keypad is assumed to always transmit.
+The codes sent by the left arrow, right arrow, up arrow, down arrow,
+and home keys can be given as
+\f(CWkl\fR, \f(CWkr\fR, \f(CWku\fR, \f(CWkd\fR, and \f(CWkh\fR,
+respectively.
+If there are function keys such as f0, f1, ..., f9, the codes they send
+can be given as \f(CWk0\fR, \f(CWk1\fR, ..., \f(CWk9\fR.
+If these keys have labels other than
+the default f0 through f9, the labels
+can be given as \f(CWl0\fR, \f(CWl1\fR, ..., \f(CWl9\fR.
+If there are other keys that
+transmit the same code as the terminal expects
+for the corresponding function, such as clear screen, the 
+.PN termcapP
+2-letter codes can be given in the \f(CWko\fR capability,
+for example, \*(lq:ko=cl,ll,sf,sb:\*(rq,
+which says that the terminal has
+clear, home down, scroll down, and scroll up keys that transmit
+the same thing as the 
+.PN cl , 
+.PN ll , 
+.PN sf , 
+and 
+.PN sb 
+entries.
+.PP
+The
+.PN ma
+entry is also used to indicate arrow keys on terminals that have
+single-character arrow keys.  It is obsolete, but still in use in
+Version 2 of 
+.PN vi ,
+which must be run on some minicomputers due to
+memory limitations.
+This field is redundant with
+\f(CWkl\fR, \f(CWkr\fR, \f(CWku\fR, \f(CWkd\fR, and \f(CWkh\fR.
+It consists of groups of 2 characters.
+In each group, the first character is what an arrow key sends; the
+second character is the corresponding
+.PN vi 
+command.
+These commands are
+.PN h
+for
+.PN kl ,
+.PN j
+for
+.PN kd ,
+.PN k
+for
+.PN ku ,
+.PN l
+for
+.PN kr ,
+and
+.PN H
+for
+.PN kh .
+For example, the Microterm Mime would be ``ma=^Kj^Zk^Xl:''
+indicating arrow keys left (^H), down (^K), up (^Z), and right (^X).
+(There is no home key on the Mime.)
+.PP
+.B Miscellaneous
+.PP
+If the terminal requires other than a null (zero) character as a pad,
+this can be given as \f(CWpc\fR.
+.PP
+If tabs on the terminal require padding, or if the terminal uses a
+character other than \f(CW^I\fR to tab,
+this can be given as \f(CWta\fR.
+.PP
+Hazeltine terminals, which do not allow tildes (~)
+to be printed, should indicate \f(CWhz\fR.
+Datamedia terminals, which echo
+carriage-return linefeed for a carriage return
+and then ignore a following linefeed, should indicate \f(CWnc\fR.
+Early Concept terminals,
+which ignore a linefeed immediately after an \f(CWam\fR
+wrap, should indicate \f(CWxn\fR.
+If an erase-eol is required to get rid of standout
+(instead of merely writing on top of it),
+\f(CWxs\fP should be given.
+Teleray terminals, where tabs turn all characters moved over to blanks,
+should indicate \f(CWxt\fR.
+Other specific terminal problems may be corrected by adding more
+capabilities of the form \f(CWx\fIx\fR.
+.PP
+Other capabilities
+include \f(CWis\fR, an initialization string for the terminal,
+and \f(CWif\fR, the name of a file containing long initialization strings.
+These strings are expected to properly clear and then set the tabs
+on the terminal, if the terminal has settable tabs.
+If both are given, \f(CWis\fR is printed before \f(CWif\fR.
+This is useful where \f(CWif\fR is
+.PN /usr/lib/tabset/std
+but \f(CWis\fR
+clears the tabs first.
+.PP
+.B Similar Terminals
+.PP
+If there are two very similar terminals,
+one can be defined as being just like the other with certain exceptions.
+The string capability \f(CWtc\fR can be given
+with the name of the similar terminal.
+This capability must be \fIlast\fP and
+the combined length of the two entries
+must not exceed 1024. Since
+.PN termlib
+routines search the entry from left to right,
+and since the tc capability is
+replaced by the corresponding entry, the capabilities given at the left
+override the ones in the similar terminal.
+A capability can be canceled with \f(CWxx@\fR, where xx is the capability.
+For example, the following entry
+defines a 2621nl that does not have the
+\f(CWks\fR or \f(CWke\fR capabilities,
+and hence does not turn on the function key labels when in visual mode:
+.EX
+hn\||\|2621nl:ks@:ke@:tc=2621:
+.EE
+.PP
+This is useful for different modes for a terminal or for different
+user preferences.
+.SH Restrictions
+The
+.PN vi
+and
+.PN ex
+commands
+allow only 256 characters for string capabilities, and the routines
+in 
+.MS termcap 3x
+do not check for overflow of this buffer.
+The total length of a single entry (excluding only escaped newlines)
+cannot exceed 1024.
+.PP
+The
+.PN ma ,
+.PN vs ,
+and
+.PN ve
+entries are specific to the 
+.PN vi
+program.
+.SH Files
+.TP 20
+.PN /etc/termcap
+File containing terminal descriptions
+.SH See Also
+ex(1), more(1), tset(1), ul(1), vi(1), curses(3x), termcap(3x)
+.NXE "termcap file" "format"
+.NXE "terminal" "creating capability data base"

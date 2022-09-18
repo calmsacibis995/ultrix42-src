@@ -1,0 +1,74 @@
+.TH llbd 8ncs
+.\".if '\nv'1' .TH LLBD 1 domain
+.\".if '\nv'4' .TH LLBD 8 domain
+.\".if '\nv'5' .TH LLBD 1M domain
+.\".if !\nh \{
+.SH Name
+llbd \- Local Location Broker Daemon
+.SH Syntax
+\fB/etc/ncs/llbd\fR [ \fB\-version\fR ] \}
+.SH Description
+The 
+Local Location Broker Daemon
+(
+.PN llbd
+) is part of the Network Computing System (NCS).
+.NXR "Local Location Broker Daemon"
+It manages the Local Location Broker (LLB) database,
+which stores information about RPC-based server programs running
+on the local host.
+.PP
+A host must run
+.PN llbd
+if it is to support the Location Broker forwarding function
+or to allow remote access (for example, by the
+.PN lb_admin
+tool)
+to the LLB database.
+In general,
+any host that runs an RPC-based server program must run an
+.PN llbd ,
+and 
+.PN llbd
+must be running before any such servers are started.
+Additionally, 
+any network supporting RPC activity
+should have at least one host
+running a Global Location Broker Daemon
+(
+.PN nrglbd
+). 
+.\".ie '\*(pR'ncs' (\fBnrglbd\fR).
+.\".el (\fBglbd\fR).
+.PP
+On ULTRIX systems,
+.PN llbd
+is typically started by a line in 
+.PN /etc/rc
+such as the following:
+.EX
+/etc/ncs/llbd& echo \-n ' llbd' > /dev/console
+.EE
+.NT
+If your system contains more than one broadcast interface, the RPC 
+software uses only the broadcast interface associated with the
+.PN /bin/hostname
+value in your
+.PN /etc/rc.local
+file.
+.NE
+.SH Options
+.TP 10
+\fB\-version\fR
+Display the version of the Network Computing Kernel (NCK) that this 
+.PN llbd
+belongs to,
+but do not start the daemon.  (NCK is part of the Network Computing
+System (NCS) on which DECrpc is based.)
+.SH See Also
+.if '\nv'1' glbd, lb_admin
+.if '\nv'4' glbd(8), lb_admin(8)
+.if '\nv'5' glbd(1m), lb_admin(1m)
+lb_admin(1ncs), nrglbd(8ncs)
+.br
+\fIGuide to the Location Broker\fR

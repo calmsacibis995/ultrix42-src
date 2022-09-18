@@ -1,0 +1,23 @@
+.TH stcode 1ncs
+.SH Name
+stcode \- translate a hexadecimal status code value to a textual message
+.SH Syntax
+.B stcode hex_stat_code
+.SH Description
+The
+.PN stcode
+command prints the textual message associated with a hexadecimal status code.
+This command is useful when a program produces
+a hexadecimal status code instead of a textual message.
+.PP
+The
+.PN stcode
+command processes predefined status codes.  No provision is currently made
+to add user-defined status codes to the error text database.
+.SH Examples
+Translate the hexadecimal status code 1c010003:
+.EX
+# \fBstcode 1c010003\fP
+unknown interface (network computing system/RPC runtime)
+.EE
+

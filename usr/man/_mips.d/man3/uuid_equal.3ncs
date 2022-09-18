@@ -1,0 +1,49 @@
+.TH uuid_equal 3ncs
+.SH Name
+uuid_equal \- compare two UUIDs
+.SH Syntax
+#include <idl/c/uuid.h>
+
+boolean uuid_$equal(\fIu1, u2\fP)
+.nf
+uuid_$t *\fIu1\fP;
+uuid_$t *\fIu2\fP;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/uuid.ins.pas'\fR
+.\"
+.\"\fBfunction uuid_$equal(\fR
+.\"	\fBin \fIu1\fB: uuid_$t;\fR
+.\"	\fBin \fIu2\fB: uuid_$t): boolean;\fR
+.\".DE
+.SH Arguments
+.TP 
+\fIu1\fR
+A UUID.
+.TP 
+\fIu2\fR
+Another UUID.
+.SH Description
+The 
+.PN uuid_$encode
+routine compares the UUIDs \fIu1\fR and \fIu2\fR.
+It returns `true' if they are equal, `false' if they are not.
+.NXR "Operations on Universal Unique Identifiers" "uuid_equal"
+.SH Examples
+The following code compares the UUIDs 
+.B bar_uuid
+and
+.B foo_uuid:
+.EX
+if (uuid_$equal (&bar_uuid, &foo_uuid))
+    printf ("bar and foo UUIDs are equal\en");
+else
+    printf ("bar and foo UUIDs are not equal\en");
+.EE
+.SH Files
+.PN /usr/include/idl/uuid.idl
+.br
+.PN /usr/include/idl/c/uuid.h
+.SH See Also
+intro(3ncs)

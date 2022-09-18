@@ -1,0 +1,81 @@
+.\" SCCSID: @(#)audgenl.3x        x.x     01/21/90
+.TH audgenl 3x
+.SH Name
+audgenl \- generate an audit record
+.SH Syntax
+#include<sys/audit.h>
+.PP
+int audgenl (\fIevent\fP [ ,\fItoken_type\fP, \fItoken_val\fP] ... , 0 )
+.br
+unsigned \fIevent\fP;
+.SH Arguments
+.TP 2 
+\fIevent\fP
+An integer that indicates the event type of the operation being audited.
+.TP 2
+\fItoken_type,token_val\fP
+A type and value pair defining the data to be placed in the audit record.
+.SH Description
+.NXR "audgenl library routine"
+This routine is an interface to the 
+.MS  audgen 2
+system call.  
+It
+accepts a variable number of arguments describing the event
+and audit data, then calls 
+.MS audgen 2
+with the appropriate parameters to
+generate the audit record.  
+This routine is found in the 
+.PN libaud.a
+library and is loaded with the 
+.B -laud
+option.
+.PP
+The argument \fIevent\fP is an integer indicating the event type of the
+operation being audited, as defined in  
+.PN audit.h .
+The value of \fIevent\fP
+must be between MIN_TRUSTED_EVENT and
+MIN_TRUSTED_EVENT + N_TRUSTED_EVENTS-1, as defined in 
+.PN audit.h .
+.\"
+.\" The next lines are to be included when V4.3 is ready:
+.\" , or between MIN_SITE_EVENT and
+.\" MIN_SITE_EVENT + N_SITE_EVENTS-1.  
+.\" The definintion of N_SITE_EVENTS is found in
+.\" .PN /sys/data/audit_data.c . 
+.\"
+The argument pairs
+containing \fItoken_type\fP and \fItoken_val\fP describe the data
+that is to be placed into the audit record.  The 
+argument \fItoken_type\fP describes
+the type of data, as defined in 
+.PN audit.h .
+.PP
+The argument
+\fItoken_val\fP 
+should be set to the value of the token when the token is represented by an
+int or short data type, or be a pointer to the data described by the token when the
+token references a character string.  
+.SH Restrictions
+The 
+.MS audgen 2
+system call is privileged. 
+.PP
+The maximum number of \fItoken_type\fP, \fItoken_val\fP pairs allowed
+is 8.
+.SH Return Values
+On successful completion, a value of 0 is returned.  Otherwise, a
+value of \-1 is returned and the global integer variable 
+.I errno
+is set to indicate the error.
+.SH Diagnostics
+.TP 18
+[EACCES]
+The user is not privileged for this operation.
+.TP 18
+[EINVAL]
+The value supplied for an argument is invalid. 
+.SH See Also
+.MS audgen 2

@@ -1,0 +1,8 @@
+/*
+ * @(#)toupper.cnv	4.1  (ULTRIX)  7/2/90
+ *	Standard toupper conversion for ISO646 ASCII
+ */
+CONVERSION toupper :
+	DEFAULT -> SAME;
+	a - z	-> A - Z;
+END.

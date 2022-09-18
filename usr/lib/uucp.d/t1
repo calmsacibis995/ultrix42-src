@@ -1,0 +1,40 @@
+setvar: @ =  noreset = 0 envflg = 0 Mflags = 040001
+         look for explicit deps. 3 
+         look for implicit rules. 3 
+         right match = mkpass.c
+setvar: < =  noreset = 0 envflg = 0 Mflags = 040001
+setvar: * =  noreset = 0 envflg = 0 Mflags = 040001
+      TIME(mkpass.c)=602988285
+setvar: * = mkpass noreset = 0 envflg = 0 Mflags = 040001
+setvar: < = mkpass.c noreset = 0 envflg = 0 Mflags = 040001
+setvar: < =  noreset = 0 envflg = 0 Mflags = 040001
+setvar: * =  noreset = 0 envflg = 0 Mflags = 040001
+   TIME(mkpass.o)=602988456
+   look for implicit rules. 1 
+setvar: < =  noreset = 0 envflg = 0 Mflags = 040001
+setvar: * =  noreset = 0 envflg = 0 Mflags = 040001
+TIME(mkpass)=602988456
+   doname(nosubdirs,1)
+setvar: @ = nosubdirs noreset = 0 envflg = 0 Mflags = 040001
+setvar: @ =  noreset = 0 envflg = 0 Mflags = 040001
+   look for explicit deps. 1 
+      doname(FRC,2)
+setvar: @ = FRC noreset = 0 envflg = 0 Mflags = 040001
+setvar: @ =  noreset = 0 envflg = 0 Mflags = 040001
+      look for explicit deps. 2 
+      look for implicit rules. 2 
+      Looking for Single suffix rule.
+setvar: @ = FRC noreset = 0 envflg = 0 Mflags = 040001
+setvar: ? =  noreset = 0 envflg = 0 Mflags = 040001
+setvar: @ =  noreset = 0 envflg = 0 Mflags = 040001
+setvar: % =  noreset = 0 envflg = 0 Mflags = 040001
+setvar: < =  noreset = 0 envflg = 0 Mflags = 040001
+setvar: * =  noreset = 0 envflg = 0 Mflags = 040001
+   TIME(FRC)=602988722
+   look for implicit rules. 1 
+setvar: @ = nosubdirs noreset = 0 envflg = 0 Mflags = 040001
+setvar: ? = FRC noreset = 0 envflg = 0 Mflags = 040001
+nenv = 13
+*** Error code 1
+nenv = 10
+*** Error code 1

@@ -1,0 +1,110 @@
+.TH intro 3int
+.SH Name 
+intro \- introduction to international subroutines
+.SH Description 
+.NXR "international subroutines" "introduction"
+.NXR "subroutines" "international" 
+The internationalization package provides a convenient method
+of writing or converting applications so that they can operate
+in the application user's natural language.
+.PP
+The package consists of the following:
+.IP \(bu
+Tools for the creation and modification of message catalogs
+.IP \(bu
+An international function library, which is called 
+.I libi
+.IP \(bu
+A set of international functions available in the C library,
+.I libc
+.IP \(bu
+An international compiler that creates language support databases
+from special source files
+.IP \(bu
+An announcement and initialization mechanism
+.IP \(bu
+A utility for converting data from one codeset to another codeset
+.PP
+When you use international library functions in a C program,
+compile it with the
+.PN \-li
+option to include \fIlibi,\fP as shown:
+.EX 0
+% cc \-o prog prog.c \-li
+.EE
+Some of the international functions are available in the
+standard C library.
+You need not compile with the 
+.PN \-li 
+option if you use only those functions.  The functions that are available
+in the standard C library are 
+.PN setlocale ,
+.PN strftime ,
+.PN strxfrm ,
+and
+.PN strcoll .
+.SS Libraries
+.\" comment
+.PP
+.TS
+tab(@);
+lp-1v-1 lp-1v-1 .
+.sp 4p
+@\fBInternationalization Library Calls\fP
+.sp 4p
+catgetmsg@T{
+get message from a message catalog (provided for XPG\-2
+compatibility)
+T}
+catgets@read a program message
+catopen@open or close a message catalog
+nl_init@T{
+set localization for internationalized program (provided for XPG\-2 
+compatibility)
+T}
+nl_langinfo@language information
+nl_printf@print formatted output (provided for XPG\-2 compatibility)
+nl_scanf@convert formatted input (provided for XPG\-2 compatibility)
+printf@print formatted output
+scanf@convert formatted input
+vprintf@print formatted output of varargs argument list
+.sp 4p
+@\fBStandard C Library Calls\fP
+.sp 4p
+setlocale@set localization for internationalized program
+strftime@convert time and date to string
+strxfrm@string transformation
+strcoll@string collation comparison
+.TE
+.PP
+.\" comment
+.SS Header Files
+.\" comment
+.PP
+.TS
+tab(@);
+lp-1v-1 lp-1v-1 .
+i_defs.h@contains language support database structure
+i_errno.h@contains error numbers and messages
+langinfo.h@T{
+contains the langinfo definitions for the locale database
+T}
+locale.h@T{
+contains the declarations used by the ANSI setlocale and localeconv 
+functions
+T}
+nl_types.h@T{
+contains the definitions for all the internationalization (libi) functions
+T}
+.TE 
+.PP
+.\" comment
+.SH See Also 
+iconv(1), extract(1int), gencat(1int), ic(1int), strextract(1int), 
+strmerge(1int), trans(1int), ctype(3), 
+setlocale(3), strcoll(3), strftime(3), strxfrm(3), 
+catgets(3int), catopen(3int), nl_langinfo(3int),
+printf(3int), scanf(3int), vprintf(3int),
+environ(5int), lang(5int), nl_types(5int), patterns(5int)
+.br
+.I Guide to Developing International Software

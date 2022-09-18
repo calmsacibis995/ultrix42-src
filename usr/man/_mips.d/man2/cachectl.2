@@ -1,0 +1,74 @@
+.TH cachectl 2 RISC
+.UC 4
+.SH Name
+cachectl \- mark pages cacheable or uncacheable
+.SH Syntax
+.ft B
+.nf
+#include <mips/cachectl.h>
+.sp
+cachectl(addr, nbytes, op)
+char *addr;
+int nbytes, op;
+.fi
+.ft R
+.SH Description
+The
+.PN cachectl
+system call allows a process to make
+ranges of its address space cacheable or uncacheable.
+Initially, a process's entire address space is cacheable.
+.PP
+The 
+.I op
+parameter is one of the following:
+.TP 20
+CACHEABLE
+Make the indicated pages cacheable.
+.TP 20
+UNCACHEABLE
+Make the indicated pages uncacheable.
+.PP
+The arguments CACHEABLE and UNCACHEABLE affect the address range
+indicated by the
+.I addr
+and
+.IR nbytes
+parameters.
+The
+.I addr
+must be page aligned, and
+.I nbytes
+must be a multiple of the page size.
+.PP
+Changing a page from UNCACHEABLE state to CACHEABLE
+state causes both the instruction and data caches to be flushed. 
+.SH Return Values
+The
+.PN cachectl
+system call returns 0 on success. If errors are 
+detected, the
+.PN cachectl
+system call returns \-1 with the error cause indicated in
+.IR errno.
+.SH Diagnostics
+.TP 15
+[EFAULT]
+Some or all of the address range
+.I addr
+to
+.RI ( addr + nbytes \-1)
+are not accessible.
+.TP 15
+[EINVAL]
+The
+.I op
+parameter is not CACHEABLE or UNCACHEABLE. 
+.TP 15
+[EINVAL]
+The 
+.I addr
+parameter is not page aligned,
+or the
+.I nbytes
+parameter is not a multiple of pagesize.

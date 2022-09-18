@@ -1,0 +1,741 @@
+#!/bin/sh
+
+# sccsid="@(#)secsetup	4.3 (ULTRIX) 12/20/90"
+
+# ************************************************************************
+# *									*
+# *			Copyright (c) 1989, 1990 by
+# *		Digital Equipment Corporation, Maynard, MA		*
+# *			All rights reserved.				*
+# *									*
+# *   This software is furnished under a license and may be used and	*
+# *   copied  only  in accordance with the terms of such license and	*
+# *   with the  inclusion  of  the  above  copyright  notice.   This	*
+# *   software  or  any  other copies thereof may not be provided or	*
+# *   otherwise made available to any other person.  No title to and	*
+# *   ownership of the software is hereby transferred.			*
+# *									*
+# *   The information in this software is subject to change  without	*
+# *   notice  and should not be construed as a commitment by Digital	*
+# *   Equipment Corporation.						*
+# *									*
+# *   Digital assumes no responsibility for the use  or  reliability	*
+# *   of its software on equipment which is not supplied by Digital.	*
+# *									*
+# ***********************************************************************
+# ***********************************************************************
+# *
+# *			Modification History
+# *
+# *	Henry Hall
+# *	Created file
+# *
+# * 	Larry Scott  06-Jul-90
+# *	added -s exec_argp option for auditmask
+# *
+# * 	Larry Scott  18-Dec-90
+# *	create /dev/audit if necessary
+# *
+# ***********************************************************************
+
+
+PATH="/bin:/etc:/usr/bin:/usr/etc:/usr/ucb"
+CDPATH=""
+HOSTNAME="`hostname | tr a-z A-Z | sed 's/\..*//'`"
+MACHINE="`/bin/machine`"
+CONFPATH="/sys/conf/$MACHINE"
+CONFIG="$CONFPATH/$HOSTNAME"
+OLDCONFIG="$CONFIG".old
+AUDEVENTS="/etc/sec/audit_events"
+OLDAUDEVENTS="/etc/sec/audit_events.old"
+DEFED="/usr/ucb/vi"
+RCFILE="/etc/rc.local"
+NEXTAUDIT=32001
+PASSLIFE=60
+SECLEV=BSD
+MINLEN=6
+MAXLEN=16
+NEWTPATH=n
+NEWAUDIT=n
+NEWAUDITRC=n
+NEWLOGIN=n
+NEWCONFIG=n
+NUMLINES=14
+TIMEGUESS=0
+
+/bin/cp $CONFIG $OLDCONFIG
+/bin/cp $AUDEVENTS $OLDAUDEVENTS
+
+#
+# Set up handlers:
+#
+
+QUIT='
+
+	if [ -w /etc/sec/audit_events ] 
+	then
+
+		/bin/cp $OLDAUDEVENTS $AUDEVENTS 
+
+	else
+
+		echo "
+		Please log in as root before running this script.
+		"
+	fi
+	echo "
+	secsetup terminated.  No installations made
+	"
+	exit 1
+'
+
+#
+# Trap ^c signal, etc.
+#
+
+trap 'eval "$QUIT"' 1 2 3 15
+
+
+echo "
+This script installs one or more of the new security features.  Make
+sure that the hostname is declared and the /usr file system is mounted.
+After running the script and depending on the feature(s) chosen, you
+will need to update the kernel and reboot the system before the security
+features will take effect.
+
+For further information, see the ULTRIX-32 Security Guide for
+Administrators.
+
+"
+
+ANS=n
+while :
+	do
+	 echo -n "Continue? (y/n) "
+	 read ANS
+	 case $ANS in
+
+	 [yY]*)
+		break
+		;;
+
+	 [nN]*)
+		exit 0
+		;;
+	
+	 *)
+		;;
+
+	 esac
+	done
+
+
+#
+# Make sure that /usr filesystem is mounted.
+#
+
+mount /usr 2> /dev/null
+
+#
+# Hostname setup?
+#
+
+[ "$HOSTNAME" = "" ] && {
+	echo "
+	 This machine's hostname has not yet been set.
+	 Please run this script again after setting the hostname
+	 with the following command:
+
+	 /bin/hostname name_of_your_machine
+
+	 "
+	exit 1
+}
+#
+# Get config file name?
+#
+
+[ ! -f $CONFIG ] && {
+	echo "Configuration file [$CONFIG] not found."
+	exit 1
+}
+
+#
+# Write config file?
+#
+[ ! -w $CONFIG ] && {
+	echo "Configuration file [$CONFIG] not writable."
+	exit 1
+}
+
+#
+# MAIN LOOP
+#
+
+while true
+	do
+	
+
+ANS=n
+while true
+	do
+	 echo -n "Do you want to enable trusted path? (y/n) "
+	 read ANS
+	 case $ANS in
+
+	 [yY]*)
+		NEWTPATH=y
+		break
+		;;
+
+	 [nN]*)
+		NEWTPATH=n
+		break
+		;;
+	 *)
+		;;
+	 esac
+done
+
+#
+# End TPATH Questions
+#
+
+ANS=n
+while true
+	do
+	 echo -n "Do you want to enable security auditing? (y/n) "
+	 read ANS
+	 case $ANS in
+
+	 [yY]*)
+		NEWAUDIT=y
+		break
+		;;
+
+	 [nN]*)
+		NEWAUDIT=n
+		break
+		;;
+	 *)
+		;;
+	 esac
+done
+
+
+#
+# modify /etc/sec/audit_events?
+#
+
+if [ $NEWAUDIT = y ]
+	 then
+
+echo "
+The system default for security auditing is a full audit of all events.
+Since this can adversely affect system perfomance, you may want to tailor
+the security auditing system to record only the security events that you
+want to audit.
+
+"
+
+ANS=n
+while :
+	do
+	 echo ""
+	 echo -n "
+Do you want to edit the list of system audit events now? (y/n) "
+	 read ANS
+	 case $ANS in
+
+	 [yY]*)
+
+                if [ -z "${EDITOR}" -o ! -f "${EDITOR}" ]
+                  then
+                        if [ -f $DEFED ]
+                         then
+                                EDITOR=$DEFED
+                          else
+                                EDITOR="/bin/ed"
+                        fi
+
+                fi
+                $EDITOR /etc/sec/audit_events
+
+		/bin/ed /etc/sec/audit_events
+		break
+		;;
+
+	 [nN]*)
+		break
+		;;
+
+	 *)
+		;;
+
+	 esac
+	done
+
+fi
+
+#
+# End NEWAUDIT Questions
+#
+
+ANS=n
+while true
+	do
+	 echo -n "Do you want to enable the enhanced login functionality? (y/n) "
+	 read ANS
+	 case $ANS in
+
+	 [yY]*)
+		NEWLOGIN=y
+		break
+		;;
+
+	 [nN]*)
+		NEWLOGIN=n
+		break
+		;;
+	 *)
+		;;
+	 esac
+ done
+
+
+#
+# NEW LOGIN INSTALLATION
+#
+
+if [ $NEWLOGIN = "y" ]
+then
+
+NEXTAUDIT=32001
+PASSLIFE=60
+SECLEV=TRANS
+MINLEN=6
+MAXLEN=16
+
+#
+echo "
+
+The security level of your system determines how the login, passwd, and su
+programs behave.  This security level is one of the following: BSD, ENHANCED,
+or UPGRADE.  If you choose BSD, no additional security features are enabled.
+If you choose ENHANCED, the new security authorization security features
+are enabled and the passwords in /etc/passwd are not used.  If you
+choose UPGRADE, the new security features are enabled, but the old password
+for each account in /etc/passwd remain in effect until changed with the
+passwd command.  At that time, the new password is stored in the
+authorization database (/etc/auth).
+
+"
+while :
+	do
+	 echo -n "Enter the new security level [No default] "
+	 read X
+	 X=`echo "${X}" | tr a-z A-Z`
+	 case "${X}"
+	   in
+	     BSD|UPGRADE|ENHANCED)
+	 	break
+	 	;;
+	     *|"")
+	 	echo 'Must be one of BSD, UPGRADE, or ENHANCED'
+	 	;;
+	 esac
+	done
+SECLEV=${X}
+#
+echo "Your SECLEVEL has been set to ${SECLEV}"
+#
+TMP=/tmp/auth.${$}
+#
+if [ ${SECLEV} = BSD ]
+  then
+    echo "If you have already been running a system in something other
+than BSD mode before, you will have to reset all user passwords.
+
+"
+fi
+
+if [ ${SECLEV} != BSD ]
+  then
+    echo "
+A new authorization database will be built using the information in the
+/etc/passwd file.
+"
+if [ ${SECLEV} != UPGRADE ]
+  then
+    echo "
+New passwords must to be set for each account.  Until this is done,
+the accounts will have invalid passwords.
+"
+fi
+echo "
+
+Each account has a maximum and minimum password lifetime.  When the
+maximum password lifetime has expired the password must be changed
+or the account will become unusable.  If the maximum password
+lifetime is set to 0 (zero), the password will not expire.
+
+"
+echo -n "Enter maximum password lifetime in days [${PASSLIFE}]> "
+read X
+if [ "${X}" -gt 0 ]
+  then
+    PASSLIFE="${X}"
+fi
+PASSLIFE=`expr ${PASSLIFE} \* 60 \* 60 \* 24`
+#
+echo "
+
+The minimum password lifetime determines how often users can change
+their passwords.  If set to 0 (zero), there is no minimum password
+lifetime and users can change their passwords at any time.
+
+"
+echo -n "Enter minimum password lifetime in hours [0]> "
+read X
+if [ "${X}" -gt 0 ]
+  then
+    MINLIFE=`expr ${X} \* 60 \* 60`
+else
+    MINLIFE=0
+fi
+
+#
+fi
+
+#
+
+fi
+
+#
+# End NEWLOGIN Questions
+#
+
+echo "
+This ends the configuration questions of the security setup procedure.
+You have chosen the following security options:
+
+"
+if [ $NEWTPATH = "y" ]
+	then
+	echo "			Trusted Path"
+fi
+if [ $NEWAUDIT = "y" ]
+	then
+	echo "			Security Auditing"
+fi
+if [ $NEWLOGIN = "y" ]
+	then
+	echo "			Enhanced Login (SECLEVEL = ${SECLEV})"
+fi
+
+echo "
+
+No files have yet been modified.  To have these changes take effect,
+answer "y" (yes) to the next question.  To restart the script,
+answer "n" (no). To exit the script, type "exit".
+
+"
+ANS=n
+while true
+	do
+	 echo -n "
+Is the selected set of security features correct? (y/n/exit) "
+	 read ANS
+	 case $ANS in
+
+	 [yY]*)
+		break 2
+		;;
+
+	 [nN]*)
+		/bin/cp $OLDAUDEVENTS $AUDEVENTS
+		break
+		;;
+	 ex*)
+		/bin/cp $OLDAUDEVENTS $AUDEVENTS
+		exit 0
+		;;
+	 *)
+		;;
+	 esac
+ done
+done
+
+#
+# Now do the work, clear the interrrupts
+#
+
+trap "" 1 2 3 15
+
+#
+# TRUSTED PATH INSTALLATION:
+#
+
+if [ $NEWTPATH = y ]
+	 then
+
+	/bin/grep -s SYS_TPATH $CONFIG
+
+	if [ $? -ne 0 ]
+	   then
+	
+		echo "Updating configuration file [$CONFIG] for Trusted Path..."
+		/bin/ed - $CONFIG << END > /dev/null
+?options
+a
+options		SYS_TPATH
+.
+?pseudo-device
+a
+pseudo-device	sys_tpath
+.
+w
+q
+END
+		echo "$CONFIG updated for Trusted Path."
+	
+	else
+
+		echo "$CONFIG already configured for Trusted Path."
+		NEWTPATH=n
+	fi
+fi
+
+#
+# TPATH INSTALLATION COMPLETE
+#
+
+
+#
+# AUDIT INSTALLATION:
+#
+
+if [ $NEWAUDIT = y ]
+	then
+
+	/bin/grep -s AUDIT $CONFIG
+
+	if [ $? -ne 0 ]
+	   then
+		echo -n "Updating configuration file [$CONFIG] for security auditing..."
+		/bin/ed - $CONFIG << END > /dev/null
+?options
+a
+options		AUDIT
+.
+?pseudo-device
+a
+pseudo-device	audit
+.
+w
+q
+END
+		echo "$CONFIG updated for security auditing."
+
+	else
+
+		echo "$CONFIG already configured for security auditing."
+		NEWAUDIT=n
+	fi
+
+
+#
+# Add audit daemon to rc.local
+#
+
+/bin/grep -s auditd $RCFILE
+if [ $? -ne 0 ]
+then
+
+		echo  "Updating the file [$RCFILE] for security auditing..."
+		/bin/ed - $RCFILE << END > /dev/null
+? sendmail
++1
+a
+# audit daemon; for C2, use "/etc/sec/auditd -z -o b" for shutdown on no space
+# 			use "-o e" for overwrite on no space
+[ -f /etc/sec/auditd ] && {
+	/etc/sec/auditd -z -o e & echo -n ' auditd'             >/dev/console
+	/etc/sec/auditmask -s exec_argp                         >/dev/console
+	/etc/sec/auditmask < /etc/sec/audit_events              >/dev/console
+}
+.
+w
+q
+END
+		echo "$RCFILE updated for security auditing."
+		NEWAUDITRC=y
+
+	else
+
+		echo "$RCFILE already configured for security auditing."
+		NEWAUDITRC=n
+	fi
+
+fi
+
+# make sure /dev/audit exists
+if [ ! -f /dev/audit ]
+then
+    (cd /dev; /dev/MAKEDEV audit)
+fi
+#
+# AUDIT INSTALLATION COMPLETE
+#
+
+#
+# NEW LOGIN INSTALLATION:
+#
+
+if [ $NEWLOGIN = "y" ]
+   then
+
+if [ ${SECLEV} != BSD ]
+	then
+
+NUMLINES=`wc -l /etc/passwd`
+set $NUMLINES
+NUMLINES=$1
+TIMEGUESS=`expr ${NUMLINES} / 11`
+
+echo "
+Your /etc/passwd file has ${NUMLINES} entries in it.  Processing this
+file into the /etc/auth database will take approximately ${TIMEGUESS}
+minutes, depending on the speed of your system.
+
+"
+
+
+cd /tmp ; cat > a$$.c << !
+main() { extern long time();  printf("%ld\n", time(0)); exit(0); }
+!
+cc -o b$$ a$$.c
+TIME=`./b$$`
+rm -f a$$.[oc] b$$
+MOD=`expr ${TIME} - ${PASSLIFE}`
+
+while read PASS
+  do
+    NAME=`expr "${PASS}" : '\([^:]*\)'`
+    UID=`expr "${PASS}" : '[^:]*:[^:]*:\([^:]*\)'`
+    if [ "${NAME}" = '+' -o "${NAME}" = '-' -o -z "${UID}" ]
+      then
+	echo "Warning: ${NAME} - YP does not serve /etc/auth entries." 1>&2
+	continue
+    fi
+    if [ ${UID} -gt 32000 ]
+      then
+	echo -n 'Illegal value for UID:'
+	echo "${PASS}"
+	exit 1
+    fi
+    if [ "${UID}" -le 0 ]
+      then
+	NEWUID=`expr ${UID} : '-\(.*\)' '|' ${UID}`
+	AUDITID=`expr ${NEXTAUDIT} + "${NEWUID}"`
+    else
+	AUDITID=${UID}
+    fi
+    if [ "${UID}" -eq 0 ]
+      then
+	echo "${UID}:Nologin:${MOD}:${MINLIFE}:${MAXLIFE}:07:0:${AUDITID}:00:00:fffffffffffffffe"
+    else
+	echo "${UID}:Nologin:${MOD}:${MINLIFE}:${PASSLIFE}:07:0:${AUDITID}:00:00:00"
+    fi
+done < /etc/passwd | sort -t: -n | uniq > ${TMP}
+#
+
+[ ! -f /etc/auth.dir ] && {
+	cat /dev/null > /etc/auth.dir
+	cat /dev/null > /etc/auth.pag
+}
+
+/usr/etc/sec/setauth < ${TMP}
+mv ${TMP} /etc/auth
+/etc/chown root /etc/auth /etc/auth.dir /etc/auth.pag
+chgrp authread /etc/auth /etc/auth.dir /etc/auth.pag
+chmod 640 /etc/auth /etc/auth.dir /etc/auth.pag
+
+fi
+
+sed -e "/SECLEVEL/s/=.*/=${SECLEV}/" < /etc/svc.conf > /tmp/p$$
+mv /tmp/p$$ /etc/svc.conf
+chmod 644 /etc/svc.conf
+sed -e '/^:[0-9][0-9]*/s/session" /session -e" /' < /etc/ttys > /tmp/p$$
+mv /tmp/p$$ /etc/ttys
+chmod 644 /etc/ttys
+
+fi
+
+#
+# NEWLOGIN INSTALLATION COMPLETE
+#
+
+
+#
+# Clean up and config
+#
+echo "
+The installation of the security features is complete.
+
+"
+if [ $NEWTPATH = y  -o  $NEWAUDIT = y ]
+   then
+
+echo "
+Since you have chosen to install some functionality which will require
+the re-configuration of your system's kernel, you may choose to have the
+installation process re-build your kernel or, since this process may take
+some time, you may choose to do it manually.
+
+"
+
+ANS=n
+while true
+        do
+	echo -n "Would you like the installation process to re-build your kernel? (y/n) "
+         read ANS
+         case $ANS in
+
+         [yY]*)
+                NEWCONFIG=y
+                break
+                ;;
+
+         [nN]*)
+		echo "Please re-build your system and then reboot."
+		exit 0
+                break
+		;;
+	 *)
+		;;
+           esac
+done
+
+
+if [ $NEWCONFIG = y ]
+   then
+
+	trap 15
+	/etc/doconfig -c $HOSTNAME
+	echo ""
+	echo "Configuration complete."
+
+fi
+
+fi
+#
+# End TPATH | NEWAUDIT
+#
+
+#
+# NEWLOGIN
+#
+
+echo "Security installation complete."
+exit 0

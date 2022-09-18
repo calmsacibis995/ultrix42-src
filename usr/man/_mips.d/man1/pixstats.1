@@ -1,0 +1,53 @@
+.TH pixstats 1 RISC
+.de sh
+.br
+.ne 5
+.PP
+\fB\\$1\fR
+.PP
+..
+.UC 4
+.SH Name
+pixstats \- analyze program execution
+.SH Syntax
+.B pixstats
+program [ options ]
+.br
+.SH Description
+The
+.B pixstats
+command analyzes a program's execution characteristics.
+To use
+.B pixstats ,
+invoke the
+.MS pixie 1
+command to translate and instrument the executable object module for the
+program.  Then execute the translation on an appropriate input.  This
+produces a
+.I .Counts
+file.  You can then use 
+.B pixstats
+to generate a detailed report on opcode frequencies, interlocks, a
+mini-profile, and more.
+.SH Options
+.TP 15
+.B \-cycle \fIns
+Assume a
+.I ns
+cycle time when converting cycle counts to seconds.
+.TP 15
+.B \-r2010
+Use r2010 floating point chip operation times and overlap rules.  This
+is the default.
+.TP 15
+.B \-disassemble
+Disassemble and show the analyzed object code.
+.SH Restrictions
+The 
+.B pixstats
+command models execution assuming a perfect memory system.
+Cache misses, and so on, increase execution above the 
+.B pixstats
+predictions.
+.SH See Also
+pixie(1), prof(1)

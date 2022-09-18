@@ -1,0 +1,81 @@
+.TH disassembler 3x RISC
+.SH Name
+disassembler \- disassemble a MIPS instruction and print the results
+.SH Syntax
+.nf
+.PP
+int disassembler (iadr, regstyle, get_symname, get_regvalue, get_bytes, print_header)
+unsigned	iadr;
+int		regstyle;
+char		*(*get_symname)();
+int		(*get_regvalue)();
+long		(*get_bytes)();
+void		(*print_header)();
+.fi
+.DT
+.SH Description
+The
+.B disassembler
+function disassembles and prints a MIPS machine instruction on 
+.I stdout.
+.PP
+The 
+.i iadr 
+argument is the instruction address to be disassembled.
+The
+.I regstyle
+parameter specifies how registers are named in the disassembly.
+The value is 0 if compiler names are used; otherwise, hardware names 
+are used.
+.PP
+The next four arguments are function pointers, most of which give the caller
+some flexibility in the appearance of the disassembly.  The only function
+that must be provided is
+.I get_bytes.
+All other functions are optional.
+The
+.I get_bytes
+function is called without arguments and returns the next byte or bytes to 
+disassemble.
+.PP
+The
+.I get_symname
+is passed an address, which is the target of a
+.I jal
+instruction. If null is returned or if 
+.I get_symname
+is null the
+.I disassembler
+prints the address; otherwise,
+the string name is printed as returned from
+.I get_symname.
+If 
+.I get_regvalue
+is not null, it is passed a register number and returns the current contents 
+of the specified register.
+The
+.B disassembler
+function prints this information along with the instruction disassembly.
+If 
+.I print_header
+is not null, it is passed the instruction address,
+.I iadr,
+and the current instruction to be disassembled,
+which is the return value from
+.I get_bytes.
+The 
+.I print_header 
+function
+can use these parameters to print any desired information before
+the actual instruction disassembly is printed.
+.PP
+If
+.I get_bytes
+is null, the
+.B disassembler
+returns -1 and errno is set to EINVAL;
+otherwise, the number of bytes that were disassembled is returned.
+If the disassembled word is a jump or branch instruction,
+the instruction in the delay slot is also disassembled.
+.SH See Also
+ldfcn(5)

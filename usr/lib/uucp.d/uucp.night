@@ -1,0 +1,41 @@
+#!/bin/sh
+# @(#)uucp.night	4.1 (ULTRIX) 7/2/90
+umask 022
+L=/usr/spool/uucp/LOG.shells
+UUL=/usr/var/uucp
+DTIME=120
+
+trap ':' 1
+
+cd $UUL
+
+echo "night:$$: starting uuclean's `date`" >>$L
+$UUL/uuclean -p  -n$DTIME -sALL
+$UUL/uuclean -p  -n7 -d/usr/spool/uucp/TM.
+$UUL/uuclean -p  -n$DTIME -d/usr/spool/uucp/STST.
+$UUL/uuclean  -pLTMP. -pLOG.  -n4 -d/usr/spool/uucp
+$UUL/uuclean -d/usr/spool/uucp/.XQTDIR -p -n72
+/usr/bin/uustat -c$DTIME
+
+if test -f $UUL/LIST.NIGHT
+then
+	for i in `sed -e 's/#.*//' $UUL/LIST.NIGHT`
+	do
+		echo "night:$$: starting uucico for $i `date`" >>$L
+		#
+		# Create a dummy file so that future uucico's 
+		# poll if this attempt fails.
+		#
+		if test -d /usr/spool/uucp/sys/$i/C.
+		then
+			touch /usr/spool/uucp/sys/$i/C./C.${i}Q0000
+		else
+			touch /usr/spool/uucp/sys/DEFAULT/C./C.${i}Q0000
+		fi
+		rm -f /usr/spool/uucp/STST./STST.$i
+		$UUL/uucico -r1 -s$i
+	done
+fi
+echo "night:$$: starting general uucico `date`" >>$L
+$UUL/uucico -r1
+echo "night:$$:     complete `date`" >>$L

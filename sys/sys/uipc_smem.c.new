@@ -1,0 +1,896 @@
+#ifndef lint
+static char *sccsid = "%W%	ULTRIX	%G%";
+#endif lint
+
+/***********************************************************************
+ *									*
+ *			Copyright (c) 1985,89 by			*
+ *		Digital Equipment Corporation, Maynard, MA		*
+ *			All rights reserved.				*
+ *									*
+ *   This software is furnished under a license and may be used and	*
+ *   copied  only  in accordance with the terms of such license and	*
+ *   with the  inclusion  of  the  above  copyright  notice.   This	*
+ *   software  or  any  other copies thereof may not be provided or	*
+ *   otherwise made available to any other person.  No title to and	*
+ *   ownership of the software is hereby transferred.			*
+ *									*
+ *   This software is  derived  from  software  received  from  the	*
+ *   University    of   California,   Berkeley,   and   from   Bell	*
+ *   Laboratories.  Use, duplication, or disclosure is  subject  to	*
+ *   restrictions  under  license  agreements  with  University  of	*
+ *   California and with AT&T.						*
+ *									*
+ *   The information in this software is subject to change  without	*
+ *   notice  and should not be construed as a commitment by Digital	*
+ *   Equipment Corporation.						*
+ *									*
+ *   Digital assumes no responsibility for the use  or  reliability	*
+ *   of its software on equipment which is not supplied by Digital.	*
+ *									*
+ **********************************************************************/
+/*
+ *
+ *   Modification history:
+ *
+ * 09 Dec 88 -- depp
+ *	Forced 4 Mb alignment for mips
+ *
+ * 17 Nov 88 -- depp
+ *	Numberous mips shared memory fixes.
+ *
+ * 9 Jun 88 -- jaa
+ *	Added fixes to correct sm_daddr panic in vssmfree().
+ *
+ * 9 Jun 88 -- jaa
+ *	Added fixes to correct sm_daddr panic in vssmfree().
+ *
+ * 3 Mar 88 -- jaa
+ *	Allowed highest attachable shared memory addr 
+ *	to be configurable (sminfo.smsmat)
+ *	Dynamically allocate shared mem segments. These 
+ *	are also configurable (sminfo.smseg)
+ *
+ * 09 Feb 88 -- depp
+ *      Changed semantic if user attempts to attach to the same smid more than
+ *      once.  It used to silently return (causing SVVS to hang), now it will 
+ *      return an error.  It seems that a SYSV side effect is to permit a 
+ *      single process to share a SMS with itself.  We DON'T!
+ *
+ * 15 Dec 86 -- depp
+ *	Fixed process SM page table swap error
+ *
+ * 18 Aug 86 -- depp
+ *	Fixed a couple of range checking bugs in "smat()"
+ *
+ * 29 Apr 86 -- depp
+ *	converted to locking macros from calls routines
+ *
+ * 12-Feb-86 -- jrs
+ *	Added calls to tbsync() for mp translation buffer control
+ *
+ * 03 Jan 86 -- depp
+ *	Modified "smat" to insure that multiple attaches on the same 
+ *	shmid can not be done.  If an attach is attempted on an attached SMS,
+ *	smat silently returns the address of the SMS.
+ *
+ *	Also, in "smdt", smfree was moved before the clearing of the detached
+ *	PTEs, so that the modification bit (PG_M) could be properly
+ *	propagated to the global PTEs.
+ *
+ * 11 Nov 85 -- depp
+ *	Removed all conditional compiles for System V IPC.
+ *
+ * 30 Sep 85 -- depp
+ *	Added shared memory segment locking to a number of routines
+ *
+ * 26 Jul 85 -- depp
+ *	Insured that an error will be returned in smat if the process
+ *	has advised that pageouts should be sequential (SSEQL)
+ *
+ * 19 Jul 85 -- depp
+ *	Cleaned up some shared memory code.  Renamed smexec to smclean.
+ *	Removed some commented out code.
+ *
+ * 29 Apr 85 -- depp
+ *	Removed the test for maximum shared memory to be allocated for
+ *	system, as virtual memory eliminates the need.
+ *
+ * 24 Apr 85 -- depp
+ *	Fixed bug in smat, the beginning of SM segments was incorrectly 
+ *	calculated.
+ *
+ * 11 Mar 85 -- depp
+ *	1) - this file ported from System V and modified to	 
+ *		handle the very different Ultrix shared memory	 
+ *		approach.					 
+ *		LeRoy Fundingsland    1 10 85    DEC		 
+ *
+ */
+#ifdef vax
+#include "../machine/mtpr.h"
+#endif vax
+#ifdef mips
+#include "../machine/cpu.h"
+#endif mips
+#include "../machine/pte.h"
+
+#include "../h/param.h"		/* includes types.h & vax/param.h */
+#include "../h/dir.h"
+#include "../h/user.h"		/* includes errno.h		*/
+#include "../h/proc.h"
+#include "../h/seg.h"
+#include "../h/cmap.h"
+#include "../h/vm.h"
+
+#include "../h/kmalloc.h"
+#include "../h/ipc.h"
+#include "../h/shm.h"
+
+
+int	smtot;		/* total shared memory currently used (clicks)*/
+
+extern struct timeval	time;		/* system idea of date */
+extern struct smem smem[];
+extern struct sminfo sminfo;
+
+struct smem	*ipcget(),
+		*smconv();
+
+
+
+/* SMAT - shared memory attach system call. Attach the		*/
+/*	specified shared memory segment to the current process.	*/
+smat(smid, addr, flag)
+	int	smid;
+	char	*addr;
+	int	flag;
+{
+	register struct smem *sp;	/* shared memory header ptr */
+	register struct proc *p;
+	int i, smindex;
+
+	XPRINTF(XPR_SM,"entering smat: smid %d, addr 0x%x, flag 0x%x",
+		smid,addr,flag,0);
+	if((sp = smconv(smid, SM_DEST)) == NULL)
+		return(-1);
+	if(ipcaccess(&sp->sm_perm, SM_R)) {
+		XPRINTF(XPR_SM, "smat: access violation 1", 0,0,0,0);
+		return(-1);
+	}
+	if((flag & SM_RDONLY) == 0)
+		if(ipcaccess(&sp->sm_perm, SM_W)) {
+			XPRINTF(XPR_SM, "smat: access violation 2", 0,0,0,0);
+			return(-1);
+		}
+	p = u.u_procp;
+
+	/* Shared memory is currently not supported with SSEQL advisory */
+	if (p->p_flag & SSEQL) {
+		XPRINTF(XPR_SM, "smat: !SSEQL", 0,0,0,0);
+		u.u_error = EINVAL;
+		return(-1);
+	}
+
+	if(sminfo.smseg <= 0){
+		XPRINTF(XPR_SM, "smat: smseg bogus %d", sminfo.smseg,0,0,0);
+		u.u_error = EINVAL;
+		return(-1);
+	}
+
+	/* allocate on first attach */
+	if(p->p_sm == (struct p_sm *)NULL){
+		if(p->p_smbeg) {
+			panic("smat: smbeg");
+		}
+		smindex = i = 0;
+		KM_ALLOC(p->p_sm, struct p_sm *, SIZEOF_PSM, KM_SHMSEG, KM_CLEAR);
+		if(p->p_sm == (struct p_sm *)NULL) {
+			panic("smat: alloc p_sm");
+		}
+	} else  {
+		i = -1;
+		for(smindex = 0; smindex < sminfo.smseg; smindex++) {
+			if (i == -1 && p->p_sm[smindex].sm_p == 0) {
+				i = smindex;
+				continue;
+			}
+		
+			/* 
+			 * if already attached, then return an error
+			 * (see history note above, dated: 9-Feb-88
+			 */
+			if (p->p_sm[smindex].sm_p == sp) {
+				u.u_error = EMFILE;
+				return(-1);
+			}
+		}
+
+		/* No open slots?? */
+		if ((smindex = i) == -1) {
+			XPRINTF(XPR_SM, "smat: no open slots", 0,0,0,0);
+			u.u_error = EMFILE;
+			return(-1);
+		}
+	}
+
+	if (flag & SM_RND)
+		addr = (char *)((u_int)addr & ~(SMLBA - 1));
+
+	if (SM_CHKALIGN(addr, sp->sm_size)) {
+		XPRINTF(XPR_SM, "smat: failed address/sizing 1", 0,0,0,0);
+		u.u_error = EINVAL;
+		return(-1);
+	}
+
+	/* Is the requested address too high? */
+	if (sminfo.smsmat && (((int)addr + sp->sm_size) >= sminfo.smsmat)) {
+		u.u_error = EINVAL;
+		return(-1);
+	}
+
+	/*
+	 * lock segment. 
+	 * note: if sm_attach can sleep (VAX does, MIPS doesn't), 
+	 * must unlock, then relock around the sleep condition
+	 */
+	SM_LOCK(sp);
+
+	/* find and attach to the users VAS */
+	if (sm_attach(p, sp, addr, smindex,flag)) {
+		XPRINTF(XPR_SM,"Failed return sm_attach u_error %d",
+			u.u_error,0,0,0);
+		SM_UNLOCK(sp);
+		return(-1);
+	}
+
+	/* finish up */
+	sp->sm_caddr = p;
+	sp->sm_count++;
+	sp->sm_ccount++;
+	sp->sm_atime = (time_t) time.tv_sec;
+	sp->sm_lpid = p->p_pid;
+	SM_UNLOCK(sp);
+	return(u.u_r.r_val1);
+}
+
+
+
+/* SMCONV - Convert user supplied smid into a ptr to the	*/
+/*	associated shared memory header.			*/
+struct smem *
+smconv(s, flg)
+    register int s;		/* smid */
+    int flg;		/* error if matching bits are set in mode */
+{
+	register struct smem *sp;	/* ptr to associated header */
+
+	XPRINTF(XPR_SM,"entering smconv",0,0,0,0);
+	sp = &smem[s % sminfo.smmni];
+	if((sp->sm_perm.mode & IPC_ALLOC) == 0  ||
+			sp->sm_perm.mode & flg  ||
+			s / sminfo.smmni != sp->sm_perm.seq) {
+		u.u_error = EINVAL;
+		XPRINTF(XPR_SM,"failed smconv: mode 0%o",
+			sp->sm_perm.mode,0,0,0);
+		return(NULL);
+	}
+	XPRINTF(XPR_SM,"smconv success: sp 0x%x", sp,0,0,0);
+	return(sp);
+}
+
+
+/* SMCTL - shared memory control operations system call.	*/
+/*	Provides three functions to the user: "stat" of the	*/
+/*	"smem" struct, set the user-group-mode for the segment,	*/
+/*	and allow the user to remove the "smem" and destroy the	*/
+/*	shared memory segment.					*/
+smctl(smid, cmd, arg)
+	int	smid,
+		cmd;
+	struct smem *arg;
+{
+	register struct smem *sp;	/* shared memory header ptr */
+	register struct p_sm *psmp;	/* see proc.h		*/
+	register struct proc *p;	/* proc pointer */
+	register int i;
+	struct smem ds;			/* hold area for IPC_SET */
+
+	XPRINTF(XPR_SM,"entering smctl smid %d cmd %d",smid, cmd,0,0);
+	if((sp = smconv(smid, (cmd == IPC_STAT)?0:SM_DEST)) == NULL)
+		return(-1);
+	switch(cmd){
+
+		/* Remove shared memory identifier. */
+	case IPC_RMID:
+		if(u.u_uid != sp->sm_perm.uid  &&  
+				u.u_uid != sp->sm_perm.cuid  &&
+				!suser())
+			return(-1);
+		sp->sm_ctime = (time_t) time.tv_sec;
+		sp->sm_perm.mode |= SM_DEST;
+
+		/* Change key to "private" so old key can be	*/
+		/* reused without waiting for last detach. Only	*/
+		/* allowed accesses to this segment now are	*/
+		/* smdt() and smctl(IPC_STAT). All others will	*/
+		/* give "bad smem".				*/
+		sp->sm_perm.key = IPC_PRIVATE;
+
+			/* If there are no processes attached	*/
+			/* to this SMS then delete it.		*/
+			/* If there are attached processes then	*/
+			/* the SM_DEST flag will cause the SMS	*/
+			/* to be deleted on the last detach.	*/
+		if(sp->sm_count == 0){
+			sp->sm_count++;
+			smfree(sp);
+		}
+		return(0);
+
+		/* Set ownership and permissions. */
+	case IPC_SET:
+		if (sp->sm_perm.mode & IPC_SYSTEM) {
+			u.u_error = EPERM;
+			return(-1);
+		}
+
+		if(u.u_uid != sp->sm_perm.uid  &&  
+				u.u_uid != sp->sm_perm.cuid  &&
+				!suser())
+			return(-1);
+		if(copyin(arg, &ds, sizeof(ds))){
+			u.u_error = EFAULT;
+			return(-1);
+		}
+		sp->sm_perm.uid = ds.sm_perm.uid;
+		sp->sm_perm.gid = ds.sm_perm.gid;
+		sp->sm_perm.mode = (ds.sm_perm.mode & 0777) |
+					(sp->sm_perm.mode & ~0777);
+		sp->sm_ctime = (time_t) time.tv_sec;
+		return(0);
+
+		/* Get shared memory data structure. */
+	case IPC_STAT:
+		if(ipcaccess(&sp->sm_perm, SM_R) != 0)
+			return(-1);
+		if(copyout(sp, arg, sizeof(*sp))) {
+			u.u_error = EFAULT;
+			return(-1);
+		}
+		return(0);
+
+#ifdef DEPPDEBUG
+#define SHM_GETPSM 10
+#define SHM_GETPDATA 11
+		/* Get process shared memory array element */
+	case SHM_GETPSM:
+		if (ipcaccess(&sp->sm_perm, SM_R) != 0)
+			return (-1);
+		p = u.u_procp;
+		for (i = 0; i < sminfo.smseg; i++)
+			if (sp == p->p_sm[i].sm_p) {
+				if (copyout(&p->p_sm[i], arg, 
+					    sizeof(struct p_sm))) {
+					u.u_error = EFAULT;
+					return(-1);
+				}
+				return(0);
+			}
+		u.u_error = EINVAL;
+		return(-1);
+
+	case SHM_GETPDATA:
+		if (ipcaccess(&sp->sm_perm, SM_R) != 0)
+			return (-1);
+		p = u.u_procp;
+		if (copyout(&p->p_smsize, arg,  16)) {
+			u.u_error = EFAULT;
+			return(-1);
+		}
+		return (0);
+
+#endif DEPPDEBUG
+	case SHM_LOCK:
+		if (sp->sm_perm.mode & IPC_SYSTEM) {
+			u.u_error = EPERM;
+			return(-1);
+		}
+
+		if (!(suser()))
+			return(-1);
+
+		/* find segment	in proc table	*/
+		p = u.u_procp;
+		if((psmp = p->p_sm) == (struct p_sm *) NULL){
+			u.u_error = EINVAL;
+			return(-1);
+		}
+		for (i=0; i < sminfo.smseg; i++, psmp++)
+			if (psmp->sm_p == sp)
+				break;
+		if (i >= sminfo.smseg || psmp->sm_lock) {
+			u.u_error = EINVAL;
+			return(-1);
+		}
+
+		/*
+		 * silently return on double lock by same proc or 
+		 * vfork child/parent 
+		 */
+		if (psmp->sm_lock)
+		        return(0);
+
+		/* set lock */
+		SM_LOCK(sp);
+		psmp->sm_lock++;
+		sp->sm_flag |= SMNOSW;
+		sp->sm_lcount++;
+		SM_UNLOCK(sp);
+		return(0);
+
+	case SHM_UNLOCK:
+		if (sp->sm_perm.mode & IPC_SYSTEM) {
+			u.u_error = EPERM;
+			return(-1);
+		}
+
+		if (!(suser()))
+			return(-1);
+
+		/* find segment in proc table */
+		p = u.u_procp;
+		if((psmp = p->p_sm) == (struct p_sm *) NULL) {
+			u.u_error = EINVAL;
+			return(-1);
+		}
+		for (i=0; i < sminfo.smseg; i++, psmp++)
+			if (psmp->sm_p == sp)
+				break;
+		if (i >= sminfo.smseg) {
+			u.u_error = EINVAL;
+			return(-1);
+		}
+
+		SM_LOCK(sp);
+		/* If not locked or this proc didn't lock it; error */
+		if (!(psmp->sm_lock) || !(sp->sm_flag & SMNOSW)) {
+			u.u_error = EINVAL;
+			SM_UNLOCK(sp);
+			return(-1);
+		}
+
+		/* unlock SMS (at least from this proc's point of view */
+		psmp->sm_lock = 0;
+		if (--(sp->sm_lcount) == 0)
+			sp->sm_flag &= ~SMNOSW;
+		SM_UNLOCK(sp);
+		return(0);
+
+	default:
+		u.u_error = EINVAL;
+		return(-1);
+	}
+}
+
+
+/* SMDT - shared memory detach system call. Detach the		*/
+/*	specified shared memory segment from the current	*/
+/*	process.						*/
+smdt(addr)
+char *addr;
+{
+	register struct p_sm *psmp;	/* see proc.h		*/
+	register struct smem *sp;
+	register struct proc *p;
+	register int *seg;
+	register i, j;
+	struct p_sm *osmp;
+	int index;
+	int segbeg;
+
+	XPRINTF(XPR_SM, "entering smdt: addr 0x%x\n",addr,0,0,0);
+	/* Check for page alignment		*/
+	if ((int)addr & (ctob(1) - 1)  ||
+			(segbeg = btop(addr)) == 0) {
+		u.u_error = EINVAL;
+		return(-1);
+	}
+
+	/* find segment				*/
+	p = u.u_procp;
+	if((psmp = p->p_sm) == (struct p_sm *) NULL) {
+		u.u_error = EINVAL;
+		return(-1);
+	}
+	for (i=0; i < sminfo.smseg; i++, psmp++)
+		if (psmp->sm_p != NULL  &&  
+#ifdef vax
+		    psmp->sm_spte == segbeg)
+#endif vax
+#ifdef mips
+		    psmp->sm_saddr == segbeg)
+#endif mips
+			break;
+	if (i >= sminfo.smseg) {
+		u.u_error = EINVAL;
+		return(-1);
+	}
+	sp = psmp->sm_p;
+
+	/* if this process has SMS locked, then unlock */
+	if (psmp->sm_lock) {
+		psmp->sm_lock = 0;
+		if (--(sp->sm_lcount) == 0)
+			sp->sm_flag &= ~SMNOSW;
+	}
+	smfree(sp);
+
+#ifdef vax
+	/* clear the PTEs for this SMS		*/
+	i = btoc(sp->sm_size);
+	seg = (int *)mfpr(P0BR) + segbeg;
+	while (i--)
+		*seg++ = 0;
+	mtpr(TBIA, 0);
+	tbsync();
+	psmp->sm_spte = 0;
+	p->p_smbeg = 0;
+	p->p_smend = 0;
+
+#define I_PLUS_SIZE	(i + btoc((psmp->sm_p)->sm_size))
+	if((psmp = p->p_sm) == (struct p_sm *) NULL ) {
+		panic("smdt: p_sm");
+	}
+	for (j=0; j < sminfo.smseg; j++, psmp++) {
+		if (i = psmp->sm_spte) {
+			if (p->p_smbeg) {
+				if (p->p_smbeg > i)
+					p->p_smbeg = i;
+				if(p->p_smend < I_PLUS_SIZE)
+					p->p_smend = I_PLUS_SIZE;
+			} else {
+				p->p_smbeg = i;
+				p->p_smend = I_PLUS_SIZE;
+			}
+		}
+	}
+	if (p->p_smbeg == 0) {
+		setp0lr(u.u_tsize + u.u_dsize);
+		u.u_smsize = p->p_smsize = 0;
+	}
+	psmp->sm_p = NULL;
+#endif vax
+#ifdef mips
+	sm_del_psm(p, psmp - p->p_sm);
+        if (p->p_smcount) {
+		SM_PSM_UPDATE(p);
+	} else {
+		SM_PSM_CLEAR(p);
+	}
+        u.u_smsize = p->p_smsize;
+#endif mips
+	sp->sm_dtime = (time_t) time.tv_sec;
+	sp->sm_lpid = p->p_pid;
+	return(0);
+}
+
+
+/* SMCLEAN - Called by vrelvm to handle shared			*/
+/*	memory cleanup processing.				*/
+smclean () 
+{
+	register struct p_sm *psmp;	/* see proc.h		*/
+	register struct proc *p;
+	register int *seg, *segend;	/* ptr's to pte		*/
+	register int i;
+	struct p_sm *osmp;
+	int index;
+
+			/* Detach all attached segments		*/
+	p = u.u_procp;
+	if((psmp = p->p_sm) == (struct p_sm *) NULL ) {
+		panic("smclean: p_sm");
+	}
+	
+	p->p_smbeg = 0;
+	for(i=0; i < sminfo.smseg; i++, psmp++){
+		if(psmp->sm_p == NULL)
+			continue;
+		/* if this process has SMS locked, then unlock */
+		if (psmp->sm_lock) {
+			psmp->sm_lock = 0;
+			if (--((psmp->sm_p)->sm_lcount) == 0)
+				(psmp->sm_p)->sm_flag &= ~SMNOSW;
+		}
+		smfree(psmp->sm_p);
+#ifdef vax
+		seg = (int *)mfpr(P0BR) + psmp->sm_spte;
+		segend = seg + btoc((psmp->sm_p)->sm_size);
+		while(seg < segend)
+			*seg++ = 0;
+		psmp->sm_spte = 0;
+		psmp->sm_p = NULL;
+#endif vax
+	}
+	KM_FREE(p->p_sm, KM_SHMSEG);
+	p->p_sm = (struct p_sm *) NULL;
+	SM_PSM_CLEAR(p);
+	p->p_smsize = 0;
+	u.u_smsize = 0;
+
+#ifdef mips
+	p->p_smcount = 0;
+#endif mips
+#ifdef vax
+	setp0lr(u.u_tsize + u.u_dsize);
+#endif vax
+}
+
+
+
+/* SMFORK - Called by newproc(sys/kern_fork.c) to handle shared	*/
+/*	memory FORK processing.					*/
+smfork(pp, cp)
+    struct proc *pp,	/* ptr to parent proc table entry */
+		*cp;	/* ptr to child proc table entry */
+{
+	register struct p_sm	*cpsmp,	/* ptr to child p_sm	*/
+				*ppsmp;	/* ptr to parent p_sm	*/
+	register int i;
+
+	/* Copy ptrs and update counts on any attached segments. */
+	if((cpsmp = cp->p_sm) == (struct p_sm *) NULL ){
+		panic("smfork: cpsmp");
+	}
+	if((ppsmp = pp->p_sm) == (struct p_sm *) NULL ){
+		panic("smfork: ppsmp");
+	}
+	SM_PSM_COPY(pp,cp);
+#ifdef mips
+	cp->p_smcount = pp->p_smcount;
+#endif mips
+	for(i=0; i < sminfo.smseg; i++, cpsmp++, ppsmp++){
+		if(cpsmp->sm_p = ppsmp->sm_p){
+			cpsmp->sm_p->sm_count++;
+#ifdef vax
+			cpsmp->sm_spte = ppsmp->sm_spte;
+#endif vax
+#ifdef mips
+			cpsmp->sm_saddr = ppsmp->sm_saddr;
+			cpsmp->sm_eaddr = ppsmp->sm_eaddr;
+#endif mips
+			cpsmp->sm_pflag = ppsmp->sm_pflag;
+			cpsmp->sm_lock = 0;
+			smlink(cp, cpsmp->sm_p);
+		}
+	}
+}
+
+
+int smdebug;
+/* SMGET - get shared memory segment system call.		*/
+smget(key,size,smflag)
+int key;
+int size;
+int smflag;
+{
+	register struct smem *sp;	/* shared memory header ptr */
+	register int tmp_size, i;
+	register struct pte *pte;
+	int s;				/* ipcget status	*/
+	struct fpte proto;
+	int vmemall();
+
+	XPRINTF(XPR_SM,"entering smget: key 0x%x size %d flag 0x%x",
+		key, size, smflag,0);
+again:
+	if((sp = ipcget(key, smflag, &smem[0], sminfo.smmni,
+					sizeof(*sp), &s)) == NULL)
+		return(-1);
+	if(sp->sm_flag & SMLOCK){
+		SM_WAIT(sp);
+		if (s)
+			sp->sm_perm.mode = 0;
+		goto again;
+	}
+
+	SM_LOCK(sp);
+	u.u_procp->p_flag |= SKEEP;
+
+	if(s){ /* This is a new shared memory segment, set it up */
+		/* If user/kernel sharing, limits have been checked */
+		if ((smflag & IPC_SYSTEM) == 0) {
+			if(size < sminfo.smmin  ||
+			   size > sminfo.smmax  ||
+			   size < 1) {
+				u.u_error = EINVAL;
+				sp->sm_perm.mode = 0;
+				SM_UNLOCK(sp);
+				return(-1);
+			}
+		}
+		tmp_size = clrnd((int)btoc(size));
+
+		/* allocate the page table for this SMS */
+		sp->sm_size = size;
+		if(vgetsmpt(sp) == 0){
+			u.u_error = ENOMEM;
+			sp->sm_perm.mode = 0;
+			SM_UNLOCK(sp);
+			return(-1);
+		}
+
+		/* if normal, then create ZFOD PTES, else ignore 
+		 * Note: protection is Read only and tlbmod() will
+		 * adjust if it should be read/write
+		 */
+		if ((smflag & IPC_SYSTEM) == 0) {
+			pte = sp->sm_ptaddr;
+#ifdef mips
+			*(u_int*) &proto = (u_int) PG_URKR;
+#else  mips
+			*(u_int*) &proto = (u_int) 0;
+#endif mips
+			proto.pg_fod = 1;
+			proto.pg_fileno = PG_FZERO;
+			for ( i = 0; i < tmp_size; i++, pte++) {
+				*(int *)pte = *(int*) &proto;
+			}
+		}
+
+		smtot += tmp_size;
+
+		/* 
+		 * allocate swap space for this SMS
+		 * unless it is user/kernel mapping 
+		 */
+		if (((smflag & IPC_SYSTEM) == 0) && vssmalloc(sp) == NULL) {
+			u.u_error = ENOMEM;
+			sp->sm_count = 1;
+			sp->sm_flag &= ~SMLOCK; /* because smfree locks */
+			smfree(sp);
+			return(-1);
+		}
+
+		sp->sm_count = sp->sm_ccount = 0;
+		sp->sm_atime = sp->sm_dtime = 0;
+		sp->sm_ctime = (time_t) time.tv_sec;
+		sp->sm_lpid = 0;
+		sp->sm_cpid = u.u_procp->p_pid;
+
+	} else  { /* not new, so simply insure requested size within SMS */
+		if(size  &&  size > sp->sm_size) {
+			u.u_error = EINVAL;
+			SM_UNLOCK(sp);
+			return(-1);
+		}
+	}
+
+	u.u_procp->p_flag &= ~SKEEP;
+	SM_UNLOCK(sp);
+	return(sp->sm_perm.seq * sminfo.smmni + (sp - smem));
+}
+
+
+/* SMSYS - System entry point for SMAT, SMCTL, SMDT, and SMGET	*/
+/*	system calls.						*/
+smsys()
+{
+	register struct a {
+		u_int	id;
+		int     parm1,
+		        parm2,
+		        parm3;
+	} *uap = (struct a *)u.u_ap;
+	register int retarg;
+	int	smat(),
+		smctl(),
+		smdt(),
+		smget();
+	static int (*calls[])() = {smat, smctl, smdt, smget};
+
+	XPRINTF(XPR_SM, "enter smsys: id  %d",uap->id,0,0,0);
+	switch (uap->id) {
+	      case 0:
+	      case 1:
+		u.u_r.r_val1 = 
+			(*calls[uap->id])(uap->parm1, uap->parm2, uap->parm3);
+		break;
+
+	      case 2:
+		XPRINTF(XPR_SM, "smsys: calling smdt: addr 0x%x",
+			uap->parm1,0,0,0);
+		u.u_r.r_val1 = (*calls[uap->id])(uap->parm1);
+		break;
+
+	      case 3:
+		/* do not permit users to pass IPC_SYSTEM flag */
+		uap->parm3 = uap->parm3 & ~IPC_SYSTEM;
+		u.u_r.r_val1 = 
+			(*calls[uap->id])(uap->parm1, uap->parm2, uap->parm3);
+		break;
+
+	      default:
+		if(uap->id > 3){
+			u.u_error = EINVAL;
+			return;
+		}
+		break;
+	}
+	if(u.u_error) {
+		XPRINTF(XPR_SM, "failed smsys", 0,0,0,0);
+		u.u_r.r_val1 = 0;
+	}
+}
+
+#ifdef mips		/* this is here, because we should change the VAX */
+/*
+ * This routine will create a "hole" in the struct p_sm array.
+ * The hole will be zero filled. The calling routine will fill the "hole".
+ * This array is ordered by address (low to high).
+ * If at end of list, then we simply return (it's already zero filled)
+ * else we need to create a "hole" in the array, so we
+ *      1. malloc a new p_sm array (zero filled)
+ *      2. copy upto "hole" without offsetting index
+ *      3. copy from "hole" in orig, offsetting index in new by one
+ *      4. Leave "hole" in place (it's already zero filled)
+ *      5. To cleanup, simply replace new array in proc and free old one
+ * We are guaranteed that smindex is a valid index
+ *
+ * In the future, this should be done with lists ...
+ *
+ */
+sm_ins_psm(p, smindex)
+register struct proc *p;
+register int smindex;
+{
+	register struct p_sm *fpsm, *tpsm, *tp;
+	int next = smindex + 1;
+
+	XPRINTF(XPR_SM, "enter sm_ins_psm: smindex = %d",smindex,0,0,0);
+
+	if (++(p->p_smcount) > sminfo.smseg) {
+		cprintf("p_smcount = %d\n",p->p_smcount);
+		panic("sm_ins_psm: p_smcount >= sminfo.smseg");
+	}
+
+	/* if at end of list ... */
+	if (p->p_sm[smindex].sm_p == NULL)
+		return;
+
+	/* if not, then shuffle ... */
+	if (next  == sminfo.smseg)
+		panic("sm_ins_psm: too many segments per process");
+	KM_ALLOC(tp, struct p_sm *, SIZEOF_PSM, KM_SHMSEG, KM_CLEAR);
+	if (smindex)
+		bcopy(p->p_sm, tp, sizeof(struct p_sm)*smindex);
+	bcopy(&p->p_sm[smindex], &tp[next], 
+	      sizeof(struct p_sm)*(sminfo.smseg - next));
+
+        KM_FREE(p->p_sm, KM_SHMSEG);
+	p->p_sm = tp;
+	return;
+}
+
+/*
+ * This routine will remove the entry in the p_sm array, compress it, and 
+ * zero fill the last entry
+ */
+sm_del_psm(p, smindex)
+register struct proc *p;
+register smindex;
+{
+	XPRINTF(XPR_SM, "enter sm_del_psm: smindex = %d",smindex,0,0,0);
+
+	/* move backward into the "hole" */
+	if (++smindex < sminfo.smseg)
+		bcopy(&p->p_sm[smindex], &p->p_sm[smindex-1],
+		      sizeof(struct p_sm) * (sminfo.smseg - smindex));
+	
+	/* zero last element */
+	bzero(&p->p_sm[sminfo.smseg-1], sizeof(struct p_sm));
+	if (--(p->p_smcount) < 0)
+		panic("sm_del_psm: smcount");
+}
+#endif mips

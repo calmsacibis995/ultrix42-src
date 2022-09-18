@@ -1,0 +1,41 @@
+.TH raw 3cur 
+.SH Name
+raw, noraw \- enable/disable raw mode
+.SH Syntax
+.br
+.B
+int raw(\|)
+.PP
+.B
+int noraw(\|)
+.SH Description
+.NXR "noraw subroutine"
+.NXR "raw subroutine"
+.PP
+The 
+.PN raw
+routine
+sets
+the terminal into RAW mode.
+RAW mode is similar to CBREAK 
+mode, in that characters are immediately
+passed through to the user program as they are typed.
+In RAW 
+mode, the interrupt, quit, suspend and flow
+control characters are passed through uninterpreted, 
+and do not generate a signal.
+.PP
+The behavior of the BREAK 
+key depends on the settings of bits that
+are not controlled by
+.PN curses .
+.PP
+The 
+.PN noraw
+routine disables RAW mode.
+.SH Return Values
+The
+.PN raw
+and
+.PN noraw 
+functions return OK on success and ERR on error.

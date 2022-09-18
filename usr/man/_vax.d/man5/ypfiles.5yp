@@ -1,0 +1,139 @@
+.\" SCCSID: @(#)ypfiles.5yp	8.2	11/9/90
+.TH ypfiles 5yp
+.SH Name
+ypfiles \- Yellow Pages data base and directory structure
+.SH Description
+.NXR "ypfiles keyword"
+.NXR "YP map" "format"
+.NXR "YP map" "defined"
+.NXR "YP domain" "defined"
+The Yellow Pages (YP) data base lookup service uses a data base of
+.PN dbm
+files in the 
+.PN /etc/yp
+directory hierarchy.
+A
+.PN dbm
+data base consists of two files, created by calls to the 
+.MS dbm 3x
+library package.  One has the filename extension 
+.PN \&.pag
+and the other has the filename extension 
+.PN \&.dir .
+For instance, the data base named
+.PN hosts.byname ,
+is implemented by the pair of files 
+.PN hosts.byname.pag
+and
+.PN hosts.byname.dir .
+.PP
+A
+.PN dbm
+data base served by YP is called a YP 
+.I map.
+A YP
+.I domain
+is a named set of YP maps.  
+Each YP domain is implemented as a subdirectory of 
+.PN /etc/yp 
+containing the maps.
+The number of YP domains that can exist is unlimited.
+Each domain can contain any number of 
+maps.
+.PP
+The YP maps are not required by the YP lookup service, although they may
+be required for the normal operation of other parts of the system.
+The YP lookup service serves all maps. If the map exists in a given
+domain and a client asks about it, YP will serve it.  There is,
+however, a set of default maps that the YP service serves.  The files
+representing these maps are listed in this description under Files.
+.PP
+For a map to be accessible consistently, it must exist on all YP
+servers that serve the domain.  To provide data consistency between the
+replicated maps, an entry to execute the 
+.PN ypxfr
+command periodically should be made in the 
+.PN /usr/lib/crontab
+file on each slave server.  More information on this topic is in 
+.MS ypxfr 8yp .
+An entry in the 
+.PN /etc/lib/crontab
+file must not exist, either on a YP master server or on a pure YP client
+machine.
+.PP
+The YP maps should contain two distinguished
+key-value pairs.  The first is
+the key YP_LAST_MODIFIED, whose value is a 10-character 
+ASCII order number.  The order number should be the \s-2UNIX\s0 time 
+in seconds when the map was built.  The second key is YP_MASTER_NAME, 
+with the name of the YP master server as a value.  
+The 
+.MS makedbm 8yp
+command generates both key-value pairs automatically.
+A map that does not contain both key-value pairs can be served by 
+the YP, but the 
+.PN ypserv 
+process will not be able to return values for ``Get order number''
+or ``Get master name'' requests.  
+In addition, values of these two keys are used by
+.MS ypxfr 8yp
+when it transfers a map from a master YP server to a slave.
+.PP
+Before they can be properly accessed, the YP maps must be initially
+set up for both masters and slaves by using the
+.MS ypsetup 8yp
+function.
+Further, YP maps must be generated and modified only
+at the master server
+location.  Copies of the master server YP maps can then
+be transferred to the
+slave servers using the 
+.MS ypxfr 8yp
+function.
+If 
+.PN ypxfr 
+is unable to determine a map's location, or if it is unable to
+determine whether the local copy is more 
+recent than the master copy, extra command line 
+switches must be set when it is executed.
+.PP
+After the server data bases are set up, the contents of
+some maps may change.  In general, some ASCII source version of the
+data base exists on the master. 
+This version should be changed with a standard text
+editor.  The update is incorporated into the YP
+map and is propagated from
+the master to the slaves by running 
+.PN /etc/yp/Makefile .
+All maps must have entries in 
+.PN /etc/yp/Makefile .
+If a YP map is added, the 
+.PN /etc/yp/Makefile
+must be edited to support the new map.
+The makefile uses 
+.MS makedbm 8yp
+to generate the YP map on the master, and
+.MS yppush 8yp
+to propagate the changed map to the slaves.  
+The 
+.MS yppush 8yp
+command is a client of the map
+.I ypservers,
+which lists all of the YP servers.  
+.SH Files
+.PN /etc/passwd
+.br
+.PN /etc/group
+.br
+.PN /etc/hosts
+.br
+.PN /etc/networks
+.br
+.PN /etc/services
+.br
+.PN /etc/protocols
+.br
+.PN /etc/netgroup
+.SH See Also
+makedbm(8yp), rpcinfo(8nfs), ypmake(8yp), yppoll(8yp),
+yppush(8yp), ypserv(8yp), ypsetup(8yp), ypxfr(8yp)

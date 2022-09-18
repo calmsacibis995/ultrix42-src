@@ -1,0 +1,4353 @@
+
+state 0
+	$accept : _pascalFile $end 
+
+	error  shift 13
+	SHARP  shift 14
+	CONST  shift 16
+	LABEL  shift 15
+	FUNCTION  shift 23
+	PROGRAM  shift 5
+	PROCEDURE  shift 24
+	TYPE  shift 17
+	VAR  shift 18
+	.  error
+
+	pascalFile  goto 1
+	CompilationUnit  goto 2
+	program  goto 3
+	lsDeclaration  goto 4
+	declaration  goto 6
+	IncludeDecl  goto 7
+	LabelDecl  goto 8
+	ConstDecl  goto 9
+	TypeDecl  goto 10
+	VarDecl  goto 11
+	ProcedureDecl  goto 12
+	ProcedurePrefix  goto 22
+	ProcedureHeader  goto 20
+	FunctionPrefix  goto 21
+	FunctionHeader  goto 19
+
+state 1
+	$accept :  pascalFile_$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	pascalFile :  CompilationUnit_    (1)
+
+	.  reduce 1
+
+
+state 3
+	CompilationUnit :  program_    (2)
+
+	.  reduce 2
+
+
+state 4
+	CompilationUnit :  lsDeclaration_    (3)
+	lsDeclaration :  lsDeclaration_declaration 
+
+	error  shift 13
+	SHARP  shift 14
+	CONST  shift 16
+	LABEL  shift 15
+	FUNCTION  shift 23
+	PROCEDURE  shift 24
+	TYPE  shift 17
+	VAR  shift 18
+	.  reduce 3
+
+	declaration  goto 25
+	IncludeDecl  goto 7
+	LabelDecl  goto 8
+	ConstDecl  goto 9
+	TypeDecl  goto 10
+	VarDecl  goto 11
+	ProcedureDecl  goto 12
+	ProcedurePrefix  goto 22
+	ProcedureHeader  goto 20
+	FunctionPrefix  goto 21
+	FunctionHeader  goto 19
+
+state 5
+	program :  PROGRAM_ident zoplsIdent SEMICOLON $$4 block END DOT 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 26
+
+state 6
+	lsDeclaration :  declaration_    (11)
+
+	.  reduce 11
+
+
+state 7
+	declaration :  IncludeDecl_    (13)
+
+	.  reduce 13
+
+
+state 8
+	declaration :  LabelDecl_    (14)
+
+	.  reduce 14
+
+
+state 9
+	declaration :  ConstDecl_    (15)
+	ConstDecl :  ConstDecl_ConstDef SEMICOLON 
+
+	IDENT  shift 27
+	.  reduce 15
+
+	ident  goto 31
+	ConstDef  goto 28
+	exportIdent  goto 29
+	prIdent  goto 30
+
+state 10
+	declaration :  TypeDecl_    (16)
+	TypeDecl :  TypeDecl_TypeDef $$32 SEMICOLON 
+
+	IDENT  shift 27
+	.  reduce 16
+
+	ident  goto 31
+	exportIdent  goto 33
+	TypeDef  goto 32
+	prIdent  goto 30
+
+state 11
+	declaration :  VarDecl_    (17)
+	VarDecl :  VarDecl_VarDef $$39 SEMICOLON 
+
+	IDENT  shift 27
+	.  reduce 17
+
+	ident  goto 31
+	exportIdent  goto 36
+	VarDef  goto 34
+	varIdentList  goto 35
+	prIdent  goto 30
+
+state 12
+	declaration :  ProcedureDecl_    (18)
+
+	.  reduce 18
+
+
+state 13
+	declaration :  error_SEMICOLON 
+
+	SEMICOLON  shift 37
+	.  error
+
+
+state 14
+	IncludeDecl :  SHARP_INCLUDE $$20 STRCONST 
+
+	INCLUDE  shift 38
+	.  error
+
+
+state 15
+	LabelDecl :  LABEL_$$22 oplsElement SEMICOLON 
+	$$22 : _    (22)
+
+	.  reduce 22
+
+	$$22  goto 39
+
+state 16
+	ConstDecl :  CONST_$$24 ConstDef SEMICOLON 
+	$$24 : _    (24)
+
+	.  reduce 24
+
+	$$24  goto 40
+
+state 17
+	TypeDecl :  TYPE_$$29 TypeDef $$30 SEMICOLON 
+	$$29 : _    (29)
+
+	.  reduce 29
+
+	$$29  goto 41
+
+state 18
+	VarDecl :  VAR_$$36 VarDef $$37 SEMICOLON 
+	$$36 : _    (36)
+
+	.  reduce 36
+
+	$$36  goto 42
+
+state 19
+	ProcedureDecl :  FunctionHeader_block END SEMICOLON 
+	ProcedureDecl :  FunctionHeader_EXTERNAL SEMICOLON 
+	oplsDeclaration : _    (9)
+
+	error  shift 13
+	SHARP  shift 14
+	CONST  shift 16
+	LABEL  shift 15
+	FORWARD  shift 46
+	FUNCTION  shift 23
+	EXTERNAL  shift 44
+	PROCEDURE  shift 24
+	TYPE  shift 17
+	VAR  shift 18
+	.  reduce 9
+
+	lsDeclaration  goto 47
+	block  goto 43
+	oplsDeclaration  goto 45
+	declaration  goto 6
+	IncludeDecl  goto 7
+	LabelDecl  goto 8
+	ConstDecl  goto 9
+	TypeDecl  goto 10
+	VarDecl  goto 11
+	ProcedureDecl  goto 12
+	ProcedurePrefix  goto 22
+	ProcedureHeader  goto 20
+	FunctionPrefix  goto 21
+	FunctionHeader  goto 19
+
+state 20
+	ProcedureDecl :  ProcedureHeader_block END SEMICOLON 
+	ProcedureDecl :  ProcedureHeader_EXTERNAL SEMICOLON 
+	oplsDeclaration : _    (9)
+
+	error  shift 13
+	SHARP  shift 14
+	CONST  shift 16
+	LABEL  shift 15
+	FORWARD  shift 46
+	FUNCTION  shift 23
+	EXTERNAL  shift 49
+	PROCEDURE  shift 24
+	TYPE  shift 17
+	VAR  shift 18
+	.  reduce 9
+
+	lsDeclaration  goto 47
+	block  goto 48
+	oplsDeclaration  goto 45
+	declaration  goto 6
+	IncludeDecl  goto 7
+	LabelDecl  goto 8
+	ConstDecl  goto 9
+	TypeDecl  goto 10
+	VarDecl  goto 11
+	ProcedureDecl  goto 12
+	ProcedurePrefix  goto 22
+	ProcedureHeader  goto 20
+	FunctionPrefix  goto 21
+	FunctionHeader  goto 19
+
+state 21
+	FunctionHeader :  FunctionPrefix_SEMICOLON 
+	FunctionHeader :  FunctionPrefix_fparameterList COLON $$50 prIdent $$51 SEMICOLON 
+	fparameterList : _    (57)
+
+	SEMICOLON  shift 50
+	LPAREN  shift 53
+	.  reduce 57
+
+	parameterList  goto 52
+	fparameterList  goto 51
+
+state 22
+	ProcedureHeader :  ProcedurePrefix_SEMICOLON 
+	ProcedureHeader :  ProcedurePrefix_parameterList SEMICOLON 
+
+	SEMICOLON  shift 54
+	LPAREN  shift 53
+	.  error
+
+	parameterList  goto 55
+
+state 23
+	FunctionPrefix :  FUNCTION_$$47 exportIdent 
+	$$47 : _    (47)
+
+	.  reduce 47
+
+	$$47  goto 56
+
+state 24
+	ProcedurePrefix :  PROCEDURE_$$43 exportIdent 
+	$$43 : _    (43)
+
+	.  reduce 43
+
+	$$43  goto 57
+
+state 25
+	lsDeclaration :  lsDeclaration declaration_    (12)
+
+	.  reduce 12
+
+
+state 26
+	program :  PROGRAM ident_zoplsIdent SEMICOLON $$4 block END DOT 
+	zoplsIdent : _    (280)
+
+	LPAREN  shift 59
+	.  reduce 280
+
+	zoplsIdent  goto 58
+
+state 27
+	ident :  IDENT_    (287)
+
+	.  reduce 287
+
+
+state 28
+	ConstDecl :  ConstDecl ConstDef_SEMICOLON 
+
+	SEMICOLON  shift 60
+	.  error
+
+
+state 29
+	ConstDef :  exportIdent_EQUALS $$27 expression 
+
+	EQUALS  shift 61
+	.  error
+
+
+state 30
+	exportIdent :  prIdent_    (294)
+
+	.  reduce 294
+
+
+state 31
+	prIdent :  ident_    (279)
+
+	.  reduce 279
+
+
+state 32
+	TypeDecl :  TypeDecl TypeDef_$$32 SEMICOLON 
+	$$32 : _    (32)
+
+	.  reduce 32
+
+	$$32  goto 62
+
+state 33
+	TypeDef :  exportIdent_EQUALS $$34 typeDefinition 
+
+	EQUALS  shift 63
+	.  error
+
+
+state 34
+	VarDecl :  VarDecl VarDef_$$39 SEMICOLON 
+	$$39 : _    (39)
+
+	.  reduce 39
+
+	$$39  goto 64
+
+state 35
+	VarDef :  varIdentList_COLON $$41 typeDefinition 
+	varIdentList :  varIdentList_COMMA $$296 exportIdent 
+
+	COMMA  shift 66
+	COLON  shift 65
+	.  error
+
+
+state 36
+	varIdentList :  exportIdent_    (295)
+
+	.  reduce 295
+
+
+state 37
+	declaration :  error SEMICOLON_    (19)
+
+	.  reduce 19
+
+
+state 38
+	IncludeDecl :  SHARP INCLUDE_$$20 STRCONST 
+	$$20 : _    (20)
+
+	.  reduce 20
+
+	$$20  goto 67
+
+state 39
+	LabelDecl :  LABEL $$22_oplsElement SEMICOLON 
+	oplsElement : _    (244)
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  reduce 244
+
+	ident  goto 31
+	oplsElement  goto 68
+	expression  goto 71
+	prIdent  goto 86
+	ElementList  goto 69
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	Element  goto 70
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 40
+	ConstDecl :  CONST $$24_ConstDef SEMICOLON 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	ConstDef  goto 87
+	exportIdent  goto 29
+	prIdent  goto 30
+
+state 41
+	TypeDecl :  TYPE $$29_TypeDef $$30 SEMICOLON 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	exportIdent  goto 33
+	TypeDef  goto 88
+	prIdent  goto 30
+
+state 42
+	VarDecl :  VAR $$36_VarDef $$37 SEMICOLON 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	exportIdent  goto 36
+	VarDef  goto 89
+	varIdentList  goto 35
+	prIdent  goto 30
+
+state 43
+	ProcedureDecl :  FunctionHeader block_END SEMICOLON 
+
+	END  shift 90
+	.  error
+
+
+state 44
+	ProcedureDecl :  FunctionHeader EXTERNAL_SEMICOLON 
+
+	SEMICOLON  shift 91
+	.  error
+
+
+state 45
+	block :  oplsDeclaration_BEGIN $$6 StatementSequence 
+
+	BEGIN  shift 92
+	.  error
+
+
+state 46
+	block :  FORWARD_    (8)
+
+	.  reduce 8
+
+
+state 47
+	oplsDeclaration :  lsDeclaration_    (10)
+	lsDeclaration :  lsDeclaration_declaration 
+
+	error  shift 13
+	SHARP  shift 14
+	CONST  shift 16
+	LABEL  shift 15
+	FUNCTION  shift 23
+	PROCEDURE  shift 24
+	TYPE  shift 17
+	VAR  shift 18
+	.  reduce 10
+
+	declaration  goto 25
+	IncludeDecl  goto 7
+	LabelDecl  goto 8
+	ConstDecl  goto 9
+	TypeDecl  goto 10
+	VarDecl  goto 11
+	ProcedureDecl  goto 12
+	ProcedurePrefix  goto 22
+	ProcedureHeader  goto 20
+	FunctionPrefix  goto 21
+	FunctionHeader  goto 19
+
+state 48
+	ProcedureDecl :  ProcedureHeader block_END SEMICOLON 
+
+	END  shift 93
+	.  error
+
+
+state 49
+	ProcedureDecl :  ProcedureHeader EXTERNAL_SEMICOLON 
+
+	SEMICOLON  shift 94
+	.  error
+
+
+state 50
+	FunctionHeader :  FunctionPrefix SEMICOLON_    (49)
+
+	.  reduce 49
+
+
+state 51
+	FunctionHeader :  FunctionPrefix fparameterList_COLON $$50 prIdent $$51 SEMICOLON 
+
+	COLON  shift 95
+	.  error
+
+
+state 52
+	fparameterList :  parameterList_    (58)
+
+	.  reduce 58
+
+
+state 53
+	parameterList :  LPAREN_$$59 lsParam RPAREN 
+	$$59 : _    (59)
+
+	.  reduce 59
+
+	$$59  goto 96
+
+state 54
+	ProcedureHeader :  ProcedurePrefix SEMICOLON_    (45)
+
+	.  reduce 45
+
+
+state 55
+	ProcedureHeader :  ProcedurePrefix parameterList_SEMICOLON 
+
+	SEMICOLON  shift 97
+	.  error
+
+
+state 56
+	FunctionPrefix :  FUNCTION $$47_exportIdent 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	exportIdent  goto 98
+	prIdent  goto 30
+
+state 57
+	ProcedurePrefix :  PROCEDURE $$43_exportIdent 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	exportIdent  goto 99
+	prIdent  goto 30
+
+state 58
+	program :  PROGRAM ident zoplsIdent_SEMICOLON $$4 block END DOT 
+
+	SEMICOLON  shift 100
+	.  error
+
+
+state 59
+	zoplsIdent :  LPAREN_IdentList RPAREN 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 102
+	IdentList  goto 101
+
+state 60
+	ConstDecl :  ConstDecl ConstDef SEMICOLON_    (26)
+
+	.  reduce 26
+
+
+state 61
+	ConstDef :  exportIdent EQUALS_$$27 expression 
+	$$27 : _    (27)
+
+	.  reduce 27
+
+	$$27  goto 103
+
+state 62
+	TypeDecl :  TypeDecl TypeDef $$32_SEMICOLON 
+
+	SEMICOLON  shift 104
+	.  error
+
+
+state 63
+	TypeDef :  exportIdent EQUALS_$$34 typeDefinition 
+	$$34 : _    (34)
+
+	.  reduce 34
+
+	$$34  goto 105
+
+state 64
+	VarDecl :  VarDecl VarDef $$39_SEMICOLON 
+
+	SEMICOLON  shift 106
+	.  error
+
+
+state 65
+	VarDef :  varIdentList COLON_$$41 typeDefinition 
+	$$41 : _    (41)
+
+	.  reduce 41
+
+	$$41  goto 107
+
+state 66
+	varIdentList :  varIdentList COMMA_$$296 exportIdent 
+	$$296 : _    (296)
+
+	.  reduce 296
+
+	$$296  goto 108
+
+state 67
+	IncludeDecl :  SHARP INCLUDE $$20_STRCONST 
+
+	STRCONST  shift 109
+	.  error
+
+
+state 68
+	LabelDecl :  LABEL $$22 oplsElement_SEMICOLON 
+
+	SEMICOLON  shift 110
+	.  error
+
+
+state 69
+	oplsElement :  ElementList_    (245)
+	ElementList :  ElementList_COMMA $$265 Element 
+
+	COMMA  shift 111
+	.  reduce 245
+
+
+state 70
+	ElementList :  Element_    (264)
+
+	.  reduce 264
+
+
+state 71
+	Element :  expression_    (261)
+	Element :  expression_DOTDOT $$262 expression 
+
+	DOTDOT  shift 112
+	.  reduce 261
+
+
+state 72
+	expression :  SimpleExpression_    (227)
+	expression :  SimpleExpression_relation SimpleExpression 
+
+	EQUALS  shift 114
+	LESS  shift 116
+	GREATER  shift 118
+	NOTEQUAL  shift 115
+	LSEQUAL  shift 117
+	GREQUAL  shift 119
+	IN  shift 120
+	.  reduce 227
+
+	relation  goto 113
+
+state 73
+	SimpleExpression :  lsAddTerm_    (269)
+	lsAddTerm :  lsAddTerm_AddOperator term 
+
+	PLUS  shift 122
+	MINUS  shift 123
+	OR  shift 124
+	.  reduce 269
+
+	AddOperator  goto 121
+
+state 74
+	SimpleExpression :  PLUS_$$270 lsAddTerm 
+	$$270 : _    (270)
+
+	.  reduce 270
+
+	$$270  goto 125
+
+state 75
+	SimpleExpression :  MINUS_$$272 lsAddTerm 
+	$$272 : _    (272)
+
+	.  reduce 272
+
+	$$272  goto 126
+
+state 76
+	term :  term_MulOperator factor 
+	lsAddTerm :  term_    (274)
+
+	ASTERISK  shift 128
+	SLASH  shift 129
+	AND  shift 132
+	DIV  shift 130
+	MOD  shift 131
+	.  reduce 274
+
+	MulOperator  goto 127
+
+state 77
+	term :  factor_    (267)
+
+	.  reduce 267
+
+
+state 78
+	factor :  NUMBER_    (211)
+
+	.  reduce 211
+
+
+state 79
+	factor :  CHARCONST_    (212)
+
+	.  reduce 212
+
+
+state 80
+	factor :  STRCONST_    (213)
+
+	.  reduce 213
+
+
+state 81
+	factor :  setexpr_    (214)
+
+	.  reduce 214
+
+
+state 82
+	factor :  designator_    (215)
+	factor :  designator_ActualParameters 
+	designator :  designator_LBRACKET $$222 ExpList RBRACKET 
+	designator :  designator_UPARROW 
+	designator :  designator_DOT $$225 prIdent 
+
+	DOT  shift 136
+	LPAREN  shift 137
+	LBRACKET  shift 134
+	UPARROW  shift 135
+	.  reduce 215
+
+	ActualParameters  goto 133
+
+state 83
+	factor :  LPAREN_$$217 expression RPAREN 
+	$$217 : _    (217)
+
+	.  reduce 217
+
+	$$217  goto 138
+
+state 84
+	factor :  NOT_$$219 factor 
+	$$219 : _    (219)
+
+	.  reduce 219
+
+	$$219  goto 139
+
+state 85
+	setexpr :  LBRACKET_$$240 oplsElement RBRACKET 
+	$$240 : _    (240)
+
+	.  reduce 240
+
+	$$240  goto 140
+
+state 86
+	designator :  prIdent_    (221)
+	setexpr :  prIdent_LBRACE $$242 oplsElement RBRACE 
+
+	LBRACE  shift 141
+	.  reduce 221
+
+
+state 87
+	ConstDecl :  CONST $$24 ConstDef_SEMICOLON 
+
+	SEMICOLON  shift 142
+	.  error
+
+
+state 88
+	TypeDecl :  TYPE $$29 TypeDef_$$30 SEMICOLON 
+	$$30 : _    (30)
+
+	.  reduce 30
+
+	$$30  goto 143
+
+state 89
+	VarDecl :  VAR $$36 VarDef_$$37 SEMICOLON 
+	$$37 : _    (37)
+
+	.  reduce 37
+
+	$$37  goto 144
+
+state 90
+	ProcedureDecl :  FunctionHeader block END_SEMICOLON 
+
+	SEMICOLON  shift 145
+	.  error
+
+
+state 91
+	ProcedureDecl :  FunctionHeader EXTERNAL SEMICOLON_    (55)
+
+	.  reduce 55
+
+
+state 92
+	block :  oplsDeclaration BEGIN_$$6 StatementSequence 
+	$$6 : _    (6)
+
+	.  reduce 6
+
+	$$6  goto 146
+
+state 93
+	ProcedureDecl :  ProcedureHeader block END_SEMICOLON 
+
+	SEMICOLON  shift 147
+	.  error
+
+
+state 94
+	ProcedureDecl :  ProcedureHeader EXTERNAL SEMICOLON_    (56)
+
+	.  reduce 56
+
+
+state 95
+	FunctionHeader :  FunctionPrefix fparameterList COLON_$$50 prIdent $$51 SEMICOLON 
+	$$50 : _    (50)
+
+	.  reduce 50
+
+	$$50  goto 148
+
+state 96
+	parameterList :  LPAREN $$59_lsParam RPAREN 
+	opParamType : _    (138)
+
+	FUNCTION  shift 154
+	PROCEDURE  shift 151
+	VAR  shift 153
+	.  reduce 138
+
+	lsParam  goto 149
+	formalParam  goto 150
+	opParamType  goto 152
+
+state 97
+	ProcedureHeader :  ProcedurePrefix parameterList SEMICOLON_    (46)
+
+	.  reduce 46
+
+
+state 98
+	FunctionPrefix :  FUNCTION $$47 exportIdent_    (48)
+
+	.  reduce 48
+
+
+state 99
+	ProcedurePrefix :  PROCEDURE $$43 exportIdent_    (44)
+
+	.  reduce 44
+
+
+state 100
+	program :  PROGRAM ident zoplsIdent SEMICOLON_$$4 block END DOT 
+	$$4 : _    (4)
+
+	.  reduce 4
+
+	$$4  goto 155
+
+state 101
+	zoplsIdent :  LPAREN IdentList_RPAREN 
+	IdentList :  IdentList_COMMA ident 
+
+	COMMA  shift 157
+	RPAREN  shift 156
+	.  error
+
+
+state 102
+	IdentList :  ident_    (285)
+
+	.  reduce 285
+
+
+state 103
+	ConstDef :  exportIdent EQUALS $$27_expression 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 158
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 104
+	TypeDecl :  TypeDecl TypeDef $$32 SEMICOLON_    (33)
+
+	.  reduce 33
+
+
+state 105
+	TypeDef :  exportIdent EQUALS $$34_typeDefinition 
+	opPACKED : _    (102)
+
+	PLUS  shift 179
+	MINUS  shift 180
+	LPAREN  shift 175
+	UPARROW  shift 169
+	IDENT  shift 178
+	NUMBER  shift 176
+	CHARCONST  shift 177
+	PACKED  shift 181
+	PFILE  shift 171
+	RECORD  shift 173
+	SET  shift 172
+	.  reduce 102
+
+	ident  goto 31
+	typeDefinition  goto 159
+	prIdent  goto 174
+	SimpleType  goto 160
+	PointerType  goto 161
+	ArrayType  goto 162
+	FileType  goto 163
+	SetType  goto 164
+	RecordType  goto 165
+	typeIdentifier  goto 166
+	enumeration  goto 167
+	SubrangeType  goto 168
+	opPACKED  goto 170
+
+state 106
+	VarDecl :  VarDecl VarDef $$39 SEMICOLON_    (40)
+
+	.  reduce 40
+
+
+state 107
+	VarDef :  varIdentList COLON $$41_typeDefinition 
+	opPACKED : _    (102)
+
+	PLUS  shift 179
+	MINUS  shift 180
+	LPAREN  shift 175
+	UPARROW  shift 169
+	IDENT  shift 178
+	NUMBER  shift 176
+	CHARCONST  shift 177
+	PACKED  shift 181
+	PFILE  shift 171
+	RECORD  shift 173
+	SET  shift 172
+	.  reduce 102
+
+	ident  goto 31
+	typeDefinition  goto 182
+	prIdent  goto 174
+	SimpleType  goto 160
+	PointerType  goto 161
+	ArrayType  goto 162
+	FileType  goto 163
+	SetType  goto 164
+	RecordType  goto 165
+	typeIdentifier  goto 166
+	enumeration  goto 167
+	SubrangeType  goto 168
+	opPACKED  goto 170
+
+state 108
+	varIdentList :  varIdentList COMMA $$296_exportIdent 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	exportIdent  goto 183
+	prIdent  goto 30
+
+state 109
+	IncludeDecl :  SHARP INCLUDE $$20 STRCONST_    (21)
+
+	.  reduce 21
+
+
+state 110
+	LabelDecl :  LABEL $$22 oplsElement SEMICOLON_    (23)
+
+	.  reduce 23
+
+
+state 111
+	ElementList :  ElementList COMMA_$$265 Element 
+	$$265 : _    (265)
+
+	.  reduce 265
+
+	$$265  goto 184
+
+state 112
+	Element :  expression DOTDOT_$$262 expression 
+	$$262 : _    (262)
+
+	.  reduce 262
+
+	$$262  goto 185
+
+state 113
+	expression :  SimpleExpression relation_SimpleExpression 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 186
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 114
+	relation :  EQUALS_    (254)
+
+	.  reduce 254
+
+
+state 115
+	relation :  NOTEQUAL_    (255)
+
+	.  reduce 255
+
+
+state 116
+	relation :  LESS_    (256)
+
+	.  reduce 256
+
+
+state 117
+	relation :  LSEQUAL_    (257)
+
+	.  reduce 257
+
+
+state 118
+	relation :  GREATER_    (258)
+
+	.  reduce 258
+
+
+state 119
+	relation :  GREQUAL_    (259)
+
+	.  reduce 259
+
+
+state 120
+	relation :  IN_    (260)
+
+	.  reduce 260
+
+
+state 121
+	lsAddTerm :  lsAddTerm AddOperator_term 
+
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	term  goto 187
+
+state 122
+	AddOperator :  PLUS_    (251)
+
+	.  reduce 251
+
+
+state 123
+	AddOperator :  MINUS_    (252)
+
+	.  reduce 252
+
+
+state 124
+	AddOperator :  OR_    (253)
+
+	.  reduce 253
+
+
+state 125
+	SimpleExpression :  PLUS $$270_lsAddTerm 
+
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	term  goto 76
+	lsAddTerm  goto 188
+
+state 126
+	SimpleExpression :  MINUS $$272_lsAddTerm 
+
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	term  goto 76
+	lsAddTerm  goto 189
+
+state 127
+	term :  term MulOperator_factor 
+
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 190
+	setexpr  goto 81
+
+state 128
+	MulOperator :  ASTERISK_    (246)
+
+	.  reduce 246
+
+
+state 129
+	MulOperator :  SLASH_    (247)
+
+	.  reduce 247
+
+
+state 130
+	MulOperator :  DIV_    (248)
+
+	.  reduce 248
+
+
+state 131
+	MulOperator :  MOD_    (249)
+
+	.  reduce 249
+
+
+state 132
+	MulOperator :  AND_    (250)
+
+	.  reduce 250
+
+
+state 133
+	factor :  designator ActualParameters_    (216)
+
+	.  reduce 216
+
+
+state 134
+	designator :  designator LBRACKET_$$222 ExpList RBRACKET 
+	$$222 : _    (222)
+
+	.  reduce 222
+
+	$$222  goto 191
+
+state 135
+	designator :  designator UPARROW_    (224)
+
+	.  reduce 224
+
+
+state 136
+	designator :  designator DOT_$$225 prIdent 
+	$$225 : _    (225)
+
+	.  reduce 225
+
+	$$225  goto 192
+
+state 137
+	ActualParameters :  LPAREN_$$166 RPAREN 
+	ActualParameters :  LPAREN_$$168 ColonExpList RPAREN 
+	$$166 : _    (166)
+	$$168 : _    (168)
+
+	RPAREN  reduce 166
+	.  reduce 168
+
+	$$166  goto 193
+	$$168  goto 194
+
+state 138
+	factor :  LPAREN $$217_expression RPAREN 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 195
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 139
+	factor :  NOT $$219_factor 
+
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 196
+	setexpr  goto 81
+
+state 140
+	setexpr :  LBRACKET $$240_oplsElement RBRACKET 
+	oplsElement : _    (244)
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  reduce 244
+
+	ident  goto 31
+	oplsElement  goto 197
+	expression  goto 71
+	prIdent  goto 86
+	ElementList  goto 69
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	Element  goto 70
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 141
+	setexpr :  prIdent LBRACE_$$242 oplsElement RBRACE 
+	$$242 : _    (242)
+
+	.  reduce 242
+
+	$$242  goto 198
+
+state 142
+	ConstDecl :  CONST $$24 ConstDef SEMICOLON_    (25)
+
+	.  reduce 25
+
+
+state 143
+	TypeDecl :  TYPE $$29 TypeDef $$30_SEMICOLON 
+
+	SEMICOLON  shift 199
+	.  error
+
+
+state 144
+	VarDecl :  VAR $$36 VarDef $$37_SEMICOLON 
+
+	SEMICOLON  shift 200
+	.  error
+
+
+state 145
+	ProcedureDecl :  FunctionHeader block END SEMICOLON_    (53)
+
+	.  reduce 53
+
+
+state 146
+	block :  oplsDeclaration BEGIN $$6_StatementSequence 
+	opLabel : _    (149)
+
+	error  shift 203
+	.  reduce 149
+
+	StatementSequence  goto 201
+	statement  goto 202
+	opLabel  goto 204
+
+state 147
+	ProcedureDecl :  ProcedureHeader block END SEMICOLON_    (54)
+
+	.  reduce 54
+
+
+state 148
+	FunctionHeader :  FunctionPrefix fparameterList COLON $$50_prIdent $$51 SEMICOLON 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 205
+
+state 149
+	parameterList :  LPAREN $$59 lsParam_RPAREN 
+	lsParam :  lsParam_SEMICOLON $$132 formalParam 
+
+	SEMICOLON  shift 207
+	RPAREN  shift 206
+	.  error
+
+
+state 150
+	lsParam :  formalParam_    (131)
+
+	.  reduce 131
+
+
+state 151
+	formalParam :  PROCEDURE_$$134 prIdentList 
+	$$134 : _    (134)
+
+	.  reduce 134
+
+	$$134  goto 208
+
+state 152
+	formalParam :  opParamType_prIdentList COLON $$136 typeIdentifier 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 210
+	prIdentList  goto 209
+
+state 153
+	opParamType :  VAR_    (139)
+
+	.  reduce 139
+
+
+state 154
+	opParamType :  FUNCTION_    (140)
+
+	.  reduce 140
+
+
+state 155
+	program :  PROGRAM ident zoplsIdent SEMICOLON $$4_block END DOT 
+	oplsDeclaration : _    (9)
+
+	error  shift 13
+	SHARP  shift 14
+	CONST  shift 16
+	LABEL  shift 15
+	FORWARD  shift 46
+	FUNCTION  shift 23
+	PROCEDURE  shift 24
+	TYPE  shift 17
+	VAR  shift 18
+	.  reduce 9
+
+	lsDeclaration  goto 47
+	block  goto 211
+	oplsDeclaration  goto 45
+	declaration  goto 6
+	IncludeDecl  goto 7
+	LabelDecl  goto 8
+	ConstDecl  goto 9
+	TypeDecl  goto 10
+	VarDecl  goto 11
+	ProcedureDecl  goto 12
+	ProcedurePrefix  goto 22
+	ProcedureHeader  goto 20
+	FunctionPrefix  goto 21
+	FunctionHeader  goto 19
+
+state 156
+	zoplsIdent :  LPAREN IdentList RPAREN_    (281)
+
+	.  reduce 281
+
+
+state 157
+	IdentList :  IdentList COMMA_ident 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 212
+
+state 158
+	ConstDef :  exportIdent EQUALS $$27 expression_    (28)
+
+	.  reduce 28
+
+
+state 159
+	TypeDef :  exportIdent EQUALS $$34 typeDefinition_    (35)
+
+	.  reduce 35
+
+
+state 160
+	typeDefinition :  SimpleType_    (61)
+
+	.  reduce 61
+
+
+state 161
+	typeDefinition :  PointerType_    (62)
+
+	.  reduce 62
+
+
+state 162
+	typeDefinition :  ArrayType_    (63)
+
+	.  reduce 63
+
+
+state 163
+	typeDefinition :  FileType_    (64)
+
+	.  reduce 64
+
+
+state 164
+	typeDefinition :  SetType_    (65)
+
+	.  reduce 65
+
+
+state 165
+	typeDefinition :  RecordType_    (66)
+
+	.  reduce 66
+
+
+state 166
+	SimpleType :  typeIdentifier_    (67)
+
+	.  reduce 67
+
+
+state 167
+	SimpleType :  enumeration_    (68)
+
+	.  reduce 68
+
+
+state 168
+	SimpleType :  SubrangeType_    (69)
+
+	.  reduce 69
+
+
+state 169
+	PointerType :  UPARROW_$$93 prIdent 
+	$$93 : _    (93)
+
+	.  reduce 93
+
+	$$93  goto 213
+
+state 170
+	ArrayType :  opPACKED_ARRAY $$95 bracketedSimpleTypeList OF $$96 typeDefinition 
+
+	ARRAY  shift 214
+	.  error
+
+
+state 171
+	FileType :  PFILE_$$104 OF $$105 typeDefinition 
+	$$104 : _    (104)
+
+	.  reduce 104
+
+	$$104  goto 215
+
+state 172
+	SetType :  SET_$$128 OF $$129 SimpleType 
+	$$128 : _    (128)
+
+	.  reduce 128
+
+	$$128  goto 216
+
+state 173
+	RecordType :  RECORD_$$107 FieldList opCase END 
+	$$107 : _    (107)
+
+	.  reduce 107
+
+	$$107  goto 217
+
+state 174
+	typeIdentifier :  prIdent_    (278)
+
+	.  reduce 278
+
+
+state 175
+	enumeration :  LPAREN_$$70 prIdentList RPAREN 
+	$$70 : _    (70)
+
+	.  reduce 70
+
+	$$70  goto 218
+
+state 176
+	SubrangeType :  NUMBER_$$72 DOTDOT $$73 constant 
+	$$72 : _    (72)
+
+	.  reduce 72
+
+	$$72  goto 219
+
+state 177
+	SubrangeType :  CHARCONST_$$75 DOTDOT $$76 constant 
+	$$75 : _    (75)
+
+	.  reduce 75
+
+	$$75  goto 220
+
+state 178
+	SubrangeType :  IDENT_$$78 DOTDOT $$79 constant 
+	ident :  IDENT_    (287)
+	$$78 : _    (78)
+
+	DOTDOT  reduce 78
+	.  reduce 287
+
+	$$78  goto 221
+
+state 179
+	SubrangeType :  PLUS_$$81 prIdent DOTDOT $$82 constant 
+	SubrangeType :  PLUS_NUMBER $$87 DOTDOT $$88 constant 
+	$$81 : _    (81)
+
+	NUMBER  shift 223
+	.  reduce 81
+
+	$$81  goto 222
+
+state 180
+	SubrangeType :  MINUS_$$84 prIdent DOTDOT $$85 constant 
+	SubrangeType :  MINUS_NUMBER $$90 DOTDOT $$91 constant 
+	$$84 : _    (84)
+
+	NUMBER  shift 225
+	.  reduce 84
+
+	$$84  goto 224
+
+state 181
+	opPACKED :  PACKED_    (103)
+
+	.  reduce 103
+
+
+state 182
+	VarDef :  varIdentList COLON $$41 typeDefinition_    (42)
+
+	.  reduce 42
+
+
+state 183
+	varIdentList :  varIdentList COMMA $$296 exportIdent_    (297)
+
+	.  reduce 297
+
+
+state 184
+	ElementList :  ElementList COMMA $$265_Element 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 71
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	Element  goto 226
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 185
+	Element :  expression DOTDOT $$262_expression 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 227
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 186
+	expression :  SimpleExpression relation SimpleExpression_    (228)
+
+	.  reduce 228
+
+
+state 187
+	term :  term_MulOperator factor 
+	lsAddTerm :  lsAddTerm AddOperator term_    (275)
+
+	ASTERISK  shift 128
+	SLASH  shift 129
+	AND  shift 132
+	DIV  shift 130
+	MOD  shift 131
+	.  reduce 275
+
+	MulOperator  goto 127
+
+state 188
+	SimpleExpression :  PLUS $$270 lsAddTerm_    (271)
+	lsAddTerm :  lsAddTerm_AddOperator term 
+
+	PLUS  shift 122
+	MINUS  shift 123
+	OR  shift 124
+	.  reduce 271
+
+	AddOperator  goto 121
+
+state 189
+	SimpleExpression :  MINUS $$272 lsAddTerm_    (273)
+	lsAddTerm :  lsAddTerm_AddOperator term 
+
+	PLUS  shift 122
+	MINUS  shift 123
+	OR  shift 124
+	.  reduce 273
+
+	AddOperator  goto 121
+
+state 190
+	term :  term MulOperator factor_    (268)
+
+	.  reduce 268
+
+
+state 191
+	designator :  designator LBRACKET $$222_ExpList RBRACKET 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 229
+	prIdent  goto 86
+	designator  goto 82
+	ExpList  goto 228
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 192
+	designator :  designator DOT $$225_prIdent 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 230
+
+state 193
+	ActualParameters :  LPAREN $$166_RPAREN 
+
+	RPAREN  shift 231
+	.  error
+
+
+state 194
+	ActualParameters :  LPAREN $$168_ColonExpList RPAREN 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 233
+	prIdent  goto 86
+	designator  goto 82
+	ColonExpList  goto 232
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 195
+	factor :  LPAREN $$217 expression_RPAREN 
+
+	RPAREN  shift 234
+	.  error
+
+
+state 196
+	factor :  NOT $$219 factor_    (220)
+
+	.  reduce 220
+
+
+state 197
+	setexpr :  LBRACKET $$240 oplsElement_RBRACKET 
+
+	RBRACKET  shift 235
+	.  error
+
+
+state 198
+	setexpr :  prIdent LBRACE $$242_oplsElement RBRACE 
+	oplsElement : _    (244)
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  reduce 244
+
+	ident  goto 31
+	oplsElement  goto 236
+	expression  goto 71
+	prIdent  goto 86
+	ElementList  goto 69
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	Element  goto 70
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 199
+	TypeDecl :  TYPE $$29 TypeDef $$30 SEMICOLON_    (31)
+
+	.  reduce 31
+
+
+state 200
+	VarDecl :  VAR $$36 VarDef $$37 SEMICOLON_    (38)
+
+	.  reduce 38
+
+
+state 201
+	block :  oplsDeclaration BEGIN $$6 StatementSequence_    (7)
+	StatementSequence :  StatementSequence_SEMICOLON $$142 statement 
+
+	SEMICOLON  shift 237
+	.  reduce 7
+
+
+state 202
+	StatementSequence :  statement_    (141)
+
+	.  reduce 141
+
+
+state 203
+	StatementSequence :  error_SEMICOLON $$144 statement 
+
+	SEMICOLON  shift 238
+	.  error
+
+
+state 204
+	statement :  opLabel_unlabelledStatement 
+	opLabel :  opLabel_NUMBER COLON 
+	unlabelledStatement : _    (151)
+
+	IDENT  shift 27
+	NUMBER  shift 240
+	BEGIN  shift 260
+	CASE  shift 254
+	GOTO  shift 259
+	FOR  shift 257
+	IF  shift 253
+	REPEAT  shift 256
+	WHILE  shift 255
+	WITH  shift 258
+	.  reduce 151
+
+	ident  goto 31
+	prIdent  goto 252
+	BeginEndBlock  goto 250
+	unlabelledStatement  goto 239
+	Assignment  goto 241
+	ProcedureCall  goto 242
+	IfStatement  goto 243
+	CaseStatement  goto 244
+	WhileStatement  goto 245
+	RepeatStatement  goto 246
+	ForStatement  goto 247
+	WithStatement  goto 248
+	GotoStatement  goto 249
+	designator  goto 251
+
+state 205
+	FunctionHeader :  FunctionPrefix fparameterList COLON $$50 prIdent_$$51 SEMICOLON 
+	$$51 : _    (51)
+
+	.  reduce 51
+
+	$$51  goto 261
+
+state 206
+	parameterList :  LPAREN $$59 lsParam RPAREN_    (60)
+
+	.  reduce 60
+
+
+state 207
+	lsParam :  lsParam SEMICOLON_$$132 formalParam 
+	$$132 : _    (132)
+
+	.  reduce 132
+
+	$$132  goto 262
+
+state 208
+	formalParam :  PROCEDURE $$134_prIdentList 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 210
+	prIdentList  goto 263
+
+state 209
+	formalParam :  opParamType prIdentList_COLON $$136 typeIdentifier 
+	prIdentList :  prIdentList_COMMA $$283 prIdent 
+
+	COMMA  shift 265
+	COLON  shift 264
+	.  error
+
+
+state 210
+	prIdentList :  prIdent_    (282)
+
+	.  reduce 282
+
+
+state 211
+	program :  PROGRAM ident zoplsIdent SEMICOLON $$4 block_END DOT 
+
+	END  shift 266
+	.  error
+
+
+state 212
+	IdentList :  IdentList COMMA ident_    (286)
+
+	.  reduce 286
+
+
+state 213
+	PointerType :  UPARROW $$93_prIdent 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 267
+
+state 214
+	ArrayType :  opPACKED ARRAY_$$95 bracketedSimpleTypeList OF $$96 typeDefinition 
+	$$95 : _    (95)
+
+	.  reduce 95
+
+	$$95  goto 268
+
+state 215
+	FileType :  PFILE $$104_OF $$105 typeDefinition 
+
+	OF  shift 269
+	.  error
+
+
+state 216
+	SetType :  SET $$128_OF $$129 SimpleType 
+
+	OF  shift 270
+	.  error
+
+
+state 217
+	RecordType :  RECORD $$107_FieldList opCase END 
+	Field : _    (113)
+
+	IDENT  shift 27
+	.  reduce 113
+
+	ident  goto 31
+	prIdent  goto 210
+	prIdentList  goto 274
+	FieldList  goto 271
+	lsField  goto 272
+	Field  goto 273
+
+state 218
+	enumeration :  LPAREN $$70_prIdentList RPAREN 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 210
+	prIdentList  goto 275
+
+state 219
+	SubrangeType :  NUMBER $$72_DOTDOT $$73 constant 
+
+	DOTDOT  shift 276
+	.  error
+
+
+state 220
+	SubrangeType :  CHARCONST $$75_DOTDOT $$76 constant 
+
+	DOTDOT  shift 277
+	.  error
+
+
+state 221
+	SubrangeType :  IDENT $$78_DOTDOT $$79 constant 
+
+	DOTDOT  shift 278
+	.  error
+
+
+state 222
+	SubrangeType :  PLUS $$81_prIdent DOTDOT $$82 constant 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 279
+
+state 223
+	SubrangeType :  PLUS NUMBER_$$87 DOTDOT $$88 constant 
+	$$87 : _    (87)
+
+	.  reduce 87
+
+	$$87  goto 280
+
+state 224
+	SubrangeType :  MINUS $$84_prIdent DOTDOT $$85 constant 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 281
+
+state 225
+	SubrangeType :  MINUS NUMBER_$$90 DOTDOT $$91 constant 
+	$$90 : _    (90)
+
+	.  reduce 90
+
+	$$90  goto 282
+
+state 226
+	ElementList :  ElementList COMMA $$265 Element_    (266)
+
+	.  reduce 266
+
+
+state 227
+	Element :  expression DOTDOT $$262 expression_    (263)
+
+	.  reduce 263
+
+
+state 228
+	designator :  designator LBRACKET $$222 ExpList_RBRACKET 
+	ExpList :  ExpList_COMMA $$230 expression 
+
+	COMMA  shift 284
+	RBRACKET  shift 283
+	.  error
+
+
+state 229
+	ExpList :  expression_    (229)
+
+	.  reduce 229
+
+
+state 230
+	designator :  designator DOT $$225 prIdent_    (226)
+
+	.  reduce 226
+
+
+state 231
+	ActualParameters :  LPAREN $$166 RPAREN_    (167)
+
+	.  reduce 167
+
+
+state 232
+	ActualParameters :  LPAREN $$168 ColonExpList_RPAREN 
+	ColonExpList :  ColonExpList_COMMA $$233 expression opColonParam 
+
+	COMMA  shift 286
+	RPAREN  shift 285
+	.  error
+
+
+state 233
+	ColonExpList :  expression_opColonParam 
+	opColonParam : _    (235)
+
+	COLON  shift 289
+	.  reduce 235
+
+	opColonParam  goto 287
+	opColonParamHeader  goto 288
+
+state 234
+	factor :  LPAREN $$217 expression RPAREN_    (218)
+
+	.  reduce 218
+
+
+state 235
+	setexpr :  LBRACKET $$240 oplsElement RBRACKET_    (241)
+
+	.  reduce 241
+
+
+state 236
+	setexpr :  prIdent LBRACE $$242 oplsElement_RBRACE 
+
+	RBRACE  shift 290
+	.  error
+
+
+state 237
+	StatementSequence :  StatementSequence SEMICOLON_$$142 statement 
+	$$142 : _    (142)
+
+	.  reduce 142
+
+	$$142  goto 291
+
+state 238
+	StatementSequence :  error SEMICOLON_$$144 statement 
+	$$144 : _    (144)
+
+	.  reduce 144
+
+	$$144  goto 292
+
+state 239
+	statement :  opLabel unlabelledStatement_    (148)
+
+	.  reduce 148
+
+
+state 240
+	opLabel :  opLabel NUMBER_COLON 
+
+	COLON  shift 293
+	.  error
+
+
+state 241
+	unlabelledStatement :  Assignment_    (152)
+
+	.  reduce 152
+
+
+state 242
+	unlabelledStatement :  ProcedureCall_    (153)
+
+	.  reduce 153
+
+
+state 243
+	unlabelledStatement :  IfStatement_    (154)
+
+	.  reduce 154
+
+
+state 244
+	unlabelledStatement :  CaseStatement_    (155)
+
+	.  reduce 155
+
+
+state 245
+	unlabelledStatement :  WhileStatement_    (156)
+
+	.  reduce 156
+
+
+state 246
+	unlabelledStatement :  RepeatStatement_    (157)
+
+	.  reduce 157
+
+
+state 247
+	unlabelledStatement :  ForStatement_    (158)
+
+	.  reduce 158
+
+
+state 248
+	unlabelledStatement :  WithStatement_    (159)
+
+	.  reduce 159
+
+
+state 249
+	unlabelledStatement :  GotoStatement_    (160)
+
+	.  reduce 160
+
+
+state 250
+	unlabelledStatement :  BeginEndBlock_    (161)
+
+	.  reduce 161
+
+
+state 251
+	Assignment :  designator_ASSIGN $$162 expression 
+	designator :  designator_LBRACKET $$222 ExpList RBRACKET 
+	designator :  designator_UPARROW 
+	designator :  designator_DOT $$225 prIdent 
+
+	ASSIGN  shift 294
+	DOT  shift 136
+	LBRACKET  shift 134
+	UPARROW  shift 135
+	.  error
+
+
+state 252
+	ProcedureCall :  prIdent_    (164)
+	ProcedureCall :  prIdent_ActualParameters 
+	designator :  prIdent_    (221)
+
+	SEMICOLON  reduce 164
+	LPAREN  shift 137
+	ELSE  reduce 164
+	END  reduce 164
+	UNTIL  reduce 164
+	.  reduce 221
+
+	ActualParameters  goto 295
+
+state 253
+	IfStatement :  IF_$$170 expression THEN $$171 DelimitedSequence ElsePart 
+	$$170 : _    (170)
+
+	.  reduce 170
+
+	$$170  goto 296
+
+state 254
+	CaseStatement :  CASE_$$181 expression OF $$182 lsCaseInstance END 
+	$$181 : _    (181)
+
+	.  reduce 181
+
+	$$181  goto 297
+
+state 255
+	WhileStatement :  WHILE_$$189 expression DO $$190 DelimitedSequence 
+	$$189 : _    (189)
+
+	.  reduce 189
+
+	$$189  goto 298
+
+state 256
+	RepeatStatement :  REPEAT_$$192 StatementSequence UNTIL $$193 expression 
+	$$192 : _    (192)
+
+	.  reduce 192
+
+	$$192  goto 299
+
+state 257
+	ForStatement :  FOR_$$195 designator ASSIGN $$196 expression TOpart DO $$197 DelimitedSequence 
+	$$195 : _    (195)
+
+	.  reduce 195
+
+	$$195  goto 300
+
+state 258
+	WithStatement :  WITH_$$203 WithDesignatorMiddle 
+	$$203 : _    (203)
+
+	.  reduce 203
+
+	$$203  goto 301
+
+state 259
+	GotoStatement :  GOTO_$$209 expression 
+	$$209 : _    (209)
+
+	.  reduce 209
+
+	$$209  goto 302
+
+state 260
+	BeginEndBlock :  BEGIN_StatementSequence END 
+	opLabel : _    (149)
+
+	error  shift 203
+	.  reduce 149
+
+	StatementSequence  goto 303
+	statement  goto 202
+	opLabel  goto 204
+
+state 261
+	FunctionHeader :  FunctionPrefix fparameterList COLON $$50 prIdent $$51_SEMICOLON 
+
+	SEMICOLON  shift 304
+	.  error
+
+
+state 262
+	lsParam :  lsParam SEMICOLON $$132_formalParam 
+	opParamType : _    (138)
+
+	FUNCTION  shift 154
+	PROCEDURE  shift 151
+	VAR  shift 153
+	.  reduce 138
+
+	formalParam  goto 305
+	opParamType  goto 152
+
+state 263
+	formalParam :  PROCEDURE $$134 prIdentList_    (135)
+	prIdentList :  prIdentList_COMMA $$283 prIdent 
+
+	COMMA  shift 265
+	.  reduce 135
+
+
+state 264
+	formalParam :  opParamType prIdentList COLON_$$136 typeIdentifier 
+	$$136 : _    (136)
+
+	.  reduce 136
+
+	$$136  goto 306
+
+state 265
+	prIdentList :  prIdentList COMMA_$$283 prIdent 
+	$$283 : _    (283)
+
+	.  reduce 283
+
+	$$283  goto 307
+
+state 266
+	program :  PROGRAM ident zoplsIdent SEMICOLON $$4 block END_DOT 
+
+	DOT  shift 308
+	.  error
+
+
+state 267
+	PointerType :  UPARROW $$93 prIdent_    (94)
+
+	.  reduce 94
+
+
+state 268
+	ArrayType :  opPACKED ARRAY $$95_bracketedSimpleTypeList OF $$96 typeDefinition 
+
+	LBRACKET  shift 310
+	.  error
+
+	bracketedSimpleTypeList  goto 309
+
+state 269
+	FileType :  PFILE $$104 OF_$$105 typeDefinition 
+	$$105 : _    (105)
+
+	.  reduce 105
+
+	$$105  goto 311
+
+state 270
+	SetType :  SET $$128 OF_$$129 SimpleType 
+	$$129 : _    (129)
+
+	.  reduce 129
+
+	$$129  goto 312
+
+state 271
+	RecordType :  RECORD $$107 FieldList_opCase END 
+	opCase : _    (116)
+
+	CASE  shift 314
+	.  reduce 116
+
+	opCase  goto 313
+
+state 272
+	FieldList :  lsField_    (109)
+	lsField :  lsField_SEMICOLON $$111 Field 
+
+	SEMICOLON  shift 315
+	.  reduce 109
+
+
+state 273
+	lsField :  Field_    (110)
+
+	.  reduce 110
+
+
+state 274
+	Field :  prIdentList_COLON $$114 typeDefinition 
+	prIdentList :  prIdentList_COMMA $$283 prIdent 
+
+	COMMA  shift 265
+	COLON  shift 316
+	.  error
+
+
+state 275
+	enumeration :  LPAREN $$70 prIdentList_RPAREN 
+	prIdentList :  prIdentList_COMMA $$283 prIdent 
+
+	COMMA  shift 265
+	RPAREN  shift 317
+	.  error
+
+
+state 276
+	SubrangeType :  NUMBER $$72 DOTDOT_$$73 constant 
+	$$73 : _    (73)
+
+	.  reduce 73
+
+	$$73  goto 318
+
+state 277
+	SubrangeType :  CHARCONST $$75 DOTDOT_$$76 constant 
+	$$76 : _    (76)
+
+	.  reduce 76
+
+	$$76  goto 319
+
+state 278
+	SubrangeType :  IDENT $$78 DOTDOT_$$79 constant 
+	$$79 : _    (79)
+
+	.  reduce 79
+
+	$$79  goto 320
+
+state 279
+	SubrangeType :  PLUS $$81 prIdent_DOTDOT $$82 constant 
+
+	DOTDOT  shift 321
+	.  error
+
+
+state 280
+	SubrangeType :  PLUS NUMBER $$87_DOTDOT $$88 constant 
+
+	DOTDOT  shift 322
+	.  error
+
+
+state 281
+	SubrangeType :  MINUS $$84 prIdent_DOTDOT $$85 constant 
+
+	DOTDOT  shift 323
+	.  error
+
+
+state 282
+	SubrangeType :  MINUS NUMBER $$90_DOTDOT $$91 constant 
+
+	DOTDOT  shift 324
+	.  error
+
+
+state 283
+	designator :  designator LBRACKET $$222 ExpList RBRACKET_    (223)
+
+	.  reduce 223
+
+
+state 284
+	ExpList :  ExpList COMMA_$$230 expression 
+	$$230 : _    (230)
+
+	.  reduce 230
+
+	$$230  goto 325
+
+state 285
+	ActualParameters :  LPAREN $$168 ColonExpList RPAREN_    (169)
+
+	.  reduce 169
+
+
+state 286
+	ColonExpList :  ColonExpList COMMA_$$233 expression opColonParam 
+	$$233 : _    (233)
+
+	.  reduce 233
+
+	$$233  goto 326
+
+state 287
+	ColonExpList :  expression opColonParam_    (232)
+
+	.  reduce 232
+
+
+state 288
+	opColonParam :  opColonParamHeader_opColonParam 
+	opColonParam :  opColonParamHeader_prIdent opColonParam 
+	opColonParam : _    (235)
+
+	COLON  shift 289
+	IDENT  shift 27
+	.  reduce 235
+
+	ident  goto 31
+	prIdent  goto 328
+	opColonParam  goto 327
+	opColonParamHeader  goto 288
+
+state 289
+	opColonParamHeader :  COLON_$$238 expression 
+	$$238 : _    (238)
+
+	.  reduce 238
+
+	$$238  goto 329
+
+state 290
+	setexpr :  prIdent LBRACE $$242 oplsElement RBRACE_    (243)
+
+	.  reduce 243
+
+
+state 291
+	StatementSequence :  StatementSequence SEMICOLON $$142_statement 
+	opLabel : _    (149)
+
+	.  reduce 149
+
+	statement  goto 330
+	opLabel  goto 204
+
+state 292
+	StatementSequence :  error SEMICOLON $$144_statement 
+	opLabel : _    (149)
+
+	.  reduce 149
+
+	statement  goto 331
+	opLabel  goto 204
+
+state 293
+	opLabel :  opLabel NUMBER COLON_    (150)
+
+	.  reduce 150
+
+
+state 294
+	Assignment :  designator ASSIGN_$$162 expression 
+	$$162 : _    (162)
+
+	.  reduce 162
+
+	$$162  goto 332
+
+state 295
+	ProcedureCall :  prIdent ActualParameters_    (165)
+
+	.  reduce 165
+
+
+state 296
+	IfStatement :  IF $$170_expression THEN $$171 DelimitedSequence ElsePart 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 333
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 297
+	CaseStatement :  CASE $$181_expression OF $$182 lsCaseInstance END 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 334
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 298
+	WhileStatement :  WHILE $$189_expression DO $$190 DelimitedSequence 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 335
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 299
+	RepeatStatement :  REPEAT $$192_StatementSequence UNTIL $$193 expression 
+	opLabel : _    (149)
+
+	error  shift 203
+	.  reduce 149
+
+	StatementSequence  goto 336
+	statement  goto 202
+	opLabel  goto 204
+
+state 300
+	ForStatement :  FOR $$195_designator ASSIGN $$196 expression TOpart DO $$197 DelimitedSequence 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 338
+	designator  goto 337
+
+state 301
+	WithStatement :  WITH $$203_WithDesignatorMiddle 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 338
+	designator  goto 340
+	WithDesignatorMiddle  goto 339
+
+state 302
+	GotoStatement :  GOTO $$209_expression 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 341
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 303
+	StatementSequence :  StatementSequence_SEMICOLON $$142 statement 
+	BeginEndBlock :  BEGIN StatementSequence_END 
+
+	SEMICOLON  shift 237
+	END  shift 342
+	.  error
+
+
+state 304
+	FunctionHeader :  FunctionPrefix fparameterList COLON $$50 prIdent $$51 SEMICOLON_    (52)
+
+	.  reduce 52
+
+
+state 305
+	lsParam :  lsParam SEMICOLON $$132 formalParam_    (133)
+
+	.  reduce 133
+
+
+state 306
+	formalParam :  opParamType prIdentList COLON $$136_typeIdentifier 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 174
+	typeIdentifier  goto 343
+
+state 307
+	prIdentList :  prIdentList COMMA $$283_prIdent 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 344
+
+state 308
+	program :  PROGRAM ident zoplsIdent SEMICOLON $$4 block END DOT_    (5)
+
+	.  reduce 5
+
+
+state 309
+	ArrayType :  opPACKED ARRAY $$95 bracketedSimpleTypeList_OF $$96 typeDefinition 
+
+	OF  shift 345
+	.  error
+
+
+state 310
+	bracketedSimpleTypeList :  LBRACKET_bTypeList RBRACKET 
+
+	PLUS  shift 179
+	MINUS  shift 180
+	LPAREN  shift 175
+	IDENT  shift 178
+	NUMBER  shift 176
+	CHARCONST  shift 177
+	.  error
+
+	ident  goto 31
+	prIdent  goto 174
+	SimpleType  goto 347
+	typeIdentifier  goto 166
+	enumeration  goto 167
+	SubrangeType  goto 168
+	bTypeList  goto 346
+
+state 311
+	FileType :  PFILE $$104 OF $$105_typeDefinition 
+	opPACKED : _    (102)
+
+	PLUS  shift 179
+	MINUS  shift 180
+	LPAREN  shift 175
+	UPARROW  shift 169
+	IDENT  shift 178
+	NUMBER  shift 176
+	CHARCONST  shift 177
+	PACKED  shift 181
+	PFILE  shift 171
+	RECORD  shift 173
+	SET  shift 172
+	.  reduce 102
+
+	ident  goto 31
+	typeDefinition  goto 348
+	prIdent  goto 174
+	SimpleType  goto 160
+	PointerType  goto 161
+	ArrayType  goto 162
+	FileType  goto 163
+	SetType  goto 164
+	RecordType  goto 165
+	typeIdentifier  goto 166
+	enumeration  goto 167
+	SubrangeType  goto 168
+	opPACKED  goto 170
+
+state 312
+	SetType :  SET $$128 OF $$129_SimpleType 
+
+	PLUS  shift 179
+	MINUS  shift 180
+	LPAREN  shift 175
+	IDENT  shift 178
+	NUMBER  shift 176
+	CHARCONST  shift 177
+	.  error
+
+	ident  goto 31
+	prIdent  goto 174
+	SimpleType  goto 349
+	typeIdentifier  goto 166
+	enumeration  goto 167
+	SubrangeType  goto 168
+
+state 313
+	RecordType :  RECORD $$107 FieldList opCase_END 
+
+	END  shift 350
+	.  error
+
+
+state 314
+	opCase :  CASE_$$117 prIdent opColonIdent OF $$118 Variants 
+	$$117 : _    (117)
+
+	.  reduce 117
+
+	$$117  goto 351
+
+state 315
+	lsField :  lsField SEMICOLON_$$111 Field 
+	$$111 : _    (111)
+
+	.  reduce 111
+
+	$$111  goto 352
+
+state 316
+	Field :  prIdentList COLON_$$114 typeDefinition 
+	$$114 : _    (114)
+
+	.  reduce 114
+
+	$$114  goto 353
+
+state 317
+	enumeration :  LPAREN $$70 prIdentList RPAREN_    (71)
+
+	.  reduce 71
+
+
+state 318
+	SubrangeType :  NUMBER $$72 DOTDOT $$73_constant 
+
+	PLUS  shift 360
+	MINUS  shift 361
+	IDENT  shift 27
+	NUMBER  shift 355
+	CHARCONST  shift 357
+	STRCONST  shift 358
+	.  error
+
+	ident  goto 31
+	prIdent  goto 359
+	constant  goto 354
+	PlusMinus  goto 356
+
+state 319
+	SubrangeType :  CHARCONST $$75 DOTDOT $$76_constant 
+
+	PLUS  shift 360
+	MINUS  shift 361
+	IDENT  shift 27
+	NUMBER  shift 355
+	CHARCONST  shift 357
+	STRCONST  shift 358
+	.  error
+
+	ident  goto 31
+	prIdent  goto 359
+	constant  goto 362
+	PlusMinus  goto 356
+
+state 320
+	SubrangeType :  IDENT $$78 DOTDOT $$79_constant 
+
+	PLUS  shift 360
+	MINUS  shift 361
+	IDENT  shift 27
+	NUMBER  shift 355
+	CHARCONST  shift 357
+	STRCONST  shift 358
+	.  error
+
+	ident  goto 31
+	prIdent  goto 359
+	constant  goto 363
+	PlusMinus  goto 356
+
+state 321
+	SubrangeType :  PLUS $$81 prIdent DOTDOT_$$82 constant 
+	$$82 : _    (82)
+
+	.  reduce 82
+
+	$$82  goto 364
+
+state 322
+	SubrangeType :  PLUS NUMBER $$87 DOTDOT_$$88 constant 
+	$$88 : _    (88)
+
+	.  reduce 88
+
+	$$88  goto 365
+
+state 323
+	SubrangeType :  MINUS $$84 prIdent DOTDOT_$$85 constant 
+	$$85 : _    (85)
+
+	.  reduce 85
+
+	$$85  goto 366
+
+state 324
+	SubrangeType :  MINUS NUMBER $$90 DOTDOT_$$91 constant 
+	$$91 : _    (91)
+
+	.  reduce 91
+
+	$$91  goto 367
+
+state 325
+	ExpList :  ExpList COMMA $$230_expression 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 368
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 326
+	ColonExpList :  ColonExpList COMMA $$233_expression opColonParam 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 369
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 327
+	opColonParam :  opColonParamHeader opColonParam_    (236)
+
+	.  reduce 236
+
+
+state 328
+	opColonParam :  opColonParamHeader prIdent_opColonParam 
+	opColonParam : _    (235)
+
+	COLON  shift 289
+	.  reduce 235
+
+	opColonParam  goto 370
+	opColonParamHeader  goto 288
+
+state 329
+	opColonParamHeader :  COLON $$238_expression 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 371
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 330
+	StatementSequence :  StatementSequence SEMICOLON $$142 statement_    (143)
+
+	.  reduce 143
+
+
+state 331
+	StatementSequence :  error SEMICOLON $$144 statement_    (145)
+
+	.  reduce 145
+
+
+state 332
+	Assignment :  designator ASSIGN $$162_expression 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 372
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 333
+	IfStatement :  IF $$170 expression_THEN $$171 DelimitedSequence ElsePart 
+
+	THEN  shift 373
+	.  error
+
+
+state 334
+	CaseStatement :  CASE $$181 expression_OF $$182 lsCaseInstance END 
+
+	OF  shift 374
+	.  error
+
+
+state 335
+	WhileStatement :  WHILE $$189 expression_DO $$190 DelimitedSequence 
+
+	DO  shift 375
+	.  error
+
+
+state 336
+	StatementSequence :  StatementSequence_SEMICOLON $$142 statement 
+	RepeatStatement :  REPEAT $$192 StatementSequence_UNTIL $$193 expression 
+
+	SEMICOLON  shift 237
+	UNTIL  shift 376
+	.  error
+
+
+state 337
+	ForStatement :  FOR $$195 designator_ASSIGN $$196 expression TOpart DO $$197 DelimitedSequence 
+	designator :  designator_LBRACKET $$222 ExpList RBRACKET 
+	designator :  designator_UPARROW 
+	designator :  designator_DOT $$225 prIdent 
+
+	ASSIGN  shift 377
+	DOT  shift 136
+	LBRACKET  shift 134
+	UPARROW  shift 135
+	.  error
+
+
+state 338
+	designator :  prIdent_    (221)
+
+	.  reduce 221
+
+
+state 339
+	WithStatement :  WITH $$203 WithDesignatorMiddle_    (204)
+
+	.  reduce 204
+
+
+state 340
+	WithDesignatorMiddle :  designator_COMMA $$205 WithDesignatorMiddle 
+	WithDesignatorMiddle :  designator_DO $$207 DelimitedSequence 
+	designator :  designator_LBRACKET $$222 ExpList RBRACKET 
+	designator :  designator_UPARROW 
+	designator :  designator_DOT $$225 prIdent 
+
+	DOT  shift 136
+	COMMA  shift 378
+	LBRACKET  shift 134
+	UPARROW  shift 135
+	DO  shift 379
+	.  error
+
+
+state 341
+	GotoStatement :  GOTO $$209 expression_    (210)
+
+	.  reduce 210
+
+
+state 342
+	BeginEndBlock :  BEGIN StatementSequence END_    (147)
+
+	.  reduce 147
+
+
+state 343
+	formalParam :  opParamType prIdentList COLON $$136 typeIdentifier_    (137)
+
+	.  reduce 137
+
+
+state 344
+	prIdentList :  prIdentList COMMA $$283 prIdent_    (284)
+
+	.  reduce 284
+
+
+state 345
+	ArrayType :  opPACKED ARRAY $$95 bracketedSimpleTypeList OF_$$96 typeDefinition 
+	$$96 : _    (96)
+
+	.  reduce 96
+
+	$$96  goto 380
+
+state 346
+	bracketedSimpleTypeList :  LBRACKET bTypeList_RBRACKET 
+	bTypeList :  bTypeList_COMMA $$100 SimpleType 
+
+	COMMA  shift 382
+	RBRACKET  shift 381
+	.  error
+
+
+state 347
+	bTypeList :  SimpleType_    (99)
+
+	.  reduce 99
+
+
+state 348
+	FileType :  PFILE $$104 OF $$105 typeDefinition_    (106)
+
+	.  reduce 106
+
+
+state 349
+	SetType :  SET $$128 OF $$129 SimpleType_    (130)
+
+	.  reduce 130
+
+
+state 350
+	RecordType :  RECORD $$107 FieldList opCase END_    (108)
+
+	.  reduce 108
+
+
+state 351
+	opCase :  CASE $$117_prIdent opColonIdent OF $$118 Variants 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 383
+
+state 352
+	lsField :  lsField SEMICOLON $$111_Field 
+	Field : _    (113)
+
+	IDENT  shift 27
+	.  reduce 113
+
+	ident  goto 31
+	prIdent  goto 210
+	prIdentList  goto 274
+	Field  goto 384
+
+state 353
+	Field :  prIdentList COLON $$114_typeDefinition 
+	opPACKED : _    (102)
+
+	PLUS  shift 179
+	MINUS  shift 180
+	LPAREN  shift 175
+	UPARROW  shift 169
+	IDENT  shift 178
+	NUMBER  shift 176
+	CHARCONST  shift 177
+	PACKED  shift 181
+	PFILE  shift 171
+	RECORD  shift 173
+	SET  shift 172
+	.  reduce 102
+
+	ident  goto 31
+	typeDefinition  goto 385
+	prIdent  goto 174
+	SimpleType  goto 160
+	PointerType  goto 161
+	ArrayType  goto 162
+	FileType  goto 163
+	SetType  goto 164
+	RecordType  goto 165
+	typeIdentifier  goto 166
+	enumeration  goto 167
+	SubrangeType  goto 168
+	opPACKED  goto 170
+
+state 354
+	SubrangeType :  NUMBER $$72 DOTDOT $$73 constant_    (74)
+
+	.  reduce 74
+
+
+state 355
+	constant :  NUMBER_    (288)
+
+	.  reduce 288
+
+
+state 356
+	constant :  PlusMinus_NUMBER 
+	constant :  PlusMinus_prIdent 
+
+	IDENT  shift 27
+	NUMBER  shift 386
+	.  error
+
+	ident  goto 31
+	prIdent  goto 387
+
+state 357
+	constant :  CHARCONST_    (290)
+
+	.  reduce 290
+
+
+state 358
+	constant :  STRCONST_    (291)
+
+	.  reduce 291
+
+
+state 359
+	constant :  prIdent_    (293)
+
+	.  reduce 293
+
+
+state 360
+	PlusMinus :  PLUS_    (276)
+
+	.  reduce 276
+
+
+state 361
+	PlusMinus :  MINUS_    (277)
+
+	.  reduce 277
+
+
+state 362
+	SubrangeType :  CHARCONST $$75 DOTDOT $$76 constant_    (77)
+
+	.  reduce 77
+
+
+state 363
+	SubrangeType :  IDENT $$78 DOTDOT $$79 constant_    (80)
+
+	.  reduce 80
+
+
+state 364
+	SubrangeType :  PLUS $$81 prIdent DOTDOT $$82_constant 
+
+	PLUS  shift 360
+	MINUS  shift 361
+	IDENT  shift 27
+	NUMBER  shift 355
+	CHARCONST  shift 357
+	STRCONST  shift 358
+	.  error
+
+	ident  goto 31
+	prIdent  goto 359
+	constant  goto 388
+	PlusMinus  goto 356
+
+state 365
+	SubrangeType :  PLUS NUMBER $$87 DOTDOT $$88_constant 
+
+	PLUS  shift 360
+	MINUS  shift 361
+	IDENT  shift 27
+	NUMBER  shift 355
+	CHARCONST  shift 357
+	STRCONST  shift 358
+	.  error
+
+	ident  goto 31
+	prIdent  goto 359
+	constant  goto 389
+	PlusMinus  goto 356
+
+state 366
+	SubrangeType :  MINUS $$84 prIdent DOTDOT $$85_constant 
+
+	PLUS  shift 360
+	MINUS  shift 361
+	IDENT  shift 27
+	NUMBER  shift 355
+	CHARCONST  shift 357
+	STRCONST  shift 358
+	.  error
+
+	ident  goto 31
+	prIdent  goto 359
+	constant  goto 390
+	PlusMinus  goto 356
+
+state 367
+	SubrangeType :  MINUS NUMBER $$90 DOTDOT $$91_constant 
+
+	PLUS  shift 360
+	MINUS  shift 361
+	IDENT  shift 27
+	NUMBER  shift 355
+	CHARCONST  shift 357
+	STRCONST  shift 358
+	.  error
+
+	ident  goto 31
+	prIdent  goto 359
+	constant  goto 391
+	PlusMinus  goto 356
+
+state 368
+	ExpList :  ExpList COMMA $$230 expression_    (231)
+
+	.  reduce 231
+
+
+state 369
+	ColonExpList :  ColonExpList COMMA $$233 expression_opColonParam 
+	opColonParam : _    (235)
+
+	COLON  shift 289
+	.  reduce 235
+
+	opColonParam  goto 392
+	opColonParamHeader  goto 288
+
+state 370
+	opColonParam :  opColonParamHeader prIdent opColonParam_    (237)
+
+	.  reduce 237
+
+
+state 371
+	opColonParamHeader :  COLON $$238 expression_    (239)
+
+	.  reduce 239
+
+
+state 372
+	Assignment :  designator ASSIGN $$162 expression_    (163)
+
+	.  reduce 163
+
+
+state 373
+	IfStatement :  IF $$170 expression THEN_$$171 DelimitedSequence ElsePart 
+	$$171 : _    (171)
+
+	.  reduce 171
+
+	$$171  goto 393
+
+state 374
+	CaseStatement :  CASE $$181 expression OF_$$182 lsCaseInstance END 
+	$$182 : _    (182)
+
+	.  reduce 182
+
+	$$182  goto 394
+
+state 375
+	WhileStatement :  WHILE $$189 expression DO_$$190 DelimitedSequence 
+	$$190 : _    (190)
+
+	.  reduce 190
+
+	$$190  goto 395
+
+state 376
+	RepeatStatement :  REPEAT $$192 StatementSequence UNTIL_$$193 expression 
+	$$193 : _    (193)
+
+	.  reduce 193
+
+	$$193  goto 396
+
+state 377
+	ForStatement :  FOR $$195 designator ASSIGN_$$196 expression TOpart DO $$197 DelimitedSequence 
+	$$196 : _    (196)
+
+	.  reduce 196
+
+	$$196  goto 397
+
+state 378
+	WithDesignatorMiddle :  designator COMMA_$$205 WithDesignatorMiddle 
+	$$205 : _    (205)
+
+	.  reduce 205
+
+	$$205  goto 398
+
+state 379
+	WithDesignatorMiddle :  designator DO_$$207 DelimitedSequence 
+	$$207 : _    (207)
+
+	.  reduce 207
+
+	$$207  goto 399
+
+state 380
+	ArrayType :  opPACKED ARRAY $$95 bracketedSimpleTypeList OF $$96_typeDefinition 
+	opPACKED : _    (102)
+
+	PLUS  shift 179
+	MINUS  shift 180
+	LPAREN  shift 175
+	UPARROW  shift 169
+	IDENT  shift 178
+	NUMBER  shift 176
+	CHARCONST  shift 177
+	PACKED  shift 181
+	PFILE  shift 171
+	RECORD  shift 173
+	SET  shift 172
+	.  reduce 102
+
+	ident  goto 31
+	typeDefinition  goto 400
+	prIdent  goto 174
+	SimpleType  goto 160
+	PointerType  goto 161
+	ArrayType  goto 162
+	FileType  goto 163
+	SetType  goto 164
+	RecordType  goto 165
+	typeIdentifier  goto 166
+	enumeration  goto 167
+	SubrangeType  goto 168
+	opPACKED  goto 170
+
+state 381
+	bracketedSimpleTypeList :  LBRACKET bTypeList RBRACKET_    (98)
+
+	.  reduce 98
+
+
+state 382
+	bTypeList :  bTypeList COMMA_$$100 SimpleType 
+	$$100 : _    (100)
+
+	.  reduce 100
+
+	$$100  goto 401
+
+state 383
+	opCase :  CASE $$117 prIdent_opColonIdent OF $$118 Variants 
+	opColonIdent : _    (120)
+
+	COLON  shift 403
+	.  reduce 120
+
+	opColonIdent  goto 402
+
+state 384
+	lsField :  lsField SEMICOLON $$111 Field_    (112)
+
+	.  reduce 112
+
+
+state 385
+	Field :  prIdentList COLON $$114 typeDefinition_    (115)
+
+	.  reduce 115
+
+
+state 386
+	constant :  PlusMinus NUMBER_    (289)
+
+	.  reduce 289
+
+
+state 387
+	constant :  PlusMinus prIdent_    (292)
+
+	.  reduce 292
+
+
+state 388
+	SubrangeType :  PLUS $$81 prIdent DOTDOT $$82 constant_    (83)
+
+	.  reduce 83
+
+
+state 389
+	SubrangeType :  PLUS NUMBER $$87 DOTDOT $$88 constant_    (89)
+
+	.  reduce 89
+
+
+state 390
+	SubrangeType :  MINUS $$84 prIdent DOTDOT $$85 constant_    (86)
+
+	.  reduce 86
+
+
+state 391
+	SubrangeType :  MINUS NUMBER $$90 DOTDOT $$91 constant_    (92)
+
+	.  reduce 92
+
+
+state 392
+	ColonExpList :  ColonExpList COMMA $$233 expression opColonParam_    (234)
+
+	.  reduce 234
+
+
+state 393
+	IfStatement :  IF $$170 expression THEN $$171_DelimitedSequence ElsePart 
+	opLabel : _    (149)
+
+	.  reduce 149
+
+	statement  goto 405
+	DelimitedSequence  goto 404
+	opLabel  goto 204
+
+state 394
+	CaseStatement :  CASE $$181 expression OF $$182_lsCaseInstance END 
+	$$186 : _    (186)
+
+	.  reduce 186
+
+	lsCaseInstance  goto 406
+	caseInstance  goto 407
+	$$186  goto 408
+
+state 395
+	WhileStatement :  WHILE $$189 expression DO $$190_DelimitedSequence 
+	opLabel : _    (149)
+
+	.  reduce 149
+
+	statement  goto 405
+	DelimitedSequence  goto 409
+	opLabel  goto 204
+
+state 396
+	RepeatStatement :  REPEAT $$192 StatementSequence UNTIL $$193_expression 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 410
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 397
+	ForStatement :  FOR $$195 designator ASSIGN $$196_expression TOpart DO $$197 DelimitedSequence 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 411
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 398
+	WithDesignatorMiddle :  designator COMMA $$205_WithDesignatorMiddle 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 338
+	designator  goto 340
+	WithDesignatorMiddle  goto 412
+
+state 399
+	WithDesignatorMiddle :  designator DO $$207_DelimitedSequence 
+	opLabel : _    (149)
+
+	.  reduce 149
+
+	statement  goto 405
+	DelimitedSequence  goto 413
+	opLabel  goto 204
+
+state 400
+	ArrayType :  opPACKED ARRAY $$95 bracketedSimpleTypeList OF $$96 typeDefinition_    (97)
+
+	.  reduce 97
+
+
+state 401
+	bTypeList :  bTypeList COMMA $$100_SimpleType 
+
+	PLUS  shift 179
+	MINUS  shift 180
+	LPAREN  shift 175
+	IDENT  shift 178
+	NUMBER  shift 176
+	CHARCONST  shift 177
+	.  error
+
+	ident  goto 31
+	prIdent  goto 174
+	SimpleType  goto 414
+	typeIdentifier  goto 166
+	enumeration  goto 167
+	SubrangeType  goto 168
+
+state 402
+	opCase :  CASE $$117 prIdent opColonIdent_OF $$118 Variants 
+
+	OF  shift 415
+	.  error
+
+
+state 403
+	opColonIdent :  COLON_$$121 prIdent 
+	$$121 : _    (121)
+
+	.  reduce 121
+
+	$$121  goto 416
+
+404: shift/reduce conflict (shift 418, red'n 173) on ELSE
+state 404
+	IfStatement :  IF $$170 expression THEN $$171 DelimitedSequence_ElsePart 
+	ElsePart : _    (173)
+
+	ELSE  shift 418
+	.  reduce 173
+
+	ElsePart  goto 417
+
+state 405
+	DelimitedSequence :  statement_    (146)
+
+	.  reduce 146
+
+
+state 406
+	CaseStatement :  CASE $$181 expression OF $$182 lsCaseInstance_END 
+	lsCaseInstance :  lsCaseInstance_caseInstance 
+	$$186 : _    (186)
+
+	END  shift 419
+	.  reduce 186
+
+	caseInstance  goto 420
+	$$186  goto 408
+
+state 407
+	lsCaseInstance :  caseInstance_    (184)
+
+	.  reduce 184
+
+
+state 408
+	caseInstance :  $$186_ExpList COLON $$187 DelimitedSequence SEMICOLON 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 229
+	prIdent  goto 86
+	designator  goto 82
+	ExpList  goto 421
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 409
+	WhileStatement :  WHILE $$189 expression DO $$190 DelimitedSequence_    (191)
+
+	.  reduce 191
+
+
+state 410
+	RepeatStatement :  REPEAT $$192 StatementSequence UNTIL $$193 expression_    (194)
+
+	.  reduce 194
+
+
+state 411
+	ForStatement :  FOR $$195 designator ASSIGN $$196 expression_TOpart DO $$197 DelimitedSequence 
+
+	DOWNTO  shift 424
+	TO  shift 423
+	.  error
+
+	TOpart  goto 422
+
+state 412
+	WithDesignatorMiddle :  designator COMMA $$205 WithDesignatorMiddle_    (206)
+
+	.  reduce 206
+
+
+state 413
+	WithDesignatorMiddle :  designator DO $$207 DelimitedSequence_    (208)
+
+	.  reduce 208
+
+
+state 414
+	bTypeList :  bTypeList COMMA $$100 SimpleType_    (101)
+
+	.  reduce 101
+
+
+state 415
+	opCase :  CASE $$117 prIdent opColonIdent OF_$$118 Variants 
+	$$118 : _    (118)
+
+	.  reduce 118
+
+	$$118  goto 425
+
+state 416
+	opColonIdent :  COLON $$121_prIdent 
+
+	IDENT  shift 27
+	.  error
+
+	ident  goto 31
+	prIdent  goto 426
+
+state 417
+	IfStatement :  IF $$170 expression THEN $$171 DelimitedSequence ElsePart_    (172)
+
+	.  reduce 172
+
+
+state 418
+	ElsePart :  ELSE_$$174 ElseIfPart 
+	$$174 : _    (174)
+
+	.  reduce 174
+
+	$$174  goto 427
+
+state 419
+	CaseStatement :  CASE $$181 expression OF $$182 lsCaseInstance END_    (183)
+
+	.  reduce 183
+
+
+state 420
+	lsCaseInstance :  lsCaseInstance caseInstance_    (185)
+
+	.  reduce 185
+
+
+state 421
+	caseInstance :  $$186 ExpList_COLON $$187 DelimitedSequence SEMICOLON 
+	ExpList :  ExpList_COMMA $$230 expression 
+
+	COMMA  shift 284
+	COLON  shift 428
+	.  error
+
+
+state 422
+	ForStatement :  FOR $$195 designator ASSIGN $$196 expression TOpart_DO $$197 DelimitedSequence 
+
+	DO  shift 429
+	.  error
+
+
+state 423
+	TOpart :  TO_$$199 expression 
+	$$199 : _    (199)
+
+	.  reduce 199
+
+	$$199  goto 430
+
+state 424
+	TOpart :  DOWNTO_$$201 expression 
+	$$201 : _    (201)
+
+	.  reduce 201
+
+	$$201  goto 431
+
+state 425
+	opCase :  CASE $$117 prIdent opColonIdent OF $$118_Variants 
+	$$125 : _    (125)
+
+	.  reduce 125
+
+	Variants  goto 432
+	Variant  goto 433
+	$$125  goto 434
+
+state 426
+	opColonIdent :  COLON $$121 prIdent_    (122)
+
+	.  reduce 122
+
+
+427: shift/reduce conflict (shift 436, red'n 179) on IF
+state 427
+	ElsePart :  ELSE $$174_ElseIfPart 
+	$$179 : _    (179)
+
+	IF  shift 436
+	.  reduce 179
+
+	ElseIfPart  goto 435
+	$$179  goto 437
+
+state 428
+	caseInstance :  $$186 ExpList COLON_$$187 DelimitedSequence SEMICOLON 
+	$$187 : _    (187)
+
+	.  reduce 187
+
+	$$187  goto 438
+
+state 429
+	ForStatement :  FOR $$195 designator ASSIGN $$196 expression TOpart DO_$$197 DelimitedSequence 
+	$$197 : _    (197)
+
+	.  reduce 197
+
+	$$197  goto 439
+
+state 430
+	TOpart :  TO $$199_expression 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 440
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 431
+	TOpart :  DOWNTO $$201_expression 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 441
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 432
+	opCase :  CASE $$117 prIdent opColonIdent OF $$118 Variants_    (119)
+	Variants :  Variants_Variant 
+	$$125 : _    (125)
+
+	END  reduce 119
+	.  reduce 125
+
+	Variant  goto 442
+	$$125  goto 434
+
+state 433
+	Variants :  Variant_    (123)
+
+	.  reduce 123
+
+
+state 434
+	Variant :  $$125_ElementList COLON $$126 LPAREN FieldList RPAREN SEMICOLON 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 71
+	prIdent  goto 86
+	ElementList  goto 443
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	Element  goto 70
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 435
+	ElsePart :  ELSE $$174 ElseIfPart_    (175)
+
+	.  reduce 175
+
+
+state 436
+	ElseIfPart :  IF_$$176 expression THEN $$177 DelimitedSequence ElsePart 
+	$$176 : _    (176)
+
+	.  reduce 176
+
+	$$176  goto 444
+
+state 437
+	ElseIfPart :  $$179_DelimitedSequence 
+	opLabel : _    (149)
+
+	.  reduce 149
+
+	statement  goto 405
+	DelimitedSequence  goto 445
+	opLabel  goto 204
+
+state 438
+	caseInstance :  $$186 ExpList COLON $$187_DelimitedSequence SEMICOLON 
+	opLabel : _    (149)
+
+	.  reduce 149
+
+	statement  goto 405
+	DelimitedSequence  goto 446
+	opLabel  goto 204
+
+state 439
+	ForStatement :  FOR $$195 designator ASSIGN $$196 expression TOpart DO $$197_DelimitedSequence 
+	opLabel : _    (149)
+
+	.  reduce 149
+
+	statement  goto 405
+	DelimitedSequence  goto 447
+	opLabel  goto 204
+
+state 440
+	TOpart :  TO $$199 expression_    (200)
+
+	.  reduce 200
+
+
+state 441
+	TOpart :  DOWNTO $$201 expression_    (202)
+
+	.  reduce 202
+
+
+state 442
+	Variants :  Variants Variant_    (124)
+
+	.  reduce 124
+
+
+state 443
+	Variant :  $$125 ElementList_COLON $$126 LPAREN FieldList RPAREN SEMICOLON 
+	ElementList :  ElementList_COMMA $$265 Element 
+
+	COMMA  shift 111
+	COLON  shift 448
+	.  error
+
+
+state 444
+	ElseIfPart :  IF $$176_expression THEN $$177 DelimitedSequence ElsePart 
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LPAREN  shift 83
+	LBRACKET  shift 85
+	IDENT  shift 27
+	NUMBER  shift 78
+	CHARCONST  shift 79
+	STRCONST  shift 80
+	NOT  shift 84
+	.  error
+
+	ident  goto 31
+	expression  goto 449
+	prIdent  goto 86
+	designator  goto 82
+	factor  goto 77
+	setexpr  goto 81
+	SimpleExpression  goto 72
+	term  goto 76
+	lsAddTerm  goto 73
+
+state 445
+	ElseIfPart :  $$179 DelimitedSequence_    (180)
+
+	.  reduce 180
+
+
+state 446
+	caseInstance :  $$186 ExpList COLON $$187 DelimitedSequence_SEMICOLON 
+
+	SEMICOLON  shift 450
+	.  error
+
+
+state 447
+	ForStatement :  FOR $$195 designator ASSIGN $$196 expression TOpart DO $$197 DelimitedSequence_    (198)
+
+	.  reduce 198
+
+
+state 448
+	Variant :  $$125 ElementList COLON_$$126 LPAREN FieldList RPAREN SEMICOLON 
+	$$126 : _    (126)
+
+	.  reduce 126
+
+	$$126  goto 451
+
+state 449
+	ElseIfPart :  IF $$176 expression_THEN $$177 DelimitedSequence ElsePart 
+
+	THEN  shift 452
+	.  error
+
+
+state 450
+	caseInstance :  $$186 ExpList COLON $$187 DelimitedSequence SEMICOLON_    (188)
+
+	.  reduce 188
+
+
+state 451
+	Variant :  $$125 ElementList COLON $$126_LPAREN FieldList RPAREN SEMICOLON 
+
+	LPAREN  shift 453
+	.  error
+
+
+state 452
+	ElseIfPart :  IF $$176 expression THEN_$$177 DelimitedSequence ElsePart 
+	$$177 : _    (177)
+
+	.  reduce 177
+
+	$$177  goto 454
+
+state 453
+	Variant :  $$125 ElementList COLON $$126 LPAREN_FieldList RPAREN SEMICOLON 
+	Field : _    (113)
+
+	IDENT  shift 27
+	.  reduce 113
+
+	ident  goto 31
+	prIdent  goto 210
+	prIdentList  goto 274
+	FieldList  goto 455
+	lsField  goto 272
+	Field  goto 273
+
+state 454
+	ElseIfPart :  IF $$176 expression THEN $$177_DelimitedSequence ElsePart 
+	opLabel : _    (149)
+
+	.  reduce 149
+
+	statement  goto 405
+	DelimitedSequence  goto 456
+	opLabel  goto 204
+
+state 455
+	Variant :  $$125 ElementList COLON $$126 LPAREN FieldList_RPAREN SEMICOLON 
+
+	RPAREN  shift 457
+	.  error
+
+
+456: shift/reduce conflict (shift 418, red'n 173) on ELSE
+state 456
+	ElseIfPart :  IF $$176 expression THEN $$177 DelimitedSequence_ElsePart 
+	ElsePart : _    (173)
+
+	ELSE  shift 418
+	.  reduce 173
+
+	ElsePart  goto 458
+
+state 457
+	Variant :  $$125 ElementList COLON $$126 LPAREN FieldList RPAREN_SEMICOLON 
+
+	SEMICOLON  shift 459
+	.  error
+
+
+state 458
+	ElseIfPart :  IF $$176 expression THEN $$177 DelimitedSequence ElsePart_    (178)
+
+	.  reduce 178
+
+
+state 459
+	Variant :  $$125 ElementList COLON $$126 LPAREN FieldList RPAREN SEMICOLON_    (127)
+
+	.  reduce 127
+
+
+77/300 terminals, 189/300 nonterminals
+298/600 grammar rules, 460/1000 states
+3 shift/reduce, 0 reduce/reduce conflicts reported
+189/350 working sets used
+memory: states,etc. 2134/24000, parser 896/12000
+376/600 distinct lookahead sets
+847 extra closures
+630 shift entries, 8 exceptions
+328 goto entries
+414 entries saved by goto default
+Optimizer space used: input 1729/24000, output 566/12000
+566 table entries, 0 zero
+maximum spread: 256, maximum offset: 456

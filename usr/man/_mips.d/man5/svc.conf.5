@@ -1,0 +1,90 @@
+.TH svc.conf 5
+.SH Name
+svc.conf - database service selection and security
+configuration file
+.SH Description
+The
+.PN svc.conf
+.NXR "svc.conf" "file"
+.NXR "database service selection" "svc.conf file"
+file is a mandatory system file that allows you to select the 
+desired services on a per database basis.  It also allows you to
+select security parameters.  The default
+.PN /etc/svc.conf 
+file has
+.PN local
+as the service selected for each database.  This file must be modified when
+adding or removing a naming service, such as Yellow Pages or
+BIND/Hesiod.  The valid services are 
+.PN local , 
+.PN yp , 
+and 
+.PN bind .
+Modifications to the
+.PN /etc/svc.conf
+file can be made with an
+editor or the 
+.PN /usr/etc/svcsetup
+command for database service selection.  They can be made with the
+.PN /usr/etc/secsetup
+command for security parameter selection.  Changes take effect immediately.
+.NT
+The recommended configuration is that you have
+.PN local
+as the first entry for all databases.
+.NE
+.SH Restrictions
+White space is allowed only after commas or newlines.
+.PP
+You must have
+.PN local
+as the first entry for the
+.PN passwd
+and
+.PN hosts
+databases.
+.PP
+You must have
+.PN yp
+as the entry for the
+.PN netgroup
+database.
+.PP
+You must have either
+.PN local
+or
+.PN bind
+as the entry for the
+.PN auth
+database.
+.SH Examples
+The following is a sample 
+.PN /etc/svc.conf
+file:
+.EX0
+aliases=yp
+auth=local,bind
+group=local,yp
+hosts=local,bind,yp
+netgroup=yp
+networks=bind
+passwd=local,bind
+protocols=local,bind
+rpc=local,bind
+services=local
+
+PASSLENMIN=6
+PASSLENMAX=16
+SOFTEXP=604800         # 7 days in seconds 
+SECLEVEL=BSD           # (BSD | UPGRADE | ENHANCED)
+.EE
+.SH Files
+.PN /etc/svc.conf 
+.br
+.PN /usr/sys/h/svcinfo.h
+.SH See Also
+getsvc(3), svcsetup(8)
+.br
+.I Guide to the BIND/Hesiod Service
+.br
+.I Guide to the Yellow Pages Service

@@ -1,0 +1,72 @@
+.\" SCCSID: @(#)sigprocmask.3	2.3	8/10/87
+.TH sigprocmask 3
+.SH Name
+sigprocmask \- examine and change blocked signals (POSIX)
+.SH Syntax
+.nf
+.B #include <signal.h>
+.PP
+.B int sigprocmask(\fIhow, set, oset\fP)
+.B int \fIhow\fP;
+.B sigset_t \fI*set, *oset\fP;
+.SH Description
+.NXR "sigprocmask system call"
+.NXR "signal" "blocking"
+The
+.PN sigprocmask
+system call
+is used to examine and/or change the calling process's signal mask. If the
+value of the argument
+.I set
+is not NULL, it points to a set of signals that will be used to 
+change the currently blocked set.
+.PP
+The value of the argument
+.I how
+indicates the manner in which the set is changed as defined by the following
+values, defined in <signal.h>:
+.IP "SIG_BLOCK" 
+The resulting signal set is the union of the current set and the signal set
+pointed to by the argument
+.I set.
+.IP "SIG_UNBLOCK"
+The resulting signal set is the intersection of the current set and the 
+complement of the signal set pointed to by the argument
+.I set.
+.IP "SIG_SETMASK"
+The resulting signal set is the signal set pointed to by the argument
+.I set.
+.PP
+If the argument
+.I oset
+is not NULL, the previous mask is stored in the space pointed to by
+.I oset.
+If the value of the argument
+.I set
+is NULL, the process's signal mask is unchanged; thus, the
+.MS sigprocmask 3
+function can be used to enquire about currently blocked signals.
+.PP
+The signal masks used as arguments to this function are manipulated using the
+.MS sigsetops 3
+functions.
+.PP
+As a system restriction, SIGKILL and SIGSTOP cannot
+be blocked. 
+.SH Return Values
+A 0 return value indicates a successful call.
+A \-1 return value
+indicates an error and
+.I errno
+is set to indicated the reason.
+.SH Diagnostics
+The
+.PN sigprocmask
+function fails and the signal mask remains unchanged if the
+follow occurs:
+.TP 15
+[EINVAL]
+The value of the \fIhow\fP argument is not equal to one of the defined
+values.
+.SH See Also
+kill(2), sigsetmask(2), sigvec(2), sigblock(2), sigsetops(3)

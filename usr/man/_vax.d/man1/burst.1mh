@@ -1,0 +1,198 @@
+.TH burst 1mh
+.SH Name
+burst \- explode digests into messages
+.SH Syntax
+.B burst
+[
+.I +folder
+] [
+.I msgs
+] [
+.I options
+]
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "burst command"
+.NXR "expanding packed messages"
+The
+.PN burst
+command extracts the original messages from a forwarded message,
+discards the forwarder's header details,
+and places the original messages at the end of the current folder.  
+.PP
+By default, 
+.PN burst
+takes the current message in the current folder.
+You can specify messages other than the current message by using
+.PN burst
+with the 
+.I +folder
+and 
+.I msgs
+arguments.
+If you specify another message, that message becomes the current message.  
+If you specify another folder, that folder becomes the current folder.
+.PP
+The 
+.PN burst 
+command will expand either a single message which contains
+a number of separate messages packed together for ease of mailing,
+or an Internet digest.
+The
+.PN packf
+and
+.PN forw
+commands can both pack individual messages 
+into a single message or file.
+.PP
+You can use 
+.PN burst 
+in combination with 
+.PN forw 
+or 
+.PN packf 
+to re-direct or forward mail more conveniently.
+For example, if you wanted to forward a number of messages
+to yourself on another account, you could use
+.PN forw
+to combine them and send them in a single message.
+When the message arrives, you can use
+.PN burst
+to expand the single message into its constituent messages.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.IP "\-inplace" 10
+.PD 0
+.IP "\-noinplace" 10
+.PD
+Expands the forwarded message or digest in its current
+place in the folder.
+The message that is expanded is replaced 
+by the header used to forward the message,
+or if it is a digest, by the table of contents.
+The 
+.PN burst
+command then places the extracted messages 
+immediately after this, 
+and re-numbers the rest of the messages in the folder
+to make room for them.
+The original message or digest is not saved.
+.IP
+If 
+.B \-noinplace 
+is given, the original message or digest is preserved.
+The messages which 
+.PN burst
+extracts are placed at the end of the folder.
+Other messages are not re-numbered.
+This is the default behavior.
+.\"
+.\"
+.IP "\-quiet" 10
+.PD 0
+.IP "\-noquiet" 10
+.PD
+Directs 
+.PN burst
+to be silent about reporting messages 
+that are not in digest format.
+Normally, an error message is printed if you attempt to use 
+.PN burst 
+on a message which does not contain encapsulated messages.
+.\"
+.\"
+.IP "\-verbose" 10
+.PD 0
+.IP "\-noverbose" 10
+.PD
+Reports the general actions that 
+.PN burst
+is taking to explode the digest.
+.\"
+.\"
+.PP
+The default settings for this command are:
+.IP
+.I +folder
+defaults to the current folder
+.br
+.I msgs
+defaults to the current message
+.br
+.B \-noinplace
+.br
+.B \-noquiet
+.br
+.B \-noverbose
+.\"
+.\"
+.\"
+.\"
+.SH Restrictions
+The 
+.PN burst
+program enforces a limit on the number of messages 
+which may be expanded from a single message.
+This number is about 1000 messages.
+However, there is usually no limit on the number of messages 
+which may reside in the folder after the messages have been expanded.
+.PP
+The 
+.PN burst 
+command only works on messages that have been encapsulated 
+according to the guidelines laid down by the proposed standard RFC 934.  
+The encapsulated message is considered to start after
+.PN burst 
+encounters a line of dashes.  
+If you attempt to use
+.PN burst
+on a message that has not been encapsulated according to RFC 934, 
+the results may be unpredictable.  
+For example,
+.PN burst
+may find an encapsulation boundary prematurely,
+and split a single encapsulated message 
+into two or more messages.
+.PP
+Any text which appears after the last encapsulated message 
+is not placed in a separate message by 
+.PN burst .
+When the 
+.B \-inplace 
+option is used,
+this trailing information is lost.
+Text which appears before the first encapsulated message
+is not lost.
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+l l.
+Path:+To determine your Mail directory
+Msg-Protect:+To set file protection when creating a new message
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN $HOME/\&.mh_profile
+The user profile.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+forw(1mh), inc(1mh), msh(1mh), packf(1mh)
+.br
+\fIProposed Standard for Message Encapsulation\fR (RFC 934)

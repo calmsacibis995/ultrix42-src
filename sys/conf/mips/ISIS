@@ -1,0 +1,176 @@
+#
+# @(#)GENERIC	4.13	(ULTRIX)	12/28/88
+#
+machine		mips
+cpu		"DS5800"
+ident		"ISIS"
+timezone	5 dst 1
+maxusers	128
+maxuprc		50
+physmem		32
+processors	1
+bufcache	34
+scs_sysid	1
+
+options		QUOTA
+options		INET
+options		NFS
+options		UFS
+options		RPC
+options		SYS_TRACE
+options		DECNET
+options		LAT
+options		DLI
+
+makeoptions	ENDIAN="-EL"
+
+config vmunix root on ra0a swap on ra0b dumps on ra0b
+
+#all the adapters and adapter-like items
+adapter		xmi0	at nexus?
+adapter 	vaxbi0	at nexus?
+adapter 	vaxbi1	at nexus?
+adapter 	vaxbi2	at nexus?
+adapter 	vaxbi3	at nexus?
+adapter 	vaxbi4	at nexus?
+adapter 	vaxbi5	at nexus?
+adapter 	vaxbi11	at nexus?
+adapter 	vaxbi12	at nexus?
+adapter 	vaxbi13	at nexus?
+adapter 	vaxbi14	at nexus?
+adapter		ci0	at vaxbi?	node?
+
+#all the controllers and controller-like items
+controller	hsc0	at ci0		cinode 0
+controller	hsc1	at ci0		cinode 1
+controller	hsc2	at ci0		cinode 2
+controller	hsc3	at ci0		cinode 3
+controller	hsc4	at ci0		cinode 4
+controller	hsc5	at ci0		cinode 5
+controller	hsc6	at ci0		cinode 6
+controller	hsc7	at ci0		cinode 7
+controller	hsc8	at ci0		cinode 8
+controller	hsc9	at ci0		cinode 9
+controller	hsc10	at ci0		cinode 10
+controller	hsc11	at ci0		cinode 11
+controller	hsc12	at ci0		cinode 12
+controller	hsc13	at ci0		cinode 13
+controller	hsc14	at ci0		cinode 14
+controller	hsc15	at ci0		cinode 15
+
+controller	aie0	at vaxbi?	node?
+controller	aie1	at vaxbi?	node?
+controller	aie2	at vaxbi?	node?
+controller	aie3	at vaxbi?	node?
+controller	aie4	at vaxbi?	node?
+controller	kdb0	at vaxbi?	node?
+controller	kdb1	at vaxbi?	node?
+controller	kdb2	at vaxbi?	node?
+controller	kdb3	at vaxbi?	node?
+controller	kdb4	at vaxbi?	node?
+controller	kdb5	at vaxbi?	node?
+controller	kdb6	at vaxbi?	node?
+controller	kdb7	at vaxbi?	node?
+controller	kdb8	at vaxbi?	node?
+controller	kdb9	at vaxbi?	node?
+controller	kdb10	at vaxbi?	node?
+controller	kdb11	at vaxbi?	node?
+controller	bvpssp2 at aie0		vector bvpsspintr
+controller	bvpssp3 at aie1		vector bvpsspintr
+controller	uq4	at kdb0		vector uqintr
+controller	uq5	at kdb1		vector uqintr
+controller	uq6	at kdb2		vector uqintr
+controller	uq7	at kdb3		vector uqintr
+controller	uq8	at kdb4		vector uqintr
+controller	uq9	at kdb5		vector uqintr
+controller	uq10	at kdb6		vector uqintr
+controller	uq11	at kdb7		vector uqintr
+controller	uq12	at kdb8		vector uqintr
+controller	uq13	at kdb9		vector uqintr
+controller	uq14	at kdb10	vector uqintr
+controller	uq15	at kdb11	vector uqintr
+
+#disks and tapes
+disk		ra0	at mscp		drive 0
+disk		ra1	at mscp		drive 1
+disk		ra2	at mscp		drive 2
+disk		ra3	at mscp		drive 3
+disk		ra4	at mscp		drive 4
+disk		ra5	at mscp		drive 5
+disk		ra6	at mscp		drive 6
+disk		ra7	at mscp		drive 7
+disk		ra8	at mscp		drive 8
+disk		ra9	at mscp		drive 9
+disk		ra10	at mscp		drive 10
+disk		ra11	at mscp		drive 11
+disk		ra12	at mscp		drive 12
+disk		ra13	at mscp		drive 13
+disk		ra14	at mscp		drive 14
+disk		ra15	at mscp		drive 15
+disk		ra16	at mscp		drive 16
+disk		ra17	at mscp		drive 17
+disk		ra18	at mscp		drive 18
+disk		ra19	at mscp		drive 19
+disk		ra20	at mscp		drive 20
+disk		ra21	at mscp		drive 21
+disk		ra22	at mscp		drive 22
+disk		ra23	at mscp		drive 23
+disk		ra24	at mscp		drive 24
+disk		ra25	at mscp		drive 25
+disk		ra26	at mscp		drive 26
+disk		ra27	at mscp		drive 27
+disk		ra28	at mscp		drive 28
+disk		ra29	at mscp		drive 29
+disk		ra30	at mscp		drive 30
+disk		ra31	at mscp		drive 31
+tape		tms0	at mscp		drive 0
+tape		tms1	at mscp		drive 1
+tape		tms2	at mscp		drive 2
+tape		tms3	at mscp		drive 3
+tape		tms4	at mscp		drive 4
+tape		tms5	at mscp		drive 5
+tape		tms6	at mscp		drive 6
+tape		tms7	at mscp		drive 7
+tape		tms8	at mscp		drive 8
+tape		tms9	at mscp		drive 9
+tape		tms10	at mscp		drive 10
+tape		tms11	at mscp		drive 11
+tape		tms12	at mscp		drive 12
+tape		tms13	at mscp		drive 13
+tape		tms14	at mscp		drive 14
+tape		tms15	at mscp		drive 15
+tape		tms16	at mscp		drive 16
+tape		tms17	at mscp		drive 17
+tape		tms18	at mscp		drive 18
+tape		tms19	at mscp		drive 19
+tape		tms20	at mscp		drive 20
+tape		tms21	at mscp		drive 21
+tape		tms22	at mscp		drive 22
+tape		tms23	at mscp		drive 23
+tape		tms24	at mscp		drive 24
+tape		tms25	at mscp		drive 25
+tape		tms26	at mscp		drive 26
+tape		tms27	at mscp		drive 27
+tape		tms28	at mscp		drive 28
+tape		tms29	at mscp		drive 29
+tape		tms30	at mscp		drive 30
+tape		tms31	at mscp		drive 31
+
+# Ethernet devices
+device		xna0	at vaxbi?	node? vector xnaintr
+device		xna1	at vaxbi?	node? vector xnaintr
+device		xna2	at vaxbi?	node? vector xnaintr
+device		xna3	at vaxbi?	node? vector xnaintr
+
+pseudo-device	pty	64
+pseudo-device	inet
+pseudo-device	ether
+pseudo-device	loop
+pseudo-device	nfs
+pseudo-device	ufs
+pseudo-device	rpc
+pseudo-device	sys_trace
+pseudo-device	lat
+pseudo-device	lta	32
+pseudo-device	dli
+pseudo-device   decnet

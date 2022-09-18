@@ -1,0 +1,32 @@
+##################################################################
+#
+# 	Makefile for sendmail.cf files
+#
+#		@(#)Makefile.dist	4.1	(ULTRIX)	7/2/90
+#
+##################################################################
+
+DESTROOT=
+
+MAILERS= localm.m4 uucpm.m4 tcpm.m4 xm.m4
+BASES= version.m4 base.m4 localbase.m4 zerobase.m4
+
+.SUFFIXES: .mc .cf
+
+.mc.cf:
+	rm -f $*.cf
+	m4 $*.mc > $*.cf
+	chmod 755 $*.cf
+	cp $*.cf exampleether.cf
+	cp $*.cf exampleuucp.cf
+
+all:	generic.cf
+
+install: generic.cf
+	cp generic.cf $(DESTROOT)/usr/lib/sendmail.cf
+
+clean:
+	rm -f *.cf
+
+generic.cf:	generic.mc $(BASES) $(MAILERS)
+

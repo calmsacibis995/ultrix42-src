@@ -1,0 +1,150 @@
+.\" SCCSID: @(#)talk.1	8.1	9/11/90
+.TH talk 1
+.SH Name
+talk, otalk \- talk to another user
+.SH Syntax
+.B talk
+\fIperson\fR [\|\fIttyname\fR\|]
+.PP
+.B otalk
+\fIperson\fR [\|\fIttyname\fR\|]
+.SH Description
+.NXR "talk program"
+.NXR "otalk program"
+.NXA "talk program" "write command"
+.NXA "mesg command" "talk program"
+.NXR "message" "interactive"
+The
+.PN talk
+command is a visual communication program which
+copies lines from your terminal to that of
+another user.
+.PP 
+If you wish to talk to someone on your own machine, then
+.I person
+is just the person's login name. If you wish to talk to
+a user on another host, then
+.I person
+is of the form :
+.EX
+host!user
+ or
+host.user
+ or
+host:user
+ or
+user@host
+.EE
+The form
+user@host 
+is perhaps preferred.
+.PP
+If you want to talk to a user who is logged in more than once,
+the
+.I ttyname
+argument may be used to indicate the
+appropriate terminal name.
+.PP
+When first called,
+it sends the message
+.EX
+Message from TalkDaemon@his_machine...
+talk: connection requested by your_name@your_machine.
+talk: respond with: talk your_name@your_machine
+.EE
+.PP
+to the user you wish to talk to. At this point, the recipient
+of the message should reply by 
+typing 
+.EX
+talk \ your_name@your_machine
+.EE
+.PP
+It doesn't matter from 
+which machine the recipient replies, as long as his login-name is
+the same.
+Once communication is established, the two parties may type 
+simultaneously, with their output appearing in separate windows. 
+Typing Ctrl-L will cause the screen to be reprinted, while your 
+erase, kill, and word kill characters will work in talk as normal.
+To exit,
+just type your interrupt character;
+.PN talk
+then moves the cursor to the bottom of the screen and restores 
+the terminal.
+.PP
+Permission to talk may be denied or granted by use of the
+.I mesg
+command.
+At the outset talking is allowed.
+Certain commands, in particular
+.PN nroff
+and 
+.MS pr 1
+disallow messages in order to prevent messy output.
+.PP
+In order to use the
+.PN talk
+program with machines on your network that
+may be running earlier versions of ULTRIX, you must initiate
+a session with the command
+.PN otalk
+(/usr/ucb/otalk) instead of the command
+.PN talk .
+You must also respond to a request from a machine running an older
+version of the
+.PN talk
+program with the
+.PN otalk
+command. See the Restrictions section.
+.SH Examples
+The following example demonstrates how to use the
+.PN otalk
+command.  In this case, user1, whose system (system1) is running
+ULTRIX V2.2 initiates a session with 
+user2, whose system (system2)
+is running ULTRIX V3.0.  User1 types the following:
+.EX
+system1> talk user2@system2
+.EE
+The following message appears on the screen of user2:
+.EX
+Message from Talk_Daemon@system2 at 12:37 ...
+talk: connection requested by user1@system1.
+talk: respond with:  otalk user1@system1
+.EE
+To establish the connection user2 follows the instructions
+from the Talk_Daemon and types the following at the system
+prompt:
+.EX
+system2> otalk user1@system1
+.EE
+.SH Restrictions
+The version of
+.PN talk
+released with ULTRIX V3.0 uses a protocol that is incompatible with the
+protocol used in earlier versions. Starting with ULTRIX V3.0, the
+.PN talk
+program
+communicates with other machines running ULTRIX, V3.0 (and later), 
+and machines running 4.3 BSD or versions of UNIX based on 4.3 BSD.
+.PP
+The
+.PN talk
+command is not 8-bit clean. Typing in DEC
+Multinational Characters (DECMCS) causes the characters
+to echo as a sequence of a carets (^) followed by the
+character represented with its high bit cleared. This limitation makes
+.PN talk
+unusable if
+you want to communicate using a language which has DECMCS characters
+in its alphabet.
+.SH Files
+.TP 15
+.PN /etc/hosts
+to find the recipient's machine
+.TP 15
+.PN /etc/utmp
+to find the recipient's tty
+.SH See Also
+mail(1), mesg(1), who(1), write(1), talkd(8c)

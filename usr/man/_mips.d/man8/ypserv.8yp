@@ -1,0 +1,242 @@
+.\" SCCSID: @(#)ypserv.8yp	8.2	11/9/90
+.TH ypserv 8yp
+.SH Name
+ypserv, ypbind \- yellow pages (YP) server and binder processes
+.SH Syntax
+.B /usr/etc/ypserv
+.br
+.B /etc/ypbind [ \-S 
+.I domainname, servername1,servername2...
+][
+.B \-X
+]
+.SH Description
+.NXR "ypserv command"
+.NXR "ypbind daemon"
+.NXA "ypbind daemon" "ypwhich command"
+.NXA "mount command (NFS)" "ypserv daemon"
+.NXA "ypserv daemon" "yppush command"
+.NXR "YP server"
+.NXR "YP binder"
+.PP
+The yellow pages (YP) service provides a network lookup service  
+consisting of databases and processes.  The databases are
+.PN dbm(3x)
+files stored in the
+.PN  /etc/yp 
+directory.
+These files are described in 
+.MS ypfiles 5yp .
+The processes are 
+.PN /usr/etc/ypserv ,
+the YP database lookup server, and 
+.PN /etc/ypbind ,
+the YP binder.
+The software interface to the YP service is described in 
+.MS ypclnt 3yp .
+Administrative tools are described in
+.MS yppush 8yp , 
+.MS ypxfr 8yp , 
+.MS yppoll 8yp , 
+and 
+.MS ypwhich 1yp .
+Tools to see the contents of YP maps are described in
+.MS ypcat 1yp , 
+and 
+.MS ypmatch 1yp .
+Database generation and maintenance tools are described in
+.MS ypmake 8yp , 
+and 
+.MS makedbm 8yp .
+.PP
+Both
+.PN ypserv
+and
+.PN ypbind
+are daemon processes activated at system startup
+time from 
+.PN /etc/rc.local .
+The
+.PN ypserv
+command runs only on a YP server machine with a complete YP database.
+The
+.PN ypbind
+command runs on all machines using YP services, 
+both YP servers and clients.
+.PP
+The
+.PN ypserv
+daemon's primary function is to look up information in its local 
+database of YP maps.
+The operations performed by
+.PN ypserv 
+are defined 
+for the programmer in the header file 
+.PN <rpcsvc/yp_prot.h> .  
+.PP
+Communication with 
+.PN ypserv
+is by means of RPC calls.  Lookup functions are described in
+.MS ypclnt 3yp ,
+and are supplied as C-callable functions in 
+.PN /lib/libc .
+.PP
+There are four lookup functions, all of which are 
+performed on a specified map within a YP domain:
+.PN Match , 
+.PN Get_first ,
+.PN Get_next ,
+and
+.PN Get_all .
+The
+.PN Match
+operation takes a key, and returns the associated value.
+The
+.PN Get_first
+operation returns the first key-value pair from the map, and
+the
+.PN Get_next 
+operation returns the remaining key-value pairs.
+The
+.PN Get_all 
+operation ships the entire map to the requester.
+.PP
+Two other functions supply
+information about the map, rather than the map entries:
+.PN Get_order_number ,
+and 
+.PN Get_master_name .
+Both the order number and the master name exist in the map as
+key-value pairs, but the server will not return either through the
+usual lookup functions.  If the map is examined with
+.MS makedbm 8yp ,
+however, they are visible.
+.PP
+Other functions are used within the YP
+subsystem itself, and are not of general interest to YP clients.  They
+include the
+.PN Do_you_serve_this_domain? ,
+the
+.PN Transfer_map ,
+and the
+.PN Reinitialize_internal_state
+functions.
+.PP
+The purpose of the
+.PN ypbind
+function
+is to remember information that lets client processes on a single node
+communicate with a
+.PN ypserv
+process.
+The 
+.PN ypbind
+function 
+.I must  
+run on every machine that has YP client service requirements.
+The 
+.PN ypbind
+function must be started through an entry in the 
+.PN /etc/rc.local 
+file. 
+.PP
+The information
+.PN ypbind
+remembers is called a 
+.IR binding , 
+the association of a domain name with
+the internet address of the YP server, and the port on that host at 
+which the
+.PN ypserv
+process is listening for service requests.  The process of binding is 
+driven
+by client requests.  As a request for an unbound domain comes in, the
+.PN ypbind
+process broadcasts on the net trying to find a
+.PN ypserv
+process that serves maps within that domain.  Since the binding is 
+established by broadcasting, there must be at least one
+.PN ypserv
+process on every net.  Once a domain is bound by a particular
+.PN ypbind ,
+that same binding is given to every client process on the node.
+The 
+.PN ypbind
+process on the local node or a remote node may be queried for the 
+binding of a particular domain by using the
+.MS ypwhich 1yp 
+command.
+.PP
+Bindings are verified before they are given out to a client process.  If
+.PN ypbind
+is unable to speak to the
+.PN ypserv
+process it is bound to, it marks the domain as unbound, tells the client
+process that the domain is unbound, and tries to bind the domain
+once again.  Requests received for an unbound domain will fail 
+immediately.
+In general, a bound domain is marked as unbound when the node
+running 
+.PN ypserv
+crashes or gets overloaded.  When the node gets overloaded, 
+.PN ypbind
+will try to bind any YP server (typically 
+one that is less-heavily loaded) available on the net.
+.PP
+The
+.PN ypbind
+process also accepts requests to set its binding for a particular
+domain.  The request is usually generated by the YP subsystem itself.
+.SH Options
+.IP \-S 10
+Allows the system administrator to lock
+.PN ypbind 
+to a particular domain and set of servers. Up to four servers can 
+be specified as follows:
+.EX
+/etc/ypbind \-S domainname,server1,server2,server3,server4
+.EE
+Note that there can not be any spaces around the commas in
+the command line. The 
+.PN \-S
+option ensures that this system only binds to the 
+specified domain and to one of the specified servers.
+The servers used with the 
+.PN \-S
+option must have entries in the local
+.PN /etc/hosts 
+file.
+.IP \-X
+The initial bind (
+.PN \-X )
+option forces 
+.PN ypbind
+to bind to a YP server at the time that the 
+.PN ypbind
+command is executed, instead of waiting until YP is used.
+If no server is available at this time, 
+.PN ypbind
+will try for several minutes and then exit.
+Normally, 
+.PN ypbind
+is executed at boot time.
+.IP
+The 
+.PN \-X
+option enables a system that does not exclusively depend
+on YP to boot and to allow logins when there are no YP
+servers available.  Without this option, such a system 
+hangs.
+.SH Files
+If the file
+.PN /var/yp/ypserv.log
+exists when 
+.PN ypserv
+starts up, log information is written to
+.PN ypserv.log
+when error conditions occur.
+.SH See Also
+ypcat(1yp), ypmatch(1yp), ypwhich(1yp), ypclnt(3yp), ypfiles(5yp), yppush(8yp),
+ypxfr(8yp)
+.br
+\fIGuide to the Yellow Pages Service\fP

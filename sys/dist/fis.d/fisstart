@@ -1,0 +1,748 @@
+#!/bin/sh5
+#
+# @(#)fisstart	4.3	(ULTRIX)	4/25/91
+#
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	000	Jonathan Wallace	01-Jun-1990
+#		Created original code
+#
+#	001	James C. Overman	05-Aug-1990
+#		Moved references to /tmp to /usr/tmp and references
+#		of /etc/scampdir to /usr/etc/scampdir
+#
+#	002	Jonathan Wallace	15-Oct-1990
+#		Changed location of fisinit from /etc to /etc/fis.
+#		Added DEP_ORD call which performs a setld C install.
+#		Changed some text.
+#	
+#	003	Added query for video display type.  Changed year in
+#		date example text.
+#
+#	004	Rearranged code that moves the customized kernel due
+#		to a change that was put into MAKEDEV.
+#
+########################################################################
+#
+[ -f /etc/fis/.fisinit ] && exit 0
+term=VT100
+PATH=/bin:/usr/ucb:/usr/bin:/etc:/etc/fis:/usr/adm:/usr/etc:/dev
+export TERM PATH
+set -h
+LL="
+"
+ADVFLAG=1
+ADMDIR="/usr/adm"
+FISDIR="/etc/fis"
+
+MACHTYPE=`/bin/machine`
+case "$MACHTYPE" in
+vax )
+	KERNELPATH="/sys/VAX"
+	CONFIGPATH="/sys/conf/vax"
+	;;
+mips)
+	KERNELPATH="/sys/MIPS"
+	CONFIGPATH="/sys/conf/mips"
+	;;
+esac
+
+trap '' 1 3 18
+trap '
+echo "
+
+*** Interrupt signal received from console ***
+
+Factory installed software requires that this machine execute a series
+of procedures to properly set up the system before it is ready for use.
+Booting this system for the first time,  without going through the FIS
+startup procedure, is not allowed. If you want to stop the FIS startup
+procedure for some reason, answer 'yes'  to the question below and the
+machine will be halted.   If you want to continue with the FIS startup
+procedure, answer 'no' to the question below."
+
+while :
+do
+	echo "
+Do you want to stop the FIS startup procedure? (yes/no) [no]: \c"
+	read resp
+	resp=`echo $resp`
+	case $resp in
+	%% )	# FOR TESTING - BYPASS FISINIT SCRIPT
+		echo "
+
+	You will be placed into manufacturing test mode when
+	the system reboots.  YOU will be responsible for the
+	correct shutdown of the system when you are finished.
+
+Do you want to enter manufacturing test mode? (yes/no) [no]: \c"
+		read resp
+		case $resp in
+		yes )	
+			rm -f /usr/adm/fisinit.log
+			touch /etc/fis/mantest
+			/etc/reboot
+			;;
+		* )
+			echo "*** Halting Machine ***"
+			/etc/halt
+			;;
+		esac
+		;;
+	yes )
+		echo
+		echo "*** Halting Machine ***"
+		/etc/halt
+		;;
+	"" | no )
+		echo
+		echo
+		exit 5
+		;;
+	* )
+		echo "
+You must answer 'yes' or 'no' to the following question:"
+		;;
+	esac
+done ' 2
+
+###############
+# Subroutines # 
+###############
+: Ticker - Put time stamps on screen
+Ticker()
+{
+	(
+		while :
+		do
+			echo "    working ..... \c"
+			date
+			sleep 120
+		done
+	)&
+	TICKPID=$!
+}
+
+
+: Unticker - Stop time stamps to screen
+Unticker()
+{
+	[ -n "$TICKPID" ] &&
+	{
+		(
+		kill -15 $TICKPID
+		wait $TICKPID
+		TICKPID=
+		)
+	}
+}
+
+
+: Get_Configname - Get the config name out of sysname
+Get_Configname()
+{(
+	IFS=.
+	set $1
+	IFS=
+	echo $1 | dd conv=ucase 2>/dev/null
+)}
+
+
+: Get_Sysname - Get the systemname
+Get_Sysname()
+{
+	while : true
+	do
+		echo "${LL}*** SYSTEM NAME SPECIFICATION *** "
+		echo "
+Select the name of your system using alphanumeric characters. 
+The first character must be a letter.   For example, tinker.${LL} 
+Enter your system name: \c"
+
+		read SYSNAME
+		check=`expr $SYSNAME : '\([a-zA-Z][a-zA-Z0-9.]*\)' 2> /dev/null`
+
+		case $SYSNAME in
+		"" )
+			continue
+			;;
+		$check )
+			;;
+		* )
+			echo "
+You specified $SYSNAME as your system name, which is not valid. 
+Read the following prompt and this time type a valid system name:"
+			continue
+			;;
+		esac
+
+		CONFIGNAME=`Get_Configname $SYSNAME`
+
+		echo "
+You selected ${SYSNAME} as the name of your system.  Is this
+correct? (y/n) [y]: \c"
+		read resp
+		case $resp in
+		[Yy]* | "")
+			if egrep -s "^/bin/hostname" /etc/rc.local
+			then
+				# Found, replace it with a new one
+				sed "/^\/bin\/hostname.*/s/hostname.*/hostname ${SYSNAME}/"\
+				/etc/rc.local > /etc/rc.tmp
+			else
+				# Not found, add it at the top
+				echo "/bin/hostname ${SYSNAME}" |
+				cat - /etc/rc.local > /etc/rc.tmp
+			fi
+			mv /etc/rc.tmp /etc/rc.local
+			chmod 644 /etc/rc.local
+			/bin/hostname ${SYSNAME}
+			break
+			;;
+		*)
+			;;
+		esac
+	done
+
+	echo "$SYSNAME $CONFIGNAME" > $FISDIR/sysinfo
+}
+
+
+: Get_Root_Password - Get the systems Root password
+Get_Root_Password()
+{
+	echo "
+*** SPECIFY THE SUPERUSER PASSWORD *** 
+The installation booklet for your processor instructs
+you on how to enter the superuser password."
+
+	until /bin/passwd root
+	do
+		echo "Trying again to set Super User password...${LL}  "
+	done
+}
+
+
+###########################
+# Start Processing here
+###########################
+OPTION=$1
+case $OPTION in
+-S )
+	Get_Sysname
+	exit 0
+	;;
+-P )
+	Get_Root_Password
+	exit 0
+	;;
+* )
+	[ -s $FISDIR/sysinfo ] ||
+	{
+		echo "
+ERROR: $FISDIR/sysinfo file does not exist.  Cannot complete FIS process."
+		exit 5
+	}
+	set -- `cat $FISDIR/sysinfo`
+	SYSNAME=$1; CONFIGNAME=$2
+	rm $FISDIR/sysinfo
+	;;
+esac
+
+
+##################################################################
+# Reset trap to loop in the following while-do loops
+##################################################################
+trap 'continue' 1 3 18
+
+
+##################################################################
+# Set the Date and TIME
+##################################################################
+while : true
+do
+	echo "${LL}${LL}*** DATE AND TIME SPECIFICATION *** "
+	echo "
+The system date and time should be specified using the following
+format:
+
+	yymmddhhmm
+
+Use two digits for year (yy), month (mm), day (dd), hour (hh), and
+minute (mm).  Enter the time in 24-hour format.  For example, 11:30
+p.m. on May 3, 1991 would be entered as:
+
+	9105032330
+
+Enter the date and time [no default]: \c"
+	read tnc
+	case $tnc in
+	T) 	tnc=		#testing only
+	  	;;
+	"")
+	   	echo "You MUST specify a date and time. ${LL}"
+	   	;;
+	[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9])
+		date $tnc > /dev/null 
+	 	case $? in 
+	 	0 )
+			;;
+	 	* )
+			echo "${LL}Sorry, '${tnc}', is not a valid date entry."
+			;;
+	 	esac
+	  	;;
+	* )
+		echo "${LL}Sorry, '${tnc}', is not a valid date entry."
+		;;
+	esac
+	
+	DATE=`date +%d-%h-%y`
+	TIME=`date +%H:%M`
+	echo "
+The current system date and time is set to $DATE, $TIME.
+Is this correct? (y/n) [y]: \c"
+	read resp
+	case $resp in
+	"" | [Yy]* )
+		break
+		;;
+	* )
+		;;
+	esac
+done
+
+	
+##################################################################
+# Set the Timezone 
+##################################################################
+while : true
+do
+	echo "${LL}
+*** TIME ZONE SELECTION ***
+	
+Select the time zone for your area, using the options listed in the
+table below.  You can also enter the number of hours (-12 to 12) in
+time east of Greenwich.
+
+  Selection	Time Zone 
+---------------------------------
+      e		Eastern
+      c		Central
+      m		Mountain
+      p		Pacific
+      g		Greenwich
+---------------------------------
+
+Enter your choice [no default]: \c"
+	read zone
+	case ${zone} in
+	e|E)
+		zone=Eastern
+		hourswest=5
+		ZIC="/etc/zoneinfo/US/Eastern"
+		;;
+	c|C)
+		zone=Central
+		hourswest=6
+		ZIC="/etc/zoneinfo/US/Central"
+		;;
+	m|M)
+		zone=Mountain
+		hourswest=7
+		ZIC="/etc/zoneinfo/US/Mountain"
+		;;
+	p|P)
+		zone=Pacific
+		hourswest=8
+		ZIC="/etc/zoneinfo/US/Pacific"
+		;;
+	g|G)
+		zone=Greenwich
+		hourswest=0
+		ZIC="/etc/zoneinfo/GMT"
+		;;
+	[0-9] | 1[0-2] )
+		hourswest="-${zone}"
+		ZIC="GMT${zone}"
+		;;
+	-[1-9] | -1[0-2] )
+		hourswest=`expr $zone : '[-]\(.*\)'`
+		ZIC="GMT${zone}"
+		;;
+	"")
+		echo ""
+		continue
+		;;
+	*)
+	   	echo "
+Sorry, ${zone}, is not a valid time zone option.  Please enter
+one of the menu options listed below."
+	   	continue
+	   	;;
+	esac
+	
+	echo "
+You selected '$zone' as your time zone area.
+Is this correct? (y/n) [y]: \c"
+	read resp
+	case $resp in
+	"" | [Yy]* )
+		break
+		;;
+	* )
+		;;
+	esac
+done
+
+
+##################################################################
+# Set Daylights Savings Time
+##################################################################
+while : true
+do
+	echo "
+Does your area alternate between Daylight Savings and Standard
+time? (y/n) [y]: \c"
+	read dst
+	case ${dst} in
+	[yY]*|"")
+		while :
+		do
+	   		echo "
+Select your geographic area for Daylight Savings Time, using the
+options in the table below.
+
+  Selection	Geographic Area 
+----------------------------------
+      u		USA
+      a		Australia
+      e		Eastern Europe
+      m		Middle Europe
+      w		Western Europe
+      n		None of the above
+----------------------------------
+
+Enter your choice [no default]: \c"
+			read dst
+			case ${dst} in
+			u|U) dst=1; geog=u; area="USA" ;;
+			a|A) dst=2; geog=a; area="Australia" ;;
+			w|W) dst=3; geog=w; area="Western Europe" ;;
+			m|M) dst=4; geog=m; area="Middle Europe" ;;
+			e|E) dst=5; geog=e; area="Eastern Europe" ;;
+			n|N) dst=n; geog=n; area="n" ;;
+			*)
+				echo "
+You  typed  an invalid  geographic area.  Please type 'u' for USA, 'a' for
+Australia, 'e' for Eastern Europe, 'c' for Central Europe, 'w' for Western
+Europe, or 'n' if none of the choices are applicable. ${LL}"
+				continue
+				;;
+			esac
+
+			case $area in
+			n )
+				echo "
+You do not want to choose any of the options from the above menu."
+				;;
+			* )
+				echo "
+You chose '$area' as your Daylight Savings Time Geographic Area."
+				;;
+			esac
+
+			echo "Is this correct? (y/n) [y]: \c"
+			read resp
+			case $resp in
+			"" | [Yy]* )
+				break
+				;;
+			* )
+				;;
+			esac
+		done
+		;;
+	[nN]*)
+		dst=n; geog=n
+		break
+		;;
+	*)
+		echo ""
+		continue
+		;;
+	esac
+	break
+done
+
+
+##################################################################
+# Check to see what kind of display they are using
+##################################################################
+
+WS_BITS="Y"
+while :
+do
+	echo "
+
+Select one of the options below that describes the type of display
+being used:
+
+	1) Black and White
+	2) Color
+	3) Gray Scale
+
+Enter your choice: \c"
+	read ans
+	ans=`echo $ans`
+	case $ans in
+	1 | 2 )
+		ISL_ISGRAY=0
+		break
+		;;
+	3 )
+		ISL_ISGRAY=1
+		break
+		;;
+	* )
+		;;
+	esac
+done
+export ADVFLAG WS_BITS ISL_ISGRAY
+
+
+#######################################################
+# Reset the trap to ignore interrupts from here on out
+#######################################################
+trap '' 1 3 18
+
+
+##################################################################
+# Now Set Everything Up Using The Date Command
+##################################################################
+case ${dst} in
+"" | n) 
+	TIMEZONE=$hourswest
+	;;
+*)  
+	TIMEZONE="$hourswest dst ${dst}" 
+	;;
+esac
+
+#
+# Because the timezone in the kernel is in the east of USA,
+# time needs to be adjusted.
+# 
+tt=`expr $hourswest : '-\(.*\)' '|' $hourswest`
+tttt=`expr $tt '*' 60`
+case $hourswest in
+0 )  	tttt=0000	
+	;;
+1 ) 	tttt=00${tttt}	
+	;;
+-1 ) 	tttt=-00${tttt}
+	;;
+-* )	tttt=-0${tttt}	
+	;;
+* )	tttt=0${tttt}	
+	;;
+esac
+# In case timezone and dst do not match 
+tnc=`date +%y\%m\%d\%H\%M.%S`
+date $tnc-$tttt$geog >/dev/null 2>&1 
+echo "${LL}The current system date and time is `date`"
+
+
+##################################################################
+# Edit crontab, rc, and hosts files
+##################################################################
+ed /usr/lib/crontab <<xxEOFxx  1>/dev/null
+	/#BIGVAX/d
+	.,/#END/d
+	/#MICROVAX/d
+	.,/#END/s/^#//g
+	d
+	w
+	q
+xxEOFxx
+
+ed /etc/rc <<xxEOFxx  1>/dev/null
+	/#MICROVAX/d
+	.,/#END/s/^#//g
+	d
+	w
+	q
+xxEOFxx
+
+ed  /etc/hosts <<xxxEOFxxx 1>/dev/null
+	/localhost/s/\$/ $SYSNAME/p
+	w
+	q
+xxxEOFxxx
+
+
+##################################################################
+# Check for Low_Swap_Warning file and print it
+#
+[ -f /etc/fis/low_swap_warning ] &&
+{
+        echo "
+
+*************************************************************************"
+        cat /etc/fis/low_swap_warning
+        echo "******************************************************************
+*******
+
+"
+}
+
+
+##################################################################
+# Tell the user how to log into the system
+#
+echo "
+
+##################################################################
+#								 #
+#	The system will now automatically configure the 	 #
+#	ULTRIX  Operating  System, build a  kernel, and 	 #
+#	then reboot.  This will take  approximately  15		 #
+#	minutes, depending on the processor type.		 #
+#								 #
+#	When  the login prompt appears after the system		 #
+#	has rebooted, use 'root' as the  login name and 	 #
+#	the SUPERUSER  password that was entered during		 #
+#	this procedure, to log into the system.			 #
+#								 #
+##################################################################"
+
+
+##################################################################
+# Perform setld -c install for each subset .lk file
+##################################################################
+echo "${LL}
+*** PERFORMING SUBSET CONFIGURATION *** "
+sh5 /etc/fis/DEP_ORD
+
+
+##################################################################
+# Create and Edit A Customized Config File
+##################################################################
+/etc/sizer -n ${CONFIGNAME} -t "$TIMEZONE" >/dev/null
+#  the following /tmp is the result of sizer - do not move to /usr/tmp
+/bin/ed /tmp/$CONFIGNAME <<xxEOFxx 1>/dev/null
+/^options/
+.r /etc/fis/options.mips
+/^pseudo/
+.r /etc/fis/pseudo.mips
+w
+q
+xxEOFxx
+#  the following /tmp is the result of sizer - do not move to /usr/tmp
+cp /tmp/$CONFIGNAME $CONFIGPATH/$CONFIGNAME
+
+
+##################################################################
+# Build the Customized Kernel
+##################################################################
+echo "${LL}${LL}*** PERFORMING SYSTEM CONFIGURATION *** "
+cd $CONFIGPATH
+/etc/config $CONFIGNAME 2>&1 > /tmp/config$$
+case $? in
+0 )
+	rm /tmp/config$$
+	if cd $KERNELPATH/$CONFIGNAME
+	then 
+		Ticker
+		make clean 2>&1 > /dev/null 
+		if (make depend vmunix 2>&1) > errs
+		then
+			# successful configuration
+			STAT=0
+			cd /dev
+			rm -f /dev/*mt*
+			(sh -v /tmp/${CONFIGNAME}.devs 2>&1) > MAKEDEV.log
+			mv $KERNELPATH/$CONFIGNAME/vmunix /vmunix
+		else
+			STAT=2
+			echo "
+There were errors while building the custom kernel for $SYSNAME.
+Check  $KERNELPATH/$CONFIGNAME/errs  for a record of the errors.
+
+The system has been booted using the generic  ULTRIX kernel, which
+means the system may not have  all its devices,  or all its memory
+configured.  It is  highly recommended  that  the  reason  for the 
+kernel rebuild failure be corrected and then the fisinit procedure
+performed again, so  that  the  custom  configured kernel for this
+machine can be built.${LL}"
+			echo "
+There were errors while building the custom kernel for $SYSNAME.
+Check  $KERNELPATH/$CONFIGNAME/errs  for a record of the errors.
+
+The System has been booted using the generic  ULTRIX kernel, which
+means the system may not have  all its devices,  or all its memory
+configured.  It is  highly recommended  that  the  reason  for the 
+kernel rebuild failure be corrected and then the fisinit procedure
+performed again, so  that  the  custom  configured kernel for this
+machine can be built.${LL} " >> /etc/motd
+		fi
+		Unticker
+	fi
+	;;
+
+* )
+	STAT=3
+	echo "
+Configuration file has errors.
+
+The system has been booted using the generic ULTRIX kernel, which
+means the system may not have all its devices, or all its memory
+configured.  It is highly recommended that the reason for the 
+configuration file failure be corrected and then the fisinit procedure
+performed again, so that the custom configured kernel for this
+machine can be built.${LL}"
+	echo "
+Configuration file has errors.
+
+The system has been booted using the generic ULTRIX kernel, which
+means the system may not have all its devices, or all its memory
+configured.  It is highly recommended that the reason for the 
+configuration file failure be corrected and then the fisinit procedure
+performed again, so that the custom configured kernel for this
+machine can be built.${LL} " >> /etc/motd
+	rm /tmp/config$$	
+	;;
+esac
+
+
+##################################################################
+# Move fisinit so we only run this once, then Reboot the kernel
+##################################################################
+case $STAT in
+0 )
+	mv /etc/fis/fisinit /etc/fis/.fisinit
+	echo; echo
+	/etc/reboot
+	;;
+* )
+	exit $STAT
+	;;
+esac

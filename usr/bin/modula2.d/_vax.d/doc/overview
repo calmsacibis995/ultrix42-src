@@ -1,0 +1,143 @@
+.\"#@(#)overview	4.1	Ultrix	7/17/90
+.po 1i
+.nr PO 1i
+.DA "February 29, 1984"
+.SH
+OVERVIEW OF COMPILER
+.LP
+The DECWRL Modula-2 compiler distribution consists of several programs.
+The compiler itself is divided into three phases:
+the front end, the back end, and the intermodule checker.
+There is also a program to invoke the various phases of the compiler,
+a small runtime library,
+some updates to DBX, and a tool for helping convert programs from Pascal to
+Modula-2.
+.LP
+The first phase of the compiler parses an individual Modula-2 module and
+compiles it into P-code.
+It consists of about 17,000 lines of Pascal program and 1,000
+lines of YACC grammar.
+It includes an optimizer that eliminates common subexpressions,
+moves invariants out of loops, allocates registers, and performs other
+optimizations.
+.LP
+The second phase of the compiler translates P-code into VAX instructions.
+It consists of about 6,000 lines of Pascal program.
+It folds constants and selects instructions in order to reduce execution time.
+.LP
+The intermodule checker examines a collection of object modules to be sure they
+are consistent.
+It consists of about 2,500 lines of Modula-2 program.
+Optionally, it will recompile any out-of-date modules.
+.LP
+The mod command examines its argument list and invokes the various phases of
+the compiler to compile programs.
+It consists of about 400 lines of C program.
+.LP
+There is a small runtime library provided to perform I/O, allocate and
+release memory, do some standard string functions, and interface to the Unix
+libraries and system calls.
+It consists of about 800 lines of C and Modula-2 program.
+.LP
+The DBX debugger is used to debug Modula-2 programs.
+A set of updates to the 4.2 version of DBX is provided
+(Since DBX is part of the 4.2BSD distribution, we cannot distribute the whole
+debugger).
+.LP
+A program to help convert Pascal programs into Modula-2 is provided.
+It consists of about 1,800 lines of Pascal and 1,000 lines of YACC grammar.
+.LP
+The benchmark program used to compare different compilers is also
+supplied.
+.SH
+SELECTED FEATURES OF THE COMPILER
+.LP
+Compiles comparable programs faster than the Berkeley Pascal compiler.
+Benchmarks indicate code is comparable to the fastest VAX compilers.
+.LP
+Built-in I/O library similar to Unix printf/scanf.
+.LP
+Automatic recompilation based on actual dependencies, not timestamps, in order
+to minimize recompilations.
+.LP
+Generated code is compatible with Berkeley Pascal and Unix C.
+Easy to call Pascal or C from Modula-2 and vice-versa.
+.LP
+Accepts the language as defined in the Modula-2 report.
+Uses compile-time switches to relax restrictions in the case of reserved
+words and identifiers.
+.SH
+COMPILER ANNOUNCEMENT 1/31/84
+.LP
+The Western Research Laboratory of Digital Equipment Corporation is pleased
+to announce the availability of a new, experimental Modula-2 compiler for
+the VAX and UNIX for university use.  We are licensing interested colleges
+and universities to receive and use this compiler for internal, noncommercial
+use for a fee of $100 to cover our distribution costs.
+.LP
+The compiler was designed and built by Michael L. Powell and it appears to
+be one of the best compilers for the VAX in terms of the efficiency of the
+generated code.  The error messages are slightly better than those from the
+Unix C compiler and the compile time is slightly worse.  Below is a table
+of execution times on a set of ten benchmarks that John Hennessy at Stanford
+has assembled.  All the times are in CPU seconds on a VAX 11/780 with FPA.
+All compilers were asked to generate the best code they could and all
+optional run time checks were turned off.  All versions of the programs
+were as syntactically and semantically similar as possible.
+.DS L
+Prog. Cambridge BerkeleyUnix  DEC     DEC   DEC  VAXElan Stanford DEC
+ Name  Modula-2 Pascal   C    Pascal   C  Bliss32 Pascal Pascal Modula-2
+========================================================================
+ Perm     4.9    2.7    2.6    2.5    2.5    2.5    2.5    2.2    2.0
+ Towers   6.1    2.8    2.6    2.6    2.7    2.5    2.6    2.1    1.9
+ Queens   2.8    1.6    1.0    1.1    0.7    0.7    0.9    1.5    0.9
+ Intmm    4.9    2.2    1.7    1.1    0.8    1.4    0.8    0.7    0.8
+ Mm       5.0    2.7    2.2    1.1    1.3    1.4    0.8    0.7    0.9
+ Puzzle  24.6   12.9   12.4    6.2    4.9    5.8    6.5    4.9    4.1
+ Quick    2.8    1.7    1.2    1.2    0.8    0.8    0.8    1.0    0.8
+ Bubble   5.5    3.0    1.7    1.3    1.0    1.1    0.9    1.4    1.0
+ Tree     6.7    6.4    6.2    4.1    3.4    3.2    3.8    1.9    1.9
+ FFT      9.7    4.8    4.1    2.5    2.6    1.5    1.2    1.8    1.6
+Int Comp  9.9    5.5    4.8    3.5    3.1    3.1    3.1    2.6    2.3
+Real Com 14.2    7.7    6.7    4.6    4.3    3.9    3.7    3.4    3.1
+.DE
+.LP
+Doing benchmarks is always tricky and is especially difficult on a VAX 11/780
+because of the peculiar interactions between the instruction prefetch buffer
+and instruction alignment on word boundaries.  Variations on the order of 10%
+because of changes in alignment are not unusual.  The integer and real
+composite numbers in the last two lines are Hennessy's weighted averages
+of the previous lines -- his attempt to summarize the results.  The above
+performance information is provided for guidance only.  Your mileage may vary.
+.LP
+If you are a college or university and are interested in this compiler,
+we can send you some tech reports and copies of the license agreement
+that you should have signed by the appropriate licensing office of your
+institution.  We can then send you a tar tape that you should be able to
+install and run with no more than the usual amount of associated grief
+on Berkeley Unix 4.x BSD.  There is no Unix material on the distribution
+so we don't need to see your Unix license.  The distribution also includes
+a program that does most of the translation of Pascal programs into Modula-2.
+.DS
+	{...decvax|...ucbvax}!decwrl!powell
+or
+	powell@decwrl.csnet
+or
+	Michael L. Powell
+	Digital Equipment Corporation
+	Western Research Laboratory
+	4410 El Camino Real
+	Los Altos, CA  94022
+.DE
+.LP
+This compiler has a number of internal users and we feel it is quite
+reliable.  However, new users often find new bugs so we expect to hear
+from some of those who try it and we expect to be distributing bug
+fixes in a moderately prompt fashion for a while.  We may also have
+some additional extensions to distribute as we gain more experience
+with the language and hear from other users.
+.LP
+Please be fully aware that this experimental compiler is not a DEC product
+and is not for sale.  Our aim in distributing this compiler is a public
+service one.  The license agreement does, however, protect DEC's option
+to make this compiler into a product someday.

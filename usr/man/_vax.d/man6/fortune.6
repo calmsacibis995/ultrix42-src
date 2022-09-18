@@ -1,0 +1,40 @@
+.TH fortune 6 "" "" Unsupported
+.SH Name
+fortune \- print a random, hopefully interesting, adage
+.SH Syntax
+.B /usr/games/fortune
+[
+.B \-
+] [
+.B \-wsl
+]
+..[ file ]
+.SH Description
+.NXR "fortune command"
+.NXA "fortune command" "ching command"
+The 
+.PN fortune
+program with no arguments prints out a random adage. 
+.SH Options
+.PP
+.TP 5
+.B \-w
+Waits before termination
+for an amount of time calculated from the number of characters in the message.
+This is useful if it is executed as part of the logout procedure
+to guarantee that the message can be read before the screen is cleared.
+.TP 5
+.B \-s
+Short messages only.
+.TP 5
+.B \-l
+Long messages only.
+.\".PP
+.\"..The user may specify a file of adages.
+.\"..This file must be created by strfile(6),
+.\"..and be given by the user as
+.\"...it file.
+.\"..Only one such file may be named,
+.\"..subsequent ones are ignored.
+.SH Files
+.PN /usr/games/lib/fortunes.dat

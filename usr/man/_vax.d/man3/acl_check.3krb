@@ -1,0 +1,203 @@
+.TH acl_check 3krb
+.SH Name
+acl_check \- Access control list (ACL) library routines.
+.SH Syntax
+.nf
+.nj
+ \fBcc <files> \-lacl \-l krb\fP
+.PP
+ \fB#include <krb.h>\fP\fP
+.PP
+ \fBacl_canonicalize_principal\fP (\fIprincipal, buf\fP)
+ \fBchar\fP	\fI*principal\fP;
+ \fBchar\fP	\fI*buf\fP;
+.PP
+ \fBacl_check\fP (\fIacl_file, principal\fP)
+ \fBchar\fP	 \fI*acl_file\fP;
+ \fBchar\fP     \fI*principal\fP;
+.PP
+ \fBacl_exact_match\fP (\fIacl_file, principal\fP)
+ \fBchar\fP     \fI*acl_file\fP;
+ \fBchar\fP     \fI*principal\fP;
+.PP
+ \fBacl_add\fP (\fIacl_file, principal\fP)
+ \fBchar\fP     \fI*acl_file\fP;
+ \fBchar\fP     \fI*principal\fP;
+.PP
+ \fBacl_delete\fP (\fIacl_file, principal\fP)
+ \fBchar\fP     \fI*acl_file\fP;
+ \fBchar\fP     \fI*principal\fP;
+.PP
+ \fBacl_initialize\fP (\fIacl_file, mode\fP)
+ \fBchar\fP     \fI*acl_file\fP;
+ \fBint\fP       \fImode\fP;
+.PP
+ \fBkname_parse\fP (\fIprimary_name, instance_name\fP,
+                       \fIrealm_name, principal\fP)
+ \fBchar\fP	\fI*primary_name\fP;
+ \fBchar\fP	\fI*instance_name\fP;
+ \fBchar\fP	\fI*realm_name\fP;
+ \fBchar\fP	\fI*principal\fP;
+.fi
+.SH Arguments
+.TP 9
+.I principal
+The name of a principal.  Principal names consist of from one to three fields.
+The first field must be included because it stores the primary name of the
+principal.  The second field is not always required.  It begins 
+with a period (.),
+and stores the instance name of the principal.  The third field is not
+always required.  It begins with an "at" sign (@), and stores the realm name of
+the principal.  The principal name format can be expressed as: 
+.EX
+name[.instance][@realm]
+.EE
+For example, all of the names below are legitimate principal names:
+.EX
+venus
+venus.root
+venus@dec.com
+venus.@dec.com
+venus.root@dec.com
+.EE
+.TP
+.I buf
+Pointer to the buffer that stores the canonical form of a principal name.  The
+canonical form is derived from the form of a principal name.  Like a principal
+name, it includes a primary name in its first field.  Unlike a principal name,
+it must include an instance name as its next field even if the instance name
+is blank.  Also, unlike a principal name, it must contain a realm field.  If a
+canonical name is derived from a principal name that has no realm field, the
+local realm returned by 
+.PN krb_get_lrealm(3krb)
+is used as the realm field in the canonical name.  Of the above
+examples, only the last two are in canonical form. 
+.TP
+.I acl_file
+The path name of the file in which the access control list (ACL) is stored.
+.TP
+.I mode
+If the ACL file, \fIacl_file\fP, does not currently exist when
+.PN acl_initialize
+is called, the file \fIacl_file\fP, is created with read, write, and access
+mode bits set equal to \fImode\fP. 
+.TP
+.I primary_name
+The primary name portion of \fIprincipal\fP, returned by
+.PN kname_parse .
+ANAME_SZ bytes of storage space must be allocated for \fIprimary_name\fP.
+.TP
+.I instance_name
+The instance name of \fIprincipal\fP, returned by
+.PN kname_parse .
+INST_SZ bytes of storage space must be allocated for \fIinstance_name\fP.
+.TP
+.I realm_name
+The realm name of \fIprincipal\fP, returned by
+.PN kname_parse .
+REALM_SZ bytes of storage space must be allocated for \fIrealm_name\fP.
+.SH Description
+.NXR "Kerberos routines" "acl_canonicalize_principal"
+.NXR "Kerberos routines" "acl_check"
+.NXR "Kerberos routines" "acl_exact_match"
+.NXR "Kerberos routines" "acl_add"
+.NXR "Kerberos routines" "acl_delete"
+.NXR "Kerberos routines" "acl_initialize"
+.NXR "Kerberos routines" "kname_parse"
+The routines of the 
+.PN acl_check
+library allow you to perform various administrative functions on an
+access control list (ACL). An ACL is a list of Kerberos principals
+in which each principal is represented by a text string.
+The routines of this library allow application
+programs to refer to named ACLs to test whether a principal is a member of an
+ACL, and
+to add or delete principals from the ACL file.
+.PP
+The routines of the \f(CWacl_check\fP library are:
+.IP acl_canonicalize_principal
+Stores the canonical form of the principal name pointed to by
+\fIprincipal\fP in the buffer pointed to by \fIbuf\fP.  This buffer must
+contain enough space to store a full canonical principal name 
+(MAX_PRINCIPAL_SIZE characters).  No meaningful value is returned by
+.PN acl_canonicalize_principal .
+.IP acl_check
+Verifies that the principal name, \fIprincipal\fP, appears in the ACL
+file, \fIacl_file\fP.  This routine returns a zero (0) if the principal does
+not appear in the ACL, or if there is an error condition.  If the principal is
+a member of the ACL, a one (1) is returned.  The \f(CWacl_check\fP
+routine always canonicalizes a principal before trying to find it in the 
+ACL.
+.PN acl_check
+will determine if there is an ACL entry in the \fIacl_file\fP which exactly
+matches principal, \fIprincipal\fP, or if \fIprincipal\fP matches an ACL entry
+which contains a wildcard.  A wildcard appears in place of a field name in an
+ACL entry and is represented as an asterisk (*).  A wildcard in a field name
+of an ACL entry allows the ACL entry to match a principal name that contains
+anything in that particular field.  For example, if there is an entry,
+.PN venus.*@dec.com
+in the ACL, the principals,
+.PN venus.root@dec.com ,
+.PN venus.@dec.com ,
+and
+.PN venus.planet@dec.com
+would be included in the ACL.  The use of wildcards is limited, for they may
+be used in only the three following configurations in an ACL file:
+.EX
+name.*@realm
+*.*@realm
+*.*@*
+.EE
+.IP acl_exact_match
+Verifies that principal name, \fIprincipal\fP, appears in the ACL file,
+.PN acl_file .
+This routine returns a zero (0) if the principal does not appear in the ACL,
+or if any error occurs.  If the principal is a member of the ACL,
+.PN acl_exact_match
+returns a non-zero.  The
+.PN acl_exact_match
+routine does not canonicalize a principal before the ACL checks are made, and
+it does not support wildcards.  Only an exact match is acceptable.  So, for
+example, if there is an entry,
+.PN venus.*@dec.com
+in the ACL, only the principal
+.PN venus.*@dec.com
+would match the ACL entry.  This routine makes it easy to find ACL entries
+with wildcards. 
+.IP acl_add
+Adds the principal name, \fIprincipal\fP, to the ACL file,
+\fIacl_file\fP.  This routine returns a zero (0) if it successfully 
+adds the principal to the ACL.  Otherwise, if there was an internal error, or
+if the principal is already in the ACL, the
+.PN acl_add
+routine returns a non-zero value.  The
+.PN acl_add
+routine canonicalizes a principal, but treats wildcards literally.
+.IP acl_delete
+Deletes the principal, \fIprincipal\fP, from the ACL file, \fIacl_file\fP.  
+The routine returns a zero (0) if it successfully
+deletes the principal from the ACL.  Otherwise, if there was an internal error
+or if the principal is not in the ACL, the
+\f(CWacl_delete\fP routine returns a non-zero value.
+The
+.PN acl_delete
+routine canonicalizes a principal, but
+treats wildcards literally.
+.IP acl_initialize
+Initializes the ACL file, \fIacl_file\fP.  If the named
+\fIacl_file\fP does not exist, \f(CWacl_initialize\fP creates one with
+the permissions specified by the \fImode\fP argument.  If the ACL exists,
+\f(CWacl_initialize\fP removes all previously stored principal members
+of the list.  This routine returns a zero (0) if successful or a nonzero if it
+fails.
+.IP kname_parse
+parses the principal name, \fIprincipal\fP, and stores the primary name of
+the principal in \fIprincipal_name\fP, the instance name of the principal
+in \fIinstance_name\fP, and the realm name of the principal 
+in \fIrealm_name\fP.
+.PN kname_parse
+returns KNAME_FMT if the principal name is incorrectly formatted or if it is
+too long to be a principal name.  It returns KSUCCESS if the parsing of the
+principal name succeeded.
+.SH See Also
+kerberos(3krb), krb_get_lrealm(3krb)

@@ -1,0 +1,364 @@
+.\" SCCSID: @(#)ctime.3	8.2	10/31/90
+.TH ctime 3
+.SH Name
+ctime, localtime, gmtime, asctime, difftime, mktime, timezone, tzset \- date and time functions 
+.SH Syntax
+As shown, the 
+.PN ctime ,
+.PN localtime ,
+.PN gmtime ,
+.PN asctime ,
+.PN difftime, 
+.PN mktime ,
+and
+.PN tzset
+calls are common to both the non-System V environment and the
+System V environment.
+.SS Common to Both Environments
+.nf
+.B #include <time.h>
+.PP
+.B void tzset()
+.PP
+.B char *ctime(\fIclock\fP)
+.B time_t *\fIclock\fP;
+.PP
+.B char *asctime(\fItm\fP)
+.B struct \fItm\fP *\fItm\fP;
+.PP
+.B struct \fItm\fP *localtime(\fIclock\fP)
+.B time_t *\fIclock\fP;
+.PP
+.B struct \fItm\fP *gmtime(\fIclock\fP)
+.B time_t *\fIclock\fP;
+.PP
+.B double difftime(\fItime1\fP, \fItime0\fP)
+.B time_t \fItime1\fP, \fItime0\fP;
+.PP
+.B time_t mktime(\fItimeptr\fP)
+.B struct \fItm\fP *\fItimeptr\fP;
+.PP
+.B extern char *tzname[2];
+.SS BSD Environment Only
+.B char *timezone(\fIzone\fP, \fIdst\fP)
+.SS System V and POSIX Environments Only
+.B extern long timezone;
+.PP
+.B extern int daylight;
+.fi
+.SH Description
+.NXR "ctime subroutine (standard C)"
+.NXR "localtime subroutine (standard C)"
+.NXR "gmtime subroutine (standard C)"
+.NXR "asctime subroutine (standard C)"
+.NXR "timezone subroutine"
+.NXR "tzet subroutine"
+.NXR "time" "converting to ASCII"
+.NXR "date" "converting to ASCII"
+.PP
+The 
+.PN tzset
+call uses the value of the environment variable TZ to
+set up the time conversion information used by 
+.PN localtime .
+.PP
+If TZ does not appear in the environment, the file
+.PN /etc/zoneinfo/localtime 
+is used by 
+.PN localtime .
+If
+this file fails for any reason, the Greenwich Mean Time 
+(GMT) offset as provided by the
+kernel is used.  In this case, Daylight Savings Time
+(DST) is ignored, resulting in the time
+being incorrect by some amount if DST is currently in effect.  If
+this fails for any reason, GMT is used.
+.PP
+If TZ appears in the environment but its value is a null string,
+GMT is used; if TZ appears and its value is not
+a null string, its value is interpreted using rules specific to the
+System V and non-System V environments.
+.PP
+Programs that always wish to use local wall clock time should explicitly
+remove the environmental variable TZ with 
+.PN unsetenv(3).
+.PP
+The
+.PN ctime
+call converts a long integer, pointed to by
+.I clock,
+representing the time in seconds since
+00:00:00 GMT, January 1, 1970,
+and returns a pointer to a
+26-character string
+in the following form.
+All the fields have constant width.
+.EX
+Sun Sep 16 01:03:52 1985\\n\\0
+.EE
+.PP
+The
+.PN localtime
+and
+.PN gmtime
+calls return pointers to 
+.I tm 
+structures, described below.
+The
+.PN localtime
+call corrects for the time zone and possible DST;
+.PN gmtime
+converts directly to GMT, which is the
+time the ULTRIX system uses.
+.PP
+The
+.PN asctime
+call converts a 
+.I tm 
+structure to a 26-character string,
+as shown in the previous example,
+and returns a pointer
+to the string.
+.PP
+Declarations of all the functions and externals,
+and the 
+.I tm
+structure,
+are in the <time.h> header file.
+The structure declaration is:
+.EX
+struct tm {
+        int tm_sec;     /\(** seconds (0 - 59) \(**/
+        int tm_min;     /\(** minutes (0 - 59) \(**/
+        int tm_hour;    /\(** hours (0 - 23) \(**/
+        int tm_mday;    /\(** day of month (1 - 31) \(**/
+        int tm_mon;     /\(** month of year (0 - 11) \(**/
+        int tm_year;    /\(** year \- 1900 \(**/
+        int tm_wday;    /\(** day of week (Sunday = 0) \(**/
+        int tm_yday;    /\(** day of year (0 - 365) \(**/
+        int tm_isdst;   /\(** flag: daylight savings time in
+                              effect \(**/
+        long tm_gmtoff; /\(** offset from GMT in seconds \(**/
+        char *tm_zone;  /\(** abbreviation of timezone name \(**/
+
+};
+.EE
+.B tm_isdst
+is nonzero if DST is in effect.
+.PP
+\fBtm_gmtoff\fP is the offset (in seconds) of the time represented
+from GMT, with positive values indicating East of Greenwich.
+.PP
+The 
+.PN difftime 
+call computes the difference between two calendar times:
+\fItime1\fP - \fItime0\fP and returns the difference expressed in
+seconds.
+.PP
+The
+.PN mktime 
+call converts the broken-down local time in the \fItm\fP structure
+pointed to by \fItimeptr\fP into a calendar time value with the
+same encoding as that of the values returned by 
+.PN time .
+The values of \fBtm_wday\fP and \fBtm_yday\fP in the structure are
+ignored, and the other values are not restricted to the ranges 
+indicated above for the \fItm\fP structure. A positive or zero 
+value for \fBtm_isdst\fP causes 
+.PN mktime
+to presume that DST, respectively,
+is or is not in effect for the specified time. A negative value causes
+.PN mktime 
+to attempt to determine whether DST is
+in effect for the specified time. On successful completion, 
+the values of \fBtm_wday\fP and \fBtm_yday\fP are set appropriately, 
+and the other components are set to represent the specified 
+calendar time, but with their values forced to the ranges indicated 
+above. If the calendar time cannot be represented, the function 
+returns the value \fB(time_t)\-1\fP.
+.PP
+The external variable \fItzname\fP, contains the current time zone
+names. The function 
+.PN tzset 
+sets this variable.
+.SS BSD and POSIX Environment Only
+If TZ appears in the environment and its value is not a null string,
+its value has one of three formats:
+.PP
+    :
+.PP
+or
+.PP
+    :\fIpathname\fP
+.PP
+or
+.PP
+    \fIstdoffset[dst[offset][\fP,\fIstart[\fP/\fItime]\fP,\fIend[\fP/\fItime]]]\fP
+.PP
+If TZ is the single colon format (first format), GMT is used.
+.PP
+If TZ is the colon followed by a pathname format (second),
+the characters following the colon specify a pathname of a
+.MS tzfile 5 
+format file from which to read the time conversion
+information. If the pathname begins with a slash, it represents an
+absolute pathname; otherwise the pathname is relative to the system
+time conversion information directory 
+.PN /etc/zoneinfo. 
+If this file fails
+for any reason, the GMT offset as provided by the kernel is used.
+.PP
+If the first character in TZ is not a colon (third format),
+the components of the string have the following meaning:
+.TP 15
+\fIstd\fP and \fIdst\fP
+Three or more characters that are the designation for the standard (\fIstd\fP)
+or summer (\fIdst\fP) time zone. Only \fIstd\fP is required; if \fIdst\fP
+is missing, then summer time does not apply in this locale. Upper- and
+lowercase letters are explicitly allowed. Any characters except a leading
+colon (:), digits, comma (,), minus (\-), plus (+), and ASCII NUL are
+allowed.
+.TP 15
+\fIoffset\fP
+Indicates the value to be added to the local time to arrive at Coordinated
+Universal Time. The \fIoffset\fP has the form:
+.br
+.sp
+    \fIhh[:mm[:ss]]\fP
+.br
+.sp
+The minutes (\fImm\fP) and seconds (\fIss\fP) are optional. The hour
+(\fIhh\fP) is required and may be a single digit. The \fIoffset\fP
+following \fIstd\fP is required. If no \fIoffset\fP follows \fIdst\fP,
+summer time is assumed to be one hour ahead of standard time. One or more
+digits may be used; the value is always interpreted as a decimal number.
+The hour must be between zero and 24, and the minutes (and seconds) \- if
+present \- between zero and 59. If preceded by a "\-", the time zone is
+east of the Prime Meridian; otherwise it is west (which may be indicated
+by an optional preceding "+").
+.TP 15
+\fIstart\fP and \fIend\fP
+Indicates when to change to and back from summer time. \fIStart\fP describes
+the date when the change from standard to summer time occurs and \fIend\fP
+describes the date when the change back happens. The format of \fIstart\fP
+and \fIend\fP must be one of the following:
+.RS
+.TP 8
+J\fIn\fP
+The Julian day \fIn\fP (1 \(<= \fIn\fP \(<= 365). Leap days are not counted.
+That is, in all years, including leap years, February 28 is day 59 and March
+1 is day 60. It is impossible to explicitly refer to the occasional
+February 29.
+.TP 8
+\fIn\fP
+The zero-based Julian day (0 \(<= \fIn\fP \(<= 365). Leap days are counted,
+and it is possible to refer to February 29.
+.TP 8
+M\fIm\fP.\fIn\fP.\fId\fP
+The \fIn\fPth \fId\fP day of month \fIm\fP (1 \(<= \fIn\fP \(<= 5,
+0 \(<= \fId\fP \(<= 6, 1 \(<= \fIm\fP \(<= 12). When \fIn\fP is 5 it refers
+to the last \fId\fP day of month \fIm\fP. Day 0 is Sunday.
+.RE
+.TP 15
+\fItime\fP
+The \fItime\fP field describes the time when, in current time, the change to
+or from summer time occurs. \fITime\fP has the same format as \fIoffset\fP
+except that no leading sign (a minus sign (\-) or a plus sign (+))
+is allowed. The default, if
+\fItime\fP is not given, is 02:00:00.
+.PP
+As an example of the previous format, if the TZ environment
+variable had the value EST5EDT4,M4.1.0,M10.5.0 it would describe the
+rule, which went into effect in 1987, for the Eastern time zone in the
+USA. Specifically, EST would be the designation for standard time,
+which is 5 hours behind GMT. EDT would be the designation for
+DST, which is 4 hours behind GMT. DST starts on
+the first Sunday in April and ends on the last Sunday in October.
+In both cases, since the time was not specified, the change to and from DST would occur at the default time of 2:00 AM.
+.PP
+The 
+.PN timezone
+call remains for compatibility reasons only; it is impossible to
+reliably map timezone's arguments (\fIzone\fP, a `minutes west of GMT'
+value and
+\fIdst\fP, a `daylight saving time in effect' flag) to a time zone
+abbreviation.
+.PP
+If the environmental string TZNAME exists, 
+.PN timezone 
+returns
+its value, unless it consists of two comma separated strings, in which
+case the second string is returned if \fIdst\fP is non-zero, else
+the first string.  If TZNAME does not exist, \fIzone\fP is checked
+for equality with a built-in table of values, in which case 
+.PN timezone
+returns the time zone or daylight time zone abbreviation 
+associated with that value.  If the requested \fIzone\fP does 
+not appear in the table, the
+difference from GMT is returned; that is, in Afghanistan,
+.PN timezone(\-(60*4+30), 0)
+is appropriate because it is 4:30 ahead of
+GMT, and the string `GMT+4:30' is returned.  Programs that in the
+past used the 
+.PN timezone 
+function should return the 
+.I zone 
+name as
+set by 
+.PN localtime
+to assure correctness.
+.SS System V Environment Only
+.NXR "ctime subroutine (standard C)" "System V and"
+If TZ appears in the environment its value specifies a pathname
+of a 
+.MS tzfile 5
+format file from which to read the time conversion
+information. If the pathname begins with a slash, 
+it represents an absolute
+pathname; otherwise the pathname is relative 
+to the system time conversion
+information directory 
+.PN /etc/zoneinfo .
+.PP
+If TZ appears in the environment and using the value as a pathname
+of a 
+.MS tzfile 5
+format file fails for any reason, the value is assumed
+to be a three-letter time zone name followed by a number 
+representing the difference between local 
+time and GMT in hours, followed
+by an optional three-letter name for a time zone 
+on DST.
+For example, the setting for New Jersey would be EST5EDT.
+.SS System V and POSIX Environment Only
+The external \fIlong\fP variable 
+.PN timezone
+contains the difference,
+in seconds, between GMT and local standard time (in EST, 
+.PN timezone
+is 5*60*60).
+The external variable \fIdaylight\fP is nonzero if any daylight time
+rules are to be applied (that is, if the specified timezone
+includes rules for daylight time).
+These
+variables are set whenever
+.PN tzset ,
+.PN ctime ,
+.PN localtime ,
+.PN mktime ,
+or
+.PN strftime
+are called.
+.SH Restrictions
+The return values point to static data whose content is overwritten by
+each call.  The \fBtm_zone\fP field of a returned \fBstruct tm\fP
+points to a static array of characters, which will also be overwritten
+at the next call (and by calls to 
+.PN tzset).
+.SH Files
+.ta \w'/etc/zoneinfo/localtime\0\0'u
+/etc/zoneinfo	time zone information directory
+.br
+/etc/zoneinfo/localtime	local time zone file
+.SH See Also
+gettimeofday(2), getenv(3), strftime(3), time(3), tzfile(5), environ(7)

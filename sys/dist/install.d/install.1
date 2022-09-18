@@ -1,0 +1,761 @@
+#!/bin/sh
+# install.1: installation for standalone environment.
+#
+# @(#)install.1	4.5	(ULTRIX)	1/21/91
+#
+# Modification History
+# ~~~~~~~~~~~~~~~~~~~~
+#
+# 013 - Jan 1991 - Jon Wallace
+#	Changed text that references the ULTRIX installation guide to
+#	reflect the proper title of that document.
+#
+#	Added RZ23L to case statement that restricts installation on
+#	disks that can't hold the entire operating system by themselves.
+#
+# 012 - Aug 31, 1990 - Jon Wallace
+#	Put in fix to remove embedded spaces when performing a read
+#
+# 011 - Mar 14, 1990 - Jon Wallace
+#	Re-wrote installation message when installing to RZ23
+#	and RD53 disks.
+#
+# 010 - Sep 13, 1989 - Tim Burke
+#	Added dynamic disc support.  If the disk is not in the list of
+#	supported units then call the geometry program to determine the
+#	number of sectors and tracks.
+#
+# 009 - May 31, 1989 - Jon Wallace
+#	Added variable ROUTINE to allow finder to page through
+#	disk selections of more than 16 disks.
+#
+# 008	Dec 01, 1988 - Jon Wallace
+#	Fixed RZ23 system disk ADVFLAG bug
+#
+# 007 - Nov 20, 1988 - Jon Wallace
+#	Coded RZ23 system disk to be ADVANCED installation only.
+#
+# 006 - Aug 16, 1988 - Jon Wallace
+#	Added PVAX CDROM support
+#
+# 005 - Jun 28, 1988 - Jon Wallace
+#	Added RZ55 disk and restructured BTD case
+#
+# 004 - Jun 07, 1988 - Jon Wallace
+#	Added PVAX support (TZ30)
+#
+# 003 - Jan 26, 1988 - Tung-Ning Cherng
+# 	Allowed using the existing partition of system disk.
+#
+# 002 - April, 1987 - Tungning Cherng
+#	Added the log file for V2.2.
+#	
+# 001 - June, 1986 - Lea Gottfredsen & Tungning Cherng
+#		Added in network remote support.
+#
+# 000 - April 11, 1986, by Tungning Cherng
+# 	Prompt edits - Sept. 19, 1986, by Al Wojtas
+################################################################
+################################################################
+
+PATH=.:/etc:/bin
+HOME=/
+MACHTYPE=`/bin/machine`
+export PATH HOME MACHTYPE
+LL="
+"
+MSG2="${LL}*** SOFTWARE DISTRIBUTION DEVICE SELECTION ***${LL} 
+The 'Guide to Installing ULTRIX' explains the following table 
+of software distribution devices and which installation media you should 
+load on it: "
+MSG3="${LL}*** SYSTEM DISK SELECTION ***${LL}
+The 'Guide to Installing ULTRIX' explains the following table 
+of system disk drives.  Select one of the devices below to contain the
+root file system: "
+MSG4="${LL}The installation procedure is now restoring the root file system to
+partition 'a' of the system disk,"
+MSG5="
+The installation procedure now checks the root file system on partition 'a'
+of the system disk,"
+ERMSG1="
+This error causes the installation procedure to stop.  One possible
+cause for the error is a corrupt system disk. You may want to replace
+or use another system disk, and begin the installation again. If this
+error message appears a second time, contact a DIGITAL representative."
+ERMSG2="
+The installation software could not access your distribution device.
+Make sure the distribution device is on line and ready before you 
+select the device from the table."
+ERMSG3="
+The installation software could not access your system disk. Make sure
+the system disk drive is on line and write-enabled (if applicable to
+your disk drive) before you select the device from the table."
+ERMSG4="
+Contact a DIGITAL field service representative."
+ERMSG5="
+The existing disk partitions do not meet the requirements for installation."
+
+MINIROOTSIZE=32768
+MINISWAPSIZE=12288
+
+case $MACHTYPE in
+vax )
+	DISK_MEDIA_DIR="VAX/BASE"
+	;;
+
+mips)
+	DISK_MEDIA_DIR="RISC/BASE"
+	;;
+esac
+
+while : true
+do
+	echo -n "
+*** STANDALONE ULTRIX ENVIRONMENT *** 
+
+If you select the BASIC Installation option from the list that follows,
+the installation software creates file systems on default partitions on
+your system disk and loads the mandatory ULTRIX software subsets.
+
+If you require additional installation choices, select the ADVANCED
+Installation option.
+
+Select one of the following options: ${LL}
+	1) BASIC Installation
+	2) ADVANCED Installation
+	3) System management ${LL}
+Enter your choice: "
+	read resp
+	resp=`echo $resp`
+	case $resp in
+	1 ) 
+		ADVFLAG=0 
+		DEF_PT=1
+		break
+		;;
+	2 )	
+		ADVFLAG=1 
+		DEF_PT=0
+		break
+		;;
+	3 )
+		exit 1
+		;;
+	esac
+done
+
+trap '
+while :
+do
+	echo -n "
+Do you want to quit the installation? (y/n) []: "
+	read ans
+	ans=`echo $ans`
+	case $ans in
+	[yY]* )  echo "Restart your installation."
+		 exit 1 ;;
+	[nN]* )
+	         break ;;
+	esac
+done ' 1 2 3
+	
+
+	
+BTD=`btd`
+BTDTYPE=`expr "$BTD" : '\([a-zA-Z][a-zA-Z]*\)'`
+BTDUNIT=`expr "$BTD" : '[a-zA-Z][a-zA-Z]*\([0-9][0-9]*\)'`
+case $BTD in
+NETWORK )
+	eval `gethost` 
+	media_D=REMOTE
+	;;
+tms* )
+	(cd /dev; MAKEDEV $BTD > /dev/null)
+	media_D=TK50; media_d=$BTDTYPE; media_u=$BTDUNIT
+	;;
+rmt* )
+	(cd /dev; MAKEDEV $BTD > /dev/null)
+	media_D=TK50; media_d=$BTDTYPE; media_u=$BTDUNIT
+	;;
+tz* )
+	(cd /dev; MAKEDEV $BTD > /dev/null)
+	media_D=TZ30; media_d=$BTDTYPE; media_u=$BTDUNIT
+	;;
+rz* )
+	(cd /dev; MAKEDEV $BTD > /dev/null)
+	media_D=CDROM; media_d=$BTDTYPE; media_u=$BTDUNIT; media_p=c
+	;;
+st* )
+	(cd /dev; MAKEDEV $BTD > /dev/null)
+	media_D=TK50; media_d=$BTDTYPE; media_u=$BTDUNIT
+	;;
+* )
+	while : true
+	do
+		ROUTINE="SOFTWARE DISTRIBUTION DEVICE"
+		export ROUTINE
+		echo "$MSG2"
+		if [ "$PASS" = "REPEAT" ]
+		then
+			MEDIA=`finder -f`
+		else
+			MEDIA=`finder -i`
+		fi
+		case $? in
+		0 )	;;
+		* )
+			echo "${LL}No valid device is found. $ERMSG4"
+			exit 1 ;;
+		esac
+		set xx $MEDIA
+		media_D=$2; media_d=$3; media_u=$4	
+		LABEL="SUPPORTED SOFTWARE"
+		case $media_D in
+		TK* )
+			echo "
+REMOVE THE TAPE LABELED 'STANDALONE ULTRIX TK50 #1'."
+			;;
+		RX* )
+			LABEL="ROOT 1"
+			;;
+		RA60 )
+			LABEL="SUPPORTED & UNSUPPORTED SOFTWARE"
+			;;
+		esac
+		while :
+		do
+			echo -n "
+You selected ${media_D}, device number ${media_u}.  After you load the media
+labeled $LABEL, make sure the device is on line
+and write protected, and then confirm your choice.
+
+Use $media_D, ${media_d}${media_u} as Software Distribution Device? (y/n) []: "
+			read ans
+			ans=`echo $ans`
+			case $ans in
+			Y | y )
+				PASS=
+				break
+				;;
+			N | n )
+				PASS=REPEAT
+				continue 2
+				;;
+			* )
+				echo "
+You must answer 'y' or 'n' to the following."
+				continue
+				;;
+			esac
+		done
+		media_p=
+		case $media_D in	
+		RX50 | RA60 )	
+			media_p=c ;;
+		esac
+		cd /dev
+		MAKEDEV $media_d$media_u$media_p > /dev/null
+		case $? in
+		0 )	;;
+		* )
+			echo "
+The MAKEDEV command could not make the special files on device $media_d$media_u. $ERMSG1 "
+			exit 1 ;;
+		esac
+		cd /
+		case $media_D in	
+		RA60 | RX50 )
+			dd if=/dev/r$media_d$media_u$media_p count=1 >/dev/null 2>&1
+			case $? in
+			0 )	;;
+			* )	
+				echo "$ERMSG2"
+				continue ;;
+			esac
+			;;
+		*)	
+			mt -f /dev/rmt0h rew	
+			case $? in
+			0 )	;;
+			* )	
+			echo "$ERMSG2"
+				rm -f /dev/*mt*
+				continue ;;
+			esac
+			;;
+		esac
+		break
+	done
+	;;
+esac	
+
+case $MACHTYPE$BTD in
+mipstz* )
+	while :
+	do
+		mt rew 2>1 >/dev/null
+		case $? in
+		1 )
+			continue
+			;;
+		* )
+			break
+			;;
+		esac
+	done
+	;;
+esac
+
+while : true
+do
+	ROUTINE="SYSTEM DISK"
+	export ROUTINE
+	echo "$MSG3"
+	ROOTF=`finder -r`
+	case $? in
+	0 )	;;
+	* )
+		echo "${LL}No valid device is found. $ERMSG4"
+		exit 1	;;
+	esac
+	set xx $ROOTF
+	root_D=$2; root_d=$3; root_u=$4
+	case $root_d$root_u in
+	$media_d$media_u )
+		echo "
+You attempted to allocate the root file system on $root_d$root_u, which 
+contains your distribution medium. Select another disk device from the
+table."
+		continue ;;
+	esac
+	while :
+	do
+		echo -n "
+You selected ${root_D}, device number ${root_u}. Make sure this disk drive 
+is on line and write-enabled (if applicable to your disk drive), then
+confirm your choice.
+
+Use ${root_D}, $root_d$root_u, for your system disk? (y/n) []: "
+		read ans 
+		ans=`echo $ans`
+		case $ans in
+		Y | y )
+			break
+			;;
+		N | n )
+			continue 2
+			;;
+		* )
+			echo "
+
+You must answer 'y' or 'n' to the following."
+			continue
+			;;
+		esac
+	done
+	case $root_D in
+	RA60 )
+		ns=42;nt=4;;
+	RA70 )
+		ns=33; nt=11 ;;
+	RA80 | RM80 | R80 )
+		ns=31;nt=14;;
+	RA81 )
+		ns=51;nt=14;;
+	RA82 )
+		ns=57;nt=15;;
+	RA90 )
+		ns=70; nt=13;;
+	RD32 )
+		ns=17; nt=6;;
+	RD33 )
+		ns=17; nt=7;;
+	RD53 )
+		ns=18;nt=8;;
+	RD54 )
+		ns=17;nt=15;;
+	RM03 )
+		ns=32;nt=5;;
+	RM05 )
+		ns=32;nt=19;;
+	RP05 | RP06 )
+		ns=22;nt=19;;
+	RP07 )
+		ns=50; nt=32;;
+	RF30 )
+		ns=37; nt=6;;
+	RF71 )
+		ns=37; nt=16;;
+	RZ23 )
+		ns=33; nt=8;;
+	RZ55 )
+		ns=36; nt=15;;
+	RZ56 )
+		ns=54; nt=15;;
+	* )
+		GEOMETRY=`geometry $root_d $root_u`
+		case $? in
+		0 )     ;;
+		* )
+			echo "
+Unable to obtain device geometry for $root_d$root_u.
+This is not a supported system disk."
+			exit 1
+			;;
+		esac
+		set xx $GEOMETRY
+		ns=$2; nt=$3;
+		;;
+	esac
+
+	case $root_D in
+	RZ23 | RZ23L | RD53 ) echo "
+NOTE: The ${root_D} disk is not supported by itself as a system disk.
+A second suitably sized disk is required to perform the installation.
+Disk partitions must be carefully selected based on the usage infor-
+mation in the Guide to Installing ULTRIX."
+		if test "$ADVFLAG" -eq "0"
+		then
+		echo "
+BASIC installations are not allowed using the ${root_D} as a system
+disk.  The installation procedure will switch to ADVANCED installation
+and continue.
+"
+		ADVFLAG=1
+		DEF_PT=0
+		fi
+		;;
+	esac
+
+	cd /dev
+	MAKEDEV ${root_d}${root_u}a ${root_d}${root_u}c > /dev/null
+	case $? in
+	0 )	;;
+	* )
+		echo "
+The MAKEDEV command could not make the special files for the system disk,
+$root_d$root_u. $ERMSG1"
+		exit 1	;;
+	esac
+
+	cd /
+	case $DEF_PT in
+	0 )
+		chpt -q /dev/r$root_d${root_u}a > /tmp/pt_exist 2>/dev/null 
+		case $? in
+		0 )
+			chpt -q -d /dev/r$root_d${root_u}a > /tmp/pt_def 2>/dev/null 
+			ed /tmp/pt_def <<xxEOFxx 1>/dev/null
+				1,2d
+				w
+				q
+xxEOFxx
+			ed /tmp/pt_exist <<xxEOFxx 1>/dev/null
+				1,2d
+				w
+				q
+xxEOFxx
+			PTdef=`dd if=/tmp/pt_def 2>/dev/null`
+			PTexist=`dd if=/tmp/pt_exist 2>/dev/null`
+			if [ "$PTdef" = "$PTexist" ]
+			then
+				DEF_PT=1
+			fi
+			;;
+		esac
+		;;
+	esac
+
+	case $DEF_PT in
+	1 )
+		chpt -d /dev/r$root_d${root_u}a 2>/dev/null 
+		chpt -d /dev/r$root_d${root_u}c 2>/dev/null 
+		;;
+	0 )
+		while :
+		do	
+			echo -n "
+Select one of the following partition tables to be displayed 
+for the system disk $root_d$root_u $root_D:
+
+	1 ) Default partition table
+	2 ) Existing partition table	
+
+Enter your choice: "
+			read ppp
+			ppp=`echo $ppp`
+			case $ppp in
+			1 )
+				echo "
+The following table shows the default disk partitions: 
+Note: The size is shown in 512-byte blocks.
+"
+				dd if=/tmp/pt_def 2>/dev/null
+				;;
+			2 )
+				echo "
+The following table shows the existing disk partitions:
+Note: The size is shown in 512-byte blocks.
+"
+				dd if=/tmp/pt_exist 2>/dev/null
+				;;
+			* )	
+				continue
+				;;
+			esac
+			echo -n "
+Are these the disk partitions you want? (y/n): "
+			read ans
+			ans=`echo $ans`
+			case $ans in
+			n )
+				continue
+				;;
+			y )
+		            case $ppp in
+			    1 )
+				chpt -d /dev/r$root_d${root_u}a 2>/dev/null 
+				chpt -d /dev/r$root_d${root_u}c 2>/dev/null 
+				DEF_PT=1
+				;;
+			    2 )
+				ed /tmp/pt_exist 1>/dev/null <<xxEOFxx
+					2w /tmp/part
+xxEOFxx
+				set xxx `dd if=/tmp/part 2>/dev/null`
+				case $6 in
+				*b* )	
+					echo "$ERMSG5
+The 'a' and 'b' partitions overlap.  You must select the default disk
+partition layout to use this disk.
+"
+					continue 2
+					;;
+				esac
+				ROOTSIZE=$5
+				if test $ROOTSIZE -lt $MINIROOTSIZE
+				then
+					echo "$ERMSG5
+The 'a' partition needs a size of at least ${MINIROOTSIZE}.  You must select 
+the default disk partition layout to use this disk.
+"
+					continue 2
+				fi	
+				ed /tmp/pt_exist 1>/dev/null <<xxEOFxx
+					3w /tmp/part
+xxEOFxx
+				set xxx `dd if=/tmp/part 2>/dev/null`
+				if test $5 -lt $MINISWAPSIZE
+				then
+					echo "$ERMSG5
+The 'b' partition needs a size of at least ${MINISWAPSIZE}.  You must
+select the default disk partition layout to use this disk.
+"
+					continue 2
+				fi	
+				;;
+			    esac
+			    ;;
+			* )
+				continue
+				;;
+			esac
+			break
+		done
+		;;
+	esac
+
+	echo "
+The installation procedure now allocates the root file system on
+partition 'a' of the system disk, ${root_d}${root_u} ${root_D}. ${LL}"
+	dd if=bootblks of=/dev/r${root_d}${root_u}a bs=8192 count=1 >/dev/null 2>&1
+	case $? in
+	0 )	;;
+	* )	echo "$ERMSG3"
+		rm -f /dev/*${root_d}${root_u}* 
+		continue ;;
+	esac
+	break
+done
+
+umount /mnt >/dev/null 2>&1
+echo "Making the root file system on $root_d$root_u $root_D."
+(echo "
+Making the root file system on $root_d$root_u $root_D.") > /FILESYS.log
+case $DEF_PT in
+1 )
+	ROOTSIZE=$MINIROOTSIZE
+	;;
+esac
+mkfs /dev/r${root_d}${root_u}a $ROOTSIZE $ns $nt 8192 1024 2>&1 >> /FILESYS.log 
+case $? in
+0 )	;;
+* )
+	echo "
+The mkfs command failed to construct a file system on
+partition 'a' of the system disk, ${root_d}${root_u}. $ERMSG1"
+	exit 1	;;
+esac
+mount /dev/${root_d}${root_u}a /mnt 
+case $? in
+0 ) ;;
+* )
+	echo "
+The mount command failed to mount partition 'a' of the system
+disk, ${root_d}${root_u}. $ERMSG1"
+	exit 1 ;;
+esac
+
+	
+while : true
+do
+	case $media_D in
+
+	REMOTE )
+		cd /mnt
+                rsh $SERVER -l ris -n grep "'^$CLIENT:'" clients/risdb 2>/dev/null > /tmp/ris.ent
+		[ -s /tmp/ris.ent ]  || {
+			echo "
+Cannot find $CLIENT in risdb file.  Check the sytem manager of 
+your host server."
+			exit 1
+		}
+		DIFS="$IFS"
+		IFS=:
+		set `dd if=/tmp/ris.ent 2>/dev/null`
+		PRODS=$3
+		IFS=,
+		set $PRODS
+		RISROOT=`rsh $SERVER -l ris -n "echo $1/*/ROOT"`
+		IFS=$DIFS
+		echo "$MSG4 ${root_d}${root_u} ${root_D}. "
+		rsh $SERVER -l ris -n "dd if=$RISROOT bs=10k" | restore rf -
+		case $? in
+		0 )	;;
+		* )
+			echo "
+The root file system restore operation failed.  Please check with the
+system manager of your host server."
+			exit 1 ;;
+		esac
+		dd if=/netstart of=netstart 2>/dev/null
+		dd if=/etc/hosts of=etc/hosts 2>/dev/null
+		break
+		;;
+
+	RA60 | CDROM )
+		if test "$media_D" = "RA60"
+		then
+			echo "${LL}
+The installation procedure now checks your distribution medium,
+${media_d}${media_u}, to ensure that it is not corrupt. "
+			fsck /dev/r${media_d}${media_u}${media_p}
+			case $? in
+			0 ) ;;
+			* )
+				echo "
+The fsck command failed to complete a file consistency check
+for the file system on partition ${media_p} of the ra60 distribution medium,
+${media_d}${media_u}. $ERMSG1"
+				exit 1
+				;;
+			esac
+		fi
+		mkdir rootdump
+		mount -r /dev/${media_d}${media_u}${media_p} /rootdump 
+		case $? in
+		0 )	;;
+		* )
+			echo "
+The mount command was unable to mount the ra60 distribution medium,
+${media_d}${media_u} on /rootdump.  $ERMSG1"
+			exit 1	;;
+		esac
+		cd /mnt
+		echo "$MSG4 ${root_d}${root_u} ${root_D}."
+		restore rf /rootdump/$DISK_MEDIA_DIR/ROOT 
+		case $? in
+		0 )	;;
+		* )
+			echo "
+The restore command could not access the root file system. $ERMSG1"
+			exit 1	;;
+		esac
+		break
+		;;
+
+	RX50)
+		cd /mnt
+		echo "$MSG4 ${root_d}${root_u} ${root_D}."
+		restore rBf 400 /dev/${media_d}${media_u}$media_p
+		case $? in
+		0 )	;;
+		* )
+			echo -n "
+The restore command failed to access the RX50 distribution medium. To
+correct the error, make sure you loaded the appropriate RX50 distribution
+medium correctly in the drive. Then answer y to the following question.
+	
+Do you want to continue with the installation? (y/n) [y]: "
+			read resp
+			resp=`echo $resp`
+			case $resp in
+			n* | N*)
+				;;
+			*)
+				continue ;;
+			esac
+			;;
+		esac
+		break
+		;;
+
+	 * )
+		cd /mnt
+		mt -f /dev/nrmt0h fsf 2
+		echo "$MSG4 ${root_d}${root_u} ${root_D}."
+		restore rf /dev/nrmt0h
+		case $? in 
+		0 )	;;
+		* )
+			echo "
+The restore command failed to access the magnetic tape distribution
+medium. $ERMSG1"
+			exit 1	;;
+		esac
+		break
+		;;
+	esac
+done
+
+echo "$root_D $root_d $root_u $media_D $media_d $media_u $media_p" > .minidevice
+echo "$ADVFLAG $DEF_PT $MACHTYPE" > .advflag
+dd if=/tmp/showboot of=/mnt/tmp/showboot 2>/dev/null
+cd /
+echo "${LL}*** BOOTSTRAP COMMAND SEQUENCE ***" >> /install.log
+case media_D in
+REMOTE )
+	echo "${LL}Distribution source is remote server $SERVER" >> /install.log
+	;;
+esac
+dd if=/tmp/showboot 2>/dev/null >> /install.log
+dd if=/install.log of=/mnt/install.log 2>/dev/null
+dd if=/FILESYS.log of=/mnt/FILESYS.log 2>/dev/null
+
+umount /dev/${root_d}${root_u}a
+echo "$MSG5 ${root_d}${root_u}  ${root_D}."
+fsck /dev/r${root_d}${root_u}a 
+case $? in
+0 )	;;
+* )
+	echo "
+The fsck command failed to complete a file system consistency check 
+for the file system on partition 'a' of the system disk, ${root_d}${root_u}.
+$ERMSG1 "
+	exit 1	;;
+esac
+
+echo "${LL} *** BOOTSTRAP COMMAND SEQUENCE ***"
+dd if=/tmp/showboot 2>/dev/null 
+
+exit 0

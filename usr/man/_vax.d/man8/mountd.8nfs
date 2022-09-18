@@ -1,0 +1,51 @@
+.\" SCCSID: @(#)mountd.8nfs	3.6	7/26/88
+.TH mountd 8nfs
+.SH Name
+mountd \- NFS mount request daemon
+.SH Syntax
+.B /etc/mountd 
+[\fB\-i\fR] [\fB\-d\fR] [\fB\-s\fR]
+.SH Description
+.NXR "mountd daemon"
+.NXR "NFS mount request server"
+The 
+.PN mountd 
+daemon must be run on NFS servers
+to process NFS mount protocol requests.
+It reads the 
+.PN /etc/exports
+file to determine which file systems and directories are available
+to which machines and users,
+and makes this information available to the operating system.
+The machine names listed in the
+.PN /etc/exports
+file may optionally contain the local BIND domain name.  For more
+information on BIND, see the 
+\fIGuide to the BIND/Hesiod Service\fP
+To see which clients have file systems or directories mounted,
+use the
+.PN showmount
+command.
+.SH Options
+.IP \fB\-d\fR 0.3i
+If you are running the BIND/Hesiod service, after checking the 
+Internet address,
+.PN mountd 
+will verify that the host requesting a mount or unmount is in the 
+server's domain.
+.IP \fB\-i\fR 0.3i
+Turns on verification of the Internet address of the client
+against the server's
+.PN hosts
+database for mounts and unmounts.
+The default is no address verification.  
+.IP \fB\-s\fR 0.3i
+If you are running the BIND/Hesiod service, after checking 
+the Internet address,
+.PN mountd 
+will verify that the host requesting a mount or unmount is in the
+server's subdomain.
+.SH See Also
+exports(5nfs), mount(8nfs), nfsd(8nfs), showmount(8nfs)
+.br
+\fIGuide to the BIND/Hesiod Service\fP

@@ -1,0 +1,57 @@
+.TH ldsseek 3x RISC
+.SH Name
+ldsseek, ldnsseek \- seek to an indexed or named section of a common object file
+.SH Syntax
+.ta \w'unsigned\ 'u +\w'short\ \ 'u
+.nf
+.B #include <stdio.h>
+.B #include <filehdr.h>
+.B #include <syms.h>
+.B #include <ldfcn.h>
+.PP
+.BR "int ldsseek (" "ldptr, sectindx" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR "unsigned short" " sectindx" ;
+.PP
+.BR "int ldnsseek (" "ldptr, sectname" )
+.BR "\s-1LDFILE\s+1 \(**" ldptr ;
+.BR "char \(**" sectname ;
+.DT
+.fi
+.SH Description
+The
+.PN ldsseek
+seeks to the section specified by
+.I sectindx
+of the common object file
+currently associated with
+.IR ldptr .
+.PP
+The 
+.PN ldnsseek
+seeks to the section specified by
+.IR sectname .
+.PP
+The
+.PN ldsseek
+and
+.PN ldnsseek
+return success or failure. If 
+.I sectindx
+is greater than the number of sections in the object file,
+.PN ldsseek
+fails;
+if there is no section name corresponding with
+.IR sectname,
+.PN ldnsseek
+fails.
+If a no section data for the specified section does not exist or
+if it cannot seek to the specified section, either function fails.
+.NT
+The first section has an index of
+.IR one .
+.NE
+The program must be loaded with the object file access routine library
+.BR libmld.a .
+.SH See Also
+ldclose(3x), ldopen(3x), ldshread(3x), ldfcn(5)

@@ -1,0 +1,20 @@
+/*        @(#)xlc_graph.vc	4.1      7/2/90      */
+
+/*  Version 2.00   4/ 3/89 13:57:00.0000  */
+/* makehf /vc /cv /setup=portab.h,capdl.def xlc_graph.def xlc_graph.vc  */
+
+
+
+
+
+CONST WORD init_list[95] =  { 128,64,32,16,8,4,3,2,0,4,3,2,0,2,0,0,3,2,0,0,0,2,0,3,2,0,0,0,0,0,0,0,2,0,
+3,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,3,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,
+0,0,0,0,0,0,0,0,2,0,0,0,0,2,0,0,2,0,8,4,3,2,0 } 
+;
+NOSHARE PTR_SIXEL_MAP_EL six_rptr[64];
+NOSHARE SIXEL_MAP_EL sixel_cmprss_mppng[95];
+CONST SIXEL_MAP_EL sixel_cmprss_mppng_null =  { 0, 0 } 
+;
+
+
+

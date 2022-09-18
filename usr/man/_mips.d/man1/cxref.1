@@ -1,0 +1,66 @@
+.\" SCCSID: @(#)cxref.1	3.3	9/16/88
+.TH cxref 1
+.SH Name
+cxref \- generate C program cross reference
+.SH Syntax
+.B cxref
+[\|\fIoptions\fR\|] \fIfiles\fR
+.SH Description
+.NXR "cxref command"
+.NXR "file" "xcpp file"
+.NXA "cc compiler" "cxref command"
+.NXR "C program" "building cross-reference table"
+The
+.PN cxref
+command analyzes a collection of C files
+and attempts to build a cross reference table.
+The
+.PN cxref
+command
+utilizes a special version of
+.PN cpp
+to include
+.BR #define 'd
+information in its symbol table.
+It produces a listing on standard output of all symbols (auto, static,
+and global) in each file separately, or with the
+.B \-c
+option, in combination.
+Each symbol 
+contains an asterisk (\(**) before the declaring reference.
+.SH Options
+.IP \-c 10
+Prints a combined cross-reference of all input files.
+.IP "\-D\fIname\fR"
+Defines 
+.I name 
+to processor, as if by 
+.I #define.
+Default value is 1.
+.IP "\-I\fIdir\fR"
+Searches named directory for 
+.PN #include
+files whose names do not begin 
+with a backslash (/).
+.IP "\-o \fIfile\fR"
+Directs output to named \fIfile\fP.
+.IP \-s
+Operates silently; does not print input file names.
+.IP \-t
+Formats listing for 80-column width.
+.IP "\-U\fIname\fR"
+Removes any initial definition of 
+.I name.
+.IP \-w<\fInum\fR>
+Width option which formats output no wider than <\fInum\fR> 
+(decimal) columns.  This option will default to 80 
+if <\fInum\fR> is not specified or is less than 51.
+.SH Diagnostics
+Error messages usually indicate a problem that will prevent the file
+from compiling.
+.SH Files
+.TP \w'/usr/lib/xcpp\ \ \ \ 'u
+/usr/lib/xcpp
+special version of C-preprocessor.
+.SH See Also
+cc(1).

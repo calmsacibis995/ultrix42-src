@@ -1,0 +1,75 @@
+.TH mdc 4 RISC
+.SH Name
+mdc \- DS5100 serial line driver
+.SH Syntax
+.nf
+.B "device    mdc0     at ibus?     vector mdcintr"
+.B "device    mdc1     at ibus?     vector mdcintr"
+.B "device    mdc2     at ibus?     vector mdcintr"
+.fi
+.SH Description
+.NXS "mdc interface" "DS5100 serial line interface"
+.NXR "DS5100 serial line interface"
+A DS5100 base system (mdc0) provides four asynchronous ports.
+An optional asynchronous card (mdc1 and mdc2 ) can be added to supply 
+eight additional ports.
+.PP
+The 
+mdc 
+ports are used as follows:
+.PP
+.ta \w'Port    'u +\w'full modem control port    'u 
+.nf
+\f(HBPort	Usage	Connector\fR
+.sp
+0	Console port	6-pin MMJ on CPU board
+1	Local terminal	6-pin MMJ on CPU board
+2	Full modem control port	25-pin D-Sub on CPU board
+3	Local terminal	6-pin MMJ on CPU board
+.sp
+An optional asynchronous board provides an additional eight lines:
+.sp
+4	Local terminal	6-pin MMJ
+5	Local terminal	6-pin MMJ
+6	Full modem control port	25-pin D-Sub 
+7	Local terminal	6-pin MMJ 
+8	Local terminal	6-pin MMJ
+9	Local terminal	6-pin MMJ
+10	Local terminal	6-pin MMJ
+11	Local terminal	6-pin MMJ
+.fi
+.PP
+The console baud rate is set to 9600 baud by default. 
+You can change this 
+by setting the baud environment variable from console prompt.
+Each communication port from the serial line controller
+behaves as described in the
+.MS tty 4
+reference page and can be set to run at any of 16 speeds. 
+For the encoding, see
+.MS tty 4 .
+.PP
+You can establish the state of port 2 (port 6) by specifying either
+modem or nomodem as part of the 
+.PN /etc/ttys 
+file entry.
+.SH Restrictions
+The speed default is to 9600 baud on the console port.
+The console device must be set for 8-bit character 
+length with one stop bit 
+and no parity. The 
+.PN mdc 
+driver enforces these restrictions; 
+that is, changing speeds with the 
+.PN stty 
+command may
+not always work on console ports.
+.SH Files
+.TP 20
+.PN /dev/console
+Console terminal
+.TP
+.PN /dev/tty??
+Full modem control or local terminal
+.SH See Also
+console(4), devio(4), tty(4), ttys(5), MAKEDEV(8)

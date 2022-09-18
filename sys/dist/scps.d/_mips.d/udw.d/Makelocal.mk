@@ -1,0 +1,26 @@
+#	Makelocal.mk
+#		sys/dist/scps.d/_mips.d/ Makefile
+#
+#	000	02-mar-1989	ccb
+#	New.
+#
+#  @(#)Makelocal.mk	4.1  ULTRIX  7/2/90
+
+include $(GMAKEVARS)
+
+
+TODIR= $(DESTROOT)/usr/sys/dist
+DESTLIST= $(TODIR)
+
+SCPS= UDWDECW021.scp UDWFONT021.scp UDWFONT15021.scp UDWX11021.scp \
+	UDWXCOMP021.scp UDWXDEV021.scp
+
+
+install:
+	@for i in $(SCPS); \
+	do \
+		echo "$(INSTALL) -c -m 744 ../$$i $(TODIR)/$$i"; \
+		$(INSTALL) -c -m 744 ../$$i $(TODIR)/$$i; \
+	done
+	
+include $(GMAKERULES)

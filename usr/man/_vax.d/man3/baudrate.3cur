@@ -1,0 +1,18 @@
+.TH baudrate 3cur 
+.SH Name
+baudrate \- return terminal baudrate
+.SH Syntax
+.B
+int baudrate(\|)
+.SH Description
+.NXR "baudrate subroutine"
+The 
+.PN baudrate 
+routine
+returns the output speed of the terminal
+in bits per second, for example 9600,
+as an integer.
+.SH Return Values
+The
+.PN baudrate
+function returns the baudrate in bits per second.

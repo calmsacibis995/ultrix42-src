@@ -1,0 +1,30 @@
+.\" SCCSID: @(#)sigsetmask.2	8.1	9/11/90
+.TH sigsetmask 2
+.SH Name
+sigsetmask \- set current signal mask
+.SH Syntax
+.nf
+.B sigsetmask(\fImask\fP)
+.B int \fImask\fP;
+.SH Description
+.NXR "sigsetmask system call"
+.NXR "signal mask" "setting"
+.NXA "signal" "signal mask"
+.NXA "sigblock system call" "sigsetmask system call"
+The
+.PN sigsetmask
+system call
+sets the current signal mask (those signals
+that are blocked from delivery).  Signal
+.I i
+is blocked if the
+.IR i th
+bit in 
+.I mask
+is a 1.
+.PP
+The system quietly disallows SIGKILL or SIGSTOP to be blocked.
+.PP
+The previous set of masked signals is returned.
+.SH See Also
+kill(2), sigblock(2), sigpause(2), sigvec(2)

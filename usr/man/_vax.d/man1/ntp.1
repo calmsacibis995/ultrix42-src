@@ -1,0 +1,213 @@
+.TH ntp 1
+.SH Name
+ntp \- query a clock running the Network Time Protocol daemon, ntpd
+.SH Syntax
+.B /usr/etc/ntp 
+[
+.B \-v
+][
+.B \-s
+][
+.B \-f
+]
+.I host1 \fR|\fP IPaddress1 ...
+.SH Description
+.NXR "ntp command"
+The 
+.PN ntp
+command is used to determine the offset between
+the local clock and a remote clock.  It can
+also be used to set the local host's time to
+a remote host's time.  The 
+.PN ntp
+command sends an NTP packet to the NTP daemon,
+.PN ntpd ,
+running on each of the remote hosts specified on the command line.  
+The remote hosts must be running 
+.PN ntpd .
+When the 
+.PN ntpd
+daemon on the remote host receives the NTP packet, it fills 
+in the fields (as specified in
+RFC 1129), and sends the packet back.  The 
+.PN ntp
+command then formats and prints
+the results on the standard output. 
+.NT
+You can specify hosts by either host name or Internet
+address.  The hosts that you specify must either exist
+in the
+.PN /etc/hosts
+file, or in the master
+.PN hosts
+database, if the database is being served to your
+system by BIND/Hesiod or Yellow Pages.
+.NE
+The default output shows the roundtrip delay of the NTP packet in 
+seconds, the estimated offset between the local time
+and remote time in seconds, and the date in 
+.PN ctime 
+format.  See the 
+.MS ctime 3
+reference page for more information.
+.PP
+The
+.PN \-s
+and
+.PN \-f
+options can be used to reset the time of the local clock.  
+Use
+.PN ntp
+with these options to initialize the system time prior to running the
+.PN ntpd
+daemon.  
+.SH Options
+.IP \-v 5
+Specifies verbose output.  The output shows the full contents of the 
+received NTP packets, plus the calculated offset and delay.
+.IP \-s 5
+Sets local clock to remote time.  This only happens if the
+offset between the local and remote time is less than 1000 seconds.  
+The local clock is not reset if the remote host is unsynchronized.  
+.IP
+If you specify more than one host name on the command line, 
+.PN ntp
+queries each host in order, waiting for each host to answer
+or timeout before querying the next host.  The local clock is set to the time
+of the first remote host that responds.
+.IP \-f 5
+Forces setting local clock regardless of offset.  The
+.PN \-f 
+option must be used with 
+.PN \-s 
+option.  The local clock is not reset if the remote
+host is unsynchronized.
+.SH Restrictions
+Using the 
+.PN \-s
+and 
+.PN \-f
+options require that you be logged on as superuser.
+.SH Examples
+The following is the default output to an
+.PN ntp
+query about a remote host with an internet address of 555.5.55.5:
+.NXR "ntp command" "sample output"
+.EX
+# \f(CB/usr/etc/ntp 555.5.55.5\f(CW
+
+555.5.55.5: delay:1.845207 offset:-0.358460  Mon Mar 20 08:05:44 1989
+.EE
+.PP
+The following is the verbose output to an 
+.PN ntp 
+query about the same remote host:
+.EX
+# \f(CB/usr/etc/ntp \-v 555.5.55.5\f(CW
+
+Packet from: [555.5.55.5]
+Leap 0, version 1, mode Server, poll 6, precision \-10 stratum 1 (WWVB)
+Synch Distance is 0000.1999  0.099991
+Synch Dispersion is 0000.0000  0.000000
+Reference Timestamp is a7bea6c3.88b40000 Tue Mar  7 14:06:43 1989
+Originate Timestamp is a7bea6d7.d7e6e652 Tue Mar  7 14:07:03 1989
+Receive Timestamp is   a7bea6d7.cf1a0000 Tue Mar  7 14:07:03 1989
+Transmit Timestamp is  a7bea6d8.0ccc0000 Tue Mar  7 14:07:04 1989
+Input Timestamp is     a7bea6d8.1a77e5ea Tue Mar  7 14:07:04 1989
+555.5.55.5: delay:0.019028 offset:-0.043890  Tue Mar  7 14:07:04 1989
+.EE
+.PP
+The fields are interpreted as follows:
+.IP "Packet from: [\fIinternet address\fP]" 5
+The address of the remote host from which this NTP packet was received.
+.IP "Leap \fIn\fP" 5
+The leap second indicator.  Non-zero if there is to be a
+leap second inserted in the NTP timescale.  The bits are
+set before 23:59 on the day of insertion and reset after
+00:00 on the following day.
+.IP "version \fIn\fP"
+The NTP protocol version.
+.IP "mode \fItype\fP"
+The NTP mode can be Server, Client, Symmetric Passive,
+Symmetric Active, or Broadcast. See RFC 1129 for more information
+on NTP modes.
+.IP "Poll \fIx\fP" 5
+The desired poll rate of the peer in seconds as a power of 2.
+For example, if poll is equal to
+6, that means that the poll rate is one message exchanged every 2**6 seconds.
+.IP "Precision \fIx\fP" 5
+The precision of the remote host's clock in seconds as a power of 2.  
+For example, if precision is equal to
+\-10, that means that the precision is 2**\-10.  The 
+.PN ntpd
+daemon sets this automatically.
+.IP "Stratum \fIn\fP (\fIsource\fP)" 5
+The stratum of the clock in the NTP hierarchy, along with
+the source of the clock.  The \fIsource\fP is either the name of a reference
+standard (such as WWVB or GOES), or the Internet address of
+the clock that this clock references.
+.IP "Synch Distance is \fInn.nn nn.nn\fP" 5
+The values reported are used internally by 
+.PN ntpd .
+.IP "Synch Dispersion is \fInn.nn nn.nn\fP" 5
+The values reported are used internally by
+.PN ntpd .
+.PP
+The next five timestamps are given as NTP fixed-point values, in
+both hexadecimal and 
+.PN ctime .
+The timestamps are set either by this NTP process, or by the remote host you
+are querying.  These timestamps are used by the local host to calculate
+delay and offset for this query.
+.IP "Reference Timestamp is \fIhex-timestamp ctime_string\fP"
+This specifies the last time the remote host clock was adjusted.
+(remote time)
+.IP "Originate Timestamp is \fIhex-timestamp ctime_string\fP"
+This specifies when the NTP request was transmitted by the
+local host to the remote host. (local time)
+.IP "Receive Timestamp is \fIhex-timestamp ctime_string\fP"
+This specifies when the NTP request was received at the remote
+host.  (remote time)
+.IP "Transmit Timestamp is \fIhex-timestamp ctime_string\fP"
+This specifies when the NTP response was transmitted by the 
+remote host.  (remote time)
+.IP "Input Timestamp is \fIhex-timestamp ctime_string\fP" 5
+This specifies when the NTP response was received by the local host.
+(local time)
+.IP "\fIhostname\fP: delay:\fItime\fP offset:\fItime\fP" 5
+This field summarizes the results of the query, giving the host name or
+internet
+address of the responding clock specified in the command line, the round-trip 
+delay in seconds, and the offset between the two clocks in 
+seconds (assuming symmetric round-trip times).  
+.SH Diagnostics
+The following error messages can be returned by NTP:
+.TP 20
+\f(CW*Timeout*\fP
+.TP 20
+\fIhostname\fP \f(CWis not responding\fP
+May indicate that the 
+.PN ntpd
+daemon is not running on the remote host.
+.TP 20
+\f(CWNo such host: \fIhostname\fP
+The
+.PN ntpd
+daemon cannot resolve the specified host name
+in the
+.PN /etc/hosts
+file.  Check that the host
+exists in the
+.PN /etc/hosts
+file, or that it exists in the master
+.PN hosts
+database, if the database is being served to your system
+by BIND/Hesiod or Yellow Pages.
+.SH See Also
+ctime(3), ntp.conf(5), ntpd(8), ntpdc(8)
+.br
+\fIRFC 1129\(emInternet time synchronization:  The Network Time Protocol\fP
+.br
+\fIGuide to System and Network Setup\fP
+.br
+\fIIntroduction to Networking and Distributed System Services\fP

@@ -1,0 +1,29 @@
+.\" SCCSID: @(#)gcore.1	8.1	9/11/90
+.TH gcore 1 VAX
+.SH Name
+gcore \- get core images of running processes
+.SH Syntax
+.B gcore
+\fIprocess-id...\fR
+.SH Description
+.NXR "gcore command"
+.NXR "process" "getting core image"
+.NXA "adb debugger" "gcore command"
+.NXA "dbx debugger" "gcore command"
+The
+.PN gcore
+command
+creates a core image of each specified process,
+suitable for use with 
+.MS adb 1
+or 
+.MS dbx 1 .
+.SH Restrictions
+Paging activity that occurs while
+.PN gcore
+is running may cause the program
+to become confused.
+For best results,
+the desired processes should be stopped.
+.SH Files
+core.<process-id>	core images

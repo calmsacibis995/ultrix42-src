@@ -1,0 +1,27 @@
+.TH has_ic 3cur 
+.SH Name
+has_ic \- determine whether insert/delete character available
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B
+bool has_ic(\|)
+.SH Description
+.NXR "has_ic subroutine"
+.NXA "has_ic subroutine" "insch subroutine"
+.NXA "has_ic subroutine" "delch subroutine"
+True if the terminal has insert- and delete-character capabilities.
+.PP
+The routines
+.PN insch 
+and
+.PN delch 
+are always available in the
+.PN curses
+library if the terminal does not have the required capabilities.
+.SH Return Values
+This function returns TRUE if the terminal has insert character and delete
+character capabilities, otherwise it returns FALSE.
+.SH See Also
+delch(3cur), insch(3cur)

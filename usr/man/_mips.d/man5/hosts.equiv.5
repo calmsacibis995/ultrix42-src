@@ -1,0 +1,144 @@
+.\" SCCSID: @(#)hosts.equiv.5	8.1	9/11/90
+.TH hosts.equiv 5
+.SH Name
+hosts.equiv \- list of trusted hosts
+.SH Description
+.NXR "hosts.equiv file"
+.NXR "host" "listing trusted"
+The 
+.PN hosts.equiv
+file resides in the 
+.PN /etc
+directory and contains a list of trusted hosts.
+When an 
+.MS rlogin 1c
+or
+.MS rsh 1c
+request from a host listed in the 
+.PN hosts.equiv
+file is made, 
+and the initiator of the request has an entry in 
+.PN /etc/passwd ,
+further validity checking is not required.
+Thus,
+.PN rlogin
+does not prompt for a password, and
+.PN rsh
+completes successfully.
+When a remote user is in the local 
+.PN hosts.equiv
+file, that user is defined as equivalenced to a local user
+with the same user ID.
+.PP
+The format of
+.PN hosts.equiv
+is a list of names, as in:
+.nf
+.I host1
+.I \-host2
+.I +@group1
+.I -@group2
+.fi
+.PP
+A line consisting of a host name 
+means that anyone logging in from that host is trusted.
+A line consisting of a host name preceded by \fB\-\fP
+means that anyone logging in from that host is not trusted.
+A line consisting of a single \fB+\fR means that all hosts are trusted.  
+.NT
+Placing a line consisting of a single \fB+\fP in your 
+.PN hosts.equiv
+file poses substantial security risks and is not recommended.
+.NE
+.PP
+The \fB+@\fP and \fB-@\fP syntax are specific to Yellow Pages (YP).
+A line consisting of
+.I +@group
+means that all hosts in that network group (which is 
+served by YP) are trusted.
+A line consisting of
+.I \-@group
+means that hosts in that network group (which is served
+by YP) are not trusted.  Programs scan the
+.PN hosts.equiv
+file sequentially and stop when they encounter the appropriate entry 
+(either positive for host name and +@ entries,
+or negative for \-@ entries).
+.PP
+The
+.PN hosts.equiv
+file has the same format as the
+.PN .rhosts
+file.
+When a user
+executes
+.PN rlogin
+or
+.PN rsh ,
+the 
+.PN .rhosts 
+file from that user's 
+home directory is concatenated onto the 
+.PN hosts.equiv
+file for permission checking.
+The host names listed in the 
+.PN /etc/hosts.equiv
+and 
+.PN \&.rhosts
+files may optionally contain the local BIND domain
+name.  For more information on BIND, see the 
+.I Guide to the BIND/Hesiod Service.
+.NXR "hosts.equiv file" "rhost=>\\&.rhosts file and"
+If a user is excluded by a minus entry from
+.PN hosts.equiv
+but included in 
+.PN .rhosts ,
+that user is considered trusted.
+In the special case when the user is root,
+only the 
+.PN .rhosts 
+file is checked.
+.PP
+It is possible to have two entries on a single line.
+Separate the entires with a space.
+If the remote host is equivalenced by the first entry,
+the user named by the second entry is allowed to specify any name to the
+.PN \-l
+option (provided that name is in the 
+.PN /etc/passwd
+file).
+For example:
+.EX
+suez john
+.EE
+This entry allows John
+to log in from suez.  The normal use would be
+to put this entry in the 
+.PN .rhosts
+file in the home directory for
+.I bill.
+Then, John
+can log in as
+.I bill
+when coming from suez without having to supply a password.
+The second entry can be a netgroup.  For example:
+.EX
++@group1 +@group2
+.EE
+This entry allows any user in
+.I group2
+coming from a host in
+.I group1
+to log in as anyone.
+.SH Files
+\f(CW/var/yp/\fIdomain\fP/netgroup
+.br
+\f(CW/var/yp/\fIdomain\fP/netgroup.byuser
+.br
+\f(CW/var/yp/\fIdomain\fP/netgroup.byhost\fR
+.SH See Also
+rlogin(1c), rsh(1c), netgroup(5yp)
+.br
+.I Guide to the BIND/Hesiod Service
+.br
+.I Guide to the Yellow Pages Service

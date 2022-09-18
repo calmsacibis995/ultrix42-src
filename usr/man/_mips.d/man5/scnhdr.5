@@ -1,0 +1,138 @@
+.TH scnhdr 5 RISC
+.SH Name
+scnhdr \- section header for a MIPS object file
+.SH Syntax
+.B "#include < scnhdr.h>"
+.SH Description
+Every MIPS object file has a table of section headers that specify the layout
+of the data in the file.  Each section that is in an object file has its own
+header.  The C structure appears as follows:
+.EX
+struct scnhdr
+{
+char            s_name[8];    /* section name */
+long            s_paddr;      /* physical address, aliased s_nlib */
+long            s_vaddr;      /* virtual address */
+long            s_size;       /* section size */
+long            s_scnptr;     /* file ptr to raw data for section */
+long            s_relptr;     /* file ptr to relocation */
+long            s_lnnoptr;    /* file ptr to gp table */
+unsigned short  s_nreloc;     /* number of relocation entries */
+unsigned short  s_nlnno;      /* number of gp table entries */
+long            s_flags;      /* flags */
+};
+.EE
+.PP
+File pointers are byte offsets into the file; they can be used as the 
+offset in a call to FSEEK (see
+.MS ldfcn 5 ).
+If a section is initialized, the file contains the actual bytes.  An
+uninitialized section is somewhat different.  It has a size, symbols defined
+in it, and symbols that refer to it.  It cannot have relocation entries
+or data.  Consequently, an uninitialized section does not contain data in 
+the object file, and the values for
+.I "s_scnptr, s_relptr,"
+and
+.I s_nreloc
+are zero.
+.PP
+The entries that refer to line numbers 
+.RI ( s_lnnoptr " and " s_nlnno )
+are not used for line numbers on MIPS machines.  See the header file 
+.PN sym.h
+for the entries to get to the line number table.  The entries that were for
+line numbers in the section header are used for gp tables on MIPS machines.
+.PP
+The number of relocation entries for a section is found in the
+.I s_nreloc
+field of the section header.  This field is a C language short and can
+overflow with large objects.  If this field overflows, the section header
+.I s_flags
+field has the
+.SM S_NRELOC_OVFL
+bit set.  In this case, the true number of relocation entries is found in the
+.I r_vaddr
+field of the first relocation entry for that section.  That relocation entry
+has a type of
+.SM R_ABS;
+thus, it is ignored when the relocation takes place. 
+.PP
+The gp table gives the section size corresponding to each applicable value
+of the compiler option 
+.PN -G
+.I num
+(always including 0), sorted by smallest size first. It is pointed to
+by the
+.I s_lnnoptr
+field in the section header and its number of entries
+(including the header) is in the
+.I s_nlnno
+field in the section header.
+This table only needs to exist for the
+.I .sdata
+and
+.I .sbss
+sections.
+If a small section does not exist, 
+then the gp table for it is
+attached to the corresponding large section so the information still
+gets to the link editor, 
+.PN ld .
+The C union for the gp table follows:
+.EX
+union gp_table
+{
+struct {
+        long    current_g_value;    /* actual value */
+        long    unused;
+} header;
+struct {
+        long    g_value;            /* hypothetical value */
+        long    bytes;              /* section size corresponding 
+                                       to hypothetical value */
+} entry;
+}; 
+.EE
+.PP
+Each gp table has one header structure that contains the actual value of the
+.PN -G
+.I num
+option used to produce the object file.  An entry must exist for every
+.PN -G
+.I num
+.BI \-G " num"
+option.  The applicable values are all the sizes of the data items
+in that section.
+.PP
+For
+.I .lib
+sections, the number of shared libraries is in the
+.I s_nlib
+field (an alias to
+.IR s_paddr ).
+The
+.I .lib
+section is made up of
+.I s_nlib
+descriptions of shared libraries.
+Each description of a shared library is a
+.I libscn
+structure followed by the path name to the shared library.
+The C structure appears here and is defined in
+.I scnhdr.h :
+.EX
+struct libscn
+{
+long    size;        /* size of this entry (including target name) */
+long    offset;      /* offset from start of entry to target name */
+long    tsize;       /* text size in bytes, padded to DW boundary */
+long    dsize;       /* initialized data size */
+long    bsize;       /* uninitialized data */
+long    text_start;  /* base of text used for this library */
+long    data_start;  /* base of data used for this library */
+long    bss_start;   /* base of bss used for this library */
+/* pathname of target shared library */
+};
+.EE
+.SH See Also
+ld(1), fseek(3s), a.out(5), reloc(5)

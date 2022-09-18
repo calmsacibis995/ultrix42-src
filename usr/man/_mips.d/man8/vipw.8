@@ -1,0 +1,40 @@
+.\" SCCSID: @(#)vipw.8	6.2	8/30/89
+.TH vipw 8 
+.SH Name
+vipw \- edit the password file
+.SH Syntax
+.B vipw
+.SH Description
+.NXR "vipw command"
+.NXAM "passwd file (general)" "vipw command"
+.NXR "password file" "editing"
+The
+.PN vipw
+command
+edits the password file while setting the appropriate locks
+and doing any necessary processing after the password file is unlocked.
+If the password file is already being edited, then you will be told
+to try again later.  The 
+.PN vi
+editor will be used unless the environment variable EDITOR indicates
+an alternate editor.  
+The
+.PN vipw
+command
+performs a number of consistency checks on the password entry for
+root, and does not allow a password file with a corrupted root entry
+to be installed.
+.P
+If the hashed 
+.PN passwd 
+database exists
+.PN vipw
+will automatically invoke
+.MS mkpasswd 8
+on it to keep it synchronized with the 
+.PN passwd 
+file.
+.SH Files
+.PN /etc/ptmp
+.SH See Also
+chfn(1), chsh(1), passwd(1), passwd(5yp), adduser(8), mkpasswd(8)

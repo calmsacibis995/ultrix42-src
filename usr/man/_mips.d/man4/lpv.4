@@ -1,0 +1,50 @@
+.\" SCCSID: @(#)lpv.4	8.1	9/11/90
+.TH lpv 4
+.SH Name
+lpv \- LPV11 parallel line printer
+.SH Syntax
+.B "device lp0 at uba0 csr 0177514 flags 0x???? vector lpintr"
+.SH Description
+The
+.PN lp
+provides the interface to any of the standard
+DEC line printers on an LPV11 parallel interface.
+When it is opened or closed, a suitable number
+of page ejects is generated.
+Bytes written are printed.
+.PP
+The unit number of the printer is specified by the minor device
+after removing the low 3 bits, which act as per-device parameters.
+Only the lowest of the low three bits is interpreted:
+if it is set, the device is treated as having a 64-character set,
+rather than a full 96-character set.
+In the resulting half-ASCII mode, lower case letters are turned
+into upper case and certain characters are approximated according to
+the following table:
+.PP
+.RS
+.ta 1i
+\fBCharacter	Printer Approximation\fR
+.PP
+.ta .25i, 1.5i
+	\f(CW{	\o"-("
+.sp .1i
+	}	\o"-)"
+.sp .1i
+	\`	\o"-\'"
+.sp .1i
+	|	\o"\-!"
+.sp .1i
+	~	\o"\-^"\fR
+.sp .1i
+.RE
+.PP
+The driver correctly interprets
+carriage returns, backspaces, tabs, and form feeds.
+Lines longer than the maximum page width are truncated.
+The default page width is 132 columns.
+This can be overridden by specifying, for example, ``flags 0xff'' .
+.SH Files
+.PN /dev/lp?
+.SH See Also
+MAKEDEV(8)

@@ -1,0 +1,60 @@
+(*#@(#)porttab.def	4.1	Ultrix	7/17/90 *)
+(****************************************************************************
+ *									    *
+ *  Copyright (c) 1984 by						    *
+ *  DIGITAL EQUIPMENT CORPORATION, Maynard, Massachusetts.		    *
+ *  All rights reserved.						    *
+ * 									    *
+ *  This software is furnished under a license and may be used and copied   *
+ *  only in  accordance with  the  terms  of  such  license  and with the   *
+ *  inclusion of the above copyright notice. This software or  any  other   *
+ *  copies thereof may not be provided or otherwise made available to any   *
+ *  other person.  No title to and ownership of  the  software is  hereby   *
+ *  transferred.							    *
+ * 									    *
+ *  The information in this software is  subject to change without notice   *
+ *  and  should  not  be  construed as  a commitment by DIGITAL EQUIPMENT   *
+ *  CORPORATION.							    *
+ * 									    *
+ *  DIGITAL assumes no responsibility for the use  or  reliability of its   *
+ *  software on equipment which is not supplied by DIGITAL.		    *
+ * 									    *
+$Header: porttab.def,v 1.4 84/05/19 11:34:25 powell Exp $
+ ****************************************************************************)
+definition module porttab;
+from io import File;
+from list import List;
+from stringtab import String, WriteString;
+from symtab import ModuleNode, PortNode, TypeNode, ConstNode;
+export qualified DefineModule, DefinePort, WriteType, WriteConst, DumpPort,
+	DumpExports, CheckExports, currModule, tracePorttab, autoMakeFlag,
+	logErrorsFlag, errorCount, WatchModule, IgnoreModule, moduleList,
+	libraryCheckFlag, fatalErrorFlag;
+
+procedure DefineModule(name : String; fileName : cardinal) : ModuleNode;
+
+procedure DefinePort(mname, name : String; pn : PortNode;
+	imported, unqual, extern : boolean; refModule : ModuleNode);
+
+procedure WriteType(f : File; tn : TypeNode);
+
+procedure WriteConst(f : File; cn : ConstNode);
+
+procedure DumpPort(pn : PortNode);
+
+procedure DumpExports();
+
+procedure CheckExports();
+
+procedure WatchModule(arg : array of char);
+
+procedure IgnoreModule(arg : array of char);
+
+var
+    currModule : ModuleNode;
+    tracePorttab : boolean;
+    fatalErrorFlag, autoMakeFlag, logErrorsFlag, libraryCheckFlag : boolean;
+    errorCount : cardinal;
+    moduleList : List;
+
+end porttab.

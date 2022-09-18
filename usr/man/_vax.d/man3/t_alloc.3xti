@@ -1,0 +1,144 @@
+.TH t_alloc 3xti
+.SH Name
+t_alloc \- allocate a library structure 
+.SH Syntax
+.B #include <xti.h>
+.br
+.sp 1
+.B char *t_alloc(\fIfd, struct_type, fields\fB)
+.br
+.B int \fIfd\fB;
+.br
+.B int \fIstruct_type\fB;
+.br
+.B int \fIfields\fB;
+.SH Arguments
+.IP \fIfd\fR 10
+Refers to the transport endpoint through which the newly allocated
+structure is passed.
+.IP \fIstruct_type\fR 10
+Specifies the allocated structure where each structure can subsequently
+be used as an argument to one or more transport functions.
+.IP
+The \fIstruct_type\fR argument must specify one of the following:
+.EX
+T_BIND_STR 		\fIstruct\fP 		t_bind
+T_CALL_STR 		\fIstruct\fP 		t_call
+T_OPTMGMT_STR		\fIstruct\fP 		t_optmgmt
+T_DIS_STR 		\fIstruct\fP 		t_discon
+T_UNITDATA_STR	\fIstruct\fP 		t_unitdata
+T_UDERROR_STR 	\fIstruct\fP 		t_uderr
+T_INFO_STR 		\fIstruct\fR 		t_info
+.EE
+.IP \fIfields\fR 10
+Specifies which buffers to allocate, where the argument is the
+bitwise-OR of any of the following: 
+.RS 10
+.IP T_ADDR 12
+The \fIaddr\fP field of the 
+.PN t_bind\fR,\fR 
+.PN t_call\fR,\fR 
+.PN  t_unitdata\fR,\fR 
+or 
+\fBt_uderr\fR structures (size obtained from \fIinfo_addr\fP).
+.IP T_OPT 12
+The \fIopt\fP field of the \fBt_optmgmt\fR, \fBt_call\fR, \fBt_unitdata\fR, 
+or \fBt_uderr\fR structures (size obtained from \fIinfo_options\fP).
+.IP T_UDATA 12
+The \fIudata\fP field of the 
+\fBt_call\fR, \fBt_discon\fR, or \fBt_uderr\fR structures (for 
+T_CALL_STR, size is the maximum value of \fIinfo_connect\fP and \fIinfo_discon\fP; for 
+T_DIS_STR, size is the value of \fIinfo_discon\fP; for T_UNITDATA_STR, size is the 
+value of \fIinfo_tsdu\fP). 
+.IP T_ALL 12
+All relevant fields of the given structure.	 
+.RE
+.SH Description
+The 
+.PN t_alloc()
+function dynamically allocates memory for the various
+transport function argument structures as listed under the ARGUMENTS
+section. This function allocates memory for the specified structure
+and also allocates memory for buffers referenced by the structure.
+.NXR "t_alloc system call"
+.NXR "memory" "allocating"
+.PP
+Each of the accepted structures, except 
+.PN t_info()\fR,\fR 
+contains at least
+one field of type \fIstruct netbuf\fR. For each field of this type, the
+user can specify that the buffer for that field should be allocated as
+well. The length of the buffer allocated is based on the size
+information returned in the 
+.PN t_open()
+or
+.PN t_getinfo()\fR.\fR 
+.PP
+For each field specified in \fIfields\fR, 
+.PN t_alloc() 
+allocates
+memory for the buffer associated with the field and initializes the
+\fIlen\fR field to zero and the \fIbuf\fR pointer and \fImaxlen\fR field
+accordingly. Because the length of the buffer allocated is based on
+the same size information that is returned to the user on
+.PN t_open() 
+and 
+.PN t_getinfo()\fR,\fR 
+\fIfd\fR must refer to the
+transport endpoint through which the newly allocated structure will be
+passed. In this way, the appropriate size information can be accessed. If
+the size value associated with any specified field is \-1 or \-2, 
+.PN t_alloc() 
+will be unable
+to determine the size of the buffer to allocate and will fail, setting
+\fBt_errno\fR to [TSYSERR] and \fBerrno\fR to [EINVAL]. For
+any field not specified in \fIfields\fR, \fIbuf\fR will be set to NULL
+and \fImaxlen\fR will be set to zero.
+.PP
+Use of 
+.PN t_alloc() 
+to allocate structures helps to ensure the
+compatibility of user programs with future releases of the transport
+interface functions.
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB
+lfR  lfR  lfR .
+_
+.sp 4p
+Parameters@Before Call@After Call
+.sp 4p
+_
+.sp 6p
+fd@x@/
+struct_type@x@/
+fields@x@/
+.sp 6p
+_
+.TE
+.PP
+.sp 12p
+.SH Return Values
+Upon successful completion, 
+.PN t_alloc() 
+returns a pointer to the newly
+allocated structure. On failure, NULL is returned.
+.SH Diagnostics
+On failure, \fBt_errno\fR is set to one of the following:
+.TP 20
+[TBADF]
+The specified file descriptor does not refer to a transport endpoint.
+.TP 20
+[TNOTSUPPORT]
+This function is not supported by the current implementation of XTI. 
+.TP 20
+[TSYSERR]
+A system error has occurred during execution of this function.
+.TP 20
+[TNOSTRUCTYPE]
+An unsupported \fIstruct_type\fR has been requested.
+.SH See Also
+t_free(3xti), 
+t_getinfo(3xti), 
+t_open(3xti)

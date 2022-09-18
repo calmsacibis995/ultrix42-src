@@ -1,0 +1,62 @@
+.\" SCCSID: @(#)showmount.8nfs	8.1	9/11/90
+.TH showmount 8nfs
+.SH Name
+showmount \- show remotely-mounted file systems
+.SH Syntax
+.B /usr/etc/showmount
+[
+.B \-a
+] [
+.B \-d
+] [
+.B \-e
+] [ \fIhost\fP ]
+.SH Description
+.NXR "showmount command"
+.NXAM "showmount command" "rmtab file"
+.NXA "mountd daemon" "showmount command"
+.NXR "NFS file system" "showing remotely mounted"
+The 
+.PN showmount
+command lists all of the NFS client machines
+that have remotely mounted a filesystem from the NFS server
+.I host .
+This information is maintained by the
+.MS mountd 8nfs
+daemon on
+.I host,
+and is saved across crashes in the
+.PN /etc/rmtab
+file.
+The default value for
+.I host
+is the value returned by
+.MS hostname 1 
+or 
+.MS gethostname 2 .
+.SH Options
+.TP
+.B \-d
+List directories that have been remotely mounted by clients.
+.TP
+.B \-a
+Print all remote mounts in the format:
+.EX
+hostname:directory
+.EE
+In this format,
+.I hostname
+is the name of the client, and
+.I directory
+is the directory that has been mounted.
+.TP
+.B \-e
+Print the list of file systems exported by the NFS server,
+.I host.
+.SH Restrictions
+If an NFS client crashes,
+.PN showmount
+will incorrectly report that the client still has a file system mounted,
+until the crashed client reboots.
+.SH See Also
+hostname(1), exports(5nfs), rmtab(5nfs), mountd(8nfs)

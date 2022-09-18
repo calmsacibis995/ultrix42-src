@@ -1,0 +1,49 @@
+/*
+ * @(#)FRE.strtab	4.1
+ *
+ * This is the common file of the International UNIX data base for
+ *
+ * 	FRENCH
+ *
+ * (contains the definition of the strings)
+ */
+
+STRINGTABLE :
+	NOSTR		= "non";
+	EXPL_STR	= 'e';
+	EXPU_STR	= 'E';
+	RADIXCHAR	= comma;
+	THOUSEP		= ' ';
+	YESSTR		= "oui";
+	CRNCYSTR	= "-F";
+
+	D_T_FMT		= "%a %d %b %Y %Z %H:%M:%S";
+	D_FMT		= "%d/%m/%y";
+	T_FMT		= "%H:%M:%S";
+	AM_STR		= "AM";
+	PM_STR		= "PM";
+
+	DAY_1		= "Dimanche";		DAY_2		= "Lundi";
+	DAY_3		= "Mardi";		DAY_4		= "Mercredi";
+	DAY_5		= "Jeudi";		DAY_6		= "Vendredi";
+	DAY_7		= "Samedi";
+
+	ABDAY_1		= "Dim";		ABDAY_2		= "Lun";
+	ABDAY_3		= "Mar";		ABDAY_4		= "Mer";
+	ABDAY_5		= "Jeu";		ABDAY_6		= "Ven";
+	ABDAY_7		= "Sam";
+
+	MON_1		= "Janvier";		MON_2		= F, acute_e, "vrier";
+	MON_3		= "Mars";		MON_4		= "Avril";
+	MON_5		= "Mai";		MON_6		= "Juin";
+	MON_7		= "Juillet";		MON_8		= "Aout";
+	MON_9		= "Septembre";		MON_10		= "Octobre";
+	MON_11		= "Novembre";		MON_12		= D, acute_e, "cembre";
+
+	ABMON_1		= "Janv";		ABMON_2		= "Fev";
+	ABMON_3		= "Mars";		ABMON_4		= "Avr";
+	ABMON_5		= "Mai";		ABMON_6		= "Juin";
+	ABMON_7		= "Juil";		ABMON_8		= "Aout";
+	ABMON_9		= "Sept";		ABMON_10	= "Oct";
+	ABMON_11	= "Nov";		ABMON_12	= "Dec";
+END.

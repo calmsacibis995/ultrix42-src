@@ -1,0 +1,45 @@
+.TH newwin 3cur 
+.SH Name
+newwin \- create new window
+.SH Syntax
+.br
+.B
+#include <cursesX.h>
+.PP
+.br
+.B
+WINDOW \(**newwin(nlines, ncols, begin_y, begin_x)
+.br
+.B
+int nlines, ncols, begin_y, begin_x;
+.SH Description
+.NXR "newwin subroutine"
+The function
+.PN newwin
+creates a new window with the number of lines, 
+.PN nlines ,
+and columns, 
+.PN ncols .
+The upper left corner of the window is at line 
+.PN begin_y ,
+column 
+.PN begin_x .
+.PP
+If either 
+.PN nlines
+or 
+.PN ncols
+is zero, they will be defaulted to LINES 
+- 
+.PN begin_y
+and 
+COLS 
+- 
+.PN begin_x .
+A new full-screen window is created by calling 
+.PN newwin (0,0,0,0).
+.SH Return Values
+On success the
+.PN newwin 
+function returns a pointer to the new WINDOW structure created.  On failure
+the function returns a null pointer.

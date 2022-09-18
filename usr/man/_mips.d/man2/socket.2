@@ -1,0 +1,301 @@
+.\" SCCSID: @(#)socket.2	6.1	4/27/89
+.TH socket 2
+.SH Name
+socket \- create an endpoint for communication
+.SH Syntax
+.B #include <sys/types.h>
+.br
+.B #include <sys/socket.h>
+.PP
+.nf
+.B s = socket(af, type, protocol)
+.B int s, af, type, protocol;
+.fi
+.SH Description
+.NXR "socket system call"
+.NXR "socket" "creating"
+.NXR "socket system call" "accept system call"
+.NXR "socket system call" "bind system call"
+.NXR "socket system call" "connect system call"
+.NXR "socket system call" "getsockname system call"
+.NXR "socket system call" "pipe system call"
+.NXR "socket system call" "recv system call"
+.NXR "socket system call" "socketpair system call"
+The
+.PN socket
+system call
+creates an endpoint for communication and returns a descriptor.
+.PP
+The operation of sockets is controlled by socket-level options, defined
+in the file 
+.PN <sys/socket.h>
+and explained in the section, Socket-level Options.  The calls
+.MS setsockopt 2
+and
+.MS getsockopt 2
+are used to set and get options.
+.SH Arguments
+The
+.I af
+parameter specifies an address format. Addresses specified
+in later operations using the socket are interpreted according
+to these formats.  The
+formats are defined in the include file 
+.PN <sys/socket.h> : 
+.NXR "socket system call" "address formats"
+.PP
+.EX
+AF_UNIX	\fRUNIX path names\fP
+AF_INET	\fRARPA Internet addresses\fP
+AF_IMPLINK	\fRIMP \*(lqhost at IMP\*(rq addresses\fP
+AF_DLI		\fRFor access to broadcast devices (Ethernet)\fP
+.EE
+.PP
+The 
+.I type
+argument specifies the semantics of communication.  The 
+defined types are:
+.NXR "socket" "defined types"
+.PP
+.EX
+SOCK_STREAM
+SOCK_DGRAM
+SOCK_RAW
+SOCK_SEQPACKET
+.EE
+.PP
+The SOCK_STREAM and SOCK_DGRAM types are available only if
+your system includes the TCP/IP network.  For example,
+if you can use the
+.PN rlogin
+command to log in to a remote ULTRIX node, your system
+supports these socket types.
+.PP
+A SOCK_STREAM type provides sequenced, reliable,
+2-way-connection-based byte streams with an out-of-band data
+transmission mechanism.
+A SOCK_DGRAM socket supports
+datagrams (connectionless, unreliable messages of
+a fixed maximum length, typically small).
+.NXR "datagram" "defined"
+.PP
+SOCK_RAW sockets provide access to internal network interfaces
+and are available only to the super-user.  
+.PP
+The SOCK_SEQPACKET type is the socket protocol to request when
+you want to communicate with other Digital systems using DECnet. 
+.PP
+Socket types are discussed further in following sections.
+.PP
+The
+.I protocol
+argument specifies the protocol to be used with the socket.
+Normally, only a single protocol exists to support a particular
+socket type using a given address format.  However, it is possible
+that many protocols may exist, in which case a particular protocol
+must be specified in this manner.  The protocol number to use is
+particular to the communication domain in which communication
+is to take place.  For further information, see
+.MS services 5
+and
+.MS protocols 5 .
+.SH Socket Type SOCK_STREAM
+.NXR "SOCK_STREAM socket type" "defined"
+.PP
+Sockets of type SOCK_STREAM
+are full-duplex byte streams, similar
+to pipes.  A stream socket must be in a
+.I connected
+state before any data can be sent or received
+on it.  A connection to another socket is created with a
+.PN connect 
+call.  Once connected, data can be transferred using
+.PN read 
+and 
+.PN write 
+calls or some variant of the 
+.PN send 
+and 
+.PN recv 
+calls.  When a session has been completed, a
+.PN close 
+may be performed.
+Out-of-band data can also be transmitted as described in
+.MS send 2
+and received as described in
+.MS recv 2 .
+.PP
+The communications protocols used to implement a
+SOCK_STREAM ensure that data
+is not lost or duplicated.  If a piece of data for which the
+peer protocol has buffer space cannot be successfully transmitted
+within a reasonable length of time, then
+the connection is considered broken and calls
+will indicate an error with
+\-1 returns and with ETIMEDOUT as the specific code
+in the global variable errno.
+The protocols optionally keep sockets \*(lqwarm\*(rq by
+forcing transmissions
+roughly every minute in the absence of other activity.
+An error is then indicated if no response can be
+elicited on an otherwise
+idle connection for an extended period (for example, 5 minutes).
+A SIGPIPE signal is raised if a process sends
+on a broken stream; this causes processes
+that do not handle the signal to exit.
+.SH Socket Types SOCK_DGRAM and SOCK_RAW
+.NXR "SOCK_DGRAM socket type"
+.NXR "SOCK_RAW socket type"
+.PP
+SOCK_DGRAM and SOCK_RAW
+sockets allow sending of datagrams to correspondents
+named in
+.MS send 2
+calls.  It is also possible to receive datagrams at
+these sockets with
+.MS recv 2 .
+.PP
+An 
+.MS fcntl 2
+call can be used to specify a process group to receive
+a SIGURG signal when the out-of-band data arrives.
+.PP
+SOCK_DGRAM sockets are the only type of socket allowed by the Data
+Link Interface.
+.SH Socket Type SOCK_SEQPACKET
+.NXR "SOCK_SEQPACKET socket type" "defined"
+.PP
+SOCK_SEQPACKET sockets are similar to datagrams except
+that they are guaranteed to be received in the sequence
+that they are sent.  They are also guaranteed to be
+error-free.
+.SH Socket-Level Options
+.NXR "socket system call" "options"
+.PP
+The operation of sockets is controlled by socket-level
+options.
+These options are defined in the file,
+.PN <sys/socket.h> .
+The calls 
+.PN setsockopt 
+and
+.PN getsockopt 
+are used to set and get options.
+.PP
+Options other than SO_LINGER take an integer parameter that
+should be nonzero, if the option is to be enabled, or zero (0), if
+it is to be disabled.
+SO_LINGER uses a ``linger'' structure parameter
+defined in 
+.PN <sys/socket.h> .  
+This structure specifies the desired state of the option and the linger
+interval (see the following).
+.PP
+.EX
+SO_DEBUG             \fRTurn on recording of debugging information\fP
+SO_REUSEADDR         \fRAllow local address reuse\fP
+SO_KEEPALIVE         \fRKeep connections alive\fP
+SO_DONTROUTE         \fRDo not apply routing on outgoing messages\fP
+SO_LINGER            \fRLinger on close if data present\fP
+SO_BROADCAST         \fRPermit sending of broadcast messages\fP
+SO_ACCEPTCONN        \fRSocket has had listen()\fP
+SO_USELOOPBACK       \fRBypass hardware when possible\fP
+SO_OOBINLINE         \fRLeave received OOB data in line\fP
+.EE
+.RE
+.PP
+SO_DEBUG enables debugging in the underlying protocol modules.
+.PP
+SO_REUSEADDR indicates the rules used in validating addresses supplied
+in a
+.PN bind 
+call should allow reuse of local addresses.  
+.PP
+SO_KEEPALIVE enables the
+periodic transmission of messages on a connected socket.  Should the
+connected party fail to respond to these messages, the connection is
+considered broken and processes using the socket are notified through 
+a SIGIO signal.  
+Note that in order to receive signals on a socket the
+program must first call
+.MS fcntl 2
+with a F_SETOWN request to set the process group
+of the process
+to receive the signal, and with a F_SETFL request to set the
+FASYNC flag, which enables the SIGIO signal to be sent.
+.PP
+SO_DONTROUTE indicates that outgoing messages should
+bypass the standard routing facilities.  Instead, messages are directed
+to the appropriate network interface, according to the network portion
+of the destination address.  
+.PP
+SO_LINGER controls the actions taken when unsent messages
+are queued on the socket and a 
+.PN close 
+is performed.
+When using the 
+.PN setsockopt 
+to set the linger values,
+the option value for the SO_LINGER command is the address of a linger
+structure:
+.EX
+struct  linger {
+        int     l_onoff;       /* option on/off */
+        int     l_linger;      /* linger time */
+};
+.EE
+If the socket promises reliable delivery of data and l_onoff is nonzero,
+the system blocks the process on the 
+.PN close
+attempt until it is able to transmit the data or until it decides it
+is unable to deliver the information.  A timeout period, termed the
+linger interval, is specified in l_linger in seconds.
+If l_onoff is set to zero (0) and a 
+.PN close
+is issued, the system processes the close in a manner that allows
+the process to continue as quickly as possible.
+.PP
+SO_BROADCAST is used to enable or disable broadcasting on the socket.
+.SH Return Values
+.NXR "socket system call" "return value"
+A \-1 is returned if an error occurs.   Otherwise, the return
+value is a descriptor to be used in other calls to refer to
+the socket.
+.SH Diagnostics
+.NXR "socket system call" "diagnostics"
+The
+.PN socket
+call fails if:
+.TP 10
+[EAFNOSUPPORT]
+The specified address family is not supported in this version
+of the system.
+.br
+.ne 2
+.TP 10
+[ESOCKTNOSUPPORT]
+The specified socket type is not supported in this address family.
+.br
+.ne 3
+.TP 10
+[EPROTONOSUPPORT]
+The specified protocol is not supported.
+.TP 10
+[EPROTOTYPE]
+Request for a type of socket for which there is no supporting
+protocol.
+.TP 10
+[EMFILE]
+The per-process descriptor table is full.
+.TP 10
+[ENOBUFS]
+No buffer space is available.  The socket cannot be created.
+.SH See Also
+accept(2), bind(2), close(2), connect(2), fcntl(2), getsockname(2),
+getsockopt(2), ioctl(2), listen(2), read (2), recv(2), select(2),
+send(2), setsockopt(2), shutdown(2), socketpair(2), protocols(5), 
+services(5), write(2),
+.br
+\fIGuide to Network Programming\fR,
+.br
+\fIGuide to the Data Link Interface\fR

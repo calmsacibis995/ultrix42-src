@@ -1,0 +1,121 @@
+.\" SCCSID: @(#)struct.1	8.1	9/11/90
+.TH struct 1 VAX "" Unsupported
+.SH Name
+struct \- structure FORTRAN programs
+.SH Syntax
+.B struct
+[ \fIoptions\fP ] ...
+\fIfile\fP
+.SH Description
+The 
+.PN struct
+command translates the FORTRAN program specified by
+.I file
+(standard input default)
+into a 
+.PN ratfor 
+program.
+Wherever possible, 
+.PN ratfor 
+control constructs
+replace the original FORTRAN.
+Statement numbers appear only where still necessary.
+Cosmetic changes are made, including changing Hollerith strings
+into quoted strings
+and relational operators into symbols (for example, ".GT." into ">").
+The output is appropriately indented.
+.SH Options
+.TP
+.B  \-s
+Input is accepted in standard format, that is
+comments are specified by a c, C, or * in column 1, and continuation lines
+are specified by a nonzero, nonblank character in column 6.
+Normally input is in the form accepted by 
+.MS f77 1 .
+.TP
+.B  \-i
+Do not turn computed goto statements into
+switches.
+.Pn ( ratfor 
+does not turn switches back
+into computed goto statements.)
+.TP
+.B  \-a
+Turn sequences of else ifs into a
+. Pn non- ratfor 
+switch of the form
+.IP
+.nf
+.ta 5 7
+\f(CWswitch
+	{	case pred1: code
+		case pred2: code
+		case pred3: code
+		default: code
+	}\fP
+.fi
+.DT
+.IP
+The case predicates are tested in order;
+the code appropriate to only one case is executed.
+This generalized form of switch statement does not
+occur in 
+.PN ratfor .
+.TP
+.B  \-b
+Generate goto's instead of multilevel break statements.
+.TP
+.B  \-n
+Generate goto's instead of multilevel next statements.
+.TP
+.BI \-t n
+Make
+the nonzero integer
+.I n
+the lowest valued label in the output program
+(default 10).
+.TP
+.BI \-c n
+Increment successive labels
+in the output program
+by the nonzero integer
+.I n
+(default 1).
+.TP
+.BI \-e n
+If 
+.I n
+is 0 (default),
+place code within a loop only if it can
+lead to an iteration of the loop.
+If
+.I n
+is nonzero,
+admit a small code segments to a loop
+if otherwise the loop would have exits to several places including the segment,
+and the segment can be reached only from the loop.
+`Small' is close to, but not equal to, the
+number of statements in the code segment.
+Values of n under 10 are suggested.
+.SH Restrictions
+Struct knows FORTRAN 66 syntax, but not full FORTRAN 77.
+.br
+If an input FORTRAN program contains identifiers which
+are reserved words in 
+.PN ratfor , 
+the structured
+version of the program
+will not be a valid 
+.PN ratfor 
+program.
+.br
+The labels generated cannot go above 32767.
+.br
+If you get a goto without a target, try
+.B \-e .
+.SH Files
+/tmp/struct*
+.br
+/usr/lib/struct/*
+.SH See Also
+f77(1)

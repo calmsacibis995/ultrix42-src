@@ -1,0 +1,120 @@
+.\" SCCSID: @(#)newfs.8	6.4	8/31/89
+.TH newfs 8
+.SH Name
+newfs \- construct a new file system
+.SH Syntax
+.B /etc/newfs 
+[
+.B \-N
+] [
+.B \-n
+] [
+.B \-v
+] [
+.I mkfs-options
+]
+.B special disk-type
+.SH Description
+.NXR "newfs command"
+.NXA "mkfs command" "newfs command"
+.NXR "newfs command" "mkfs and"
+.NXR "file system" "creating"
+The
+.PN newfs
+command is a front-end to the 
+.MS mkfs 8 
+program.  
+The
+.PN newfs
+program looks up the type of disk a file system is
+being created on in the disk description file 
+.PN /etc/disktab ,
+calculates the appropriate parameters to use in calling
+.PN mkfs ,
+then builds the file system by forking 
+.PN mkfs . 
+If the file system is a root partition,
+.PN newfs
+installs the necessary bootstrap program
+in the initial 16 sectors of the device.
+.PP
+If there is no disk description for the specified disk type in the
+.PN /etc/disktab
+file, the 
+.PN newfs
+program will use the 
+.PN creatdiskbyname(3x)
+subroutine to derive disk geometry information from the controlling
+device driver.  This functionality is provided for MSCP and SCSI disks.
+.SH Options
+.IP \-N 10
+Runs 
+.mkfs
+in no update mode.  In this mode, 
+.PN mkfs
+will not write to
+.PN special .
+.IP \-n 10
+Prevents the bootstrap program from being installed.
+.IP \-v
+Instructs 
+.PN newfs
+to print out its actions, including the parameters passed to
+.PN mkfs .
+.PP
+Options which may be used to override default
+parameters passed to
+.PN mkfs
+are:
+.TP 10
+\fB\-s \fIsize\fR
+The size of the file system in sectors.
+.TP 10
+\fB\-b \fIblock-size\fR
+The block size of the file system in bytes.  
+.TP 10
+\fB\-f \fIfrag-size\fR
+The fragment size of the file system in bytes.
+.TP 10
+\fB\-t \fI#tracks/cylinder\fR
+.ns
+.TP 10
+\fB\-c \fI#cylinders/group\fR
+The number of cylinders per cylinder group in a file system.
+The default value used is 16.
+.TP 10
+\fB\-m \fIfree space %\fR
+The percentage of space reserved from normal users; the minimum
+free space threshold.  The default value used is 10%.
+.TP 10
+\fB\-o \fIoptimization\fR
+Specifies whether the file system will optimize for \fIspace\fR or 
+for \fItime\fR.
+.TP 10
+\fB\-r \fIrevolutions/minute\fR
+The speed of the disk in revolutions per minute (normally 3600).
+.TP 10
+\fB\-S \fIsector-size\fR
+The size of a sector in bytes (almost never anything but 512).
+.TP 10
+\fB\-i \fInumber of bytes per inode\fR
+This specifies the density of inodes in the file system.
+The default is to create an inode for each 2048 bytes of data space.
+If fewer inodes are desired, a larger number should be used;
+to create more inodes a smaller number should be given.
+.SH Files
+.TP 20
+.PN /etc/disktab 
+For disk geometry and file system partition information
+.TP
+.PN /etc/mkfs 
+To actually build the file system
+.TP
+.PN /usr/mdec/vaxboot 
+For boot strapping program
+.SH See Also
+disktab(5), fs(5), chpt(8), fsck(8), format(8v), 
+creatediskbyname(3x), mkfs(8), tunefs(8)
+.br
+"A Fast File System for UNIX", 
+\fISupplementary Documents, Volume 3: System Manager\fP

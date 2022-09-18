@@ -1,0 +1,23 @@
+.\" SCCSID: @(#)getlog.3f	8.1	9/11/90
+.TH getlog 3f VAX "" Unsupported
+.SH Name
+getlog \- get user's login name
+.SH Syntax
+.B subroutine getlog (name)
+.br
+.B character*(*) name
+.sp 1
+.B character*(*) function getlog()
+.SH Description
+.NXR "getlog subroutine (FORTRAN)"
+.NXR "login name" "getting"
+The 
+.PN getlog
+subroutine
+will return the user's login name or all blanks if
+the process is running detached from a terminal.
+.SH Files
+.ie \nM /usr/ucb/lib/libU77.a
+.el /usr/lib/libU77.a
+.SH See Also
+getlogin(3)

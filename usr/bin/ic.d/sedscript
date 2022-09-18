@@ -1,0 +1,65 @@
+/yaccpar/a\
+/*\
+ * yydisplay -- print a symbol in human readable form.(@(#)sedscript	4.1	(ULTRIX)	7/17/90)\
+ */\
+#include <ctype.h>\
+#define DIM(x)	(sizeof x / sizeof x[0])\
+#ifdef 	ULTRIX\
+#define	yy_n yyn\
+#endif\
+\
+static char *\
+yydisplay(ch)\
+register int ch;\
+{\
+	static char buf[15];\
+	static char *token[] = {\
+#include "y.tok.h"\
+		0};\
+\
+	switch (ch)\
+	{\
+	case 0:\
+		return "[end of file]";\
+	\
+	case YYERRCODE:\
+		return "[error]";\
+\
+	case '\b':\
+		return "'\\b'";\
+\
+	case '\f':\
+		return "'\\f'";\
+\
+	case '\n':\
+		return "'\\n'";\
+\
+	case '\r':\
+		return "'\\r'";\
+\
+	case '\t':\
+		return "'\\t'";\
+	}\
+	if ( ch > 256 && ch < 256 + DIM(token))\
+		return token[ch -257];\
+	if (isascii(ch) && isprint(ch))\
+		sprintf(buf, "'%c'", ch);\
+	else if (ch < 256)\
+		sprintf(buf, "char %2x", ch);\
+	else\
+		sprintf(buf, "token %d", ch);\
+	return buf;\
+}
+
+/"syntax error"/c\
+			if ((yy_n = yypact[yystate]) > YYFLAG && yy_n < YYLAST)\
+			{\
+				register int x;\
+\
+				for (x = yy_n > 0 ? yy_n : 0; x < YYLAST; x++)\
+					if (yychk[yyact[x]] == x - yy_n\
+					    &&\
+					    x - yy_n != YYERRCODE)\
+						yyerror(0, yydisplay(x - yy_n));\
+			}\
+			yyerror(0, 0);

@@ -1,0 +1,736 @@
+.TH repl 1mh
+.SH Name
+repl \- reply to a message
+.SH Syntax
+.B repl
+[
+.I msg
+] [ 
+.I +folders
+] [
+.I options
+]
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" ***COMMENTED OUT
+.\" .SH Arguments
+.\" .IP \fImsg\fR 10
+.\" The message that 
+.\" .PN repl 
+.\" replies to.
+.\" The argument is the number of the message.
+.\" If you do not supply a 
+.\" .I msg
+.\" argument, 
+.\" .PN repl
+.\" takes the current message.
+.\"
+.\" .IP \fI+folder\fR 10
+.\" The folder from which
+.\" .PN repl
+.\" takes the message to reply to.
+.\" The folder name must be preceded by a plus sign (+).
+.\" If you do not supply a 
+.\" .I +folder
+.\" argument,
+.\" .PN repl
+.\" takes the message from the current folder.
+.\" You can supply both a 
+.\" .I msg
+.\" and a 
+.\" .I +folder
+.\" argument.
+.\" If you specify a 
+.\" .I +folder
+.\" argument but no message number,
+.\" .PN repl
+.\" replies to the current message in the specified folder.
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.\"
+.\"
+.SH Description
+.NXR "repl command"
+.NXR "messages" "replying to" 
+Use
+.PN repl
+to reply to a message that you have received.
+.\"
+.\" ***Info from old Arguments section
+.\"
+.PP
+By default,
+.PN repl
+replies to the current message in the current folder.
+If you want to reply to another message, 
+you can specify a message number as the
+.I msg
+argument.
+You can also specify a message in another folder 
+by supplying a 
+.I +folder
+argument.
+You can supply both a 
+.I msg
+and a 
+.I +folder 
+argument.
+If you specify a folder without giving a message number,
+.PN repl
+will reply to the current message in the named folder.
+.\"
+.\" ***End of Arguments stuff
+.\"
+.PP
+When you reply to a message,
+.PN repl
+automatically fills in the mail header for you, 
+taking the information it needs from the mail header 
+of the original message.  
+The following example shows how
+.PN repl 
+constructs the mail header for the return message:
+.EX
+To: <Reply\-To> or <From> or <sender>
+cc: <cc>, <To>, and yourself
+Subject: Re: <Subject>
+In\-reply\-to: Your message of <Date>.
+<Message\-Id>
+.\" X\-mts: <X-mts>
+.EE
+Field names enclosed in angle brackets (<\ >) indicate the
+contents of the named field from the original message.  
+.\"
+.\" ***COMMENTED OUT
+.ig
+.PP
+When you reply to a message,
+.PN repl
+takes the value from the
+\f(CWX-mts:\fR
+.R
+field of the original message and places it in the
+\f(CWX-mts:\fR
+.R
+field of your draft reply.
+The two legal entries are: \f(CWx400\fR,
+.R
+for mail sent to X.400 users; and \f(CWsmtp\fR,
+.R
+for mail sent to non-X.400 users.
+The default is to assume non-X.400 transport.
+If there is no
+\f(CWX-mts:\fP
+.R
+field on the original message,
+.PN repl
+.R
+generates the field on your draft reply, but
+leaves it blank.
+Since all incoming X.400 mail has the
+\f(CWX-mts: x400\fP
+.R
+field added automatically, any incoming mail
+which does not have an
+\f(CWX-mts:\fP
+.R
+field must have been sent by a non-X.400 user.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.PP
+Normally,
+.PN repl
+replies to the original sender, and sends carbon copies 
+to all the addressees on the original message.  
+.\"
+.\" **********************************
+.\" COMMENTED OUT - the -nocc me stuff
+.ig
+.NT
+If you wish to reply to X.400 messages, you MUST
+add the following line to your 
+.PN \&.mh_profile :
+.EX
+repl: -nocc me
+.EE
+You must not use the 
+.B "\-cc me"
+or 
+.B "\-cc all"
+options.
+If you wish to send a copy of an X.400 reply to yourself,
+you should edit the header fields to include your X.400 address.
+.NE
+..
+.\" **********************************
+.\"
+.PP
+You can create a different mail header from the default 
+and use it every time you reply to mail.  
+If you create an alternative mail header and store it in the file 
+.PN replcomps 
+in your Mail directory,
+.PN repl
+will use it instead of the default header file.  
+This must be an mhl file; see
+.MS mh-format 5mh
+for more information.
+.PP
+If you do not have a draft folder set up,
+.PN repl
+creates your new draft in a file called
+.PN draft
+in your Mail directory.
+This file must be empty before you can create a new draft,
+which means that you can only store one draft at a time.
+If it is not empty, the mail system will ask you
+what you want to do with the existing contents.
+The options are:
+.TP 10
+\f(CWquit\fR
+Aborts
+.PN repl ,
+leaving the draft intact.
+.TP 10
+\f(CWreplace\fR
+Replaces the existing draft with the appropriate message form.
+.\" .TP 10
+.\" \f(CWuse\fR
+.\" Allows you to edit the existing draft.
+.TP 10
+\f(CWlist\fR
+Displays the draft message.
+.TP 10
+\f(CWrefile\fR
+Refiles the existing draft message in the specified folder,
+and provides a new message form for you to complete.
+.PP
+If you want to be able to have more than one draft at a time,
+you can set up a draft folder in your
+.PN \&.mh_profile .
+This allows you to keep as many unsent drafts as space allows,
+and still create new messages as you wish.
+To do this, make sure that the following line is in your
+.PN \&.mh_profile :
+.EX
+Draft-folder: +drafts
+.EE
+For more information on how to do this, see
+.MS mh_profile 5mh .
+.PP
+If you set up a draft folder,
+all draft messages are created in that folder.
+If you decide not to send the draft, by typing
+.PN quit
+at the \f(CWWhat now?\fR prompt,
+the message is stored in the draft folder.
+You can then re-edit the message, or send it at a later date,
+by using the
+.PN "comp \-use"
+command.
+.PP
+Note that while in the editor,
+the message being replied to is available through a link named 
+.PN @
+(assuming the default 
+.PN whatnowproc ).
+In addition, the actual pathname of the message is stored in the 
+environment variable \f(CW$editalt\fR,
+and the pathname of the folder containing the message is stored in the
+environment variable \f(CW$mhfolder\fR.
+If your current working directory is not writable,
+the link named 
+.PN @
+is not available.
+.\"
+.\"
+.\"
+.\"
+.SH Options
+.\"
+.\" 
+.\" **************************************
+.\" COMMENTED OUT  -nocc me stuff
+.ig
+.NT
+If you wish to reply to X.400 mail, you must set up the 
+.B "\-nocc me"
+option in your 
+.PN \&.mh_profile .
+Note also that you cannot specify the 
+.B "\-cc me"
+or 
+.B "\-cc all"
+options when you are replying to X.400 mail.
+If you want to send a copy of an X.400 reply to yourself, 
+you must edit the header fields of the reply 
+to include your address. 
+.NE
+..
+.\" ***************************************
+.\"
+.\"
+.\"
+.IP \-annotate 10
+.PD 0
+.IP \-noannotate 10
+.PD
+Marks out the original message as replied to.
+When the message is shown on the listing produced by
+.PN scan ,
+it is marked with a dash (\-).
+The following lines are also added to the message:
+.EX
+     Replied:\ date
+     Replied:\ addrs
+.EE
+where the address list contains one line for each addressee.
+The mail system will annotate the message 
+only if it is sent immediately.
+If the message is not sent immediately,
+you can send it later with
+.PN "comp \-use" , 
+but the annotations will not take place.
+.\"
+.\"
+.IP "\-cc all|to|cc|me" 10
+.PD 0
+.IP "\-nocc all|to|cc|me" 10
+.PD
+Specifies who will receive copies of the reply.
+By default the mail system sends the reply to the sender 
+of the original message, and copies to all other names in
+the \f(CWTo:\fP and \f(CWcc:\fP lines.
+You can change this behavior by using the 
+.B \-cc 
+option.
+This sends copies of the replies only to the specified 
+names.
+There are four values:
+.B \-cc\ all
+sends copies to all the names on the original message;
+.B \-cc\ to 
+sends copies only to those names in the \f(CWTo:\fP field;
+.B \-cc\ cc
+sends copies only to those names in the \f(CWcc:\fP field; and
+.B \-cc\ me
+sends a copy of the reply to yourself.
+.IP
+There is also a 
+.B \-nocc
+option, which stops copies of the reply 
+being sent to the named people.
+It takes the same values as 
+.B \-cc .
+So, for example,
+.B \-nocc\ cc
+would stop replies being sent to the names in the 
+\f(CWcc:\fP field of the original message.
+.\"
+.\"
+.IP \-draftfolder\ \fI+folder\fP
+.PD 0
+.IP \-nodraftfolder
+.PD
+Specifies the folder in which the draft message is created.
+If you do not send the draft, it is stored in this folder.
+.IP
+This option is usually set up in your
+.PN \&.mh_profile .
+See 
+.MS mh_profile 5mh
+for more information.
+If you have this option set up, you can
+override it by using the 
+.B \-nodraftfolder
+option.
+.\" 
+.\"
+.ig
+.IP "\-draftmessage\ \fIfile-name\fP" 10
+***I HAVE NO IDEA WHAT THIS OPTION DOES***
+..
+.\"
+.\"
+.IP \-editor\ \fIeditorname\fP 
+Specifies the editor you wish to use to write your reply.
+The default editor provided is
+.PN prompter .  
+You can specify any legal ULTRIX editor as an alternative.
+.IP
+You can also set up an editor in your 
+.PN \&.mh_profile
+file.
+See
+.MS mh_profile 5mh
+for more details.
+.\"
+.\"
+.IP \-fcc\ \fI+folder\fP
+Specifies a folder to receive copies of your reply.
+More than one folder can be named, each preceded by 
+.B \-fcc .
+.\"
+.\"
+.IP \-filter\ \fIfilterfile\fP
+Specifies how the original message is formatted in the draft.
+By default, the mail system does not include a copy of the
+original message in your reply.
+If you use the 
+.B \-filter
+.I filterfile
+option, the original message may be included in your reply, 
+and formatted according to the information in the file you name.
+.IP
+The filter file for
+.PN repl
+should be a standard form file for
+.PN mhl ,
+as
+.PN repl
+will invoke
+.PN mhl
+to format the message
+being replied to.
+There is no default filter file for 
+.PN repl ;
+you must create your own.
+A filter file that is commonly used is:
+.EX
+:
+body:nocomponent,compwidth=9,offset=9
+.EE
+This outputs a blank line and then the body of the message
+being replied to, indented by one tab-stop.
+.\"
+.\"
+.IP \-form\ \fIformfile\fP
+Varies the appearance of the mail header for the reply.
+The mail system will construct the header 
+according to the instructions in the named file.
+In order for 
+.PN repl 
+to operate correctly, this must be an mhl file; see
+.MS mh-format 5mh
+for more information.
+This option overrides the header set up by the system file
+.PN /usr/lib/mh/replcomps .
+.\"
+.\"
+.\" 
+.\" ***COMMENTED OUT - not supported in MH6.7
+.ig
+.IP \-format
+Specifies that standard Internet-style address formatting is used.
+Lines beginning with the fields \f(CWTo:\fR,
+\f(CWcc:\fR and \f(CWBcc:\fR
+are standardized and duplicate addresses are removed.
+.IP
+You can use the 
+.B \-noformat 
+option to suppress this address formatting, and re-format
+the message yourself using the 
+.B \-width
+option.
+However, this may result in an address that will not be
+accepted by MH or other user agents.
+You should only attempt this if you completely understand
+the implications of any changes you intend to make.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.IP \-help
+Prints out a list of valid options to the command.
+.\"
+.\"
+.IP \-inplace 10
+.PD 0
+.IP \-noinplace 10
+.PD
+Causes annotation to be done in place, in order 
+to preserve links to the annotated message.  
+.\"
+.\"
+.IP \-noedit 
+Calls 
+.PN repl
+without an editor.
+This option takes you straight to the 
+\f(CWWhat now?\fR
+.R
+prompt, without allowing you to edit your reply.
+This will usually produce a reply with no text
+in the body of the message.
+.\"
+.\"
+.IP \-query 10
+.PD 0
+.IP \-noquery 10
+.PD
+Allows you to modify the list of recipients.
+The mail system asks you whether each of the addresses 
+that would normally be placed in the 
+\f(CWTo:\fR and \f(CWcc:\fR fields
+should actually receive a copy of the reply.
+.\"
+.\"
+.\" 
+.\" ***COMMENTED OUT
+.ig
+.IP \-template [\fIeditorname\fB]
+Helps you to construct valid X.400 addresses in message headers.
+If you are sending a reply to X.400 addresses and you want to
+add more X.400 addresses to the \f(CWTo:\fP or \f(CWcc:\fP
+fields of your reply, you can use the
+.B \-template
+option to help you construct the X.400 addresses.
+For each header field, the
+.PN template
+program asks you whether you want to create an address in that field;
+if you do, it will prompt you for the individual attributes of
+an X.400 address.
+When you have completed all the new addresses,
+exit from the 
+.PN template 
+utility and the addresses are entered in the header
+fields of your draft reply.
+You can then continue to edit the message in the usual way.
+As
+.PN repl
+.R
+automatically fills in the \f(CWTo:\fR 
+.R
+and \f(CWcc:\fR
+.R
+fields of the reply, you
+would only use
+.B \-template
+.R
+to send the reply to additional addressees not on the original
+message.
+You can specify your own choice of editor 
+to fill in the template by using the
+.B \-template
+.I editorname
+.R
+option.
+The default editor for
+.B \-template
+.R
+is
+.PN prompter .
+.R
+If you regularly use the same editor with 
+.B \-template
+you can specify it in the
+\f(CWTemplate\-Editor:\fP
+.R
+line of your 
+.PN \&.mh_profile .
+See
+.MS template 1
+.R
+for more information.
+..
+.\" ***END OF COMMENTS
+.\"
+.\"
+.\"
+.IP \-width
+Sets the maximum width of the header line.
+Lines exceeding this width are split.
+.\"
+.\"
+.IP "\-whatnowproc \fIprogram\fP" 10
+.PD 0
+.IP \-nowhatnowproc 10
+.PD
+Specifies an alternative
+.PN whatnow
+program.
+Normally,
+.PN repl
+invokes the default
+.PN whatnow
+program.
+See
+.MS whatnow 1mh
+for a discussion of available options.
+You can specify your own alternative
+to the default program using the
+.B \-whatnowproc
+.I program
+option.
+If you do specify your own program, you should not call it
+.PN whatnow .
+.IP
+You can suppress the
+.PN whatnow
+program entirely by using the
+.B \-nowhatnowproc
+option.
+However, as the program normally starts the initial edit, the
+.B \-nowhatnowproc
+option will prevent you from editing the message.
+.\"
+.\" Specifies the 
+.\" .PN whatnow
+.\" program invoked when 
+.\" .PN repl 
+.\" exits from the editor.
+.\" See 
+.\" .MS whatnow 1mh 
+.\" for a discussion of available options.
+.\" The invocation of this program can be inhibited by using the 
+.\" .B \-nowhatnowproc
+.\" option.
+.\" But as it is actually the 
+.\" .PN whatnow
+.\" program which starts the initial edit, specifying
+.\" .B \-nowhatnowproc
+.\" will prevent any edit from occurring.
+.\" .IP
+.\" If the 
+.\" .PN whatnowproc
+.\" is 
+.\" .PN whatnow,
+.\" then 
+.\" .PN repl
+.\" uses its own built-in 
+.\" .PN whatnow,
+.\" it does not actually run the 
+.\" .PN whatnow
+.\" program.
+.\" Hence, if you define your own 
+.\" .PN whatnowproc,
+.\" do not call it 
+.\" .PN whatnow
+.\" since 
+.\" .PN repl
+.\" will not run it.
+.\"
+.\"
+.PP
+The default settings for this command are:
+.IP
+.I +folder
+defaults to the current folder
+.br
+.I msg
+defaults to the current message
+.br
+.B \-cc\ all
+.br
+.B \-format
+.br
+.B \-noannotate
+.br
+.B \-nodraftfolder
+.br
+.B \-noinplace
+.br
+.B \-noquery
+.br
+.B \-width\ 72
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" **********************************
+.\" COMMENTED OUT the -nocc me stuff
+.ig
+.SH Restrictions
+If you wish to reply to X.400 messages, 
+you must add the following line to your 
+.PN \&.mh_profile :
+.EX
+repl: -nocc me
+.EE
+When you are replying to X.400 messages, you must not use the
+.B "\-cc me"
+or
+.B "\-cc all"
+options on the command line.
+If you wish to send a copy of an X.400 address to yourself, 
+you should edit the header fields of the draft message
+to include your X.400 address.
+.PP
+If you are replying to non-X.400 mail, 
+these restrictions do not apply.
+..
+.\" ***********************************
+.\"
+.\"
+.\"
+.\"
+.SH Examples
+This example replies to message number 15 in the current folder:
+.EX
+% \f(CBrepl 15
+.EE
+.PP
+The next example creates your reply in the folder 
+.PN +drafts .
+If you decide not to send the draft reply, 
+the mail system will store it in this folder:
+.EX
+% \f(CBrepl -draftfolder +drafts
+.EE
+.PP
+The next example places a copy of your reply in your 
+.PN +copylog
+folder:
+.EX
+% \f(CBrepl -fcc +copylog
+.EE
+.\"
+.\"
+.\"
+.\"
+.SH Profile Components
+.TS
+tab(+);
+lw(1.5i) l.
+Path:+To determine your Mail directory
+Alternate-Mailboxes:+To determine your mailboxes
+Draft-Folder:+To find the default draft folder
+Editor:+To override the default editor
+Msg-Protect:+To set mode when creating a new message (draft)
+fileproc:+Program to refile the message
+mhlproc:+Program to filter message being replied to
+whatnowproc:+Program to ask the \*(lqWhat now?\*(rq questions
+.TE
+.\"
+.\"
+.\"
+.\"
+.SH Files
+.TP 10
+.PN /usr/lib/mh/replcomps
+The default system reply template.
+.TP
+.PN <mh-dir>/replcomps
+The user-supplied alternative to the standard reply template.
+.TP 
+.PN $HOME/\&.mh_profile
+The user profile.
+.TP
+.PN <mh-dir>/draft
+The draft file.
+.\"
+.\"
+.\"
+.\"
+.SH See Also
+comp(1mh), dist(1mh), forw(1mh), prompter(1mh), send(1mh), 
+.\" template(1), 
+whatnow(1mh), mh-format(5mh)

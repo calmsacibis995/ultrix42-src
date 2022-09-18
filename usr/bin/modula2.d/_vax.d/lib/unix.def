@@ -1,0 +1,75 @@
+(*#@(#)unix.def	4.1	Ultrix	7/17/90 *)
+(* $Header: unix.def,v 1.6 84/05/27 13:03:37 powell Exp $ *)
+DEFINITION MODULE unix;
+FROM SYSTEM IMPORT ADDRESS, BYTE, MAXINT;
+FROM IO IMPORT FILE;
+EXPORT QUALIFIED
+    chmod, creat, close, dup, dup2, uexit, fstat, link, lseek, open, read, sbrk,
+    select, stat, umask, unlink, write,
+    getpid,
+    exec, execv, execve, fork, vfork, kill, wait,
+    getenv, perror,
+    errno, environ,
+    fopen, fclose, fflush, fgetc, fputc, fseek, ungetc,
+    argc, argv, File, stdin, stdout, stderr;
+TYPE
+    CString = ARRAY @NOCOUNT OF CHAR;
+    CBuffer = ARRAY @NOCOUNT OF BYTE;
+    CStringPointer = POINTER @NOCHECK TO ARRAY [0..MAXINT] OF CHAR;
+    CParamPointer = POINTER @NOCHECK TO ARRAY [0..MAXINT] OF CStringPointer;
+    File = FILE;
+VAR
+    argc : CARDINAL;
+    argv : CParamPointer;
+
+    (* shared variables with Unix *)
+    @EXTERNAL errno : INTEGER;
+    @EXTERNAL environ : ADDRESS;
+
+    stdin, stdout, stderr : File;
+
+(* UNIX I/O SYSTEM CALLS *)
+
+PROCEDURE @EXTERNAL chmod(name : CString; mode : BITSET) : INTEGER;
+PROCEDURE @EXTERNAL close(fildes : INTEGER) : INTEGER;
+PROCEDURE @EXTERNAL creat(name : CString; mode : BITSET) : INTEGER;
+PROCEDURE @EXTERNAL dup(fildes : INTEGER) : INTEGER;
+PROCEDURE @EXTERNAL dup2(fildes1, fildes2 : INTEGER) : INTEGER;
+PROCEDURE @EXTERNAL uexit(exitCode : INTEGER);
+PROCEDURE @EXTERNAL fstat(fildes : INTEGER; buf : CBuffer) : INTEGER;
+PROCEDURE @EXTERNAL link(name1, name2 : CString) : INTEGER;
+PROCEDURE @EXTERNAL lseek(fildes : INTEGER; offset : INTEGER; whence : CARDINAL)
+	: INTEGER;
+PROCEDURE @EXTERNAL open(name : CString; mode : CARDINAL) : INTEGER;
+PROCEDURE @EXTERNAL read(fildes : INTEGER; buffer : CBuffer; nbytes : CARDINAL):INTEGER;
+PROCEDURE @EXTERNAL sbrk(incr : INTEGER) : ADDRESS;
+PROCEDURE @EXTERNAL select (numfds : CARDINAL; VAR readfds, writefds, exceptfds : BITSET;
+			timeout : ADDRESS) : INTEGER;
+PROCEDURE @EXTERNAL stat(name : CString; buf : CBuffer) : INTEGER;
+PROCEDURE @EXTERNAL umask(mask : BITSET) : INTEGER;
+PROCEDURE @EXTERNAL unlink(name : CString) : INTEGER;
+PROCEDURE @EXTERNAL write(fildes : INTEGER; buffer : CBuffer; nbytes : CARDINAL):INTEGER;
+
+(* UNIX PROCESS SYSTEM CALLS *)
+
+PROCEDURE @EXTERNAL getpid() : INTEGER;
+PROCEDURE @EXTERNAL exec(name : CString; argv : ADDRESS) : INTEGER;
+PROCEDURE @EXTERNAL execv(name : CString; argv : ADDRESS) : INTEGER;
+PROCEDURE @EXTERNAL execve(name : CString; argv : ADDRESS; envp : ADDRESS) : INTEGER;
+PROCEDURE @EXTERNAL fork() : INTEGER;
+PROCEDURE @EXTERNAL vfork() : INTEGER;
+PROCEDURE @EXTERNAL kill(process : INTEGER; signal : INTEGER) : INTEGER;
+PROCEDURE @EXTERNAL wait(VAR status : INTEGER) : INTEGER;
+
+(* UNIX LIBRARY ROUTINES *)
+
+PROCEDURE @EXTERNAL getenv(name : CString) : CStringPointer;
+PROCEDURE @EXTERNAL perror(msg : CString);
+PROCEDURE @EXTERNAL fopen(name : CString; mode : CString) : File;
+PROCEDURE @EXTERNAL fclose(file : File);
+PROCEDURE @EXTERNAL fflush(file : File);
+PROCEDURE @EXTERNAL fseek(file : File; offset, relative : INTEGER) : INTEGER;
+PROCEDURE @EXTERNAL fgetc(file : File) : CHAR;
+PROCEDURE @EXTERNAL fputc(c : CHAR; file : File);
+PROCEDURE @EXTERNAL ungetc(c : CHAR; file : File);
+END unix.

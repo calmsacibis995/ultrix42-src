@@ -1,0 +1,73 @@
+.\" SCCSID: @(#)efl.1	8.1	9/11/90
+.TH efl 1 VAX "" Unsupported
+.SH Name
+efl \- Extended FORTRAN Language
+.SH Syntax
+.B efl
+[ \fIoption\fP ... ]
+[ \fIfilename\fP ... ]
+.SH Description
+The 
+.PN efl
+command compiles a program written in the EFL language into clean FORTRAN.
+The 
+.PN efl
+command provides the same control flow constructs as does
+.MS ratfor 1 ,
+which are essentially identical to those in C:
+.TP 15
+statement grouping with braces;
+decision-making with if, if-else, and switch-case;
+while,
+for,
+FORTRAN do,
+repeat,
+and repeat...until loops;
+multi-level break and next.
+In addition, EFL has C-like data structures,
+and more uniform and convenient input/output syntax,
+generic functions.
+EFL also provides
+some syntactic sugar to make programs easier to read and write:
+.TP
+free form input:
+multiple statements/line; automatic continuation
+statement label names (not just numbers),
+.TP
+comments:
+# this is a comment
+.TP
+translation of relationals:
+>, >=, etc., become .GT., .GE., etc.
+.TP
+return (expression)
+returns expression to caller from function
+.TP
+define:
+define name replacement
+.TP
+include:
+include filename
+.PP
+The 
+.PN efl
+program is best used with
+.MS f77 1 .
+.SH Options
+.IP \-w
+Suppresses warning messages.
+.IP \-C
+Causes comments to be copied through to the FORTRAN output (default).
+.IP \-#
+Prevents comments from being copied through.
+If a command argument contains an embedded equal sign,
+that argument is treated as if it had appeared in an
+option
+statement at the beginning of the program.
+.SH See Also
+f77(1),
+ratfor(1).
+.br
+S. I. Feldman,
+.IR "The Programming Language EFL",
+Bell Labs Computing Science Technical Report #78.

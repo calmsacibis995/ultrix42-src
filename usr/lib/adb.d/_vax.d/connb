@@ -1,0 +1,32 @@
+./"CONNECTION BLOCK"3n
+./"connection"8t"next"16t"prev"16t"class block"n"block list"16t3pn
++/"unit block"16t"flink"16t"blink"16t"BBRB pointer"n"list"16t3Xn
++/"reserved"16t"0x"x8t"flags"16t"0x"x2n"request queues"16t"flink"16t"blink"n
++/"active"16t2Xn
++/"restart"16t2Xn
++/"credit wait"16t2Xn
++/"buffer wait"16t2Xn
++/"map wait"16t2X2n
++/"cmdtmo intvl"16tx8t"maptmp_intvl"16txn
++/"retry cnt"16tx8t"cur_unit"16txn
++/"restart count"16tx8t"hst_tmo"16txn
++/"sysid"16tXxn
++/"rport addr"16tXxn
++/"lport name"16t4Cn
++/"mscp version"16tx8t"cnt flgs"16txn
++/"cnt tmo"16tx8t"cnt svr/cnt hvr"16txn
++/"cnt id"16t2Xn
++/"max bcnt"16tXn
++/"old rspid"16tX"old cmd sts"16tX
++/"restart reqb"16tXn
++>1
+./"model name addr"16tX
+*<1/"model name"16tsn
+<1+4>1
+./"cnt name addr"16tXn
+*<1/"cnt_name"16tsn
+<1+4/"cnt_number"16tx8t"bus type"16txn
++/"ubminit entry"16tX"connid"16tXn"CONNECTION MGMT"
++$<<reqb
++/"POLLING/DAP"
+.$<<reqb

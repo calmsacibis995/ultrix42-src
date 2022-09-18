@@ -1,0 +1,9 @@
+#
+# @(#)crontab	4.1	(ULTRIX)	7/2/90
+#
+0,15,30,45 * * * * /usr/lib/atrun
+15 4 * * * ( cd /usr/preserve; find . -mtime +7 -a -exec rm -f {} \; )
+0 4 * * * calendar -
+5 4 * * * sh /usr/adm/newsyslog
+15 2 1 * * for i in /usr/man/cat[1-8]; do df $i | grep -s /dev && find $i -type f -atime +28 -a -exec rm {} \; ; done
+

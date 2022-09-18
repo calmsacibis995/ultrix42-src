@@ -1,0 +1,199 @@
+.\" SCCSID: @(#)pc.1	2.2	7/17/87
+.TH pc 1 VAX
+.SH Name
+pc \- Pascal compiler
+.SH Syntax
+.B pc
+[\|\fIoption\fR\|] \fIname...\fR
+.SH Description
+.NXR "pc compiler"
+.NXR "Pascal compiler"
+.NXA "pc compiler" "pix command"
+.NXA "pc compiler" "prof command"
+.NXA "pc compiler" "px command"
+.NXA "pc compiler" "pxp command"
+.NXA "pc compiler" "ctags command"
+.NXA "pc compiler" "make command (general)"
+.NXA "pc compiler" "pi code translator"
+.NXA "pc compiler" "ld command"
+The
+.PN pc
+command
+is a Pascal compiler.
+If given an argument file ending with
+a .p,
+it compiles and loads the file
+into an executable file called, by default, a.out.
+.PP
+A program may be separated into more than one .p file.  The
+.PN pc
+command compiles a number of argument .p
+files into object files (with
+the extension .o
+in place of .p).
+Object files may then be loaded 
+into an executable a.out file.
+Exactly one object file must supply a 
+.I program
+statement to successfully create an executable a.out file.
+The rest of the files must consist only of 
+declarations which logically nest within the program.
+References to objects shared between separately compiled files
+are allowed if the objects are declared in
+.PN include d
+header files, whose names must end with .h.
+Header files may only be included at the outermost level,
+and thus declare only globally available objects.
+To allow functions and procedures
+to be declared, an
+.I external
+directive has been added, whose use is similar to the
+.I forward
+directive but restricted to appear only in
+.PN \&.h
+files.
+The
+.I function
+and 
+.I procedure
+bodies may not appear in 
+.PN \&.h 
+files.  A binding phase of the compiler checks that declarations
+are used consistently, to enforce the type checking rules of Pascal.
+The binder is not as strict as described here,
+with regard to the rules about external declarations only
+in .h files and including .h files only at the outermost level.
+.PP
+Object files 
+created by other language processors may be loaded together with
+object files created by 
+.PN pc .
+The 
+.I functions 
+and 
+.I procedures
+they define must have been declared
+in .h files included by all the .p
+files which call those routines.
+Calling conventions are as in C,
+with
+.I var
+parameters passed by address.
+.SH Options
+.NXR "pc compiler" "options"
+The following options have the same meaning as in
+.MS cc 1
+and 
+.MS f77 1 .
+(Note that 
+.MS f77 1
+is from the unsupported subset.)
+See 
+.MS ld 1 
+for load-time options.
+.IP \fB\-c\fR 20
+Suppresses loading and produce .o files from source files.
+.IP \fB\-g\fR 20
+Produces additional symbol table information for 
+.MS dbx 1 .
+.IP \fB\-w\fR 20
+Suppresses warning messages.
+.IP \fB\-O\fR 20
+Invokes an
+object-code improver.
+.IP "\fB\-\|o\fI output\fR" 20
+Names the final output file
+.I output
+instead of a.out.
+.IP \fB\-p\fR 20
+Prepares object files for profiling.  For further information, see 
+.MS prof 1 .
+.IP \fB\-S\fR 20
+Compiles the named program, and leave the
+assembler-language output on the corresponding file suffixed .s.
+No .o file is created.
+.PP
+The following options are peculiar to
+.PN pc .
+.IP \fB\-C\fR 20
+Compiles code to perform runtime checks,
+verify
+.PN assert
+calls,
+and initialize all variables to zero as in
+.IR pi .
+.IP \fB\-b\fR 20
+Block buffers the file
+.I output.
+.IP \fB\-i\fIname\fR 20
+Produces a listing for
+the specified procedures, functions and
+.PN include
+files.
+.IP \fB\-l\fR 20
+Makes a program listing during translation.
+.IP \fB\-s\fR 20
+Accepts standard Pascal only and non-standard constructs cause warning diagnostics.
+.PP
+Because the
+.B \-s
+option is usurped by the compiler,
+it is not possible to pass the strip option to the loader.
+Thus programs which are to be stripped, must be run through 
+.MS strip 1
+after they are compiled.
+.IP "\fB\-\|t\fI directory\fR" 20
+Uses the given
+.I directory
+for compiler temporary files.
+.IP \fB\-z\fR 20
+Allows execution profiling with
+.PN pxp
+by generating statement counters, and arranging for the
+creation of the profile data file pmon.out
+when the resulting object is executed.  The
+.B \-z
+flag doesn't work for separately compiled files.
+.PP
+Other arguments are taken to be loader option arguments,
+perhaps libraries of
+.PN pc
+compatible routines.
+Certain flags can also be controlled in comments within the program.
+.SH Restrictions
+.NXR "pc compiler" "restricted"
+The keyword
+.I packed
+is recognized but has no effect.
+.SH Diagnostics
+See 
+.MS pi 1
+for an explanation of the error message format.
+.SH Files
+.ta 2.5i
+file.p	pascal source files
+.br
+/usr/lib/pc0	compiler
+.br
+/lib/f1	code generator
+.br
+/usr/lib/pc2	runtime integrator (inline expander)
+.br
+/lib/c2	peephole optimizer
+.br
+/usr/lib/pc3	separate compilation consistency checker
+.br
+/usr/lib/pc2.*strings	text of the error messages
+.br
+/usr/lib/how_pc	basic usage explanation
+.br
+/usr/lib/libpc.a	intrinsic functions and I/O library
+.br
+/usr/lib/libm.a	math library
+.br
+/lib/libc.a	standard library, see intro(3)
+.SH See Also
+pi(1), pxp(1), pxref(1) 
+.br
+"Berkeley Pascal User's Manual,"
+\fISupplementary Documents, Volume 2: Programmer\fP

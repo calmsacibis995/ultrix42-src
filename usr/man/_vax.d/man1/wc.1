@@ -1,0 +1,35 @@
+.\" SCCSID: @(#)wc.1	8.1	9/11/90
+.TH wc 1 
+.SH Name
+wc \- count words, lines, and characters
+.SH Syntax
+.B wc
+[\fB\-lwc\fR] [\|\fIname...\fR\|]
+.SH Description
+.NXR "wc command"
+.NXR "file" "getting word count"
+.NXR "file" "getting line count"
+.NXR "file" "getting character count"
+The
+.PN wc
+command counts lines, words and characters 
+in the named files, or in the standard input if no name appears.
+A word is a maximal string of
+characters delimited by spaces, tabs or new lines.
+.PP
+If an argument beginning with one of ``lwc'' is present,
+the specified counts (lines, words, or characters)
+are selected by the letters
+.BR l ,
+.BR w ,
+or
+.BR c .
+The default is
+.BR \-lwc .
+.SH Options
+.IP \fB\-c\fR 0.3i
+Displays number of characters only.
+.IP \fB\-l\fR 0.3i
+Displays number of lines only.
+.IP \fB\-w\fR 0.3i
+Displays number of words only.

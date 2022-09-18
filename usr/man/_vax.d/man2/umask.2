@@ -1,0 +1,48 @@
+.\" SCCSID: @(#)umask.2	8.1	9/11/90
+.TH umask 2
+.SH Name
+umask \- set file creation mask
+.SH Syntax
+.B #include <sys/types.h>
+.br
+.B #include <sys/stat.h>
+.PP
+.B oumask = umask(\fInumask\fP)
+.br
+.B mode_t oumask, \fInumask\fP;
+.fi
+.SH Description
+.NXR "umask system call"
+.NXR "file" "setting mode mask"
+The
+.PN umask
+system call
+sets the process's file mode creation mask to 
+.PN numask
+and returns the previous value of the mask.  The low-order
+nine bits of 
+.PN numask
+are used whenever a file is created,
+clearing corresponding bits in the file mode.
+(For further information, see 
+.MS chmod 2 .)
+This clearing allows each user to restrict the default access
+to his or her files.
+.PP
+The value is initially 022 (write access for owner only).
+The mask is inherited by child processes.
+.PP
+The previous value of the file mode mask is returned by the call.
+.SH Environment
+.PP
+POSIX
+.br
+When your program is compiled in POSIX mode,
+the
+.I numask
+argument is of type mode_t and the
+.PN umask
+function
+returns a value of type mode_t.
+.SH See Also
+chmod(2), mknod(2), open(2)

@@ -1,0 +1,97 @@
+.\" SCCSID: @(#)kgmon.8	8.2	12/4/90
+.TH kgmon 8 "" "" Unsupported
+.SH Name
+kgmon \- generate a dump of the operating system's profile buffers
+.SH Syntax
+.B /etc/kgmon
+[
+.I options
+] [ 
+.I system 
+] [ 
+.I memory 
+]
+.SH Description
+.NXR "kgmon command"
+.NXR "profile buffer" "dumping"
+.NXR "gprof command" "kgmon command"
+The
+.PN kgmon
+command is used when profiling the operating system.
+When no arguments are supplied,
+.PN kgmon 
+indicates the state of operating system profiling as running,
+off, or not configured.
+For further information, see 
+.MS config 8 .
+If the
+.PN \-p
+option is specified,
+.PN kgmon
+extracts profile data from the operating system and produces a
+.PN kgdump.out 
+file suitable for later analysis by 
+.PN gprof .
+.PP
+The 
+.PN kgdump.out 
+file is first converted to a format suitable for 
+.PN gprof 
+by using the 
+.PN kgconv
+filter. The
+.PN kgmon
+command dumps the kernel profiling data for all the processors in 
+the system. The 
+.PN kgconv
+command is used to create a 
+.PN kgmon.out 
+file suitable for analysis by 
+.PN gprof
+for any or all the processors in the system.
+.SH Options
+.IP \-b 5
+Resumes the collection of profile data.
+.IP \-h
+Stops the collection of profile data.
+.IP \-p
+Dumps the contents of the profile buffers into a
+.PN kgdump.out 
+file.
+.IP \-r
+Resets all the profile buffers. 
+If the
+.PN \-p
+option is also specified, the
+.PN kgdump.out 
+file is generated before the buffers are reset.
+.PP
+If neither 
+.PN \-b
+nor
+.PN \-h
+is specified, the state of profiling collection remains unchanged.
+For example, if the
+.PN \-p
+option is specified and profile data is being collected,
+profiling will be momentarily suspended,
+the operating system profile buffers will be dumped,
+and profiling will be immediately resumed.
+.SH Diagnostics
+Users with only read permission on 
+.PN /dev/kmem 
+cannot change the state
+of profiling collection. 
+They can get a 
+.PN kgdump.out
+file with the warning that the data may be
+inconsistent if profiling is in progress.
+.SH Files
+.TP 15
+.PN /vmunix
+Default system
+.TP 
+.PN /dev/kmem
+Default memory
+.SH See Also
+gprof(1), config(8), kgconv(8)

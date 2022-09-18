@@ -1,0 +1,173 @@
+.TH ar 1 RISC
+.SH Name
+ar \- archive and library maintainer
+.SH Syntax
+.B ar
+option [ \fIposname\fR ] archive file ...
+.SH Description
+The archiver 
+.B ar 
+maintains groups of files as
+a single archive file.
+This utility is generally used to 
+create and update library files that the link editor uses; however, you
+can use the archiver for other similar purposes.
+.NT
+This version
+uses a portable ASCII-format archive that you can use on various
+machines that run \s-2UNIX\s0.
+If you have an archive that uses an older format, see 
+.MS arcv 8 .
+.SH Options
+This section describes the options and suboptions 
+that you can use with the 
+.B ar
+utility.  Suboptions must
+be specified with options.
+Following is a list and description of the options:
+.TP
+.B d
+Deletes the specified files from the archive file.
+.TP
+.B r
+Replaces the specified files in the archive file.
+If you use the suboption
+.B u
+with
+.B r,
+the archiver only replaces those files that have last-modified dates later 
+than the archive files.  If you use a positioning character (from the set
+.B abi)
+you must specify the
+.I posname
+argument to tell the archiver to put the new files after
+.RB ( a )
+or before
+.RB ( b
+or
+.BR i ).
+Otherwise, the archiver puts new files at the end of the archive.
+.TP
+.B q
+Appends the specified files to the end of the archive file.
+The archiver does not accept suboption positioning characters with the
+\fBq\fR option.
+It also does not check
+whether the files you want to add already exist 
+in the archive.
+Use the \fBq\fR option
+only to avoid quadratic behavior when you create a large
+archive piece by piece.
+.TP
+.B t
+Prints a table of contents for the files in the archive file.
+If you do not specify any filenames, the archiver builds a table 
+of contents for all files.
+If you specify filenames, the archiver builds a table of contents only 
+for those files.
+.TP
+.B p
+Prints the specified files from the archive.
+.TP
+.B m
+Moves the specified files to the end of the archive.
+If you specify a
+positioning character,
+you must also specify the
+.I posname
+(as in option
+.B r)
+to tell the archiver where to move the files.
+.TP
+.B x
+Extracts the specified files from the archive.
+If you do not specify any filenames, the archiver extracts all files.
+When it extracts files, the archiver does not change any file.
+Normally, the last-modified date for each
+extracted file shows the date when someone extracted it; however, when
+you use 
+.B o,
+the archiver resets the last-modified date to the date recorded in the
+archive.
+.TP
+.B s
+Makes a symbol definition (symdef file) as the first file of an archive.
+This file contains a hash table of
+.I ranlib
+structures and a corresponding string table. The symdef file's name is based on the byte
+ordering of the hash table and the byte ordering of the file's target machine.
+Files must be consistent in their target byte ordering before the 
+archiver can create a symdef file.
+If you change the archive contents, the symdef file becomes 
+obsolete because the archive file's name changes.   
+If you specify s,
+the archiver
+creates the symdef file as its last action before finishing execution.
+You must specify at least one other archive option (m, p, q, r, or t) 
+when you use the \fBs\fR option.  For UMIPS-V, archives include member
+objects based on the definition of a common object only.  For UMIPS-BSD,
+they define the common object, but do not include the object.
+.TP
+.B v
+Gives a file-by-file description as the archiver makes a
+new archive file from an old archive and its constituent files.
+When you use this option with
+.B t,
+the archiver lists all information about the files in the archive.
+When you use this option with
+.BR p ,
+the archiver
+precedes each file with a name.
+.TP
+.B c
+Suppresses the normal message that the archiver prints when 
+it creates the specified archive file.  
+Normally, the archiver
+creates 
+the specified archiver file 
+when it needs to.
+.TP
+.B l
+Places temporary files in the local directory.
+If the l option is not used then the value of the environment
+symbol, TMPDIR, is used as the directory for temporary files.
+If TMPDIR is not defined or if the directory it references is
+not writable then /tmp is used.
+.PP
+The suboptions do these things:
+.TP
+.B a
+Specifies that the file goes after the existing file (\fIposname\fR).
+Use this suboption with the \fBm\fR or \fBr\fR options.
+.TP
+.B b
+Specifies that the file goes before the existing file (\fIposname\fR).
+Use this suboption with the \fBm\fR or \fBr\fR options.
+.TP
+.B i
+Specifies that the file goes before the existing file (\fIposname\fR).
+Use this suboption with the \fBm\fR or \fBr\fR options.
+.TP
+.B o
+Forces a newly created file to have the last-modified date that 
+it had before it was extracted from the archive.  Use this suboption with the
+\fBx\fR option.
+.TP
+.B u
+Prevents the archiver from replacing an existing file unless the replacement 
+is newer than the existing file.  This option uses the UNIX system last
+modified date for this comparison.  Use this suboption with the \fBr\fR
+option.
+.SH Restrictions
+If you specify the 
+same file twice in an argument list,
+it can appear twice in the archive file.
+.PP
+The \fBo\fR option does not change the last-modified date of a file
+unless you own the extracted file or you are the superuser.
+.PP
+This command truncates filenames to 15 characters.
+.SH Files
+/tmp/v*	temporaries
+.SH See Also
+lorder(1), ld(1), odump(1), ranlib(1), ranhash(3x), ar(5), arcv(8)

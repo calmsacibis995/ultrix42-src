@@ -1,0 +1,242 @@
+.\" SCCSID: @(#)a.out.5	2.1	3/10/87
+.TH a.out 5 VAX
+.SH Name
+a.out \- assembler and link editor output
+.SH Syntax
+.B #include <a.out.h>
+.SH Description
+.NXB "a.out file" "format"
+.NXAM "as assembler" "a.out file"
+.NXAM "ld command" "a.out file"
+The
+.PN a.out
+file
+is the output file of the assembler
+.MS as 1
+and the link editor
+.MS ld 1 .
+Both programs make
+.PN a.out
+executable if there were no
+errors and no unresolved external references.
+Layout information as given in the include file for the VAX is:
+.NXR(e) "a.out file" "layout information"
+.EX 0
+/*
+* Header prepended to each a.out file.
+*/
+struct exec {
+  unsigned short        a_magic;        /* magic number */
+  unsigned short        a_mode;         /* mode parameter */
+  unsigned    a_text;   /* size of text segment */
+  unsigned    a_data;   /* size of initialized data */
+  unsigned    a_bss;    /* size of uninitialized data */
+  unsigned    a_syms;   /* size of symbol table */
+  unsigned    a_entry;  /* entry point */
+  unsigned    a_trsize; /* size of text relocation */
+  unsigned    a_drsize; /* size of data relocation */
+};
+
+#define OMAGIC  0407    /* old impure format */
+#define NMAGIC  0410    /* read-only text */
+#define ZMAGIC  0413    /* demand load format */
+
+/*
+ *	Compatibility modes
+ */
+#define A_BSD   0               /* All pre V2.4 a.outs and BSD */
+#define A_SYSV  1               /* System V compliant process */
+#define A_POSIX 2               /* IEEE P1003.1 compliant process */
+
+/*
+* Macros which take exec structures as arguments and tell whether
+* the file has a reasonable magic number or offsets
+  to text\||\|symbols\||\|strings.
+*/
+#define	N_BADMAG(x) \e
+    ((x).a_magic)!=OMAGIC && ((x).a_magic)!=NMAGIC &&
+    ((x).a_magic)!=ZMAGIC)
+
+#define	N_TXTOFF(x) \e
+    ((x).a_magic==ZMAGIC ? 1024 : sizeof (struct exec))
+#define N_SYMOFF(x) \e
+    (N_TXTOFF(x) + (x).a_text+(x).a_data + (x).a_trsize+(x).a_drsize)
+#define	N_STROFF(x) \e
+    (N_SYMOFF(x) + (x).a_syms)
+.EE
+.PP
+The file has five sections:
+a header, the program text and data, relocation information,
+a symbol table, and a string table (in that order).
+The last three sections may be omitted
+if the program was loaded with the \fB-s\fR option of
+.PN ld
+or if the symbols and relocation have been removed by
+.MS strip 1 .
+.PP
+In the header, the sizes of each section are given in bytes.
+The size of the header is not included in any of the other sizes.
+.PP
+When an
+.PN a.out
+file is executed, three logical segments are
+set up: the text segment, the data segment
+(with uninitialized data, which starts off as all 0, following
+initialized), and a stack.
+The text segment begins at 0
+in the core image and the header is not loaded.
+If the magic number in the header is OMAGIC (0407),
+the number indicates that the text
+segment will not be write protected and shared,
+so the data segment is immediately contiguous
+with the text segment.
+This is the oldest kind of executable program and is rarely used.
+.PP
+If the magic number is NMAGIC (0410) or ZMAGIC (0413),
+the data segment begins at the first 0 mod 1024-byte
+boundary following the text segment,
+and the text segment is not writable by the program.
+If other processes are executing the same file,
+they will share the text segment.
+For ZMAGIC format, the text segment begins at a 0 mod 1024-byte boundary
+in the
+.PN a.out
+file.  The remaining bytes after the header in the first block are
+reserved and should be zero.
+In this case, the text and
+data sizes must both be multiples of 1024 bytes.
+The pages of the file
+will be brought into the running image as needed,
+and not preloaded as with the other
+formats.  This is especially suitable
+for large programs and is the default format produced by
+.MS ld 1 .
+.PP
+The stack will occupy the highest possible locations
+in the core image, growing downwards from
+.lg 0
+0x7ffff000.
+.lg 1
+The stack is automatically extended as required.
+The data segment is only extended as requested by
+.MS brk 2 .
+.PP
+After the header in the file, follow the text, data, text relocation, 
+data relocation, symbol table, and string table in that order.
+The text begins at byte 1024 in the file for ZMAGIC format or just
+after the header for the other formats.  The N_TXTOFF macro returns
+this absolute file position when given the name of an exec structure
+as argument.
+The data segment is contiguous with the text and immediately
+followed by the text relocation and then the
+data relocation information.
+The symbol table follows all this.  
+Its position is computed by the
+N_SYMOFF macro.  Finally, the string table immediately follows the
+symbol table at a position that can be easily accessed using N_STROFF.
+The first 4 bytes of the string table are not used for string storage;
+instead they contain the size of the string table which includes 
+the 4 bytes.  The minimum string table size is thus 4.
+.PP
+The layout of a symbol table entry and the principal flag values
+that distinguish symbol types are given in the include file as follows:
+.NXR(e) "a.out file" "symbol table entry"
+.PP
+.EX 0
+/*
+* Format of a symbol table entry.
+*/
+struct nlist {
+   union {
+       char  *n_name;   /* for use when in-core */
+       long   n_strx;   /* index into file string table */
+    } n_un;
+    unsigned char   n_type; /* type flag, i.e. N_TEXT; see below */
+    char	n_other;
+    short	n_desc;     /* see <stab.h> */
+    unsigned	n_value;    /* value of this symbol (or offset) */
+};
+#define n_hash  n_desc      /* used internally by ld */
+
+/*
+* Simple values for n_type.
+*/
+#define N_UNDF 0x0    /* undefined */
+#define N_ABS  0x2    /* absolute */
+#define N_TEXT 0x4    /* text */
+#define N_DATA 0x6    /* data */
+#define N_BSS  0x8    /* bss */
+#define N_COMM 0x12   /* common (internal to ld) */
+#define N_FN   0x1f   /* file name symbol */
+
+#define N_EXT  01     /* external bit, or'ed in */
+#define N_TYPE 0x1e   /* mask for all the type bits */
+
+/*
+* Other permanent symbol table entries have some N_STAB bits set.
+* These are given in <stab.h>
+*/
+#define N_STAB 0xe0  /* if any of these bits set, don't discard */
+
+/*
+* Format for namelist values.
+*/
+#define N_FORMAT    "%08x"
+.EE
+.PP
+In the
+.PN a.out
+file, a symbol's n_un.n_strx field gives an index into the
+string table.  An n_strx value of 0 indicates that no name is associated
+with a particular symbol table entry.  The field n_un.n_name can be used
+to refer to the symbol name only if the program sets this up using
+n_strx and appropriate data from the string table.
+.PP
+If a symbol's type is undefined external,
+and the value field is nonzero,
+the symbol is interpreted by the loader
+.PN ld
+as
+the name of a common region
+whose size is indicated by the value of the
+symbol.
+.PP
+The value of a byte in the text or data that is not
+a portion of a reference to an undefined external symbol
+is exactly the value that will appear in memory
+when the file is executed.
+If a byte in the text or data
+involves a reference to an undefined external symbol,
+as indicated by the relocation information,
+then the value stored in the file
+is an offset from the associated external symbol.
+When the file is processed by the
+link editor and the external symbol becomes
+defined, the value of the symbol will
+be added to the bytes in the file.
+.PP
+If relocation
+information is present, it amounts to 8 bytes per
+relocatable datum, as in the following structure:
+.NXR(e) "a.out file" "relocation information"
+.EX 0
+/*
+* Format of a relocation datum.
+*/
+struct relocation_info {
+   int  r_address;    /* address which is relocated */
+   unsigned   r_symbolnum:24,   /* local symbol ordinal */
+        r_pcrel:1,    /* was relocated pc relative already */
+        r_length:2,   /* 0=byte, 1=word, 2=long */
+        r_extern:1,   /* does not include value of sym referenced */
+         :4;          /* nothing, yet */
+};
+.EE
+.PP
+There is no relocation information if a_trsize+a_drsize==0.
+If r_extern is 0, then r_symbolnum
+is actually an n_type for the relocation
+(that is, N_TEXT meaning relative to segment text origin).
+.SH See Also
+adb(1), as(1), dbx(1), ld(1), nm(1), strip(1), stab(5)
+.NXE "a.out file" "format"

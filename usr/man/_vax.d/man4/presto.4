@@ -1,0 +1,490 @@
+.TH presto 4
+.SH Name
+presto \- the Prestoserve pseudodevice driver
+.SH Syntax
+.nf
+.ft B
+#include <sys/presto.h>
+#include <sys/prestoioctl.h>
+
+pseudo-device	presto
+.fi
+.ft R
+.SH Description
+.NXR "presto pseudodevice driver"
+The Prestoserve pseudodevice driver 
+.PN presto 
+caches synchronous writes in nonvolatile memory.  Prestoserve causes synchronous 
+writes to be performed at memory speeds, rather than at disk speeds.
+Synchronous writes that result in Prestoserve cache hits do not perform the
+earlier physical disk writes, because only the last write is actually 
+performed by Prestoserve.  Therefore, 50% to 65% of all the physical disk
+write operations are avoided, because every sequential NFS write to 
+a file also causes the inode and the indirect block to be synchronously written.
+.PP
+The
+.PN presto 
+driver is layered on other disk drivers, and
+it intercepts the other drivers' I/O requests by replacing the entry points 
+of the original driver in the bdevsw and cdevsw tables. The 
+.PN presto
+driver caches the intercepted synchronous write requests in 
+the Prestoserve cache's nonvolatile memory.
+When Prestoserve needs to perform actual I/O, it calls the original 
+driver's entry points to perform the I/O.  A modified form of
+Least Recently Used (LRU) replacement determines when the 
+Prestoserve cache data needs to be written to the intended disks.
+.PP
+An accelerated disk device (one that has the 
+.PN presto
+pseudodevice driver layered on top of its driver),
+uses the same major and minor devices that it used before it was accelerated.
+.PP
+The Prestoserve nonvolatile memory must be found at boot time in order 
+for Prestoserve to perform its write-caching function.
+In addition, Prestoserve must pass diagnostic tests, and
+there must be sufficient backup battery power to guarantee a reasonable
+amount of cache data stability (measured in days or weeks) in the event 
+of a power or hardware failure.
+See the appropriate appendix in the \fIGuide to Prestoserve\fP
+for information on specific processors.
+.PP
+If the Prestoserve nonvolatile memory is not found or if there is not enough 
+backup battery power, then the disks are not accelerated; however
+they can be opened and used as usual.  In this case, the
+.PN presto
+driver simply passes all I/O requests directly through to the appropriate device.
+.SS Operation
+When Prestoserve is in the PRUP state, it caches all synchronous write 
+requests for enabled file systems and block devices to the
+.PN presto
+driver in nonvolatile memory and writes the Prestoserve cache data 
+asynchronously to the intended disks.  
+.PP
+When Prestoserve is in the
+PRDOWN state, there is no data in the Prestoserve cache, no data 
+is put into the Prestoserve cache, and all disk 
+requests are passed directly to the real disk driver.
+.PP
+When Prestoserve is in the PRERROR
+state, the data in the Prestoserve cache can not be written to the
+intended disks because of a disk, system, or hardware error.  
+.PP
+When the system is shut down normally by using the
+.PN reboot
+system call from the 
+.PN shutdown ,
+.PN halt ,
+or
+.PN reboot 
+command, the Prestoserve cache data is written to
+the intended disks, and Prestoserve enters the PRDOWN state.
+This allows you to fix any system or disk error or to upgrade or change
+your system without losing the data in the Prestoserve cache or
+corrupting your disks.
+.PP
+If your system was shut down without following normal shutdown
+procedures, and you reboot the system, any data in the Prestoserve
+cache is written to the intended disks, if possible.  If the data is 
+successfully written to the intended disks (and if the nonvolatile 
+memory and backup battery passed the diagnostic tests), Prestoserve 
+enters the PRDOWN state.  If an error occurs, Prestoserve enters the 
+PRERROR state.
+.NT
+Data can exist in the Prestoserve cache after you reboot the 
+system only in the event of a previous power failure, disk device error,
+or kernel crash that resulted from a software or hardware problem.
+.NE
+.PP
+If an error from a disk device occurs
+or if the backup battery power is insufficient, Prestoserve
+writes the cache data to the intended disks, if possible, and enters the 
+PRERROR state.  When Prestoserve is in the PRERROR
+state,  new data that is written to a block not found in the Prestoserve
+cache is passed directly to the real disk driver.
+If new data is written to a block that is found in the cache,
+Prestoserve replaces the existing block and attempts to 
+write the block to the real disk driver to determine 
+if the error condition on that block still exists.
+If the write is successful and if all the  Prestoserve cache 
+data can be written to the intended disks, Prestoserve leaves the
+PRERROR state.
+.PP
+The Prestoserve cache never discards data without being explicitly 
+told to do so by using a PRRESET 
+ioctl command.  This can be done by using the 
+.PN "presto -R"
+command.  This command should only be used when there is a fatal disk error
+and when the data is not important.  
+.SS ioctl Commands
+The
+.PN presto
+pseudodevice driver does not intercept ioctl
+commands;  they go directly to the actual disk driver.  The following ioctl 
+commands can be performed on the Prestoserve control device
+.PN /dev/pr0 .
+Some ioctl 
+commands affect all of Prestoserve operation,
+while others only affect a particular accelerated file system.
+.TP 
+PRGETSTATUS
+The argument to ioctl
+is a pointer to a
+.B "presto_status" 
+structure, which contains battery status information, Prestoserve
+state, current and maximum nonvolatile memory sizes, and various Prestoserve
+statistics.
+.TP
+PRSETSTATE
+The argument to ioctl is a pointer to an
+.BR int .
+The
+.B int
+can be either PRUP
+to enable Prestoserve or PRDOWN
+to disable Prestoserve.  When a system reboots, Prestoserve is in the
+PRDOWN state and must be explicitly enabled by an ioctl.
+You enable Prestoserve by using the 
+.PN "presto \-u" 
+command, which can be placed in the 
+.PN /etc/rc.local
+file.   When Prestoserve goes from the PRDOWN
+state to the PRUP
+state, the Prestoserve I/O statistics are reset.  When Prestoserve
+goes from the PRUP state to the PRDOWN state, all the Prestoserve
+buffers are written to the intended disks, and the buffers are invalidated.
+.TP
+PRSETMEMSZ
+The argument to ioctl is a pointer to an
+.BR int .
+This
+.B int
+is the size in bytes of the Prestoserve nonvolatile memory to be used.
+This size cannot be larger than the maximum size reported in the
+.B presto_status
+structure.
+.TP
+PRRESET
+The argument to ioctl is ignored.  Like the PRSETSTATE
+ioctl, PRRESET
+sets the Prestoserve state to PRDOWN,
+but it also reinitializes all of nonvolatile Prestoserve memory.  If 
+Prestoserve was in the PRERROR
+state and some Prestoserve buffers could not be written
+to the intended disks because of disk I/O errors, the data in the buffers is lost.
+This is the only method you can use to force Prestoserve 
+to discard data that cannot be written to disk, and it can be accomplished by
+using the 
+.PN "presto -R"
+command.
+.TP
+PRFLUSH
+The argument to ioctl is ignored.
+All the data in the Prestoserve buffers is written to the intended 
+disks, but the buffers are 
+not invalidated. This command can be used by a daemon that flushes the 
+cache periodically to minimize the risk to data in the event of a
+catastrophic failure.  The cache data can be flushed to the intended
+disks by using the 
+.PN "presto -F"
+command.
+.TP
+PRGETUPRTAB
+The argument to ioctl is a pointer to a
+.BR "struct uprtab" .
+On input, the field
+.B upt_bmajordev
+specifies the block device major number of the device whose
+.B "struct uprtab"
+should be returned.  The field
+.B upt_bmajordev
+is set to 
+.B NODEV ,
+which is defined in the header file 
+.PN <sys/param.h> ,
+if the requested device does not exist or if it is not 
+accelerated.  The
+.B "struct uprtab"
+contains a 
+.B upt_enabled 
+field that is a bit vector indexed by a minor device number and that 
+indicates whether the minor device number has Prestoserve
+caching enabled.
+.TP
+PRNEXTUPRTAB
+The argument to ioctl is a pointer to a
+.BR "struct uprtab" .
+This ioctl returns the
+.B "struct uprtab"
+for the accelerated device with the
+smallest block device major number that is greater than the
+.B bmajordev
+field of the
+.B "struct uprtab"
+argument.  This allows each accelerated device's
+.B "struct uprtab"
+to be retrieved sequentially by specifying the previous device's block device 
+major number. To get the first accelerated device's
+.BR "struct uprtab" ,
+set the
+.B upt_bmajordev
+field to
+.B NODEV .  
+Use the same
+.B "struct uprtab"
+that was returned on the previous call for the next call.
+When the
+.B upt_bmajordev
+field of the argument
+.B "struct uprtab"
+is greater than or equal to the last accelerated
+device's major block device number, the
+.B "struct uprtab"
+that is returned has the
+.B upt_bmajordev
+field set to
+.BR NODEV .
+.TP
+PRENABLE
+The argument to ioctl is a pointer to a
+.BR dev_t .
+This enables Prestoserve caching on the specified file system or block
+device.
+.TP
+PRDISABLE
+The argument to ioctl is a pointer to a
+.BR dev_t .
+If all cached data for the specified file system or block device
+can be successfully written
+to disk, Prestoserve caching is disabled for this file system or
+block device.
+.SH Diagnostics
+.B "Prestoserve license not registered"
+.br
+This message is displayed if you attempt to use Prestoserve 
+on a system that has not had its license registered. It is necessary to
+register a valid license in order to use Prestoserve.
+.PP
+.B "presto: using %d bytes of NVRAM at 0x%x"
+.br
+This message is displayed at boot time and indicates that Prestoserve 
+recognized its control information portion of the cache.
+It is a normal Prestoserve startup message.
+.PP
+.B "presto: initializing %d bytes of NVRAM at 0x%x"
+.br
+This message is displayed at boot time and indicates that Prestoserve did not
+recognize the cache as being in either a clean (containing no data) or a 
+dirty (containing data) state.
+The message is usually displayed when the cache is used for the first time,
+after the cache has been cleared by using a diagnostic command, or
+after backup battery failure.
+.PP
+.B "presto: NVRAM tested %s"
+.br
+This message is displayed at boot time, and it indicates that the cache 
+tested as either "read/write ok" or "readonly ok."
+The message is a normal Prestoserve startup message.
+.PP
+.B "presto: %s battery %s"
+.br
+The status for the primary battery or a secondary 
+battery, if applicable, is reported as either 
+.B OK , 
+.B LOW , 
+or 
+.B DISABLED .
+This message is displayed at boot time and when there is a change
+in the state of the backup battery power level.
+.PP
+.B "presto: cache contains dirty data"
+.br
+This message is displayed at boot time if Prestoserve
+was not shut down by using the normal system shutdown procedures.
+.PP
+.B "presto: %d dirty buffers found"
+.br
+This message indicates that dirty buffers
+were found after the system rebooted.
+The data is written to the intended disks as soon as possible,
+usually when the first I/O request occurs for any accelerated device.
+.PP
+.B "presto: writing dirty buffers"
+.br
+This message indicates that Prestoserve has begun to write the data in
+the dirty buffers to the intended disks.
+.PP
+.B "presto: dirty buffers written"
+.br
+This message indicates that the data in the dirty buffers has been
+successfully written to the intended disks. 
+.PP
+.B "presto: using software version %d -- version %d last used"
+.br
+This message is displayed at boot time and indicates that the kernel 
+is now being run with a version of the Prestoserve software that is
+different from the version used previously.  Usually, this message is 
+displayed when you first boot the system after performing 
+a software upgrade.
+.PP
+.B "presto: expected sizes %d, %d -- found %d, %d"
+.br
+This message indicates that the block size and fragment size 
+in the Prestoserve control information portion of the cache are
+different from the information that was expected.
+This message should only be displayed when you first boot the system after 
+performing a software upgrade.
+.PP
+.B "presto: NVRAM increased from %d to %d bytes at 0x%x"
+.br
+This message indicates that only a portion 
+of the Prestoserve cache was being used when the system was shut down,
+but now Prestoserve is using the entire cache.  The 
+.PN "presto \-s" 
+command, which changes the size of the Prestoserve cache, is described
+in 
+.MS presto 8
+in the \fIULTRIX Reference Pages\fP.
+.PP
+.B "presto: decreased from %d to %d bytes!"
+.br
+This message indicates that a hardware or software problem exists
+because the size of the Prestoserve cache at reboot is less
+than the size of the cache when the system shut down.
+.PP
+.B "presto: dirty buffers found for host id 0x%x,"
+.br
+.B "which is different from this host's id (0x%x)"
+.br
+This message is displayed at boot time and indicates that Prestoserve
+was not shut down normally and that the cache contents were previously in a
+different system (for example, either the cache was moved or the system
+ID, which is usually the on-board Ethernet hardware address, has changed).
+Prestoserve allows you to do one of the following interactively:
+discard the data, write the data to disk, or halt the machine.
+.PP
+.B "The Prestoserve cache failed memory self-tests."
+.br
+.B "The cache may contain data which has not been written to disk yet."
+.br
+When these messages are displayed, Prestoserve allows you to do one of the
+following interactively:  continue with the boot or halt the machine.
+.PP
+.B "presto: error %d opening dev (%d, %d), skipping writing of its buffers..."
+.br
+This message indicates that dirty Prestoserve buffers were found after
+the system rebooted, 
+and the data in the dirty buffers could not be written to the specified device
+because the device failed to open.  You should verify that the
+device is online and that the kernel successfully found the device at boot time.
+Refer to 
+.MS errno 2
+in the \fIULTRIX Reference Pages\fP for a complete description of the error.
+.PP
+.B "presto: error %d opening block device (%d, %d)"
+.br
+This message indicates that the specified device failed to open.
+You should check your disk configuration and make sure that the drive is on
+line.  Refer to 
+.MS errno 2
+in the \fIULTRIX Reference Pages\fP for a complete description of the error.
+.PP
+.B "presto: error %d ioctl'ing dev (%d, %d)"
+.br
+This message indicates that an ioctl failed for the specified device.
+Refer to 
+.MS errno 2
+in the \fIULTRIX Reference Pages\fP for a complete description of the error.
+.PP
+.B "presto: can NOT do direct I/0 for block device (%d, %d)"
+.br
+.B "presto: using block device (%d, %d) in `bounceio' mode"
+.br
+These messages indicate that the disk controller for the specified device
+could not directly address the cache when Prestoserve was 
+enabled on the file system or block device.  Refer to the \fIGuide to Prestoserve\fP
+for information about bounceio state.
+.PP
+.B "presto: flush dirty buffers"
+.br
+This message is displayed when Prestoserve is in the PRERROR
+state and receives a request to write the data in a dirty buffer to 
+the intended disks.
+.PP
+.B "presto: Block device %d not present or is not Presto-ized in this kernel!"
+.br
+This message indicates that Prestoserve
+was not shut down cleanly, and the system was previously running a kernel
+with an accelerated device that the current kernel does not accelerate.
+You should boot a kernel that accelerates all the devices that were
+previously accelerated.
+.PP
+.B "presto: NVRAM probe error"  
+.br
+This message is displayed at system startup if a Prestoserve cache 
+read/write error occurred, and it indicates that the cache could not be accessed.
+It indicates a hardware or software error.
+.PP
+.B "presto: failed to write and read 0x%x from 0x%x"
+.br
+This message indicates that the Prestoserve cache failed the read/write test
+at the specified address.
+.PP
+.B "presto: error on dev (%d, %d)"
+.br
+This message indicates that an I/O error occurred on the specified disk 
+during a Prestoserve write-back operation.
+.PP
+.B "presto: not enough backup battery power!"
+.br
+This message indicates that there is inadequate backup battery power.
+Prestoserve attempts to write all Prestoserve cache data to the
+intended disks and then enters the PRERROR state.
+.PP
+.B "presto: disabling..."
+.br
+This message indicates that Prestoserve disabled itself because of 
+inadequate backup battery power or because a disk error occurred 
+during a write to disk.
+.PP
+.B "presto: back online!"
+.br
+This message indicates that a disk error or low backup battery power 
+condition has been corrected and that Prestoserve is enabled again.
+.SS Errors
+.TP 12
+[EACCESS]
+Indicates that Prestoserve is not registered for use on this system.
+.TP
+[EPERM]
+Indicates that a caller whose uid is not root tried to use the
+PRSETSTATE, PRSETMEMSZ, PRRESET, PRENABLE or PRDISABLE command.
+.TP
+[EBUSY]
+Indicates that you tried to use the PRSETSTATE, PRSETMEMSZ, or
+PRDISABLE command, but a fatal disk error or a battery problem exists.
+.TP
+[ENOMEM]
+Indicates that the memory size you specified in the PRSETSTATE
+command exceeds the maximum size of the cache reported in the
+.B presto_status
+structure.
+.TP
+[ENODEV] 
+Indicates that Prestoserve
+was not successfully started at boot time, or it indicates that you used 
+the PRENABLE or PRDISABLE command and the device 
+specified by dev_t is not a device initialized for use with Prestoserve 
+or an error occurred in trying to open/ioctl the device.
+.TP
+[EINVAL]
+Indicates that an invalid argument was specified with the PRSETMEMSZ 
+or PRSETSTATE command or that an invalid command was used.
+.SH Files
+.TP 28
+.PN /dev/pr0
+Generic Prestoserve control device
+.SH See Also
+errno(2), ioctl(2), presto(8), dxpresto(8X), prestoctl_svc(8)
+.br
+\fIGuide to Prestoserve\fP

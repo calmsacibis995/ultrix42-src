@@ -1,0 +1,92 @@
+#!/bin/sh5
+#
+# @(#)DEP_ORD	4.1	(ULTRIX)	2/28/91
+#
+########################################################################
+#
+#			Copyright (c) 1988, 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	000	Jonathan Wallace	10-Oct-1990
+#		Created initial script
+#
+########################################################################
+#
+set -h
+HOLD=XXX
+ADMDIR="/usr/adm"
+SUBDIR="/usr/etc/subsets"
+TMPDIR="/tmp"
+
+>$TMPDIR/CODES
+>$ADMDIR/C_install.log
+
+: Parse - Use the first argument to break up strings
+Parse()
+{(
+	IFS=$1
+	shift
+	echo $*
+)}
+
+
+#######################################################################
+#######################################################################
+cd $SUBDIR
+
+SUBLIST=`ls *.lk` 
+SUBLIST=`echo $SUBLIST | sed 's/.lk//g'` 
+for K in $SUBLIST
+do
+	PREF=`expr "$K" : '\([a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]\)'`
+	POST=`expr "$K" : '.*\([0-9][0-9][0-9]\)'`
+	for L in $HOLD
+	do
+		[ "$POST" = "$L" ] &&
+			continue 2
+	done
+
+	echo "$POST" >> $TMPDIR/CODES
+	HOLD="$POST $HOLD"
+done
+
+sort -o $TMPDIR/CODES $TMPDIR/CODES
+
+for K in `cat $TMPDIR/CODES`
+do
+	>$TMPDIR/SUBLIST
+	SUBLIST=`ls *$K.lk` 
+	SUBLIST=`echo $SUBLIST | sed 's/.lk//g'` 
+	for S in $SUBLIST
+	do
+		LOC=`grep MTLOC $S.ctrl | sed 's/MTLOC=//g'`
+		echo "$S:$LOC" >> $TMPDIR/SUBLIST
+	done
+
+	sort -o $TMPDIR/SUBLIST -t: +1n +2n $TMPDIR/SUBLIST
+
+	SUB_ORD=`cat $TMPDIR/SUBLIST`
+	for S in $SUB_ORD
+	do
+		set -- `Parse : $S`
+		setld -c $1 INSTALL | tee -a $ADMDIR/C_install.log
+	done
+done
+
+rm $TMPDIR/CODES $TMPDIR/SUBLIST
+exit 0

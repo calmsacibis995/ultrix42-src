@@ -1,0 +1,316 @@
+.\" V4.0 source updated for V4.Titanium.
+.\"
+.\" Updated on 26.10.90 by Karen Campbell, OSCR-Europe
+.\"
+.\" Submitted for FT 9-Nov-90.
+.\"
+.\" Print this document on a PostScript printer using the command line
+.\"	tbl filename | ditroff \-Tps \-man | devps | lpr
+.\"
+.\"
+.TH printcap 5
+.SH Name
+printcap \- printer capability data base
+.SH Syntax
+.B /etc/printcap
+.SH Description
+.NXR "printcap file" "format"
+.NXR "printer" "adding"
+.NXR "printer" "deleting"
+The
+.PN printcap
+file describes the printers available on a system.
+There is one entry in the file for each printer, and the entry describes
+the printer capabilities.
+A change to the
+.PN printcap
+file immediately affects the spooling system, unless the affected queue is
+active.
+In this case, the spooling queue should be stopped and restarted.
+For more information, refer to
+.MS lpc 8 . 
+.PP
+Entries in the
+.PN printcap
+file comprise a number of fields separated by colons (:).
+The first entry for each printer gives the names that are known for the
+printer.
+The names are separated by the pipe character (|).
+The first name is the name of the printer that is displayed when
+you use the
+.PN lpc
+command to show the status of a queue.
+Second and subsequent names are alternative names for the
+printer.
+You can use the last name to fully identify the printer, including blanks
+for readability if necessary.
+.PP
+The 
+.PN /etc/printcap
+file is created when the system is installed.
+After this, you can modify the
+.PN printcap
+file by using the
+.PN lprsetup
+script or a suitable editor.
+The
+.PN lprsetup
+script is described on the
+.MS lprsetup 8
+reference page and in the 
+\fIGuide to System Environment Setup\fP.
+.PP
+When a file is printed using the
+.PN lpr
+command, the file can be sent to a named printer.
+If a printer is not named, and a print name is not defined by the PRINTER
+environment variable, the file is sent to the printer with the name ``lp''
+in the
+.PN printcap
+file.
+The
+.PN printcap
+file should always have a printer with the name ``lp''.
+.SH Examples
+The following examples show the format of entries created using the
+.PN lprsetup
+script.
+.PP
+A typical entry for a printer in the
+.PN printcap
+file would be:
+.EX
+lp|lp0|nlp|ln03 in room 4:\\
+	:af=/usr/adm/lpacct:\\
+	:br#4800:\\
+	:fc#0177777:\\
+	:fs#03:\\
+	:if=/usr/lib/lpdfilters/ln03of:\\
+	:lf=/usr/adm/lperr:\\
+	:lp=/dev/tty00:\\
+	:mx#0:\\
+	:of=/usr/lib/lpdfilters/ln03of:\\
+	:pl#66:\\
+	:pw#80:\\
+	:sd=/usr/spool/lpd:\\
+	:xc#0177777:\\
+	:xs#044000:
+.EE
+A typical entry for a PrintServer in the
+.PN printcap
+file would be:
+.EX
+lp0|lp|0:
+     :ct=network:\\
+     :lf=/usr/adm/lpd-errs/ex1:\\
+     :of=lpscomm dotty %U %H %J:\\ 
+     :ps=LPS:\\
+     :sd=/usr/spool/lpd/ex1:\\
+     :uv=4.0:\\
+     :Da=ascii:\\
+     :Dl=/usr/lib/lpdfilters/lps_v3.a:\\
+     :Sd=a:\\
+.EE
+For more information, refer to the 
+\fIGuide to System Environment Setup\fP.
+.SH Capabilities
+There are three types of capabilities in the
+.PN printcap
+file: Boolean, string, and numeric.
+String valued capabilities are processed before use.
+For more details, refer to
+.MS termcap 5 .
+The following list contains the names of capabilities that can be used in the
+.PN printcap
+file:
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB lfHB
+lw lw lw lw.
+Name@Type@Default@Description
+.sp 4p
+af@str@\fInot set\fR@Accounting file name
+br@num@\fInot set\fR@Baud rate, set if lp is a tty
+ @ @ @(ioctl call)
+cf@str@\fInot set\fR@Cifplot data filter
+ct@str@dev@Connection type - only valid 
+ @ @ @when \fBuv=psv4.0\fR (choices are:
+ @ @ @dev, lat, remote, network)
+db@num@0@Debugging level (choices are:
+ @ @ @0 (none), 1 (normal), 10
+ @ @ @(do not execute job, describe
+ @ @ @actions to log file))
+df@str@\fInot set\fR@Text data filter (DVI format)
+du@num@ @Daemon user id      
+fc@num@0@If lp is a tty, clear octal
+ @ @ @T{
+flag values (\c
+.MS tty 4
+sg_flags)
+T}
+ff@str@\ef@String to send for a form feed
+fo@bool@false@Print a form feed when device
+ @ @ @is opened
+fs@num@0@If lp is a tty, set octal flag
+ @ @ @T{
+values (\c
+.MS tty 4
+sg_flags)
+T}
+gf@str@\fInot set\fR@Graph data filter (plot(1g)
+ @ @ @format)
+if@str@\fInot set\fR@Text filter that does
+ @ @ @accounting
+lf@str@/dev/console@Error logging file name
+lo@str@lock@Lock file name
+lp@str@/dev/lp@Device name to open for output
+mc@num@ @Maximum number of copies allowed
+mx@num@1000@Maximum file size (in 1kbyte
+ @ @ @blocks), 0 = unlimited
+nf@str@\fInot set\fR@Ditroff (device independent
+ @ @ @troff) data filter 
+of@str@\fInot set\fR@Output filtering program name
+op@str@\fInot set\fR@The entry in the ``Name'' field
+ @ @ @for LAT port characteristics
+os@str@\fInot set\fR@Service name supported on some
+ @ @ @terminal servers
+pl@num@66@Page length (in lines)
+pp@str@/bin/pr@Print filter
+ps@str@non_PS@Printer type (choices are:
+ @ @ @non_PS, LPS)
+pw@num@132@Page width (in characters)
+px@num@0@Page width in pixels 
+py@num@0@Page length in pixels 
+rf@str@\fInot set\fR@Filter for printing Fortran style
+ @ @ @text files
+rm@str@\fInot set\fR@Machine name for remote printer
+rp@str@lp@Remote printer name argument
+rs@bool@false@Restrict remote users to those
+ @ @ @with local accounts
+rw@bool@false@Open the printer device for
+ @ @ @reading as well as writing
+sb@bool@false@Short banner (one line only)
+sc@bool@false@Suppress multiple copies
+sd@str@/usr/spool/lpd@Spool directory
+sf@bool@false@Suppress form feeds
+sh@bool@false@Suppress printing of banner
+ @ @ @page header
+st@str@status@Status file name
+tf@str@\fInot set\fR@Troff data filter (CAT
+ @ @ @phototypesetter)
+tr@str@\fInot set\fR@Trailer string to print when
+ @ @ @queue empties
+ts@str@\fInot set\fR@LAT terminal server node name
+uv@str@3.0@ULTRIX version number (choices
+ @ @ @are: 3.0, 4.0)
+vf@str@\fInot set\fR@Raster image filter
+xc@num@0@If lp is a tty, clear local
+ @ @ @T{
+mode octal values (\c
+.MS tty 4
+``Local mode'')
+T}
+xf@str@\fInot set\fR@Transparent mode filter
+xs@num@0@If lp is a tty, set local mode
+ @ @ @T{
+octal values (\c
+.MS tty 4
+``Local mode'')
+T}
+.TE
+.PP
+The \fBct\fR entry specifies the connection type; these are device, LAT, 
+remote or network.
+To enable PrintServer support you must ensure the
+.PN :ct=network:
+entry is included in the
+.PN printcap
+file for the appropriate print queue.
+.PP
+The \fBuv\fR entry specifies the version number of the ULTRIX operating system. 
+This entry allows backward compatibility with earlier versions of the print
+system.
+Ensure that
+.PN :uv=4.0: ,
+otherwise the print queue functions as it did in Version 3.1 or
+earlier and you will not be able to access the features for PostScript
+support.
+.PP
+The \fBps\fR entry specifies the printer type.
+You must ensure the
+.PN :ps=LPS:
+entry is included in the 
+.PN printcap
+file for all print queues using PrintServer features.
+.PP
+The following capabilities set defaults for PostScript printers.
+You should refer to the
+.MS lpr 1
+reference page for the choices available for each capability.
+The equivalent
+.PN lpr
+options are shown for reference purposes.
+.PP
+.TS
+tab(@);
+lfHB lfHB lfHB lfHB lfHB
+lw lw lw lw lw.
+Name@Type@Default@Description@lpr Option
+.sp 4p
+Da@str@postscript@Data type@\-D
+It@str@\fInot set\fR@Input tray@\-I
+Lu@str@\fInot set\fR@Layup definition file@\-L
+Ml@str@\fInot set\fR@Record messages@\-M
+Nu@num@\fInot set\fR@Number up@\-N
+Or@str@portrait@Orientation@\-O
+Ot@str@\fInot set\fR@Output tray@\-o
+Ps@str@\fInot set\fR@Page size@\-F
+Sd@str@a@Default sheet size@
+ @ @ @(see below)@
+Si@str@\fInot set\fR@Sides@\-K
+Ss@str@\fInot set\fR@Sheet size@\-S
+Ul@str@<last page>@Upper page limit@\-Z
+Xf@str@xlator_call@Translator dispatch@
+ @ @ @program@ 
+Lf@str@layup@Layup to PostScript@
+ @ @ @translator
+Dl@str@\fInot set\fR@Name of the device@
+.TE
+.PP
+The \fBSs\fR capability specifies a mandatory sheet size.
+The print job fails if this sheet size is not available with the
+printer.
+.PP
+The \fBSd\fR capability specifies a preferred sheet size and is overridden
+by the Ss capability and the
+.PN lpr\0\-S
+command.
+For American A size paper (8.5 x 11 inches) ensure the entry is
+.PN :Sd=a: .
+For European A4 size paper (8.3 x 11.7 inches) ensure the entry is 
+.PN :Sd=a4: .
+If the sheet size specified by the 
+.PN Sd 
+capability is not available,
+the print job does not fail, but is printed on the default sheet size
+for the printer.
+.PP
+The \fBDl\fR capability specifies the name of the device control module 
+library file.
+If the PrintServer supporting host is Version 2.0 or 2.1, the \fBDl\fR
+entry should be:
+.EX
+:Dl=/usr/lib/lpdfilters/lps_v2.a:\\
+.EE
+If the PrintServer supporting host is Version 3.0, the \fBDl\fR entry 
+should be:
+.EX
+:Dl=/usr/lib/lpdfilters/lps_v3.a:\\
+.EE
+If the \fBDl\fR entry does not match the version of the PrintServer supporting
+host software, the job flag page prints, but the job itself may not.
+.SH See Also
+lpq(1), lpr(1), lprm(1), termcap(5), lpc(8), lpd(8), pac(8)
+.br
+\fIGuide to System Environment Setup\fP

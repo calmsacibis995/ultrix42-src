@@ -1,0 +1,105 @@
+.\" SCCSID: @(#)config.8	8.2	10/18/90
+.TH config 8 VAX
+.SH Name
+config \- build system configuration files
+.SH Syntax
+.B /etc/config
+[\fB\-p\fR]
+[\fB\-s\fR]
+.I config_file
+.SH Description
+.NXR "config program"
+.NXR "configuration file (syslog)" "building"
+The
+.PN config
+command builds a set of system configuration files
+from a short file that describes
+the sort of system that is being configured.  
+It also takes as input a file that tells
+.PN config
+what files are needed to generate a system.
+This can be augmented by a configuration specific set of files
+that give alternate files for a specific machine.
+(See the Files section.)
+If the
+.B \-p
+option is supplied, 
+.PN config
+will configure a system for profiling.  You must have sources 
+to use the \fB\-p\fR option.  Use the \fB\-s\fR option when
+building a kernel from sources. For further information,
+see 
+.MS kgmon 8
+and
+.MS gprof 1 .
+.PP
+The
+.PN config
+command should be run from the
+.PN conf
+subdirectory of the system source (usually 
+.PN /sys/conf
+).
+The
+.PN config
+command assumes that there is already a directory 
+.PN \&.\&./config_file
+created and it places all its output files in there.  
+The output of
+.PN config
+consists of a number files:
+.PN ioconf.c 
+contains a description
+of what I/O devices are attached to the system,
+.PN ubglue.s 
+contains a set of interrupt service routines for devices
+attached to the UNIBUS, and
+.PN makefile
+is a file used by 
+.MS make 1
+in building the system; a set of header files which contain
+the number of various devices that will be compiled into the system;
+and a set of swap configuration files which contain definitions for
+the disk areas to be used for swapping, the root file system,
+argument processing, and system dumps.
+.PP
+After running
+.PN config ,
+it is necessary to run 
+.PN make depend
+in the directory where the new makefile
+was created.
+The
+.PN config
+command reminds you of this when it completes.
+.PP
+If you get any other error messages from
+.PN config ,
+you should fix the problems in your configuration file and try again.
+If you try to compile a system that had configuration errors, you
+will likely meet with failure.
+.SH Restrictions
+The line numbers reported in error messages are usually off by one.
+.SH Files
+.TP 20
+.PN /sys/conf/makefile.vax
+Generic makefile for the VAX
+.TP
+.PN /sys/conf/files
+List of common files system is built from
+.TP
+.PN /sys/conf/files.vax
+List of VAX specific files
+.TP
+.PN /sys/conf/devices.vax   
+Name to major device mapping file for the VAX
+.TP
+.PN /sys/conf/files.ERNIE   
+List of files specific to ERNIE system
+.TP
+.PN /sys/conf/filesystems   
+List of known file systems
+.SH See Also
+The Syntax portion of each device in Section 4.
+.br
+.I "ULTRIX Supplementary Documents, Volume 3: System Manager" 

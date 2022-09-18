@@ -1,0 +1,22 @@
+%
+% /newfont encoding /basefont `encodefont' newfont
+% 
+% Note that the encoding is actually an array, not the name of an array.
+
+/encodefont {
+    findfont dup			% Get the old font dict
+    maxlength dict begin		% Make a new one just as big
+    {	1 index /FID ne			% Copy everything but FID
+	{   def	}
+	{   pop pop }
+	ifelse
+	}
+    forall
+    /Encoding exch def			% Install the new encoding
+    dup	/FontName exch def		% new font dict is still current.
+    currentdict definefont		% Create the new font.
+    end
+} bind def
+
+% Sample use:
+% /CourierI ISOLatin1Encoding /Courier encodefont pop

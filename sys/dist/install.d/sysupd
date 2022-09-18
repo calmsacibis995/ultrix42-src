@@ -1,0 +1,338 @@
+#!/bin/sh5
+#
+#	sysupd - coordinate system update
+#
+#			Copyright (c) 1989 by
+#		Digital Equipment Corporation, Maynard, MA
+#			All rights reserved.
+#
+#	This software is furnished under a license and may be used and
+#	copied  only  in accordance with the terms of such license and
+#	with the  inclusion  of  the  above  copyright  notice.   This
+#	software  or  any  other copies thereof may not be provided or
+#	otherwise made available to any other person.  No title to and
+#	ownership of the software is hereby transferred.		
+#
+#	The information in this software is subject to change  without
+#	notice  and should not be construed as a commitment by Digital
+#	Equipment Corporation.					
+#
+#	Digital assumes no responsibility for the use  or  reliability
+#	of its software on equipment which is not supplied by Digital.
+#
+#	SCCSID = "@(#)sysupd	4.1	(ULTRIX)	7/2/90";
+#
+#	000	21-jun-1989	jon wallace
+#	001	14-aug-1989	ccb
+#		qualified with new information from 8840 update
+#	002	17-oct-1989	ccb
+#		remove v3.0/3.1 specific code
+
+PATH="/install.tmp:/bin:/etc:/usr/ucb:/usr/bin:/usr/etc:."
+CDPATH=
+export CDPATH PATH
+
+# This procedure runs twice. First invocation is under is running under
+#  a shell being paged out of the /usr file system. It copies the shell
+#  into the / file system and execs itself after setting a flag.
+
+cd /
+case "$SYSUPD_CONTEXT" in
+go)	;;
+*)	# rerun script with shell paged from /
+	cp /usr/bin/sh5 /
+	SYSUPD_CONTEXT=go
+	export SYSUPD_CONTEXT
+	TRACE=
+
+	case "$-" in
+	*x*)	TRACE=-x
+	esac
+	exec /sh5 $TRACE /sysupd $*
+	;;
+esac
+
+MTMP=/tmp/mtab$$
+PROG=$0
+RESTOREFILES="./bin/sh ./bin/sh5 ./etc/svc.conf ./bin/init
+	./install.tmp/compress ./install.tmp/rsh ./install.tmp/rcp
+	./install.tmp/grep ./install.tmp/whoami ./install.tmp/egrep
+	./install.tmp/getopt ./install.tmp/sleep ./install.tmp/setld
+	./install.tmp/tar ./install.tmp/dd ./install.tmp/depord
+	./install.tmp/usync ./install.tmp/fitset ./install.tmp/umerge
+	./install.tmp/udelta ./install.tmp/frm ./install.tmp/iff
+	./install.tmp/udetect ./vmunix ./.updprofile"
+
+UPDTMP=/usr/#updtmp
+
+
+
+: -Error
+#	Print an error message
+#
+
+Error()
+{
+	1>&2 echo "$PROG: $*"
+}
+
+
+: -InitDevice
+#	establish relationship to device
+#
+#	given:	$1 - name of device from command line
+#	does:	establish UNIT and MEDIA information for DEVICE
+#	return:	VOID
+
+InitDevice()
+{
+	DEVICE=$1
+
+	MEDIA=
+	UNIT=
+
+	case "$DEVICE" in
+	*::)	# DECnet, unsupported, leave MEDIA empty
+		;;
+	*: )	# InterNet
+		HOSTNAME=`hostname`
+		[ "$HOSTNAME" ] ||
+		{
+			Error "Hostname undefined"
+			return 1
+		}
+		UNIT=`Parse : $DEVICE`
+		MEDIA=inet
+		;;
+
+	*rmt*)	# looks like a tape device
+		UD=`expr $DEVICE : '.*\([0-9][0-9]*.\)'`
+		UNIT=/dev/nrmt$UD
+		DEVICE=$UNIT
+		[ -c $UNIT ] ||
+		{
+			Error "$DEVICE: No Such Device"
+			return 1
+		}
+		MEDIA=tape
+		;;
+	*)	# no match so far, maybe the device is a directory?
+		[ -d "$DEVICE" ] &&
+		{
+			UNIT=`(cd $DEVICE;pwd)`
+			DEVICE=$UNIT
+			MEDIA=disk
+
+			# what device is this on?
+			set -- `df $UNIT | awk 'NR == 3 {print $1, $NF}'`
+			DISKPART=$1
+			MOUNTPOINT=$2
+		}
+		;;
+	esac
+	[ "$MEDIA" ] ||
+	{
+		Error "$DEVICE: not supported for update"
+		return 1
+	}
+}
+
+
+: -InitFileSystems
+#	re-arrange mounts to accomodate use of ufs file systems only
+#
+#	given:	nothing
+#	does:	dismount all file systems, remount ufs file systems
+#	return:	nothing
+
+InitFileSystems()
+{ (
+	cd /
+	umount -af && mount -a -t ufs
+	STAT=$?
+
+	# remount distribution if is disk and not already mounted
+	[ "$MEDIA" = disk -a ! -f $UNIT/ROOT ] &&
+	{
+		mount $DISKPART $MOUNTPOINT
+		STAT=$?
+	}
+	return $STAT
+) }
+
+
+
+
+: -Main
+#	Main Program
+#
+
+Main()
+{
+	[ "$#" = 1 ] ||
+	{
+		Error "Usage: $PROG <location>"
+		exit 1
+	}
+	DEVICE=$1
+
+	HOSTNAME=`hostname`
+	[ "$HOSTNAME" ] ||
+	{
+		Error "Hostname is not set"
+		exit 1
+	}
+	echo "$HOSTNAME" > /.hostname
+
+	InitDevice $DEVICE ||
+	{
+		Error "Cannot initialize distribution at $DEVICE"
+		exit 1
+	}
+	Warning ||
+	{
+		Error "update exiting at user request"
+		exit 1
+	}
+	InitFileSystems
+
+	mkdir $UPDTMP
+
+	(cd $UPDTMP
+		MediaRestore $MEDIA $UNIT $RESTOREFILES ||
+		{
+			Error "Restore Failed"
+			exit 1
+		}
+		ln -s $UPDTMP/install.tmp /install.tmp
+		[ -f /etc/svc.conf ] ||
+			mv etc/svc.conf /etc
+	)
+
+
+	# run setld -u
+	/$UPDTMP/bin/sh5 /install.tmp/setld -u $DEVICE ||
+	{
+		Error "Setld -u error"
+		exit 1
+	}
+	/$UPDTMP/bin/sh5 /install.tmp/setld -l $DEVICE ||
+	{
+		Error "Setld -l error"
+		exit 1
+	}
+
+
+	# the rest of this procedure is perilous
+
+	# disable the ability to come up
+	echo "Moving files:\c"
+	mv /etc/rc /etc/rc.UPD && echo " rc\c" &&
+
+	# drop in a new profile
+	mv /.profile /.realprofile &&
+	mv /$UPDTMP/.updprofile /.profile && echo " .profile\c" &&
+
+	mv /bin/sh /bin/sh.old &&
+	mv /$UPDTMP/bin/sh /bin/sh && echo " shell\c" &&
+	mv /bin/init /bin/init.old &&
+	mv /$UPDTMP/bin/init /bin/init && echo " init\c" &&
+	mv /vmunix /vmunix.old &&
+	mv /$UPDTMP/vmunix /vmunix && echo "vmunix." ||
+	{
+		echo
+		Error "FAILED"
+		exit 1
+	}
+
+	umount -a
+	sync;  sync;  sync
+	echo "
+
+	Your system will now halt. Perform what steps are needed to
+	reboot the system."
+
+	halt
+}
+
+
+: -MediaRestore
+#	restore requested files from current media
+#
+#	given:	$1: media type
+#		$2: unit info
+#		$3 ->: files to restore
+#	does:	retore the named files from the appropriate places
+#	return:	nothing
+
+MediaRestore()
+{
+	case "$#" in
+	[12])
+		Error "MediaRestore($*): expects 3+ args, got $#"
+		return 1
+		;;
+	*)	MEDIA=$1
+		UNIT=$2
+		shift 2
+		LIST=$*
+	esac
+
+	case "$MEDIA" in
+	inet)	rsh $UNIT -l ris "/etc/getrisroot $HOSTNAME" | restore xf - $LIST
+		;;
+	tape)
+		mt -f $UNIT rew && mt -f $UNIT fsf 2 &&
+			dd if=$UNIT bs=20b | restore xf - $LIST
+		;;
+	disk)
+		dd if=$UNIT/ROOT bs=20b | restore xf - $LIST
+		;;
+	esac ||
+	{
+		Error "MediaRestore(): cannot restore $LIST"
+		return 1
+	}
+}
+
+
+: -Parse
+#
+
+Parse()
+{ (
+	IFS=$1
+	shift
+	echo $*
+) }
+
+
+Warning()
+{
+	echo "
+	WARNING:
+		You have chosen to perform an update installation of your
+	ULTRIX system. The update installation is an advanced procedure
+	which requires a thorough understanding of your system.
+
+		Be sure that you have perfomed full backups of your system
+	and that you have read and understood the update installation guide
+	and the release notes."
+
+	while :
+	do
+		echo "
+	Are you ready for the update to proceed (y/n)? \c"
+
+		read X
+		case "$X" in
+		[Yy])	return 0
+			;;
+		[Nn])	return 1
+		esac
+	done
+}
+[ "$SYSUPD_DEBUG" ] || Main $*
+
+
+

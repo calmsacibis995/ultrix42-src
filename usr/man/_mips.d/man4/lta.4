@@ -1,0 +1,133 @@
+.\" SCCSID: @(#)lta.4	8.1	9/11/90
+.TH lta 4 
+.SH Name
+lta \- lta pseudoterminal interface
+.SH Syntax
+.br
+.B options LAT
+.br
+.B pseudo-device lat
+.br
+\fBpseudo-device lta\fB[\fIn\fB]
+.SH Description
+.NXR "lta pseudoterminal interface"
+.NXM "Local Area Transport (LAT) interface" "lta pseudoterminal interface"
+The
+.PN lta
+pseudoterminal interface provides support for
+local area transport (LAT) service.
+LAT service allows users to access remote nodes through the Ethernet.
+.PP
+To configure the LAT service for your machine, you must:
+.IP \(bu 4
+Edit the system configuration file.
+.IP \(bu 4
+Edit the 
+.PN /etc/rc.local 
+file.
+.IP \(bu 4
+Create LAT special files.
+.IP \(bu 4 
+Edit the 
+.PN /etc/ttys 
+file.
+.PP
+Instructions for performing these tasks are further documented in the 
+.I Guide to Ethernet Communications Servers.
+.SS Edit the Configuration File
+.NXR "LAT service" "editing configuration file for"
+.NXR "configuration file" "editing for LAT service" 
+Edit the configuration file to include
+the 
+.PN LAT
+option and the 
+.PN lat
+and
+.PN lta
+pseudo-devices.
+The configuration file to edit is located in 
+\f(CW/sys/conf/vax/\fIHOSTNAME\fR
+or 
+\f(CW/sys/conf/mips/\fIHOSTNAME\fR
+(depending on your processor), where
+.I HOSTNAME 
+is the name of your host processor, in uppercase.
+.PP
+The optional value for the 
+.PN lta
+pseudo-device entry defines the number
+of LAT lines to configure, a number between 1 and 256.
+If you do not specify a value, the default is
+16 lines.  For example, if you want to configure 32 LAT devices into your
+system, the 
+entry for the LAT lines is:
+.EX
+pseudo-device lta32
+.EE
+.PP
+To use 
+the system as a load host for remote note maintenance functions such as loading and controlling
+terminal servers,
+you must also include an options entry for
+.PN DLI
+and a pseudo-device entry
+for 
+.PN dli
+in the configuration file.
+.SS Edit the /etc/rc.local File
+.NXR "LAT service" "restarting with /etc/rc.local file"
+Edit the 
+.PN /etc/rc.local 
+file to restart LAT service
+automatically when the system reboots.
+Add the following entry after
+the commands for local daemon startup:
+.EX 0
+if [ \-f /etc/lcp ]; then
+     /etc/lcp \-s > /dev/console & echo \-n ' lat' >/dev/console
+fi
+.EE
+.SS Create LAT Special Files
+.NXR "LAT service" "creating LAT special files"
+.NXR "LAT special files" "creating"
+Create the LAT special files by running the 
+.PN MAKEDEV 
+program from the
+.PN /dev
+directory and specifying the 
+.PN lta 
+option.
+You create one LAT special file for each LAT device.
+For example, the following 
+.PN MAKEDEV 
+commands create 32 device special files for LAT devices:
+.EX 
+# \f(CBcd /dev\f(CW
+# \f(CBMAKEDEV lta0\f(CW
+# \f(CBMAKEDEV lta1\f(CW
+.EE
+.PP
+The option range is 1 to 7.  The maximum 
+number of LAT special files is 256.  
+.PP
+.SS Edit the /etc/ttys File
+.NXR "LAT service" "editing the /etc/ttys file"
+Edit the 
+.PN /etc/ttys
+file to include entries for all the LAT special files
+you created using the 
+.PN MAKEDEV
+command.
+For more information on how to add these entries, see
+.MS ttys 5 .
+.SH Files
+.TP 15
+.PN /dev/tty??
+Contains terminal devices defined to the machine.
+.TP 
+.PN /dev/ttyd?
+Contains terminal devices defined to the machine (modem lines only).
+.SH See Also
+ttys(5), MAKEDEV(8)
+.br
+.I Guide to Ethernet Communications Servers

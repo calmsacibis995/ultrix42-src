@@ -1,0 +1,141 @@
+.\" SCCSID: @(#)ioinit.3f	8.1	9/11/90
+.TH ioinit 3f VAX "" Unsupported
+.SH Name
+ioinit \- change f77 I/O initialization
+.SH Syntax
+\fBlogical function ioinit (cctl, bzro, apnd, prefix, vrbose)\fP
+.br
+.B logical cctl, bzro, apnd, vrbose
+.br
+.B character*(*) prefix
+.SH Description
+.NXR "ioinit subroutine (FORTRAN)"
+.NXR "f77 compiler" "initializing I/O system"
+This routine will initialize several global parameters in the f77 I/O system,
+and attach externally defined files to logical units at run time.
+The effect of the flag arguments applies to logical units opened after
+.PN ioinit
+is called.
+The exception is the preassigned units, 5 and 6, to which
+.I cctl
+and
+.I bzro
+will apply at any time.
+The
+.PN ioinit
+routine is written in FORTRAN-77.
+.PP
+By default,
+carriage control is not recognized on any logical unit. If
+.I cctl
+is
+.B .true.
+then carriage control will be recognized on formatted output
+to all logical units except unit 0, the diagnostic channel.
+Otherwise the default will be restored.
+.PP
+By default, trailing and embedded blanks in input data fields
+are ignored. If
+.I bzro
+is
+.B .true.
+then such blanks will be treated as zeros.
+Otherwise the default will be restored.
+.PP
+By default, all files opened for sequential access are positioned at
+their beginning.
+It is sometimes necessary or convenient to open at the END-OF-FILE
+so that a write will append to the existing data.
+If
+.I apnd
+is
+.B .true.
+then files opened subsequently on any logical unit
+will be positioned at their end upon opening.
+A value of
+.B .false.
+will restore the default behavior.
+.PP
+The
+.PN ioinit
+routine may be used to associate file names with FORTRAN
+logical unit numbers through environment variables.  See
+the ``Introduction to the f77 I/O Library'' in the
+.I "ULTRIX Supplementary Documents"
+for a more general way of doing this.  If the argument
+.I prefix
+is a non-blank string, then names of the form
+.BR prefix NN
+will be sought in the program environment. The value associated with
+each such name found will be used to open logical unit NN for formatted
+sequential access.
+For example, if f77 program
+.I myprogram
+included the call:
+.EX
+call ioinit (.true., .false., .false., FORT, .false.)
+.EE
+then the following sequence:
+.EX
+% setenv FORT01 mydata
+% setenv FORT12 myresults
+% myprogram
+.EE
+would result in logical unit 1 opened to file
+.I mydata
+and logical unit 12 opened to file
+.I myresults .
+Both files would be positioned at their beginning.
+Any formatted output would have column 1 removed and interpreted
+as carriage control.
+Embedded and trailing blanks would be ignored on input.
+.PP
+If the argument
+.I vrbose
+is
+.B .true.
+then
+.PN ioinit
+will report on its activity.
+.PP
+The effect of:
+.EX
+call ioinit (.true., .true., .false., , .false.)
+.EE
+can be achieved without the actual call by including ``\-lI66''
+on the
+.PN f77
+command line.
+This gives carriage control on all logical units except 0,
+causes files to be opened at their beginning, and causes
+blanks to be interpreted as zero's.
+.PP
+The internal flags are stored in a labeled common block with the following
+definition:
+.EX
+integer*2 ieof, ictl, ibzr
+common /ioiflg/ ieof, ictl, ibzr
+.EE
+.SH Restrictions
+.NXR "ioinit subroutine (FORTRAN)" "restrictions"
+The
+.I prefix
+argument can be no longer than 30 characters.  A pathname
+associated with an environment name can be no longer
+than 255 characters.
+.PP
+The ``+'' carriage control does not work.
+.SH Files
+.ta \w'/usr/ucb/lib/libI77.a   'u
+.ie \nM /usr/ucb/lib/libI77.a	f77 I/O library
+.el /usr/lib/libI77.a	f77 I/O library
+.br
+.ie \nM /usr/ucb/lib/libI66.a	Sets older FORTRAN I/O modes
+.el /usr/lib/libI66.a	Sets older FORTRAN I/O modes
+.SH See Also
+getarg(3f), getenv(3f)
+.br
+``Introduction to the f77 I/O Library,''
+.I ULTRIX Supplementary Documents,
+.br
+Vol. II: Programmer

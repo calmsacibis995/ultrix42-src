@@ -1,0 +1,203 @@
+.\" SCCSID: @(#)lint.1	3.1	11/23/87
+.TH lint 1 VAX
+.SH Name
+lint \- check C code
+.SH Syntax
+.B lint
+[\fIOptions\fR] \fIfile...\fR
+.SH Description
+.NXR "lint command"
+.NXR "C program" "verifying"
+The
+.PN lint
+command detects features of the C program
+.I files
+which are
+likely to be bugs, non-portable, or wasteful.
+It also checks the type usage of the program more strictly
+than the compilers.
+Among the things which are currently found are
+unreachable statements,
+loops not entered at the top,
+automatic variables declared and not used,
+and logical expressions whose value is constant.
+Moreover, the usage of functions is checked to find
+functions which return values in some places and not in others,
+functions called with varying numbers of arguments,
+and functions whose values are not used.
+.PP
+By default, it is assumed that all the
+.I files
+are to be loaded together; they are checked for
+mutual compatibility.
+Function definitions for certain libraries are available to
+.PN lint .
+These libraries are referred to by a
+conventional name,
+such as `\-lm', in the style of 
+.MS ld 1 .
+Arguments ending in .ln
+are also treated as library files.  
+.PP
+To create 
+.PN lint
+libraries,
+use the
+.B \-C
+option as follows:
+.EX
+lint \-Cdlib files . . .
+.EE
+.PP
+The C sources of library
+.I dlib
+are 
+.I files.
+The result is the library file \fRllib-l\fIdlib\fP\.ln
+in the correct library format suitable for linting programs
+using
+.IR dlib .
+Note that if you have set the System V environment
+variable,
+the System V lint library is used.
+For further information, see 
+.MS intro 2 .
+.SH Options
+.NXR "lint command" "options"
+Any number of the options in the following list
+may be used.
+The
+.BR \-D "\*S,"
+.BR \-U "\*S,"
+and
+.B \-I
+options of 
+.MS cc 1
+are also recognized as separate arguments.
+.sp
+.IP \fB\-a\fR 5
+Report assignments of long values to int variables.
+.IP \fB\-b\fR 
+Report
+.B break
+statements that cannot be reached.  (This is not the
+default because most
+.PN lex
+and many
+.PN yacc
+outputs produce dozens of such comments.)
+.IP \fB\-c\fR 
+Complain about casts that have questionable portability.
+.IP \fB\-h\fR 
+Apply a number of heuristic tests to attempt to find
+bugs, improve style, and reduce waste.
+.IP \fB\-n\fR 
+Do not check compatibility against the standard library.
+.IP \fB\-p\fR 
+Attempt to check portability to the IBM and GCOS dialects
+of C.
+.IP \fB\-u\fR 
+Do not complain about functions and variables used and
+not defined, or defined and not used.  (This is suitable
+for running
+.PN lint
+on a subset of files out of a larger program.)
+.IP \fB\-v\fR
+Suppress complaints about unused arguments in functions.
+.IP \fB\-x\fR
+Report variables referred to be extern declarations,
+but never used.
+.IP \fB\-Y\fIenvironment\fR
+Compile C programs for \fIenvironment\fP.  If \fIenvironment\fP is
+SYSTEM_FIVE or omitted, defines SYSTEM_FIVE for the preprocessor, 
+.PN cpp ,
+and if the loader is invoked,
+specifies that the System V version of the C runtime library is
+used.  Also, if the math library is specified with the \fB\-lm\fR
+option, the System V version is used.  If \fIenvironment\fP is
+POSIX, defines POSIX for the preprocessor.  If the environment 
+variable PROG_ENV has the value SYSTEM_FIVE or POSIX, the effect is the
+same as specifying
+the corresponding \fB\-Y\fIenvironment\fR option to 
+.PN cc .
+The \fB-Y\fP option overrides the PROG_ENV variable; \fB-YBSD\fP can be
+used to override all special actions.
+.IP \fB\-z\fR
+Do not complain about structures that are never defined
+(for example, using a structure pointer without knowing
+its contents.)
+.SH Restrictions
+.NXR "lint command" "exit system call and"
+The 
+.MS exit 2
+system calls and other functions that do not return
+are not understood; this causes various anomalies in
+.PN lint
+output.
+.PP
+Certain conventional comments in the C source
+change the behavior of
+.PN lint:
+.TP 20
+/*NOTREACHED*/
+At appropriate points,
+stops comments about unreachable code.
+.TP
+.RI /*VARARGS n */
+Suppresses
+the usual checking for variable numbers of arguments
+in the following function declaration.
+The data types of the first
+.I n
+arguments are checked;
+a missing
+.I n
+is taken to be 0.
+.TP
+/*NOSTRICT*/
+Shuts off strict type checking in the next expression.
+.TP
+/*ARGSUSED*/
+Turns on the
+.B \-v
+option for the next function.
+.TP
+/*LINTLIBRARY*/
+At the beginning of a file, shuts off complaints about
+unused functions in this file.
+.SH Files
+.ta \w'/usr/lib/lint/llib-port.ln  'u
+.TP 20
+/usr/lib/lint1	
+Program
+.TP
+/usr/lib/lint2	
+Program
+.TP
+/usr/lib/lint/llib-lc.ln	
+Declarations for standard functions
+.TP
+/usr/lib/lint/llib-lc	
+Human readable version of above
+.TP
+/usr/lib/lint/llib-lcV.ln	
+System V declarations for standard functions
+.TP
+/usr/lib/lint/llib-lcP.ln
+POSIX declarations for standard functions
+.TP
+/usr/lib/lint/llib-port.ln	
+Declarations for portable functions
+.TP
+/usr/lib/lint/llib-port	
+Human readable . . .
+.TP
+llib-l*.ln	
+Library created with
+.B \-C
+.SH See Also
+cc(1)
+.sp
+``Lint, a C Program Checker'',
+.I ULTRIX Supplementary Documents,
+Vol. II:Programmer

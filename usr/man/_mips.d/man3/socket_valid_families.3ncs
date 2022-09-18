@@ -1,0 +1,60 @@
+.TH socket_valid_families 3ncs
+.SH Name
+socket_valid_families \- obtain a list of valid address families
+.SH Syntax
+#include <idl/c/socket.h>
+
+void socket_$valid_families(\fImax_families, families, status\fP)
+.nf
+unsigned long *\fImax_families\fR;
+socket_$addr_family_t \fIfamilies\fR[ ];
+status_$t *\fIstatus\fR;
+.fi
+.\".SH SYNOPSIS (PASCAL)
+.\".DS
+.\"\fB%include '/usr/include/idl/pas/socket.ins.pas'\fR
+.\"
+.\"\fBprocedure socket_$valid_families(\fR
+.\"	\fBin out \fImax_families\fB: unsigned32;\fR
+.\"	\fBout \fIfamilies\fB: array [1..*] of socket_$addr_family_t;\fR
+.\"	\fBout \fIstatus\fB: status_$t);\fR
+.\".DE
+.SH Arguments
+.TP 20
+\fImax_families\fR
+The maximum number of families that can be returned.
+.TP 20
+\fIfamilies[ ]\fR
+An array of \fBsocket_$addr_family_t\fR.
+Possible values for this type are enumerated in
+.PN /usr/include/idl/nbase.idl .
+Currently, only
+.B ip
+is supported for
+.I family.
+.TP 20
+\fIstatus\fR
+The completion status.
+This variable is set if the \fIfamilies[ ]\fR array is not long enough to hold
+all the valid families. If the completion status returned in
+.PN status\&.all
+is equal to
+.B status_$ok ,
+then the routine that supplied it was successful.
+.SH Description
+The 
+.PN socket_$valid_families
+routine returns a list
+of the address families that are valid on the calling host.
+.NXR "Operations on Socket Addresses" "socket_valid_families"
+.SH Examples
+The following routine returns the valid address family:
+.EX
+socket_$valid_families (1, &families, $status);
+.EE
+.SH Files
+.PN /usr/include/idl/socket.idl
+.br
+.PN /usr/include/idl/c/socket.h
+.SH See Also
+intro(3ncs), socket_valid_family(3ncs)

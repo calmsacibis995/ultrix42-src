@@ -1,0 +1,19 @@
+.\" SCCSID: @(#)pagesize.1	8.1	9/11/90
+.TH pagesize 1
+.SH Name
+pagesize \- print system page size
+.SH Syntax
+.B pagesize
+.SH Description
+.NXR "pagesize command"
+.NXAM "getpagesize system call" "pagesize command"
+.NXR "page size" "printing"
+The
+.PN pagesize
+command prints the size of a page of memory in bytes, as
+returned by 
+.MS getpagesize 2 .
+This program is useful in constructing portable
+shell scripts.
+.SH See Also
+getpagesize(2)

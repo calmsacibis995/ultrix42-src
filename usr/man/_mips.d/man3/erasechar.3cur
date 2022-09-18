@@ -1,0 +1,16 @@
+.TH erasechar 3cur 
+.NXR "erasechar subroutine"
+.SH Name
+erasechar \- return current ERASE character
+.SH Syntax
+.B
+#include <cursesX.h>
+.PP
+.B
+char erasechar(\|)
+.SH Description
+The user's current erase character is returned.
+.SH Return Values
+The
+.PN erasechar
+function returns the user's current erase character.
